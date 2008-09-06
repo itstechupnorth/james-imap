@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project default="main" name="main-deployment">
+  <description>Builds main-deployment module. This is an deployment module.</description>
+  <property name="name.module" value="main-deployment" />
+  <import file="../build-tools/deployment-build.xml" optional="no" />
+</project>
