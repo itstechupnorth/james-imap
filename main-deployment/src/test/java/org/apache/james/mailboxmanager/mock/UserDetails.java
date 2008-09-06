@@ -19,22 +19,36 @@
 
 package org.apache.james.mailboxmanager.mock;
 
-import org.apache.james.api.user.User;
+import java.util.Collection;
+import java.util.HashSet;
 
-public class MockUser implements User {
+public class UserDetails {
+	private final String userName;
+	private String password;
+	private final Collection subscriptions;
+	
+	public UserDetails(final String userName) {
+		this.userName = userName;
+		this.subscriptions = new HashSet();
+	}
 
-    public String getUserName() {
-        return "tuser";
-    }
+	public String getPassword() {
+		return password;
+	}
 
-    public boolean setPassword(String newPass) {
-        // TODO Auto-generated method stub
-        return false;
-    }
+	public void setPassword(String password) {
+		this.password = password;
+	}
+	
+	public Collection getSubscriptions() {
+		return subscriptions;
+	}
+	
+	public void addSubscription(String subscription) {
+		this.subscriptions.add(subscription);
+	}
 
-    public boolean verifyPassword(String pass) {
-        // TODO Auto-generated method stub
-        return false;
-    }
-
+	public void removeSubscription(String mailbox) {
+		this.subscriptions.remove(mailbox);
+	}
 }

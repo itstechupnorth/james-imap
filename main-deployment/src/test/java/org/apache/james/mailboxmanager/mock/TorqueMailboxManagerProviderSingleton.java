@@ -19,46 +19,46 @@
 
 package org.apache.james.mailboxmanager.mock;
 
-import org.apache.commons.configuration.ConfigurationException;
+import java.util.Collection;
+
 import org.apache.james.experimental.imapserver.ExperimentalHostSystem;
 import org.apache.james.experimental.imapserver.HostSystemFactory;
 import org.apache.james.mailboxmanager.impl.DefaultMailboxManagerProvider;
 import org.apache.james.mailboxmanager.manager.MailboxManagerProvider;
-import org.apache.james.mailboxmanager.torque.PheonixUserManager;
-import org.apache.james.mailboxmanager.torque.TorqueMailboxManagerFactory;
-import org.apache.james.test.mock.james.MockFileSystem;
-import org.apache.james.user.impl.file.FileUserMetaDataRepository;
+import org.apache.james.mailboxmanager.manager.SubscriptionException;
+import org.apache.james.mailboxmanager.torque.TorqueMailboxManager;
 
 public class TorqueMailboxManagerProviderSingleton {
-    
-    private static TorqueMailboxManagerFactory torqueMailboxManagerFactory;
+   
+    private static TorqueMailboxManager torqueMailboxManager;
+    private static SimpleUserManager userManager;
     private static DefaultMailboxManagerProvider defaultMailboxManagerProvider;
     public static final ExperimentalHostSystem host = new ExperimentalHostSystem();
 
     public synchronized static MailboxManagerProvider getTorqueMailboxManagerProviderInstance() throws Exception {
         if (defaultMailboxManagerProvider==null) {
-            getTorqueFactory();
+        	getMailboxManager();
             defaultMailboxManagerProvider=new DefaultMailboxManagerProvider();
-            defaultMailboxManagerProvider.setMailboxManagerInstance(torqueMailboxManagerFactory);
+            defaultMailboxManagerProvider.setMailboxManagerInstance(torqueMailboxManager);
         }
         return defaultMailboxManagerProvider;
         
     }
 
-    private static TorqueMailboxManagerFactory getTorqueFactory() throws ConfigurationException, Exception {
-        if (torqueMailboxManagerFactory == null) {
-            torqueMailboxManagerFactory=new TorqueMailboxManagerFactory(new PheonixUserManager(
-                    new FileUserMetaDataRepository(HostSystemFactory.META_DATA_DIRECTORY),  host)) {{
-                setFileSystem(new MockFileSystem());
-            }};
-            torqueMailboxManagerFactory.configureDefaults();
-            torqueMailboxManagerFactory.initialize();
+    public static void addUser(String user, String password) {
+    	userManager.addUser(user, password);
+    }
+    
+    private static TorqueMailboxManager getMailboxManager() throws Exception {
+        if (torqueMailboxManager == null) {
+        	userManager = new SimpleUserManager();
+            torqueMailboxManager=new TorqueMailboxManager(userManager);
         }
-        return torqueMailboxManagerFactory;
+        return torqueMailboxManager;
     }
 
     public static void reset() throws Exception {
-        getTorqueFactory().deleteEverything();
+    	getMailboxManager().deleteEverything();
     }
 
 }

@@ -33,14 +33,11 @@ import java.util.Iterator;
 import java.util.Set;
 
 import org.apache.james.api.imap.process.ImapProcessor;
-import org.apache.james.api.user.User;
-import org.apache.james.api.user.UsersRepository;
 import org.apache.james.imapserver.codec.decode.ImapDecoder;
 import org.apache.james.imapserver.codec.encode.ImapEncoder;
 import org.apache.james.test.functional.imap.HostSystem;
-import org.apache.james.test.mock.avalon.MockLogger;
 
-public class ExperimentalHostSystem implements HostSystem, UsersRepository {
+public class ExperimentalHostSystem implements HostSystem {
 
     private ImapDecoder decoder;
     private ImapEncoder encoder;
@@ -61,13 +58,6 @@ public class ExperimentalHostSystem implements HostSystem, UsersRepository {
         this.dataReset = dataReset;
     }
     
-    public boolean addUser(String username, String password) {
-        User user = new MockUser(username, password);
-        users.add(user);
-        return true;
-
-    }
-
     public HostSystem.Session newSession(Continuation continuation) throws Exception {
         return new Session(continuation);
     }
@@ -97,48 +87,6 @@ public class ExperimentalHostSystem implements HostSystem, UsersRepository {
         return Integer.MAX_VALUE;
     }
 
-    public boolean addUser(User user) {
-        users.add(user);
-        return true;
-    }
-
-    public void addUser(String name, Object attributes) {
-        User user = new MockUser(name, "SHA");
-        users.add(user);
-    }
-
-    public boolean contains(String name) {
-        boolean result = false;
-        if (name != null)
-        {
-            for (Iterator it=users.iterator();it.hasNext();)
-            {
-                User user = (User) it.next();
-                if (name.equals(user.getUserName())){
-                    result = true;
-                    break;
-                }
-            }
-        }
-        return result;
-    }
-
-    public boolean containsCaseInsensitive(String name) {
-        boolean result = false;
-        if (name != null)
-        {
-            for (Iterator it=users.iterator();it.hasNext();)
-            {
-                User user = (User) it.next();
-                if (name.equalsIgnoreCase(user.getUserName())){
-                    result = true;
-                    break;
-                }
-            }
-        }
-        return result;
-    }
-
     public int countUsers() {
         return users.size();
     }
@@ -147,84 +95,6 @@ public class ExperimentalHostSystem implements HostSystem, UsersRepository {
         return name;
     }
 
-    public User getUserByName(String name) {
-        User result = null;
-        if (name != null)
-        {
-            for (Iterator it=users.iterator();it.hasNext();)
-            {
-                User user = (User) it.next();
-                if (name.equals(user.getUserName())){
-                    result = user;
-                    break;
-                }
-            }
-        }
-        return result;
-    }
-
-    public User getUserByNameCaseInsensitive(String name) {
-        User result = null;
-        if (name != null)
-        {
-            for (Iterator it=users.iterator();it.hasNext();)
-            {
-                User user = (User) it.next();
-                if (name.equalsIgnoreCase(user.getUserName())){
-                    result = user;
-                    break;
-                }
-            }
-        }
-        return result;
-    }
-
-    public Iterator list() {
-        Collection results = new ArrayList();
-        for (Iterator it=users.iterator();it.hasNext();)
-        {
-            User user = (User) it.next();
-            results.add(user.getUserName());
-        }
-
-        return results.iterator();
-    }
-
-    public void removeUser(String name) {
-        if (name != null)
-        {
-            for (Iterator it=users.iterator();it.hasNext();)
-            {
-                User user = (User) it.next();
-                if (name.equals(user.getUserName())){
-                    it.remove();
-                    break;
-                }
-            }
-        }       
-    }
-
-    public boolean test(String name, String password) {
-        boolean result = false;
-        if (name != null)
-        {
-            for (Iterator it=users.iterator();it.hasNext();)
-            {
-                User user = (User) it.next();
-                if (name.equals(user.getUserName())){
-                    result = user.verifyPassword(password);
-                    break;
-                }
-            }
-        }
-        return result;
-    }
-
-    public boolean updateUser(User user) {
-        users.add(user);
-        return true;
-    }
-    
     class Session implements HostSystem.Session
     {
         ByteBufferOutputStream out;
@@ -364,57 +234,12 @@ public class ExperimentalHostSystem implements HostSystem, UsersRepository {
         }
     }
     
-    static class MockUser implements User {
-
-        private final String user;
-        private String password;
-        
-        
-        
-        public MockUser(final String user, final String password) {
-            super();
-            this.user = user;
-            this.password = password;
-        }
-
-        public String getUserName() {
-            return user;
-        }
-
-        public boolean setPassword(String newPass) {
-            this.password = newPass;
-            return true;
-        }
-
-        public boolean verifyPassword(String pass) {
-            return password.equals(pass);
-        }
-
-        public int hashCode() {
-            final int PRIME = 31;
-            int result = 1;
-            result = PRIME * result + ((user == null) ? 0 : user.hashCode());
-            return result;
-        }
-
-        public boolean equals(Object obj) {
-            if (this == obj)
-                return true;
-            if (obj == null)
-                return false;
-            if (getClass() != obj.getClass())
-                return false;
-            final MockUser other = (MockUser) obj;
-            if (user == null) {
-                if (other.user != null)
-                    return false;
-            } else if (!user.equals(other.user))
-                return false;
-            return true;
-        }
-    }
-    
     public interface Resetable {
         public void reset() throws Exception;
     }
+
+	public boolean addUser(String user, String password) throws Exception {
+		
+		return false;
+	}
 }
