@@ -26,7 +26,7 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.apache.james</groupId>
-  <artifactId>james-server</artifactId>
+  <artifactId>james-imap-protocol</artifactId>
   <name>Apache JAMES Server</name>
   <version>3.0-SNAPSHOT</version>
   <description>The Apache Java Enterprise Mail Server (a.k.a. JAMES Server)</description>
@@ -35,36 +35,12 @@
   <packaging>pom</packaging>
   <modules>
     <module>stage</module>
-    <module>javamail-util</module>
-    <module>common-util</module>
-    <module>core-api</module>
-    <module>user-api</module>
-    <module>domain-api</module>
     <module>imap-api</module>
     <module>imap-codec-library</module>
-    <module>user-library</module>
-    <module>core-library</module>
-    <module>management-library</module>
-    <module>avalon-spring-bridge-library</module>
-    <module>avalon-socket-library</module>
     <module>mailbox-library</module>
-    <module>core-function</module>
-    <module>smtpserver-function</module>
-    <module>pop3server-function</module>
-    <module>nntpserver-function</module>
-    <module>spoolmanager-function</module>
-    <module>remotemanager-function</module>
-    <module>basic-user-function</module>
-    <module>avalon-user-function</module>
-    <module>mailets-function</module>
-    <module>fetchmail-function</module>
     <module>imap-mailbox-processor-function</module>
     <module>torque-mailboxmanager-function</module>
     <module>experimental-seda-imap-function</module>
-    <module>experimental-activemq-function</module>
-    <module>jcr-backend-function</module>
-    <module>phoenix-deployment</module>
-    <module>spring-deployment</module>
   </modules>
   <scm>
     <connection>scm:svn:http://svn.apache.org/repos/asf/james/server/trunk</connection>
@@ -286,112 +262,12 @@
     </dependency>
     <dependency>
       <groupId>org.apache.james</groupId>
-      <artifactId>james-server-javamail-util</artifactId>
-      <version>3.0-SNAPSHOT</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.james</groupId>
-      <artifactId>james-server-common-util</artifactId>
-      <version>3.0-SNAPSHOT</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.james</groupId>
-      <artifactId>james-server-user-api</artifactId>
-      <version>3.0-SNAPSHOT</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.james</groupId>
-      <artifactId>james-server-core-api</artifactId>
-      <version>3.0-SNAPSHOT</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.james</groupId>
-      <artifactId>james-server-domain-api</artifactId>
-      <version>3.0-SNAPSHOT</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.james</groupId>
-      <artifactId>james-server-core-library</artifactId>
-      <version>3.0-SNAPSHOT</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.james</groupId>
-      <artifactId>james-server-management-library</artifactId>
-      <version>3.0-SNAPSHOT</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.james</groupId>
-      <artifactId>james-server-user-library</artifactId>
-      <version>3.0-SNAPSHOT</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.james</groupId>
-      <artifactId>james-server-avalon-spring-bridge-library</artifactId>
-      <version>3.0-SNAPSHOT</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.james</groupId>
-      <artifactId>james-server-avalon-socket-library</artifactId>
-      <version>3.0-SNAPSHOT</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.james</groupId>
       <artifactId>james-server-mailbox-library</artifactId>
       <version>3.0-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.apache.james</groupId>
       <artifactId>james-server-imap-codec-library</artifactId>
-      <version>3.0-SNAPSHOT</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.james</groupId>
-      <artifactId>james-server-avalon-user-function</artifactId>
-      <version>3.0-SNAPSHOT</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.james</groupId>
-      <artifactId>james-server-basic-user-function</artifactId>
-      <version>3.0-SNAPSHOT</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.james</groupId>
-      <artifactId>james-server-smtpserver-function</artifactId>
-      <version>3.0-SNAPSHOT</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.james</groupId>
-      <artifactId>james-server-core-function</artifactId>
-      <version>3.0-SNAPSHOT</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.james</groupId>
-      <artifactId>james-server-pop3server-function</artifactId>
-      <version>3.0-SNAPSHOT</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.james</groupId>
-      <artifactId>james-server-nntpserver-function</artifactId>
-      <version>3.0-SNAPSHOT</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.james</groupId>
-      <artifactId>james-server-fetchmail-function</artifactId>
-      <version>3.0-SNAPSHOT</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.james</groupId>
-      <artifactId>james-server-spoolmanager-function</artifactId>
-      <version>3.0-SNAPSHOT</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.james</groupId>
-      <artifactId>james-server-mailets-function</artifactId>
-      <version>3.0-SNAPSHOT</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.james</groupId>
-      <artifactId>james-server-remotemanager-function</artifactId>
       <version>3.0-SNAPSHOT</version>
     </dependency>
     <dependency>
@@ -406,11 +282,6 @@
     </dependency>
     <dependency>
       <groupId>org.apache.james</groupId>
-      <artifactId>james-server-experimental-activemq-function</artifactId>
-      <version>3.0-SNAPSHOT</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.james</groupId>
       <artifactId>james-server-experimental-seda-imap-function</artifactId>
       <version>3.0-SNAPSHOT</version>
     </dependency>
@@ -423,18 +294,6 @@
     </dependency>
     <dependency>
       <groupId>org.apache.james</groupId>
-      <artifactId>james-server-smtpserver-function</artifactId>
-      <version>3.0-SNAPSHOT</version>
-      <type>test-jar</type>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.james</groupId>
-      <artifactId>james-server-jcr-backend-function</artifactId>
-      <version>3.0-SNAPSHOT</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.james</groupId>
       <artifactId>james-server-imap-api</artifactId>
       <version>3.0-SNAPSHOT</version>
     </dependency>
@@ -444,26 +303,6 @@
       <version>3.0-SNAPSHOT</version>
       <type>test-jar</type>
       <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.james</groupId>
-      <artifactId>james-server-core-library</artifactId>
-      <version>3.0-SNAPSHOT</version>
-      <type>test-jar</type>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.james</groupId>
-      <artifactId>james-server-user-library</artifactId>
-      <version>3.0-SNAPSHOT</version>
-      <type>test-jar</type>
-      <scope>test</scope>
-    </dependency>
-
-    <dependency>
-      <groupId>org.apache.james</groupId>
-      <artifactId>james-server-phoenix-deployment</artifactId>
-      <version>3.0-SNAPSHOT</version>
     </dependency>
 
     <dependency>
