@@ -35,6 +35,7 @@ import java.util.Set;
 import org.apache.james.api.imap.process.ImapProcessor;
 import org.apache.james.imapserver.codec.decode.ImapDecoder;
 import org.apache.james.imapserver.codec.encode.ImapEncoder;
+import org.apache.james.mailboxmanager.mock.TorqueMailboxManagerProviderSingleton;
 import org.apache.james.test.functional.imap.HostSystem;
 
 public class ExperimentalHostSystem implements HostSystem {
@@ -239,7 +240,7 @@ public class ExperimentalHostSystem implements HostSystem {
     }
 
 	public boolean addUser(String user, String password) throws Exception {
-		
-		return false;
+		TorqueMailboxManagerProviderSingleton.addUser(user, password);
+		return true;
 	}
 }

@@ -3,4 +3,26 @@
   <description>Builds main-deployment module. This is an deployment module.</description>
   <property name="name.module" value="main-deployment" />
   <import file="../build-tools/deployment-build.xml" optional="no" />
+	
+    <target 
+        name='dist'
+        description='Builds and creates distribution without cleaning'
+        depends='build, check-environment, conditional-clean, test'
+        unless='dont.build.module'>
+        <CreateJar 
+            name='${name.module}'   
+            bin='${dir.build.bin}'
+            lib='${dir.stage.james}'/>  
+        <CreateJar 
+            name='${name.module}-test'   
+            bin='${dir.build.test}'
+            lib='${dir.stage.james}'/>  
+	<!-- JavaDocs fails unless source exists in main
+        <CreateJavaDocs/>
+        <CreateJar 
+            name='${name.module}-javadoc'   
+            bin='${build.javadocs}'
+            lib='${dir.stage.james}'/>     
+            -->
+    </target> 
 </project>
