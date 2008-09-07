@@ -17,8 +17,8 @@
   specific language governing permissions and limitations
   under the License.    
 -->
-<project default="main" name="imap-api">
-  <description>Builds imap-api module. This is an api module.</description>
-  <property name="name.module" value="imap-api" />
-  <import file="../build-tools/api-build.xml" optional="no" />
+<project default="main" name="processor-function">
+  <description>Builds processor-function module. This is an function module.</description>
+  <property name="name.module" value="processor-function" />
+  <import file="../build-tools/function-build.xml" optional="no" />
 </project>
