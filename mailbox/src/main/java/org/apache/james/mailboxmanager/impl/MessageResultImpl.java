@@ -19,6 +19,7 @@
 
 package org.apache.james.mailboxmanager.impl;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -28,7 +29,6 @@ import java.util.Map;
 import javax.mail.Flags;
 import javax.mail.internet.MimeMessage;
 
-import org.apache.commons.collections.IteratorUtils;
 import org.apache.james.mailboxmanager.MailboxManagerException;
 import org.apache.james.mailboxmanager.MessageResult;
 import org.apache.james.mailboxmanager.util.MessageResultUtils;
@@ -75,7 +75,7 @@ public class MessageResultImpl implements MessageResult {
             setInternalDate(result.getInternalDate());
         }
         if (MessageResultUtils.isHeadersIncluded(result)) {
-            setHeaders(IteratorUtils.toList(result.headers()));
+            setHeaders(toList(result.headers()));
         }
         if (MessageResultUtils.isFullContentIncluded(result)) {
             setFullContent(result.getFullContent());
@@ -85,7 +85,17 @@ public class MessageResultImpl implements MessageResult {
         }
     }
 
-    public MessageResult.FetchGroup getIncludedResults() {
+    private List toList(Iterator iterator) {
+		final List results = new ArrayList();
+		if (iterator != null) {
+			while (iterator.hasNext()) {
+				results.add(iterator.next());
+			}
+		}
+		return results;
+	}
+
+	public MessageResult.FetchGroup getIncludedResults() {
         final FetchGroupImpl fetchGroup = new FetchGroupImpl(includedResults);
         return fetchGroup;
     }

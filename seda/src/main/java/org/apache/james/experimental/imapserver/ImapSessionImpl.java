@@ -20,10 +20,10 @@
 package org.apache.james.experimental.imapserver;
 
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.collections.ListUtils;
 import org.apache.james.api.imap.AbstractLogEnabled;
 import org.apache.james.api.imap.ImapConstants;
 import org.apache.james.api.imap.ImapSessionState;
@@ -55,7 +55,7 @@ public final class ImapSessionImpl extends AbstractLogEnabled implements ImapSes
         final List results;
         final SelectedImapMailbox selected = getSelected();
         if (selected == null) {
-            results = ListUtils.EMPTY_LIST;
+            results = Collections.EMPTY_LIST;
         } else {
             results = selected.unsolicitedResponses(omitExpunged, useUid);
         }

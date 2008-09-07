@@ -26,7 +26,6 @@ import java.util.List;
 
 import javax.mail.MessagingException;
 
-import org.apache.commons.collections.IteratorUtils;
 import org.apache.james.mailboxmanager.MailboxManagerException;
 import org.apache.james.mailboxmanager.MessageResult;
 import org.apache.james.mailboxmanager.MessageResult.FetchGroup;
@@ -42,7 +41,12 @@ public class MessageResultUtils {
      * @throws MessagingException
      */
     public static List getAll(final Iterator iterator) {
-        List results = IteratorUtils.toList(iterator);
+        final List results = new ArrayList();
+        if (iterator != null) {
+        	while(iterator.hasNext()) {
+        		results.add(iterator.next());
+        	}
+        }
         return results;
     }
     

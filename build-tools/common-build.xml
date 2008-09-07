@@ -184,7 +184,6 @@ JAMES requires Ant 1.7 or higher. Please install a more modern version of Ant.
         <sequential>  
             <path id='classpath.base'>  
                 <fileset dir="${lib.dir}">
-                    <include name="${commons-collections.jar}"/>
                     <include name="${javax-mail.jar}"/>
                     <include name="${javax-activation.jar}"/>
                     <include name="${commons-logging.jar}"/>
@@ -198,6 +197,7 @@ JAMES requires Ant 1.7 or higher. Please install a more modern version of Ant.
         	
             <path id='classpath.torque'>  
                 <fileset dir="${lib.dir}">
+                	<include name="${commons-collections.jar}"/>
                     <include name="${commons-dbcp.jar}"/>
                     <include name="${commons-pool.jar}"/>
     				<include name="${torque.jar}"/>
