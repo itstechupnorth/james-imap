@@ -17,8 +17,8 @@
   specific language governing permissions and limitations
   under the License.    
 -->
-<project default="main" name="seda-function">
-  <description>Builds seda-function module. This is an function module.</description>
-  <property name="name.module" value="seda-function" />
+<project default="main" name="seda">
+  <description>Builds seda module. This is an function module.</description>
+  <property name="name.module" value="seda" />
   <import file="../build-tools/function-build.xml" optional="no" />
 </project>

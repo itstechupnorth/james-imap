@@ -255,72 +255,54 @@ JAMES requires Ant 1.7 or higher. Please install a more modern version of Ant.
             <path 
                 id='classpath.dependencies.api'
                 description="Convenient way to import all APIs">
-                <!-- TODO Add content when APIs are broken out -->   
                 <fileset dir="${lib.dir}/${path.lib.james}">
-                    <include name="${jars-prefix}*-api-${version}.jar" />
-                </fileset>
-            </path>
-            <path 
-                id='classpath.dependencies.util'
-                description="Convenient way to import all Utils">
-                <!-- TODO Add content when Utilss are broken out -->   
-                <fileset dir="${lib.dir}/${path.lib.james}">
-                    <include name="${jars-prefix}*-util-${version}.jar" />
+                    <include name="${jars-prefix}api-${version}.jar" />
                 </fileset>
             </path>
             <path 
                 id='classpath.dependencies.libraries'
-                description="Convenient way to import all libraries, APIs and Utils">
-                <!-- TODO Add content when libraries are broken out -->   
+                description="Convenient way to import all libraries, APIs and Utils"> 
                 <path refid='classpath.dependencies.api'/>
-                <path refid='classpath.dependencies.util'/>
                 <fileset dir="${lib.dir}/${path.lib.james}">
-                    <include name="${jars-prefix}*-library-${version}.jar" />
+                    <include name="${jars-prefix}mailbox-${version}.jar" />
+                	<include name="${jars-prefix}codec-${version}.jar" />
                 </fileset>
             </path> 
             <path 
                 id='classpath.dependencies.functions'
-                description="Convenient way to import all functions, libraries, APIs and Utils">
-                <!-- TODO Add content when functions are broken out -->   
+                description="Convenient way to import all functions, libraries, APIs and Utils">  
                 <path refid='classpath.dependencies.libraries'/>   
                 <fileset dir="${lib.dir}/${path.lib.james}">
-                    <include name="${jars-prefix}*-function-${version}.jar" />
+                    <include name="${jars-prefix}processor-${version}.jar" />
+                	<include name="${jars-prefix}seda-${version}.jar" />
+                	<include name="${jars-prefix}torque-${version}.jar" />
                 </fileset>
             </path> 
             
             <path 
                 id='classpath.test.dependencies.api'
-                description="Convenient way to import all API tests">
-                <!-- TODO Add content when APIs are broken out -->   
+                description="Convenient way to import all API tests"> 
                 <fileset dir="${lib.dir}/${path.lib.james}">
-                    <include name="${jars-prefix}*-api-test-${version}.jar" />
-                </fileset>
-            </path>
-            <path 
-                id='classpath.test.dependencies.util'
-                description="Convenient way to import all Utils tests">
-                <!-- TODO Add content when Utils are broken out -->   
-                <fileset dir="${lib.dir}/${path.lib.james}">
-                    <include name="${jars-prefix}*-util-test-${version}.jar" />
+                    <include name="${jars-prefix}*api-test-${version}.jar" />
                 </fileset>
             </path>
             <path 
                 id='classpath.test.dependencies.libraries'
                 description="Convenient way to import all library, API and Util tests">
-                <!-- TODO Add content when libraries are broken out -->   
                 <path refid='classpath.test.dependencies.api'/>
-                <path refid='classpath.test.dependencies.util'/>
                 <fileset dir="${lib.dir}/${path.lib.james}">
-                    <include name="${jars-prefix}*-library-test-${version}.jar" />
+                    <include name="${jars-prefix}mailbox-test-${version}.jar" />
+                    <include name="${jars-prefix}codec-test-${version}.jar" />
                 </fileset>
             </path> 
             <path 
                 id='classpath.test.dependencies.functions'
                 description="Convenient way to import all function, libraries, APIs and Utils tests">
-                <!-- TODO Add content when functions are broken out -->   
                 <path refid='classpath.test.dependencies.libraries'/>   
                 <fileset dir="${lib.dir}/${path.lib.james}">
-                    <include name="${jars-prefix}*-function-test-${version}.jar" />
+                    <include name="${jars-prefix}*processor-test-${version}.jar" />
+                	<include name="${jars-prefix}*seda-test-${version}.jar" />
+                	<include name="${jars-prefix}*torque-test-${version}.jar" />
                 </fileset>
             </path>   
         </sequential>   

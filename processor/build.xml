@@ -17,8 +17,8 @@
   specific language governing permissions and limitations
   under the License.    
 -->
-<project default="main" name="processor-function">
-  <description>Builds processor-function module. This is an function module.</description>
-  <property name="name.module" value="processor-function" />
+<project default="main" name="processor">
+  <description>Builds processor module. This is an function module.</description>
+  <property name="name.module" value="processor" />
   <import file="../build-tools/function-build.xml" optional="no" />
 </project>
