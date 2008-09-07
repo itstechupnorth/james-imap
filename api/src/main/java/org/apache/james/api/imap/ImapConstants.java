@@ -85,6 +85,21 @@ public interface ImapConstants
     public String MIME_TYPE_MESSAGE = "MESSAGE";
     public String MIME_SUBTYPE_RFC822 = "RFC822";
     
+    // RFC822 CONSTANTS: 
+    // TODO: Consider switching to standard case
+	public String RFC822_BCC = "Bcc";
+	public String RFC822_CC = "Cc";
+	public String RFC822_FROM = "From";
+	public String RFC822_DATE = "Date";
+	public String RFC822_SUBJECT = "Subject";
+	public String RFC822_TO = "To";
+	public String RFC822_SENDER = "Sender";
+	public String RFC822_REPLY_TO = "Reply-To";
+	public String RFC822_IN_REPLY_TO = "In-Reply-To";
+	public String RFC822_MESSAGE_ID = "Message-ID";
+	
+	
+    
     public static final char BACK_SLASH = '\\';
     public static final String STATUS_UNSEEN = "UNSEEN";
     public static final String STATUS_UIDVALIDITY = "UIDVALIDITY";

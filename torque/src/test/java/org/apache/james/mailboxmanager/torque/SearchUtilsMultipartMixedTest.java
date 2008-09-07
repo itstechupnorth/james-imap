@@ -25,11 +25,11 @@ import java.util.Collection;
 
 import junit.framework.TestCase;
 
+import org.apache.james.api.imap.ImapConstants;
 import org.apache.james.mailboxmanager.SearchQuery;
 import org.apache.james.mailboxmanager.torque.om.MessageBody;
 import org.apache.james.mailboxmanager.torque.om.MessageHeader;
 import org.apache.james.mailboxmanager.torque.om.MessageRow;
-import org.apache.mailet.RFC2822Headers;
 
 public class SearchUtilsMultipartMixedTest extends TestCase {
 
@@ -114,10 +114,10 @@ public class SearchUtilsMultipartMixedTest extends TestCase {
     protected void setUp() throws Exception {
         super.setUp();
         row = new MessageRow(); 
-        row.addMessageHeader(new MessageHeader(RFC2822Headers.FROM, "Alex <alex@example.org"));
-        row.addMessageHeader(new MessageHeader(RFC2822Headers.TO, "Harry <harry@example.org"));
-        row.addMessageHeader(new MessageHeader(RFC2822Headers.SUBJECT, "A Mixed Multipart Mail"));
-        row.addMessageHeader(new MessageHeader(RFC2822Headers.DATE, "Thu, 14 Feb 2008 12:00:00 +0000 (GMT)"));
+        row.addMessageHeader(new MessageHeader(ImapConstants.RFC822_FROM, "Alex <alex@example.org"));
+        row.addMessageHeader(new MessageHeader(ImapConstants.RFC822_TO, "Harry <harry@example.org"));
+        row.addMessageHeader(new MessageHeader(ImapConstants.RFC822_SUBJECT, "A Mixed Multipart Mail"));
+        row.addMessageHeader(new MessageHeader(ImapConstants.RFC822_DATE, "Thu, 14 Feb 2008 12:00:00 +0000 (GMT)"));
         row.addMessageHeader(new MessageHeader("Content-Type", "multipart/mixed;boundary=1729"));
         row.addMessageBody(new MessageBody(Charset.forName("us-ascii").encode(BODY).array()));
         searches = new MessageSearches();

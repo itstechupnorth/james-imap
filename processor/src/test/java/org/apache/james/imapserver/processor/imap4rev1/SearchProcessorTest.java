@@ -25,6 +25,7 @@ import java.util.List;
 import javax.mail.Flags.Flag;
 
 import org.apache.james.api.imap.ImapCommand;
+import org.apache.james.api.imap.ImapConstants;
 import org.apache.james.api.imap.display.HumanReadableTextKey;
 import org.apache.james.api.imap.message.IdRange;
 import org.apache.james.api.imap.message.request.DayMonthYear;
@@ -42,7 +43,6 @@ import org.apache.james.mailboxmanager.MailboxSession;
 import org.apache.james.mailboxmanager.SearchQuery;
 import org.apache.james.mailboxmanager.impl.FetchGroupImpl;
 import org.apache.james.mailboxmanager.mailbox.Mailbox;
-import org.apache.mailet.RFC2822Headers;
 import org.jmock.Mock;
 import org.jmock.MockObjectTestCase;
 
@@ -145,7 +145,7 @@ public class SearchProcessorTest extends MockObjectTestCase {
 
     public void testBCC() throws Exception {
         session.expects(once()).method("getSelected").will(returnValue(null));
-        check(SearchKey.buildBcc(ADDRESS), SearchQuery.headerContains(RFC2822Headers.BCC, ADDRESS));
+        check(SearchKey.buildBcc(ADDRESS), SearchQuery.headerContains(ImapConstants.RFC822_BCC, ADDRESS));
     }
 
     public void testBEFORE() throws Exception {
@@ -160,7 +160,7 @@ public class SearchProcessorTest extends MockObjectTestCase {
 
     public void testCC() throws Exception {
         session.expects(once()).method("getSelected").will(returnValue(null));
-        check(SearchKey.buildCc(ADDRESS), SearchQuery.headerContains(RFC2822Headers.CC, ADDRESS));
+        check(SearchKey.buildCc(ADDRESS), SearchQuery.headerContains(ImapConstants.RFC822_CC, ADDRESS));
     }
 
     public void testDELETED() throws Exception {
@@ -181,12 +181,12 @@ public class SearchProcessorTest extends MockObjectTestCase {
 
     public void testFROM() throws Exception {
         session.expects(once()).method("getSelected").will(returnValue(null));
-        check(SearchKey.buildFrom(ADDRESS), SearchQuery.headerContains(RFC2822Headers.FROM, ADDRESS));
+        check(SearchKey.buildFrom(ADDRESS), SearchQuery.headerContains(ImapConstants.RFC822_FROM, ADDRESS));
     }
 
     public void testHEADER () throws Exception {
         session.expects(once()).method("getSelected").will(returnValue(null));
-        check(SearchKey.buildHeader(RFC2822Headers.IN_REPLY_TO, ADDRESS), SearchQuery.headerContains(RFC2822Headers.IN_REPLY_TO, ADDRESS));
+        check(SearchKey.buildHeader(ImapConstants.RFC822_IN_REPLY_TO, ADDRESS), SearchQuery.headerContains(ImapConstants.RFC822_IN_REPLY_TO, ADDRESS));
     }
 
     public void testKEYWORD() throws Exception {
@@ -252,17 +252,17 @@ public class SearchProcessorTest extends MockObjectTestCase {
 
     public void testSENTBEFORE() throws Exception {
         session.expects(once()).method("getSelected").will(returnValue(null));
-        check(SearchKey.buildSentBefore(DAY_MONTH_YEAR), SearchQuery.headerDateBefore(RFC2822Headers.DATE, DAY, MONTH, YEAR));
+        check(SearchKey.buildSentBefore(DAY_MONTH_YEAR), SearchQuery.headerDateBefore(ImapConstants.RFC822_DATE, DAY, MONTH, YEAR));
     }
 
     public void testSENTON() throws Exception {
         session.expects(once()).method("getSelected").will(returnValue(null));
-        check(SearchKey.buildSentOn(DAY_MONTH_YEAR), SearchQuery.headerDateOn(RFC2822Headers.DATE, DAY, MONTH, YEAR));
+        check(SearchKey.buildSentOn(DAY_MONTH_YEAR), SearchQuery.headerDateOn(ImapConstants.RFC822_DATE, DAY, MONTH, YEAR));
     }
 
     public void testSENTSINCE() throws Exception {
         session.expects(once()).method("getSelected").will(returnValue(null));
-        check(SearchKey.buildSentSince(DAY_MONTH_YEAR), SearchQuery.headerDateAfter(RFC2822Headers.DATE, DAY, MONTH, YEAR));
+        check(SearchKey.buildSentSince(DAY_MONTH_YEAR), SearchQuery.headerDateAfter(ImapConstants.RFC822_DATE, DAY, MONTH, YEAR));
     }
 
     public void testSINCE() throws Exception {
@@ -277,7 +277,7 @@ public class SearchProcessorTest extends MockObjectTestCase {
 
     public void testSUBJECT() throws Exception {
         session.expects(once()).method("getSelected").will(returnValue(null));
-        check(SearchKey.buildSubject(SUBJECT), SearchQuery.headerContains(RFC2822Headers.SUBJECT, SUBJECT));
+        check(SearchKey.buildSubject(SUBJECT), SearchQuery.headerContains(ImapConstants.RFC822_SUBJECT, SUBJECT));
     }
 
     public void testTEXT() throws Exception {
@@ -287,7 +287,7 @@ public class SearchProcessorTest extends MockObjectTestCase {
 
     public void testTO () throws Exception {
         session.expects(once()).method("getSelected").will(returnValue(null));
-        check(SearchKey.buildTo(ADDRESS), SearchQuery.headerContains(RFC2822Headers.TO, ADDRESS));
+        check(SearchKey.buildTo(ADDRESS), SearchQuery.headerContains(ImapConstants.RFC822_TO, ADDRESS));
     }
 
     public void testUID() throws Exception {

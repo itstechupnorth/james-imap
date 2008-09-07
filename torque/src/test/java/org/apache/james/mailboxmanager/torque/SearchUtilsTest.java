@@ -25,11 +25,11 @@ import java.util.Date;
 
 import javax.mail.Flags;
 
+import org.apache.james.api.imap.ImapConstants;
 import org.apache.james.mailboxmanager.SearchQuery;
 import org.apache.james.mailboxmanager.torque.om.MessageFlags;
 import org.apache.james.mailboxmanager.torque.om.MessageHeader;
 import org.apache.james.mailboxmanager.torque.om.MessageRow;
-import org.apache.mailet.RFC2822Headers;
 import org.apache.torque.TorqueException;
 
 import junit.framework.TestCase;
@@ -40,8 +40,8 @@ public class SearchUtilsTest extends TestCase {
     private static final String CUSTARD = "Custard";
     private static final Date SUN_SEP_9TH_2001 = new Date(1000000000000L);
     private static final int SIZE = 1729;
-    private static final String DATE_FIELD = RFC2822Headers.DATE;
-    private static final String SUBJECT_FIELD = RFC2822Headers.SUBJECT;
+    private static final String DATE_FIELD = ImapConstants.RFC822_DATE;
+    private static final String SUBJECT_FIELD = ImapConstants.RFC822_SUBJECT;
     private static final String RFC822_SUN_SEP_9TH_2001 = "Sun, 9 Sep 2001 09:10:48 +0000 (GMT)";
     private static final String TEXT = RHUBARD + RHUBARD + RHUBARD;
     

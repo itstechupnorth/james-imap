@@ -28,6 +28,7 @@ import java.util.List;
 import javax.mail.MessagingException;
 
 import org.apache.avalon.framework.logger.Logger;
+import org.apache.james.api.imap.ImapConstants;
 import org.apache.james.imap.message.response.imap4rev1.FetchResponse;
 import org.apache.james.mailboxmanager.Headers;
 import org.apache.james.mailboxmanager.MailboxManagerException;
@@ -40,7 +41,6 @@ import org.apache.james.mime4j.field.address.Group;
 import org.apache.james.mime4j.field.address.MailboxList;
 import org.apache.james.mime4j.field.address.NamedMailbox;
 import org.apache.james.mime4j.field.address.parser.ParseException;
-import org.apache.mailet.RFC2822Headers;
 
 final class EnvelopeBuilder {
     private final Logger logger;
@@ -51,22 +51,22 @@ final class EnvelopeBuilder {
     }
    
     public FetchResponse.Envelope buildEnvelope(final Headers headers) throws MessagingException, ParseException {
-        final String date = headerValue(headers, RFC2822Headers.DATE);
-        final String subject = headerValue(headers, RFC2822Headers.SUBJECT);
+        final String date = headerValue(headers, ImapConstants.RFC822_DATE);
+        final String subject = headerValue(headers, ImapConstants.RFC822_SUBJECT);
         final FetchResponse.Envelope.Address[] fromAddresses 
-                    = buildAddresses(headers, RFC2822Headers.FROM);
+                    = buildAddresses(headers, ImapConstants.RFC822_FROM);
         final FetchResponse.Envelope.Address[] senderAddresses
-                    = buildAddresses(headers, RFC2822Headers.SENDER, fromAddresses);
+                    = buildAddresses(headers, ImapConstants.RFC822_SENDER, fromAddresses);
         final FetchResponse.Envelope.Address[] replyToAddresses
-                    = buildAddresses(headers, RFC2822Headers.REPLY_TO, fromAddresses);
+                    = buildAddresses(headers, ImapConstants.RFC822_REPLY_TO, fromAddresses);
         final FetchResponse.Envelope.Address[] toAddresses 
-                    = buildAddresses(headers, RFC2822Headers.TO);
+                    = buildAddresses(headers, ImapConstants.RFC822_TO);
         final FetchResponse.Envelope.Address[] ccAddresses 
-                    = buildAddresses(headers, RFC2822Headers.CC);
+                    = buildAddresses(headers, ImapConstants.RFC822_CC);
         final FetchResponse.Envelope.Address[] bccAddresses 
-                    = buildAddresses(headers, RFC2822Headers.BCC);
-        final String inReplyTo = headerValue(headers, RFC2822Headers.IN_REPLY_TO);
-        final String messageId = headerValue(headers, RFC2822Headers.MESSAGE_ID);
+                    = buildAddresses(headers, ImapConstants.RFC822_BCC);
+        final String inReplyTo = headerValue(headers, ImapConstants.RFC822_IN_REPLY_TO);
+        final String messageId = headerValue(headers, ImapConstants.RFC822_MESSAGE_ID);
         final FetchResponse.Envelope envelope = new EnvelopeImpl(date, subject, fromAddresses, senderAddresses, 
                 replyToAddresses, toAddresses, ccAddresses, bccAddresses, inReplyTo, messageId);
         return envelope;

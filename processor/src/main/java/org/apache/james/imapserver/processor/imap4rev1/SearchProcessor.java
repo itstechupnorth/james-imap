@@ -28,6 +28,7 @@ import java.util.TreeSet;
 import javax.mail.Flags.Flag;
 
 import org.apache.james.api.imap.ImapCommand;
+import org.apache.james.api.imap.ImapConstants;
 import org.apache.james.api.imap.ImapMessage;
 import org.apache.james.api.imap.message.IdRange;
 import org.apache.james.api.imap.message.request.DayMonthYear;
@@ -48,7 +49,6 @@ import org.apache.james.mailboxmanager.MessageResult.FetchGroup;
 import org.apache.james.mailboxmanager.SearchQuery.Criterion;
 import org.apache.james.mailboxmanager.impl.FetchGroupImpl;
 import org.apache.james.mailboxmanager.mailbox.Mailbox;
-import org.apache.mailet.RFC2822Headers;
 
 public class SearchProcessor extends AbstractImapRequestProcessor {
 
@@ -135,14 +135,14 @@ public class SearchProcessor extends AbstractImapRequestProcessor {
             case SearchKey.TYPE_ALL: return SearchQuery.all();
             case SearchKey.TYPE_AND: return and(key.getKeys(), session);
             case SearchKey.TYPE_ANSWERED: return SearchQuery.flagIsSet(Flag.ANSWERED);
-            case SearchKey.TYPE_BCC: return SearchQuery.headerContains(RFC2822Headers.BCC, key.getValue());
+            case SearchKey.TYPE_BCC: return SearchQuery.headerContains(ImapConstants.RFC822_BCC, key.getValue());
             case SearchKey.TYPE_BEFORE: return SearchQuery.internalDateBefore(date.getDay(), date.getMonth(), date.getYear());
             case SearchKey.TYPE_BODY: return SearchQuery.bodyContains(key.getValue());
-            case SearchKey.TYPE_CC: return SearchQuery.headerContains(RFC2822Headers.CC, key.getValue());
+            case SearchKey.TYPE_CC: return SearchQuery.headerContains(ImapConstants.RFC822_CC, key.getValue());
             case SearchKey.TYPE_DELETED: return SearchQuery.flagIsSet(Flag.DELETED);
             case SearchKey.TYPE_DRAFT: return SearchQuery.flagIsSet(Flag.DRAFT);
             case SearchKey.TYPE_FLAGGED: return SearchQuery.flagIsSet(Flag.FLAGGED);
-            case SearchKey.TYPE_FROM: return SearchQuery.headerContains(RFC2822Headers.FROM, key.getValue());
+            case SearchKey.TYPE_FROM: return SearchQuery.headerContains(ImapConstants.RFC822_FROM, key.getValue());
             case SearchKey.TYPE_HEADER: return SearchQuery.headerContains(key.getName(), key.getValue());
             case SearchKey.TYPE_KEYWORD: return SearchQuery.flagIsSet(key.getValue());
             case SearchKey.TYPE_LARGER: return SearchQuery.sizeGreaterThan(key.getSize());
@@ -153,15 +153,15 @@ public class SearchProcessor extends AbstractImapRequestProcessor {
             case SearchKey.TYPE_OR: return or(key.getKeys(), session);
             case SearchKey.TYPE_RECENT: return SearchQuery.flagIsSet(Flag.RECENT);
             case SearchKey.TYPE_SEEN: return SearchQuery.flagIsSet(Flag.SEEN);
-            case SearchKey.TYPE_SENTBEFORE: return SearchQuery.headerDateBefore(RFC2822Headers.DATE, date.getDay(), date.getMonth(), date.getYear());
-            case SearchKey.TYPE_SENTON: return SearchQuery.headerDateOn(RFC2822Headers.DATE, date.getDay(), date.getMonth(), date.getYear());
-            case SearchKey.TYPE_SENTSINCE: return SearchQuery.headerDateAfter(RFC2822Headers.DATE, date.getDay(), date.getMonth(), date.getYear());
+            case SearchKey.TYPE_SENTBEFORE: return SearchQuery.headerDateBefore(ImapConstants.RFC822_DATE, date.getDay(), date.getMonth(), date.getYear());
+            case SearchKey.TYPE_SENTON: return SearchQuery.headerDateOn(ImapConstants.RFC822_DATE, date.getDay(), date.getMonth(), date.getYear());
+            case SearchKey.TYPE_SENTSINCE: return SearchQuery.headerDateAfter(ImapConstants.RFC822_DATE, date.getDay(), date.getMonth(), date.getYear());
             case SearchKey.TYPE_SEQUENCE_SET: return sequence(key.getSequenceNumbers(), session, true);
             case SearchKey.TYPE_SINCE: return SearchQuery.internalDateAfter(date.getDay(), date.getMonth(), date.getYear());
             case SearchKey.TYPE_SMALLER: return SearchQuery.sizeLessThan(key.getSize());
-            case SearchKey.TYPE_SUBJECT: return SearchQuery.headerContains(RFC2822Headers.SUBJECT, key.getValue());
+            case SearchKey.TYPE_SUBJECT: return SearchQuery.headerContains(ImapConstants.RFC822_SUBJECT, key.getValue());
             case SearchKey.TYPE_TEXT: return SearchQuery.mailContains(key.getValue());
-            case SearchKey.TYPE_TO: return SearchQuery.headerContains(RFC2822Headers.TO, key.getValue());
+            case SearchKey.TYPE_TO: return SearchQuery.headerContains(ImapConstants.RFC822_TO, key.getValue());
             case SearchKey.TYPE_UID: return sequence(key.getSequenceNumbers(), session, false);
             case SearchKey.TYPE_UNANSWERED: return SearchQuery.flagIsUnSet(Flag.ANSWERED);
             case SearchKey.TYPE_UNDELETED: return SearchQuery.flagIsUnSet(Flag.DELETED);
