@@ -29,12 +29,12 @@ Master build file for JAMES IMAP.
  MODULE DEFINITIONS
  =========================================================================
  -->
- <property name='module.api' location='base-api'/>
- <property name='module.codec' location='codec-library'/>
- <property name='module.mailbox' location='mailbox-library'/>
- <property name='module.seda' location='seda-function'/>
- <property name='module.torque' location='torque-function'/>
- <property name='module.deployment' location='main-deployment'/> 
+ <property name='module.api' location='api'/>
+ <property name='module.codec' location='codec'/>
+ <property name='module.mailbox' location='mailbox'/>
+ <property name='module.seda' location='seda'/>
+ <property name='module.torque' location='torque'/>
+ <property name='module.deployment' location='deployment'/> 
 
  <!--
  =========================================================================
