@@ -19,14 +19,14 @@
 -->
 <project>
   <parent>
-    <artifactId>james-imap-protocol</artifactId>
+    <artifactId>james-imap</artifactId>
     <groupId>org.apache.james</groupId>
     <version>3.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.apache.james</groupId>
-  <artifactId>james-server-mailbox-library</artifactId>
-  <name>Apache JAMES Server Mailbox Manager Library</name>
+  <artifactId>james-imap-mailbox</artifactId>
+  <name>Apache JAMES Mailbox Manager Library</name>
   <dependencies>
     <dependency>
       <groupId>${javax.mail.groupId}</groupId>
@@ -35,12 +35,7 @@
 
     <dependency>
       <groupId>org.apache.james</groupId>
-      <artifactId>james-server-imap-api</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>commons-collections</groupId>
-      <artifactId>commons-collections</artifactId>
+      <artifactId>james-imap-api</artifactId>
     </dependency>
 
     <dependency>

@@ -19,28 +19,29 @@
 -->
 <project>
   <parent>
-    <artifactId>james-server-root</artifactId>
+    <artifactId>james-project</artifactId>
     <groupId>org.apache.james</groupId>
-    <version>1.0</version>
-    <relativePath>../james-project/project/server/pom.xml</relativePath>
+    <version>1.2</version>
+    <relativePath>../james-project/project/pom.xml</relativePath>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.apache.james</groupId>
-  <artifactId>james-imap-protocol</artifactId>
-  <name>Apache JAMES Server</name>
+  <artifactId>james-imap</artifactId>
+  <name>Apache JAMES Imap</name>
   <version>3.0-SNAPSHOT</version>
-  <description>The Apache Java Enterprise Mail Server (a.k.a. JAMES Server)</description>
-  <url>http://james.apache.org/server/head/</url>
+  <description>The Apache JAMES Imap Protocol</description>
+  <url>http://james.apache.org/imap/</url>
   <inceptionYear>2002</inceptionYear>
   <packaging>pom</packaging>
   <modules>
     <module>stage</module>
-    <module>imap-api</module>
-    <module>imap-codec-library</module>
-    <module>mailbox-library</module>
-    <module>imap-mailbox-processor-function</module>
-    <module>torque-mailboxmanager-function</module>
-    <module>experimental-seda-imap-function</module>
+    <module>api</module>
+    <module>codec</module>
+    <module>mailbox</module>
+    <module>processor</module>
+    <module>torque</module>
+    <module>seda</module>
+    <module>deployment</module>
   </modules>
   <scm>
     <connection>scm:svn:http://svn.apache.org/repos/asf/james/server/trunk</connection>
@@ -262,86 +263,49 @@
     </dependency>
     <dependency>
       <groupId>org.apache.james</groupId>
-      <artifactId>james-server-mailbox-library</artifactId>
+      <artifactId>james-imap-mailbox</artifactId>
       <version>3.0-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.apache.james</groupId>
-      <artifactId>james-server-imap-codec-library</artifactId>
+      <artifactId>james-imap-codec</artifactId>
       <version>3.0-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.apache.james</groupId>
-      <artifactId>james-server-torque-mailboxmanager-function</artifactId>
+      <artifactId>james-imap-torque</artifactId>
       <version>3.0-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.apache.james</groupId>
-      <artifactId>james-server-imap-mailbox-processor-function</artifactId>
+      <artifactId>james-imap-processor</artifactId>
       <version>3.0-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.apache.james</groupId>
-      <artifactId>james-server-experimental-seda-imap-function</artifactId>
+      <artifactId>james-imap-seda</artifactId>
       <version>3.0-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.apache.james</groupId>
-      <artifactId>james-server-experimental-seda-imap-function</artifactId>
-      <version>3.0-SNAPSHOT</version>
-      <type>test-jar</type>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.james</groupId>
-      <artifactId>james-server-imap-api</artifactId>
-      <version>3.0-SNAPSHOT</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.james</groupId>
-      <artifactId>james-server-imap-api</artifactId>
+      <artifactId>james-imap-seda</artifactId>
       <version>3.0-SNAPSHOT</version>
       <type>test-jar</type>
       <scope>test</scope>
     </dependency>
-
-    <dependency>
-      <groupId>org.bouncycastle</groupId>
-      <artifactId>bcmail-jdk14</artifactId>
-      <version>129</version>
-    </dependency>
-    <dependency>
-      <groupId>org.bouncycastle</groupId>
-      <artifactId>bcmail-jdk14-workaround</artifactId>
-      <version>129</version>
-    </dependency>
-    <!-- TODO test the updated version
-    <dependency>
-      <groupId>bouncycastle</groupId>
-      <artifactId>bcmail-jdk14</artifactId>
-      <version>136</version>
-    </dependency>
-     -->
     <dependency>
       <groupId>org.apache.james</groupId>
-      <artifactId>apache-jspf</artifactId>
-      <version>0.9.5</version>
-      <exclusions>
-        <exclusion>
-          <artifactId>log4j</artifactId>
-          <groupId>log4j</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>commons-cli</artifactId>
-          <groupId>commons-cli</groupId>
-        </exclusion>
-        <!--  only used for the asynchronous executors -->
-        <exclusion>
-          <artifactId>dnsjnio</artifactId>
-          <groupId>uk.nominet</groupId>
-        </exclusion>
-      </exclusions>
+      <artifactId>james-imap-api</artifactId>
+      <version>3.0-SNAPSHOT</version>
     </dependency>
+    <dependency>
+      <groupId>org.apache.james</groupId>
+      <artifactId>james-imap-api</artifactId>
+      <version>3.0-SNAPSHOT</version>
+      <type>test-jar</type>
+      <scope>test</scope>
+    </dependency>
+    
     <dependency>
       <groupId>org.apache.james</groupId>
       <artifactId>apache-jsieve</artifactId>
@@ -514,175 +478,6 @@
       <groupId>commons-collections</groupId>
       <artifactId>commons-collections</artifactId>
       <version>3.1</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.avalon.cornerstone.connection</groupId>
-      <artifactId>cornerstone-connection-api</artifactId>
-      <version>2.2.2</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.avalon.cornerstone.connection</groupId>
-      <artifactId>cornerstone-connection-impl</artifactId>
-      <version>2.2.2</version>
-      <exclusions>
-        <exclusion>
-          <groupId>commons-logging</groupId>
-          <artifactId>commons-logging</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.avalon.cornerstone.sockets</groupId>
-      <artifactId>cornerstone-sockets-api</artifactId>
-      <version>2.2.2</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.avalon.cornerstone.sockets</groupId>
-      <artifactId>cornerstone-sockets-impl</artifactId>
-      <version>2.2.2</version>
-      <scope>runtime</scope>
-      <exclusions>
-        <exclusion>
-          <artifactId>xml-apis</artifactId>
-          <groupId>xml-apis</groupId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.avalon.cornerstone.datasources</groupId>
-      <artifactId>cornerstone-datasources-api</artifactId>
-      <version>2.2.2</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.excalibur.components</groupId>
-      <artifactId>excalibur-datasource</artifactId>
-      <version>2.2.2</version>
-      <exclusions>
-        <exclusion>
-          <artifactId>excalibur-pool-instrumented</artifactId>
-          <groupId>org.apache.excalibur.components</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>excalibur-component</artifactId>
-          <groupId>org.apache.excalibur.components</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>excalibur-testcase</artifactId>
-          <groupId>org.apache.excalibur.components</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>excalibur-fortress</artifactId>
-          <groupId>org.apache.excalibur.components</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>excalibur-fortress-container-api</artifactId>
-          <groupId>org.apache.excalibur.components</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>excalibur-logger</artifactId>
-          <groupId>org.apache.excalibur.components</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>hsqldb</artifactId>
-          <groupId>hsqldb</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>excalibur-fortress-meta</artifactId>
-          <groupId>org.apache.excalibur.components</groupId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.avalon.cornerstone.datasources</groupId>
-      <artifactId>cornerstone-datasources-impl</artifactId>
-      <version>2.2.2</version>
-      <scope>runtime</scope>
-      <exclusions>
-        <exclusion>
-          <artifactId>d-haven-managed-pool</artifactId>
-          <groupId>d-haven-managed-pool</groupId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.avalon.cornerstone.scheduler</groupId>
-      <artifactId>cornerstone-scheduler-api</artifactId>
-      <version>2.2.2</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.avalon.cornerstone.scheduler</groupId>
-      <artifactId>cornerstone-scheduler-impl</artifactId>
-      <version>2.2.2</version>
-      <scope>runtime</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.avalon.cornerstone.store</groupId>
-      <artifactId>cornerstone-store-api</artifactId>
-      <version>2.2.2</version>
-    </dependency>
-    <dependency>
-      <groupId>dnsjava</groupId>
-      <artifactId>dnsjava</artifactId>
-      <version>2.0.6</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.excalibur.components</groupId>
-      <artifactId>excalibur-pool-api</artifactId>
-      <version>2.2.1</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.excalibur.components</groupId>
-      <artifactId>excalibur-pool-impl</artifactId>
-      <version>2.2.1</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.avalon.cornerstone.threads</groupId>
-      <artifactId>cornerstone-threads-api</artifactId>
-      <version>2.2.2</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.avalon.cornerstone.threads</groupId>
-      <artifactId>cornerstone-threads-impl</artifactId>
-      <version>2.2.2</version>
-      <scope>runtime</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.excalibur.components</groupId>
-      <artifactId>excalibur-thread-api</artifactId>
-      <version>2.2.1</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.excalibur.components</groupId>
-      <artifactId>excalibur-thread-impl</artifactId>
-      <version>2.2.1</version>
-      <scope>runtime</scope>
-      <exclusions>
-        <exclusion>
-          <artifactId>junitperf</artifactId>
-          <groupId>junitperf</groupId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.avalon.logkit</groupId>
-      <artifactId>avalon-logkit</artifactId>
-      <version>2.2.1</version>
-      <!-- maybe this is only needed in phoenix -->
-      <scope>runtime</scope>
-      <exclusions>
-        <exclusion>
-          <artifactId>geronimo-spec-javamail</artifactId>
-          <groupId>geronimo-spec</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>geronimo-spec-jms</artifactId>
-          <groupId>geronimo-spec</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>servletapi</artifactId>
-          <groupId>servletapi</groupId>
-        </exclusion>
-      </exclusions>
     </dependency>
     <dependency>
       <groupId>junit</groupId>

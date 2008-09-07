@@ -19,46 +19,34 @@
 -->
 <project>
   <parent>
-    <artifactId>james-imap-protocol</artifactId>
+    <artifactId>james-imap</artifactId>
     <groupId>org.apache.james</groupId>
     <version>3.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.apache.james</groupId>
-  <artifactId>james-server-experimental-seda-imap-function</artifactId>
-  <name>Apache JAMES Server *Experimental* IMAP function</name>
+  <artifactId>james-imap-seda</artifactId>
+  <name>Apache JAMES *Experimental* IMAP function</name>
   <dependencies>
     <dependency>
       <groupId>org.apache.james</groupId>
-      <artifactId>james-server-imap-api</artifactId>
+      <artifactId>james-imap-api</artifactId>
     </dependency>
     <dependency>
       <groupId>org.apache.james</groupId>
-      <artifactId>james-server-imap-codec-library</artifactId>
+      <artifactId>james-imap-codec</artifactId>
     </dependency>
     <dependency>
       <groupId>concurrent</groupId>
       <artifactId>concurrent</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.apache.avalon.framework</groupId>
-      <artifactId>avalon-framework-api</artifactId>
-    </dependency>
-    <dependency>
       <groupId>commons-lang</groupId>
       <artifactId>commons-lang</artifactId>
     </dependency>
     <dependency>
-      <groupId>commons-collections</groupId>
-      <artifactId>commons-collections</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.avalon.cornerstone.connection</groupId>
-      <artifactId>cornerstone-connection-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.excalibur.components</groupId>
-      <artifactId>excalibur-pool-api</artifactId>
+      <groupId>commons-logging</groupId>
+      <artifactId>commons-logging</artifactId>
     </dependency>
     <dependency>
       <groupId>junit</groupId>

@@ -19,20 +19,24 @@
 -->
 <project>
   <parent>
-    <artifactId>james-imap-protocol</artifactId>
+    <artifactId>james-imap</artifactId>
     <groupId>org.apache.james</groupId>
     <version>3.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.apache.james</groupId>
-  <artifactId>james-server-imap-api</artifactId>
-  <name>Apache JAMES Server IMAP Api</name>
+  <artifactId>james-imap-api</artifactId>
+  <name>Apache JAMES IMAP Api</name>
   <dependencies>
     <dependency>
       <groupId>${javax.mail.groupId}</groupId>
       <artifactId>${javax.mail.artifactId}</artifactId>
     </dependency>
     
+    <dependency>
+      <groupId>commons-logging</groupId>
+      <artifactId>commons-logging</artifactId>
+    </dependency>
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
