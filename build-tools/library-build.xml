@@ -47,9 +47,7 @@ Template build for library modules
 		<GenerateEclipseProject 
 			name='${name.module}' dir='${basedir}'>
 			<dependencies>
-				<classpathentry combineaccessrules="false" kind='src' path='/domain-api'/> 
-				<classpathentry combineaccessrules="false" kind='src' path='/imap-api'/>
-				<classpathentry combineaccessrules="false" kind="src" path="/user-api"/>
+				<classpathentry combineaccessrules="false" kind='src' path='/api'/>
 			</dependencies>
 		</GenerateEclipseProject>
 	</target>
