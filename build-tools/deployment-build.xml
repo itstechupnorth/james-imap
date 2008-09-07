@@ -30,6 +30,7 @@ Template build for deployment modules
            depends='check-environment, master-module-template.set-classpath'>
            <path id='classpath.main'>
                <path refid='classpath.base'/>
+           	   <path refid='classpath.torque'/>
                <path refid='classpath.dependencies.functions'/>   
            </path>
            <path id='classpath.test'>
