@@ -21,8 +21,20 @@
 <project default="full" basedir=".">
 
 <description>
-Master build file for JAMES server.
+Master build file for JAMES IMAP.
 </description>
+
+ <!--
+ =========================================================================
+ MODULE DEFINITIONS
+ =========================================================================
+ -->
+ <property name='module.api' location='base-api'/>
+ <property name='module.codec' location='codec-library'/>
+ <property name='module.mailbox' location='mailbox-library'/>
+ <property name='module.seda' location='seda-function'/>
+ <property name='module.torque' location='torque-function'/>
+ <property name='module.deployment' location='main-deployment'/> 
 
  <!--
  =========================================================================
@@ -31,68 +43,20 @@ Master build file for JAMES server.
  -->   
  
     <macrodef 
-            name='fordo'
-            description='Executes a target for modules of a particular type'>
-        <attribute name='do'/>   
-        <attribute name='dir' default='.'/>
-        <attribute name='type'/>   
-        <sequential>
-            <subant target='@{do}'>
-                <fileset dir='@{dir}' includes='*@{type}/build.xml'/>   
-            </subant>   
-        </sequential>   
-    </macrodef>
-
-    <macrodef 
-            name='forbasedo'
-            description='Executes a target for all deployment modules'>
-        <attribute name='do'/>   
-        <attribute name='dir' default='.'/>   
-        <sequential>
-            <fordo do='@{do}' dir='@{dir}' type='api'/>
-            <fordo do='@{do}' dir='@{dir}' type='util'/>
-        </sequential>   
-    </macrodef>  
- 
-    <macrodef 
-            name='forlibrariesdo'
-            description='Executes a target for all library modules'>
-        <attribute name='do'/>   
-        <attribute name='dir' default='.'/>   
-        <sequential>
-            <fordo do='@{do}' dir='@{dir}' type='library'/>
-        </sequential>   
-    </macrodef>    
-    
-    <macrodef 
-            name='forfunctionsdo'
-            description='Executes a target for all function modules'>
-        <attribute name='do'/>   
-        <attribute name='dir' default='.'/>   
-        <sequential>
-            <fordo do='@{do}' dir='@{dir}' type='function'/>
-        </sequential>   
-    </macrodef>    
-    
-    <macrodef 
-            name='fordeploymentsdo' 
-            description='Executes a target for all deployment modules' >
-        <attribute name='do'/>   
-        <attribute name='dir' default='.'/>   
-        <sequential>
-            <fordo do='@{do}' dir='@{dir}' type='deployment'/>
-        </sequential>   
-    </macrodef>  
-    
-    <macrodef 
            name='foralldo'
            description='Executes a target for all modules'>
         <attribute name='do'/>   
         <sequential>
-            <forbasedo do='@{do}'/>
-            <forlibrariesdo do='@{do}'/>
-            <forfunctionsdo do='@{do}'/>   
-            <fordeploymentsdo do='@{do}'/> 
+           <subant target='@{do}'>
+              <filelist dir='${basedir}'>
+                 <file name='${module.api}'/>
+                 <file name='${module.codec}'/>
+                 <file name='${module.mailbox}'/>
+                 <file name='${module.seda}'/>
+                 <file name='${module.torque}'/>
+                 <file name='${module.deployment}'/>
+              </filelist>
+           </subant> 
         </sequential>   
     </macrodef>   
     
@@ -160,7 +124,7 @@ Master build file for JAMES server.
         description='Prints details of recommended targets'>
         <echo message=""/>
         <echo message=""/>
-        <echo message="JAMES Server, Master Build"/>
+        <echo message="JAMES IMAP, Master Build"/>
         <echo message="-------------------------------------------------------------"/>
         <echo message=""/>
         <echo message=" available targets are:"/>
