@@ -190,13 +190,13 @@ JAMES requires Ant 1.7 or higher. Please install a more modern version of Ant.
                     <include name="${commons-lang.jar}"/>
                     <include name="${concurrent.jar}"/>  
                     <include name="${mime4j.jar}"/>     
-                    <include name="${commons-io.jar}"/>
                     <include name="${log4j.jar}"/>       
                 </fileset> 
             </path>   
         	
             <path id='classpath.torque'>  
                 <fileset dir="${lib.dir}">
+                	<include name="${commons-io.jar}"/>
                 	<include name="${commons-collections.jar}"/>
                     <include name="${commons-dbcp.jar}"/>
                     <include name="${commons-pool.jar}"/>
