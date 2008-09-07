@@ -22,9 +22,8 @@ package org.apache.james.imapserver.codec.decode.imap4rev1;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.avalon.framework.CascadingRuntimeException;
-import org.apache.avalon.framework.logger.AbstractLogEnabled;
-import org.apache.avalon.framework.logger.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.james.api.imap.AbstractLogEnabled;
 import org.apache.james.api.imap.ImapConstants;
 import org.apache.james.api.imap.imap4rev1.Imap4Rev1CommandFactory;
 import org.apache.james.api.imap.imap4rev1.Imap4Rev1MessageFactory;
@@ -121,7 +120,7 @@ public class Imap4Rev1CommandParserFactory extends AbstractLogEnabled implements
 
     private ImapCommandParser createCommand( Class commandClass )
     {
-        final Logger logger = getLogger(); 
+        final Log logger = getLog(); 
         try {
             ImapCommandParser cmd = ( ImapCommandParser ) commandClass.newInstance();
             initialiseParser(commandClass, logger, cmd);
@@ -133,11 +132,11 @@ public class Imap4Rev1CommandParserFactory extends AbstractLogEnabled implements
             }
             // TODO: would probably be better to manage this in protocol
             // TODO: this runtime will produce a nasty disconnect for the client
-            throw new CascadingRuntimeException( "Could not create command instance: " + commandClass.getName(), e );
+            throw new RuntimeException( "Could not create command instance: " + commandClass.getName(), e );
         }
     }
 
-    protected void initialiseParser(Class commandClass, final Logger logger, ImapCommandParser cmd) {
+    protected void initialiseParser(Class commandClass, final Log logger, ImapCommandParser cmd) {
         setupLogger(cmd);
         if (logger.isDebugEnabled()) {
             logger.debug("Created command " + commandClass); 

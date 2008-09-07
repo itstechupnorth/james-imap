@@ -27,7 +27,6 @@ import java.util.Locale;
 
 import org.apache.commons.configuration.BaseConfiguration;
 import org.apache.james.experimental.imapserver.ExperimentalHostSystem;
-import org.apache.james.mailboxmanager.impl.DefaultMailboxManagerProvider;
 import org.apache.james.mailboxmanager.manager.MailboxManagerProvider;
 import org.apache.james.mailboxmanager.torque.TorqueMailboxManager;
 import org.apache.james.mailboxmanager.torque.om.MailboxRowPeer;
@@ -175,16 +174,16 @@ public class TorqueMailboxManagerProviderSingleton {
     
     private static TorqueMailboxManager torqueMailboxManager;
     private static SimpleUserManager userManager;
-    private static DefaultMailboxManagerProvider defaultMailboxManagerProvider;
+    private static SimpleMailboxManagerProvider provider;
     public static final ExperimentalHostSystem host = new ExperimentalHostSystem();
 
     public synchronized static MailboxManagerProvider getTorqueMailboxManagerProviderInstance() throws Exception {
-        if (defaultMailboxManagerProvider==null) {
+        if (provider==null) {
         	getMailboxManager();
-            defaultMailboxManagerProvider=new DefaultMailboxManagerProvider();
-            defaultMailboxManagerProvider.setMailboxManagerInstance(torqueMailboxManager);
+            provider=new SimpleMailboxManagerProvider();
+            provider.setMailboxManager(torqueMailboxManager);
         }
-        return defaultMailboxManagerProvider;
+        return provider;
         
     }
 

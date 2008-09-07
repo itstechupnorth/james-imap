@@ -95,7 +95,7 @@ public class SearchCommandParserQuotedCharsetTest extends MockObjectTestCase {
         parser.init((Imap4Rev1CommandFactory) mockCommandFactory.proxy());
         parser.setMessageFactory((Imap4Rev1MessageFactory) mockMessageFactory.proxy());
         parser.setStatusResponseFactory((StatusResponseFactory) mockStatusResponseFactory.proxy());
-        parser.enableLogging(new MockLogger());
+        parser.setLog(new MockLogger());
     }
 
     protected void tearDown() throws Exception {

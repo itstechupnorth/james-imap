@@ -18,8 +18,8 @@
  ****************************************************************/ 
 package org.apache.james.imapserver.codec.decode.main;
 
-import org.apache.avalon.framework.logger.AbstractLogEnabled;
-import org.apache.avalon.framework.logger.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.james.api.imap.AbstractLogEnabled;
 import org.apache.james.api.imap.ImapMessage;
 import org.apache.james.api.imap.ImapSessionState;
 import org.apache.james.api.imap.display.HumanReadableTextKey;
@@ -43,17 +43,14 @@ public class DefaultImapDecoder extends AbstractLogEnabled implements ImapDecode
         this.imapCommands = imapCommands;
     }
     
-    /**
-     * @see org.apache.avalon.framework.logger.AbstractLogEnabled#enableLogging(org.apache.avalon.framework.logger.Logger)
-     */
-    public void enableLogging(Logger logger) { 
-        super.enableLogging(logger);
+    public void setLog(Log logger) { 
+        super.setLog(logger);
         setupLogger(imapCommands);
     }
     
     public ImapMessage decode(ImapRequestLineReader request, ImapSession session) {
         ImapMessage message;
-        final Logger logger = getLogger(); 
+        final Log logger = getLog(); 
         
         try {
             final String tag = AbstractImapCommandParser.tag( request );    
@@ -70,7 +67,7 @@ public class DefaultImapDecoder extends AbstractLogEnabled implements ImapDecode
         return message;
     }
 
-    private ImapMessage decodeCommandTagged(final ImapRequestLineReader request, final Logger logger, 
+    private ImapMessage decodeCommandTagged(final ImapRequestLineReader request, final Log logger, 
             final String tag, final ImapSession session) {
         ImapMessage message;
         if (logger.isDebugEnabled()) { 
@@ -100,7 +97,7 @@ public class DefaultImapDecoder extends AbstractLogEnabled implements ImapDecode
     }
 
     private ImapMessage decodeCommandNamed(final ImapRequestLineReader request, 
-            final String tag, String commandName, final Logger logger, final ImapSession session) {
+            final String tag, String commandName, final Log logger, final ImapSession session) {
         ImapMessage message;
         if (logger.isDebugEnabled()) { 
             logger.debug( "Got <command>: " + commandName); 

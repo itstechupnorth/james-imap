@@ -19,7 +19,7 @@
 
 package org.apache.james.imapserver.processor.imap4rev1;
 
-import org.apache.avalon.framework.logger.Logger;
+import org.apache.commons.logging.Log;
 import org.apache.james.api.imap.ImapCommand;
 import org.apache.james.api.imap.ImapMessage;
 import org.apache.james.api.imap.message.StatusDataItems;
@@ -53,7 +53,7 @@ public class StatusProcessor extends AbstractMailboxAwareProcessor {
         final StatusRequest request = (StatusRequest) message;
         final String mailboxName = request.getMailboxName();
         final StatusDataItems statusDataItems = request.getStatusDataItems();
-        final Logger logger = getLogger();
+        final Log logger = getLog();
         final MailboxSession mailboxSession = ImapSessionUtils.getMailboxSession(session);
         
         try {

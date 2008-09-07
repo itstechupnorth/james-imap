@@ -16,40 +16,34 @@
  * specific language governing permissions and limitations      *
  * under the License.                                           *
  ****************************************************************/
-package org.apache.james.imap.message.request.base;
 
-import org.apache.james.api.imap.AbstractLogEnabled;
-import org.apache.james.api.imap.ImapCommand;
-import org.apache.james.api.imap.ImapMessage;
-import org.apache.james.api.imap.message.request.ImapRequest;
+package org.apache.james.api.imap;
 
-abstract public class AbstractImapRequest extends AbstractLogEnabled implements
-        ImapMessage, ImapRequest {
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
-    private final String tag;
+/**
+ * Note this is a temporary measure aimed at being a drop in 
+ * replacement for the avalon coupling. Usage should be reviewed.
+ */
+public abstract class AbstractLogEnabled {
 
-    private final ImapCommand command;
+	private static final Log IMAP_LOG = LogFactory.getLog("org.apache.james.imap");
+	
+	private Log log = IMAP_LOG;
 
-    public AbstractImapRequest(final String tag, final ImapCommand command) {
-        this.tag = tag;
-        this.command = command;
-    }
+	public Log getLog() {
+		return log;
+	}
 
-    /**
-     * Gets the IMAP command whose execution is requested by the client.
-     * 
-     * @see org.apache.james.api.imap.message.request.ImapRequest#getCommand()
-     */
-    public final ImapCommand getCommand() {
-        return command;
-    }
-
-    /**
-     * Gets the prefix tag identifying this request.
-     * 
-     * @see org.apache.james.api.imap.message.request.ImapRequest#getTag()
-     */
-    public final String getTag() {
-        return tag;
-    }
+	public void setLog(Log log) {
+		this.log = log;
+	}
+	
+	public void setupLogger(Object object) {
+		if (object instanceof AbstractLogEnabled) {
+			AbstractLogEnabled logEnabled = (AbstractLogEnabled) object;
+			logEnabled.setLog(log);
+		}
+	}
 }

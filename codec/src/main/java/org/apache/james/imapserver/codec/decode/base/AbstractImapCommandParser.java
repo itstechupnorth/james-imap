@@ -33,7 +33,7 @@ import java.util.Date;
 
 import javax.mail.Flags;
 
-import org.apache.avalon.framework.logger.AbstractLogEnabled;
+import org.apache.james.api.imap.AbstractLogEnabled;
 import org.apache.james.api.imap.ImapCommand;
 import org.apache.james.api.imap.ImapConstants;
 import org.apache.james.api.imap.ImapMessage;
@@ -114,7 +114,7 @@ public abstract class AbstractImapCommandParser extends AbstractLogEnabled imple
             result = message;
             
         } catch ( ProtocolException e ) {
-            getLogger().debug("Cannot parse protocol ", e);
+            getLog().debug("Cannot parse protocol ", e);
             result = messageFactory.taggedBad(tag, command, HumanReadableTextKey.ILLEGAL_ARGUMENTS);
         }
         return result;

@@ -26,8 +26,8 @@ import java.util.List;
 
 import javax.mail.Flags;
 
-import org.apache.avalon.framework.logger.AbstractLogEnabled;
-import org.apache.avalon.framework.logger.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.james.api.imap.AbstractLogEnabled;
 import org.apache.james.api.imap.ImapCommand;
 import org.apache.james.api.imap.ImapConstants;
 import org.apache.james.imap.message.response.imap4rev1.Literal;
@@ -105,7 +105,7 @@ public class ImapResponseComposerImpl extends AbstractLogEnabled implements
         message(FAILED);
         message(reason);
         end();
-        final Logger logger = getLogger();
+        final Log logger = getLog();
         if (logger != null && logger.isInfoEnabled()) {
             logger.info("COMMAND FAILED [" + responseCode + "] - " + reason);
         }
@@ -120,7 +120,7 @@ public class ImapResponseComposerImpl extends AbstractLogEnabled implements
         message(BAD);
         message(message);
         end();
-        final Logger logger = getLogger();
+        final Log logger = getLog();
         if (logger != null && logger.isInfoEnabled()) {
             logger.info("ERROR - " + message);
         }
@@ -135,7 +135,7 @@ public class ImapResponseComposerImpl extends AbstractLogEnabled implements
         message(BAD);
         message(message);
         end();
-        final Logger logger = getLogger();
+        final Log logger = getLog();
         if (logger != null && logger.isInfoEnabled()) {
             logger.info("BAD - " + message);
         }
@@ -150,7 +150,7 @@ public class ImapResponseComposerImpl extends AbstractLogEnabled implements
         message(BAD);
         message(message);
         end();
-        final Logger logger = getLogger();
+        final Log logger = getLog();
         if (logger != null && logger.isInfoEnabled()) {
             logger.info("BAD - " + message);
         }

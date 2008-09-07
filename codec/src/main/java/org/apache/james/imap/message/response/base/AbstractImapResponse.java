@@ -23,7 +23,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.avalon.framework.logger.AbstractLogEnabled;
+import org.apache.james.api.imap.AbstractLogEnabled;
 import org.apache.james.api.imap.ImapCommand;
 import org.apache.james.api.imap.message.response.ImapResponseMessage;
 

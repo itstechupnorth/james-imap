@@ -28,7 +28,7 @@ import java.util.TreeSet;
 import javax.mail.Flags;
 import javax.mail.MessagingException;
 
-import org.apache.avalon.framework.logger.AbstractLogEnabled;
+import org.apache.james.api.imap.AbstractLogEnabled;
 import org.apache.james.api.imap.process.SelectedImapMailbox;
 import org.apache.james.imap.message.response.imap4rev1.ExistsResponse;
 import org.apache.james.imap.message.response.imap4rev1.ExpungeResponse;
@@ -187,8 +187,8 @@ public class SelectedMailboxSessionImpl extends AbstractLogEnabled implements Se
     }
 
     private void handleResponseException(final List responses, MessagingException e, final String message) {
-        getLogger().info(message);
-        getLogger().debug(message, e);
+        getLog().info(message);
+        getLog().debug(message, e);
         // TODO: consider whether error message should be passed to the user
         UntaggedNoResponse response = new UntaggedNoResponse(message, null);
         responses.add(response);

@@ -25,7 +25,7 @@ import javax.mail.MessagingException;
 import javax.mail.Flags.Flag;
 import javax.mail.internet.MimeMessage;
 
-import org.apache.avalon.framework.logger.Logger;
+import org.apache.commons.logging.Log;
 import org.apache.james.api.imap.ImapCommand;
 import org.apache.james.api.imap.ImapMessage;
 import org.apache.james.api.imap.display.HumanReadableTextKey;
@@ -80,7 +80,7 @@ public class AppendProcessor extends AbstractMailboxAwareProcessor {
             // assume that 
             // TODO: improved API should communicate when this operation
             // TODO: fails whether the mailbox exists
-            Logger logger = getLogger();
+            Log logger = getLog();
             if (logger.isInfoEnabled()) {
                 logger.info(mme.getMessage());
             }

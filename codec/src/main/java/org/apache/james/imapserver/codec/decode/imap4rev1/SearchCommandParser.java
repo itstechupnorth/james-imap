@@ -814,10 +814,10 @@ class SearchCommandParser extends AbstractUidCommandParser implements Initialisa
             final ImapMessage result = getMessageFactory().createSearchMessage(command, key, useUids, tag);
             return result;
         } catch (IllegalCharsetNameException e) {
-            getLogger().debug(e.getMessage());
+            getLog().debug(e.getMessage());
             return unsupportedCharset(tag, command);
         } catch (UnsupportedCharsetException e) {
-            getLogger().debug(e.getMessage());
+            getLog().debug(e.getMessage());
             return unsupportedCharset(tag, command);
         }
     }

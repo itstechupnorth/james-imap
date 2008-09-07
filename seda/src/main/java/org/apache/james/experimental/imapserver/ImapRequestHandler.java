@@ -23,8 +23,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import org.apache.avalon.framework.logger.AbstractLogEnabled;
-import org.apache.avalon.framework.logger.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.james.api.imap.AbstractLogEnabled;
 import org.apache.james.api.imap.ImapMessage;
 import org.apache.james.api.imap.ImapSessionState;
 import org.apache.james.api.imap.message.response.ImapResponseMessage;
@@ -65,8 +65,8 @@ public final class ImapRequestHandler extends AbstractLogEnabled {
     /**
      * @see org.apache.avalon.framework.logger.AbstractLogEnabled#enableLogging(org.apache.avalon.framework.logger.Logger)
      */
-    public void enableLogging(Logger logger) { 
-        super.enableLogging(logger);
+    public void setLog(Log logger) { 
+        super.setLog(logger);
         setupLogger(decoder);
         setupLogger(processor);
     }
@@ -93,7 +93,7 @@ public final class ImapRequestHandler extends AbstractLogEnabled {
             ImapRequestLineReader request = new ImapRequestLineReader( input, output );
             setupLogger(request);
             
-            final Logger logger = getLogger();
+            final Log logger = getLog();
             try {
                 request.nextChar();
             }
@@ -103,7 +103,7 @@ public final class ImapRequestHandler extends AbstractLogEnabled {
             }
     
             ImapResponseComposerImpl response = new ImapResponseComposerImpl( new OutputStreamImapResponseWriter( output ));
-            response.enableLogging(logger); 
+            response.setLog(logger); 
     
             if (doProcessRequest( request, response, session )) {
         
@@ -135,8 +135,8 @@ public final class ImapRequestHandler extends AbstractLogEnabled {
         try {
             output.write(MAILBOX_DELETED_SIGNOFF);
         } catch (IOException e) {
-            getLogger().warn("Failed to write signoff");
-            getLogger().debug("Failed to write signoff:", e);
+            getLog().warn("Failed to write signoff");
+            getLog().debug("Failed to write signoff:", e);
         }
     }
 
@@ -155,7 +155,7 @@ public final class ImapRequestHandler extends AbstractLogEnabled {
         try {
             out.write(ABANDON_SIGNOFF);
         } catch (Throwable t) {
-            getLogger().debug("Failed to write ABANDON_SIGNOFF", t);
+            getLog().debug("Failed to write ABANDON_SIGNOFF", t);
         }
     }
     
@@ -172,7 +172,7 @@ public final class ImapRequestHandler extends AbstractLogEnabled {
             result = true;
         } else {
             result = false;
-            final Logger logger = getLogger();
+            final Log logger = getLog();
             logger.info(failure.getMessage());
             if (logger.isDebugEnabled()) {
                 logger.debug("Failed to write " + message, failure);

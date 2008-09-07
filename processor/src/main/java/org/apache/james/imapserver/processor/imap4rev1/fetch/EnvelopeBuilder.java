@@ -27,7 +27,7 @@ import java.util.List;
 
 import javax.mail.MessagingException;
 
-import org.apache.avalon.framework.logger.Logger;
+import org.apache.commons.logging.Log;
 import org.apache.james.api.imap.ImapConstants;
 import org.apache.james.imap.message.response.imap4rev1.FetchResponse;
 import org.apache.james.mailboxmanager.Headers;
@@ -43,9 +43,9 @@ import org.apache.james.mime4j.field.address.NamedMailbox;
 import org.apache.james.mime4j.field.address.parser.ParseException;
 
 final class EnvelopeBuilder {
-    private final Logger logger;
+    private final Log logger;
     
-    public EnvelopeBuilder(final Logger logger) {
+    public EnvelopeBuilder(final Log logger) {
         super();
         this.logger = logger;
     }

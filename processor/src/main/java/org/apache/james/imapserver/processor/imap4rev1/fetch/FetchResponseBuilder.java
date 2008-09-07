@@ -31,7 +31,7 @@ import java.util.List;
 import javax.mail.Flags;
 import javax.mail.MessagingException;
 
-import org.apache.avalon.framework.logger.Logger;
+import org.apache.commons.logging.Log;
 import org.apache.james.api.imap.message.BodyFetchElement;
 import org.apache.james.api.imap.message.FetchData;
 import org.apache.james.api.imap.process.ImapSession;
@@ -49,7 +49,7 @@ import org.apache.james.mailboxmanager.util.MessageResultUtils;
 import org.apache.james.mime4j.field.address.parser.ParseException;
 
 final class FetchResponseBuilder {
-    private final Logger logger;
+    private final Log logger;
     private final EnvelopeBuilder envelopeBuilder;
     
     private int msn;
@@ -62,7 +62,7 @@ final class FetchResponseBuilder {
     private FetchResponse.Structure body;
     private FetchResponse.Structure bodystructure;
     
-    public FetchResponseBuilder(final Logger logger,final EnvelopeBuilder envelopeBuilder) {
+    public FetchResponseBuilder(final Log logger,final EnvelopeBuilder envelopeBuilder) {
         super();
         this.logger = logger;
         this.envelopeBuilder = envelopeBuilder;

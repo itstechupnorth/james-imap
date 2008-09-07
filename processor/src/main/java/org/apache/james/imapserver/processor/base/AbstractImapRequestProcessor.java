@@ -23,7 +23,7 @@ import java.util.List;
 
 import javax.mail.MessagingException;
 
-import org.apache.avalon.framework.logger.Logger;
+import org.apache.commons.logging.Log;
 import org.apache.james.api.imap.ImapCommand;
 import org.apache.james.api.imap.ImapConstants;
 import org.apache.james.api.imap.ImapMessage;
@@ -61,7 +61,7 @@ abstract public class AbstractImapRequestProcessor extends
     }
 
     protected void no(final ImapCommand command, final String tag, final Responder responder, final MessagingException e) {
-        final Logger logger = getLogger();
+        final Log logger = getLog();
         final ImapResponseMessage response;
         if (e instanceof MailboxExistsException) {
             response = factory.taggedNo(tag, command, HumanReadableTextKey.FAILURE_MAILBOX_EXISTS);

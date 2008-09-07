@@ -23,8 +23,8 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.Iterator;
 
-import org.apache.avalon.framework.logger.AbstractLogEnabled;
-import org.apache.avalon.framework.logger.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.james.api.imap.AbstractLogEnabled;
 import org.apache.james.api.imap.ImapMessage;
 import org.apache.james.imapserver.codec.encode.ImapEncoder;
 import org.apache.james.imapserver.codec.encode.ImapResponseComposer;
@@ -38,8 +38,8 @@ abstract public class AbstractChainedImapEncoder extends AbstractLogEnabled impl
         this.next = next;
     }
 
-    public void enableLogging(Logger logger) {
-        super.enableLogging(logger);
+    public void setLog(Log logger) {
+        super.setLog(logger);
         setupLogger(next);
     }
     

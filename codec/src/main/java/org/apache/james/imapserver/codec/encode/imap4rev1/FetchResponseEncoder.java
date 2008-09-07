@@ -30,7 +30,7 @@ import java.util.TreeSet;
 
 import javax.mail.Flags;
 
-import org.apache.avalon.framework.logger.Logger;
+import org.apache.commons.logging.Log;
 import org.apache.james.api.imap.ImapConstants;
 import org.apache.james.api.imap.ImapMessage;
 import org.apache.james.imap.message.response.imap4rev1.FetchResponse;
@@ -168,7 +168,7 @@ public class FetchResponseEncoder extends AbstractChainedImapEncoder {
                 final String name = (String) iter.next();
                 final String value = (String) params.get(name);
                 if (value == null) {
-                    final Logger logger = getLogger();
+                    final Log logger = getLog();
                     logger.warn("Disposition parameter name has no value.");
                     if (logger.isDebugEnabled()) {
                         logger.debug("Disposition parameter " + name + " has no matching value");

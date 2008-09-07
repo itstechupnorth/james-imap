@@ -21,8 +21,8 @@ package org.apache.james.imapserver.codec.encode.base;
 
 import java.io.IOException;
 
-import org.apache.avalon.framework.logger.AbstractLogEnabled;
-import org.apache.avalon.framework.logger.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.james.api.imap.AbstractLogEnabled;
 import org.apache.james.api.imap.ImapMessage;
 import org.apache.james.imapserver.codec.encode.ImapEncoder;
 import org.apache.james.imapserver.codec.encode.ImapResponseComposer;
@@ -30,7 +30,7 @@ import org.apache.james.imapserver.codec.encode.ImapResponseComposer;
 public class EndImapEncoder extends AbstractLogEnabled implements ImapEncoder {
 
     public void encode(ImapMessage message, ImapResponseComposer composer) throws IOException {
-        final Logger logger = getLogger();
+        final Log logger = getLog();
         logger.warn("Unknown message");
         if (logger.isDebugEnabled()) {
             logger.debug("Chain end reached for " + message);

@@ -16,40 +16,24 @@
  * specific language governing permissions and limitations      *
  * under the License.                                           *
  ****************************************************************/
-package org.apache.james.imap.message.request.base;
 
-import org.apache.james.api.imap.AbstractLogEnabled;
-import org.apache.james.api.imap.ImapCommand;
-import org.apache.james.api.imap.ImapMessage;
-import org.apache.james.api.imap.message.request.ImapRequest;
+package org.apache.james.mailboxmanager.mock;
 
-abstract public class AbstractImapRequest extends AbstractLogEnabled implements
-        ImapMessage, ImapRequest {
+import org.apache.james.mailboxmanager.MailboxManagerException;
+import org.apache.james.mailboxmanager.manager.MailboxManager;
+import org.apache.james.mailboxmanager.manager.MailboxManagerProvider;
 
-    private final String tag;
+public class SimpleMailboxManagerProvider implements MailboxManagerProvider {
 
-    private final ImapCommand command;
+	private MailboxManager manager;
+	
+	public void setMailboxManager(MailboxManager manager) {
+		this.manager = manager;
+	}
 
-    public AbstractImapRequest(final String tag, final ImapCommand command) {
-        this.tag = tag;
-        this.command = command;
-    }
 
-    /**
-     * Gets the IMAP command whose execution is requested by the client.
-     * 
-     * @see org.apache.james.api.imap.message.request.ImapRequest#getCommand()
-     */
-    public final ImapCommand getCommand() {
-        return command;
-    }
+	public MailboxManager getMailboxManager() throws MailboxManagerException {
+		return manager;
+	}
 
-    /**
-     * Gets the prefix tag identifying this request.
-     * 
-     * @see org.apache.james.api.imap.message.request.ImapRequest#getTag()
-     */
-    public final String getTag() {
-        return tag;
-    }
 }

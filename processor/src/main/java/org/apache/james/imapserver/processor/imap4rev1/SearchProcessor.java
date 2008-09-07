@@ -170,7 +170,7 @@ public class SearchProcessor extends AbstractImapRequestProcessor {
             case SearchKey.TYPE_UNKEYWORD: return SearchQuery.flagIsUnSet(key.getValue());
             case SearchKey.TYPE_UNSEEN: return SearchQuery.flagIsUnSet(Flag.SEEN);
             default:
-                getLogger().warn("Ignoring unknown search key.");
+                getLog().warn("Ignoring unknown search key.");
                 return SearchQuery.all();
         }
     }

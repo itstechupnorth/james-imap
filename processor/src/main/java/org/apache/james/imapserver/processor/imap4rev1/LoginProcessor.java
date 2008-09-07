@@ -81,7 +81,7 @@ public class LoginProcessor extends AbstractMailboxAwareProcessor {
                 }
             }
         } catch (MailboxManagerException e) {
-            getLogger().debug("Login failed", e);
+            getLog().debug("Login failed", e);
             final HumanReadableTextKey displayTextKey = HumanReadableTextKey.INVALID_LOGIN;
             no(command, tag, responder, displayTextKey);
         }

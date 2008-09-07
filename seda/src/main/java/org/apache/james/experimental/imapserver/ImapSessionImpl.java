@@ -23,8 +23,8 @@ package org.apache.james.experimental.imapserver;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.avalon.framework.logger.AbstractLogEnabled;
 import org.apache.commons.collections.ListUtils;
+import org.apache.james.api.imap.AbstractLogEnabled;
 import org.apache.james.api.imap.ImapConstants;
 import org.apache.james.api.imap.ImapSessionState;
 import org.apache.james.api.imap.process.ImapSession;

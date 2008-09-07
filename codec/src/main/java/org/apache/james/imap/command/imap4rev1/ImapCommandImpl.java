@@ -19,7 +19,7 @@
 
 package org.apache.james.imap.command.imap4rev1;
 
-import org.apache.avalon.framework.logger.AbstractLogEnabled;
+import org.apache.james.api.imap.AbstractLogEnabled;
 import org.apache.james.api.imap.ImapCommand;
 import org.apache.james.api.imap.ImapSessionState;
 

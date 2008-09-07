@@ -26,10 +26,7 @@ import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.charset.Charset;
 import java.nio.charset.CharsetEncoder;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Set;
 
 import org.apache.james.api.imap.process.ImapProcessor;
@@ -108,7 +105,7 @@ public class ExperimentalHostSystem implements HostSystem {
             out = new ByteBufferOutputStream(continuation);
             in = new ByteBufferInputStream();
             handler = new ImapRequestHandler(decoder, processor, encoder);
-            handler.enableLogging(new MockLogger());
+            handler.setLog(new MockLogger());
             session = new ImapSessionImpl();
         }
         

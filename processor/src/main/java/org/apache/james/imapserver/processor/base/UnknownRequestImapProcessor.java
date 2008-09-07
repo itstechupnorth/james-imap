@@ -19,8 +19,8 @@
 
 package org.apache.james.imapserver.processor.base;
 
-import org.apache.avalon.framework.logger.AbstractLogEnabled;
-import org.apache.avalon.framework.logger.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.james.api.imap.AbstractLogEnabled;
 import org.apache.james.api.imap.ImapCommand;
 import org.apache.james.api.imap.ImapMessage;
 import org.apache.james.api.imap.display.HumanReadableTextKey;
@@ -40,7 +40,7 @@ public class UnknownRequestImapProcessor extends AbstractLogEnabled implements I
     }
 
     public ImapResponseMessage process(ImapMessage message, ImapSession session) {
-        Logger logger = getLogger();
+        Log logger = getLog();
         if (logger != null && logger.isDebugEnabled()) {
             logger.debug("Unknown message: " + message);
         }

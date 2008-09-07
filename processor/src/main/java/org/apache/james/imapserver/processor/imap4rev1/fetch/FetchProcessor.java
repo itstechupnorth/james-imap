@@ -71,7 +71,7 @@ public class FetchProcessor extends AbstractImapRequestProcessor {
             FetchGroup resultToFetch = getFetchGroup(fetch);
             Mailbox mailbox = ImapSessionUtils.getMailbox(session);
             for (int i = 0; i < idSet.length; i++) {
-                final FetchResponseBuilder builder = new FetchResponseBuilder(getLogger(), new EnvelopeBuilder(getLogger()));
+                final FetchResponseBuilder builder = new FetchResponseBuilder(getLog(), new EnvelopeBuilder(getLog()));
                 final long highVal;
                 final long lowVal;
                 if (useUids) {

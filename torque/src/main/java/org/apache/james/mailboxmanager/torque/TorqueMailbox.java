@@ -35,12 +35,9 @@ import javax.mail.Flags;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 
-import org.apache.avalon.framework.logger.AbstractLogEnabled;
-import org.apache.avalon.framework.logger.Logger;
 import org.apache.commons.collections.IteratorUtils;
 import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.commons.logging.impl.AvalonLogger;
+import org.apache.james.api.imap.AbstractLogEnabled;
 import org.apache.james.mailboxmanager.MailboxListener;
 import org.apache.james.mailboxmanager.MailboxManagerException;
 import org.apache.james.mailboxmanager.MailboxSession;
@@ -696,22 +693,10 @@ public class TorqueMailbox extends AbstractLogEnabled implements Mailbox {
     }
 
     public void setLog(Log log) {
+    	super.setLog(log);
         this.log = log;
         searches.setLog(log);
     }    
-    
-    private Log getLog() {
-        // Note opt to accept double calls to avoid synchronisation
-        if (log == null) {
-            log = LogFactory.getLog(TorqueMailbox.class);
-        }
-        return log;
-    }
-
-    public void enableLogging(Logger logger) {
-        super.enableLogging(logger);
-        setLog(new AvalonLogger(logger));
-    }
 
     public void copyTo(MessageRange set, TorqueMailbox toMailbox, MailboxSession session) throws MailboxManagerException {
         try {
