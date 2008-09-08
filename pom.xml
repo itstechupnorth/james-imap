@@ -28,7 +28,7 @@
   <groupId>org.apache.james</groupId>
   <artifactId>james-imap</artifactId>
   <name>Apache JAMES Imap</name>
-  <version>3.0-SNAPSHOT</version>
+  <version>0.1-SNAPSHOT</version>
   <description>The Apache JAMES Imap Protocol</description>
   <url>http://james.apache.org/imap/</url>
   <inceptionYear>2002</inceptionYear>
@@ -204,45 +204,45 @@
     <dependencies>
     <dependency>
       <groupId>org.apache.james</groupId>
-      <artifactId>james-imap-mailbox</artifactId>
-      <version>3.0-SNAPSHOT</version>
+      <artifactId>apache-james-imap-mailbox</artifactId>
+      <version>0.1-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.apache.james</groupId>
-      <artifactId>james-imap-codec</artifactId>
-      <version>3.0-SNAPSHOT</version>
+      <artifactId>apache-james-imap-codec</artifactId>
+      <version>0.1-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.apache.james</groupId>
-      <artifactId>james-imap-torque</artifactId>
-      <version>3.0-SNAPSHOT</version>
+      <artifactId>apache-james-imap-torque</artifactId>
+      <version>0.1-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.apache.james</groupId>
-      <artifactId>james-imap-processor</artifactId>
-      <version>3.0-SNAPSHOT</version>
+      <artifactId>apache-james-imap-processor</artifactId>
+      <version>0.1-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.apache.james</groupId>
-      <artifactId>james-imap-seda</artifactId>
-      <version>3.0-SNAPSHOT</version>
+      <artifactId>apache-james-imap-seda</artifactId>
+      <version>0.1-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.apache.james</groupId>
-      <artifactId>james-imap-seda</artifactId>
-      <version>3.0-SNAPSHOT</version>
+      <artifactId>apache-james-imap-seda</artifactId>
+      <version>0.1-SNAPSHOT</version>
       <type>test-jar</type>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.james</groupId>
-      <artifactId>james-imap-api</artifactId>
-      <version>3.0-SNAPSHOT</version>
+      <artifactId>apache-james-imap-api</artifactId>
+      <version>0.1-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.apache.james</groupId>
-      <artifactId>james-imap-api</artifactId>
-      <version>3.0-SNAPSHOT</version>
+      <artifactId>apache-james-imap-api</artifactId>
+      <version>0.1-SNAPSHOT</version>
       <type>test-jar</type>
       <scope>test</scope>
     </dependency>
@@ -447,11 +447,6 @@
           <artifactId>xercesImpl</artifactId>
         </exclusion>
       </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.james</groupId>
-      <artifactId>apache-mime4j</artifactId>
-      <version>0.4-SNAPSHOT</version>
     </dependency>
     </dependencies>
   </dependencyManagement>
