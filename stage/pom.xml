@@ -47,22 +47,6 @@
   <dependencies>
     <dependency>
       <groupId>org.apache.james</groupId>
-      <artifactId>mailet</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.james</groupId>
-      <artifactId>apache-james-mailet-base</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.james</groupId>
-      <artifactId>standard-mailets</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.james</groupId>
-      <artifactId>apache-jsieve</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.james</groupId>
       <artifactId>apache-mime4j</artifactId>
     </dependency>
     <dependency>
@@ -136,18 +120,6 @@
       <groupId>org.apache.james</groupId>
       <artifactId>apache-mime4j</artifactId>
     </dependency>
-
-    <dependency>
-      <groupId>org.apache.james</groupId>
-      <artifactId>apache-james-mailet-base</artifactId>
-      <classifier>tests</classifier>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.james</groupId>
-      <artifactId>standard-mailets</artifactId>
-      <classifier>tests</classifier>
-    </dependency>
-
   </dependencies>
   
   <build>
