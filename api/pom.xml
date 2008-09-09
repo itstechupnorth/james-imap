@@ -19,7 +19,7 @@
 -->
 <project>
   <parent>
-    <artifactId>james-imap</artifactId>
+    <artifactId>apache-james-imap</artifactId>
     <groupId>org.apache.james</groupId>
     <version>0.1-SNAPSHOT</version>
   </parent>

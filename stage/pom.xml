@@ -19,13 +19,13 @@
 -->
 <project>
   <parent>
-    <artifactId>james-imap</artifactId>
+    <artifactId>apache-james-imap</artifactId>
     <groupId>org.apache.james</groupId>
     <version>0.1-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.apache.james</groupId>
-  <artifactId>james-imap-repository</artifactId>
+  <artifactId>apache-james-imap-repository</artifactId>
   <name>Local maven repository for Apache James Imap</name>
   <description>Local maven repository for Apache James Imap</description>
   <packaging>pom</packaging>
