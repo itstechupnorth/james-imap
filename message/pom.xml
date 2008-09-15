@@ -25,8 +25,8 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.apache.james</groupId>
-  <artifactId>apache-james-imap-codec</artifactId>
-  <name>Apache JAMES IMAP Codec Library</name>
+  <artifactId>apache-james-imap-message</artifactId>
+  <name>Apache JAMES IMAP Message Library</name>
   
   <profiles>
     <profile>
