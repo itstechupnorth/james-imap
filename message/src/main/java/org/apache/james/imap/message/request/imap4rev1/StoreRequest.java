@@ -22,7 +22,6 @@ import javax.mail.Flags;
 
 import org.apache.james.api.imap.ImapCommand;
 import org.apache.james.api.imap.message.IdRange;
-import org.apache.james.imap.message.request.base.AbstractImapRequest;
 
 public class StoreRequest extends AbstractImapRequest {
     

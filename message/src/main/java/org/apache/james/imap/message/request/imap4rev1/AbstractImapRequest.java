@@ -18,18 +18,38 @@
  ****************************************************************/
 package org.apache.james.imap.message.request.imap4rev1;
 
+import org.apache.james.api.imap.AbstractLogEnabled;
 import org.apache.james.api.imap.ImapCommand;
+import org.apache.james.api.imap.ImapMessage;
+import org.apache.james.api.imap.message.request.ImapRequest;
 
-public class SubscribeRequest extends AbstractImapRequest {
-    private final String mailboxName;
+abstract public class AbstractImapRequest extends AbstractLogEnabled implements
+        ImapMessage, ImapRequest {
 
-    public SubscribeRequest(final ImapCommand command,
-            final String mailboxName, final String tag) {
-        super(tag, command);
-        this.mailboxName = mailboxName;
+    private final String tag;
+
+    private final ImapCommand command;
+
+    public AbstractImapRequest(final String tag, final ImapCommand command) {
+        this.tag = tag;
+        this.command = command;
     }
 
-    public final String getMailboxName() {
-        return mailboxName;
+    /**
+     * Gets the IMAP command whose execution is requested by the client.
+     * 
+     * @see org.apache.james.api.imap.message.request.ImapRequest#getCommand()
+     */
+    public final ImapCommand getCommand() {
+        return command;
+    }
+
+    /**
+     * Gets the prefix tag identifying this request.
+     * 
+     * @see org.apache.james.api.imap.message.request.ImapRequest#getTag()
+     */
+    public final String getTag() {
+        return tag;
     }
 }

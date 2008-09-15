@@ -22,7 +22,7 @@ package org.apache.james.experimental.imapserver;
 import org.apache.james.api.imap.imap4rev1.Imap4Rev1CommandFactory;
 import org.apache.james.api.imap.imap4rev1.Imap4Rev1MessageFactory;
 import org.apache.james.imap.command.imap4rev1.StandardImap4Rev1CommandFactory;
-import org.apache.james.imap.message.request.base.BaseImap4Rev1MessageFactory;
+import org.apache.james.imap.message.request.imap4rev1.BaseImap4Rev1MessageFactory;
 import org.apache.james.imap.message.response.imap4rev1.status.UnpooledStatusResponseFactory;
 import org.apache.james.imapserver.codec.decode.ImapCommandParserFactory;
 import org.apache.james.imapserver.codec.decode.ImapDecoder;

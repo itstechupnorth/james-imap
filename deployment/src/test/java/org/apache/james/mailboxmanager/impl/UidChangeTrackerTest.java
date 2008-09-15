@@ -25,8 +25,6 @@ import javax.mail.Flags;
 
 import junit.framework.TestCase;
 
-import org.apache.james.mailboxmanager.MessageResult;
-import org.apache.james.mailboxmanager.util.UidChangeTracker;
 import org.apache.james.mailboxmanager.util.UidRange;
 
 public class UidChangeTrackerTest extends TestCase {
@@ -52,7 +50,6 @@ public class UidChangeTrackerTest extends TestCase {
     
     public void testFound() throws Exception {
         MessageResultImpl[] results;
-        MessageResult result;
         
         results=new MessageResultImpl[1];
         
@@ -84,7 +81,6 @@ public class UidChangeTrackerTest extends TestCase {
     public void testShouldNotIssueFlagsUpdateEventWhenFlagsNotIncluded() throws Exception {
         MessageResultImpl[] results = new MessageResultImpl[1];
         
-        MessageResult result;
         results[0]=new MessageResultImpl(1000l,new Flags(Flags.Flag.FLAGGED));
         tracker.found(new UidRange(1000,1000),Arrays.asList(results));
         assertCollectorSizes(0,0,0);

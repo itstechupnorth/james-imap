@@ -17,7 +17,7 @@
  * under the License.                                           *
  ****************************************************************/
 
-package org.apache.james.mailboxmanager.util;
+package org.apache.james.mailboxmanager.impl;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -35,9 +35,8 @@ import org.apache.james.mailboxmanager.Constants;
 import org.apache.james.mailboxmanager.MailboxListener;
 import org.apache.james.mailboxmanager.MailboxManagerException;
 import org.apache.james.mailboxmanager.MessageResult;
-import org.apache.james.mailboxmanager.impl.MailboxEventDispatcher;
-import org.apache.james.mailboxmanager.impl.MessageFlags;
 import org.apache.james.mailboxmanager.mailbox.Mailbox;
+import org.apache.james.mailboxmanager.util.UidRange;
 
 public class UidChangeTracker implements Constants {
     

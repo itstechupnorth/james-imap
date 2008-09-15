@@ -24,7 +24,6 @@ import javax.mail.Flags;
 import javax.mail.internet.MimeMessage;
 
 import org.apache.james.api.imap.ImapCommand;
-import org.apache.james.imap.message.request.base.AbstractImapRequest;
 
 public class AppendRequest extends AbstractImapRequest {
     private final String mailboxName;
