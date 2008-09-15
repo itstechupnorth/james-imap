@@ -200,7 +200,7 @@ JAMES requires Ant 1.7 or higher. Please install a more modern version of Ant.
                 	<include name="${commons-collections.jar}"/>
                     <include name="${commons-dbcp.jar}"/>
                     <include name="${commons-pool.jar}"/>
-    				<include name="${torque.jar}"/>
+                    <include name="${torque.jar}"/>
                     <include name="${village.jar}"/>
                     <include name="${commons-configuration.jar}"/>
                     <include name="${commons-digester.jar}"/>       
@@ -231,7 +231,8 @@ JAMES requires Ant 1.7 or higher. Please install a more modern version of Ant.
                 <path refid='classpath.dependencies.api'/>
                 <fileset dir="${lib.dir}/${path.lib.james}">
                     <include name="${jars-prefix}mailbox-${version}.jar" />
-                	<include name="${jars-prefix}codec-${version}.jar" />
+                    <include name="${jars-prefix}message-${version}.jar" />
+                    <include name="${jars-prefix}codec-${version}.jar" />
                 </fileset>
             </path> 
             <path 
@@ -258,6 +259,7 @@ JAMES requires Ant 1.7 or higher. Please install a more modern version of Ant.
                 <path refid='classpath.test.dependencies.api'/>
                 <fileset dir="${lib.dir}/${path.lib.james}">
                     <include name="${jars-prefix}mailbox-test-${version}.jar" />
+                    <include name="${jars-prefix}message-test-${version}.jar" />
                     <include name="${jars-prefix}codec-test-${version}.jar" />
                 </fileset>
             </path> 
