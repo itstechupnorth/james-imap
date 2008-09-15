@@ -21,6 +21,7 @@ package org.apache.james.mailboxmanager.manager;
 
 import org.apache.james.mailboxmanager.MailboxManagerException;
 
+//TODO: remove this pointless interface
 public interface MailboxManagerProvider {
 
 	/**
