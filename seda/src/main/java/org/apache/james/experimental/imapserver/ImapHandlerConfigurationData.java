@@ -27,6 +27,7 @@ import org.apache.james.imapserver.codec.encode.ImapEncoder;
 /**
  * Provides a number of server-wide constant values to the
  * POP3Handlers
+ * @deprecated unnecessary
  */
 public interface ImapHandlerConfigurationData
 {

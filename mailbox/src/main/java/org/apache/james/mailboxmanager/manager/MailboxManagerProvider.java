@@ -22,7 +22,10 @@ package org.apache.james.mailboxmanager.manager;
 import org.apache.james.mailboxmanager.MailboxManagerException;
 
 public interface MailboxManagerProvider {
-    
+
+	/**
+	 * @deprecated remove avalon coupling
+	 */
     public static final String ROLE 
         =  "org.apache.james.mailboxmanager.manager.MailboxManagerProvider";
     
