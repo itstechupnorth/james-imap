@@ -32,6 +32,7 @@ import org.apache.james.imapserver.codec.decode.main.DefaultImapDecoder;
 
 /**
  * TODO: this is temporary: should let the container do the coupling.
+ * TODO: convert to POJO
  */
 public class DefaultImapDecoderFactory implements ImapDecoderFactory{
     
