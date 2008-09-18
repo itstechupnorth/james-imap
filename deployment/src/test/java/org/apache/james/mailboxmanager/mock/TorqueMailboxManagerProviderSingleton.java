@@ -26,7 +26,7 @@ import java.sql.SQLException;
 import java.util.Locale;
 
 import org.apache.commons.configuration.BaseConfiguration;
-import org.apache.james.experimental.imapserver.ExperimentalHostSystem;
+import org.apache.james.imap.functional.ExperimentalHostSystem;
 import org.apache.james.mailboxmanager.manager.MailboxManagerProvider;
 import org.apache.james.mailboxmanager.torque.TorqueMailboxManager;
 import org.apache.james.mailboxmanager.torque.om.MailboxRowPeer;
