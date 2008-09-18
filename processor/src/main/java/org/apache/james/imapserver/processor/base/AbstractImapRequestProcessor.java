@@ -40,104 +40,119 @@ import org.apache.james.mailboxmanager.MailboxNotFoundException;
 abstract public class AbstractImapRequestProcessor extends
         AbstractChainedImapProcessor implements ImapConstants {
 
-    private final StatusResponseFactory factory;    
-    public AbstractImapRequestProcessor(final ImapProcessor next, final StatusResponseFactory factory) {
+    private final StatusResponseFactory factory;
+
+    public AbstractImapRequestProcessor(final ImapProcessor next,
+            final StatusResponseFactory factory) {
         super(next);
         this.factory = factory;
     }
 
-    protected final void doProcess(
-            final ImapMessage acceptableMessage, final Responder responder, 
-            final ImapSession session) {
+    protected final void doProcess(final ImapMessage acceptableMessage,
+            final Responder responder, final ImapSession session) {
         final ImapRequest request = (ImapRequest) acceptableMessage;
         process(request, responder, session);
     }
 
-    protected final void process(final ImapRequest message, final Responder responder,
-            final ImapSession session) {
+    protected final void process(final ImapRequest message,
+            final Responder responder, final ImapSession session) {
         final ImapCommand command = message.getCommand();
         final String tag = message.getTag();
         doProcess(message, command, tag, responder, session);
     }
 
-    protected void no(final ImapCommand command, final String tag, final Responder responder, final MessagingException e) {
+    protected void no(final ImapCommand command, final String tag,
+            final Responder responder, final MessagingException e) {
         final Log logger = getLog();
         final ImapResponseMessage response;
         if (e instanceof MailboxExistsException) {
-            response = factory.taggedNo(tag, command, HumanReadableTextKey.FAILURE_MAILBOX_EXISTS);
+            response = factory.taggedNo(tag, command,
+                    HumanReadableTextKey.FAILURE_MAILBOX_EXISTS);
         } else if (e instanceof MailboxNotFoundException) {
-            response = factory.taggedNo(tag, command, HumanReadableTextKey.FAILURE_NO_SUCH_MAILBOX);
+            response = factory.taggedNo(tag, command,
+                    HumanReadableTextKey.FAILURE_NO_SUCH_MAILBOX);
         } else {
             if (logger != null) {
                 logger.info(e.getMessage());
                 logger.debug("Processing failed:", e);
             }
-            response = factory.taggedNo(tag, command, HumanReadableTextKey.GENERIC_FAILURE_DURING_PROCESSING);
+            response = factory.taggedNo(tag, command,
+                    HumanReadableTextKey.GENERIC_FAILURE_DURING_PROCESSING);
         }
         responder.respond(response);
     }
 
-    final void doProcess(final ImapRequest message,
-            final ImapCommand command, final String tag, Responder responder, ImapSession session) {
+    final void doProcess(final ImapRequest message, final ImapCommand command,
+            final String tag, Responder responder, ImapSession session) {
         if (!command.validForState(session.getState())) {
-            ImapResponseMessage response = factory.taggedNo(tag, command, HumanReadableTextKey.INVALID_COMMAND);
+            ImapResponseMessage response = factory.taggedNo(tag, command,
+                    HumanReadableTextKey.INVALID_COMMAND);
             responder.respond(response);
-            
+
         } else {
             doProcess(message, session, tag, command, responder);
         }
     }
-    
-    protected void unsolicitedResponses(final ImapSession session, 
-            final ImapProcessor.Responder responder, boolean omitExpunged, boolean useUids) {
-        final List responses = session.unsolicitedResponses(omitExpunged, useUids);
+
+    protected void unsolicitedResponses(final ImapSession session,
+            final ImapProcessor.Responder responder, boolean omitExpunged,
+            boolean useUids) {
+        final List responses = session.unsolicitedResponses(omitExpunged,
+                useUids);
         respond(responder, responses);
     }
-    
-    protected void unsolicitedResponses(final ImapSession session, 
+
+    protected void unsolicitedResponses(final ImapSession session,
             final ImapProcessor.Responder responder, boolean useUids) {
         final List responses = session.unsolicitedResponses(useUids);
         respond(responder, responses);
     }
 
-    private void respond(final ImapProcessor.Responder responder, final List responses) {
-        for (final Iterator it=responses.iterator(); it.hasNext();) {
+    private void respond(final ImapProcessor.Responder responder,
+            final List responses) {
+        for (final Iterator it = responses.iterator(); it.hasNext();) {
             ImapResponseMessage message = (ImapResponseMessage) it.next();
             responder.respond(message);
         }
     }
 
-    protected void okComplete(final ImapCommand command, final String tag, 
+    protected void okComplete(final ImapCommand command, final String tag,
             final ImapProcessor.Responder responder) {
-        final StatusResponse response = factory.taggedOk(tag, command, HumanReadableTextKey.COMPLETED);
+        final StatusResponse response = factory.taggedOk(tag, command,
+                HumanReadableTextKey.COMPLETED);
         responder.respond(response);
     }
-    
-    protected void no(final ImapCommand command, final String tag, 
-            final ImapProcessor.Responder responder, final HumanReadableTextKey displayTextKey) {
-        final StatusResponse response = factory.taggedNo(tag, command, displayTextKey);
+
+    protected void no(final ImapCommand command, final String tag,
+            final ImapProcessor.Responder responder,
+            final HumanReadableTextKey displayTextKey) {
+        final StatusResponse response = factory.taggedNo(tag, command,
+                displayTextKey);
         responder.respond(response);
     }
-    
-    protected void no(final ImapCommand command, final String tag, 
-            final ImapProcessor.Responder responder, final HumanReadableTextKey displayTextKey,
+
+    protected void no(final ImapCommand command, final String tag,
+            final ImapProcessor.Responder responder,
+            final HumanReadableTextKey displayTextKey,
             final StatusResponse.ResponseCode responseCode) {
-        final StatusResponse response = factory.taggedNo(tag, command, displayTextKey, responseCode);
+        final StatusResponse response = factory.taggedNo(tag, command,
+                displayTextKey, responseCode);
         responder.respond(response);
     }
-    
+
     protected void bye(final ImapProcessor.Responder responder) {
         final StatusResponse response = factory.bye(HumanReadableTextKey.BYE);
         responder.respond(response);
     }
-    
-    protected void bye(final ImapProcessor.Responder responder, final HumanReadableTextKey key) {
+
+    protected void bye(final ImapProcessor.Responder responder,
+            final HumanReadableTextKey key) {
         final StatusResponse response = factory.bye(key);
         responder.respond(response);
     }
-    
+
     protected abstract void doProcess(final ImapRequest message,
-            ImapSession session, String tag, ImapCommand command, Responder responder);
-    
+            ImapSession session, String tag, ImapCommand command,
+            Responder responder);
 
 }

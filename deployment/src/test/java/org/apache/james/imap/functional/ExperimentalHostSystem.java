@@ -40,25 +40,30 @@ import org.apache.james.test.functional.imap.HostSystem;
 public class ExperimentalHostSystem implements HostSystem {
 
     private ImapDecoder decoder;
+
     private ImapEncoder encoder;
+
     private ImapProcessor processor;
+
     private Resetable dataReset;
+
     private final Set users;
-    
+
     public ExperimentalHostSystem() {
         super();
         users = new HashSet();
     }
-    
-    public void configure(final ImapDecoder decoder, final ImapEncoder encoder, 
-            final ImapProcessor processor, final Resetable dataReset) {    
+
+    public void configure(final ImapDecoder decoder, final ImapEncoder encoder,
+            final ImapProcessor processor, final Resetable dataReset) {
         this.decoder = decoder;
         this.encoder = encoder;
         this.processor = processor;
         this.dataReset = dataReset;
     }
-    
-    public HostSystem.Session newSession(Continuation continuation) throws Exception {
+
+    public HostSystem.Session newSession(Continuation continuation)
+            throws Exception {
         return new Session(continuation);
     }
 
@@ -95,14 +100,17 @@ public class ExperimentalHostSystem implements HostSystem {
         return name;
     }
 
-    class Session implements HostSystem.Session
-    {
+    class Session implements HostSystem.Session {
         ByteBufferOutputStream out;
+
         ByteBufferInputStream in;
+
         ImapRequestHandler handler;
+
         ImapSessionImpl session;
+
         boolean isReadLast = true;
-        
+
         public Session(Continuation continuation) {
             out = new ByteBufferOutputStream(continuation);
             in = new ByteBufferInputStream();
@@ -110,7 +118,7 @@ public class ExperimentalHostSystem implements HostSystem {
             handler.setLog(new MockLogger());
             session = new ImapSessionImpl();
         }
-        
+
         public String readLine() throws Exception {
             if (!isReadLast) {
                 handler.handleRequest(in, out, session);
@@ -126,7 +134,7 @@ public class ExperimentalHostSystem implements HostSystem {
         }
 
         public void stop() throws Exception {
-            
+
         }
 
         public void writeLine(String line) throws Exception {
@@ -142,13 +150,15 @@ public class ExperimentalHostSystem implements HostSystem {
             }
         }
     }
-    
+
     static class ByteBufferInputStream extends InputStream {
-        
+
         ByteBuffer buffer = ByteBuffer.allocate(16384);
+
         CharsetEncoder encoder = Charset.forName("ASCII").newEncoder();
+
         boolean readLast = true;
-        
+
         public int read() throws IOException {
             if (!readLast) {
                 readLast = true;
@@ -160,34 +170,39 @@ public class ExperimentalHostSystem implements HostSystem {
             }
             return result;
         }
-        
+
         public void nextLine(String line) {
             if (buffer.position() > 0 && readLast) {
                 buffer.compact();
             }
             encoder.encode(CharBuffer.wrap(line), buffer, true);
-            buffer.put((byte)'\r');
-            buffer.put((byte)'\n');
+            buffer.put((byte) '\r');
+            buffer.put((byte) '\n');
             readLast = false;
         }
     }
-    
+
     static class ByteBufferOutputStream extends OutputStream {
         ByteBuffer buffer = ByteBuffer.allocate(65536);
+
         Charset ascii = Charset.forName("ASCII");
+
         Continuation continuation;
+
         boolean matchPlus = false;
+
         boolean matchCR = false;
+
         boolean matchLF = false;
-        
+
         public ByteBufferOutputStream(Continuation continuation) {
             this.continuation = continuation;
         }
-        
+
         public void write(String message) throws IOException {
             ascii.newEncoder().encode(CharBuffer.wrap(message), buffer, true);
         }
-        
+
         public void write(int b) throws IOException {
             buffer.put((byte) b);
             if (b == '\n' && matchPlus && matchCR && matchLF) {
@@ -209,8 +224,8 @@ public class ExperimentalHostSystem implements HostSystem {
                 matchCR = false;
                 matchLF = false;
             }
-        }        
-        
+        }
+
         public String nextLine() throws Exception {
             buffer.flip();
             byte last = 0;
@@ -233,13 +248,13 @@ public class ExperimentalHostSystem implements HostSystem {
             return result;
         }
     }
-    
+
     public interface Resetable {
         public void reset() throws Exception;
     }
 
-	public boolean addUser(String user, String password) throws Exception {
-		TorqueMailboxManagerProviderSingleton.addUser(user, password);
-		return true;
-	}
+    public boolean addUser(String user, String password) throws Exception {
+        TorqueMailboxManagerProviderSingleton.addUser(user, password);
+        return true;
+    }
 }

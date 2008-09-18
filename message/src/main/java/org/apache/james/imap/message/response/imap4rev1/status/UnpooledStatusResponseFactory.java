@@ -26,11 +26,14 @@ import org.apache.james.api.imap.message.response.imap4rev1.StatusResponseFactor
 import org.apache.james.api.imap.message.response.imap4rev1.StatusResponse.ResponseCode;
 import org.apache.james.api.imap.message.response.imap4rev1.StatusResponse.Type;
 
-public class UnpooledStatusResponseFactory extends AbstactStatusResponseFactory implements StatusResponseFactory {
+public class UnpooledStatusResponseFactory extends AbstactStatusResponseFactory
+        implements StatusResponseFactory {
 
-    protected StatusResponse createResponse(Type type, String tag, ImapCommand command, HumanReadableTextKey displayTextKey, ResponseCode code) {
-        return new ImmutableStatusResponse(type, tag, command, displayTextKey, code);
+    protected StatusResponse createResponse(Type type, String tag,
+            ImapCommand command, HumanReadableTextKey displayTextKey,
+            ResponseCode code) {
+        return new ImmutableStatusResponse(type, tag, command, displayTextKey,
+                code);
     }
-
 
 }

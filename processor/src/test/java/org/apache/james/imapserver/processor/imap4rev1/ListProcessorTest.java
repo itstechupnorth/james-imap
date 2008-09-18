@@ -32,14 +32,21 @@ import org.jmock.MockObjectTestCase;
 public class ListProcessorTest extends MockObjectTestCase {
 
     ListProcessor processor;
+
     Mock next;
+
     Mock provider;
+
     Mock responder;
+
     Mock result;
+
     Mock session;
+
     Mock command;
+
     Mock serverResponseFactory;
-    
+
     protected void setUp() throws Exception {
         serverResponseFactory = mock(StatusResponseFactory.class);
         session = mock(ImapSession.class);
@@ -48,59 +55,69 @@ public class ListProcessorTest extends MockObjectTestCase {
         responder = mock(ImapProcessor.Responder.class);
         result = mock(ListResult.class);
         provider = mock(MailboxManagerProvider.class);
-        processor = createProcessor((ImapProcessor) next.proxy(), 
-                (MailboxManagerProvider) provider.proxy(), (StatusResponseFactory) serverResponseFactory.proxy());
+        processor = createProcessor((ImapProcessor) next.proxy(),
+                (MailboxManagerProvider) provider.proxy(),
+                (StatusResponseFactory) serverResponseFactory.proxy());
     }
 
     protected void tearDown() throws Exception {
         super.tearDown();
     }
 
-    ListProcessor createProcessor(ImapProcessor next, MailboxManagerProvider provider, StatusResponseFactory factory) {
+    ListProcessor createProcessor(ImapProcessor next,
+            MailboxManagerProvider provider, StatusResponseFactory factory) {
         return new ListProcessor(next, provider, factory);
     }
 
-    ListResponse createResponse(boolean noinferior, boolean noselect, boolean marked, 
-            boolean unmarked, String hierarchyDelimiter, String mailboxName) {
-        return new ListResponse(noinferior, noselect, marked, unmarked, hierarchyDelimiter, mailboxName);
+    ListResponse createResponse(boolean noinferior, boolean noselect,
+            boolean marked, boolean unmarked, String hierarchyDelimiter,
+            String mailboxName) {
+        return new ListResponse(noinferior, noselect, marked, unmarked,
+                hierarchyDelimiter, mailboxName);
     }
 
-    void setUpResult(final boolean isNoinferiors, final int selectability, String hierarchyDelimiter, String name) {
-        result.expects(once()).method("isNoInferiors").will(returnValue(isNoinferiors));
-        result.expects(once()).method("getSelectability").will(returnValue(selectability));
-        result.expects(once()).method("getHierarchyDelimiter").will(returnValue(hierarchyDelimiter));
+    void setUpResult(final boolean isNoinferiors, final int selectability,
+            String hierarchyDelimiter, String name) {
+        result.expects(once()).method("isNoInferiors").will(
+                returnValue(isNoinferiors));
+        result.expects(once()).method("getSelectability").will(
+                returnValue(selectability));
+        result.expects(once()).method("getHierarchyDelimiter").will(
+                returnValue(hierarchyDelimiter));
         result.expects(once()).method("getName").will(returnValue(name));
     }
-    
+
     public void testNoInferiors() throws Exception {
         setUpResult(true, ListResult.SELECTABILITY_FLAG_NONE, ".", "#INBOX");
         responder.expects(once()).method("respond").with(
                 eq(createResponse(true, false, false, false, ".", "#INBOX")));
-        processor.processResult((ImapProcessor.Responder) responder.proxy(), 
+        processor.processResult((ImapProcessor.Responder) responder.proxy(),
                 false, 0, (ListResult) result.proxy());
     }
-    
+
     public void testNoSelect() throws Exception {
-        setUpResult(false, ListResult.SELECTABILITY_FLAG_NOSELECT, ".", "#INBOX");
+        setUpResult(false, ListResult.SELECTABILITY_FLAG_NOSELECT, ".",
+                "#INBOX");
         responder.expects(once()).method("respond").with(
                 eq(createResponse(false, true, false, false, ".", "#INBOX")));
-        processor.processResult((ImapProcessor.Responder) responder.proxy(), 
+        processor.processResult((ImapProcessor.Responder) responder.proxy(),
                 false, 0, (ListResult) result.proxy());
     }
-    
+
     public void testUnMarked() throws Exception {
-        setUpResult(false, ListResult.SELECTABILITY_FLAG_UNMARKED, ".", "#INBOX");
+        setUpResult(false, ListResult.SELECTABILITY_FLAG_UNMARKED, ".",
+                "#INBOX");
         responder.expects(once()).method("respond").with(
                 eq(createResponse(false, false, false, true, ".", "#INBOX")));
-        processor.processResult((ImapProcessor.Responder) responder.proxy(), 
+        processor.processResult((ImapProcessor.Responder) responder.proxy(),
                 false, 0, (ListResult) result.proxy());
     }
-    
+
     public void testMarked() throws Exception {
         setUpResult(false, ListResult.SELECTABILITY_FLAG_MARKED, ".", "#INBOX");
         responder.expects(once()).method("respond").with(
                 eq(createResponse(false, false, true, false, ".", "#INBOX")));
-        processor.processResult((ImapProcessor.Responder) responder.proxy(), 
+        processor.processResult((ImapProcessor.Responder) responder.proxy(),
                 false, 0, (ListResult) result.proxy());
-    }    
+    }
 }

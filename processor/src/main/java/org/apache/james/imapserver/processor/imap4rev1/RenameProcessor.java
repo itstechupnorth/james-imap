@@ -37,7 +37,8 @@ import org.apache.james.mailboxmanager.manager.MailboxManagerProvider;
 public class RenameProcessor extends AbstractMailboxAwareProcessor {
 
     public RenameProcessor(final ImapProcessor next,
-            final MailboxManagerProvider mailboxManagerProvider, final StatusResponseFactory factory) {
+            final MailboxManagerProvider mailboxManagerProvider,
+            final StatusResponseFactory factory) {
         super(next, mailboxManagerProvider, factory);
     }
 
@@ -45,24 +46,26 @@ public class RenameProcessor extends AbstractMailboxAwareProcessor {
         return (message instanceof RenameRequest);
     }
 
-    protected void doProcess(ImapRequest message,
-            ImapSession session, String tag, ImapCommand command, Responder responder) {
+    protected void doProcess(ImapRequest message, ImapSession session,
+            String tag, ImapCommand command, Responder responder) {
         final RenameRequest request = (RenameRequest) message;
         final String existingName = request.getExistingName();
         final String newName = request.getNewName();
         try {
-            
+
             final String fullExistingName = buildFullName(session, existingName);
             final String fullNewName = buildFullName(session, newName);
             final MailboxManager mailboxManager = getMailboxManager(session);
             mailboxManager.renameMailbox(fullExistingName, fullNewName);
             okComplete(command, tag, responder);
             unsolicitedResponses(session, responder, false);
-            
+
         } catch (MailboxExistsException e) {
-            no(command, tag, responder, HumanReadableTextKey.FAILURE_MAILBOX_EXISTS);
+            no(command, tag, responder,
+                    HumanReadableTextKey.FAILURE_MAILBOX_EXISTS);
         } catch (MailboxNotFoundException e) {
-            no(command, tag, responder, HumanReadableTextKey.FAILURE_NO_SUCH_MAILBOX);
+            no(command, tag, responder,
+                    HumanReadableTextKey.FAILURE_NO_SUCH_MAILBOX);
         } catch (MailboxManagerException e) {
             no(command, tag, responder, e);
         }

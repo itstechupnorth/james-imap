@@ -45,18 +45,23 @@ import org.apache.james.mailboxmanager.mailbox.Mailbox;
 import org.apache.james.mailboxmanager.util.MailboxEventAnalyser;
 import org.apache.james.mailboxmanager.util.UidToMsnConverter;
 
-//TODO: deal with deleted or renamed mailboxes
-public class SelectedMailboxSessionImpl extends AbstractLogEnabled implements SelectedImapMailbox {
+// TODO: deal with deleted or renamed mailboxes
+public class SelectedMailboxSessionImpl extends AbstractLogEnabled implements
+        SelectedImapMailbox {
 
     private final Mailbox mailbox;
-    
+
     private final MailboxEventAnalyser events;
-    private final UidToMsnConverter converter;    
+
+    private final UidToMsnConverter converter;
+
     private final MailboxSession mailboxSession;
+
     private final Set recentUids;
+
     private boolean recentUidRemoved;
-    
-    public SelectedMailboxSessionImpl(Mailbox mailbox, List uids, 
+
+    public SelectedMailboxSessionImpl(Mailbox mailbox, List uids,
             MailboxSession mailboxSession) throws MailboxManagerException {
         this.mailbox = mailbox;
         this.mailboxSession = mailboxSession;
@@ -81,13 +86,14 @@ public class SelectedMailboxSessionImpl extends AbstractLogEnabled implements Se
     public boolean isSizeChanged() {
         return events.isSizeChanged();
     }
-    
+
     public Mailbox getMailbox() {
         return mailbox;
     }
 
     /**
-     * @see org.apache.james.api.imap.process.SelectedImapMailbox#unsolicitedResponses(boolean, boolean)
+     * @see org.apache.james.api.imap.process.SelectedImapMailbox#unsolicitedResponses(boolean,
+     *      boolean)
      */
     public List unsolicitedResponses(boolean omitExpunged, boolean useUid) {
         final List results = new ArrayList();
@@ -101,14 +107,14 @@ public class SelectedMailboxSessionImpl extends AbstractLogEnabled implements Se
         if (!omitExpunged) {
             addExpungedResponses(results, mailbox);
         }
-        if(sizeChanged || (recentUidRemoved && !omitExpunged)) {
+        if (sizeChanged || (recentUidRemoved && !omitExpunged)) {
             addRecentResponses(results, mailbox);
             recentUidRemoved = false;
         }
-        
+
         // Message updates
         addFlagsResponses(results, useUid, mailbox);
-        
+
         events.reset();
         return results;
     }
@@ -116,18 +122,19 @@ public class SelectedMailboxSessionImpl extends AbstractLogEnabled implements Se
     public int msn(long uid) {
         return converter.getMsn(uid);
     }
-    
+
     /**
      * Is the mailbox deleted?
-     * @return true when the mailbox has been deleted by another session, 
-     * false otherwise
+     * 
+     * @return true when the mailbox has been deleted by another session, false
+     *         otherwise
      */
     public boolean isDeletedByOtherSession() {
         return events.isDeletedByOtherSession();
     }
-    
+
     private void addExpungedResponses(List responses, final Mailbox mailbox) {
-        for  (Iterator it = events.expungedUids(); it.hasNext();) {
+        for (Iterator it = events.expungedUids(); it.hasNext();) {
             final Long uid = (Long) it.next();
             final long uidValue = uid.longValue();
             final int msn = msn(uidValue);
@@ -135,19 +142,21 @@ public class SelectedMailboxSessionImpl extends AbstractLogEnabled implements Se
             ExpungeResponse response = new ExpungeResponse(msn);
             responses.add(response);
         }
-        
-        for  (Iterator it = events.expungedUids(); it.hasNext();) {
+
+        for (Iterator it = events.expungedUids(); it.hasNext();) {
             final Long uid = (Long) it.next();
             final long uidValue = uid.longValue();
             converter.expunge(uidValue);
         }
     }
 
-    private void addFlagsResponses(final List responses, boolean useUid, final Mailbox mailbox) {
+    private void addFlagsResponses(final List responses, boolean useUid,
+            final Mailbox mailbox) {
         try {
             for (final Iterator it = events.flagUpdateUids(); it.hasNext();) {
                 Long uid = (Long) it.next();
-                MessageRange messageSet = MessageRangeImpl.oneUid(uid.longValue());
+                MessageRange messageSet = MessageRangeImpl.oneUid(uid
+                        .longValue());
                 addFlagsResponses(responses, useUid, mailbox, messageSet);
             }
         } catch (MessagingException e) {
@@ -156,8 +165,11 @@ public class SelectedMailboxSessionImpl extends AbstractLogEnabled implements Se
         }
     }
 
-    private void addFlagsResponses(final List responses, boolean useUid, final Mailbox mailbox, MessageRange messageSet) throws MailboxManagerException {
-        final Iterator it = mailbox.getMessages(messageSet, FetchGroupImpl.FLAGS, mailboxSession);
+    private void addFlagsResponses(final List responses, boolean useUid,
+            final Mailbox mailbox, MessageRange messageSet)
+            throws MailboxManagerException {
+        final Iterator it = mailbox.getMessages(messageSet,
+                FetchGroupImpl.FLAGS, mailboxSession);
         while (it.hasNext()) {
             MessageResult mr = (MessageResult) it.next();
             final long uid = mr.getUid();
@@ -174,7 +186,8 @@ public class SelectedMailboxSessionImpl extends AbstractLogEnabled implements Se
             } else {
                 flags.remove(Flags.Flag.RECENT);
             }
-            FetchResponse response = new FetchResponse(msn, flags, uidOut, null, null, null, null, null, null);
+            FetchResponse response = new FetchResponse(msn, flags, uidOut,
+                    null, null, null, null, null, null);
             responses.add(response);
         }
     }
@@ -186,7 +199,8 @@ public class SelectedMailboxSessionImpl extends AbstractLogEnabled implements Se
         responses.add(response);
     }
 
-    private void handleResponseException(final List responses, MessagingException e, final String message) {
+    private void handleResponseException(final List responses,
+            MessagingException e, final String message) {
         getLog().info(message);
         getLog().debug(message, e);
         // TODO: consider whether error message should be passed to the user
@@ -195,15 +209,15 @@ public class SelectedMailboxSessionImpl extends AbstractLogEnabled implements Se
     }
 
     private void addExistsResponses(final List responses, final Mailbox mailbox) {
-            try {
-                final int messageCount = mailbox.getMessageCount(mailboxSession);
-                // TODO: use factory
-                ExistsResponse response = new ExistsResponse(messageCount);
-                responses.add(response);
-            } catch (MailboxManagerException e) {
-                final String message = "Failed to retrieve exists count data";
-                handleResponseException(responses, e, message);
-            }
+        try {
+            final int messageCount = mailbox.getMessageCount(mailboxSession);
+            // TODO: use factory
+            ExistsResponse response = new ExistsResponse(messageCount);
+            responses.add(response);
+        } catch (MailboxManagerException e) {
+            final String message = "Failed to retrieve exists count data";
+            handleResponseException(responses, e, message);
+        }
     }
 
     public long uid(int msn) {
@@ -217,7 +231,7 @@ public class SelectedMailboxSessionImpl extends AbstractLogEnabled implements Se
         }
         return result;
     }
-    
+
     public boolean addRecent(long uid) {
         final boolean result = recentUids.add(new Long(uid));
         return result;
@@ -227,7 +241,7 @@ public class SelectedMailboxSessionImpl extends AbstractLogEnabled implements Se
         checkExpungedRecents();
         final long[] results = new long[recentUids.size()];
         int count = 0;
-        for (Iterator it=recentUids.iterator();it.hasNext();) {
+        for (Iterator it = recentUids.iterator(); it.hasNext();) {
             Long uid = (Long) it.next();
             results[count++] = uid.longValue();
         }
@@ -242,9 +256,9 @@ public class SelectedMailboxSessionImpl extends AbstractLogEnabled implements Se
     public String getName() {
         return mailbox.getName();
     }
-    
+
     private void checkExpungedRecents() {
-        for(final Iterator it = events.expungedUids();it.hasNext();) {
+        for (final Iterator it = events.expungedUids(); it.hasNext();) {
             final Long uid = (Long) it.next();
             removeRecent(uid.longValue());
         }

@@ -39,9 +39,9 @@ import org.apache.james.mailboxmanager.mailbox.Mailbox;
 import org.apache.james.mailboxmanager.util.UidRange;
 
 public class UidChangeTracker implements Constants {
-    
+
     private final MailboxEventDispatcher eventDispatcher;
-    
+
     private final TreeMap cache;
 
     private long lastUidAtStart;
@@ -59,23 +59,27 @@ public class UidChangeTracker implements Constants {
 
     public synchronized void expunged(final long[] uidsExpunged) {
         final int length = uidsExpunged.length;
-        for (int i=0;i< length;i++) {
+        for (int i = 0; i < length; i++) {
             final long uid = uidsExpunged[i];
             cache.remove(new Long(uid));
             eventDispatcher.expunged(uid, 0);
         }
     }
-    
+
     /**
      * Indicates that the flags on the given messages may have been updated.
-     * @param messageFlags flags 
-     * @param sessionId id of the session upating the flags
+     * 
+     * @param messageFlags
+     *            flags
+     * @param sessionId
+     *            id of the session upating the flags
      * @see #flagsUpdated(MessageResult, long)
      */
-    public synchronized void flagsUpdated(MessageFlags[] messageFlags, long sessionId) {
+    public synchronized void flagsUpdated(MessageFlags[] messageFlags,
+            long sessionId) {
         if (messageFlags != null) {
             final int length = messageFlags.length;
-            for (int i=0;i< length;i++){
+            for (int i = 0; i < length; i++) {
                 final MessageFlags result = messageFlags[i];
                 final long uid = result.getUid();
                 final Flags flags = result.getFlags();
@@ -84,30 +88,38 @@ public class UidChangeTracker implements Constants {
             }
         }
     }
-    
+
     /**
      * Indicates that the flags on the given messages may have been updated.
-     * @param messageResults results 
-     * @param sessionId id of the session upating the flags
-     * @throws MailboxManagerException 
+     * 
+     * @param messageResults
+     *            results
+     * @param sessionId
+     *            id of the session upating the flags
+     * @throws MailboxManagerException
      * @see #flagsUpdated(MessageResult, long)
      */
-    public synchronized void flagsUpdated(Collection messageResults, long sessionId) throws MailboxManagerException {
+    public synchronized void flagsUpdated(Collection messageResults,
+            long sessionId) throws MailboxManagerException {
         if (messageResults != null) {
-            for (final Iterator it = messageResults.iterator();it.hasNext();) {
+            for (final Iterator it = messageResults.iterator(); it.hasNext();) {
                 final MessageResult result = (MessageResult) it.next();
                 flagsUpdated(result, sessionId);
             }
         }
     }
-    
+
     /**
      * Indicates that the flags on the given message may have been updated.
-     * @param messageResult result of update
-     * @param sessionId id of the session updating the flags
-     * @throws MailboxManagerException 
+     * 
+     * @param messageResult
+     *            result of update
+     * @param sessionId
+     *            id of the session updating the flags
+     * @throws MailboxManagerException
      */
-    public synchronized void flagsUpdated(MessageResult messageResult, long sessionId) throws MailboxManagerException {
+    public synchronized void flagsUpdated(MessageResult messageResult,
+            long sessionId) throws MailboxManagerException {
         if (messageResult != null) {
             final Flags flags = messageResult.getFlags();
             final long uid = messageResult.getUid();
@@ -115,27 +127,28 @@ public class UidChangeTracker implements Constants {
             updatedFlags(uid, flags, uidLong, sessionId);
         }
     }
-    
-    public synchronized void found(UidRange range, final Collection messageResults) throws MessagingException {
+
+    public synchronized void found(UidRange range,
+            final Collection messageResults) throws MessagingException {
         found(range, MessageFlags.toMessageFlags(messageResults));
     }
-    
-    public synchronized void found(UidRange range, final MessageFlags[] messageFlags) {
+
+    public synchronized void found(UidRange range,
+            final MessageFlags[] messageFlags) {
         Set expectedSet = getSubSet(range);
         final int length = messageFlags.length;
-        for (int i=0;i<length;i++) {
+        for (int i = 0; i < length; i++) {
             final MessageFlags message = messageFlags[i];
             if (message != null) {
                 long uid = message.getUid();
-                if (uid>lastScannedUid) {
-                    lastScannedUid=uid;
+                if (uid > lastScannedUid) {
+                    lastScannedUid = uid;
                 }
                 final Flags flags = message.getFlags();
                 final Long uidLong = new Long(uid);
                 if (expectedSet.contains(uidLong)) {
                     expectedSet.remove(uidLong);
-                    updatedFlags(uid, flags, uidLong, 
-                            Mailbox.ANONYMOUS_SESSION);
+                    updatedFlags(uid, flags, uidLong, Mailbox.ANONYMOUS_SESSION);
                 } else {
                     cache.put(uidLong, flags);
                     if (uid > lastUidAtStart) {
@@ -146,30 +159,31 @@ public class UidChangeTracker implements Constants {
 
         }
 
-        if (lastScannedUid>lastUid) {
-            lastUid=lastScannedUid;
+        if (lastScannedUid > lastUid) {
+            lastUid = lastScannedUid;
         }
-        if (range.getToUid()==UID_INFINITY || range.getToUid()>=lastUid) {
-            lastScannedUid=lastUid;
-        } else if (range.getToUid()!=UID_INFINITY && range.getToUid()<lastUid && range.getToUid() > lastScannedUid) {
-            lastScannedUid=range.getToUid();
+        if (range.getToUid() == UID_INFINITY || range.getToUid() >= lastUid) {
+            lastScannedUid = lastUid;
+        } else if (range.getToUid() != UID_INFINITY
+                && range.getToUid() < lastUid
+                && range.getToUid() > lastScannedUid) {
+            lastScannedUid = range.getToUid();
         }
-        
+
         for (Iterator iter = expectedSet.iterator(); iter.hasNext();) {
             long uid = ((Long) iter.next()).longValue();
             eventDispatcher.expunged(uid, 0);
         }
     }
 
-    private void updatedFlags(final long uid, final Flags flags, 
+    private void updatedFlags(final long uid, final Flags flags,
             final Long uidLong, final long sessionId) {
         if (flags != null) {
             Flags cachedFlags = (Flags) cache.get(uidLong);
-            if (cachedFlags == null
-                    || !flags.equals(cachedFlags)) {
+            if (cachedFlags == null || !flags.equals(cachedFlags)) {
                 if (cachedFlags != null) {
-                    eventDispatcher.flagsUpdated(uid, sessionId,
-                             cachedFlags, flags);
+                    eventDispatcher.flagsUpdated(uid, sessionId, cachedFlags,
+                            flags);
                 }
                 cache.put(uidLong, flags);
             }
@@ -181,17 +195,18 @@ public class UidChangeTracker implements Constants {
         if (range.getToUid() > 0) {
             final long nextUidAfterRange = range.getToUid() + 1;
             final Long nextUidAfterRangeLong = new Long(nextUidAfterRange);
-            final SortedMap subMap = cache.subMap(rangeStartLong, nextUidAfterRangeLong);
+            final SortedMap subMap = cache.subMap(rangeStartLong,
+                    nextUidAfterRangeLong);
             final Set keySet = subMap.keySet();
             return new TreeSet(keySet);
         } else {
-            return new TreeSet(cache
-                    .tailMap(rangeStartLong).keySet());
+            return new TreeSet(cache.tailMap(rangeStartLong).keySet());
         }
 
     }
 
-    public synchronized void found(MessageResult messageResult) throws MessagingException {
+    public synchronized void found(MessageResult messageResult)
+            throws MessagingException {
         if (messageResult != null) {
             long uid = messageResult.getUid();
             Collection results = new ArrayList();
@@ -203,10 +218,10 @@ public class UidChangeTracker implements Constants {
     public synchronized long getLastUid() {
         return lastUid;
     }
-    
+
     public synchronized void foundLastUid(long foundLastUid) {
-        if (foundLastUid>lastUid) {
-            lastUid=foundLastUid;
+        if (foundLastUid > lastUid) {
+            lastUid = foundLastUid;
         }
     }
 

@@ -31,7 +31,9 @@ public class SearchResponse implements ImapResponseMessage {
 
     /**
      * Constructs a <code>SEARCH</code> response.
-     * @param ids ids, not null
+     * 
+     * @param ids
+     *            ids, not null
      */
     public SearchResponse(final long[] ids) {
         super();
@@ -40,6 +42,7 @@ public class SearchResponse implements ImapResponseMessage {
 
     /**
      * Gets the ids returned by this search.
+     * 
      * @return the ids, not null
      */
     public final long[] getIds() {
@@ -49,7 +52,7 @@ public class SearchResponse implements ImapResponseMessage {
     /**
      * @see java.lang.Object#hashCode()
      */
-    //@Override
+    // @Override
     public int hashCode() {
         return ids.length;
     }
@@ -57,7 +60,7 @@ public class SearchResponse implements ImapResponseMessage {
     /**
      * @see java.lang.Object#equals(java.lang.Object)
      */
-    //@Override
+    // @Override
     public boolean equals(Object obj) {
         if (this == obj)
             return true;
@@ -72,22 +75,19 @@ public class SearchResponse implements ImapResponseMessage {
     }
 
     /**
-     * Constructs a <code>String</code> with all attributes
-     * in name = value format.
-     *
-     * @return a <code>String</code> representation 
-     * of this object.
+     * Constructs a <code>String</code> with all attributes in name = value
+     * format.
+     * 
+     * @return a <code>String</code> representation of this object.
      */
-    public String toString()
-    {
+    public String toString() {
         final String TAB = " ";
-        
+
         StringBuffer retValue = new StringBuffer();
-        
-        retValue.append("SearchResponse ( ")
-            .append("ids = ").append(this.ids).append(TAB)
-            .append(" )");
-        
+
+        retValue.append("SearchResponse ( ").append("ids = ").append(this.ids)
+                .append(TAB).append(" )");
+
         return retValue.toString();
     }
 }

@@ -29,7 +29,8 @@ import org.apache.james.imapserver.codec.encode.ImapResponseComposer;
 
 public class EndImapEncoder extends AbstractLogEnabled implements ImapEncoder {
 
-    public void encode(ImapMessage message, ImapResponseComposer composer) throws IOException {
+    public void encode(ImapMessage message, ImapResponseComposer composer)
+            throws IOException {
         final Log logger = getLog();
         logger.warn("Unknown message");
         if (logger.isDebugEnabled()) {

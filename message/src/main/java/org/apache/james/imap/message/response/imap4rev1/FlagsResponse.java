@@ -37,11 +37,11 @@ public class FlagsResponse implements ImapResponseMessage {
     public String toString() {
         return "Flags: " + flags;
     }
-    
+
     public Flags getFlags() {
         return flags;
     }
-    
+
     public int hashCode() {
         final int PRIME = 31;
         int result = 1;
@@ -64,6 +64,5 @@ public class FlagsResponse implements ImapResponseMessage {
             return false;
         return true;
     }
-    
-    
+
 }

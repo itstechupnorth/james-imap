@@ -27,6 +27,7 @@ public abstract class AbstractTestOutputStreamImapResponseWriter extends
         TestCase {
 
     OutputStreamImapResponseWriter writer;
+
     ByteArrayOutputStream out;
 
     public AbstractTestOutputStreamImapResponseWriter() {
@@ -43,7 +44,7 @@ public abstract class AbstractTestOutputStreamImapResponseWriter extends
         writer.flush();
         out.flush();
         byte[] output = out.toByteArray();
-        for (int i=0;i<output.length;i++) {
+        for (int i = 0; i < output.length; i++) {
             buffer.append((char) output[i]);
         }
         assertEquals(expected, buffer.toString());

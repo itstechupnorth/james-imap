@@ -49,9 +49,10 @@ import org.apache.james.mailboxmanager.manager.MailboxManagerProvider;
 public class AppendProcessor extends AbstractMailboxAwareProcessor {
 
     final StatusResponseFactory statusResponseFactory;
-    
+
     public AppendProcessor(final ImapProcessor next,
-            final MailboxManagerProvider mailboxManagerProvider, final StatusResponseFactory statusResponseFactory) {
+            final MailboxManagerProvider mailboxManagerProvider,
+            final StatusResponseFactory statusResponseFactory) {
         super(next, mailboxManagerProvider, statusResponseFactory);
         this.statusResponseFactory = statusResponseFactory;
     }
@@ -60,8 +61,8 @@ public class AppendProcessor extends AbstractMailboxAwareProcessor {
         return (message instanceof AppendRequest);
     }
 
-    protected void doProcess(ImapRequest message,
-            ImapSession session, String tag, ImapCommand command, Responder responder){
+    protected void doProcess(ImapRequest message, ImapSession session,
+            String tag, ImapCommand command, Responder responder) {
         final AppendRequest request = (AppendRequest) message;
         final String mailboxName = request.getMailboxName();
         final MimeMessage mimeMessage = request.getMessage();
@@ -69,15 +70,18 @@ public class AppendProcessor extends AbstractMailboxAwareProcessor {
         // TODO: Flags are ignore: check whether the specification says that
         // they should be processed
         try {
-            
+
             final String fullMailboxName = buildFullName(session, mailboxName);
             final MailboxManager mailboxManager = getMailboxManager(session);
-            final Mailbox mailbox = mailboxManager.getMailbox(fullMailboxName, false);
-            appendToMailbox(mimeMessage, datetime, session, tag, command, mailbox, responder);
-            
+            final Mailbox mailbox = mailboxManager.getMailbox(fullMailboxName,
+                    false);
+            appendToMailbox(mimeMessage, datetime, session, tag, command,
+                    mailbox, responder);
+
         } catch (MailboxManagerException mme) {
-            // Mailbox API does not provide facilities for diagnosing the problem
-            // assume that 
+            // Mailbox API does not provide facilities for diagnosing the
+            // problem
+            // assume that
             // TODO: improved API should communicate when this operation
             // TODO: fails whether the mailbox exists
             Log logger = getLog();
@@ -87,23 +91,27 @@ public class AppendProcessor extends AbstractMailboxAwareProcessor {
             if (logger.isDebugEnabled()) {
                 logger.debug("Cannot open mailbox: ", mme);
             }
-            no(command, tag, responder, HumanReadableTextKey.FAILURE_NO_SUCH_MAILBOX, 
+            no(command, tag, responder,
+                    HumanReadableTextKey.FAILURE_NO_SUCH_MAILBOX,
                     StatusResponse.ResponseCode.tryCreate());
         }
 
     }
 
-    private void appendToMailbox(MimeMessage message, Date datetime, 
-            ImapSession session, String tag, ImapCommand command, Mailbox mailbox,
-            Responder responder) {
+    private void appendToMailbox(MimeMessage message, Date datetime,
+            ImapSession session, String tag, ImapCommand command,
+            Mailbox mailbox, Responder responder) {
         try {
-            final MailboxSession mailboxSession = ImapSessionUtils.getMailboxSession(session);
+            final MailboxSession mailboxSession = ImapSessionUtils
+                    .getMailboxSession(session);
             final SelectedImapMailbox selectedMailbox = session.getSelected();
-            final boolean isSelectedMailbox = selectedMailbox != null && mailbox.getName().equals(selectedMailbox.getName());
+            final boolean isSelectedMailbox = selectedMailbox != null
+                    && mailbox.getName().equals(selectedMailbox.getName());
             if (!isSelectedMailbox) {
                 message.setFlag(Flag.RECENT, true);
             }
-            final MessageResult result = mailbox.appendMessage(message, datetime, FetchGroupImpl.MINIMAL, mailboxSession);
+            final MessageResult result = mailbox.appendMessage(message,
+                    datetime, FetchGroupImpl.MINIMAL, mailboxSession);
             final long uid = result.getUid();
             if (isSelectedMailbox) {
                 selectedMailbox.addRecent(uid);
@@ -116,6 +124,6 @@ public class AppendProcessor extends AbstractMailboxAwareProcessor {
         } catch (MessagingException e) {
             no(command, tag, responder, e);
         }
-        
+
     }
 }

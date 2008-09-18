@@ -47,21 +47,25 @@ import org.apache.torque.TorqueException;
 
 public class MessageRowUtils {
 
-    public static final byte[] BYTES_NEW_LINE = {0x0D, 0x0A};
-    public static final byte[] BYTES_HEADER_FIELD_VALUE_SEP = {0x3A, 0x20};
+    public static final byte[] BYTES_NEW_LINE = { 0x0D, 0x0A };
+
+    public static final byte[] BYTES_HEADER_FIELD_VALUE_SEP = { 0x3A, 0x20 };
+
     static final Charset US_ASCII = Charset.forName("US-ASCII");
-    
+
     /**
      * Converts {@link MessageRow} to {@link MessageFlags}.
-     * @param messageRows <code>Collectio</code> of {@link MessageRow},
-     * not null 
+     * 
+     * @param messageRows
+     *            <code>Collectio</code> of {@link MessageRow}, not null
      * @return <code>MessageFlags</code>, not null
      * @throws TorqueException
      */
-    public static MessageFlags[] toMessageFlags(final Collection messageRows) throws TorqueException {
+    public static MessageFlags[] toMessageFlags(final Collection messageRows)
+            throws TorqueException {
         final MessageFlags[] results = new MessageFlags[messageRows.size()];
-        int i=0;
-        for (final Iterator it=messageRows.iterator(); it.hasNext();) {
+        int i = 0;
+        for (final Iterator it = messageRows.iterator(); it.hasNext();) {
             MessageRow row = (MessageRow) it.next();
             final Flags flags = row.getMessageFlags().getFlagsObject();
             final long uid = row.getUid();
@@ -70,11 +74,12 @@ public class MessageRowUtils {
         return results;
     }
 
-    public static List createHeaders(MessageRow messageRow) throws TorqueException {
+    public static List createHeaders(MessageRow messageRow)
+            throws TorqueException {
         final List headers = getSortedHeaders(messageRow);
-        
+
         final List results = new ArrayList(headers.size());
-        for (Iterator it=headers.iterator();it.hasNext();) {
+        for (Iterator it = headers.iterator(); it.hasNext();) {
             final MessageHeader messageHeader = (MessageHeader) it.next();
             final Header header = new Header(messageHeader);
             results.add(header);
@@ -82,47 +87,54 @@ public class MessageRowUtils {
         return results;
     }
 
-    private static List getSortedHeaders(MessageRow messageRow) throws TorqueException {
-        final List headers=messageRow.getMessageHeaders();
+    private static List getSortedHeaders(MessageRow messageRow)
+            throws TorqueException {
+        final List headers = messageRow.getMessageHeaders();
         Collections.sort(headers, new Comparator() {
-    
+
             public int compare(Object one, Object two) {
-                return ((MessageHeader) one).getLineNumber() - ((MessageHeader)two).getLineNumber();
+                return ((MessageHeader) one).getLineNumber()
+                        - ((MessageHeader) two).getLineNumber();
             }
-            
+
         });
         return headers;
     }
 
-    public static Content createBodyContent(MessageRow messageRow) throws TorqueException {
-        final MessageBody body = (MessageBody) messageRow.getMessageBodys().get(0);
+    public static Content createBodyContent(MessageRow messageRow)
+            throws TorqueException {
+        final MessageBody body = (MessageBody) messageRow.getMessageBodys()
+                .get(0);
         final byte[] bytes = body.getBody();
         final ByteContent result = new ByteContent(bytes);
         return result;
     }
 
-    public static Content createFullContent(final MessageRow messageRow, List headers) throws TorqueException {
+    public static Content createFullContent(final MessageRow messageRow,
+            List headers) throws TorqueException {
         if (headers == null) {
             headers = createHeaders(messageRow);
         }
-        final MessageBody body = (MessageBody) messageRow.getMessageBodys().get(0);
+        final MessageBody body = (MessageBody) messageRow.getMessageBodys()
+                .get(0);
         final byte[] bytes = body.getBody();
         final FullContent results = new FullContent(bytes, headers);
         return results;
     }
 
-    public static MessageResult loadMessageResult(final MessageRow messageRow, final FetchGroup fetchGroup)
-            throws TorqueException, MailboxManagerException {
-        
+    public static MessageResult loadMessageResult(final MessageRow messageRow,
+            final FetchGroup fetchGroup) throws TorqueException,
+            MailboxManagerException {
+
         MessageResultImpl messageResult = new MessageResultImpl();
         messageResult.setUid(messageRow.getUid());
         if (fetchGroup != null) {
             int content = fetchGroup.content();
             if ((content & FetchGroup.FLAGS) > 0) {
-                org.apache.james.mailboxmanager.torque.om.MessageFlags messageFlags
-                    = messageRow.getMessageFlags();
-                if (messageFlags!=null) {
-                    messageResult.setFlags(messageFlags.getFlagsObject());  
+                org.apache.james.mailboxmanager.torque.om.MessageFlags messageFlags = messageRow
+                        .getMessageFlags();
+                if (messageFlags != null) {
+                    messageResult.setFlags(messageFlags.getFlagsObject());
                 }
                 content -= FetchGroup.FLAGS;
             }
@@ -162,44 +174,55 @@ public class MessageRowUtils {
         return messageResult;
     }
 
-    private static void addMimeDescriptor(MessageRow messageRow, MessageResultImpl messageResult) throws TorqueException  {
-        try {   
-            MessageResult.MimeDescriptor descriptor = MimeDescriptorImpl.build(toInput(messageRow));
+    private static void addMimeDescriptor(MessageRow messageRow,
+            MessageResultImpl messageResult) throws TorqueException {
+        try {
+            MessageResult.MimeDescriptor descriptor = MimeDescriptorImpl
+                    .build(toInput(messageRow));
             messageResult.setMimeDescriptor(descriptor);
         } catch (IOException e) {
             throw new TorqueException("Cannot parse message", e);
         }
     }
 
-    private static void addFullContent(final MessageRow messageRow, MessageResultImpl messageResult) throws TorqueException, MailboxManagerException {
+    private static void addFullContent(final MessageRow messageRow,
+            MessageResultImpl messageResult) throws TorqueException,
+            MailboxManagerException {
         final List headers = messageResult.getHeaders();
         final Content content = createFullContent(messageRow, headers);
         messageResult.setFullContent(content);
     }
 
-    private static void addBody(final MessageRow messageRow, MessageResultImpl messageResult) throws TorqueException {
+    private static void addBody(final MessageRow messageRow,
+            MessageResultImpl messageResult) throws TorqueException {
         final Content content = createBodyContent(messageRow);
         messageResult.setBody(content);
     }
 
-    private static void addHeaders(final MessageRow messageRow, MessageResultImpl messageResult) throws TorqueException {
+    private static void addHeaders(final MessageRow messageRow,
+            MessageResultImpl messageResult) throws TorqueException {
         final List headers = createHeaders(messageRow);
         messageResult.setHeaders(headers);
     }
 
-    private static void addPartContent(final FetchGroup fetchGroup, MessageRow row, 
-            MessageResultImpl messageResult) throws TorqueException, MailboxManagerException, IOException, MimeException {
+    private static void addPartContent(final FetchGroup fetchGroup,
+            MessageRow row, MessageResultImpl messageResult)
+            throws TorqueException, MailboxManagerException, IOException,
+            MimeException {
         Collection partContent = fetchGroup.getPartContentDescriptors();
         if (partContent != null) {
             for (Iterator it = partContent.iterator(); it.hasNext();) {
-                FetchGroup.PartContentDescriptor descriptor = (FetchGroup.PartContentDescriptor) it.next();
+                FetchGroup.PartContentDescriptor descriptor = (FetchGroup.PartContentDescriptor) it
+                        .next();
                 addPartContent(descriptor, row, messageResult);
             }
         }
     }
-    
-    private static void addPartContent(FetchGroup.PartContentDescriptor descriptor, MessageRow row,
-                                       MessageResultImpl messageResult) throws TorqueException, MailboxManagerException, IOException, MimeException {
+
+    private static void addPartContent(
+            FetchGroup.PartContentDescriptor descriptor, MessageRow row,
+            MessageResultImpl messageResult) throws TorqueException,
+            MailboxManagerException, IOException, MimeException {
         final MimePath mimePath = descriptor.path();
         final int content = descriptor.content();
         if ((content & MessageResult.FetchGroup.FULL_CONTENT) > 0) {
@@ -218,8 +241,9 @@ public class MessageRowUtils {
             addMimeHeaders(row, messageResult, mimePath);
         }
     }
-    
-    private static PartContentBuilder build(int[] path, final MessageRow row) throws IOException, MimeException, TorqueException {
+
+    private static PartContentBuilder build(int[] path, final MessageRow row)
+            throws IOException, MimeException, TorqueException {
         final InputStream stream = toInput(row);
         PartContentBuilder result = new PartContentBuilder();
         result.parse(stream);
@@ -236,9 +260,11 @@ public class MessageRowUtils {
         return result;
     }
 
-    public static InputStream toInput(final MessageRow row) throws TorqueException {
+    public static InputStream toInput(final MessageRow row)
+            throws TorqueException {
         final List headers = getSortedHeaders(row);
-        final StringBuffer headersToString = new StringBuffer(headers.size()*50);
+        final StringBuffer headersToString = new StringBuffer(
+                headers.size() * 50);
         for (Iterator it = headers.iterator(); it.hasNext();) {
             MessageHeader header = (MessageHeader) it.next();
             headersToString.append(header.getField());
@@ -247,19 +273,22 @@ public class MessageRowUtils {
             headersToString.append("\r\n");
         }
         headersToString.append("\r\n");
-        
+
         byte[] bodyContent = row.getBodyContent();
-        final MessageInputStream stream = new MessageInputStream(headersToString, bodyContent);
+        final MessageInputStream stream = new MessageInputStream(
+                headersToString, bodyContent);
         return stream;
     }
-    
+
     private static final class MessageInputStream extends InputStream {
         private final StringBuffer headers;
+
         private final ByteBuffer bodyContent;
-        
+
         private int headerPosition = 0;
-        
-        public MessageInputStream(final StringBuffer headers, final byte[] bodyContent) {
+
+        public MessageInputStream(final StringBuffer headers,
+                final byte[] bodyContent) {
             super();
             this.headers = headers;
             this.bodyContent = ByteBuffer.wrap(bodyContent);
@@ -269,16 +298,16 @@ public class MessageRowUtils {
             final int result;
             if (headerPosition < headers.length()) {
                 result = headers.charAt(headerPosition++);
-            } else if (bodyContent.hasRemaining() ){
+            } else if (bodyContent.hasRemaining()) {
                 result = bodyContent.get();
             } else {
                 result = -1;
             }
             return result;
         }
-        
+
     }
-    
+
     private static final int[] path(MimePath mimePath) {
         final int[] result;
         if (mimePath == null) {
@@ -288,8 +317,10 @@ public class MessageRowUtils {
         }
         return result;
     }
-    
-    private static void addHeaders(MessageRow row, MessageResultImpl messageResult, MimePath mimePath) throws TorqueException, IOException, MimeException {
+
+    private static void addHeaders(MessageRow row,
+            MessageResultImpl messageResult, MimePath mimePath)
+            throws TorqueException, IOException, MimeException {
         final int[] path = path(mimePath);
         if (path == null) {
             addHeaders(row, messageResult);
@@ -299,8 +330,10 @@ public class MessageRowUtils {
             messageResult.setHeaders(mimePath, headers.iterator());
         }
     }
-    
-    private static void addMimeHeaders(MessageRow row, MessageResultImpl messageResult, MimePath mimePath) throws TorqueException, IOException, MimeException {
+
+    private static void addMimeHeaders(MessageRow row,
+            MessageResultImpl messageResult, MimePath mimePath)
+            throws TorqueException, IOException, MimeException {
         final int[] path = path(mimePath);
         if (path == null) {
             addHeaders(row, messageResult);
@@ -311,7 +344,9 @@ public class MessageRowUtils {
         }
     }
 
-    private static void addBodyContent(MessageRow row, MessageResultImpl messageResult, MimePath mimePath) throws TorqueException, IOException, MimeException {
+    private static void addBodyContent(MessageRow row,
+            MessageResultImpl messageResult, MimePath mimePath)
+            throws TorqueException, IOException, MimeException {
         final int[] path = path(mimePath);
         if (path == null) {
             addBody(row, messageResult);
@@ -321,16 +356,20 @@ public class MessageRowUtils {
             messageResult.setBodyContent(mimePath, content);
         }
     }
-    
-    private static void addMimeBodyContent(MessageRow row, MessageResultImpl messageResult, MimePath mimePath) throws TorqueException, IOException, MimeException {
+
+    private static void addMimeBodyContent(MessageRow row,
+            MessageResultImpl messageResult, MimePath mimePath)
+            throws TorqueException, IOException, MimeException {
         final int[] path = path(mimePath);
         final PartContentBuilder builder = build(path, row);
         final Content content = builder.getMimeBodyContent();
         messageResult.setMimeBodyContent(mimePath, content);
     }
 
-    private static void addFullContent(MessageRow row, MessageResultImpl messageResult, MimePath mimePath) 
-            throws TorqueException, MailboxManagerException, IOException, MimeException {
+    private static void addFullContent(MessageRow row,
+            MessageResultImpl messageResult, MimePath mimePath)
+            throws TorqueException, MailboxManagerException, IOException,
+            MimeException {
         final int[] path = path(mimePath);
         if (path == null) {
             addFullContent(row, messageResult);
@@ -342,23 +381,24 @@ public class MessageRowUtils {
     }
 
     /**
-     * Gets a comparator that evaluates {@link MessageRow}'s
-     * on the basis of their UIDs.
+     * Gets a comparator that evaluates {@link MessageRow}'s on the basis of
+     * their UIDs.
+     * 
      * @return {@link Comparator}, not null
      */
     public static Comparator getUidComparator() {
         return UidComparator.INSTANCE;
     }
-    
+
     private static final class UidComparator implements Comparator {
         private static final UidComparator INSTANCE = new UidComparator();
-        
+
         public int compare(Object one, Object two) {
             final MessageRow rowOne = (MessageRow) one;
             final MessageRow rowTwo = (MessageRow) two;
-            final int result = (int)(rowOne.getUid() - rowTwo.getUid());
+            final int result = (int) (rowOne.getUid() - rowTwo.getUid());
             return result;
         }
-        
+
     }
 }

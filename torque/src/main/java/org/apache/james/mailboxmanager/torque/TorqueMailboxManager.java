@@ -54,28 +54,30 @@ import EDU.oswego.cs.dl.util.concurrent.ReentrantWriterPreferenceReadWriteLock;
 public class TorqueMailboxManager implements MailboxManager {
 
     private static final char SQL_WILDCARD_CHAR = '%';
+
     private final static Random random = new Random();
-    
+
     protected Log log = LogFactory.getLog(TorqueMailboxManager.class);
 
     private final ReadWriteLock lock;
-    
+
     private final Map mailboxes;
-    
+
     private final UserManager userManager;
-    
+
     public TorqueMailboxManager(final UserManager userManager) {
-        this.lock =  new ReentrantWriterPreferenceReadWriteLock();
+        this.lock = new ReentrantWriterPreferenceReadWriteLock();
         mailboxes = new HashMap();
         this.userManager = userManager;
     }
-    
+
     public Mailbox getMailbox(String mailboxName, boolean autoCreate)
             throws MailboxManagerException {
         return doGetMailbox(mailboxName, autoCreate);
     }
-    
-    private TorqueMailbox doGetMailbox(String mailboxName, boolean autoCreate) throws MailboxManagerException {
+
+    private TorqueMailbox doGetMailbox(String mailboxName, boolean autoCreate)
+            throws MailboxManagerException {
         if (autoCreate && !existsMailbox(mailboxName)) {
             getLog().info("autocreated mailbox  " + mailboxName);
             createMailbox(mailboxName);
@@ -86,14 +88,16 @@ public class TorqueMailboxManager implements MailboxManager {
                         .retrieveByName(mailboxName);
 
                 if (mailboxRow != null) {
-                    getLog().debug("Loaded mailbox "+mailboxName);
-                    
-                    TorqueMailbox torqueMailbox = (TorqueMailbox) mailboxes.get(mailboxName);
+                    getLog().debug("Loaded mailbox " + mailboxName);
+
+                    TorqueMailbox torqueMailbox = (TorqueMailbox) mailboxes
+                            .get(mailboxName);
                     if (torqueMailbox == null) {
-                        torqueMailbox = new TorqueMailbox(mailboxRow, lock, getLog());
+                        torqueMailbox = new TorqueMailbox(mailboxRow, lock,
+                                getLog());
                         mailboxes.put(mailboxName, torqueMailbox);
                     }
-                    
+
                     return torqueMailbox;
                 } else {
                     getLog().info("Mailbox '" + mailboxName + "' not found.");
@@ -104,10 +108,10 @@ public class TorqueMailboxManager implements MailboxManager {
             throw new MailboxManagerException(e);
         }
     }
-    
+
     public void createMailbox(String namespaceName)
             throws MailboxManagerException {
-        getLog().debug("createMailbox "+namespaceName);
+        getLog().debug("createMailbox " + namespaceName);
         final int length = namespaceName.length();
         if (length == 0) {
             getLog().warn("Ignoring mailbox with empty name");
@@ -120,12 +124,14 @@ public class TorqueMailboxManager implements MailboxManager {
                 // TODO: transaction
                 int index = namespaceName.indexOf(HIERARCHY_DELIMITER);
                 int count = 0;
-                while (index>=0) {
+                while (index >= 0) {
                     // Until explicit namespace support is added,
-                    // this workaround prevents the namespaced elements being created
+                    // this workaround prevents the namespaced elements being
+                    // created
                     // TODO: add explicit support for namespaces
                     if (index > 0 && count++ > 1) {
-                        final String mailbox = namespaceName.substring(0, index);
+                        final String mailbox = namespaceName
+                                .substring(0, index);
                         if (!existsMailbox(mailbox)) {
                             doCreate(mailbox);
                         }
@@ -151,7 +157,7 @@ public class TorqueMailboxManager implements MailboxManager {
 
     public void deleteMailbox(String mailboxName, MailboxSession session)
             throws MailboxManagerException {
-        getLog().info("deleteMailbox "+mailboxName);
+        getLog().info("deleteMailbox " + mailboxName);
         synchronized (mailboxes) {
             try {
                 // TODO put this into a serilizable transaction
@@ -160,7 +166,8 @@ public class TorqueMailboxManager implements MailboxManager {
                     throw new MailboxNotFoundException("Mailbox not found");
                 }
                 MailboxRowPeer.doDelete(mr);
-                TorqueMailbox mailbox = (TorqueMailbox) mailboxes.remove(mailboxName);
+                TorqueMailbox mailbox = (TorqueMailbox) mailboxes
+                        .remove(mailboxName);
                 if (mailbox != null) {
                     mailbox.deleted(session);
                 }
@@ -171,8 +178,8 @@ public class TorqueMailboxManager implements MailboxManager {
     }
 
     public void renameMailbox(String from, String to)
-    throws MailboxManagerException {
-        getLog().debug("renameMailbox "+from+" to "+to);
+            throws MailboxManagerException {
+        getLog().debug("renameMailbox " + from + " to " + to);
         try {
             synchronized (mailboxes) {
                 if (existsMailbox(to)) {
@@ -199,11 +206,14 @@ public class TorqueMailboxManager implements MailboxManager {
                 List l = MailboxRowPeer.doSelect(c);
                 for (Iterator iter = l.iterator(); iter.hasNext();) {
                     MailboxRow sub = (MailboxRow) iter.next();
-                    String subOrigName=sub.getName();
-                    String subNewName=to + subOrigName.substring(from.length());
+                    String subOrigName = sub.getName();
+                    String subNewName = to
+                            + subOrigName.substring(from.length());
                     sub.setName(to + sub.getName().substring(from.length()));
                     sub.save();
-                    getLog().info("renameMailbox sub-mailbox "+subOrigName+" to "+subNewName);
+                    getLog().info(
+                            "renameMailbox sub-mailbox " + subOrigName + " to "
+                                    + subNewName);
                 }
             }
         } catch (TorqueException e) {
@@ -211,13 +221,15 @@ public class TorqueMailboxManager implements MailboxManager {
         }
     }
 
-    public void copyMessages(MessageRange set, String from, String to, MailboxSession session) throws MailboxManagerException {
-        TorqueMailbox toMailbox= doGetMailbox(to, false);
+    public void copyMessages(MessageRange set, String from, String to,
+            MailboxSession session) throws MailboxManagerException {
+        TorqueMailbox toMailbox = doGetMailbox(to, false);
         TorqueMailbox fromMailbox = doGetMailbox(from, false);
         fromMailbox.copyTo(set, toMailbox, session);
     }
 
-    public ListResult[] list(final MailboxExpression mailboxExpression) throws MailboxManagerException {
+    public ListResult[] list(final MailboxExpression mailboxExpression)
+            throws MailboxManagerException {
         final char localWildcard = mailboxExpression.getLocalWildcard();
         final char freeWildcard = mailboxExpression.getFreeWildcard();
         final String base = mailboxExpression.getBase();
@@ -227,42 +239,46 @@ public class TorqueMailboxManager implements MailboxManager {
         } else {
             baseLength = base.length();
         }
-        
-        final String search = mailboxExpression.getCombinedName(HIERARCHY_DELIMITER)
-            .replace(freeWildcard, SQL_WILDCARD_CHAR).replace(localWildcard, SQL_WILDCARD_CHAR);
-       
+
+        final String search = mailboxExpression.getCombinedName(
+                HIERARCHY_DELIMITER).replace(freeWildcard, SQL_WILDCARD_CHAR)
+                .replace(localWildcard, SQL_WILDCARD_CHAR);
+
         Criteria criteria = new Criteria();
-        criteria.add(MailboxRowPeer.NAME,(Object)(search),Criteria.LIKE);
+        criteria.add(MailboxRowPeer.NAME, (Object) (search), Criteria.LIKE);
         try {
-            List mailboxRows=MailboxRowPeer.doSelect(criteria);
-            List listResults=new ArrayList(mailboxRows.size());
+            List mailboxRows = MailboxRowPeer.doSelect(criteria);
+            List listResults = new ArrayList(mailboxRows.size());
             for (Iterator iter = mailboxRows.iterator(); iter.hasNext();) {
                 final MailboxRow mailboxRow = (MailboxRow) iter.next();
                 final String name = mailboxRow.getName();
                 if (name.startsWith(base)) {
                     final String match = name.substring(baseLength);
-                    if (mailboxExpression.isExpressionMatch(match, HIERARCHY_DELIMITER)) { 
-                        listResults.add(new ListResultImpl(name,"."));
+                    if (mailboxExpression.isExpressionMatch(match,
+                            HIERARCHY_DELIMITER)) {
+                        listResults.add(new ListResultImpl(name, "."));
                     }
                 }
             }
-            final ListResult[] results = (ListResult[]) listResults.toArray(ListResult.EMPTY_ARRAY);
-            Arrays.sort(results);    
+            final ListResult[] results = (ListResult[]) listResults
+                    .toArray(ListResult.EMPTY_ARRAY);
+            Arrays.sort(results);
             return results;
         } catch (TorqueException e) {
             throw new MailboxManagerException(e);
         }
-        
+
     }
-    
+
     public void setSubscription(String mailboxName, boolean value) {
         // TODO implement subscriptions
     }
-    
-    public boolean existsMailbox(String mailboxName) throws MailboxManagerException {
-        Criteria c=new Criteria();
-        c.add(MailboxRowPeer.NAME,mailboxName);
-        CountHelper countHelper=new CountHelper();
+
+    public boolean existsMailbox(String mailboxName)
+            throws MailboxManagerException {
+        Criteria c = new Criteria();
+        c.add(MailboxRowPeer.NAME, mailboxName);
+        CountHelper countHelper = new CountHelper();
         int count;
         try {
             synchronized (mailboxes) {
@@ -286,17 +302,18 @@ public class TorqueMailboxManager implements MailboxManager {
 
     public void deleteEverything() throws MailboxManagerException {
         try {
-            MailboxRowPeer.doDelete(new Criteria().and(MailboxRowPeer.MAILBOX_ID,
-                    new Integer(-1), Criteria.GREATER_THAN));
+            MailboxRowPeer.doDelete(new Criteria().and(
+                    MailboxRowPeer.MAILBOX_ID, new Integer(-1),
+                    Criteria.GREATER_THAN));
             mailboxes.clear();
         } catch (TorqueException e) {
             throw new MailboxManagerException(e);
         }
     }
-    
+
     protected Log getLog() {
-        if (log==null) {
-            log=new SimpleLog("TorqueMailboxManager");
+        if (log == null) {
+            log = new SimpleLog("TorqueMailboxManager");
         }
         return log;
     }
@@ -307,9 +324,10 @@ public class TorqueMailboxManager implements MailboxManager {
 
     public String resolve(final String userName, String mailboxPath) {
         if (mailboxPath.charAt(0) != HIERARCHY_DELIMITER) {
-            mailboxPath = HIERARCHY_DELIMITER + mailboxPath ;
-        } 
-        final String result = USER_NAMESPACE + HIERARCHY_DELIMITER + userName + mailboxPath;
+            mailboxPath = HIERARCHY_DELIMITER + mailboxPath;
+        }
+        final String result = USER_NAMESPACE + HIERARCHY_DELIMITER + userName
+                + mailboxPath;
         return result;
     }
 
@@ -317,7 +335,8 @@ public class TorqueMailboxManager implements MailboxManager {
         return userManager.isAuthentic(userid, passwd);
     }
 
-    public void subscribe(String user, String mailbox) throws SubscriptionException {
+    public void subscribe(String user, String mailbox)
+            throws SubscriptionException {
         userManager.subscribe(user, mailbox);
     }
 
@@ -325,7 +344,8 @@ public class TorqueMailboxManager implements MailboxManager {
         return userManager.subscriptions(user);
     }
 
-    public void unsubscribe(String user, String mailbox) throws SubscriptionException {
+    public void unsubscribe(String user, String mailbox)
+            throws SubscriptionException {
         userManager.unsubscribe(user, mailbox);
     }
 

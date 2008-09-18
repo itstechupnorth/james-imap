@@ -26,7 +26,7 @@ import org.apache.james.imapserver.codec.decode.ImapRequestLineReader;
 import org.apache.james.imapserver.codec.decode.base.AbstractImapCommandParser;
 
 abstract class AbstractUidCommandParser extends AbstractImapCommandParser {
-    
+
     public AbstractUidCommandParser() {
     }
 
@@ -35,14 +35,15 @@ abstract class AbstractUidCommandParser extends AbstractImapCommandParser {
         final ImapMessage result = decode(command, request, tag, false);
         return result;
     }
-    
-    public ImapMessage decode(ImapRequestLineReader request, 
-            String tag, boolean useUids) throws ProtocolException {
+
+    public ImapMessage decode(ImapRequestLineReader request, String tag,
+            boolean useUids) throws ProtocolException {
         final ImapCommand command = getCommand();
         final ImapMessage result = decode(command, request, tag, useUids);
         return result;
     }
 
     protected abstract ImapMessage decode(ImapCommand command,
-            ImapRequestLineReader request, String tag, boolean useUids) throws ProtocolException;
+            ImapRequestLineReader request, String tag, boolean useUids)
+            throws ProtocolException;
 }

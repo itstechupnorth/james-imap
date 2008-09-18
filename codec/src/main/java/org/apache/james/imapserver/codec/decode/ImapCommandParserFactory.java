@@ -19,7 +19,6 @@
 
 package org.apache.james.imapserver.codec.decode;
 
-
 public interface ImapCommandParserFactory {
 
     public abstract ImapCommandParser getParser(String commandName);

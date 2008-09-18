@@ -23,32 +23,32 @@ import java.util.List;
 
 import org.apache.james.api.imap.ImapSessionState;
 
-
 /**
- * Encapsulates all state held for an ongoing Imap session,
- * which commences when a client first establishes a connection to the Imap
- * server, and continues until that connection is closed.
+ * Encapsulates all state held for an ongoing Imap session, which commences when
+ * a client first establishes a connection to the Imap server, and continues
+ * until that connection is closed.
+ * 
  * @version $Revision: 109034 $
  */
-public interface ImapSession
-{
+public interface ImapSession {
     /**
      * Sends any unsolicited responses to the client, such as EXISTS and FLAGS
      * responses when the selected mailbox is modified by another user.
+     * 
      * @return <code>List</code> of {@link ImapResponseMessage}'s
      */
-    List unsolicitedResponses( boolean useUid );
+    List unsolicitedResponses(boolean useUid);
 
-    List unsolicitedResponses( boolean omitExpunged, boolean useUid);
-    
+    List unsolicitedResponses(boolean omitExpunged, boolean useUid);
+
     /**
-     * Logs out the session.
-     * Marks the connection for closure;
+     * Logs out the session. Marks the connection for closure;
      */
     void logout();
 
     /**
      * Gets the current client state.
+     * 
      * @return Returns the current state of this session.
      */
     ImapSessionState getState();
@@ -59,44 +59,52 @@ public interface ImapSession
     void authenticated();
 
     /**
-     * Moves this session into {@link ImapSessionState#SELECTED} state and sets the
-     * supplied mailbox to be the currently selected mailbox.
-     * @param mailbox The selected mailbox.
-     * @param readOnly If <code>true</code>, the selection is set to be read only.
-     * @throws MailboxManagerException 
+     * Moves this session into {@link ImapSessionState#SELECTED} state and sets
+     * the supplied mailbox to be the currently selected mailbox.
+     * 
+     * @param mailbox
+     *            The selected mailbox.
+     * @param readOnly
+     *            If <code>true</code>, the selection is set to be read only.
+     * @throws MailboxManagerException
      */
-    void selected( SelectedImapMailbox mailbox );
+    void selected(SelectedImapMailbox mailbox);
 
     /**
-     * Moves the session out of {@link ImapSessionState#SELECTED} state and back into
-     * {@link ImapSessionState#AUTHENTICATED} state. The selected mailbox is cleared.
+     * Moves the session out of {@link ImapSessionState#SELECTED} state and back
+     * into {@link ImapSessionState#AUTHENTICATED} state. The selected mailbox
+     * is cleared.
      */
     void deselect();
 
     /**
-     * Provides the selected mailbox for this session, or <code>null</code> if this
-     * session is not in {@link ImapSessionState#SELECTED} state.
+     * Provides the selected mailbox for this session, or <code>null</code> if
+     * this session is not in {@link ImapSessionState#SELECTED} state.
+     * 
      * @return the currently selected mailbox.
      */
     SelectedImapMailbox getSelected();
 
     /**
-     * Gets an attribute of this session by name.
-     * Implementations should ensure that access
-     * is thread safe. 
-     * @param key name of the key, not null
-     * @return <code>Object</code> value
-     * or null if this attribute has unvalued
+     * Gets an attribute of this session by name. Implementations should ensure
+     * that access is thread safe.
+     * 
+     * @param key
+     *            name of the key, not null
+     * @return <code>Object</code> value or null if this attribute has
+     *         unvalued
      */
     public Object getAttribute(String key);
-    
+
     /**
-     * Sets an attribute of this session by name.
-     * Implementations should ensure that access
-     * is thread safe. 
-     * @param key name of the key, not null
-     * @param value <code>Object</code> value 
-     * or null to set this attribute as unvalued
+     * Sets an attribute of this session by name. Implementations should ensure
+     * that access is thread safe.
+     * 
+     * @param key
+     *            name of the key, not null
+     * @param value
+     *            <code>Object</code> value or null to set this attribute as
+     *            unvalued
      */
     public void setAttribute(String key, Object value);
 }

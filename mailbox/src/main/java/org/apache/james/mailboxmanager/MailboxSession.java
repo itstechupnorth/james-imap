@@ -26,17 +26,18 @@ public interface MailboxSession {
 
     /**
      * Gets the session ID.
+     * 
      * @return session id
      */
     public long getSessionId();
-    
+
     /**
      * Is this session open?
-     * @return true if the session is open,
-     * false otherwise
+     * 
+     * @return true if the session is open, false otherwise
      */
     public boolean isOpen();
-    
+
     /**
      * Closes this session.
      */

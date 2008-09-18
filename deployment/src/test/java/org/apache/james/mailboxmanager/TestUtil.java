@@ -38,37 +38,40 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
 public class TestUtil {
-    
-    private static Random random;
-    
 
-    public static boolean contentEquals(MimeMessage m1, MimeMessage m2, boolean verbose)
-            throws IOException, MessagingException {
+    private static Random random;
+
+    public static boolean contentEquals(MimeMessage m1, MimeMessage m2,
+            boolean verbose) throws IOException, MessagingException {
         ByteArrayOutputStream baos1 = new ByteArrayOutputStream();
         m1.writeTo(new CRLFOutputStream(baos1));
         ByteArrayOutputStream baos2 = new ByteArrayOutputStream();
         m2.writeTo(new CRLFOutputStream(baos2));
         if (verbose) {
-            byte[] b1=baos1.toByteArray();
-            byte[] b2=baos2.toByteArray();
-            int size=b1.length;
-            if (b2.length<b1.length) size=b2.length;
-            for (int i=0; i< size; i++) {
-                if (b1[i]!=b2[i]) {
-                    System.out.println("I: "+i+" B1: "+b1[i]+" B2 "+b2[i]);
-                    System.out.println("B1:"+new String(b1,0,i+1)+"\u00C2\u00B0");
-                    System.out.println("B2:"+new String(b2,0,i+1)+"\u00C2\u00B0");
+            byte[] b1 = baos1.toByteArray();
+            byte[] b2 = baos2.toByteArray();
+            int size = b1.length;
+            if (b2.length < b1.length)
+                size = b2.length;
+            for (int i = 0; i < size; i++) {
+                if (b1[i] != b2[i]) {
+                    System.out.println("I: " + i + " B1: " + b1[i] + " B2 "
+                            + b2[i]);
+                    System.out.println("B1:" + new String(b1, 0, i + 1)
+                            + "\u00C2\u00B0");
+                    System.out.println("B2:" + new String(b2, 0, i + 1)
+                            + "\u00C2\u00B0");
                     break;
                 }
             }
-            
+
         }
-        
+
         return Arrays.equals(baos1.toByteArray(), baos2.toByteArray());
     }
 
-    public static byte[] messageToByteArray(MimeMessage mm)
-            throws IOException, MessagingException {
+    public static byte[] messageToByteArray(MimeMessage mm) throws IOException,
+            MessagingException {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         mm.writeTo(new CRLFOutputStream(baos));
         return baos.toByteArray();
@@ -94,8 +97,7 @@ public class TestUtil {
         }
         return s1.equals(s2);
     }
-    
-    
+
     public static MimeMessage createMessage() throws MessagingException {
         MimeMessage mm = new MimeMessage((Session) null);
         int r = getRandom().nextInt() % 100000;
@@ -120,6 +122,5 @@ public class TestUtil {
         return random;
 
     }
-
 
 }

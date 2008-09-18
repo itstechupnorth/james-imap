@@ -32,23 +32,25 @@ public class MessageRowUtilsTest extends TestCase {
     protected void tearDown() throws Exception {
         super.tearDown();
     }
-    
-    public void testShouldReturnPositiveWhenFirstGreaterThanSecond() throws Exception {
+
+    public void testShouldReturnPositiveWhenFirstGreaterThanSecond()
+            throws Exception {
         MessageRow one = new MessageRow();
         one.setUid(100);
         MessageRow two = new MessageRow();
         two.setUid(99);
         assertTrue(MessageRowUtils.getUidComparator().compare(one, two) > 0);
     }
-    
-    public void testShouldReturnNegativeWhenFirstLessThanSecond() throws Exception {
+
+    public void testShouldReturnNegativeWhenFirstLessThanSecond()
+            throws Exception {
         MessageRow one = new MessageRow();
         one.setUid(98);
         MessageRow two = new MessageRow();
         two.setUid(99);
         assertTrue(MessageRowUtils.getUidComparator().compare(one, two) < 0);
     }
-    
+
     public void testShouldReturnZeroWhenFirstEqualsSecond() throws Exception {
         MessageRow one = new MessageRow();
         one.setUid(90);

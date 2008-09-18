@@ -27,10 +27,12 @@ import javax.mail.Flags;
 import org.apache.james.mailboxmanager.MailboxListener;
 
 public class MailboxListenerCollector implements MailboxListener {
-    
-    protected List addedList =new ArrayList();
-    protected List expungedList =new ArrayList();
-    protected List flaggedList =new ArrayList();
+
+    protected List addedList = new ArrayList();
+
+    protected List expungedList = new ArrayList();
+
+    protected List flaggedList = new ArrayList();
 
     public void added(final long uid) {
         addedList.add(new Long(uid));
@@ -43,27 +45,27 @@ public class MailboxListenerCollector implements MailboxListener {
     public void flagsUpdated(final long uid, final Flags flags) {
         flaggedList.add(new MessageFlags(uid, flags));
     }
-    
+
     public synchronized List getAddedList(boolean reset) {
-        List list=addedList;
+        List list = addedList;
         if (reset) {
-            addedList=new ArrayList();
+            addedList = new ArrayList();
         }
         return list;
     }
 
     public synchronized List getExpungedList(boolean reset) {
-        List list=expungedList;
+        List list = expungedList;
         if (reset) {
-            expungedList=new ArrayList();
+            expungedList = new ArrayList();
         }
         return list;
     }
 
     public synchronized List getFlaggedList(boolean reset) {
-        List list=flaggedList;
+        List list = flaggedList;
         if (reset) {
-            flaggedList=new ArrayList();
+            flaggedList = new ArrayList();
         }
         return list;
     }

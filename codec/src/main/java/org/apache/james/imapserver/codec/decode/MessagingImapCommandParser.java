@@ -25,9 +25,11 @@ public interface MessagingImapCommandParser {
 
     public abstract Imap4Rev1MessageFactory getMessageFactory();
 
-    public abstract void setMessageFactory(Imap4Rev1MessageFactory messageFactory);
+    public abstract void setMessageFactory(
+            Imap4Rev1MessageFactory messageFactory);
 
     public abstract StatusResponseFactory getStatusResponseFactory();
-    
-    public abstract void setStatusResponseFactory(StatusResponseFactory statusResponseFactory) ;
+
+    public abstract void setStatusResponseFactory(
+            StatusResponseFactory statusResponseFactory);
 }

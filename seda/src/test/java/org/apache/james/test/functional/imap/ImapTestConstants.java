@@ -17,20 +17,22 @@
  * under the License.                                           *
  ****************************************************************/
 
-
 package org.apache.james.test.functional.imap;
 
 /**
  * Some constants to use when running Imap tests.
  */
-public interface ImapTestConstants
-{
+public interface ImapTestConstants {
     int PORT = 143;
+
     String HOST = "localhost";
 
     String USER = "imapuser";
+
     String PASSWORD = "password";
+
     String FROM_ADDRESS = "sender@localhost";
+
     String TO_ADDRESS = USER + "@" + HOST;
 
     int TIMEOUT = 10000;

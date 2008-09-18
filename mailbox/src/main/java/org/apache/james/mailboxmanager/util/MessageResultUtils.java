@@ -34,7 +34,9 @@ public class MessageResultUtils {
 
     /**
      * Gets all header lines.
-     * @param iterator {@link MessageResult.Header} <code>Iterator</code>
+     * 
+     * @param iterator
+     *            {@link MessageResult.Header} <code>Iterator</code>
      * @return <code>List</code> of <code>MessageResult.Header<code>'s,
      * in their natural order
      * 
@@ -43,31 +45,36 @@ public class MessageResultUtils {
     public static List getAll(final Iterator iterator) {
         final List results = new ArrayList();
         if (iterator != null) {
-        	while(iterator.hasNext()) {
-        		results.add(iterator.next());
-        	}
+            while (iterator.hasNext()) {
+                results.add(iterator.next());
+            }
         }
         return results;
     }
-    
+
     /**
-     * Gets header lines whose header names matches (ignoring case)
-     * any of those given.
-     * @param names header names to be matched, not null
-     * @param iterator {@link MessageResult.Header} <code>Iterator</code>
-     * @return <code>List</code> of <code>MessageResult.Header</code>'s,
-     * in their natural order
+     * Gets header lines whose header names matches (ignoring case) any of those
+     * given.
+     * 
+     * @param names
+     *            header names to be matched, not null
+     * @param iterator
+     *            {@link MessageResult.Header} <code>Iterator</code>
+     * @return <code>List</code> of <code>MessageResult.Header</code>'s, in
+     *         their natural order
      * @throws MessagingException
      */
-    public static List getMatching(final String[] names, final Iterator iterator) throws MessagingException {
+    public static List getMatching(final String[] names, final Iterator iterator)
+            throws MessagingException {
         final List results = new ArrayList(20);
         if (iterator != null) {
-            while(iterator.hasNext()) {
-                MessageResult.Header header = (MessageResult.Header) iterator.next();
+            while (iterator.hasNext()) {
+                MessageResult.Header header = (MessageResult.Header) iterator
+                        .next();
                 final String headerName = header.getName();
                 if (headerName != null) {
                     final int length = names.length;
-                    for (int i=0;i<length;i++) {
+                    for (int i = 0; i < length; i++) {
                         final String name = names[i];
                         if (headerName.equalsIgnoreCase(name)) {
                             results.add(header);
@@ -79,26 +86,33 @@ public class MessageResultUtils {
         }
         return results;
     }
-    
+
     /**
-     * Gets header lines whose header names matches (ignoring case)
-     * any of those given.
-     * @param names header names to be matched, not null
-     * @param iterator {@link MessageResult.Header} <code>Iterator</code>
-     * @return <code>List</code> of <code>MessageResult.Header</code>'s,
-     * in their natural order
+     * Gets header lines whose header names matches (ignoring case) any of those
+     * given.
+     * 
+     * @param names
+     *            header names to be matched, not null
+     * @param iterator
+     *            {@link MessageResult.Header} <code>Iterator</code>
+     * @return <code>List</code> of <code>MessageResult.Header</code>'s, in
+     *         their natural order
      * @throws MessagingException
      */
-    public static List getMatching(final Collection names, final Iterator iterator) throws MessagingException {
+    public static List getMatching(final Collection names,
+            final Iterator iterator) throws MessagingException {
         final List result = matching(names, iterator, false);
         return result;
     }
 
-    private static List matching(final Collection names, final Iterator iterator, boolean not) throws MailboxManagerException {
+    private static List matching(final Collection names,
+            final Iterator iterator, boolean not)
+            throws MailboxManagerException {
         final List results = new ArrayList(names.size());
         if (iterator != null) {
-            while(iterator.hasNext()) {
-                final MessageResult.Header header = (MessageResult.Header) iterator.next();
+            while (iterator.hasNext()) {
+                final MessageResult.Header header = (MessageResult.Header) iterator
+                        .next();
                 final boolean match = contains(names, header);
                 final boolean add = (not && !match) || (!not && match);
                 if (add) {
@@ -109,7 +123,8 @@ public class MessageResultUtils {
         return results;
     }
 
-    private static boolean contains(final Collection names, MessageResult.Header header) throws MailboxManagerException {
+    private static boolean contains(final Collection names,
+            MessageResult.Header header) throws MailboxManagerException {
         boolean match = false;
         final String headerName = header.getName();
         if (headerName != null) {
@@ -123,36 +138,44 @@ public class MessageResultUtils {
         }
         return match;
     }
-    
+
     /**
-     * Gets header lines whose header names matches (ignoring case)
-     * any of those given.
-     * @param names header names to be matched, not null
-     * @param iterator {@link MessageResult.Header} <code>Iterator</code>
-     * @return <code>List</code> of <code>MessageResult.Header</code>'s,
-     * in their natural order
+     * Gets header lines whose header names matches (ignoring case) any of those
+     * given.
+     * 
+     * @param names
+     *            header names to be matched, not null
+     * @param iterator
+     *            {@link MessageResult.Header} <code>Iterator</code>
+     * @return <code>List</code> of <code>MessageResult.Header</code>'s, in
+     *         their natural order
      * @throws MessagingException
      */
-    public static List getNotMatching(final Collection names, final Iterator iterator) throws MessagingException {
+    public static List getNotMatching(final Collection names,
+            final Iterator iterator) throws MessagingException {
         final List result = matching(names, iterator, true);
         return result;
     }
-    
+
     /**
-     * Gets a header matching the given name.
-     * The matching is case-insensitive.
-     * @param name name to be matched, not null
-     * @param iterator <code>Iterator</code> of <code>MessageResult.Header</code>'s,
-     * not null
-     * @return <code>MessageResult.Header</code>, 
-     * or null if the header does not exist
-     * @throws MessagingException 
+     * Gets a header matching the given name. The matching is case-insensitive.
+     * 
+     * @param name
+     *            name to be matched, not null
+     * @param iterator
+     *            <code>Iterator</code> of <code>MessageResult.Header</code>'s,
+     *            not null
+     * @return <code>MessageResult.Header</code>, or null if the header does
+     *         not exist
+     * @throws MessagingException
      */
-    public static MessageResult.Header getMatching(final String name, final Iterator iterator) throws MessagingException {
+    public static MessageResult.Header getMatching(final String name,
+            final Iterator iterator) throws MessagingException {
         MessageResult.Header result = null;
         if (name != null) {
-            while(iterator.hasNext()) {
-                MessageResult.Header header = (MessageResult.Header) iterator.next();
+            while (iterator.hasNext()) {
+                MessageResult.Header header = (MessageResult.Header) iterator
+                        .next();
                 final String headerName = header.getName();
                 if (name.equalsIgnoreCase(headerName)) {
                     result = header;
@@ -164,24 +187,28 @@ public class MessageResultUtils {
     }
 
     /**
-     * Gets header lines whose header name fails to match (ignoring case)
-     * all of the given names.
-     * @param names header names, not null
-     * @param iterator {@link MessageResult.Header} <code>Iterator</code>
-     * @return <code>List</code> of <code>@MessageResult.Header</code>'s,
-     * in their natural order
+     * Gets header lines whose header name fails to match (ignoring case) all of
+     * the given names.
+     * 
+     * @param names
+     *            header names, not null
+     * @param iterator
+     *            {@link MessageResult.Header} <code>Iterator</code>
+     * @return <code>List</code> of <code>@MessageResult.Header</code>'s, in their natural order
      * @throws MessagingException
      */
-    public static List getNotMatching(final String[] names, final Iterator iterator) throws MessagingException {
+    public static List getNotMatching(final String[] names,
+            final Iterator iterator) throws MessagingException {
         final List results = new ArrayList(20);
         if (iterator != null) {
-            while(iterator.hasNext()) {
-                MessageResult.Header header = (MessageResult.Header) iterator.next();
+            while (iterator.hasNext()) {
+                MessageResult.Header header = (MessageResult.Header) iterator
+                        .next();
                 final String headerName = header.getName();
                 if (headerName != null) {
                     final int length = names.length;
                     boolean match = false;
-                    for (int i=0;i<length;i++) {
+                    for (int i = 0; i < length; i++) {
                         final String name = names[i];
                         if (headerName.equalsIgnoreCase(name)) {
                             match = true;
@@ -196,16 +223,20 @@ public class MessageResultUtils {
         }
         return results;
     }
-    
+
     /**
      * Is the given datum included in these results?
-     * @param message <code>MessageResult</code>, possibly null
-     * @param datum {@link MessageResult} datum constant
-     * @return true if <code>MessageResult</code> includes 
-     * the given datum, false if <code>MessageResult</code> is null
-     * or does not contain this datum
+     * 
+     * @param message
+     *            <code>MessageResult</code>, possibly null
+     * @param datum
+     *            {@link MessageResult} datum constant
+     * @return true if <code>MessageResult</code> includes the given datum,
+     *         false if <code>MessageResult</code> is null or does not contain
+     *         this datum
      */
-    public static boolean isIncluded(final MessageResult message, final int datum) {
+    public static boolean isIncluded(final MessageResult message,
+            final int datum) {
         final boolean result;
         if (message == null) {
             result = false;
@@ -217,73 +248,82 @@ public class MessageResultUtils {
         }
         return result;
     }
-    
+
     /**
      * Is {@link FetchGroup#BODY_CONTENT} included in these results?
-     * @param message <code>MessageResult</code>, possibly null
-     * @return true if <code>MessageResult</code> includes 
-     * BODY_CONTENT, false if <code>MessageResult</code> is null
-     * or does not contain BODY_CONTENT
+     * 
+     * @param message
+     *            <code>MessageResult</code>, possibly null
+     * @return true if <code>MessageResult</code> includes BODY_CONTENT, false
+     *         if <code>MessageResult</code> is null or does not contain
+     *         BODY_CONTENT
      * @see #isIncluded(MessageResult, int)
      */
     public static boolean isBodyContentIncluded(final MessageResult message) {
         return isIncluded(message, FetchGroup.BODY_CONTENT);
     }
-    
+
     /**
      * Is {@link FetchGroup#FLAGS} included in these results?
-     * @param message <code>MessageResult</code>, possibly null
-     * @return true if <code>MessageResult</code> includes 
-     * FLAGS, false if <code>MessageResult</code> is null
-     * or does not contain FLAGS
+     * 
+     * @param message
+     *            <code>MessageResult</code>, possibly null
+     * @return true if <code>MessageResult</code> includes FLAGS, false if
+     *         <code>MessageResult</code> is null or does not contain FLAGS
      * @see #isIncluded(MessageResult, int)
      */
     public static boolean isFlagsIncluded(final MessageResult message) {
         return isIncluded(message, FetchGroup.FLAGS);
     }
-    
+
     /**
      * Is {@link FetchGroup#FULL_CONTENT} included in these results?
-     * @param message <code>MessageResult</code>, possibly null
-     * @return true if <code>MessageResult</code> includes 
-     * FULL_CONTENT, false if <code>MessageResult</code> is null
-     * or does not contain FULL_CONTENT
+     * 
+     * @param message
+     *            <code>MessageResult</code>, possibly null
+     * @return true if <code>MessageResult</code> includes FULL_CONTENT, false
+     *         if <code>MessageResult</code> is null or does not contain
+     *         FULL_CONTENT
      * @see #isIncluded(MessageResult, int)
      */
     public static boolean isFullContentIncluded(final MessageResult message) {
         return isIncluded(message, FetchGroup.FULL_CONTENT);
     }
-    
+
     /**
      * Is {@link FetchGroup#HEADERS} included in these results?
-     * @param message <code>MessageResult</code>, possibly null
-     * @return true if <code>MessageResult</code> includes 
-     * HEADERS, false if <code>MessageResult</code> is null
-     * or does not contain HEADERS
+     * 
+     * @param message
+     *            <code>MessageResult</code>, possibly null
+     * @return true if <code>MessageResult</code> includes HEADERS, false if
+     *         <code>MessageResult</code> is null or does not contain HEADERS
      * @see #isIncluded(MessageResult, int)
      */
     public static boolean isHeadersIncluded(final MessageResult message) {
         return isIncluded(message, FetchGroup.HEADERS);
     }
-    
+
     /**
      * Is {@link FetchGroup#INTERNAL_DATE} included in these results?
-     * @param message <code>MessageResult</code>, possibly null
-     * @return true if <code>MessageResult</code> includes 
-     * INTERNAL_DATE, false if <code>MessageResult</code> is null
-     * or does not contain INTERNAL_DATE
+     * 
+     * @param message
+     *            <code>MessageResult</code>, possibly null
+     * @return true if <code>MessageResult</code> includes INTERNAL_DATE,
+     *         false if <code>MessageResult</code> is null or does not contain
+     *         INTERNAL_DATE
      * @see #isIncluded(MessageResult, int)
      */
     public static boolean isInternalDateIncluded(final MessageResult message) {
         return isIncluded(message, FetchGroup.INTERNAL_DATE);
     }
-    
+
     /**
      * Is {@link FetchGroup#SIZE} included in these results?
-     * @param message <code>MessageResult</code>, possibly null
-     * @return true if <code>MessageResult</code> includes 
-     * SIZE, false if <code>MessageResult</code> is null
-     * or does not contain SIZE
+     * 
+     * @param message
+     *            <code>MessageResult</code>, possibly null
+     * @return true if <code>MessageResult</code> includes SIZE, false if
+     *         <code>MessageResult</code> is null or does not contain SIZE
      * @see #isIncluded(MessageResult, int)
      */
     public static boolean isSizeIncluded(final MessageResult message) {

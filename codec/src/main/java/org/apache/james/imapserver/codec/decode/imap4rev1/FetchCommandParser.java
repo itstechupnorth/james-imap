@@ -32,52 +32,49 @@ import org.apache.james.imapserver.codec.decode.FetchPartPathDecoder;
 import org.apache.james.imapserver.codec.decode.ImapRequestLineReader;
 import org.apache.james.imapserver.codec.decode.InitialisableCommandFactory;
 
-class FetchCommandParser extends AbstractUidCommandParser  implements InitialisableCommandFactory
-{
+class FetchCommandParser extends AbstractUidCommandParser implements
+        InitialisableCommandFactory {
     public FetchCommandParser() {
     }
 
     /**
      * @see org.apache.james.imapserver.codec.decode.InitialisableCommandFactory#init(org.apache.james.api.imap.imap4rev1.Imap4Rev1CommandFactory)
      */
-    public void init(Imap4Rev1CommandFactory factory)
-    {
+    public void init(Imap4Rev1CommandFactory factory) {
         final ImapCommand command = factory.getFetch();
         setCommand(command);
     }
 
-    public FetchData fetchRequest( ImapRequestLineReader request )
-    throws ProtocolException
-    {
+    public FetchData fetchRequest(ImapRequestLineReader request)
+            throws ProtocolException {
         FetchData fetch = new FetchData();
 
-        char next = nextNonSpaceChar( request );
+        char next = nextNonSpaceChar(request);
         if (request.nextChar() == '(') {
-            consumeChar( request, '(' );
+            consumeChar(request, '(');
 
-            next = nextNonSpaceChar( request );
-            while ( next != ')' ) {
-                addNextElement( request, fetch );
-                next = nextNonSpaceChar( request );
+            next = nextNonSpaceChar(request);
+            while (next != ')') {
+                addNextElement(request, fetch);
+                next = nextNonSpaceChar(request);
             }
             consumeChar(request, ')');
         } else {
-            addNextElement( request, fetch );
+            addNextElement(request, fetch);
 
         }
 
         return fetch;
     }
 
-    private void addNextElement( ImapRequestLineReader reader, FetchData fetch)
-    throws ProtocolException
-    {   
-        //String name = element.toString();
+    private void addNextElement(ImapRequestLineReader reader, FetchData fetch)
+            throws ProtocolException {
+        // String name = element.toString();
         String name = readWord(reader, " [)\r\n");
         char next = reader.nextChar();
         // Simple elements with no '[]' parameters.
         if (next != '[') {
-            if ( "FAST".equalsIgnoreCase( name ) ) {
+            if ("FAST".equalsIgnoreCase(name)) {
                 fetch.setFlags(true);
                 fetch.setInternalDate(true);
                 fetch.setSize(true);
@@ -113,19 +110,18 @@ class FetchCommandParser extends AbstractUidCommandParser  implements Initialisa
             } else if ("RFC822.TEXT".equalsIgnoreCase(name)) {
                 fetch.add(BodyFetchElement.createRFC822Text(), false);
             } else {
-                throw new ProtocolException( "Invalid fetch attribute: " + name );
+                throw new ProtocolException("Invalid fetch attribute: " + name);
             }
-        }
-        else {
-            consumeChar( reader, '[' );
+        } else {
+            consumeChar(reader, '[');
 
             String parameter = readWord(reader, "]");
 
-            consumeChar( reader, ']');
+            consumeChar(reader, ']');
 
             final Long firstOctet;
             final Long numberOfOctets;
-            if(reader.nextChar() == '<') {
+            if (reader.nextChar() == '<') {
                 consumeChar(reader, '<');
                 firstOctet = new Long(number(reader));
                 if (reader.nextChar() == '.') {
@@ -139,10 +135,9 @@ class FetchCommandParser extends AbstractUidCommandParser  implements Initialisa
                 firstOctet = null;
                 numberOfOctets = null;
             }
-            
-            
-            final BodyFetchElement bodyFetchElement 
-                = createBodyElement(parameter, firstOctet, numberOfOctets);
+
+            final BodyFetchElement bodyFetchElement = createBodyElement(
+                    parameter, firstOctet, numberOfOctets);
             final boolean isPeek = isPeek(name);
             fetch.add(bodyFetchElement, isPeek);
         }
@@ -150,17 +145,19 @@ class FetchCommandParser extends AbstractUidCommandParser  implements Initialisa
 
     private boolean isPeek(String name) throws ProtocolException {
         final boolean isPeek;
-        if ( "BODY".equalsIgnoreCase( name ) ) {
+        if ("BODY".equalsIgnoreCase(name)) {
             isPeek = false;
-        } else if ( "BODY.PEEK".equalsIgnoreCase( name ) ) {
+        } else if ("BODY.PEEK".equalsIgnoreCase(name)) {
             isPeek = true;
         } else {
-            throw new ProtocolException( "Invalid fetch attibute: " + name + "[]" );
+            throw new ProtocolException("Invalid fetch attibute: " + name
+                    + "[]");
         }
         return isPeek;
     }
 
-    private BodyFetchElement createBodyElement(String parameter, Long firstOctet, Long numberOfOctets) throws ProtocolException {
+    private BodyFetchElement createBodyElement(String parameter,
+            Long firstOctet, Long numberOfOctets) throws ProtocolException {
         final String responseName = "BODY[" + parameter + "]";
         FetchPartPathDecoder decoder = new FetchPartPathDecoder();
         decoder.decode(parameter);
@@ -168,11 +165,14 @@ class FetchCommandParser extends AbstractUidCommandParser  implements Initialisa
 
         final List names = decoder.getNames();
         final int[] path = decoder.getPath();
-        final BodyFetchElement bodyFetchElement = new BodyFetchElement(responseName, sectionType, path, names, firstOctet, numberOfOctets);
+        final BodyFetchElement bodyFetchElement = new BodyFetchElement(
+                responseName, sectionType, path, names, firstOctet,
+                numberOfOctets);
         return bodyFetchElement;
     }
 
-    private int getSectionType(FetchPartPathDecoder decoder) throws ProtocolException {
+    private int getSectionType(FetchPartPathDecoder decoder)
+            throws ProtocolException {
         final int specifier = decoder.getSpecifier();
         final int sectionType;
         switch (specifier) {
@@ -187,7 +187,7 @@ class FetchCommandParser extends AbstractUidCommandParser  implements Initialisa
                 break;
             case FetchPartPathDecoder.HEADER_NOT_FIELDS:
                 sectionType = BodyFetchElement.HEADER_NOT_FIELDS;
-                break;    
+                break;
             case FetchPartPathDecoder.MIME:
                 sectionType = BodyFetchElement.MIME;
                 break;
@@ -200,10 +200,11 @@ class FetchCommandParser extends AbstractUidCommandParser  implements Initialisa
         return sectionType;
     }
 
-    private String readWord(ImapRequestLineReader request, String terminator) throws ProtocolException {
+    private String readWord(ImapRequestLineReader request, String terminator)
+            throws ProtocolException {
         StringBuffer buf = new StringBuffer();
-        char next = request.nextChar(); 
-        while(terminator.indexOf(next)==-1) {
+        char next = request.nextChar();
+        while (terminator.indexOf(next) == -1) {
             buf.append(next);
             request.consume();
             next = request.nextChar();
@@ -211,25 +212,26 @@ class FetchCommandParser extends AbstractUidCommandParser  implements Initialisa
         return buf.toString();
     }
 
-    private char nextNonSpaceChar( ImapRequestLineReader request )
-    throws ProtocolException
-    {
+    private char nextNonSpaceChar(ImapRequestLineReader request)
+            throws ProtocolException {
         char next = request.nextChar();
-        while ( next == ' ' ) {
+        while (next == ' ') {
             request.consume();
             next = request.nextChar();
         }
         return next;
     }
 
-    protected ImapMessage decode(ImapCommand command, ImapRequestLineReader request, 
-            String tag, boolean useUids) throws ProtocolException {
-        IdRange[] idSet = parseIdRange( request );
-        FetchData fetch = fetchRequest( request );
-        endLine( request );
+    protected ImapMessage decode(ImapCommand command,
+            ImapRequestLineReader request, String tag, boolean useUids)
+            throws ProtocolException {
+        IdRange[] idSet = parseIdRange(request);
+        FetchData fetch = fetchRequest(request);
+        endLine(request);
 
         final Imap4Rev1MessageFactory factory = getMessageFactory();
-        final ImapMessage result  = factory.createFetchMessage(command, useUids, idSet, fetch, tag);
+        final ImapMessage result = factory.createFetchMessage(command, useUids,
+                idSet, fetch, tag);
         return result;
     }
 

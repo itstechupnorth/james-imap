@@ -27,25 +27,26 @@ import org.apache.james.imapserver.codec.decode.ImapRequestLineReader;
 import org.apache.james.imapserver.codec.decode.InitialisableCommandFactory;
 import org.apache.james.imapserver.codec.decode.base.AbstractImapCommandParser;
 
-class ExpungeCommandParser extends AbstractImapCommandParser  implements InitialisableCommandFactory {
+class ExpungeCommandParser extends AbstractImapCommandParser implements
+        InitialisableCommandFactory {
 
     public ExpungeCommandParser() {
     }
-    
+
     /**
      * @see org.apache.james.imapserver.codec.decode.InitialisableCommandFactory#init(org.apache.james.api.imap.imap4rev1.Imap4Rev1CommandFactory)
      */
-    public void init(Imap4Rev1CommandFactory factory)
-    {
+    public void init(Imap4Rev1CommandFactory factory) {
         final ImapCommand command = factory.getExpunge();
         setCommand(command);
     }
 
-    protected ImapMessage decode(ImapCommand command, ImapRequestLineReader request, String tag) throws ProtocolException {
-        endLine( request );
+    protected ImapMessage decode(ImapCommand command,
+            ImapRequestLineReader request, String tag) throws ProtocolException {
+        endLine(request);
         final Imap4Rev1MessageFactory factory = getMessageFactory();
         final ImapMessage result = factory.createExpungeMessage(command, tag);
         return result;
     }
-    
+
 }

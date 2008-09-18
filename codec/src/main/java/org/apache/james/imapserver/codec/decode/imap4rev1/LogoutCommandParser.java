@@ -26,7 +26,8 @@ import org.apache.james.imapserver.codec.decode.ImapRequestLineReader;
 import org.apache.james.imapserver.codec.decode.InitialisableCommandFactory;
 import org.apache.james.imapserver.codec.decode.base.AbstractImapCommandParser;
 
-class LogoutCommandParser extends AbstractImapCommandParser  implements InitialisableCommandFactory {
+class LogoutCommandParser extends AbstractImapCommandParser implements
+        InitialisableCommandFactory {
 
     public LogoutCommandParser() {
     }
@@ -34,16 +35,17 @@ class LogoutCommandParser extends AbstractImapCommandParser  implements Initiali
     /**
      * @see org.apache.james.imapserver.codec.decode.InitialisableCommandFactory#init(org.apache.james.api.imap.imap4rev1.Imap4Rev1CommandFactory)
      */
-    public void init(Imap4Rev1CommandFactory factory)
-    {
+    public void init(Imap4Rev1CommandFactory factory) {
         final ImapCommand command = factory.getLogout();
         setCommand(command);
     }
-    
-    protected ImapMessage decode(ImapCommand command, ImapRequestLineReader request, String tag) throws ProtocolException {
-        endLine( request );
-        final ImapMessage result = getMessageFactory().createLogoutMessage(command, tag);
+
+    protected ImapMessage decode(ImapCommand command,
+            ImapRequestLineReader request, String tag) throws ProtocolException {
+        endLine(request);
+        final ImapMessage result = getMessageFactory().createLogoutMessage(
+                command, tag);
         return result;
     }
-    
+
 }

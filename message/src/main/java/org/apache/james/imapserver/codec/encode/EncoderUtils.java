@@ -32,14 +32,15 @@ public class EncoderUtils {
 
     /**
      * Encodes a date in IMAP <code>date-time</code> format.
-     * @param date <code>Date</code>, not null
+     * 
+     * @param date
+     *            <code>Date</code>, not null
      * @return encoded IMAP <code>date-time</code>, not null
      */
     public static String encodeDateTime(final Date date) {
-        final FastDateFormat format 
-            = FastDateFormat.getInstance("dd-MMM-yyyy HH:mm:ss Z", 
-                    TimeZone.getTimeZone("GMT"), 
-                    Locale.US);
+        final FastDateFormat format = FastDateFormat.getInstance(
+                "dd-MMM-yyyy HH:mm:ss Z", TimeZone.getTimeZone("GMT"),
+                Locale.US);
         final String result = format.format(date);
         return result;
     }

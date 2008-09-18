@@ -30,19 +30,22 @@ import org.apache.james.api.imap.message.response.ImapResponseMessage;
 /**
  * @deprecated responses should correspond to specification
  */
-abstract public class AbstractImapResponse extends AbstractLogEnabled implements ImapResponseMessage {
+abstract public class AbstractImapResponse extends AbstractLogEnabled implements
+        ImapResponseMessage {
 
     private final ImapCommand command;
+
     private final String tag;
+
     private final List unsolicatedResponses;
-    
+
     public AbstractImapResponse(final ImapCommand command, final String tag) {
         super();
         this.command = command;
         this.tag = tag;
         unsolicatedResponses = new ArrayList();
     }
-    
+
     public final String getTag() {
         return tag;
     }
@@ -50,15 +53,15 @@ abstract public class AbstractImapResponse extends AbstractLogEnabled implements
     public ImapCommand getCommand() {
         return command;
     }
-    
+
     public void addUnsolicitedResponses(List responses) {
         unsolicatedResponses.addAll(responses);
     }
-    
+
     public void addUnsolicitedResponses(ImapResponseMessage response) {
         unsolicatedResponses.add(response);
     }
-    
+
     public List getUnsolicatedResponses() {
         return Collections.unmodifiableList(unsolicatedResponses);
     }

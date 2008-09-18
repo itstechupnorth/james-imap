@@ -42,7 +42,8 @@ import org.apache.james.mailboxmanager.manager.MailboxManagerProvider;
 public class CopyProcessor extends AbstractMailboxAwareProcessor {
 
     public CopyProcessor(final ImapProcessor next,
-            final MailboxManagerProvider mailboxManagerProvider, final StatusResponseFactory factory) {
+            final MailboxManagerProvider mailboxManagerProvider,
+            final StatusResponseFactory factory) {
         super(next, mailboxManagerProvider, factory);
     }
 
@@ -50,21 +51,22 @@ public class CopyProcessor extends AbstractMailboxAwareProcessor {
         return (message instanceof CopyRequest);
     }
 
-    protected void doProcess(ImapRequest message,
-            ImapSession session, String tag, ImapCommand command, Responder responder) {
+    protected void doProcess(ImapRequest message, ImapSession session,
+            String tag, ImapCommand command, Responder responder) {
         final CopyRequest request = (CopyRequest) message;
         final String mailboxName = request.getMailboxName();
         final IdRange[] idSet = request.getIdSet();
         final boolean useUids = request.isUseUids();
-        Mailbox currentMailbox = ImapSessionUtils
-                .getMailbox(session);
+        Mailbox currentMailbox = ImapSessionUtils.getMailbox(session);
         try {
             String fullMailboxName = buildFullName(session, mailboxName);
             final MailboxManager mailboxManager = getMailboxManager(session);
-            final boolean mailboxExists = mailboxManager.existsMailbox(fullMailboxName);
+            final boolean mailboxExists = mailboxManager
+                    .existsMailbox(fullMailboxName);
             if (!mailboxExists) {
-                no(command, tag, responder, 
-                        HumanReadableTextKey.FAILURE_NO_SUCH_MAILBOX, ResponseCode.tryCreate());
+                no(command, tag, responder,
+                        HumanReadableTextKey.FAILURE_NO_SUCH_MAILBOX,
+                        ResponseCode.tryCreate());
             } else {
                 for (int i = 0; i < idSet.length; i++) {
                     final long highVal;
@@ -73,13 +75,17 @@ public class CopyProcessor extends AbstractMailboxAwareProcessor {
                         highVal = idSet[i].getHighVal();
                         lowVal = idSet[i].getLowVal();
                     } else {
-                        highVal = session.getSelected().uid((int)idSet[i].getHighVal());
-                        lowVal = session.getSelected().uid((int)idSet[i].getLowVal());
+                        highVal = session.getSelected().uid(
+                                (int) idSet[i].getHighVal());
+                        lowVal = session.getSelected().uid(
+                                (int) idSet[i].getLowVal());
                     }
-                    MessageRange messageSet = MessageRangeImpl.uidRange(lowVal, highVal);
-                    final MailboxSession mailboxSession = ImapSessionUtils.getMailboxSession(session);
-                    mailboxManager.copyMessages(messageSet, currentMailbox.getName(), 
-                            fullMailboxName, mailboxSession);
+                    MessageRange messageSet = MessageRangeImpl.uidRange(lowVal,
+                            highVal);
+                    final MailboxSession mailboxSession = ImapSessionUtils
+                            .getMailboxSession(session);
+                    mailboxManager.copyMessages(messageSet, currentMailbox
+                            .getName(), fullMailboxName, mailboxSession);
                 }
                 unsolicitedResponses(session, responder, useUids);
                 okComplete(command, tag, responder);

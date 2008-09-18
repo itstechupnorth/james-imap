@@ -30,30 +30,34 @@ import junit.framework.TestCase;
 
 public class MessageResultUtilsTest extends TestCase {
 
-    private static final String[] NAMES = {"One", "Three"};
-    
+    private static final String[] NAMES = { "One", "Three" };
+
     Header headerOne;
+
     Header headerTwo;
+
     Header headerThree;
+
     List headers;
-    
+
     private static class Header implements MessageResult.Header {
 
         public String name;
+
         public String value;
-        
+
         public Header(String name) {
             this.name = name;
             value = "Value";
         }
-        
+
         public long size() {
             return 0;
         }
 
         public void writeTo(StringBuffer buffer) {
         }
-        
+
         public String getName() {
             return name;
         }
@@ -63,11 +67,11 @@ public class MessageResultUtilsTest extends TestCase {
         }
 
         public void writeTo(WritableByteChannel channel) throws IOException {
-            
+
         }
-        
+
     }
-    
+
     protected void setUp() throws Exception {
         super.setUp();
         headerOne = new Header("One");
@@ -92,24 +96,29 @@ public class MessageResultUtilsTest extends TestCase {
     }
 
     public void testGetMatching() throws Exception {
-        
-        List results = MessageResultUtils.getMatching(NAMES, headers.iterator());
+
+        List results = MessageResultUtils
+                .getMatching(NAMES, headers.iterator());
         assertEquals(2, results.size());
         assertEquals(headerOne, results.get(0));
         assertEquals(headerThree, results.get(1));
     }
 
     public void testGetNotMatching() throws Exception {
-        
-        List results = MessageResultUtils.getNotMatching(NAMES, headers.iterator());
+
+        List results = MessageResultUtils.getNotMatching(NAMES, headers
+                .iterator());
         assertEquals(1, results.size());
         assertEquals(headerTwo, results.get(0));
     }
 
     public void testGetMatchingSingle() throws Exception {
-        assertEquals(headerOne, MessageResultUtils.getMatching("One", headers.iterator()));
-        assertEquals(headerThree, MessageResultUtils.getMatching("Three", headers.iterator()));
-        assertNull(MessageResultUtils.getMatching("Missing", headers.iterator()));
+        assertEquals(headerOne, MessageResultUtils.getMatching("One", headers
+                .iterator()));
+        assertEquals(headerThree, MessageResultUtils.getMatching("Three",
+                headers.iterator()));
+        assertNull(MessageResultUtils
+                .getMatching("Missing", headers.iterator()));
     }
 
 }

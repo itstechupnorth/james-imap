@@ -24,17 +24,20 @@ import java.nio.ByteBuffer;
 import java.nio.channels.WritableByteChannel;
 
 /**
- * Filters a {@link WritableByteChannel} 
- * to supply a limited byte range
+ * Filters a {@link WritableByteChannel} to supply a limited byte range
  */
 class PartialWritableByteChannel implements WritableByteChannel {
 
     private final WritableByteChannel delegate;
+
     private final long firstOctet;
+
     private final long numberOfOctets;
+
     private long bytesWritten;
-    
-    public PartialWritableByteChannel(final WritableByteChannel delegate, final long firstOctet, final long numberOfOctets) {
+
+    public PartialWritableByteChannel(final WritableByteChannel delegate,
+            final long firstOctet, final long numberOfOctets) {
         super();
         this.delegate = delegate;
         this.firstOctet = firstOctet;
@@ -52,22 +55,25 @@ class PartialWritableByteChannel implements WritableByteChannel {
             } else {
                 final int remainingBytesToIgnore = (int) bytesToIgnore;
                 src.position(src.position() + remainingBytesToIgnore);
-                result = writeRemaining(src, numberOfOctets) + remainingBytesToIgnore;
+                result = writeRemaining(src, numberOfOctets)
+                        + remainingBytesToIgnore;
             }
         } else {
-            final long bytesToWrite = numberOfOctets - bytesWritten + firstOctet;
+            final long bytesToWrite = numberOfOctets - bytesWritten
+                    + firstOctet;
             result = writeRemaining(src, bytesToWrite);
         }
         bytesWritten += result;
         return result;
     }
 
-    private int writeRemaining(ByteBuffer src, final long bytesToWrite) throws IOException {
+    private int writeRemaining(ByteBuffer src, final long bytesToWrite)
+            throws IOException {
         final int remaining = src.remaining();
         final int result;
         if (bytesToWrite <= 0) {
             result = ignoreRemaining(src);
-        } else if (remaining < bytesToWrite ) {
+        } else if (remaining < bytesToWrite) {
             result = delegate.write(src);
         } else {
             final ByteBuffer slice = src.asReadOnlyBuffer();

@@ -21,48 +21,49 @@ package org.apache.james.test.functional.imap;
 
 import java.util.Locale;
 
-public abstract class AbstractTestPartialFetch extends AbstractTestSelectedStateBase {
+public abstract class AbstractTestPartialFetch extends
+        AbstractTestSelectedStateBase {
 
     public AbstractTestPartialFetch(HostSystem system) {
         super(system);
     }
-    
+
     public void testBodyPartialFetchUS() throws Exception {
         scriptTest("BodyPartialFetch", Locale.US);
     }
-    
+
     public void testBodyPartialFetchIT() throws Exception {
         scriptTest("BodyPartialFetch", Locale.ITALY);
     }
-    
+
     public void testBodyPartialFetchKO() throws Exception {
         scriptTest("BodyPartialFetch", Locale.KOREA);
     }
-    
+
     public void testTextPartialFetchUS() throws Exception {
         scriptTest("TextPartialFetch", Locale.US);
     }
-    
+
     public void testTextPartialFetchKO() throws Exception {
         scriptTest("TextPartialFetch", Locale.US);
     }
-    
+
     public void testTextPartialFetchIT() throws Exception {
         scriptTest("TextPartialFetch", Locale.US);
     }
-    
+
     public void testMimePartialFetchUS() throws Exception {
         scriptTest("MimePartialFetch", Locale.US);
     }
-    
+
     public void testMimePartialFetchIT() throws Exception {
         scriptTest("MimePartialFetch", Locale.ITALY);
     }
-    
+
     public void testMimePartialFetchKO() throws Exception {
         scriptTest("MimePartialFetch", Locale.KOREA);
     }
-    
+
     public void testHeaderPartialFetchUS() throws Exception {
         scriptTest("HeaderPartialFetch", Locale.US);
     }

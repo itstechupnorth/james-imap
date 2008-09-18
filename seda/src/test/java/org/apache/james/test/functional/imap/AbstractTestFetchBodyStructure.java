@@ -21,7 +21,8 @@ package org.apache.james.test.functional.imap;
 
 import java.util.Locale;
 
-public abstract class AbstractTestFetchBodyStructure extends AbstractTestSelectedStateBase {
+public abstract class AbstractTestFetchBodyStructure extends
+        AbstractTestSelectedStateBase {
 
     public AbstractTestFetchBodyStructure(HostSystem system) {
         super(system);

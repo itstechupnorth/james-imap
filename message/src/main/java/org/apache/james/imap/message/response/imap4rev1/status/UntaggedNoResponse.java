@@ -22,9 +22,8 @@ package org.apache.james.imap.message.response.imap4rev1.status;
 import org.apache.james.imap.message.response.base.AbstractUntaggedStatusResponse;
 
 /**
- * An operational warning message from the server.
- * A command may still complete successfully even 
- * when this response is received.
+ * An operational warning message from the server. A command may still complete
+ * successfully even when this response is received.
  */
 public class UntaggedNoResponse extends AbstractUntaggedStatusResponse {
 

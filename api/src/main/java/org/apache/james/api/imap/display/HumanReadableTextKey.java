@@ -22,125 +22,121 @@ package org.apache.james.api.imap.display;
 import org.apache.james.api.imap.ImapConstants;
 
 /**
- * Keys human response text that may be displayed to the user. 
+ * Keys human response text that may be displayed to the user.
  */
 public class HumanReadableTextKey {
-    
-    public static final HumanReadableTextKey SELECT
-    = new HumanReadableTextKey("org.apache.james.imap.SELECT", 
-        "completed.");
-    
-    public static final HumanReadableTextKey UNSEEN
-    = new HumanReadableTextKey("org.apache.james.imap.UNSEEN", 
-        "");
-    
-    public static final HumanReadableTextKey UID_VALIDITY 
-    = new HumanReadableTextKey("org.apache.james.imap.UID_VALIDITY", 
-    "");
 
-    public static final HumanReadableTextKey PERMANENT_FLAGS 
-    = new HumanReadableTextKey("org.apache.james.imap.PERMANENT_FLAGS", 
-    ""); 
-    
-    public static final HumanReadableTextKey GENERIC_LSUB_FAILURE 
-    = new HumanReadableTextKey("org.apache.james.imap.GENERIC_SUBSCRIPTION_FAILURE", 
-    "Cannot list subscriptions."); 
-    
-    public static final HumanReadableTextKey GENERIC_UNSUBSCRIPTION_FAILURE 
-    = new HumanReadableTextKey("org.apache.james.imap.GENERIC_SUBSCRIPTION_FAILURE", 
-    "Cannot unsubscribe."); 
-    
-    public static final HumanReadableTextKey GENERIC_SUBSCRIPTION_FAILURE 
-    = new HumanReadableTextKey("org.apache.james.imap.GENERIC_SUBSCRIPTION_FAILURE", 
-    "Cannot subscribe."); 
-    
-    public static final HumanReadableTextKey INVALID_COMMAND 
-    = new HumanReadableTextKey("org.apache.james.imap.INVALID_COMMAND", 
+    public static final HumanReadableTextKey SELECT = new HumanReadableTextKey(
+            "org.apache.james.imap.SELECT", "completed.");
+
+    public static final HumanReadableTextKey UNSEEN = new HumanReadableTextKey(
+            "org.apache.james.imap.UNSEEN", "");
+
+    public static final HumanReadableTextKey UID_VALIDITY = new HumanReadableTextKey(
+            "org.apache.james.imap.UID_VALIDITY", "");
+
+    public static final HumanReadableTextKey PERMANENT_FLAGS = new HumanReadableTextKey(
+            "org.apache.james.imap.PERMANENT_FLAGS", "");
+
+    public static final HumanReadableTextKey GENERIC_LSUB_FAILURE = new HumanReadableTextKey(
+            "org.apache.james.imap.GENERIC_SUBSCRIPTION_FAILURE",
+            "Cannot list subscriptions.");
+
+    public static final HumanReadableTextKey GENERIC_UNSUBSCRIPTION_FAILURE = new HumanReadableTextKey(
+            "org.apache.james.imap.GENERIC_SUBSCRIPTION_FAILURE",
+            "Cannot unsubscribe.");
+
+    public static final HumanReadableTextKey GENERIC_SUBSCRIPTION_FAILURE = new HumanReadableTextKey(
+            "org.apache.james.imap.GENERIC_SUBSCRIPTION_FAILURE",
+            "Cannot subscribe.");
+
+    public static final HumanReadableTextKey INVALID_COMMAND = new HumanReadableTextKey(
+            "org.apache.james.imap.INVALID_COMMAND",
             "failed. Command not valid in this state.");
-    
-    public static final HumanReadableTextKey ILLEGAL_TAG
-    = new HumanReadableTextKey("org.apache.james.imap.ILLEGAL_TAG", 
-            "Illegal tag.");
-    
-    public static final HumanReadableTextKey ILLEGAL_ARGUMENTS
-    = new HumanReadableTextKey("org.apache.james.imap.ILLEGAL_ARGUMENTS", 
-            "failed. Illegal arguments.");
-    
-    public static final HumanReadableTextKey FAILURE_MAIL_PARSE 
-    = new HumanReadableTextKey("org.apache.james.imap.FAILURE_MAIL_PARSE", 
-            "failed. Mail cannot be parsed.");
-    
-    public static final HumanReadableTextKey FAILURE_NO_SUCH_MAILBOX 
-        = new HumanReadableTextKey("org.apache.james.imap.FAILURE_NO_SUCH_MAILBOX", 
-                "failed. No such mailbox.");
-    
-    public static final HumanReadableTextKey GENERIC_FAILURE_DURING_PROCESSING
-        = new HumanReadableTextKey("org.apache.james.imap.GENERIC_FAILURE_DURING_PROCESSING", 
-            "processing failed.");
-    
-    public static final HumanReadableTextKey FAILURE_MAILBOX_EXISTS
-        = new HumanReadableTextKey("org.apache.james.imap.FAILURE_NO_SUCH_MAILBOX", 
-                "failed. Mailbox already exists.");
 
-    public static final HumanReadableTextKey COMPLETED 
-        = new HumanReadableTextKey("org.apache.james.imap.COMPLETED", 
-                "completed.");
-    
-    public static final HumanReadableTextKey INVALID_LOGIN 
-        = new HumanReadableTextKey("org.apache.james.imap.INVALID_LOGIN",
-                "failed. Invalid login/password.");
-    
-    public static final HumanReadableTextKey UNSUPPORTED_SEARCH_CRITERIA 
-        = new HumanReadableTextKey("org.apache.james.imap.UNSUPPORTED_CRITERIA",
-                "failed. One or more search criteria is unsupported.");
-    
-    public static final HumanReadableTextKey UNSUPPORTED_AUTHENTICATION_MECHANISM 
-    = new HumanReadableTextKey("org.apache.james.imap.UNSUPPORTED_AUTHENTICATION_MECHANISM",
+    public static final HumanReadableTextKey ILLEGAL_TAG = new HumanReadableTextKey(
+            "org.apache.james.imap.ILLEGAL_TAG", "Illegal tag.");
+
+    public static final HumanReadableTextKey ILLEGAL_ARGUMENTS = new HumanReadableTextKey(
+            "org.apache.james.imap.ILLEGAL_ARGUMENTS",
+            "failed. Illegal arguments.");
+
+    public static final HumanReadableTextKey FAILURE_MAIL_PARSE = new HumanReadableTextKey(
+            "org.apache.james.imap.FAILURE_MAIL_PARSE",
+            "failed. Mail cannot be parsed.");
+
+    public static final HumanReadableTextKey FAILURE_NO_SUCH_MAILBOX = new HumanReadableTextKey(
+            "org.apache.james.imap.FAILURE_NO_SUCH_MAILBOX",
+            "failed. No such mailbox.");
+
+    public static final HumanReadableTextKey GENERIC_FAILURE_DURING_PROCESSING = new HumanReadableTextKey(
+            "org.apache.james.imap.GENERIC_FAILURE_DURING_PROCESSING",
+            "processing failed.");
+
+    public static final HumanReadableTextKey FAILURE_MAILBOX_EXISTS = new HumanReadableTextKey(
+            "org.apache.james.imap.FAILURE_NO_SUCH_MAILBOX",
+            "failed. Mailbox already exists.");
+
+    public static final HumanReadableTextKey COMPLETED = new HumanReadableTextKey(
+            "org.apache.james.imap.COMPLETED", "completed.");
+
+    public static final HumanReadableTextKey INVALID_LOGIN = new HumanReadableTextKey(
+            "org.apache.james.imap.INVALID_LOGIN",
+            "failed. Invalid login/password.");
+
+    public static final HumanReadableTextKey UNSUPPORTED_SEARCH_CRITERIA = new HumanReadableTextKey(
+            "org.apache.james.imap.UNSUPPORTED_CRITERIA",
+            "failed. One or more search criteria is unsupported.");
+
+    public static final HumanReadableTextKey UNSUPPORTED_AUTHENTICATION_MECHANISM = new HumanReadableTextKey(
+            "org.apache.james.imap.UNSUPPORTED_AUTHENTICATION_MECHANISM",
             "failed. Authentication mechanism is unsupported.");
-    
-    public static final HumanReadableTextKey UNKNOWN_COMMAND
-    = new HumanReadableTextKey("org.apache.james.imap.UNKNOWN_COMMAND",
-            "failed. Unknown command.");
-    
-    public static final HumanReadableTextKey BAD_CHARSET 
-        = new HumanReadableTextKey("org.apache.james.imap.BAD_CHARSET",
-                "failed. Charset is unsupported.");
-    
-    public static final HumanReadableTextKey MAILBOX_IS_READ_ONLY 
-        = new HumanReadableTextKey("org.apache.james.imap.MAILBOX_IS_READ_ONLY",
-                "failed. Mailbox is read only.");
-    
-    public static final HumanReadableTextKey BYE 
-        = new HumanReadableTextKey("org.apache.james.imap.BYE",
-         ImapConstants.VERSION + " Server logging out");
-    
-    public static final HumanReadableTextKey TOO_MANY_FAILURES
-        = new HumanReadableTextKey("org.apache.james.imap.TOO_MANY_FAILURES",
-             "Login failed too many times.");
-    
-    public static final HumanReadableTextKey BYE_UNKNOWN_COMMAND
-    = new HumanReadableTextKey("org.apache.james.imap.BYE_UNKNOWN_COMMAND",
-            "Unknown command.");
-    
+
+    public static final HumanReadableTextKey UNKNOWN_COMMAND = new HumanReadableTextKey(
+            "org.apache.james.imap.UNKNOWN_COMMAND", "failed. Unknown command.");
+
+    public static final HumanReadableTextKey BAD_CHARSET = new HumanReadableTextKey(
+            "org.apache.james.imap.BAD_CHARSET",
+            "failed. Charset is unsupported.");
+
+    public static final HumanReadableTextKey MAILBOX_IS_READ_ONLY = new HumanReadableTextKey(
+            "org.apache.james.imap.MAILBOX_IS_READ_ONLY",
+            "failed. Mailbox is read only.");
+
+    public static final HumanReadableTextKey BYE = new HumanReadableTextKey(
+            "org.apache.james.imap.BYE", ImapConstants.VERSION
+                    + " Server logging out");
+
+    public static final HumanReadableTextKey TOO_MANY_FAILURES = new HumanReadableTextKey(
+            "org.apache.james.imap.TOO_MANY_FAILURES",
+            "Login failed too many times.");
+
+    public static final HumanReadableTextKey BYE_UNKNOWN_COMMAND = new HumanReadableTextKey(
+            "org.apache.james.imap.BYE_UNKNOWN_COMMAND", "Unknown command.");
+
     private final String defaultValue;
+
     private final String key;
+
     public HumanReadableTextKey(final String key, final String defaultValue) {
         super();
         this.defaultValue = defaultValue;
         this.key = key;
     }
-   
+
     /**
      * Gets the default value for this text.
+     * 
      * @return default human readable text, not null
      */
     public final String getDefaultValue() {
         return defaultValue;
     }
-    
+
     /**
-     * Gets a unique key that can be used to loopup the text.
-     * How this is performed is implementation independent.
+     * Gets a unique key that can be used to loopup the text. How this is
+     * performed is implementation independent.
+     * 
      * @return key value, not null
      */
     public final String getKey() {
@@ -169,7 +165,7 @@ public class HumanReadableTextKey {
             return false;
         return true;
     }
-    
+
     public String toString() {
         return defaultValue;
     }

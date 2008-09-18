@@ -39,7 +39,8 @@ public class FlagsResponseEncoder extends AbstractChainedImapEncoder {
         return message instanceof FlagsResponse;
     }
 
-    protected void doEncode(ImapMessage acceptableMessage, ImapResponseComposer composer) throws IOException {
+    protected void doEncode(ImapMessage acceptableMessage,
+            ImapResponseComposer composer) throws IOException {
         final FlagsResponse flagsResponse = (FlagsResponse) acceptableMessage;
         final Flags flags = flagsResponse.getFlags();
         composer.flagsResponse(flags);

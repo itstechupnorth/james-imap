@@ -29,10 +29,11 @@ import org.apache.james.api.imap.ImapMessage;
 import org.apache.james.imapserver.codec.encode.ImapEncoder;
 import org.apache.james.imapserver.codec.encode.ImapResponseComposer;
 
-abstract public class AbstractChainedImapEncoder extends AbstractLogEnabled implements ImapEncoder {
+abstract public class AbstractChainedImapEncoder extends AbstractLogEnabled
+        implements ImapEncoder {
 
     private final ImapEncoder next;
-    
+
     public AbstractChainedImapEncoder(final ImapEncoder next) {
         super();
         this.next = next;
@@ -42,8 +43,9 @@ abstract public class AbstractChainedImapEncoder extends AbstractLogEnabled impl
         super.setLog(logger);
         setupLogger(next);
     }
-    
-    public void encode(ImapMessage message, ImapResponseComposer composer) throws IOException {
+
+    public void encode(ImapMessage message, ImapResponseComposer composer)
+            throws IOException {
         final boolean isAcceptable = isAcceptable(message);
         if (isAcceptable) {
             doEncode(message, composer);
@@ -52,14 +54,16 @@ abstract public class AbstractChainedImapEncoder extends AbstractLogEnabled impl
         }
     }
 
-    protected void chainEncodeAll(final Collection messages, final ImapResponseComposer composer) throws IOException {
+    protected void chainEncodeAll(final Collection messages,
+            final ImapResponseComposer composer) throws IOException {
         for (Iterator iter = messages.iterator(); iter.hasNext();) {
             ImapMessage message = (ImapMessage) iter.next();
             chainEncode(message, composer);
         }
     }
-    
-    protected void chainEncode(ImapMessage message, ImapResponseComposer composer) throws IOException {
+
+    protected void chainEncode(ImapMessage message,
+            ImapResponseComposer composer) throws IOException {
         next.encode(message, composer);
     }
 
@@ -71,14 +75,16 @@ abstract public class AbstractChainedImapEncoder extends AbstractLogEnabled impl
      * @return true if the given message is encodable by this encoder
      */
     abstract protected boolean isAcceptable(final ImapMessage message);
-    
+
     /**
      * Processes an acceptable message. Only messages passing
      * {@link #isAcceptable(ImapMessage)} should be passed to this method.
      * 
      * @param acceptableMessage
      *            <code>ImapMessage</code>, not null
-     * @param composer <code>ImapResponseComposer</code>, not null
+     * @param composer
+     *            <code>ImapResponseComposer</code>, not null
      */
-    abstract protected void doEncode(ImapMessage acceptableMessage, ImapResponseComposer composer) throws IOException;
+    abstract protected void doEncode(ImapMessage acceptableMessage,
+            ImapResponseComposer composer) throws IOException;
 }

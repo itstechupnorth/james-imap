@@ -22,8 +22,9 @@ package org.apache.james.mailboxmanager;
 public class MockMailboxListenerAdded extends MailboxListener.Added {
 
     public long subjectUid;
+
     public long sessionId;
-    
+
     public MockMailboxListenerAdded(long subjectUid, long sessionId) {
         super();
         this.subjectUid = subjectUid;

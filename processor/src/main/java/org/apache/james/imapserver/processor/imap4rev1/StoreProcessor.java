@@ -48,7 +48,8 @@ public class StoreProcessor extends AbstractImapRequestProcessor {
 
     private static final FetchGroup STORE_FETCH_GROUP = FetchGroupImpl.FLAGS;
 
-    public StoreProcessor(final ImapProcessor next, final StatusResponseFactory factory) {
+    public StoreProcessor(final ImapProcessor next,
+            final StatusResponseFactory factory) {
         super(next, factory);
     }
 
@@ -56,8 +57,8 @@ public class StoreProcessor extends AbstractImapRequestProcessor {
         return (message instanceof StoreRequest);
     }
 
-    protected void doProcess(ImapRequest message,
-            ImapSession session, String tag, ImapCommand command, Responder responder) {
+    protected void doProcess(ImapRequest message, ImapSession session,
+            String tag, ImapCommand command, Responder responder) {
         final StoreRequest request = (StoreRequest) message;
         final IdRange[] idSet = request.getIdSet();
         final Flags flags = request.getFlags();
@@ -65,7 +66,7 @@ public class StoreProcessor extends AbstractImapRequestProcessor {
         final boolean silent = request.isSilent();
         final boolean isSignedPlus = request.isSignedPlus();
         final boolean isSignedMinus = request.isSignedMinus();
-        
+
         Mailbox mailbox = ImapSessionUtils.getMailbox(session);
 
         final boolean replace;
@@ -92,12 +93,14 @@ public class StoreProcessor extends AbstractImapRequestProcessor {
                     lowVal = selected.uid((int) idSet[i].getLowVal());
                     highVal = selected.uid((int) idSet[i].getHighVal());
                 }
-                final MessageRange messageSet = MessageRangeImpl.uidRange(lowVal, highVal);
-                final MailboxSession mailboxSession = ImapSessionUtils.getMailboxSession(session);
-                final Iterator it = mailbox.setFlags(flags, value, 
-                        replace, messageSet, STORE_FETCH_GROUP, mailboxSession);
+                final MessageRange messageSet = MessageRangeImpl.uidRange(
+                        lowVal, highVal);
+                final MailboxSession mailboxSession = ImapSessionUtils
+                        .getMailboxSession(session);
+                final Iterator it = mailbox.setFlags(flags, value, replace,
+                        messageSet, STORE_FETCH_GROUP, mailboxSession);
                 if (!silent) {
-                    while(it.hasNext()) {
+                    while (it.hasNext()) {
                         final MessageResult result = (MessageResult) it.next();
                         final long uid = result.getUid();
                         final int msn = selected.msn(uid);
@@ -111,8 +114,9 @@ public class StoreProcessor extends AbstractImapRequestProcessor {
                         if (selected.isRecent(uid)) {
                             resultFlags.add(Flags.Flag.RECENT);
                         }
-                        final FetchResponse response 
-                            = new FetchResponse(msn, resultFlags, resultUid, null, null, null, null, null, null);
+                        final FetchResponse response = new FetchResponse(msn,
+                                resultFlags, resultUid, null, null, null, null,
+                                null, null);
                         responder.respond(response);
                     }
                 }

@@ -29,27 +29,33 @@ import org.apache.torque.util.Criteria;
 class TorqueCriteriaBuilder {
 
     private final Criteria masterCriteria;
+
     private boolean headersJoin = false;
+
     private boolean flagsJoin = false;
-    
+
     public TorqueCriteriaBuilder() {
         masterCriteria = new Criteria();
     }
-    
+
     public Criteria getCriteria() {
         return masterCriteria;
     }
-    
+
     public void andHeaderContains(final String header, final String value) {
         joinHeaders();
-        final Criteria.Criterion nameCriterion = masterCriteria.getNewCriterion(MessageHeaderPeer.FIELD, header, Criteria.EQUAL);
+        final Criteria.Criterion nameCriterion = masterCriteria
+                .getNewCriterion(MessageHeaderPeer.FIELD, header,
+                        Criteria.EQUAL);
         if (value != null) {
-            final Criteria.Criterion valueCriterion = masterCriteria.getNewCriterion(MessageHeaderPeer.VALUE, value, Criteria.LIKE);
+            final Criteria.Criterion valueCriterion = masterCriteria
+                    .getNewCriterion(MessageHeaderPeer.VALUE, value,
+                            Criteria.LIKE);
             nameCriterion.and(valueCriterion);
         }
         masterCriteria.add(nameCriterion);
     }
-    
+
     public void andFlag(Flag flag, boolean value) {
         joinFlags();
         if (Flag.ANSWERED.equals(flag)) {
@@ -66,19 +72,21 @@ class TorqueCriteriaBuilder {
             masterCriteria.add(MessageFlagsPeer.SEEN, value);
         }
     }
-    
+
     public void joinFlags() {
         if (!flagsJoin) {
             flagsJoin = true;
-            masterCriteria.addJoin(MessageRowPeer.MAILBOX_ID, MessageFlagsPeer.MAILBOX_ID);
+            masterCriteria.addJoin(MessageRowPeer.MAILBOX_ID,
+                    MessageFlagsPeer.MAILBOX_ID);
             masterCriteria.addJoin(MessageRowPeer.UID, MessageFlagsPeer.UID);
         }
     }
-    
+
     public void joinHeaders() {
         if (!headersJoin) {
             headersJoin = true;
-            masterCriteria.addJoin(MessageRowPeer.MAILBOX_ID, MessageHeaderPeer.MAILBOX_ID);
+            masterCriteria.addJoin(MessageRowPeer.MAILBOX_ID,
+                    MessageHeaderPeer.MAILBOX_ID);
             masterCriteria.addJoin(MessageRowPeer.UID, MessageHeaderPeer.UID);
         }
     }

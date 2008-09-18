@@ -23,17 +23,15 @@ package org.apache.james.imapserver.processor.base;
  * Thrown when a user attempts to do something (e.g. alter mailbox) for which
  * they do not have appropriate rights.
  */
-public class AuthorizationException
-        extends Exception
-{
+public class AuthorizationException extends Exception {
 
     /**
      * Construct a new <code>AuthorizationException</code> instance.
-     *
-     * @param message The detail message for this exception (mandatory).
+     * 
+     * @param message
+     *            The detail message for this exception (mandatory).
      */
-    public AuthorizationException( final String message )
-    {
-        super( message );
+    public AuthorizationException(final String message) {
+        super(message);
     }
 }

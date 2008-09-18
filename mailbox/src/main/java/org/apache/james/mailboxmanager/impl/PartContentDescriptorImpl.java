@@ -25,8 +25,9 @@ import org.apache.james.mailboxmanager.MessageResult.FetchGroup.PartContentDescr
 public class PartContentDescriptorImpl implements PartContentDescriptor {
 
     private int content = 0;
+
     private final MimePath path;
-    
+
     public PartContentDescriptorImpl(final MimePath path) {
         super();
         this.path = path;
@@ -37,11 +38,11 @@ public class PartContentDescriptorImpl implements PartContentDescriptor {
         this.content = content;
         this.path = path;
     }
-    
+
     public void or(int content) {
         this.content = this.content | content;
     }
-    
+
     public int content() {
         return content;
     }
@@ -73,5 +74,4 @@ public class PartContentDescriptorImpl implements PartContentDescriptor {
         return true;
     }
 
-    
 }

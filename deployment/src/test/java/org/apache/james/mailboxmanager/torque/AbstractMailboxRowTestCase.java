@@ -28,17 +28,20 @@ import org.apache.torque.util.Criteria;
 public abstract class AbstractMailboxRowTestCase extends AbstractTorqueTestCase {
 
     MailboxManager mm;
-    
+
     public AbstractMailboxRowTestCase() throws TorqueException {
         super();
     }
+
     public void setUp() throws Exception {
         super.setUp();
-        assertEquals(0,MailboxRowPeer.doSelect(new Criteria()).size());
-        mm=TorqueMailboxManagerProviderSingleton.getTorqueMailboxManagerProviderInstance().getMailboxManager();
+        assertEquals(0, MailboxRowPeer.doSelect(new Criteria()).size());
+        mm = TorqueMailboxManagerProviderSingleton
+                .getTorqueMailboxManagerProviderInstance().getMailboxManager();
     }
+
     public void tearDown() {
-        
+
     }
-    
+
 }

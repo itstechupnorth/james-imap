@@ -41,28 +41,52 @@ import org.jmock.MockObjectTestCase;
 public class LSubProcessorTest extends MockObjectTestCase {
 
     private static final String ROOT = "ROOT";
-    private static final String PARENT = ROOT  + ImapConstants.HIERARCHY_DELIMITER + "PARENT";
-    private static final String CHILD_ONE = PARENT + ImapConstants.HIERARCHY_DELIMITER + "CHILD_ONE";
-    private static final String CHILD_TWO = PARENT + ImapConstants.HIERARCHY_DELIMITER + "CHILD_TWO";
+
+    private static final String PARENT = ROOT
+            + ImapConstants.HIERARCHY_DELIMITER + "PARENT";
+
+    private static final String CHILD_ONE = PARENT
+            + ImapConstants.HIERARCHY_DELIMITER + "CHILD_ONE";
+
+    private static final String CHILD_TWO = PARENT
+            + ImapConstants.HIERARCHY_DELIMITER + "CHILD_TWO";
+
     private static final String MAILBOX_C = "C.MAILBOX";
+
     private static final String MAILBOX_B = "B.MAILBOX";
+
     private static final String MAILBOX_A = "A.MAILBOX";
+
     private static final String USER = "A User";
+
     private static final String TAG = "TAG";
+
     LSubProcessor processor;
+
     Mock next;
+
     Mock provider;
+
     Mock manager;
+
     Mock responder;
+
     Mock result;
+
     Mock session;
+
     Mock command;
+
     Mock serverResponseFactory;
+
     Mock statusResponse;
+
     Collection subscriptions;
+
     ImapCommand imapCommand;
+
     private ImapProcessor.Responder responderImpl;
-    
+
     protected void setUp() throws Exception {
         subscriptions = new ArrayList();
         serverResponseFactory = mock(StatusResponseFactory.class);
@@ -76,129 +100,144 @@ public class LSubProcessorTest extends MockObjectTestCase {
         statusResponse = mock(StatusResponse.class);
         responderImpl = (ImapProcessor.Responder) responder.proxy();
         manager = mock(MailboxManager.class);
-        processor = new LSubProcessor((ImapProcessor) next.proxy(), (MailboxManagerProvider) provider.proxy(), 
+        processor = new LSubProcessor((ImapProcessor) next.proxy(),
+                (MailboxManagerProvider) provider.proxy(),
                 (StatusResponseFactory) serverResponseFactory.proxy());
     }
 
     protected void tearDown() throws Exception {
         super.tearDown();
     }
-    
+
     public void testHierarchy() throws Exception {
         subscriptions.add(MAILBOX_A);
         subscriptions.add(MAILBOX_B);
         subscriptions.add(MAILBOX_C);
-        
+
         responder.expects(once()).method("respond")
-            .with(eq(new LSubResponse("", ImapConstants.HIERARCHY_DELIMITER, true)));
-        
+                .with(
+                        eq(new LSubResponse("",
+                                ImapConstants.HIERARCHY_DELIMITER, true)));
+
         expectOk();
-        
-        LsubRequest request = new LsubRequest(imapCommand,"", "", TAG);
-        processor.doProcess(request, (ImapSession) session.proxy(), TAG, imapCommand, 
-                responderImpl);
-        
+
+        LsubRequest request = new LsubRequest(imapCommand, "", "", TAG);
+        processor.doProcess(request, (ImapSession) session.proxy(), TAG,
+                imapCommand, responderImpl);
+
     }
-    
-    public void testShouldRespondToRegexWithSubscribedMailboxes() throws Exception {
+
+    public void testShouldRespondToRegexWithSubscribedMailboxes()
+            throws Exception {
         subscriptions.add(MAILBOX_A);
         subscriptions.add(MAILBOX_B);
         subscriptions.add(MAILBOX_C);
         subscriptions.add(CHILD_ONE);
         subscriptions.add(CHILD_TWO);
-        
-        responder.expects(once()).method("respond")
-            .with(eq(new LSubResponse(CHILD_ONE, ImapConstants.HIERARCHY_DELIMITER, false)));        
-        
-        responder.expects(once()).method("respond")
-            .with(eq(new LSubResponse(CHILD_TWO, ImapConstants.HIERARCHY_DELIMITER, false)));  
-        
+
+        responder.expects(once()).method("respond").with(
+                eq(new LSubResponse(CHILD_ONE,
+                        ImapConstants.HIERARCHY_DELIMITER, false)));
+
+        responder.expects(once()).method("respond").with(
+                eq(new LSubResponse(CHILD_TWO,
+                        ImapConstants.HIERARCHY_DELIMITER, false)));
+
         expectSubscriptions();
         expectOk();
-        
-        LsubRequest request = new LsubRequest(imapCommand,"", PARENT + ImapConstants.HIERARCHY_DELIMITER + "%", TAG);
-        processor.doProcess(request, (ImapSession) session.proxy(), TAG, imapCommand, 
-                responderImpl);
-        
+
+        LsubRequest request = new LsubRequest(imapCommand, "", PARENT
+                + ImapConstants.HIERARCHY_DELIMITER + "%", TAG);
+        processor.doProcess(request, (ImapSession) session.proxy(), TAG,
+                imapCommand, responderImpl);
+
     }
-    
-    public void testShouldRespondNoSelectToRegexWithParentsOfSubscribedMailboxes() throws Exception {
+
+    public void testShouldRespondNoSelectToRegexWithParentsOfSubscribedMailboxes()
+            throws Exception {
         subscriptions.add(MAILBOX_A);
         subscriptions.add(MAILBOX_B);
         subscriptions.add(MAILBOX_C);
         subscriptions.add(CHILD_ONE);
         subscriptions.add(CHILD_TWO);
-        
-        responder.expects(once()).method("respond")
-            .with(eq(new LSubResponse(PARENT, ImapConstants.HIERARCHY_DELIMITER, true)));         
-        
+
+        responder.expects(once()).method("respond").with(
+                eq(new LSubResponse(PARENT, ImapConstants.HIERARCHY_DELIMITER,
+                        true)));
+
         expectSubscriptions();
         expectOk();
-        
-        LsubRequest request = new LsubRequest(imapCommand,"", ROOT + ImapConstants.HIERARCHY_DELIMITER + "%", TAG);
-        processor.doProcess(request, (ImapSession) session.proxy(), TAG, imapCommand, 
-                responderImpl);
-        
+
+        LsubRequest request = new LsubRequest(imapCommand, "", ROOT
+                + ImapConstants.HIERARCHY_DELIMITER + "%", TAG);
+        processor.doProcess(request, (ImapSession) session.proxy(), TAG,
+                imapCommand, responderImpl);
+
     }
-    
-    public void testShouldRespondSelectToRegexWithParentOfSubscribedMailboxesWhenParentSubscribed() throws Exception {
+
+    public void testShouldRespondSelectToRegexWithParentOfSubscribedMailboxesWhenParentSubscribed()
+            throws Exception {
         subscriptions.add(MAILBOX_A);
         subscriptions.add(MAILBOX_B);
         subscriptions.add(MAILBOX_C);
         subscriptions.add(PARENT);
         subscriptions.add(CHILD_ONE);
         subscriptions.add(CHILD_TWO);
-        
-        responder.expects(once()).method("respond")
-            .with(eq(new LSubResponse(PARENT, ImapConstants.HIERARCHY_DELIMITER, false)));         
-        
+
+        responder.expects(once()).method("respond").with(
+                eq(new LSubResponse(PARENT, ImapConstants.HIERARCHY_DELIMITER,
+                        false)));
+
         expectSubscriptions();
         expectOk();
-        
-        LsubRequest request = new LsubRequest(imapCommand,"", ROOT + ImapConstants.HIERARCHY_DELIMITER + "%", TAG);
-        processor.doProcess(request, (ImapSession) session.proxy(), TAG, imapCommand, 
-                responderImpl);
-        
+
+        LsubRequest request = new LsubRequest(imapCommand, "", ROOT
+                + ImapConstants.HIERARCHY_DELIMITER + "%", TAG);
+        processor.doProcess(request, (ImapSession) session.proxy(), TAG,
+                imapCommand, responderImpl);
+
     }
 
     public void testSelectAll() throws Exception {
         subscriptions.add(MAILBOX_A);
-        responder.expects(once()).method("respond")
-            .with(eq(new LSubResponse(MAILBOX_A, ImapConstants.HIERARCHY_DELIMITER, false)));
+        responder.expects(once()).method("respond").with(
+                eq(new LSubResponse(MAILBOX_A,
+                        ImapConstants.HIERARCHY_DELIMITER, false)));
         subscriptions.add(MAILBOX_B);
-        responder.expects(once()).method("respond")
-            .with(eq(new LSubResponse(MAILBOX_B, ImapConstants.HIERARCHY_DELIMITER, false)));
+        responder.expects(once()).method("respond").with(
+                eq(new LSubResponse(MAILBOX_B,
+                        ImapConstants.HIERARCHY_DELIMITER, false)));
         subscriptions.add(MAILBOX_C);
-        responder.expects(once()).method("respond")
-            .with(eq(new LSubResponse(MAILBOX_C, ImapConstants.HIERARCHY_DELIMITER, false)));
-        
+        responder.expects(once()).method("respond").with(
+                eq(new LSubResponse(MAILBOX_C,
+                        ImapConstants.HIERARCHY_DELIMITER, false)));
+
         expectSubscriptions();
         expectOk();
-        
-        LsubRequest request = new LsubRequest(imapCommand,"", "*", TAG);
-        processor.doProcess(request, (ImapSession) session.proxy(), TAG, imapCommand, 
-                responderImpl);
-        
+
+        LsubRequest request = new LsubRequest(imapCommand, "", "*", TAG);
+        processor.doProcess(request, (ImapSession) session.proxy(), TAG,
+                imapCommand, responderImpl);
+
     }
-    
+
     private void expectOk() {
         StatusResponse response = (StatusResponse) statusResponse.proxy();
-        serverResponseFactory.expects(once()).method("taggedOk")
-            .with(eq(TAG), same(imapCommand), eq(HumanReadableTextKey.COMPLETED))
-                .will(returnValue(response));
+        serverResponseFactory.expects(once()).method("taggedOk").with(eq(TAG),
+                same(imapCommand), eq(HumanReadableTextKey.COMPLETED)).will(
+                returnValue(response));
         responder.expects(once()).method("respond").with(same(response));
     }
-    
+
     private void expectSubscriptions() {
-        session.expects(once()).method("getAttribute")
-        .with(eq(ImapSessionUtils.MAILBOX_MANAGER_ATTRIBUTE_SESSION_KEY))
-            .will(returnValue(manager.proxy()));
-        session.expects(once()).method("getAttribute")
-            .with(eq(ImapSessionUtils.MAILBOX_USER_ATTRIBUTE_SESSION_KEY))
-                .will(returnValue(USER));
-        
-        manager.expects(once()).method("subscriptions")
-            .with(eq(USER))
-                .will(returnValue(subscriptions));
+        session.expects(once()).method("getAttribute").with(
+                eq(ImapSessionUtils.MAILBOX_MANAGER_ATTRIBUTE_SESSION_KEY))
+                .will(returnValue(manager.proxy()));
+        session.expects(once()).method("getAttribute").with(
+                eq(ImapSessionUtils.MAILBOX_USER_ATTRIBUTE_SESSION_KEY)).will(
+                returnValue(USER));
+
+        manager.expects(once()).method("subscriptions").with(eq(USER)).will(
+                returnValue(subscriptions));
     }
 }

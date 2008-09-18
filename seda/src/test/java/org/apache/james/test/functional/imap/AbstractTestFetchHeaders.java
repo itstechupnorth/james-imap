@@ -21,7 +21,8 @@ package org.apache.james.test.functional.imap;
 
 import java.util.Locale;
 
-public abstract class AbstractTestFetchHeaders extends AbstractTestSelectedStateBase {
+public abstract class AbstractTestFetchHeaders extends
+        AbstractTestSelectedStateBase {
 
     public AbstractTestFetchHeaders(HostSystem system) {
         super(system);
@@ -30,23 +31,23 @@ public abstract class AbstractTestFetchHeaders extends AbstractTestSelectedState
     public void testFetchHeaderFieldsUS() throws Exception {
         scriptTest("FetchHeaderFields", Locale.US);
     }
-    
+
     public void testFetchHeaderFieldsITALY() throws Exception {
         scriptTest("FetchHeaderFields", Locale.ITALY);
     }
-    
+
     public void testFetchHeaderFieldsKOREA() throws Exception {
         scriptTest("FetchHeaderFields", Locale.KOREA);
     }
-    
+
     public void testFetchHeaderFieldsNotUS() throws Exception {
         scriptTest("FetchHeaderFieldsNot", Locale.US);
     }
-    
+
     public void testFetchHeaderFieldsNotITALY() throws Exception {
         scriptTest("FetchHeaderFieldsNot", Locale.ITALY);
     }
-    
+
     public void testFetchHeaderFieldsNotKOREA() throws Exception {
         scriptTest("FetchHeaderFieldsNot", Locale.KOREA);
     }

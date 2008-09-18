@@ -19,7 +19,6 @@
 
 package org.apache.james.imap.main;
 
-
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -35,19 +34,19 @@ import EDU.oswego.cs.dl.util.concurrent.ConcurrentHashMap;
 /**
  * Implements a session.
  */
-public final class ImapSessionImpl extends AbstractLogEnabled implements ImapSession, ImapConstants
-{
+public final class ImapSessionImpl extends AbstractLogEnabled implements
+        ImapSession, ImapConstants {
     private ImapSessionState state = ImapSessionState.NON_AUTHENTICATED;
+
     private SelectedImapMailbox selectedMailbox = null;
-    
+
     private final Map attributesByKey;
-    
-    public ImapSessionImpl()
-    {
+
+    public ImapSessionImpl() {
         this.attributesByKey = new ConcurrentHashMap();
     }
 
-    public List unsolicitedResponses( boolean useUid ) {
+    public List unsolicitedResponses(boolean useUid) {
         return unsolicitedResponses(false, useUid);
     }
 
@@ -62,47 +61,41 @@ public final class ImapSessionImpl extends AbstractLogEnabled implements ImapSes
         return results;
     }
 
-    public void logout()
-    {
+    public void logout() {
         closeMailbox();
         state = ImapSessionState.LOGOUT;
     }
 
-    public void authenticated( )
-    {
+    public void authenticated() {
         this.state = ImapSessionState.AUTHENTICATED;
     }
 
-    public void deselect()
-    {
+    public void deselect() {
         this.state = ImapSessionState.AUTHENTICATED;
         closeMailbox();
     }
 
-    public void selected( SelectedImapMailbox mailbox )
-    {
+    public void selected(SelectedImapMailbox mailbox) {
         setupLogger(mailbox);
         this.state = ImapSessionState.SELECTED;
         closeMailbox();
         this.selectedMailbox = mailbox;
     }
 
-    public SelectedImapMailbox getSelected()
-    {
+    public SelectedImapMailbox getSelected() {
         return this.selectedMailbox;
     }
 
-    public ImapSessionState getState()
-    {
+    public ImapSessionState getState() {
         return this.state;
     }
 
     public void closeMailbox() {
         if (selectedMailbox != null) {
             selectedMailbox.deselect();
-            selectedMailbox=null;
+            selectedMailbox = null;
         }
-        
+
     }
 
     public Object getAttribute(String key) {

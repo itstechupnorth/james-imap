@@ -37,10 +37,11 @@ public class ExistsResponseEncoder extends AbstractChainedImapEncoder {
         return message instanceof ExistsResponse;
     }
 
-    protected void doEncode(ImapMessage acceptableMessage, ImapResponseComposer composer) throws IOException {
+    protected void doEncode(ImapMessage acceptableMessage,
+            ImapResponseComposer composer) throws IOException {
         final ExistsResponse existsResponse = (ExistsResponse) acceptableMessage;
         final int numberOfMessages = existsResponse.getNumberOfMessages();
         composer.existsResponse(numberOfMessages);
-        
+
     }
 }

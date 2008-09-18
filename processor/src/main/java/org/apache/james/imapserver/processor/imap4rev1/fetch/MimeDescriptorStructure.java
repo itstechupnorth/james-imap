@@ -40,57 +40,71 @@ import org.apache.james.mime4j.field.address.parser.ParseException;
 
 final class MimeDescriptorStructure implements FetchResponse.Structure {
 
-
-    
     private final MessageResult.MimeDescriptor descriptor;
+
     private final String[] parameters;
+
     private final List parts;
+
     private final String disposition;
+
     private final Map dispositionParams;
+
     private final String location;
+
     private final String md5;
+
     private final List languages;
+
     private final Structure embeddedMessageStructure;
+
     private final Envelope envelope;
-    
-    public MimeDescriptorStructure(final boolean allowExtensions, MimeDescriptor descriptor, EnvelopeBuilder builder) 
-                throws MessagingException, ParseException {
+
+    public MimeDescriptorStructure(final boolean allowExtensions,
+            MimeDescriptor descriptor, EnvelopeBuilder builder)
+            throws MessagingException, ParseException {
         super();
         this.descriptor = descriptor;
         parameters = createParameters(descriptor);
         parts = createParts(allowExtensions, descriptor, builder);
-        
+
         languages = descriptor.getLanguages();
         this.dispositionParams = descriptor.getDispositionParams();
         this.disposition = descriptor.getDisposition();
-        
+
         this.md5 = descriptor.getContentMD5();
         this.location = descriptor.getContentLocation();
-        
+
         final MimeDescriptor embeddedMessage = descriptor.embeddedMessage();
         if (embeddedMessage == null) {
             embeddedMessageStructure = null;
             envelope = null;
         } else {
-            embeddedMessageStructure = new MimeDescriptorStructure(allowExtensions, embeddedMessage, builder);
+            embeddedMessageStructure = new MimeDescriptorStructure(
+                    allowExtensions, embeddedMessage, builder);
             envelope = builder.buildEnvelope(embeddedMessage);
         }
     }
 
-    private static List createParts(final boolean allowExtensions, final MimeDescriptor descriptor, final EnvelopeBuilder builder) throws MessagingException, ParseException {
+    private static List createParts(final boolean allowExtensions,
+            final MimeDescriptor descriptor, final EnvelopeBuilder builder)
+            throws MessagingException, ParseException {
         final List results = new ArrayList();
         for (Iterator it = descriptor.parts(); it.hasNext();) {
             final MimeDescriptor partDescriptor = (MimeDescriptor) it.next();
-            results.add(new MimeDescriptorStructure(allowExtensions, partDescriptor, builder));
+            results.add(new MimeDescriptorStructure(allowExtensions,
+                    partDescriptor, builder));
         }
         return results;
     }
-    
-    private static String[] createParameters(MimeDescriptor descriptor) throws MailboxManagerException {
+
+    private static String[] createParameters(MimeDescriptor descriptor)
+            throws MailboxManagerException {
         final List results = new ArrayList();
         // TODO: consider revising this design
         for (Iterator it = descriptor.contentTypeParameters(); it.hasNext();) {
-            final MessageResult.Header header = (MessageResult.Header) it.next();
+            final MessageResult.Header header = (MessageResult.Header) it
+                    .next();
             final String name = header.getName();
             results.add(name);
             final String value = header.getValue();
@@ -107,12 +121,11 @@ final class MimeDescriptorStructure implements FetchResponse.Structure {
     public String getEncoding() {
         return descriptor.getTransferContentEncoding();
     }
-    
+
     public String getId() {
         return descriptor.getContentID();
     }
-    
-    
+
     public long getLines() {
         return descriptor.getLines();
     }
@@ -120,35 +133,35 @@ final class MimeDescriptorStructure implements FetchResponse.Structure {
     public String getMediaType() {
         return descriptor.getMimeType();
     }
-    
+
     public long getOctets() {
         return descriptor.getBodyOctets();
     }
-    
+
     public String[] getParameters() {
         return parameters;
     }
-    
+
     public String getSubType() {
         return descriptor.getMimeSubType();
     }
-    
+
     public Iterator parts() {
         return parts.iterator();
     }
-    
+
     public String getDisposition() {
         return disposition;
     }
-    
+
     public String getLocation() {
         return location;
     }
-    
+
     public String getMD5() {
         return md5;
     }
-    
+
     public List getLanguages() {
         return languages;
     }
@@ -164,5 +177,5 @@ final class MimeDescriptorStructure implements FetchResponse.Structure {
     public Envelope getEnvelope() {
         return envelope;
     }
-    
+
 }

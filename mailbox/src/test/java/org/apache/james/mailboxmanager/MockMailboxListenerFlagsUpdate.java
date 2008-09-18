@@ -27,15 +27,18 @@ import javax.mail.Flags;
 
 import org.apache.james.mailboxmanager.MailboxListener.FlagsUpdated;
 
-public class MockMailboxListenerFlagsUpdate extends  FlagsUpdated {
+public class MockMailboxListenerFlagsUpdate extends FlagsUpdated {
 
-    public List flags = new ArrayList();    
+    public List flags = new ArrayList();
 
     public long subjectUid;
+
     public long sessionId;
+
     public Flags newFlags;
-    
-    public MockMailboxListenerFlagsUpdate(long subjectUid, Flags newFlags, long sessionId) {
+
+    public MockMailboxListenerFlagsUpdate(long subjectUid, Flags newFlags,
+            long sessionId) {
         super();
         this.subjectUid = subjectUid;
         this.sessionId = sessionId;
@@ -49,7 +52,7 @@ public class MockMailboxListenerFlagsUpdate extends  FlagsUpdated {
     public long getSessionId() {
         return sessionId;
     }
-    
+
     public Iterator flagsIterator() {
         return flags.iterator();
     }

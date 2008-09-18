@@ -26,16 +26,16 @@ public class MailboxManagerException extends MessagingException {
     private static final long serialVersionUID = -7034955921835169361L;
 
     private Exception cause;
-    
+
     private String message;
-    
+
     public MailboxManagerException(Exception e) {
-        cause=e;
-        message="MailboxException caused by "+cause;
+        cause = e;
+        message = "MailboxException caused by " + cause;
     }
 
     public MailboxManagerException(String string) {
-        message=string;
+        message = string;
     }
 
     public Throwable getCause() {

@@ -37,7 +37,7 @@ import org.apache.james.mailboxmanager.MessageResult.FetchGroup;
 public interface Mailbox {
 
     public static final long ANONYMOUS_SESSION = 0;
-    
+
     /**
      * Example #mail.paul.lists.apache.james-dev (3rd level folder of user paul)
      * 
@@ -46,15 +46,16 @@ public interface Mailbox {
      */
     String getName();
 
-    int getMessageCount(MailboxSession mailboxSession) throws MailboxManagerException;
+    int getMessageCount(MailboxSession mailboxSession)
+            throws MailboxManagerException;
 
     boolean isWriteable();
-    
-    
+
     /**
      * @param fetchGroup
      *            which fields to be returned in MessageResult
-     * @param mailboxSession TODO
+     * @param mailboxSession
+     *            TODO
      * @return MessageResult with the fields defined by <b>result</b>
      *         <ul>
      *         <li> IMAP: msn or (msn and uid)</li>
@@ -62,36 +63,41 @@ public interface Mailbox {
      *         </ul>
      * @throws MailboxManagerException
      *             if anything went wrong
-     * @throws UnsupportedCriteriaException when any of the search parameters are 
-     * not supported by this mailbox
+     * @throws UnsupportedCriteriaException
+     *             when any of the search parameters are not supported by this
+     *             mailbox
      */
-    Iterator search(SearchQuery searchQuery, FetchGroup fetchGroup, MailboxSession mailboxSession) throws MailboxManagerException;
-    
-    
-    long getUidValidity(MailboxSession mailboxSession) throws MailboxManagerException;
-    
+    Iterator search(SearchQuery searchQuery, FetchGroup fetchGroup,
+            MailboxSession mailboxSession) throws MailboxManagerException;
+
+    long getUidValidity(MailboxSession mailboxSession)
+            throws MailboxManagerException;
+
     /**
      * 
-     * @param mailboxSession TODO
+     * @param mailboxSession
+     *            TODO
      * @return the uid that will be assigned to the next appended message
-     * @throws MailboxManagerException 
+     * @throws MailboxManagerException
      */
 
-    long getUidNext(MailboxSession mailboxSession) throws MailboxManagerException;
-    
-    
+    long getUidNext(MailboxSession mailboxSession)
+            throws MailboxManagerException;
+
     /**
      * @return Flags that can be stored
      */
     Flags getPermanentFlags();
-    
 
-    long[] recent(boolean reset, MailboxSession mailboxSession) throws MailboxManagerException;
-    
-    int getUnseenCount(MailboxSession mailboxSession) throws MailboxManagerException;
-    
-    MessageResult getFirstUnseen(FetchGroup fetchGroup, MailboxSession mailboxSession) throws MailboxManagerException;
-    
+    long[] recent(boolean reset, MailboxSession mailboxSession)
+            throws MailboxManagerException;
+
+    int getUnseenCount(MailboxSession mailboxSession)
+            throws MailboxManagerException;
+
+    MessageResult getFirstUnseen(FetchGroup fetchGroup,
+            MailboxSession mailboxSession) throws MailboxManagerException;
+
     /**
      * 
      * @param set
@@ -101,10 +107,11 @@ public interface Mailbox {
      *            </ul>
      * @param fetchGroup
      *            which fields to be returned in MessageResult
-     * @param mailboxSession TODO
+     * @param mailboxSession
+     *            TODO
      * 
-     * @return {@link MessageResult} <code>Iterator</code> with 
-     * the fields defined by <b>result</b><br />
+     * @return {@link MessageResult} <code>Iterator</code> with the fields
+     *         defined by <b>result</b><br />
      *         <ul>
      *         <li> IMAP, UIDPLUS: nothing required </li>
      *         <li> Javamail Folder: requires the expunged Message[]</li>
@@ -112,8 +119,8 @@ public interface Mailbox {
      * @throws MailboxManagerException
      *             if anything went wrong
      */
-    Iterator expunge(MessageRange set, FetchGroup fetchGroup, MailboxSession mailboxSession) throws MailboxManagerException;
-    
+    Iterator expunge(MessageRange set, FetchGroup fetchGroup,
+            MailboxSession mailboxSession) throws MailboxManagerException;
 
     /**
      * this is much more straight forward for IMAP instead of setting Flags of
@@ -128,25 +135,33 @@ public interface Mailbox {
      *            replace all Flags with this flags, value has to be true
      * @param set
      *            the range of messages
-     * @param fetchGroup fetch group for results 
-     * @param mailboxSession TODO
+     * @param fetchGroup
+     *            fetch group for results
+     * @param mailboxSession
+     *            TODO
      * @return {@link MessageResult} <code>Iterator</code> containing messages
-     * whose flags have been updated, not null
+     *         whose flags have been updated, not null
      * @throws MailboxManagerException
      */
-    Iterator setFlags(Flags flags, boolean value, boolean replace, 
-            MessageRange set, FetchGroup fetchGroup, MailboxSession mailboxSession) throws MailboxManagerException;
-    
+    Iterator setFlags(Flags flags, boolean value, boolean replace,
+            MessageRange set, FetchGroup fetchGroup,
+            MailboxSession mailboxSession) throws MailboxManagerException;
+
     /**
      * @param internalDate
-     *            <p>IMAP defines this as the time when the message has arrived to
+     *            <p>
+     *            IMAP defines this as the time when the message has arrived to
      *            this server (by smtp). Clients are also allowed to set the
-     *            internalDate on apppend.</p><p>Is this Mail.getLastUpdates() for 
-     *            James delivery? Should we use MimeMessage.getReceivedDate()?
+     *            internalDate on apppend.
+     *            </p>
+     *            <p>
+     *            Is this Mail.getLastUpdates() for James delivery? Should we
+     *            use MimeMessage.getReceivedDate()?
      * @param fetchGroup
-     *            which fields to be returned in MessageResult
-     *            or null for minimal fetch group only
-     * @param mailboxSession TODO
+     *            which fields to be returned in MessageResult or null for
+     *            minimal fetch group only
+     * @param mailboxSession
+     *            TODO
      * @return MessageResult with the fields defined by <b>result</b>
      *         <ul>
      *         <li> IMAP, Javamail Folder: nothing required </li>
@@ -157,23 +172,26 @@ public interface Mailbox {
      *             if anything went wrong
      */
     MessageResult appendMessage(MimeMessage message, Date internalDate,
-            FetchGroup fetchGroup, MailboxSession mailboxSession) throws MailboxManagerException;
-    
+            FetchGroup fetchGroup, MailboxSession mailboxSession)
+            throws MailboxManagerException;
+
     /**
      * TODO: consolidate search and getMessages into a single method
+     * 
      * @param set
-     * @param mailboxSession TODO
+     * @param mailboxSession
+     *            TODO
      * @return MessageResult with the fields defined by <b>result</b>
      *         <ul>
      *         <li> IMAP: a set of msn, uid, Flags, header lines, content, mime
      *         parts...</li>
      *         <li> Javamail Folder: Message[]</li>
      *         </ul>
-     * @throws MailboxManagerException 
+     * @throws MailboxManagerException
      */
 
-    Iterator getMessages(MessageRange set, FetchGroup fetchGroup, MailboxSession mailboxSession) 
-        throws MailboxManagerException;
+    Iterator getMessages(MessageRange set, FetchGroup fetchGroup,
+            MailboxSession mailboxSession) throws MailboxManagerException;
 
     /**
      * Implementations of Mailbox may interpret the fact that someone is
@@ -181,7 +199,7 @@ public interface Mailbox {
      * everyone has removed itself.
      * 
      * @param listener
-     * @throws MailboxManagerException 
+     * @throws MailboxManagerException
      */
     void addListener(MailboxListener listener) throws MailboxManagerException;
 

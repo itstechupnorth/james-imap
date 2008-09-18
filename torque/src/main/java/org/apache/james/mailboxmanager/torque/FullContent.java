@@ -32,20 +32,24 @@ import org.apache.james.mailboxmanager.MessageResult;
 
 final class FullContent implements MessageResult.Content {
     private final byte[] contents;
+
     private final List headers;
+
     private final long size;
-    
+
     public FullContent(final byte[] contents, final List headers) {
-        this.contents =  contents;
+        this.contents = contents;
         this.headers = headers;
         this.size = caculateSize();
     }
 
     private long caculateSize() {
-        long result = contents.length + MessageUtils.countUnnormalLines(contents);
+        long result = contents.length
+                + MessageUtils.countUnnormalLines(contents);
         result += 2;
-        for (final Iterator it=headers.iterator(); it.hasNext();) {
-            final MessageResult.Header header = (MessageResult.Header) it.next();
+        for (final Iterator it = headers.iterator(); it.hasNext();) {
+            final MessageResult.Header header = (MessageResult.Header) it
+                    .next();
             if (header != null) {
                 result += header.size();
                 result += 2;
@@ -55,8 +59,9 @@ final class FullContent implements MessageResult.Content {
     }
 
     public void writeTo(StringBuffer buffer) {
-        for (final Iterator it=headers.iterator(); it.hasNext();) {
-            final MessageResult.Header header = (MessageResult.Header) it.next();
+        for (final Iterator it = headers.iterator(); it.hasNext();) {
+            final MessageResult.Header header = (MessageResult.Header) it
+                    .next();
             if (header != null) {
                 header.writeTo(buffer);
             }
@@ -74,8 +79,9 @@ final class FullContent implements MessageResult.Content {
 
     public void writeTo(WritableByteChannel channel) throws IOException {
         ByteBuffer newLine = ByteBuffer.wrap(MessageRowUtils.BYTES_NEW_LINE);
-        for (final Iterator it=headers.iterator(); it.hasNext();) {
-            final MessageResult.Header header = (MessageResult.Header) it.next();
+        for (final Iterator it = headers.iterator(); it.hasNext();) {
+            final MessageResult.Header header = (MessageResult.Header) it
+                    .next();
             if (header != null) {
                 header.writeTo(channel);
             }
@@ -88,7 +94,8 @@ final class FullContent implements MessageResult.Content {
         writeAll(channel, wrap);
     }
 
-    private void writeAll(WritableByteChannel channel, ByteBuffer buffer) throws IOException {
+    private void writeAll(WritableByteChannel channel, ByteBuffer buffer)
+            throws IOException {
         while (channel.write(buffer) > 0) {
             // write more
         }

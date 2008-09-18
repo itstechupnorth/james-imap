@@ -27,60 +27,60 @@ import org.apache.james.mailboxmanager.manager.SubscriptionException;
 import org.apache.james.mailboxmanager.torque.UserManager;
 
 public class SimpleUserManager implements UserManager {
-	
-	private final Map users;
-	
-	public SimpleUserManager() {
-		this.users = new HashMap();
-	}
 
-	public boolean isAuthentic(String userid, String passwd) {
-		UserDetails user = (UserDetails) users.get(userid);
-		final boolean result;
-		if (user == null) {
-			result = false;
-		} else {
-			result = (passwd.equals(user.getPassword()));
-		}
-		return result;
-	}
+    private final Map users;
 
-	public void subscribe(String userid, String mailbox)
-			throws SubscriptionException {
-		UserDetails user = (UserDetails) users.get(userid);
-		if (user == null) {
-			user = new UserDetails(userid);
-			users.put(userid, user);
-		}
-		user.addSubscription(mailbox);
-	}
+    public SimpleUserManager() {
+        this.users = new HashMap();
+    }
 
-	public Collection subscriptions(String userid) throws SubscriptionException {
-		UserDetails user = (UserDetails) users.get(userid);
-		if (user == null) {
-			user = new UserDetails(userid);
-			users.put(userid, user);
-		}
-		return user.getSubscriptions();
-	}
+    public boolean isAuthentic(String userid, String passwd) {
+        UserDetails user = (UserDetails) users.get(userid);
+        final boolean result;
+        if (user == null) {
+            result = false;
+        } else {
+            result = (passwd.equals(user.getPassword()));
+        }
+        return result;
+    }
 
-	public void unsubscribe(String userid, String mailbox)
-			throws SubscriptionException {
-		UserDetails user = (UserDetails) users.get(userid);
-		if (user == null) {
-			user = new UserDetails(userid);
-			users.put(userid, user);
-		}
-		user.removeSubscription(mailbox);
-	}
+    public void subscribe(String userid, String mailbox)
+            throws SubscriptionException {
+        UserDetails user = (UserDetails) users.get(userid);
+        if (user == null) {
+            user = new UserDetails(userid);
+            users.put(userid, user);
+        }
+        user.addSubscription(mailbox);
+    }
 
-	public void addUser(String userid, String password) {
-		UserDetails user = (UserDetails) users.get(userid);
-		if (user == null) {
-			user = new UserDetails(userid);
-			users.put(userid, user);
-		}
-		user.setPassword(password);
-	}
+    public Collection subscriptions(String userid) throws SubscriptionException {
+        UserDetails user = (UserDetails) users.get(userid);
+        if (user == null) {
+            user = new UserDetails(userid);
+            users.put(userid, user);
+        }
+        return user.getSubscriptions();
+    }
+
+    public void unsubscribe(String userid, String mailbox)
+            throws SubscriptionException {
+        UserDetails user = (UserDetails) users.get(userid);
+        if (user == null) {
+            user = new UserDetails(userid);
+            users.put(userid, user);
+        }
+        user.removeSubscription(mailbox);
+    }
+
+    public void addUser(String userid, String password) {
+        UserDetails user = (UserDetails) users.get(userid);
+        if (user == null) {
+            user = new UserDetails(userid);
+            users.put(userid, user);
+        }
+        user.setPassword(password);
+    }
 
 }

@@ -33,25 +33,29 @@ import org.apache.james.mailboxmanager.manager.MailboxManagerProvider;
  */
 public class DefaultImapProcessorFactory implements ImapProcessorFactory {
 
-    public static final ImapProcessor createDefaultProcessor(final MailboxManagerProvider mailboxManagerProvider) {
+    public static final ImapProcessor createDefaultProcessor(
+            final MailboxManagerProvider mailboxManagerProvider) {
         final StatusResponseFactory statusResponseFactory = new UnpooledStatusResponseFactory();
-        final UnknownRequestImapProcessor unknownRequestImapProcessor = new UnknownRequestImapProcessor(statusResponseFactory);
-        final ImapProcessor imap4rev1Chain = Imap4Rev1ProcessorFactory.createDefaultChain(unknownRequestImapProcessor, 
-                mailboxManagerProvider, statusResponseFactory);
-        final ImapProcessor result = new ImapResponseMessageProcessor(imap4rev1Chain);
+        final UnknownRequestImapProcessor unknownRequestImapProcessor = new UnknownRequestImapProcessor(
+                statusResponseFactory);
+        final ImapProcessor imap4rev1Chain = Imap4Rev1ProcessorFactory
+                .createDefaultChain(unknownRequestImapProcessor,
+                        mailboxManagerProvider, statusResponseFactory);
+        final ImapProcessor result = new ImapResponseMessageProcessor(
+                imap4rev1Chain);
         return result;
     }
-    
+
     private MailboxManagerProvider mailboxManagerProvider;
-    
+
     public final void configure(MailboxManagerProvider mailboxManagerProvider) {
         setMailboxManagerProvider(mailboxManagerProvider);
     }
-    
+
     public final MailboxManagerProvider getMailboxManagerProvider() {
         return mailboxManagerProvider;
     }
-    
+
     public final void setMailboxManagerProvider(
             MailboxManagerProvider mailboxManagerProvider) {
         this.mailboxManagerProvider = mailboxManagerProvider;

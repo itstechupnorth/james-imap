@@ -34,23 +34,33 @@ import org.apache.james.mailboxmanager.MessageResult;
 import org.apache.james.mailboxmanager.util.MessageResultUtils;
 
 /**
- * Bean based implementation.
- * {@link #getIncludedResults()} is updated when setters are called.
+ * Bean based implementation. {@link #getIncludedResults()} is updated when
+ * setters are called.
  */
 public class MessageResultImpl implements MessageResult {
-    
+
     private MimeMessage mimeMessage;
+
     private long uid;
+
     private Flags flags;
+
     private int size;
+
     private Date internalDate;
+
     private List headers;
+
     private Content body;
+
     private Content fullContent;
+
     private int includedResults = FetchGroup.MINIMAL;
+
     private Map partsByPath = new HashMap();
+
     private MimeDescriptor mimeDescriptor;
-    
+
     public MessageResultImpl(long uid) {
         setUid(uid);
     }
@@ -63,8 +73,9 @@ public class MessageResultImpl implements MessageResult {
         setFlags(flags);
     }
 
-    public MessageResultImpl(MessageResult result) throws MailboxManagerException {
-        setUid(result.getUid()); 
+    public MessageResultImpl(MessageResult result)
+            throws MailboxManagerException {
+        setUid(result.getUid());
         if (MessageResultUtils.isFlagsIncluded(result)) {
             setFlags(result.getFlags());
         }
@@ -86,16 +97,16 @@ public class MessageResultImpl implements MessageResult {
     }
 
     private List toList(Iterator iterator) {
-		final List results = new ArrayList();
-		if (iterator != null) {
-			while (iterator.hasNext()) {
-				results.add(iterator.next());
-			}
-		}
-		return results;
-	}
+        final List results = new ArrayList();
+        if (iterator != null) {
+            while (iterator.hasNext()) {
+                results.add(iterator.next());
+            }
+        }
+        return results;
+    }
 
-	public MessageResult.FetchGroup getIncludedResults() {
+    public MessageResult.FetchGroup getIncludedResults() {
         final FetchGroupImpl fetchGroup = new FetchGroupImpl(includedResults);
         return fetchGroup;
     }
@@ -103,7 +114,7 @@ public class MessageResultImpl implements MessageResult {
     public MimeMessage getMimeMessage() {
         return mimeMessage;
     }
-    
+
     public long getUid() {
         return uid;
     }
@@ -122,37 +133,38 @@ public class MessageResultImpl implements MessageResult {
     }
 
     public void setUid(long uid) {
-        this.uid=uid;
+        this.uid = uid;
     }
-    
+
     public int getSize() {
         return size;
     }
 
     public void setFlags(Flags flags) {
-        this.flags=flags;
+        this.flags = flags;
         if (flags != null) {
             includedResults |= FetchGroup.FLAGS;
         }
     }
 
     public int compareTo(Object o) {
-        MessageResult that=(MessageResult)o;
-        if (this.uid>0 && that.getUid()>0) {
+        MessageResult that = (MessageResult) o;
+        if (this.uid > 0 && that.getUid() > 0) {
             // TODO: this seems inefficient
-            return new Long(uid).compareTo(new Long(that.getUid()));    
+            return new Long(uid).compareTo(new Long(that.getUid()));
         } else {
             // TODO: throwing an undocumented untyped runtime seems wrong
-            // TODO: if uids must be greater than zero then this should be enforced
+            // TODO: if uids must be greater than zero then this should be
+            // enforced
             // TODO: on the way in
             // TODO: probably an IllegalArgumentException would be better
             throw new RuntimeException("can't compare");
         }
-        
+
     }
 
     public void setSize(int size) {
-        this.size=size;
+        this.size = size;
         includedResults |= FetchGroup.SIZE;
     }
 
@@ -166,7 +178,7 @@ public class MessageResultImpl implements MessageResult {
     public Iterator headers() {
         return headers.iterator();
     }
-    
+
     public List getHeaders() {
         return headers;
     }
@@ -202,22 +214,17 @@ public class MessageResultImpl implements MessageResult {
 
     /**
      * Renders suitably for logging.
-     *
-     * @return a <code>String</code> representation 
-     * of this object.
+     * 
+     * @return a <code>String</code> representation of this object.
      */
-    public String toString()
-    {
+    public String toString() {
         final String TAB = " ";
-        
-        String retValue = "MessageResultImpl ( "
-            + "uid = " + this.uid + TAB
-            + "flags = " + this.flags + TAB
-            + "size = " + this.size + TAB
-            + "internalDate = " + this.internalDate + TAB
-            + "includedResults = " + this.includedResults + TAB
-            + " )";
-    
+
+        String retValue = "MessageResultImpl ( " + "uid = " + this.uid + TAB
+                + "flags = " + this.flags + TAB + "size = " + this.size + TAB
+                + "internalDate = " + this.internalDate + TAB
+                + "includedResults = " + this.includedResults + TAB + " )";
+
         return retValue;
     }
 
@@ -228,10 +235,9 @@ public class MessageResultImpl implements MessageResult {
             result = null;
         } else {
             result = partContent.getBody();
-        } 
-        return result;  
+        }
+        return result;
     }
-    
 
     public Content getMimeBody(MimePath path) throws MailboxManagerException {
         final Content result;
@@ -240,8 +246,8 @@ public class MessageResultImpl implements MessageResult {
             result = null;
         } else {
             result = partContent.getMimeBody();
-        } 
-        return result;  
+        }
+        return result;
     }
 
     public Content getFullContent(MimePath path) throws MailboxManagerException {
@@ -251,57 +257,59 @@ public class MessageResultImpl implements MessageResult {
             result = null;
         } else {
             result = partContent.getFull();
-        } 
-        return result;  
+        }
+        return result;
     }
 
-    public Iterator iterateHeaders(MimePath path) throws MailboxManagerException {
+    public Iterator iterateHeaders(MimePath path)
+            throws MailboxManagerException {
         final Iterator result;
         final PartContent partContent = getPartContent(path);
         if (partContent == null) {
             result = null;
         } else {
             result = partContent.getHeaders();
-        } 
-        return result;  
+        }
+        return result;
     }
-    
-    public Iterator iterateMimeHeaders(MimePath path) throws MailboxManagerException {
+
+    public Iterator iterateMimeHeaders(MimePath path)
+            throws MailboxManagerException {
         final Iterator result;
         final PartContent partContent = getPartContent(path);
         if (partContent == null) {
             result = null;
         } else {
             result = partContent.getMimeHeaders();
-        } 
-        return result;  
+        }
+        return result;
     }
-    
+
     public void setBodyContent(MimePath path, Content content) {
         final PartContent partContent = getPartContent(path);
         partContent.setBody(content);
     }
-    
+
     public void setMimeBodyContent(MimePath path, Content content) {
         final PartContent partContent = getPartContent(path);
         partContent.setMimeBody(content);
     }
-    
+
     public void setFullContent(MimePath path, Content content) {
         final PartContent partContent = getPartContent(path);
-        partContent.setFull(content);  
+        partContent.setFull(content);
     }
-    
+
     public void setHeaders(MimePath path, Iterator headers) {
         final PartContent partContent = getPartContent(path);
-        partContent.setHeaders(headers);    
+        partContent.setHeaders(headers);
     }
-    
+
     public void setMimeHeaders(MimePath path, Iterator headers) {
         final PartContent partContent = getPartContent(path);
-        partContent.setMimeHeaders(headers);    
+        partContent.setMimeHeaders(headers);
     }
-    
+
     private PartContent getPartContent(MimePath path) {
         PartContent result = (PartContent) partsByPath.get(path);
         if (result == null) {
@@ -310,15 +318,20 @@ public class MessageResultImpl implements MessageResult {
         }
         return result;
     }
-    
+
     private static final class PartContent {
         private Content body;
+
         private Content mimeBody;
+
         private Content full;
+
         private Iterator headers;
+
         private Iterator mimeHeaders;
+
         private int content;
-        
+
         public final int getContent() {
             return content;
         }
@@ -326,7 +339,7 @@ public class MessageResultImpl implements MessageResult {
         public final Content getBody() {
             return body;
         }
-        
+
         public final void setBody(Content body) {
             content = content | FetchGroup.BODY_CONTENT;
             this.body = body;
@@ -335,35 +348,35 @@ public class MessageResultImpl implements MessageResult {
         public final Content getMimeBody() {
             return mimeBody;
         }
-        
+
         public final void setMimeBody(Content mimeBody) {
             content = content | FetchGroup.MIME_CONTENT;
             this.mimeBody = mimeBody;
         }
-        
+
         public final Content getFull() {
             return full;
         }
-        
+
         public final void setFull(Content full) {
             content = content | FetchGroup.FULL_CONTENT;
             this.full = full;
         }
-        
+
         public final Iterator getHeaders() {
             return headers;
         }
-        
-        public final void setHeaders(Iterator headers) { 
+
+        public final void setHeaders(Iterator headers) {
             content = content | FetchGroup.HEADERS;
             this.headers = headers;
         }
-        
+
         public final Iterator getMimeHeaders() {
             return mimeHeaders;
         }
-        
-        public final void setMimeHeaders(Iterator mimeHeaders) { 
+
+        public final void setMimeHeaders(Iterator mimeHeaders) {
             content = content | FetchGroup.MIME_HEADERS;
             this.mimeHeaders = mimeHeaders;
         }
@@ -373,7 +386,7 @@ public class MessageResultImpl implements MessageResult {
         includedResults |= FetchGroup.MIME_DESCRIPTOR;
         this.mimeDescriptor = mimeDescriptor;
     }
-    
+
     public MimeDescriptor getMimeDescriptor() {
         return mimeDescriptor;
     }

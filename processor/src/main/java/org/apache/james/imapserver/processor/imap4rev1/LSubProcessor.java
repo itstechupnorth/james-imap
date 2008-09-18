@@ -42,8 +42,9 @@ import org.apache.james.mailboxmanager.manager.MailboxManagerProvider;
 import org.apache.james.mailboxmanager.manager.SubscriptionException;
 
 public class LSubProcessor extends AbstractMailboxAwareProcessor {
-    
-    public LSubProcessor(final ImapProcessor next, final MailboxManagerProvider mailboxManagerProvider, 
+
+    public LSubProcessor(final ImapProcessor next,
+            final MailboxManagerProvider mailboxManagerProvider,
             final StatusResponseFactory factory) {
         super(next, mailboxManagerProvider, factory);
     }
@@ -52,8 +53,8 @@ public class LSubProcessor extends AbstractMailboxAwareProcessor {
         return (message instanceof LsubRequest);
     }
 
-    protected void doProcess(ImapRequest message,
-            ImapSession session, String tag, ImapCommand command, Responder responder) {
+    protected void doProcess(ImapRequest message, ImapSession session,
+            String tag, ImapCommand command, Responder responder) {
         final LsubRequest request = (LsubRequest) message;
         final String referenceName = request.getBaseReferenceName();
         final String mailboxPattern = request.getMailboxPattern();
@@ -61,13 +62,14 @@ public class LSubProcessor extends AbstractMailboxAwareProcessor {
         try {
             if (mailboxPattern.length() == 0) {
                 respondWithHierarchyDelimiter(responder);
-                
+
             } else {
-                listSubscriptions(session, responder, referenceName, mailboxPattern);
-            }        
+                listSubscriptions(session, responder, referenceName,
+                        mailboxPattern);
+            }
 
             okComplete(command, tag, responder);
-            
+
         } catch (SubscriptionException e) {
             getLog().debug("Subscription failed", e);
             final HumanReadableTextKey exceptionKey = e.getKey();
@@ -82,51 +84,62 @@ public class LSubProcessor extends AbstractMailboxAwareProcessor {
             getLog().debug("Subscription failed", e);
             final HumanReadableTextKey displayTextKey = HumanReadableTextKey.GENERIC_LSUB_FAILURE;
             no(command, tag, responder, displayTextKey);
-        } 
+        }
     }
 
-    private void listSubscriptions(ImapSession session, Responder responder, final String referenceName, final String mailboxPattern) throws SubscriptionException, MailboxManagerException {
+    private void listSubscriptions(ImapSession session, Responder responder,
+            final String referenceName, final String mailboxPattern)
+            throws SubscriptionException, MailboxManagerException {
         final String userName = ImapSessionUtils.getUserName(session);
         final MailboxManager manager = getMailboxManager(session);
         final Collection mailboxes = manager.subscriptions(userName);
-        final MailboxExpression expression 
-            = new MailboxExpression(referenceName, mailboxPattern, '*', '%');
+        final MailboxExpression expression = new MailboxExpression(
+                referenceName, mailboxPattern, '*', '%');
         final Collection mailboxResponses = new ArrayList();
-        for (final Iterator it=mailboxes.iterator();it.hasNext();) {
+        for (final Iterator it = mailboxes.iterator(); it.hasNext();) {
             final String mailboxName = (String) it.next();
-            respond(responder, expression, mailboxName, true, mailboxes, mailboxResponses);
+            respond(responder, expression, mailboxName, true, mailboxes,
+                    mailboxResponses);
         }
     }
 
-    private void respond(Responder responder, final MailboxExpression expression, final String mailboxName, 
-            final boolean originalSubscription, final Collection mailboxes, final Collection mailboxResponses) {
-        if (expression.isExpressionMatch(mailboxName, ImapConstants.HIERARCHY_DELIMITER_CHAR)) {
-            if (!mailboxResponses.contains(mailboxName))
-            {
-                final LSubResponse response = new LSubResponse(mailboxName, ImapConstants.HIERARCHY_DELIMITER, !originalSubscription);
+    private void respond(Responder responder,
+            final MailboxExpression expression, final String mailboxName,
+            final boolean originalSubscription, final Collection mailboxes,
+            final Collection mailboxResponses) {
+        if (expression.isExpressionMatch(mailboxName,
+                ImapConstants.HIERARCHY_DELIMITER_CHAR)) {
+            if (!mailboxResponses.contains(mailboxName)) {
+                final LSubResponse response = new LSubResponse(mailboxName,
+                        ImapConstants.HIERARCHY_DELIMITER,
+                        !originalSubscription);
                 responder.respond(response);
                 mailboxResponses.add(mailboxName);
             }
-        }
-        else
-        {
-            final int lastDelimiter = mailboxName.lastIndexOf(ImapConstants.HIERARCHY_DELIMITER_CHAR);
+        } else {
+            final int lastDelimiter = mailboxName
+                    .lastIndexOf(ImapConstants.HIERARCHY_DELIMITER_CHAR);
             if (lastDelimiter > 0) {
-                final String parentMailbox = mailboxName.substring(0, lastDelimiter);
+                final String parentMailbox = mailboxName.substring(0,
+                        lastDelimiter);
                 if (!mailboxes.contains(parentMailbox)) {
-                    respond(responder, expression, parentMailbox, false, mailboxes, mailboxResponses);
+                    respond(responder, expression, parentMailbox, false,
+                            mailboxes, mailboxResponses);
                 }
             }
         }
     }
 
-    /** 
+    /**
      * An empty mailboxPattern signifies a request for the hierarchy delimiter
      * and root name of the referenceName argument
-     * @param referenceName IMAP reference name, possibly null
+     * 
+     * @param referenceName
+     *            IMAP reference name, possibly null
      */
     private void respondWithHierarchyDelimiter(final Responder responder) {
-        final LSubResponse response = new LSubResponse("", ImapConstants.HIERARCHY_DELIMITER, true);
+        final LSubResponse response = new LSubResponse("",
+                ImapConstants.HIERARCHY_DELIMITER, true);
         responder.respond(response);
     }
 }

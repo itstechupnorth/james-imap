@@ -27,29 +27,34 @@ import org.jmock.Mock;
 import org.jmock.MockObjectTestCase;
 import org.jmock.core.Constraint;
 
-public class STATUSResponseEncoderTest extends MockObjectTestCase{
+public class STATUSResponseEncoderTest extends MockObjectTestCase {
 
     STATUSResponseEncoder encoder;
+
     Mock mockNextEncoder;
+
     Mock composer;
-    
+
     protected void setUp() throws Exception {
         super.setUp();
         mockNextEncoder = mock(ImapEncoder.class);
-        composer = mock(ImapResponseComposer.class);    
-        encoder = new STATUSResponseEncoder((ImapEncoder) mockNextEncoder.proxy());
+        composer = mock(ImapResponseComposer.class);
+        encoder = new STATUSResponseEncoder((ImapEncoder) mockNextEncoder
+                .proxy());
     }
 
     protected void tearDown() throws Exception {
         super.tearDown();
     }
-    
+
     public void testIsAcceptable() throws Exception {
-        assertTrue(encoder.isAcceptable(new STATUSResponse(null, null, null, null, null,"mailbox")));
-        assertFalse(encoder.isAcceptable((ImapMessage) mock(ImapMessage.class).proxy()));
+        assertTrue(encoder.isAcceptable(new STATUSResponse(null, null, null,
+                null, null, "mailbox")));
+        assertFalse(encoder.isAcceptable((ImapMessage) mock(ImapMessage.class)
+                .proxy()));
         assertFalse(encoder.isAcceptable(null));
     }
-    
+
     public void testDoEncode() throws Exception {
         Long messages = new Long(2);
         Long recent = new Long(3);
@@ -57,11 +62,12 @@ public class STATUSResponseEncoderTest extends MockObjectTestCase{
         Long uidValidity = new Long(7);
         Long unseen = new Long(11);
         String mailbox = "A mailbox named desire";
-        Constraint[] args = {same(messages), same(recent), same(uidNext), 
-                same(uidValidity), same(unseen), same(mailbox)};
-        
+        Constraint[] args = { same(messages), same(recent), same(uidNext),
+                same(uidValidity), same(unseen), same(mailbox) };
+
         composer.expects(once()).method("statusResponse").with(args);
-        encoder.encode(new STATUSResponse(messages, recent, uidNext, uidValidity, unseen, mailbox),
-                (ImapResponseComposer) composer.proxy());
+        encoder.encode(new STATUSResponse(messages, recent, uidNext,
+                uidValidity, unseen, mailbox), (ImapResponseComposer) composer
+                .proxy());
     }
 }

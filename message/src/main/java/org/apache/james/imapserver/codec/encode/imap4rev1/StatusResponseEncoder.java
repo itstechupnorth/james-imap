@@ -54,15 +54,15 @@ public class StatusResponseEncoder extends AbstractChainedImapEncoder {
         if (responseCode == null) {
             parameters = null;
             number = 0;
-        } else { 
+        } else {
             parameters = responseCode.getParameters();
             number = responseCode.getNumber();
         }
-        composer.statusResponse(tag, command, type, code, parameters, number, text);
+        composer.statusResponse(tag, command, type, code, parameters, number,
+                text);
     }
 
-    private String asString(HumanReadableTextKey text)
-    {
+    private String asString(HumanReadableTextKey text) {
         final String result;
         if (text == null) {
             result = null;
@@ -71,9 +71,8 @@ public class StatusResponseEncoder extends AbstractChainedImapEncoder {
         }
         return result;
     }
-    
-    private String asString(StatusResponse.ResponseCode code)
-    {
+
+    private String asString(StatusResponse.ResponseCode code) {
         final String result;
         if (code == null) {
             result = null;
@@ -82,9 +81,8 @@ public class StatusResponseEncoder extends AbstractChainedImapEncoder {
         }
         return result;
     }
-    
-    private String asString(StatusResponse.Type type)
-    {
+
+    private String asString(StatusResponse.Type type) {
         final String result;
         if (type == null) {
             result = null;
@@ -93,7 +91,7 @@ public class StatusResponseEncoder extends AbstractChainedImapEncoder {
         }
         return result;
     }
-    
+
     protected boolean isAcceptable(ImapMessage message) {
         return (message instanceof StatusResponse);
     }

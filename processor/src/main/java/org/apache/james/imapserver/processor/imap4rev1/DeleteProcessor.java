@@ -35,7 +35,8 @@ import org.apache.james.mailboxmanager.manager.MailboxManagerProvider;
 public class DeleteProcessor extends AbstractMailboxAwareProcessor {
 
     public DeleteProcessor(final ImapProcessor next,
-            final MailboxManagerProvider mailboxManagerProvider, final StatusResponseFactory factory) {
+            final MailboxManagerProvider mailboxManagerProvider,
+            final StatusResponseFactory factory) {
         super(next, mailboxManagerProvider, factory);
     }
 
@@ -43,8 +44,8 @@ public class DeleteProcessor extends AbstractMailboxAwareProcessor {
         return (message instanceof DeleteRequest);
     }
 
-    protected void doProcess(ImapRequest message,
-            ImapSession session, String tag, ImapCommand command, Responder responder) {
+    protected void doProcess(ImapRequest message, ImapSession session,
+            String tag, ImapCommand command, Responder responder) {
         final DeleteRequest request = (DeleteRequest) message;
         final String mailboxName = request.getMailboxName();
         try {
@@ -56,10 +57,11 @@ public class DeleteProcessor extends AbstractMailboxAwareProcessor {
                 }
             }
             final MailboxManager mailboxManager = getMailboxManager(session);
-            mailboxManager.deleteMailbox(fullMailboxName, ImapSessionUtils.getMailboxSession(session));
+            mailboxManager.deleteMailbox(fullMailboxName, ImapSessionUtils
+                    .getMailboxSession(session));
             unsolicitedResponses(session, responder, false);
             okComplete(command, tag, responder);
-            
+
         } catch (MailboxManagerException e) {
             no(command, tag, responder, e);
         }

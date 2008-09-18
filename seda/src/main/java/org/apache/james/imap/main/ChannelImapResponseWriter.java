@@ -30,25 +30,30 @@ import org.apache.james.imap.message.response.imap4rev1.Literal;
 import org.apache.james.imapserver.codec.encode.ImapResponseWriter;
 
 /**
- * Class providing methods to send response messages from the server
- * to the client.
+ * Class providing methods to send response messages from the server to the
+ * client.
  */
-public class ChannelImapResponseWriter extends AbstractLogEnabled implements ImapConstants, ImapResponseWriter {
-    
+public class ChannelImapResponseWriter extends AbstractLogEnabled implements
+        ImapConstants, ImapResponseWriter {
+
     private static final int LOWER_CASE_OFFSET = 'a' - 'A';
+
     private static final int DEFAULT_BUFFER_SIZE = 128;
-    
+
     private final Charset usAscii;
+
     private final WritableByteChannel out;
+
     private final ByteBuffer buffer;
+
     private boolean skipNextSpace;
 
-    public ChannelImapResponseWriter( final WritableByteChannel out) {
+    public ChannelImapResponseWriter(final WritableByteChannel out) {
         this(out, DEFAULT_BUFFER_SIZE);
     }
-    
-    public ChannelImapResponseWriter( final WritableByteChannel out, final int bufferSize  )
-    {
+
+    public ChannelImapResponseWriter(final WritableByteChannel out,
+            final int bufferSize) {
         this.out = out;
         skipNextSpace = false;
         buffer = ByteBuffer.allocate(bufferSize);
@@ -56,79 +61,75 @@ public class ChannelImapResponseWriter extends AbstractLogEnabled implements Ima
     }
 
     /**
-     * Writes the message provided to the client, prepended with the
-     * untagged marker "*".
-     *
-     * @param message The message to write to the client.
-     * @throws IOException 
+     * Writes the message provided to the client, prepended with the untagged
+     * marker "*".
+     * 
+     * @param message
+     *            The message to write to the client.
+     * @throws IOException
      */
-    public void untaggedResponse( String message ) throws IOException
-    {
+    public void untaggedResponse(String message) throws IOException {
         untagged();
-        message( message );
+        message(message);
         end();
     }
-    
-    public void byeResponse( String message ) throws IOException {
+
+    public void byeResponse(String message) throws IOException {
         untaggedResponse(BYE + SP + message);
     }
 
     private void write(final ByteBuffer buffer) throws IOException {
-        while(out.write(buffer)>0) {
+        while (out.write(buffer) > 0) {
             // Write all
         }
     }
-    
+
     private void writeASCII(final String string) throws IOException {
         final ByteBuffer buffer = usAscii.encode(string);
-        write( buffer );
+        write(buffer);
     }
-    
+
     private void write(byte[] bytes) throws IOException {
         final ByteBuffer wrap = ByteBuffer.wrap(bytes);
         write(wrap);
     }
-    
+
     public void untagged() throws IOException {
-        writeASCII( UNTAGGED );
+        writeASCII(UNTAGGED);
     }
 
     public void tag(String tag) throws IOException {
-        writeASCII( tag );
+        writeASCII(tag);
     }
 
-    public void message( String message ) throws IOException
-    {
-        if ( message != null ) {
+    public void message(String message) throws IOException {
+        if (message != null) {
             space();
-            writeASCII( message );
+            writeASCII(message);
         }
     }
 
-    public void message( long number ) throws IOException
-    {
+    public void message(long number) throws IOException {
         space();
-        writeASCII( Long.toString(number) );
+        writeASCII(Long.toString(number));
     }
 
-    public void responseCode( String responseCode ) throws IOException
-    {
-        if ( responseCode != null ) {
-            writeASCII( " [" );
-            writeASCII( responseCode );
-            write( BYTES_CLOSE_SQUARE_BRACKET );
+    public void responseCode(String responseCode) throws IOException {
+        if (responseCode != null) {
+            writeASCII(" [");
+            writeASCII(responseCode);
+            write(BYTES_CLOSE_SQUARE_BRACKET);
         }
     }
 
-    public void end() throws IOException
-    {
+    public void end() throws IOException {
         write(BYTES_LINE_END);
         flush();
     }
 
     public void commandName(String commandName) throws IOException {
         space();
-        writeASCII( commandName );
+        writeASCII(commandName);
     }
 
     public void quote(String message) throws IOException {
@@ -136,11 +137,10 @@ public class ChannelImapResponseWriter extends AbstractLogEnabled implements Ima
         final int length = message.length();
         buffer.clear();
         buffer.put(BYTE_DQUOTE);
-        for (int i=0;i<length;i++) {
+        for (int i = 0; i < length; i++) {
             writeIfFull();
             char character = message.charAt(i);
-            if (character == ImapConstants.BACK_SLASH 
-                    || character == DQUOTE) {
+            if (character == ImapConstants.BACK_SLASH || character == DQUOTE) {
                 buffer.put(BYTE_BACK_SLASH);
             }
             writeIfFull();
@@ -164,7 +164,7 @@ public class ChannelImapResponseWriter extends AbstractLogEnabled implements Ima
             buffer.clear();
         }
     }
-    
+
     public void flush() throws IOException {
     }
 
@@ -186,15 +186,15 @@ public class ChannelImapResponseWriter extends AbstractLogEnabled implements Ima
         write(bracket);
         skipNextSpace();
     }
-    
+
     private void clearSkipNextSpace() {
         skipNextSpace = false;
     }
-    
+
     public void skipNextSpace() {
         skipNextSpace = true;
     }
-    
+
     public void space() throws IOException {
         if (skipNextSpace) {
             skipNextSpace = false;
@@ -210,7 +210,7 @@ public class ChannelImapResponseWriter extends AbstractLogEnabled implements Ima
         writeASCII(Long.toString(size));
         write(BYTES_CLOSE_BRACE);
         write(BYTES_LINE_END);
-        if (size>0) {
+        if (size > 0) {
             literal.writeTo(out);
         }
     }
@@ -222,25 +222,26 @@ public class ChannelImapResponseWriter extends AbstractLogEnabled implements Ima
     public void openSquareBracket() throws IOException {
         openBracket(BYTES_OPEN_SQUARE_BRACKET);
     }
-    
+
     public void upperCaseAscii(String message) throws IOException {
         upperCaseAscii(message, false);
     }
-    
-    private void upperCaseAscii(String message, boolean quote) throws IOException {
+
+    private void upperCaseAscii(String message, boolean quote)
+            throws IOException {
         space();
         final int length = message.length();
         buffer.clear();
         if (quote) {
             buffer.put(BYTE_DQUOTE);
         }
-        for (int i=0;i<length;i++) {
+        for (int i = 0; i < length; i++) {
             writeIfFull();
             final char next = message.charAt(i);
             if (next >= 'a' && next <= 'z') {
-                buffer.put((byte)(next - LOWER_CASE_OFFSET));
+                buffer.put((byte) (next - LOWER_CASE_OFFSET));
             } else {
-                buffer.put((byte)(next));
+                buffer.put((byte) (next));
             }
         }
         writeIfFull();
@@ -252,6 +253,6 @@ public class ChannelImapResponseWriter extends AbstractLogEnabled implements Ima
     }
 
     public void quoteUpperCaseAscii(String message) throws IOException {
-        upperCaseAscii(message, true);   
+        upperCaseAscii(message, true);
     }
 }

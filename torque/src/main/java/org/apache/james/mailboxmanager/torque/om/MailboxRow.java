@@ -15,7 +15,7 @@
  * KIND, either express or implied.  See the License for the    *
  * specific language governing permissions and limitations      *
  * under the License.                                           *
- ****************************************************************/ 
+ ****************************************************************/
 package org.apache.james.mailboxmanager.torque.om;
 
 import java.sql.Connection;
@@ -100,12 +100,12 @@ public class MailboxRow extends
         int numberOfRecords = record.getValue(1).asInt();
         return numberOfRecords;
     }
-    
+
     public void resetRecent() throws TorqueException {
         String sql = "UPDATE " + MessageFlagsPeer.TABLE_NAME + " set "
-        + MessageFlagsPeer.RECENT + " = 0 WHERE " + 
-            MessageFlagsPeer.MAILBOX_ID + " = " + getMailboxId() + " AND " 
-            	+ MessageFlagsPeer.RECENT + " = 1 ";
+                + MessageFlagsPeer.RECENT + " = 0 WHERE "
+                + MessageFlagsPeer.MAILBOX_ID + " = " + getMailboxId()
+                + " AND " + MessageFlagsPeer.RECENT + " = 1 ";
         MessageFlagsPeer.executeStatement(sql);
     }
 }

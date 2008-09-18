@@ -44,20 +44,20 @@ public class CRLFOutputStream extends FilterOutputStream {
     protected final static int LAST_WAS_CR = 1;
 
     protected final static int LAST_WAS_LF = 2;
-    
+
     protected boolean startOfLine = true;
 
     /**
      * Constructor that wraps an OutputStream.
      * 
      * @param out
-     *                the OutputStream to be wrapped
+     *            the OutputStream to be wrapped
      */
     public CRLFOutputStream(OutputStream out) {
         super(out);
         statusLast = LAST_WAS_LF; // we already assume a CRLF at beginning
-                                    // (otherwise TOP would not work correctly
-                                    // !)
+        // (otherwise TOP would not work correctly
+        // !)
     }
 
     /**
@@ -65,10 +65,10 @@ public class CRLFOutputStream extends FilterOutputStream {
      * mandated CFLF pairing.
      * 
      * @param b
-     *                the byte to write
+     *            the byte to write
      * 
      * @throws IOException
-     *                 if an error occurs writing the byte
+     *             if an error occurs writing the byte
      */
     public void write(int b) throws IOException {
         switch (b) {
@@ -94,14 +94,15 @@ public class CRLFOutputStream extends FilterOutputStream {
                 break;
         }
     }
-    
+
     /**
-     * Provides an extension point for ExtraDotOutputStream to be able to add dots
-     * at the beginning of new lines.
+     * Provides an extension point for ExtraDotOutputStream to be able to add
+     * dots at the beginning of new lines.
      * 
      * @see java.io.FilterOutputStream#write(byte[], int, int)
      */
-    protected void writeChunk(byte buffer[], int offset, int length) throws IOException {
+    protected void writeChunk(byte buffer[], int offset, int length)
+            throws IOException {
         out.write(buffer, offset, length);
     }
 
@@ -113,29 +114,29 @@ public class CRLFOutputStream extends FilterOutputStream {
         /* optimized */
         int lineStart = offset;
         for (int i = offset; i < length + offset; i++) {
-            switch(buffer[i]) {
-            case '\r':
-                // CR case. Write down the last line
-                // and position the new lineStart at the next char
-                writeChunk(buffer, lineStart, i - lineStart);
-                out.write('\r');
-                out.write('\n');
-                startOfLine = true;
-                lineStart = i + 1;
-                statusLast = LAST_WAS_CR;
-                break;
-            case '\n':
-                if (statusLast != LAST_WAS_CR) {
+            switch (buffer[i]) {
+                case '\r':
+                    // CR case. Write down the last line
+                    // and position the new lineStart at the next char
                     writeChunk(buffer, lineStart, i - lineStart);
                     out.write('\r');
                     out.write('\n');
                     startOfLine = true;
-                }
-                lineStart = i + 1;
-                statusLast = LAST_WAS_LF;
-                break;
-            default:
-                statusLast = LAST_WAS_OTHER;
+                    lineStart = i + 1;
+                    statusLast = LAST_WAS_CR;
+                    break;
+                case '\n':
+                    if (statusLast != LAST_WAS_CR) {
+                        writeChunk(buffer, lineStart, i - lineStart);
+                        out.write('\r');
+                        out.write('\n');
+                        startOfLine = true;
+                    }
+                    lineStart = i + 1;
+                    statusLast = LAST_WAS_LF;
+                    break;
+                default:
+                    statusLast = LAST_WAS_OTHER;
             }
         }
         if (length + offset > lineStart) {
@@ -144,12 +145,11 @@ public class CRLFOutputStream extends FilterOutputStream {
         }
     }
 
-
     /**
      * Ensure that the stream is CRLF terminated.
      * 
      * @throws IOException
-     *                 if an error occurs writing the byte
+     *             if an error occurs writing the byte
      */
     public void checkCRLFTerminator() throws IOException {
         if (statusLast == LAST_WAS_OTHER) {

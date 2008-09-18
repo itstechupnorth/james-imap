@@ -19,8 +19,8 @@
 
 package org.apache.james.imap.main;
 
-
-public class OutputStreamImapResponseWriterTest extends AbstractTestOutputStreamImapResponseWriter {
+public class OutputStreamImapResponseWriterTest extends
+        AbstractTestOutputStreamImapResponseWriter {
 
     protected void setUp() throws Exception {
         super.setUp();
@@ -46,7 +46,6 @@ public class OutputStreamImapResponseWriterTest extends AbstractTestOutputStream
         writer.closeParen();
         checkExpected(" (Hello)");
     }
-    
 
     public void testOpenParenQuoteCloseParen() throws Exception {
         writer.openParen();
@@ -54,8 +53,9 @@ public class OutputStreamImapResponseWriterTest extends AbstractTestOutputStream
         writer.closeParen();
         checkExpected(" (\"Hello\")");
     }
-    
-    public void testOpenParenOpenParenMessageCloseParenCloseParen() throws Exception {
+
+    public void testOpenParenOpenParenMessageCloseParenCloseParen()
+            throws Exception {
         writer.openParen();
         writer.openParen();
         writer.quote("Hello");
@@ -63,12 +63,12 @@ public class OutputStreamImapResponseWriterTest extends AbstractTestOutputStream
         writer.closeParen();
         checkExpected(" ((\"Hello\"))");
     }
-    
+
     public void testOpenParenCloseParenMessage() throws Exception {
         writer.openParen();
         writer.closeParen();
         writer.message("Hello");
         checkExpected(" () Hello");
     }
-    
+
 }

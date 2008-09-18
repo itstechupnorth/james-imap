@@ -31,16 +31,15 @@ import org.apache.james.imapserver.codec.decode.imap4rev1.Imap4Rev1CommandParser
 import org.apache.james.imapserver.codec.decode.main.DefaultImapDecoder;
 
 /**
- * TODO: this is temporary: should let the container do the coupling.
- * TODO: convert to POJO
+ * TODO: this is temporary: should let the container do the coupling. TODO:
+ * convert to POJO
  */
-public class DefaultImapDecoderFactory implements ImapDecoderFactory{
-    
-    
-    
+public class DefaultImapDecoderFactory implements ImapDecoderFactory {
+
     public static final ImapDecoder createDecoder() {
         final UnpooledStatusResponseFactory unpooledStatusResponseFactory = new UnpooledStatusResponseFactory();
-        final Imap4Rev1MessageFactory messageFactory = new BaseImap4Rev1MessageFactory(unpooledStatusResponseFactory);
+        final Imap4Rev1MessageFactory messageFactory = new BaseImap4Rev1MessageFactory(
+                unpooledStatusResponseFactory);
         final Imap4Rev1CommandFactory commandFactory = new StandardImap4Rev1CommandFactory();
         final ImapCommandParserFactory imapCommands = new Imap4Rev1CommandParserFactory(
                 messageFactory, commandFactory, unpooledStatusResponseFactory);
@@ -52,6 +51,5 @@ public class DefaultImapDecoderFactory implements ImapDecoderFactory{
     public ImapDecoder buildImapDecoder() {
         return createDecoder();
     }
-    
-    
+
 }

@@ -21,7 +21,8 @@ package org.apache.james.imap.functional;
 
 import org.apache.james.test.functional.imap.AbstractAuthenticatedStateTestSuite;
 
-public class ExperimentalAuthenticatedStateTest extends AbstractAuthenticatedStateTestSuite {
+public class ExperimentalAuthenticatedStateTest extends
+        AbstractAuthenticatedStateTestSuite {
     public ExperimentalAuthenticatedStateTest() throws Exception {
         super(HostSystemFactory.createStandardImap());
     }

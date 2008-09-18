@@ -20,7 +20,7 @@
 package org.apache.james.api.imap.process;
 
 /**
- * Builds processors. 
+ * Builds processors.
  */
 public interface ImapProcessorFactory {
 

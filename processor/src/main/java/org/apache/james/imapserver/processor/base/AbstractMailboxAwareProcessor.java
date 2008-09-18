@@ -26,34 +26,42 @@ import org.apache.james.mailboxmanager.MailboxSession;
 import org.apache.james.mailboxmanager.manager.MailboxManager;
 import org.apache.james.mailboxmanager.manager.MailboxManagerProvider;
 
-abstract public class AbstractMailboxAwareProcessor extends AbstractImapRequestProcessor {
+abstract public class AbstractMailboxAwareProcessor extends
+        AbstractImapRequestProcessor {
 
     private final MailboxManagerProvider mailboxManagerProvider;
-    
-    public AbstractMailboxAwareProcessor(final ImapProcessor next, 
-            final MailboxManagerProvider mailboxManagerProvider, final StatusResponseFactory factory) {
+
+    public AbstractMailboxAwareProcessor(final ImapProcessor next,
+            final MailboxManagerProvider mailboxManagerProvider,
+            final StatusResponseFactory factory) {
         super(next, factory);
         this.mailboxManagerProvider = mailboxManagerProvider;
     }
-    
-    public String buildFullName(final ImapSession session, String mailboxName) throws MailboxManagerException {
+
+    public String buildFullName(final ImapSession session, String mailboxName)
+            throws MailboxManagerException {
         final String user = ImapSessionUtils.getUserName(session);
         return buildFullName(mailboxName, user);
     }
 
-    private String buildFullName(String mailboxName, String user) throws MailboxManagerException {
+    private String buildFullName(String mailboxName, String user)
+            throws MailboxManagerException {
         if (!mailboxName.startsWith(NAMESPACE_PREFIX)) {
-            mailboxName = mailboxManagerProvider.getMailboxManager().resolve(user,mailboxName);
+            mailboxName = mailboxManagerProvider.getMailboxManager().resolve(
+                    user, mailboxName);
         }
         return mailboxName;
     }
 
-    public MailboxManager getMailboxManager( final ImapSession session ) throws MailboxManagerException {
-        // TODO: removed badly implemented and ineffective check that mailbox user matches current user
+    public MailboxManager getMailboxManager(final ImapSession session)
+            throws MailboxManagerException {
+        // TODO: removed badly implemented and ineffective check that mailbox
+        // user matches current user
         // TODO: add check into user login methods
         // TODO: shouldn't need to cache mailbox manager
         // TODO: consolidate API by deleting provider and supply manager direct
-        MailboxManager result = (MailboxManager) session.getAttribute( ImapSessionUtils.MAILBOX_MANAGER_ATTRIBUTE_SESSION_KEY );
+        MailboxManager result = (MailboxManager) session
+                .getAttribute(ImapSessionUtils.MAILBOX_MANAGER_ATTRIBUTE_SESSION_KEY);
         if (result == null) {
             result = mailboxManagerProvider.getMailboxManager();
             //
@@ -61,23 +69,27 @@ abstract public class AbstractMailboxAwareProcessor extends AbstractImapRequestP
             // But not need to create mailbox until user is logged in
             //
             final String user = ImapSessionUtils.getUserName(session);
-            if (user != null)
-            {
-                result.getMailbox(buildFullName(MailboxManager.INBOX, user), true);
+            if (user != null) {
+                result.getMailbox(buildFullName(MailboxManager.INBOX, user),
+                        true);
                 // TODO: reconsider decision not to sunchronise
                 // TODO: mailbox creation is ATM an expensive operation
                 // TODO: so caching is required
-                // TODO: caching in the session seems like the wrong design decision, though
-                // TODO: the mailbox provider should perform any caching that is required
-                session.setAttribute( ImapSessionUtils.MAILBOX_MANAGER_ATTRIBUTE_SESSION_KEY, result );
+                // TODO: caching in the session seems like the wrong design
+                // decision, though
+                // TODO: the mailbox provider should perform any caching that is
+                // required
+                session.setAttribute(
+                        ImapSessionUtils.MAILBOX_MANAGER_ATTRIBUTE_SESSION_KEY,
+                        result);
                 if (ImapSessionUtils.getMailboxSession(session) == null) {
-                    final MailboxSession mailboxSession = (MailboxSession) result.createSession(); 
+                    final MailboxSession mailboxSession = (MailboxSession) result
+                            .createSession();
                     ImapSessionUtils.setMailboxSession(session, mailboxSession);
                 }
             }
         }
         return result;
     }
-    
 
 }

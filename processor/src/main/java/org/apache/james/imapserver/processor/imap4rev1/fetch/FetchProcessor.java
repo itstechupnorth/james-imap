@@ -66,34 +66,41 @@ public class FetchProcessor extends AbstractImapRequestProcessor {
         final boolean useUids = request.isUseUids();
         final IdRange[] idSet = request.getIdSet();
         final FetchData fetch = request.getFetch();
-        try
-        {
+        try {
             FetchGroup resultToFetch = getFetchGroup(fetch);
             Mailbox mailbox = ImapSessionUtils.getMailbox(session);
             for (int i = 0; i < idSet.length; i++) {
-                final FetchResponseBuilder builder = new FetchResponseBuilder(getLog(), new EnvelopeBuilder(getLog()));
+                final FetchResponseBuilder builder = new FetchResponseBuilder(
+                        getLog(), new EnvelopeBuilder(getLog()));
                 final long highVal;
                 final long lowVal;
                 if (useUids) {
                     highVal = idSet[i].getHighVal();
-                    lowVal = idSet[i].getLowVal();      
+                    lowVal = idSet[i].getLowVal();
                 } else {
-                    highVal = session.getSelected().uid((int)idSet[i].getHighVal());
-                    lowVal = session.getSelected().uid((int) idSet[i].getLowVal()); 
+                    highVal = session.getSelected().uid(
+                            (int) idSet[i].getHighVal());
+                    lowVal = session.getSelected().uid(
+                            (int) idSet[i].getLowVal());
                 }
-                MessageRange messageSet = MessageRangeImpl.uidRange(lowVal, highVal);
-                final MailboxSession mailboxSession = ImapSessionUtils.getMailboxSession(session);
-                final Iterator it = mailbox.getMessages(messageSet, resultToFetch, mailboxSession);
+                MessageRange messageSet = MessageRangeImpl.uidRange(lowVal,
+                        highVal);
+                final MailboxSession mailboxSession = ImapSessionUtils
+                        .getMailboxSession(session);
+                final Iterator it = mailbox.getMessages(messageSet,
+                        resultToFetch, mailboxSession);
                 while (it.hasNext()) {
                     final MessageResult result = (MessageResult) it.next();
-                    final FetchResponse response = builder.build(fetch, result, session, useUids);
+                    final FetchResponse response = builder.build(fetch, result,
+                            session, useUids);
                     responder.respond(response);
                 }
             }
             unsolicitedResponses(session, responder, useUids);
             okComplete(command, tag, responder);
         } catch (UnsupportedCriteriaException e) {
-            no(command, tag, responder, HumanReadableTextKey.UNSUPPORTED_SEARCH_CRITERIA);
+            no(command, tag, responder,
+                    HumanReadableTextKey.UNSUPPORTED_SEARCH_CRITERIA);
         } catch (MessagingException e) {
             no(command, tag, responder, e);
         } catch (ParseException e) {
@@ -126,34 +133,40 @@ public class FetchProcessor extends AbstractImapRequestProcessor {
                 final int sectionType = element.getSectionType();
                 final int[] path = element.getPath();
                 final boolean isBase = (path == null || path.length == 0);
-                switch(sectionType) {
+                switch (sectionType) {
                     case BodyFetchElement.CONTENT:
                         if (isBase) {
-                            addContent(result, path, isBase, MessageResult.FetchGroup.FULL_CONTENT);
+                            addContent(result, path, isBase,
+                                    MessageResult.FetchGroup.FULL_CONTENT);
                         } else {
-                            addContent(result, path, isBase, MessageResult.FetchGroup.MIME_CONTENT);
+                            addContent(result, path, isBase,
+                                    MessageResult.FetchGroup.MIME_CONTENT);
                         }
                         break;
                     case BodyFetchElement.HEADER:
                     case BodyFetchElement.HEADER_NOT_FIELDS:
                     case BodyFetchElement.HEADER_FIELDS:
-                        addContent(result, path, isBase, MessageResult.FetchGroup.HEADERS);
+                        addContent(result, path, isBase,
+                                MessageResult.FetchGroup.HEADERS);
                         break;
                     case BodyFetchElement.MIME:
-                        addContent(result, path, isBase, MessageResult.FetchGroup.MIME_HEADERS);
+                        addContent(result, path, isBase,
+                                MessageResult.FetchGroup.MIME_HEADERS);
                         break;
                     case BodyFetchElement.TEXT:
-                        addContent(result, path, isBase, MessageResult.FetchGroup.BODY_CONTENT);
+                        addContent(result, path, isBase,
+                                MessageResult.FetchGroup.BODY_CONTENT);
                         break;
                 }
-                
+
             }
         }
         return result;
     }
 
-    private void addContent(FetchGroupImpl result, final int[] path, final boolean isBase, final int content) {
-        if (isBase) {                            
+    private void addContent(FetchGroupImpl result, final int[] path,
+            final boolean isBase, final int content) {
+        if (isBase) {
             result.or(content);
         } else {
             MimePath mimePath = new MimePathImpl(path);

@@ -23,32 +23,30 @@ import org.apache.james.api.imap.process.ImapProcessor;
 import org.apache.james.imapserver.codec.decode.ImapDecoder;
 import org.apache.james.imapserver.codec.encode.ImapEncoder;
 
-
 /**
- * Provides a number of server-wide constant values to the
- * ImapHandlers
+ * Provides a number of server-wide constant values to the ImapHandlers
+ * 
  * @deprecated unnecessary
  */
-public interface ImapHandlerConfigurationData
-{
+public interface ImapHandlerConfigurationData {
 
     /**
      * Returns the service wide hello name
-     *
+     * 
      * @return the hello name
      */
     String getHelloName();
 
     /**
      * Returns the service wide reset length in bytes.
-     *
+     * 
      * @return the reset length
      */
     int getResetLength();
 
     ImapDecoder getImapDecoder();
-    
+
     ImapEncoder getImapEncoder();
-    
+
     ImapProcessor getImapProcessor();
 }

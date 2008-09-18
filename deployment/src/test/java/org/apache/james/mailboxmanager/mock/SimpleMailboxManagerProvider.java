@@ -25,15 +25,14 @@ import org.apache.james.mailboxmanager.manager.MailboxManagerProvider;
 
 public class SimpleMailboxManagerProvider implements MailboxManagerProvider {
 
-	private MailboxManager manager;
-	
-	public void setMailboxManager(MailboxManager manager) {
-		this.manager = manager;
-	}
+    private MailboxManager manager;
 
+    public void setMailboxManager(MailboxManager manager) {
+        this.manager = manager;
+    }
 
-	public MailboxManager getMailboxManager() throws MailboxManagerException {
-		return manager;
-	}
+    public MailboxManager getMailboxManager() throws MailboxManagerException {
+        return manager;
+    }
 
 }

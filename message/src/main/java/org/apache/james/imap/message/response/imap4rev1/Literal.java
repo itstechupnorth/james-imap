@@ -25,14 +25,17 @@ import java.nio.channels.WritableByteChannel;
 public interface Literal {
     /**
      * Size of the literal content data.
-     * @return number of octets which {@link #writeTo(WritableByteChannel)}
-     * will put onto the channel
+     * 
+     * @return number of octets which {@link #writeTo(WritableByteChannel)} will
+     *         put onto the channel
      */
     public long size();
-    
+
     /**
      * Writes the contents of this body element to the channel.
-     * @param channel <code>Channel</code>, not null
+     * 
+     * @param channel
+     *            <code>Channel</code>, not null
      * @throws IOException
      */
     public void writeTo(WritableByteChannel channel) throws IOException;

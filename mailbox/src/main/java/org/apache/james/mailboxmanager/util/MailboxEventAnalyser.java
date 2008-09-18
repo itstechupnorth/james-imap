@@ -30,13 +30,19 @@ import org.apache.james.mailboxmanager.MailboxListener;
 public class MailboxEventAnalyser implements MailboxListener {
 
     private boolean isDeletedByOtherSession = false;
+
     private boolean sizeChanged = false;
+
     private boolean silentFlagChanges = false;
+
     private final long sessionId;
+
     private final Set flagUpdateUids;
+
     private final Flags.Flag uninterestingFlag;
+
     private final Set expungedUids;
-    
+
     public MailboxEventAnalyser(final long sessionId) {
         super();
         this.sessionId = sessionId;
@@ -49,13 +55,13 @@ public class MailboxEventAnalyser implements MailboxListener {
         final long eventSessionId = event.getSessionId();
         if (event instanceof MessageEvent) {
             final MessageEvent messageEvent = (MessageEvent) event;
-            final long uid =  messageEvent.getSubjectUid();
+            final long uid = messageEvent.getSubjectUid();
             if (messageEvent instanceof Added) {
                 sizeChanged = true;
             } else if (messageEvent instanceof FlagsUpdated) {
                 FlagsUpdated updated = (FlagsUpdated) messageEvent;
-                if (interestingFlags(updated) && 
-                        (sessionId != eventSessionId || !silentFlagChanges)) {
+                if (interestingFlags(updated)
+                        && (sessionId != eventSessionId || !silentFlagChanges)) {
                     final Long uidObject = new Long(uid);
                     flagUpdateUids.add(uidObject);
                 }
@@ -92,11 +98,12 @@ public class MailboxEventAnalyser implements MailboxListener {
         expungedUids.clear();
         isDeletedByOtherSession = false;
     }
-    
+
     /**
      * Are flag changes from current session ignored?
-     * @return true if any flag changes from current session
-     * will be ignored, false otherwise
+     * 
+     * @return true if any flag changes from current session will be ignored,
+     *         false otherwise
      */
     public final boolean isSilentFlagChanges() {
         return silentFlagChanges;
@@ -104,8 +111,10 @@ public class MailboxEventAnalyser implements MailboxListener {
 
     /**
      * Sets whether changes from current session should be ignored.
-     * @param silentFlagChanges true if any flag changes from current session
-     * should be ignored, false otherwise
+     * 
+     * @param silentFlagChanges
+     *            true if any flag changes from current session should be
+     *            ignored, false otherwise
      */
     public final void setSilentFlagChanges(boolean silentFlagChanges) {
         this.silentFlagChanges = silentFlagChanges;
@@ -113,17 +122,18 @@ public class MailboxEventAnalyser implements MailboxListener {
 
     /**
      * Has the size of the mailbox changed?
-     * @return true if new messages have been added,
-     * false otherwise
+     * 
+     * @return true if new messages have been added, false otherwise
      */
     public final boolean isSizeChanged() {
         return sizeChanged;
     }
-    
+
     /**
      * Is the mailbox deleted?
-     * @return true when the mailbox has been deleted by another session, 
-     * false otherwise
+     * 
+     * @return true when the mailbox has been deleted by another session, false
+     *         otherwise
      */
     public final boolean isDeletedByOtherSession() {
         return isDeletedByOtherSession;
@@ -132,11 +142,11 @@ public class MailboxEventAnalyser implements MailboxListener {
     public Iterator flagUpdateUids() {
         return flagUpdateUids.iterator();
     }
-    
+
     public Iterator expungedUids() {
         return expungedUids.iterator();
     }
-    
+
     public boolean hasExpungedUids() {
         return !expungedUids.isEmpty();
     }

@@ -19,15 +19,13 @@
 
 package org.apache.james.api.imap;
 
-
 /**
  * Represents a processor for a particular Imap command. Implementations of this
  * interface should encpasulate all command specific processing.
- *
+ * 
  * @version $Revision: 109034 $
  */
-public interface ImapCommand
-{
+public interface ImapCommand {
     /**
      * @return the name of the command, as specified in rfc2060.
      */
@@ -35,8 +33,13 @@ public interface ImapCommand
 
     /**
      * Specifies if this command is valid for the given session state.
-     * @param state The current {@link org.apache.james.api.imap.ImapSessionState state} of the {@link org.apache.james.experimental.imapserver.ImapSession}
+     * 
+     * @param state
+     *            The current
+     *            {@link org.apache.james.api.imap.ImapSessionState state} of
+     *            the
+     *            {@link org.apache.james.experimental.imapserver.ImapSession}
      * @return <code>true</code> if the command is valid in this state.
      */
-    boolean validForState( ImapSessionState state );
+    boolean validForState(ImapSessionState state);
 }

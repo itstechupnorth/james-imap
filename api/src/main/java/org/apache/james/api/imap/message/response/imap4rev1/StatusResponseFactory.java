@@ -23,143 +23,205 @@ import org.apache.james.api.imap.ImapCommand;
 import org.apache.james.api.imap.display.HumanReadableTextKey;
 
 /**
- * Constructs {@link StatusResponse} instances.
- * This interface enforces RFC2060 rules.
+ * Constructs {@link StatusResponse} instances. This interface enforces RFC2060
+ * rules.
  */
 public interface StatusResponseFactory {
 
     /**
      * Creates a tagged OK status response.
-     * @param tag operation tag, not null
-     * @param command <code>ImapCommand</code>, not null
-     * @param displayTextKey key to the human readable code to be displayed
-     * @param code <code>ResponseCode</code>, not null
+     * 
+     * @param tag
+     *            operation tag, not null
+     * @param command
+     *            <code>ImapCommand</code>, not null
+     * @param displayTextKey
+     *            key to the human readable code to be displayed
+     * @param code
+     *            <code>ResponseCode</code>, not null
      * @return <code>StatusResponse</code>, not null
      */
-    public StatusResponse taggedOk(String tag, ImapCommand command, HumanReadableTextKey displayTextKey, StatusResponse.ResponseCode code);
-    
+    public StatusResponse taggedOk(String tag, ImapCommand command,
+            HumanReadableTextKey displayTextKey,
+            StatusResponse.ResponseCode code);
+
     /**
      * Creates a tagged NO status response.
-     * @param tag <code>CharSequence</code>, not null
-     * @param command <code>ImapCommand</code>, not null
-     * @param displayTextKey key to the human readable code to be displayed
-     * @param code <code>ResponseCode</code>, not null
+     * 
+     * @param tag
+     *            <code>CharSequence</code>, not null
+     * @param command
+     *            <code>ImapCommand</code>, not null
+     * @param displayTextKey
+     *            key to the human readable code to be displayed
+     * @param code
+     *            <code>ResponseCode</code>, not null
      * @return <code>StatusResponse</code>, not null
      */
-    public StatusResponse taggedNo(String tag, ImapCommand command, HumanReadableTextKey displayTextKey, StatusResponse.ResponseCode code);
-    
+    public StatusResponse taggedNo(String tag, ImapCommand command,
+            HumanReadableTextKey displayTextKey,
+            StatusResponse.ResponseCode code);
+
     /**
      * Creates a tagged BAD status response.
-     * @param tag <code>CharSequence</code>, not null
-     * @param command <code>ImapCommand</code>, not null
-     * @param displayTextKey key to the human readable code to be displayed
-     * @param code <code>ResponseCode</code>, not null
+     * 
+     * @param tag
+     *            <code>CharSequence</code>, not null
+     * @param command
+     *            <code>ImapCommand</code>, not null
+     * @param displayTextKey
+     *            key to the human readable code to be displayed
+     * @param code
+     *            <code>ResponseCode</code>, not null
      * @return <code>StatusResponse</code>, not null
      */
-    public StatusResponse taggedBad(String tag, ImapCommand command, HumanReadableTextKey displayTextKey, StatusResponse.ResponseCode code);
+    public StatusResponse taggedBad(String tag, ImapCommand command,
+            HumanReadableTextKey displayTextKey,
+            StatusResponse.ResponseCode code);
 
     /**
      * Creates a untagged OK status response.
-     * @param displayTextKey key to the human readable code to be displayed
-     * @param code <code>ResponseCode</code>, not null
+     * 
+     * @param displayTextKey
+     *            key to the human readable code to be displayed
+     * @param code
+     *            <code>ResponseCode</code>, not null
      * @return <code>StatusResponse</code>, not null
      */
-    public StatusResponse untaggedOk(HumanReadableTextKey displayTextKey, StatusResponse.ResponseCode code);
+    public StatusResponse untaggedOk(HumanReadableTextKey displayTextKey,
+            StatusResponse.ResponseCode code);
 
     /**
      * Creates a untagged NO status response.
-     * @param displayTextKey key to the human readable code to be displayed
-     * @param code <code>ResponseCode</code>, not null
+     * 
+     * @param displayTextKey
+     *            key to the human readable code to be displayed
+     * @param code
+     *            <code>ResponseCode</code>, not null
      * @return <code>StatusResponse</code>, not null
      */
-    public StatusResponse untaggedNo(HumanReadableTextKey displayTextKey, StatusResponse.ResponseCode code);
+    public StatusResponse untaggedNo(HumanReadableTextKey displayTextKey,
+            StatusResponse.ResponseCode code);
 
     /**
      * Creates a untagged BAD status response.
-     * @param displayTextKey key to the human readable code to be displayed
-     * @param code <code>ResponseCode</code>, not null
+     * 
+     * @param displayTextKey
+     *            key to the human readable code to be displayed
+     * @param code
+     *            <code>ResponseCode</code>, not null
      * @return <code>StatusResponse</code>, not null
      */
-    public StatusResponse untaggedBad(HumanReadableTextKey displayTextKey, StatusResponse.ResponseCode code);
+    public StatusResponse untaggedBad(HumanReadableTextKey displayTextKey,
+            StatusResponse.ResponseCode code);
 
     /**
-     * Creates a PREAUTH status response.
-     * These are always untagged.
-     * @param displayTextKey key to the human readable code to be displayed
-     * @param code <code>ResponseCode</code>, not null
+     * Creates a PREAUTH status response. These are always untagged.
+     * 
+     * @param displayTextKey
+     *            key to the human readable code to be displayed
+     * @param code
+     *            <code>ResponseCode</code>, not null
      * @return <code>StatusResponse</code>, not null
      */
-    public StatusResponse preauth(HumanReadableTextKey displayTextKey, StatusResponse.ResponseCode code);
+    public StatusResponse preauth(HumanReadableTextKey displayTextKey,
+            StatusResponse.ResponseCode code);
 
     /**
-     * Creates a BYE status response.
-     * These are always untagged.
-     * @param displayTextKey key to the human readable code to be displayed
-     * @param code <code>ResponseCode</code>, not null
+     * Creates a BYE status response. These are always untagged.
+     * 
+     * @param displayTextKey
+     *            key to the human readable code to be displayed
+     * @param code
+     *            <code>ResponseCode</code>, not null
      * @return <code>StatusResponse</code>, not null
      */
-    public StatusResponse bye(HumanReadableTextKey displayTextKey, StatusResponse.ResponseCode code);
+    public StatusResponse bye(HumanReadableTextKey displayTextKey,
+            StatusResponse.ResponseCode code);
 
     /**
      * Creates a tagged OK status response.
-     * @param tag <code>CharSequence</code>, not null
-     * @param command <code>ImapCommand</code>, not null
-     * @param displayTextKey key to the human readable code to be displayed
+     * 
+     * @param tag
+     *            <code>CharSequence</code>, not null
+     * @param command
+     *            <code>ImapCommand</code>, not null
+     * @param displayTextKey
+     *            key to the human readable code to be displayed
      * @return <code>StatusResponse</code>, not null
      */
-    public StatusResponse taggedOk(String tag, ImapCommand command, HumanReadableTextKey displayTextKey);
-    
+    public StatusResponse taggedOk(String tag, ImapCommand command,
+            HumanReadableTextKey displayTextKey);
+
     /**
      * Creates a tagged NO status response.
-     * @param tag <code>CharSequence</code>, not null
-     * @param command <code>ImapCommand</code>, not null
-     * @param displayTextKey key to the human readable code to be displayed
+     * 
+     * @param tag
+     *            <code>CharSequence</code>, not null
+     * @param command
+     *            <code>ImapCommand</code>, not null
+     * @param displayTextKey
+     *            key to the human readable code to be displayed
      * @return <code>StatusResponse</code>, not null
      */
-    public StatusResponse taggedNo(String tag, ImapCommand command, HumanReadableTextKey displayTextKey);
-    
+    public StatusResponse taggedNo(String tag, ImapCommand command,
+            HumanReadableTextKey displayTextKey);
+
     /**
      * Creates a tagged BAD status response.
-     * @param tag <code>CharSequence</code>, not null
-     * @param command <code>ImapCommand</code>, not null
-     * @param displayTextKey key to the human readable code to be displayed
+     * 
+     * @param tag
+     *            <code>CharSequence</code>, not null
+     * @param command
+     *            <code>ImapCommand</code>, not null
+     * @param displayTextKey
+     *            key to the human readable code to be displayed
      * @return <code>StatusResponse</code>, not null
      */
-    public StatusResponse taggedBad(String tag, ImapCommand command, HumanReadableTextKey displayTextKey);
+    public StatusResponse taggedBad(String tag, ImapCommand command,
+            HumanReadableTextKey displayTextKey);
 
     /**
      * Creates a untagged OK status response.
-     * @param displayTextKey key to the human readable code to be displayed
+     * 
+     * @param displayTextKey
+     *            key to the human readable code to be displayed
      * @return <code>StatusResponse</code>, not null
      */
     public StatusResponse untaggedOk(HumanReadableTextKey displayTextKey);
 
     /**
      * Creates a untagged NO status response.
-     * @param displayTextKey key to the human readable code to be displayed
+     * 
+     * @param displayTextKey
+     *            key to the human readable code to be displayed
      * @return <code>StatusResponse</code>, not null
      */
     public StatusResponse untaggedNo(HumanReadableTextKey displayTextKey);
 
     /**
      * Creates a untagged BAD status response.
-     * @param displayTextKey key to the human readable code to be displayed
+     * 
+     * @param displayTextKey
+     *            key to the human readable code to be displayed
      * @return <code>StatusResponse</code>, not null
      */
     public StatusResponse untaggedBad(HumanReadableTextKey displayTextKey);
 
     /**
-     * Creates a PREAUTH status response.
-     * These are always untagged.
-     * @param displayTextKey key to the human readable code to be displayed
+     * Creates a PREAUTH status response. These are always untagged.
+     * 
+     * @param displayTextKey
+     *            key to the human readable code to be displayed
      * @return <code>StatusResponse</code>, not null
      */
     public StatusResponse preauth(HumanReadableTextKey displayTextKey);
 
     /**
-     * Creates a BYE status response.
-     * These are always untagged.
-     * @param displayTextKey key to the human readable code to be displayed
+     * Creates a BYE status response. These are always untagged.
+     * 
+     * @param displayTextKey
+     *            key to the human readable code to be displayed
      * @return <code>StatusResponse</code>, not null
      */
     public StatusResponse bye(HumanReadableTextKey displayTextKey);

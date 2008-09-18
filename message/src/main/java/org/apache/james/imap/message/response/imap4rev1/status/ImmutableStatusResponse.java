@@ -24,19 +24,24 @@ import org.apache.james.api.imap.display.HumanReadableTextKey;
 import org.apache.james.api.imap.message.response.imap4rev1.StatusResponse;
 
 /**
- * Immutable status response.
- * Suitable for unpooled usage.
+ * Immutable status response. Suitable for unpooled usage.
+ * 
  * @see {@link StatusResponse}
  */
 public class ImmutableStatusResponse implements StatusResponse {
 
     private final ResponseCode responseCode;
+
     private final Type serverResponseType;
+
     private final String tag;
+
     private final HumanReadableTextKey textKey;
+
     private final ImapCommand command;
-    
-    public ImmutableStatusResponse(final Type serverResponseType, final String tag, final ImapCommand command,
+
+    public ImmutableStatusResponse(final Type serverResponseType,
+            final String tag, final ImapCommand command,
             final HumanReadableTextKey textKey, final ResponseCode responseCode) {
         super();
         this.responseCode = responseCode;

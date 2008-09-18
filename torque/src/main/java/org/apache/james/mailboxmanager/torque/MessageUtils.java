@@ -28,26 +28,31 @@ import java.io.InputStream;
  * 
  */
 public class MessageUtils {
-    
+
     private static final int BYTE_STREAM_CAPACITY = 8182;
+
     private static final int BYTE_BUFFER_SIZE = 4096;
+
     public static final byte CR = 0x0D;
+
     public static final byte LF = 0x0A;
-    
+
     /**
-     * Counts the number of <code>CR</code>'s and <code>LF</code>'s 
-     * which do are part of <code>CRLF</code>s.
-     * @param contents bytes, not null
+     * Counts the number of <code>CR</code>'s and <code>LF</code>'s which
+     * do are part of <code>CRLF</code>s.
+     * 
+     * @param contents
+     *            bytes, not null
      * @return the number of lines which are not normal <code>CRLF</code>
      */
     public static long countUnnormalLines(final byte[] contents) {
         int count = 0;
         if (contents != null) {
             final int length = contents.length;
-            for (int i=0;i<length;i++) {
+            for (int i = 0; i < length; i++) {
                 byte current = contents[i];
                 if (current == CR) {
-                    final int next = i+1;
+                    final int next = i + 1;
                     if (next < length) {
                         if (contents[next] != LF) {
                             count++;
@@ -55,8 +60,8 @@ public class MessageUtils {
                     } else {
                         count++;
                     }
-                } else if (current == LF) { 
-                    final int last = i-1;
+                } else if (current == LF) {
+                    final int last = i - 1;
                     if (last >= 0) {
                         if (contents[last] != CR) {
                             count++;
@@ -69,16 +74,20 @@ public class MessageUtils {
         }
         return count;
     }
-    
+
     /**
-     * Writes bytes into the buffer using naive encoding
-     * and converts isolated LF and CR to CRLF.
-     * @param contents bytes to write, not null
-     * @param buffer <code>StringBuffer</code> sink, not null
+     * Writes bytes into the buffer using naive encoding and converts isolated
+     * LF and CR to CRLF.
+     * 
+     * @param contents
+     *            bytes to write, not null
+     * @param buffer
+     *            <code>StringBuffer</code> sink, not null
      */
-    public static void normalisedWriteTo(final byte[] contents, final StringBuffer buffer) {
+    public static void normalisedWriteTo(final byte[] contents,
+            final StringBuffer buffer) {
         char last = 0;
-        for (int i=0;i<contents.length;i++) {
+        for (int i = 0; i < contents.length; i++) {
             final char current = (char) contents[i];
             if (current == '\n') {
                 if (last == '\r') {
@@ -101,13 +110,14 @@ public class MessageUtils {
     }
 
     public static byte[] toByteArray(InputStream is) throws IOException {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream(BYTE_STREAM_CAPACITY);
+        ByteArrayOutputStream baos = new ByteArrayOutputStream(
+                BYTE_STREAM_CAPACITY);
         byte[] buf = new byte[BYTE_BUFFER_SIZE];
         int read;
         while ((read = is.read(buf)) > 0) {
             baos.write(buf, 0, read);
         }
-    
+
         final byte[] bytes = baos.toByteArray();
         return bytes;
     }

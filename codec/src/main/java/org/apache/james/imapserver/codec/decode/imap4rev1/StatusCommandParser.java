@@ -29,70 +29,65 @@ import org.apache.james.imapserver.codec.decode.ImapRequestLineReader;
 import org.apache.james.imapserver.codec.decode.InitialisableCommandFactory;
 import org.apache.james.imapserver.codec.decode.base.AbstractImapCommandParser;
 
-class StatusCommandParser extends AbstractImapCommandParser implements InitialisableCommandFactory
-{
+class StatusCommandParser extends AbstractImapCommandParser implements
+        InitialisableCommandFactory {
     public StatusCommandParser() {
     }
 
     /**
      * @see org.apache.james.imapserver.codec.decode.InitialisableCommandFactory#init(org.apache.james.api.imap.imap4rev1.Imap4Rev1CommandFactory)
      */
-    public void init(Imap4Rev1CommandFactory factory)
-    {
+    public void init(Imap4Rev1CommandFactory factory) {
         final ImapCommand command = factory.getStatus();
         setCommand(command);
     }
-    
-    StatusDataItems statusDataItems( ImapRequestLineReader request )
-            throws ProtocolException
-    {
+
+    StatusDataItems statusDataItems(ImapRequestLineReader request)
+            throws ProtocolException {
         StatusDataItems items = new StatusDataItems();
 
         request.nextWordChar();
-        consumeChar( request, '(' );
+        consumeChar(request, '(');
         CharacterValidator validator = new NoopCharValidator();
-        String nextWord = consumeWord( request, validator );
-        while ( ! nextWord.endsWith(")" ) ) {
-            addItem( nextWord, items );
-            nextWord = consumeWord( request, validator );
+        String nextWord = consumeWord(request, validator);
+        while (!nextWord.endsWith(")")) {
+            addItem(nextWord, items);
+            nextWord = consumeWord(request, validator);
         }
         // Got the closing ")", may be attached to a word.
-        if ( nextWord.length() > 1 ) {
-            addItem( nextWord.substring(0, nextWord.length() - 1 ), items );
+        if (nextWord.length() > 1) {
+            addItem(nextWord.substring(0, nextWord.length() - 1), items);
         }
 
         return items;
     }
 
-    private void addItem( String nextWord, StatusDataItems items )
-            throws ProtocolException
-    {
-        if ( nextWord.equals( ImapConstants.STATUS_MESSAGES ) ) {
+    private void addItem(String nextWord, StatusDataItems items)
+            throws ProtocolException {
+        if (nextWord.equals(ImapConstants.STATUS_MESSAGES)) {
             items.setMessages(true);
-        }
-        else if ( nextWord.equals( ImapConstants.STATUS_RECENT ) ) {
+        } else if (nextWord.equals(ImapConstants.STATUS_RECENT)) {
             items.setRecent(true);
-        }
-        else if ( nextWord.equals( ImapConstants.STATUS_UIDNEXT ) ) {
+        } else if (nextWord.equals(ImapConstants.STATUS_UIDNEXT)) {
             items.setUidNext(true);
-        }
-        else if ( nextWord.equals( ImapConstants.STATUS_UIDVALIDITY ) ) {
+        } else if (nextWord.equals(ImapConstants.STATUS_UIDVALIDITY)) {
             items.setUidValidity(true);
-        }
-        else if ( nextWord.equals( ImapConstants.STATUS_UNSEEN ) ) {
+        } else if (nextWord.equals(ImapConstants.STATUS_UNSEEN)) {
             items.setUnseen(true);
-        }
-        else {
-            throw new ProtocolException( "Unknown status item: '" + nextWord + "'" );
+        } else {
+            throw new ProtocolException("Unknown status item: '" + nextWord
+                    + "'");
         }
     }
 
-    protected ImapMessage decode(ImapCommand command, ImapRequestLineReader request, String tag) throws ProtocolException {
-        final String mailboxName = mailbox( request );
-        final StatusDataItems statusDataItems = statusDataItems( request );
-        endLine( request );
+    protected ImapMessage decode(ImapCommand command,
+            ImapRequestLineReader request, String tag) throws ProtocolException {
+        final String mailboxName = mailbox(request);
+        final StatusDataItems statusDataItems = statusDataItems(request);
+        endLine(request);
         final Imap4Rev1MessageFactory factory = getMessageFactory();
-        final ImapMessage result = factory.createStatusMessage(command, mailboxName, statusDataItems, tag);
+        final ImapMessage result = factory.createStatusMessage(command,
+                mailboxName, statusDataItems, tag);
         return result;
     }
 }

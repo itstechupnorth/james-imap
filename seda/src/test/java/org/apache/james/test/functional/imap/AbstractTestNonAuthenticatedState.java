@@ -19,14 +19,15 @@
 
 package org.apache.james.test.functional.imap;
 
-
-
 /**
- * <p>Runs tests for commands valid in the NON_AUTHENTICATED state.
- * A welcome message precedes the execution of the test elements.
- * </p><p>
+ * <p>
+ * Runs tests for commands valid in the NON_AUTHENTICATED state. A welcome
+ * message precedes the execution of the test elements.
+ * </p>
+ * <p>
  * Recommended test scripts:
- * </p><ul>
+ * </p>
+ * <ul>
  * <li>ValidAuthenticated</li>
  * <li>ValidSelected</li>
  * <li>Capability</li>
@@ -36,21 +37,19 @@ package org.apache.james.test.functional.imap;
  * <li>Login</li>
  * </ul>
  */
-public abstract class AbstractTestNonAuthenticatedState
-        extends AbstractSimpleScriptedTestProtocol
-{
-    public AbstractTestNonAuthenticatedState( HostSystem system )
-    {
-        super( system );
+public abstract class AbstractTestNonAuthenticatedState extends
+        AbstractSimpleScriptedTestProtocol {
+    public AbstractTestNonAuthenticatedState(HostSystem system) {
+        super(system);
     }
 
     /**
      * Adds a welcome message to the {@link #preElements}.
+     * 
      * @throws Exception
      */
-    public void setUp() throws Exception
-    {
+    public void setUp() throws Exception {
         super.setUp();
-        addTestFile( "Welcome.test", preElements );
+        addTestFile("Welcome.test", preElements);
     }
 }

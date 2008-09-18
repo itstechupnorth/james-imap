@@ -25,6 +25,7 @@ package org.apache.james.api.imap.message;
 public class IdRange {
 
     private long _lowVal;
+
     private long _highVal;
 
     public IdRange(long singleVal) {
@@ -80,18 +81,14 @@ public class IdRange {
 
     /**
      * Renders text suitable for logging.
-     *
-     * @return a <code>String</code> representation 
-     * of this object.
+     * 
+     * @return a <code>String</code> representation of this object.
      */
-    public String toString()
-    {
-        final String retValue = "IdRange ( "
-            + this._lowVal + "->" + this._highVal 
-            + " )";
-    
+    public String toString() {
+        final String retValue = "IdRange ( " + this._lowVal + "->"
+                + this._highVal + " )";
+
         return retValue;
     }
 
-    
 }

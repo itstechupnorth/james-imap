@@ -45,7 +45,8 @@ abstract public class AbstractChainedImapProcessor extends AbstractLogEnabled
         setupLogger(next);
     }
 
-    public void process(ImapMessage message, Responder responder, ImapSession session) {
+    public void process(ImapMessage message, Responder responder,
+            ImapSession session) {
         final boolean isAcceptable = isAcceptable(message);
         if (isAcceptable) {
             doProcess(message, responder, session);
@@ -53,7 +54,7 @@ abstract public class AbstractChainedImapProcessor extends AbstractLogEnabled
             next.process(message, responder, session);
         }
     }
-    
+
     /**
      * Is the given message acceptable?
      * 
@@ -69,11 +70,12 @@ abstract public class AbstractChainedImapProcessor extends AbstractLogEnabled
      * 
      * @param acceptableMessage
      *            <code>ImapMessage</code>, not null
-     * @param responder <code>Responder</code>, not null
+     * @param responder
+     *            <code>Responder</code>, not null
      * @param session
      *            <code>ImapSession</code>, not null
      * @return <code>ImapResponseMessage</code>, not null
      */
-    abstract protected void doProcess(
-            final ImapMessage acceptableMessage, final Responder responder, final ImapSession session);
+    abstract protected void doProcess(final ImapMessage acceptableMessage,
+            final Responder responder, final ImapSession session);
 }

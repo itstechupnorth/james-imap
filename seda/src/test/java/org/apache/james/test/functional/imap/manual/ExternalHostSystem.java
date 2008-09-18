@@ -29,21 +29,25 @@ import org.apache.james.test.functional.imap.HostSystem;
 public class ExternalHostSystem implements HostSystem {
 
     public static final HostSystem createLocalImap() {
-        final ExternalHostSystem result = new ExternalHostSystem("localhost", 143, new SystemLoggingMonitor());
+        final ExternalHostSystem result = new ExternalHostSystem("localhost",
+                143, new SystemLoggingMonitor());
         return result;
     }
-    
+
     private final InetSocketAddress address;
+
     private final Monitor monitor;
-        
-    public ExternalHostSystem(final String host, final int port, final Monitor monitor) {
+
+    public ExternalHostSystem(final String host, final int port,
+            final Monitor monitor) {
         super();
         this.address = new InetSocketAddress(host, port);
         this.monitor = monitor;
     }
 
     public boolean addUser(String user, String password) throws Exception {
-        monitor.note("Please ensure user '"+ user + "' with password '" + password + "' exists.");
+        monitor.note("Please ensure user '" + user + "' with password '"
+                + password + "' exists.");
         return true;
     }
 
@@ -61,28 +65,32 @@ public class ExternalHostSystem implements HostSystem {
     public interface Monitor {
         void note(String message);
     }
-    
+
     public static final class SystemLoggingMonitor implements Monitor {
 
         public void note(String message) {
             System.out.println(message);
         }
-        
+
     }
-    
+
     private final static class SessionImpl implements Session {
 
-        private static final byte[] CRLF = {'\r','\n'};
-        
+        private static final byte[] CRLF = { '\r', '\n' };
+
         private final SocketChannel socket;
+
         private final Monitor monitor;
+
         private final ByteBuffer readBuffer;
+
         private final Charset ascii;
+
         private final ByteBuffer lineEndBuffer;
-        
+
         private boolean first = true;
-        
-        public SessionImpl(final SocketChannel socket,final Monitor monitor) {
+
+        public SessionImpl(final SocketChannel socket, final Monitor monitor) {
             super();
             this.socket = socket;
             this.monitor = monitor;
@@ -108,9 +116,11 @@ public class ExternalHostSystem implements HostSystem {
         }
 
         private void readlineInto(StringBuffer buffer) throws Exception {
-            while (socket.read(readBuffer) == 0);
+            while (socket.read(readBuffer) == 0)
+                ;
             readBuffer.flip();
-            while (readOneMore(buffer));
+            while (readOneMore(buffer))
+                ;
             readBuffer.compact();
         }
 
@@ -133,7 +143,7 @@ public class ExternalHostSystem implements HostSystem {
             }
             return result;
         }
-        
+
         public void start() throws Exception {
             while (!socket.finishConnect()) {
                 monitor.note("connecting...");

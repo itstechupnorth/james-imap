@@ -26,25 +26,27 @@ import org.apache.james.imapserver.codec.decode.ImapRequestLineReader;
 import org.apache.james.imapserver.codec.decode.InitialisableCommandFactory;
 import org.apache.james.imapserver.codec.decode.base.AbstractImapCommandParser;
 
-class ExamineCommandParser extends AbstractImapCommandParser  implements InitialisableCommandFactory {
-    
+class ExamineCommandParser extends AbstractImapCommandParser implements
+        InitialisableCommandFactory {
+
     public ExamineCommandParser() {
     }
 
     /**
      * @see org.apache.james.imapserver.codec.decode.InitialisableCommandFactory#init(org.apache.james.api.imap.imap4rev1.Imap4Rev1CommandFactory)
      */
-    public void init(Imap4Rev1CommandFactory factory)
-    {
+    public void init(Imap4Rev1CommandFactory factory) {
         final ImapCommand command = factory.getExamine();
         setCommand(command);
     }
-    
-    protected ImapMessage decode(ImapCommand command, ImapRequestLineReader request, String tag) throws ProtocolException {
-        final String mailboxName = mailbox( request );
-        endLine( request );
-        final ImapMessage result = getMessageFactory().createExamineMessage(command, mailboxName, tag);
+
+    protected ImapMessage decode(ImapCommand command,
+            ImapRequestLineReader request, String tag) throws ProtocolException {
+        final String mailboxName = mailbox(request);
+        endLine(request);
+        final ImapMessage result = getMessageFactory().createExamineMessage(
+                command, mailboxName, tag);
         return result;
     }
-    
+
 }

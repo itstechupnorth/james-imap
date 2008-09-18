@@ -31,7 +31,8 @@ import org.apache.james.imapserver.processor.base.AbstractImapRequestProcessor;
 
 public class AuthenticateProcessor extends AbstractImapRequestProcessor {
 
-    public AuthenticateProcessor(final ImapProcessor next, final StatusResponseFactory factory) {
+    public AuthenticateProcessor(final ImapProcessor next,
+            final StatusResponseFactory factory) {
         super(next, factory);
     }
 
@@ -39,12 +40,14 @@ public class AuthenticateProcessor extends AbstractImapRequestProcessor {
         return (message instanceof AuthenticateRequest);
     }
 
-    protected void doProcess(ImapRequest message,
-            ImapSession session, String tag, ImapCommand command, Responder responder) {
+    protected void doProcess(ImapRequest message, ImapSession session,
+            String tag, ImapCommand command, Responder responder) {
         final AuthenticateRequest request = (AuthenticateRequest) message;
         final String authType = request.getAuthType();
-        getLog().info("Unsupported authentication mechanism '" + authType + "'");
-        no(command, tag, responder, HumanReadableTextKey.UNSUPPORTED_AUTHENTICATION_MECHANISM);
+        getLog()
+                .info("Unsupported authentication mechanism '" + authType + "'");
+        no(command, tag, responder,
+                HumanReadableTextKey.UNSUPPORTED_AUTHENTICATION_MECHANISM);
     }
 
 }

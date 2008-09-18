@@ -31,32 +31,35 @@ import org.apache.james.mailboxmanager.MessageResult;
  * Represents the flags for a message.
  */
 public class MessageFlags {
-    
-    
+
     /**
      * Converts given message results into {@link MessageFlags}.
-     * @param messageResults <code>Collection</code> of {@link MessageResult}, not null
+     * 
+     * @param messageResults
+     *            <code>Collection</code> of {@link MessageResult}, not null
      * @return <code>MessageFlags</code> array, not null
-     * @throws MessagingException 
+     * @throws MessagingException
      */
-    public static final MessageFlags[] toMessageFlags(Collection messageResults) throws MessagingException {
+    public static final MessageFlags[] toMessageFlags(Collection messageResults)
+            throws MessagingException {
         final int size = messageResults.size();
         final MessageFlags[] results = new MessageFlags[size];
-        int i=0;
-        for (final Iterator it=messageResults.iterator();it.hasNext();) {
+        int i = 0;
+        for (final Iterator it = messageResults.iterator(); it.hasNext();) {
             final MessageResult result = (MessageResult) it.next();
             results[i++] = new MessageFlags(result);
         }
         return results;
     }
-    
+
     private final long uid;
+
     private Flags flags;
-    
+
     public MessageFlags(final MessageResult result) throws MessagingException {
-        this(result.getUid(),result.getFlags());
+        this(result.getUid(), result.getFlags());
     }
-    
+
     public MessageFlags(final long uid, Flags flags) {
         this.uid = uid;
         this.flags = flags;
@@ -64,22 +67,26 @@ public class MessageFlags {
 
     /**
      * Gets the message flags.
+     * 
      * @return <code>Flags</code>, not null
      */
     public final Flags getFlags() {
         return flags;
     }
-    
+
     /**
      * Sets the message flags
-     * @param flags <code>Flags</code>, not null
+     * 
+     * @param flags
+     *            <code>Flags</code>, not null
      */
     public final void setFlags(Flags flags) {
         this.flags = flags;
     }
-    
+
     /**
      * Gets the UID for the message.
+     * 
      * @return the message UID
      */
     public final long getUid() {
@@ -89,7 +96,7 @@ public class MessageFlags {
     /**
      * @see java.lang.Object#hashCode()
      */
-//    @Override
+    // @Override
     public int hashCode() {
         final int PRIME = 31;
         int result = 1;
@@ -100,7 +107,7 @@ public class MessageFlags {
     /**
      * @see java.lang.Object#equals(java.lang.Object)
      */
-//  @Override
+    // @Override
     public boolean equals(Object obj) {
         if (this == obj)
             return true;
@@ -116,22 +123,17 @@ public class MessageFlags {
 
     /**
      * Represents this object suitable for logging.
-     *
-     * @return a <code>String</code> representation 
-     * of this object.
+     * 
+     * @return a <code>String</code> representation of this object.
      */
-//  @Override
-    public String toString()
-    {
+    // @Override
+    public String toString() {
         final String TAB = " ";
-        
-        final String retValue = "MessageFlags ( "
-            + "uid = " + this.uid + TAB
-            + "flags = " + this.flags + TAB
-            + " )";
-    
+
+        final String retValue = "MessageFlags ( " + "uid = " + this.uid + TAB
+                + "flags = " + this.flags + TAB + " )";
+
         return retValue;
-    }    
-    
-    
+    }
+
 }

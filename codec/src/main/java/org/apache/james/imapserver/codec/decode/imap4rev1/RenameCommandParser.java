@@ -26,7 +26,8 @@ import org.apache.james.imapserver.codec.decode.ImapRequestLineReader;
 import org.apache.james.imapserver.codec.decode.InitialisableCommandFactory;
 import org.apache.james.imapserver.codec.decode.base.AbstractImapCommandParser;
 
-class RenameCommandParser extends AbstractImapCommandParser implements InitialisableCommandFactory {
+class RenameCommandParser extends AbstractImapCommandParser implements
+        InitialisableCommandFactory {
 
     public RenameCommandParser() {
     }
@@ -34,19 +35,19 @@ class RenameCommandParser extends AbstractImapCommandParser implements Initialis
     /**
      * @see org.apache.james.imapserver.codec.decode.InitialisableCommandFactory#init(org.apache.james.api.imap.imap4rev1.Imap4Rev1CommandFactory)
      */
-    public void init(Imap4Rev1CommandFactory factory)
-    {
+    public void init(Imap4Rev1CommandFactory factory) {
         final ImapCommand command = factory.getRename();
         setCommand(command);
     }
-    
-    
-    protected ImapMessage decode(ImapCommand command, ImapRequestLineReader request, String tag) throws ProtocolException {
-        final String existingName = mailbox( request );
-        final String newName = mailbox( request );
-        endLine( request );
-        final ImapMessage result = getMessageFactory().createRenameMessage(command, existingName, newName, tag);
+
+    protected ImapMessage decode(ImapCommand command,
+            ImapRequestLineReader request, String tag) throws ProtocolException {
+        final String existingName = mailbox(request);
+        final String newName = mailbox(request);
+        endLine(request);
+        final ImapMessage result = getMessageFactory().createRenameMessage(
+                command, existingName, newName, tag);
         return result;
     }
-    
+
 }

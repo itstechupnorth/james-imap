@@ -32,18 +32,27 @@ import org.apache.james.api.imap.message.response.ImapResponseMessage;
 public final class FetchResponse implements ImapResponseMessage {
 
     private final int messageNumber;
+
     private final Flags flags;
+
     private final Long uid;
+
     private final Date internalDate;
+
     private final Integer size;
+
     private final List elements;
+
     private final Envelope envelope;
+
     private final Structure body;
+
     private final Structure bodystructure;
-    
-    public FetchResponse(final int messageNumber, final Flags flags, final Long uid,
-            final Date internalDate, final Integer size, final Envelope envelope,
-            final Structure body, final Structure bodystructure, List elements) {
+
+    public FetchResponse(final int messageNumber, final Flags flags,
+            final Long uid, final Date internalDate, final Integer size,
+            final Envelope envelope, final Structure body,
+            final Structure bodystructure, List elements) {
         super();
         this.messageNumber = messageNumber;
         this.flags = flags;
@@ -55,11 +64,12 @@ public final class FetchResponse implements ImapResponseMessage {
         this.body = body;
         this.bodystructure = bodystructure;
     }
-    
+
     /**
      * Gets the structure of this message.
-     * @return <code>Structure</code>,
-     * or null if the <code>FETCH</code> did not include <code>BODY</code>
+     * 
+     * @return <code>Structure</code>, or null if the <code>FETCH</code>
+     *         did not include <code>BODY</code>
      */
     public Structure getBody() {
         return body;
@@ -67,16 +77,17 @@ public final class FetchResponse implements ImapResponseMessage {
 
     /**
      * Gets the structure of this message.
-     * @return <code>Structure</code>,
-     * or null if the <code>FETCH</code> did not include <code>BODYSTRUCTURE</code>
+     * 
+     * @return <code>Structure</code>, or null if the <code>FETCH</code>
+     *         did not include <code>BODYSTRUCTURE</code>
      */
     public Structure getBodyStructure() {
         return bodystructure;
     }
-    
+
     /**
-     * Gets the number of the message whose details 
-     * have been fetched.
+     * Gets the number of the message whose details have been fetched.
+     * 
      * @return message number
      */
     public final int getMessageNumber() {
@@ -85,8 +96,9 @@ public final class FetchResponse implements ImapResponseMessage {
 
     /**
      * Gets the fetched flags.
-     * @return {@link Flags} fetched,
-     * or null if the <code>FETCH</code> did not include <code>FLAGS</code>
+     * 
+     * @return {@link Flags} fetched, or null if the <code>FETCH</code> did
+     *         not include <code>FLAGS</code>
      */
     public Flags getFlags() {
         return flags;
@@ -94,8 +106,9 @@ public final class FetchResponse implements ImapResponseMessage {
 
     /**
      * Gets the unique id for the fetched message.
-     * @return message uid, 
-     * or null if the <code>FETCH</code> did not include <code>UID</code>
+     * 
+     * @return message uid, or null if the <code>FETCH</code> did not include
+     *         <code>UID</code>
      */
     public Long getUid() {
         return uid;
@@ -103,8 +116,9 @@ public final class FetchResponse implements ImapResponseMessage {
 
     /**
      * Gets the internal date for the fetched message.
-     * @return the internalDate,
-     * or null if the <code>FETCH</code> did not include <code>INTERNALDATE</code>
+     * 
+     * @return the internalDate, or null if the <code>FETCH</code> did not
+     *         include <code>INTERNALDATE</code>
      */
     public final Date getInternalDate() {
         return internalDate;
@@ -112,17 +126,19 @@ public final class FetchResponse implements ImapResponseMessage {
 
     /**
      * Gets the size for the fetched message.
-     * @return the size,
-     * or null if the <code>FETCH</code> did not include <code>SIZE</code>
+     * 
+     * @return the size, or null if the <code>FETCH</code> did not include
+     *         <code>SIZE</code>
      */
     public final Integer getSize() {
         return size;
     }
-    
+
     /**
      * Gets the envelope for the fetched message
-     * @return the envelope,
-     * or null if the <code>FETCH</code> did not include <code>ENVELOPE</code>
+     * 
+     * @return the envelope, or null if the <code>FETCH</code> did not include
+     *         <code>ENVELOPE</code>
      */
     public final Envelope getEnvelope() {
         return envelope;
@@ -130,267 +146,286 @@ public final class FetchResponse implements ImapResponseMessage {
 
     /**
      * TODO: replace
-     * @return <code>List</code> of <code>BodyElement</code>'s, 
-     * or null if the <code>FETCH</code> did not include body elements
+     * 
+     * @return <code>List</code> of <code>BodyElement</code>'s, or null if
+     *         the <code>FETCH</code> did not include body elements
      */
     public final List getElements() {
         return elements;
     }
-    
+
     /**
      * Describes the message structure.
      */
     public interface Structure {
         /**
          * Gets the MIME media type.
-         * @return media type, 
-         * or null if default
+         * 
+         * @return media type, or null if default
          */
         public String getMediaType();
-        
+
         /**
          * Gets the MIME content subtype
-         * @return subtype 
-         * of null if default
+         * 
+         * @return subtype of null if default
          */
         public String getSubType();
-        
+
         /**
-         * Gets body type parameters. 
-         * @return parameters, 
-         * or null
+         * Gets body type parameters.
+         * 
+         * @return parameters, or null
          */
         public String[] getParameters();
-        
+
         /**
          * Gets <code>Content-ID</code>.
-         * @return MIME content ID,
-         * possibly null
+         * 
+         * @return MIME content ID, possibly null
          */
         public String getId();
-        
+
         /**
          * Gets <code>Content-Description</code>.
-         * @return MIME <code>Content-Description</code>,
-         * possibly null
+         * 
+         * @return MIME <code>Content-Description</code>, possibly null
          */
         public String getDescription();
-        
+
         /**
          * Gets content transfer encoding.
-         * @return MIME <code>Content-Transfer-Encoding</code>,
-         * possibly null
+         * 
+         * @return MIME <code>Content-Transfer-Encoding</code>, possibly null
          */
         public String getEncoding();
-        
+
         /**
          * Gets the size of message body the in octets.
+         * 
          * @return number of octets in the message.
          */
         public long getOctets();
-        
+
         /**
-         * Gets the number of lines fo transfer encoding 
-         * for a <code>TEXT</code> type.
-         * @return number of lines when <code>TEXT</code>,
-         * -1 otherwise
+         * Gets the number of lines fo transfer encoding for a <code>TEXT</code>
+         * type.
+         * 
+         * @return number of lines when <code>TEXT</code>, -1 otherwise
          */
         public long getLines();
-        
+
         /**
          * Gets <code>Content-MD5</code>.
-         * @return Content-MD5
-         * or null if <code>BODY</code> FETCH or not present
+         * 
+         * @return Content-MD5 or null if <code>BODY</code> FETCH or not
+         *         present
          */
         public String getMD5();
-        
+
         /**
          * Gets header field-value from <code>Content-Disposition</code>.
-         * @return map of field value <code>String</code> 
-         * indexed by field name <code>String</code>
-         * or null if <code>BODY</code> FETCH or not present
+         * 
+         * @return map of field value <code>String</code> indexed by field
+         *         name <code>String</code> or null if <code>BODY</code>
+         *         FETCH or not present
          */
         public Map getDispositionParams();
-        
+
         /**
          * Gets header field-value from <code>Content-Disposition</code>.
-         * @return disposition 
-         * or null if <code>BODY</code> FETCH or not present
+         * 
+         * @return disposition or null if <code>BODY</code> FETCH or not
+         *         present
          */
         public String getDisposition();
-        
+
         /**
          * Gets MIME <code>Content-Language</code>'s.
-         * @return List of <code>Content-Language</code> name <code>String</code>'s
-         * possibly null or null when <code>BODY</code> FETCH
+         * 
+         * @return List of <code>Content-Language</code> name
+         *         <code>String</code>'s possibly null or null when
+         *         <code>BODY</code> FETCH
          */
         public List getLanguages();
-        
+
         /**
          * Gets <code>Content-Location</code>.
-         * @return Content-Location possibly null;
-         * or null when <code>BODY</code> FETCH
+         * 
+         * @return Content-Location possibly null; or null when
+         *         <code>BODY</code> FETCH
          */
         public String getLocation();
-        
+
         /**
          * Iterates parts of a composite media type.
-         * @return <code>Structure</code> <code>Iterator</code>
-         * when composite type, null otherwise
+         * 
+         * @return <code>Structure</code> <code>Iterator</code> when
+         *         composite type, null otherwise
          */
         public Iterator parts();
-        
+
         /**
          * Gets the envelope of an embedded mail.
+         * 
          * @return <code>Envelope</code> when <code>message/rfc822</code>
-         * otherwise null
+         *         otherwise null
          */
         public Envelope getEnvelope();
-        
+
         /**
          * Gets the envelope of an embedded mail.
-         * @return <code>Structure</code> when when <code>message/rfc822</code>
-         * otherwise null
+         * 
+         * @return <code>Structure</code> when when
+         *         <code>message/rfc822</code> otherwise null
          */
         public Structure getBody();
     }
-    
+
     /**
      * BODY FETCH element content.
      */
     public interface BodyElement extends Literal {
-        
+
         /**
-         * The full name of the element fetched.
-         * As per <code>FETCH</code> command input.
+         * The full name of the element fetched. As per <code>FETCH</code>
+         * command input.
+         * 
          * @return name, not null
          */
         public String getName();
-        
+
         /**
          * Size of the literal content data.
+         * 
          * @return number of octets which {@link #writeTo(WritableByteChannel)}
-         * will put onto the channel
+         *         will put onto the channel
          */
         public long size();
-        
+
         /**
          * Writes the contents of this body element to the channel.
-         * @param channel <code>Channel</code>, not null
+         * 
+         * @param channel
+         *            <code>Channel</code>, not null
          * @throws IOException
          */
         public void writeTo(WritableByteChannel channel) throws IOException;
     }
-    
+
     /**
      * ENVELOPE content.
      */
     public interface Envelope {
-        
+
         /**
-         * Gets the envelope <code>date</code>.
-         * This is the value of the RFC822 <code>date</code> header.
-         * @return envelope Date
-         * or null if this attribute is <code>NIL</code>
+         * Gets the envelope <code>date</code>. This is the value of the
+         * RFC822 <code>date</code> header.
+         * 
+         * @return envelope Date or null if this attribute is <code>NIL</code>
          */
         public String getDate();
-        
+
         /**
-         * Gets the envelope <code>subject</code>.
-         * This is the value of the RFC822 <code>subject</code> header.
-         * @return subject,
-         * or null if this attribute is <code>NIL</code>
+         * Gets the envelope <code>subject</code>. This is the value of the
+         * RFC822 <code>subject</code> header.
+         * 
+         * @return subject, or null if this attribute is <code>NIL</code>
          */
         public String getSubject();
-        
+
         /**
          * Gets the envelope <code>from</code> addresses.
          * 
          * @return from addresses, not null
          */
         public Address[] getFrom();
-        
+
         /**
          * Gets the envelope <code>sender</code> addresses.
+         * 
          * @return <code>sender</code> addresses, not null
          */
         public Address[] getSender();
-     
+
         /**
          * Gets the envelope <code>reply-to</code> addresses.
+         * 
          * @return <code>reply-to</code>, not null
          */
         public Address[] getReplyTo();
-        
+
         /**
          * Gets the envelope <code>to</code> addresses.
-         * @return <code>to</code>,
-         * or null if <code>NIL</code>
+         * 
+         * @return <code>to</code>, or null if <code>NIL</code>
          */
         public Address[] getTo();
-        
+
         /**
          * Gets the envelope <code>cc</code> addresses.
-         * @return <code>cc</code>, 
-         * or null if <code>NIL</code>
+         * 
+         * @return <code>cc</code>, or null if <code>NIL</code>
          */
         public Address[] getCc();
-        
+
         /**
          * Gets the envelope <code>bcc</code> addresses.
-         * @return <code>bcc</code>,
-         * or null if <code>NIL</code>
+         * 
+         * @return <code>bcc</code>, or null if <code>NIL</code>
          */
         public Address[] getBcc();
-        
+
         /**
          * Gets the envelope <code>in-reply-to</code>.
-         * @return <code>in-reply-to</code>
-         * or null if <code>NIL</code>
+         * 
+         * @return <code>in-reply-to</code> or null if <code>NIL</code>
          */
         public String getInReplyTo();
-        
+
         /**
          * Gets the envelope <code>message
          * @return
          */
         public String getMessageId();
-        
+
         /**
          * Values an envelope address.
          */
         public interface Address {
-            
+
             /** Empty array */
             public static final Address[] EMPTY = {};
-            
+
             /**
              * Gets the personal name.
-             * @return personal name, 
-             * or null if the personal name is <code>NIL</code>
+             * 
+             * @return personal name, or null if the personal name is
+             *         <code>NIL</code>
              */
             public String getPersonalName();
-            
+
             /**
              * Gets the SMTP source route.
-             * @return SMTP at-domain-list, 
-             * or null if the list if <code>NIL</code>
+             * 
+             * @return SMTP at-domain-list, or null if the list if
+             *         <code>NIL</code>
              */
             public String getAtDomainList();
-            
+
             /**
              * Gets the mailbox name.
-             * @return the mailbox name 
-             * or the group name when {@link #getHostName()}
-             * is null
+             * 
+             * @return the mailbox name or the group name when
+             *         {@link #getHostName()} is null
              */
             public String getMailboxName();
-            
+
             /**
              * Gets the host name.
-             * @return the host name,
-             * or null when this address marks the start
-             * or end of a group
+             * 
+             * @return the host name, or null when this address marks the start
+             *         or end of a group
              */
             public String getHostName();
         }

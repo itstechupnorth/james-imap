@@ -31,7 +31,6 @@ public abstract class AbstractTestFetch extends AbstractTestSelectedStateBase {
         scriptTest("FetchEnvelope", Locale.US);
     }
 
-
     public void testFetchEnvelopeIT() throws Exception {
         scriptTest("FetchEnvelope", Locale.ITALY);
     }
@@ -102,24 +101,24 @@ public abstract class AbstractTestFetch extends AbstractTestSelectedStateBase {
 
     public void testFetchInternalDateUS() throws Exception {
         scriptTest("FetchInternalDate", Locale.US);
-    }  
+    }
 
     public void testFetchInternalDateITALY() throws Exception {
         scriptTest("FetchInternalDate", Locale.ITALY);
-    } 
+    }
 
     public void testFetchInternalDateKOREA() throws Exception {
         scriptTest("FetchInternalDate", Locale.KOREA);
-    } 
-    
+    }
+
     public void testFetchFetchRfcMixedUS() throws Exception {
         scriptTest("FetchRFC822Mixed", Locale.US);
     }
-    
+
     public void testFetchFetchRfcMixedKOREA() throws Exception {
         scriptTest("FetchRFC822Mixed", Locale.KOREA);
     }
-    
+
     public void testFetchFetchRfcMixedITALY() throws Exception {
         scriptTest("FetchRFC822Mixed", Locale.ITALY);
     }

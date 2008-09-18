@@ -27,13 +27,15 @@ import org.apache.james.mailboxmanager.MailboxListener;
 public class EventCollector implements MailboxListener {
 
     public final List events = new ArrayList();
-    
+
     public void event(Event event) {
         events.add(event);
     }
 
-    public void mailboxDeleted() {}
+    public void mailboxDeleted() {
+    }
 
-    public void mailboxRenamed(String origName, String newName) {}
+    public void mailboxRenamed(String origName, String newName) {
+    }
 
 }

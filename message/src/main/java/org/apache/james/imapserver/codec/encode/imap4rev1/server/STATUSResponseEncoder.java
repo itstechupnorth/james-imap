@@ -39,9 +39,9 @@ public class STATUSResponseEncoder extends AbstractChainedImapEncoder {
     protected void doEncode(ImapMessage acceptableMessage,
             ImapResponseComposer composer) throws IOException {
         STATUSResponse response = (STATUSResponse) acceptableMessage;
-        composer.statusResponse(response.getMessages(), response.getRecent(), 
-                response.getUidNext(), response.getUidValidity(), response.getUnseen(), 
-                response.getMailbox());
+        composer.statusResponse(response.getMessages(), response.getRecent(),
+                response.getUidNext(), response.getUidValidity(), response
+                        .getUnseen(), response.getMailbox());
 
     }
 

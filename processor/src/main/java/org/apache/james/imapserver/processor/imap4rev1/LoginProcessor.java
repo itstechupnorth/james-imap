@@ -38,12 +38,13 @@ import org.apache.james.mailboxmanager.manager.MailboxManagerProvider;
  */
 public class LoginProcessor extends AbstractMailboxAwareProcessor {
 
-    private static final String ATTRIBUTE_NUMBER_OF_FAILURES 
-        = "org.apache.james.imapserver.processor.imap4rev1.LoginProcessor.NUMBER_OF_FAILURES";
+    private static final String ATTRIBUTE_NUMBER_OF_FAILURES = "org.apache.james.imapserver.processor.imap4rev1.LoginProcessor.NUMBER_OF_FAILURES";
+
     // TODO: this should be configurable
     private static final int MAX_FAILURES = 3;
 
-    public LoginProcessor(final ImapProcessor next, final MailboxManagerProvider mailboxManagerProvider, 
+    public LoginProcessor(final ImapProcessor next,
+            final MailboxManagerProvider mailboxManagerProvider,
             final StatusResponseFactory factory) {
         super(next, mailboxManagerProvider, factory);
     }
@@ -52,10 +53,9 @@ public class LoginProcessor extends AbstractMailboxAwareProcessor {
         return (message instanceof LoginRequest);
     }
 
-    protected void doProcess(ImapRequest message,
-            ImapSession session, String tag, ImapCommand command, Responder responder) {
-        try
-        {
+    protected void doProcess(ImapRequest message, ImapSession session,
+            String tag, ImapCommand command, Responder responder) {
+        try {
             final LoginRequest request = (LoginRequest) message;
             final String userid = request.getUserid();
             final String passwd = request.getPassword();
@@ -65,7 +65,8 @@ public class LoginProcessor extends AbstractMailboxAwareProcessor {
                 ImapSessionUtils.setUserName(session, userid);
                 okComplete(command, tag, responder);
             } else {
-                final Integer currentNumberOfFailures = (Integer) session.getAttribute(ATTRIBUTE_NUMBER_OF_FAILURES);
+                final Integer currentNumberOfFailures = (Integer) session
+                        .getAttribute(ATTRIBUTE_NUMBER_OF_FAILURES);
                 final int failures;
                 if (currentNumberOfFailures == null) {
                     failures = 1;
@@ -73,8 +74,10 @@ public class LoginProcessor extends AbstractMailboxAwareProcessor {
                     failures = currentNumberOfFailures.intValue() + 1;
                 }
                 if (failures < MAX_FAILURES) {
-                    session.setAttribute(ATTRIBUTE_NUMBER_OF_FAILURES, new Integer(failures));
-                    no(command,tag, responder, HumanReadableTextKey.INVALID_LOGIN);
+                    session.setAttribute(ATTRIBUTE_NUMBER_OF_FAILURES,
+                            new Integer(failures));
+                    no(command, tag, responder,
+                            HumanReadableTextKey.INVALID_LOGIN);
                 } else {
                     bye(responder, HumanReadableTextKey.TOO_MANY_FAILURES);
                     session.logout();

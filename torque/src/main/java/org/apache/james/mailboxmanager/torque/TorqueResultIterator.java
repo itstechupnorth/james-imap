@@ -41,9 +41,11 @@ import org.apache.torque.TorqueException;
 public class TorqueResultIterator implements Iterator {
 
     private final Buffer messageRows;
+
     private final FetchGroup fetchGroup;
-    
-    public TorqueResultIterator(final Collection messageRows, final FetchGroup fetchGroup) {
+
+    public TorqueResultIterator(final Collection messageRows,
+            final FetchGroup fetchGroup) {
         super();
         if (messageRows == null || messageRows.isEmpty()) {
             this.messageRows = BufferUtils.EMPTY_BUFFER;
@@ -54,12 +56,14 @@ public class TorqueResultIterator implements Iterator {
     }
 
     public MessageFlags[] getMessageFlags() throws TorqueException {
-        final MessageFlags[] results = MessageRowUtils.toMessageFlags(messageRows);
+        final MessageFlags[] results = MessageRowUtils
+                .toMessageFlags(messageRows);
         return results;
     }
-    
+
     /**
      * Iterates over the contained rows.
+     * 
      * @return <code>Iterator</code> for message rows
      */
     public final Iterator iterateRows() {
@@ -77,30 +81,36 @@ public class TorqueResultIterator implements Iterator {
         final MessageRow messageRow = (MessageRow) messageRows.remove();
         MessageResult result;
         try {
-        
-            result = MessageRowUtils.loadMessageResult(messageRow, 
+
+            result = MessageRowUtils.loadMessageResult(messageRow,
                     this.fetchGroup);
         } catch (TorqueException e) {
-            result = new UnloadedMessageResult(messageRow, new MailboxManagerException(e));
+            result = new UnloadedMessageResult(messageRow,
+                    new MailboxManagerException(e));
         } catch (MailboxManagerException e) {
             result = new UnloadedMessageResult(messageRow, e);
         }
         return result;
     }
-    
+
     public void remove() {
         throw new UnsupportedOperationException("Read only iteration.");
     }
 
     private static final class UnloadedMessageResult implements MessageResult {
-        private static final FetchGroup FETCH_GROUP = new FetchGroupImpl(FetchGroup.INTERNAL_DATE | FetchGroup.SIZE);
-        
+        private static final FetchGroup FETCH_GROUP = new FetchGroupImpl(
+                FetchGroup.INTERNAL_DATE | FetchGroup.SIZE);
+
         private final MailboxManagerException exception;
+
         private final Date internalDate;
+
         private final int size;
+
         private final long uid;
-        
-        public UnloadedMessageResult(final MessageRow row, final MailboxManagerException exception) {
+
+        public UnloadedMessageResult(final MessageRow row,
+                final MailboxManagerException exception) {
             super();
             internalDate = row.getInternalDate();
             size = row.getSize();
@@ -112,7 +122,7 @@ public class TorqueResultIterator implements Iterator {
             throw exception;
         }
 
-        public Content getFullContent() throws MailboxManagerException{
+        public Content getFullContent() throws MailboxManagerException {
             throw exception;
         }
 
@@ -157,25 +167,29 @@ public class TorqueResultIterator implements Iterator {
         }
 
         public int compareTo(Object o) {
-            MessageResult that=(MessageResult)o;
-            // Java 1.5  return (int) Math.signum(uid - that.getUid());
+            MessageResult that = (MessageResult) o;
+            // Java 1.5 return (int) Math.signum(uid - that.getUid());
             long diff = uid - that.getUid();
             return (int) diff == 0 ? 0 : diff > 0 ? 1 : -1;
         }
 
-        public Content getMessageBody(MimePath path) throws MailboxManagerException {
+        public Content getMessageBody(MimePath path)
+                throws MailboxManagerException {
             throw exception;
         }
 
-        public Content getFullContent(MimePath path) throws MailboxManagerException {
+        public Content getFullContent(MimePath path)
+                throws MailboxManagerException {
             throw exception;
         }
 
-        public Iterator iterateHeaders(MimePath path) throws MailboxManagerException {
+        public Iterator iterateHeaders(MimePath path)
+                throws MailboxManagerException {
             throw exception;
         }
 
-        public Iterator iterateMimeHeaders(MimePath path) throws MailboxManagerException {
+        public Iterator iterateMimeHeaders(MimePath path)
+                throws MailboxManagerException {
             throw exception;
         }
 
@@ -183,13 +197,15 @@ public class TorqueResultIterator implements Iterator {
             throw exception;
         }
 
-        public Content getMimeBody(MimePath path) throws MailboxManagerException {
+        public Content getMimeBody(MimePath path)
+                throws MailboxManagerException {
             throw exception;
         }
 
-        public MimeDescriptor getMimeDescriptor() throws MailboxManagerException {
+        public MimeDescriptor getMimeDescriptor()
+                throws MailboxManagerException {
             throw exception;
         }
-        
+
     }
 }

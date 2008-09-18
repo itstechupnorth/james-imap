@@ -31,8 +31,8 @@ public class MessageRangeImpl implements MessageRange {
 
     private final long uidTo;
 
-
-    private MessageRangeImpl(final int type, final long uidFrom, final long uidTo) {
+    private MessageRangeImpl(final int type, final long uidFrom,
+            final long uidTo) {
         super();
         this.type = type;
         this.uidFrom = uidFrom;
@@ -51,14 +51,14 @@ public class MessageRangeImpl implements MessageRange {
         return uidTo;
     }
 
-
     public static MessageRange oneUid(long uid) {
         MessageRangeImpl result = new MessageRangeImpl(TYPE_UID, uid, uid);
         return result;
     }
 
     public static MessageRange all() {
-        MessageRangeImpl result = new MessageRangeImpl(TYPE_ALL, NOT_A_UID, NOT_A_UID);
+        MessageRangeImpl result = new MessageRangeImpl(TYPE_ALL, NOT_A_UID,
+                NOT_A_UID);
         return result;
     }
 

@@ -23,27 +23,28 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 /**
- * Note this is a temporary measure aimed at being a drop in 
- * replacement for the avalon coupling. Usage should be reviewed.
+ * Note this is a temporary measure aimed at being a drop in replacement for the
+ * avalon coupling. Usage should be reviewed.
  */
 public abstract class AbstractLogEnabled {
 
-	private static final Log IMAP_LOG = LogFactory.getLog("org.apache.james.imap");
-	
-	private Log log = IMAP_LOG;
+    private static final Log IMAP_LOG = LogFactory
+            .getLog("org.apache.james.imap");
 
-	public Log getLog() {
-		return log;
-	}
+    private Log log = IMAP_LOG;
 
-	public void setLog(Log log) {
-		this.log = log;
-	}
-	
-	public void setupLogger(Object object) {
-		if (object instanceof AbstractLogEnabled) {
-			AbstractLogEnabled logEnabled = (AbstractLogEnabled) object;
-			logEnabled.setLog(log);
-		}
-	}
+    public Log getLog() {
+        return log;
+    }
+
+    public void setLog(Log log) {
+        this.log = log;
+    }
+
+    public void setupLogger(Object object) {
+        if (object instanceof AbstractLogEnabled) {
+            AbstractLogEnabled logEnabled = (AbstractLogEnabled) object;
+            logEnabled.setLog(log);
+        }
+    }
 }

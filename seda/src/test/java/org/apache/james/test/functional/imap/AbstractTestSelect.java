@@ -21,23 +21,22 @@ package org.apache.james.test.functional.imap;
 
 import java.util.Locale;
 
+abstract public class AbstractTestSelect extends
+        AbstractTestForAuthenticatedState {
 
-abstract public class AbstractTestSelect extends AbstractTestForAuthenticatedState {
-
-    public AbstractTestSelect(HostSystem system) throws Exception
-    {
+    public AbstractTestSelect(HostSystem system) throws Exception {
         super(system);
     }
 
     public void testSelectUnseenUS() throws Exception {
-        scriptTest("SelectUnseen", Locale.US); 
+        scriptTest("SelectUnseen", Locale.US);
     }
-    
+
     public void testSelectUnseenKOREA() throws Exception {
-        scriptTest("SelectUnseen", Locale.KOREA ); 
+        scriptTest("SelectUnseen", Locale.KOREA);
     }
-    
+
     public void testSelectUnseenITALY() throws Exception {
-        scriptTest("SelectUnseen", Locale.ITALY); 
+        scriptTest("SelectUnseen", Locale.ITALY);
     }
 }

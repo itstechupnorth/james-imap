@@ -30,12 +30,13 @@ import org.apache.james.imapserver.codec.encode.base.AbstractChainedImapEncoder;
  * Encoders IMAP4rev1 <code>SEARCH</code> responses.
  */
 public class SearchResponseEncoder extends AbstractChainedImapEncoder {
-    
+
     public SearchResponseEncoder(ImapEncoder next) {
         super(next);
     }
 
-    protected void doEncode(ImapMessage acceptableMessage, ImapResponseComposer composer) throws IOException {
+    protected void doEncode(ImapMessage acceptableMessage,
+            ImapResponseComposer composer) throws IOException {
         SearchResponse response = (SearchResponse) acceptableMessage;
         final long[] ids = response.getIds();
         composer.searchResponse(ids);
@@ -43,5 +44,5 @@ public class SearchResponseEncoder extends AbstractChainedImapEncoder {
 
     protected boolean isAcceptable(ImapMessage message) {
         return (message instanceof SearchResponse);
-    } 
+    }
 }

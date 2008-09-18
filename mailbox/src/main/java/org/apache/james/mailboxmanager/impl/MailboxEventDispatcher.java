@@ -31,7 +31,7 @@ import org.apache.james.mailboxmanager.MailboxListener;
 import EDU.oswego.cs.dl.util.concurrent.CopyOnWriteArraySet;
 
 public class MailboxEventDispatcher implements MailboxListener {
-    
+
     private final Set listeners = new CopyOnWriteArraySet();
 
     public void addMailboxListener(MailboxListener mailboxListener) {
@@ -58,9 +58,9 @@ public class MailboxEventDispatcher implements MailboxListener {
         }
     }
 
-    public void flagsUpdated(final long uid, long sessionId, final Flags original,
-            final Flags updated) {
-        final FlagsUpdatedImpl flags = new FlagsUpdatedImpl(sessionId, uid, 
+    public void flagsUpdated(final long uid, long sessionId,
+            final Flags original, final Flags updated) {
+        final FlagsUpdatedImpl flags = new FlagsUpdatedImpl(sessionId, uid,
                 original, updated);
         for (Iterator iter = listeners.iterator(); iter.hasNext();) {
             MailboxListener mailboxListener = (MailboxListener) iter.next();
@@ -74,7 +74,7 @@ public class MailboxEventDispatcher implements MailboxListener {
             mailboxListener.event(event);
         }
     }
-    
+
     public int size() {
         return listeners.size();
     }
@@ -82,8 +82,9 @@ public class MailboxEventDispatcher implements MailboxListener {
     private final static class AddedImpl extends MailboxListener.Added {
 
         private final long sessionId;
+
         private final long subjectUid;
-        
+
         public AddedImpl(final long sessionId, final long subjectUid) {
             super();
             this.sessionId = sessionId;
@@ -98,12 +99,13 @@ public class MailboxEventDispatcher implements MailboxListener {
             return sessionId;
         }
     }
-    
+
     private final static class ExpungedImpl extends MailboxListener.Expunged {
 
         private final long sessionId;
+
         private final long subjectUid;
-        
+
         public ExpungedImpl(final long sessionId, final long subjectUid) {
             super();
             this.sessionId = sessionId;
@@ -118,38 +120,46 @@ public class MailboxEventDispatcher implements MailboxListener {
             return sessionId;
         }
     }
-    
-    private final static class FlagsUpdatedImpl extends MailboxListener.FlagsUpdated {
 
-        private static final boolean isChanged(final Flags original, final Flags updated, 
-                Flags.Flag flag) {
-            return original != null && updated != null 
-                && (original.contains(flag) ^ updated.contains(flag)) ;
+    private final static class FlagsUpdatedImpl extends
+            MailboxListener.FlagsUpdated {
+
+        private static final boolean isChanged(final Flags original,
+                final Flags updated, Flags.Flag flag) {
+            return original != null && updated != null
+                    && (original.contains(flag) ^ updated.contains(flag));
         }
-        
-        private static final Flags.Flag[] FLAGS = {Flags.Flag.ANSWERED,
-            Flags.Flag.DELETED, Flags.Flag.DRAFT, Flags.Flag.FLAGGED,
-            Flags.Flag.RECENT, Flags.Flag.SEEN};
+
+        private static final Flags.Flag[] FLAGS = { Flags.Flag.ANSWERED,
+                Flags.Flag.DELETED, Flags.Flag.DRAFT, Flags.Flag.FLAGGED,
+                Flags.Flag.RECENT, Flags.Flag.SEEN };
+
         private static final int NUMBER_OF_SYSTEM_FLAGS = 6;
-        
+
         private final long sessionId;
+
         private final long subjectUid;
+
         private final boolean[] modifiedFlags;
+
         private final Flags newFlags;
-        
-        public FlagsUpdatedImpl(final long sessionId, final long subjectUid, 
+
+        public FlagsUpdatedImpl(final long sessionId, final long subjectUid,
                 final Flags original, final Flags updated) {
-            this(sessionId, subjectUid, updated, isChanged(original, updated, Flags.Flag.ANSWERED),
-                    isChanged(original, updated, Flags.Flag.DELETED), 
-                    isChanged(original, updated, Flags.Flag.DRAFT),
-                    isChanged(original, updated, Flags.Flag.FLAGGED), 
-                    isChanged(original, updated, Flags.Flag.RECENT),
-                    isChanged(original, updated, Flags.Flag.SEEN));
+            this(sessionId, subjectUid, updated, isChanged(original, updated,
+                    Flags.Flag.ANSWERED), isChanged(original, updated,
+                    Flags.Flag.DELETED), isChanged(original, updated,
+                    Flags.Flag.DRAFT), isChanged(original, updated,
+                    Flags.Flag.FLAGGED), isChanged(original, updated,
+                    Flags.Flag.RECENT), isChanged(original, updated,
+                    Flags.Flag.SEEN));
         }
-        
-        public FlagsUpdatedImpl(final long sessionId, final long subjectUid, final Flags newFlags,
-                boolean answeredUpdated, boolean deletedUpdated, boolean draftUpdated,
-                boolean flaggedUpdated, boolean recentUpdated, boolean seenUpdated) {
+
+        public FlagsUpdatedImpl(final long sessionId, final long subjectUid,
+                final Flags newFlags, boolean answeredUpdated,
+                boolean deletedUpdated, boolean draftUpdated,
+                boolean flaggedUpdated, boolean recentUpdated,
+                boolean seenUpdated) {
             super();
             this.sessionId = sessionId;
             this.subjectUid = subjectUid;
@@ -174,14 +184,14 @@ public class MailboxEventDispatcher implements MailboxListener {
         public Iterator flagsIterator() {
             return new FlagsIterator();
         }
-        
+
         public Flags getNewFlags() {
             return newFlags;
         }
-        
+
         private class FlagsIterator implements Iterator {
             private int position;
-            
+
             public FlagsIterator() {
                 position = 0;
                 nextPosition();
@@ -195,7 +205,7 @@ public class MailboxEventDispatcher implements MailboxListener {
                     }
                 }
             }
-            
+
             public boolean hasNext() {
                 return position < NUMBER_OF_SYSTEM_FLAGS;
             }
@@ -216,16 +226,18 @@ public class MailboxEventDispatcher implements MailboxListener {
     }
 
     public void mailboxDeleted(long sessionId) {
-        final MailboxDeletionEventImpl event = new MailboxDeletionEventImpl(sessionId);
+        final MailboxDeletionEventImpl event = new MailboxDeletionEventImpl(
+                sessionId);
         for (Iterator iter = listeners.iterator(); iter.hasNext();) {
             MailboxListener mailboxListener = (MailboxListener) iter.next();
             mailboxListener.event(event);
         }
     }
 
-    private static final class MailboxDeletionEventImpl implements  MailboxListener.MailboxDeletionEvent {
+    private static final class MailboxDeletionEventImpl implements
+            MailboxListener.MailboxDeletionEvent {
         private final long sessionId;
-        
+
         public MailboxDeletionEventImpl(final long sessionId) {
             super();
             this.sessionId = sessionId;
@@ -234,6 +246,6 @@ public class MailboxEventDispatcher implements MailboxListener {
         public long getSessionId() {
             return sessionId;
         }
-        
+
     }
 }

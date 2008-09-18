@@ -39,26 +39,38 @@ import org.apache.james.imapserver.codec.encode.imap4rev1.status.UntaggedNoRespo
  * TODO: perhaps a POJO would be better
  */
 public class DefaultImapEncoderFactory implements ImapEncoderFactory {
-    
+
     public static final ImapEncoder createDefaultEncoder() {
         final EndImapEncoder endImapEncoder = new EndImapEncoder();
-        final StatusResponseEncoder statusResponseEncoder = new StatusResponseEncoder(endImapEncoder);
-        final UntaggedNoResponseEncoder untaggedNoResponseEncoder = new UntaggedNoResponseEncoder(statusResponseEncoder);
-        final RecentResponseEncoder recentResponseEncoder = new RecentResponseEncoder(untaggedNoResponseEncoder);
-        final FetchResponseEncoder fetchResponseEncoder = new FetchResponseEncoder(recentResponseEncoder);
-        final ExpungeResponseEncoder expungeResponseEncoder = new ExpungeResponseEncoder(fetchResponseEncoder);
-        final ExistsResponseEncoder existsResponseEncoder = new ExistsResponseEncoder(expungeResponseEncoder);
-        final STATUSResponseEncoder statusCommandResponseEncoder = new STATUSResponseEncoder(existsResponseEncoder);
-        final SearchResponseEncoder searchResponseEncoder = new SearchResponseEncoder(statusCommandResponseEncoder);
-        final LSubResponseEncoder lsubResponseEncoder = new LSubResponseEncoder(searchResponseEncoder);
-        final ListResponseEncoder listResponseEncoder = new ListResponseEncoder(lsubResponseEncoder);
-        final FlagsResponseEncoder flagsResponseEncoder = new FlagsResponseEncoder(listResponseEncoder);
-        final CapabilityResponseEncoder capabilityResponseEncoder = new CapabilityResponseEncoder(flagsResponseEncoder);
+        final StatusResponseEncoder statusResponseEncoder = new StatusResponseEncoder(
+                endImapEncoder);
+        final UntaggedNoResponseEncoder untaggedNoResponseEncoder = new UntaggedNoResponseEncoder(
+                statusResponseEncoder);
+        final RecentResponseEncoder recentResponseEncoder = new RecentResponseEncoder(
+                untaggedNoResponseEncoder);
+        final FetchResponseEncoder fetchResponseEncoder = new FetchResponseEncoder(
+                recentResponseEncoder);
+        final ExpungeResponseEncoder expungeResponseEncoder = new ExpungeResponseEncoder(
+                fetchResponseEncoder);
+        final ExistsResponseEncoder existsResponseEncoder = new ExistsResponseEncoder(
+                expungeResponseEncoder);
+        final STATUSResponseEncoder statusCommandResponseEncoder = new STATUSResponseEncoder(
+                existsResponseEncoder);
+        final SearchResponseEncoder searchResponseEncoder = new SearchResponseEncoder(
+                statusCommandResponseEncoder);
+        final LSubResponseEncoder lsubResponseEncoder = new LSubResponseEncoder(
+                searchResponseEncoder);
+        final ListResponseEncoder listResponseEncoder = new ListResponseEncoder(
+                lsubResponseEncoder);
+        final FlagsResponseEncoder flagsResponseEncoder = new FlagsResponseEncoder(
+                listResponseEncoder);
+        final CapabilityResponseEncoder capabilityResponseEncoder = new CapabilityResponseEncoder(
+                flagsResponseEncoder);
         return capabilityResponseEncoder;
     }
 
     public ImapEncoder buildImapEncoder() {
         return createDefaultEncoder();
     }
-   
+
 }

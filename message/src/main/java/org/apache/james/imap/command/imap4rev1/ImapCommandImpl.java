@@ -31,26 +31,30 @@ class ImapCommandImpl extends AbstractLogEnabled implements ImapCommand {
     public static ImapCommand nonAuthenticatedStateCommand(final String name) {
         return new ImapCommandImpl(false, false, true, name);
     }
-    
+
     public static ImapCommand authenticatedStateCommand(final String name) {
         return new ImapCommandImpl(true, true, false, name);
     }
-    
+
     public static ImapCommand selectedStateCommand(final String name) {
         return new ImapCommandImpl(false, true, false, name);
     }
-    
+
     public static ImapCommand anyStateCommand(final String name) {
         return new ImapCommandImpl(true, true, true, name);
     }
-    
+
     private final boolean validInAuthenticated;
+
     private final boolean validInSelected;
+
     private final boolean validInNonAuthenticated;
+
     private final String name;
-    
-    private ImapCommandImpl(boolean validInAuthenticated, boolean validInSelected, 
-            boolean validInNonAuthenticated, final String name) {
+
+    private ImapCommandImpl(boolean validInAuthenticated,
+            boolean validInSelected, boolean validInNonAuthenticated,
+            final String name) {
         super();
         this.validInAuthenticated = validInAuthenticated;
         this.validInSelected = validInSelected;
@@ -66,12 +70,12 @@ class ImapCommandImpl extends AbstractLogEnabled implements ImapCommand {
         final boolean result;
         if (state == ImapSessionState.AUTHENTICATED) {
             result = validInAuthenticated;
-        } else if (state == ImapSessionState.NON_AUTHENTICATED ) {
+        } else if (state == ImapSessionState.NON_AUTHENTICATED) {
             result = validInNonAuthenticated;
         } else if (state == ImapSessionState.SELECTED) {
             result = validInSelected;
         } else {
-          result = false;  
+            result = false;
         }
         return result;
     }

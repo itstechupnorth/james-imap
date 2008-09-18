@@ -24,18 +24,18 @@ import org.apache.james.mailboxmanager.manager.MailboxManagerProvider;
 import org.apache.james.mailboxmanager.mock.TorqueMailboxManagerProviderSingleton;
 import org.apache.torque.TorqueException;
 
-public class TorqueMailboxSelfTest extends
-        AbstractMailboxSelfTestCase {
-    
+public class TorqueMailboxSelfTest extends AbstractMailboxSelfTestCase {
+
     public TorqueMailboxSelfTest() throws TorqueException {
         super();
     }
 
     public void setUp() throws Exception {
         TorqueMailboxManagerProviderSingleton.reset();
-        MailboxManagerProvider mailboxManagerProvider=TorqueMailboxManagerProviderSingleton.getTorqueMailboxManagerProviderInstance();
+        MailboxManagerProvider mailboxManagerProvider = TorqueMailboxManagerProviderSingleton
+                .getTorqueMailboxManagerProviderInstance();
         mailboxManager = mailboxManagerProvider.getMailboxManager();
-        
+
         super.setUp();
     }
 

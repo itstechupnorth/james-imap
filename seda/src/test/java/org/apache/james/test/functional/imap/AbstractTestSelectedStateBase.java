@@ -17,17 +17,17 @@
  * under the License.                                           *
  ****************************************************************/
 
-
 package org.apache.james.test.functional.imap;
 
-
-
 /**
- * <p>Runs tests for commands valid only in the SELECTED state. A login session
- * and setup of a "seleted" mailbox precedes the execution of the test elements.
- * </p><p>
+ * <p>
+ * Runs tests for commands valid only in the SELECTED state. A login session and
+ * setup of a "seleted" mailbox precedes the execution of the test elements.
+ * </p>
+ * <p>
  * Recommended scripts:
- * </p><ul>
+ * </p>
+ * <ul>
  * <li>Check"</li>
  * <li>Expunge"</li>
  * <li>Search"</li>
@@ -39,23 +39,22 @@ package org.apache.james.test.functional.imap;
  * <li>Uid"</li>
  * </ul>
  */
-public abstract class AbstractTestSelectedStateBase
-        extends AbstractTestForAuthenticatedState
-{
-    public AbstractTestSelectedStateBase( HostSystem system )
-    {
-        super( system );
+public abstract class AbstractTestSelectedStateBase extends
+        AbstractTestForAuthenticatedState {
+    public AbstractTestSelectedStateBase(HostSystem system) {
+        super(system);
     }
 
     /**
-     * Superclass sets up welcome message and login session in {@link #preElements}.
-     * A "SELECT INBOX" session is then added to these elements.
+     * Superclass sets up welcome message and login session in
+     * {@link #preElements}. A "SELECT INBOX" session is then added to these
+     * elements.
+     * 
      * @throws Exception
      */
-    public void setUp() throws Exception
-    {
+    public void setUp() throws Exception {
         super.setUp();
-        addTestFile( "SelectedStateSetup.test", preElements );
-        addTestFile( "SelectedStateCleanup.test", postElements );
+        addTestFile("SelectedStateSetup.test", preElements);
+        addTestFile("SelectedStateCleanup.test", postElements);
     }
 }

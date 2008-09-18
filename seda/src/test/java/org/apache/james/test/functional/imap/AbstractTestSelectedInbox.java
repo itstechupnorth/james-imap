@@ -21,7 +21,8 @@ package org.apache.james.test.functional.imap;
 
 import java.util.Locale;
 
-public abstract class AbstractTestSelectedInbox extends AbstractBaseTestSelectedInbox {
+public abstract class AbstractTestSelectedInbox extends
+        AbstractBaseTestSelectedInbox {
 
     public AbstractTestSelectedInbox(HostSystem system) {
         super(system);
@@ -30,171 +31,169 @@ public abstract class AbstractTestSelectedInbox extends AbstractBaseTestSelected
     public void testValidNonAuthenticatedUS() throws Exception {
         scriptTest("ValidNonAuthenticated", Locale.US);
     }
-    
+
     public void testCapabilityUS() throws Exception {
         scriptTest("Capability", Locale.US);
     }
-    
+
     public void testNoopUS() throws Exception {
         scriptTest("Noop", Locale.US);
     }
-    
+
     public void testLogoutUS() throws Exception {
         scriptTest("Logout", Locale.US);
     }
-    
+
     public void testCreateUS() throws Exception {
         scriptTest("Create", Locale.US);
     }
-    
+
     public void testExamineEmptyUS() throws Exception {
         scriptTest("ExamineEmpty", Locale.US);
     }
-    
+
     public void testSelectEmptyUS() throws Exception {
         scriptTest("SelectEmpty", Locale.US);
     }
-    
+
     public void testListNamespaceUS() throws Exception {
         scriptTest("ListNamespace", Locale.US);
     }
-    
+
     public void testListMailboxesUS() throws Exception {
         scriptTest("ListMailboxes", Locale.US);
     }
-    
+
     public void testStatusUS() throws Exception {
         scriptTest("Status", Locale.US);
     }
-    
+
     public void testStringArgsUS() throws Exception {
         scriptTest("StringArgs", Locale.US);
     }
-    
+
     public void testSubscribeUS() throws Exception {
         scriptTest("Subscribe", Locale.US);
     }
-    
+
     public void testAppendUS() throws Exception {
         scriptTest("Append", Locale.US);
     }
-    
+
     public void testDeleteUS() throws Exception {
         scriptTest("Delete", Locale.US);
     }
-    
 
     public void testValidNonAuthenticatedITALY() throws Exception {
         scriptTest("ValidNonAuthenticated", Locale.ITALY);
     }
-    
+
     public void testCapabilityITALY() throws Exception {
         scriptTest("Capability", Locale.ITALY);
     }
-    
+
     public void testNoopITALY() throws Exception {
         scriptTest("Noop", Locale.ITALY);
     }
-    
+
     public void testLogoutITALY() throws Exception {
         scriptTest("Logout", Locale.ITALY);
     }
-    
+
     public void testCreateITALY() throws Exception {
         scriptTest("Create", Locale.ITALY);
     }
-    
+
     public void testExamineEmptyITALY() throws Exception {
         scriptTest("ExamineEmpty", Locale.ITALY);
     }
-    
+
     public void testSelectEmptyITALY() throws Exception {
         scriptTest("SelectEmpty", Locale.ITALY);
     }
-    
+
     public void testListNamespaceITALY() throws Exception {
         scriptTest("ListNamespace", Locale.ITALY);
     }
-    
+
     public void testListMailboxesITALY() throws Exception {
         scriptTest("ListMailboxes", Locale.ITALY);
     }
-    
+
     public void testStatusITALY() throws Exception {
         scriptTest("Status", Locale.ITALY);
     }
-    
+
     public void testStringArgsITALY() throws Exception {
         scriptTest("StringArgs", Locale.ITALY);
     }
-    
+
     public void testSubscribeITALY() throws Exception {
         scriptTest("Subscribe", Locale.ITALY);
     }
-    
+
     public void testAppendITALY() throws Exception {
         scriptTest("Append", Locale.ITALY);
     }
-    
+
     public void testDeleteITALY() throws Exception {
         scriptTest("Delete", Locale.ITALY);
     }
-    
 
     public void testValidNonAuthenticatedKOREA() throws Exception {
         scriptTest("ValidNonAuthenticated", Locale.KOREA);
     }
-    
+
     public void testCapabilityKOREA() throws Exception {
         scriptTest("Capability", Locale.KOREA);
     }
-    
+
     public void testNoopKOREA() throws Exception {
         scriptTest("Noop", Locale.KOREA);
     }
-    
+
     public void testLogoutKOREA() throws Exception {
         scriptTest("Logout", Locale.KOREA);
     }
-    
+
     public void testCreateKOREA() throws Exception {
         scriptTest("Create", Locale.KOREA);
     }
-    
+
     public void testExamineEmptyKOREA() throws Exception {
         scriptTest("ExamineEmpty", Locale.KOREA);
     }
-    
+
     public void testSelectEmptyKOREA() throws Exception {
         scriptTest("SelectEmpty", Locale.KOREA);
     }
-    
+
     public void testListNamespaceKOREA() throws Exception {
         scriptTest("ListNamespace", Locale.KOREA);
     }
-    
+
     public void testListMailboxesKOREA() throws Exception {
         scriptTest("ListMailboxes", Locale.KOREA);
     }
-    
+
     public void testStatusKOREA() throws Exception {
         scriptTest("Status", Locale.KOREA);
     }
-    
+
     public void testStringArgsKOREA() throws Exception {
         scriptTest("StringArgs", Locale.KOREA);
     }
-    
+
     public void testSubscribeKOREA() throws Exception {
         scriptTest("Subscribe", Locale.KOREA);
     }
-    
+
     public void testAppendKOREA() throws Exception {
         scriptTest("Append", Locale.KOREA);
     }
-    
+
     public void testDeleteKOREA() throws Exception {
         scriptTest("Delete", Locale.KOREA);
     }
-    
+
 }

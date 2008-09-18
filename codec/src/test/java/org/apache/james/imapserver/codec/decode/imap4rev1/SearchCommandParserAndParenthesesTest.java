@@ -39,17 +39,18 @@ import org.jmock.MockObjectTestCase;
 
 public class SearchCommandParserAndParenthesesTest extends MockObjectTestCase {
 
-    Input[] variety = {sequence(), uid(), fromHeader(), since(), stringQuoted(), stringUnquoted(), draft(),
-            mailingListHeader(), on(),  unanswered()};
-    
+    Input[] variety = { sequence(), uid(), fromHeader(), since(),
+            stringQuoted(), stringUnquoted(), draft(), mailingListHeader(),
+            on(), unanswered() };
+
     public static Input and(Input[] parts, boolean parens) {
         List keys = new ArrayList();
         StringBuffer buffer = new StringBuffer();
         if (parens) {
-            buffer.append("(");            
+            buffer.append("(");
         }
         for (int i = 0; i < parts.length; i++) {
-            if (i>0) {
+            if (i > 0) {
                 buffer.append(' ');
             }
             buffer.append(parts[i].input);
@@ -61,85 +62,98 @@ public class SearchCommandParserAndParenthesesTest extends MockObjectTestCase {
         Input input = new Input(buffer.toString(), SearchKey.buildAnd(keys));
         return input;
     }
-    
+
     public static Input sequence() {
-        IdRange[] range = {new IdRange(Long.MAX_VALUE, 100), new IdRange(110), new IdRange(200, 201),
-                new IdRange(400, Long.MAX_VALUE)};
+        IdRange[] range = { new IdRange(Long.MAX_VALUE, 100), new IdRange(110),
+                new IdRange(200, 201), new IdRange(400, Long.MAX_VALUE) };
         SearchKey key = SearchKey.buildSequenceSet(range);
         return new Input("*:100,110,200:201,400:*", key);
     }
-    
+
     public static Input uid() {
-        IdRange[] range = {new IdRange(Long.MAX_VALUE, 100), new IdRange(110), new IdRange(200, 201),
-                new IdRange(400, Long.MAX_VALUE)};
+        IdRange[] range = { new IdRange(Long.MAX_VALUE, 100), new IdRange(110),
+                new IdRange(200, 201), new IdRange(400, Long.MAX_VALUE) };
         SearchKey key = SearchKey.buildUidSet(range);
         return new Input("UID *:100,110,200:201,400:*", key);
     }
-    
+
     public static Input fromHeader() {
         SearchKey key = SearchKey.buildHeader("FROM", "Smith");
         return new Input("HEADER FROM Smith", key);
     }
-    
+
     public static Input to() {
-        SearchKey key = SearchKey.buildTo("JAMES Server Development <server-dev@james.apache.org>");
-        return new Input("To \"JAMES Server Development <server-dev@james.apache.org>\"", key);
+        SearchKey key = SearchKey
+                .buildTo("JAMES Server Development <server-dev@james.apache.org>");
+        return new Input(
+                "To \"JAMES Server Development <server-dev@james.apache.org>\"",
+                key);
     }
-    
+
     public static Input mailingListHeader() {
-        SearchKey key = SearchKey.buildHeader("Mailing-List", "contact server-dev-help@james.apache.org; run by ezmlm");
-        return new Input("HEADER Mailing-List \"contact server-dev-help@james.apache.org; run by ezmlm\"", key);
+        SearchKey key = SearchKey.buildHeader("Mailing-List",
+                "contact server-dev-help@james.apache.org; run by ezmlm");
+        return new Input(
+                "HEADER Mailing-List \"contact server-dev-help@james.apache.org; run by ezmlm\"",
+                key);
     }
-    
+
     public static Input since() {
-        SearchKey key = SearchKey.buildSince(new DayMonthYear(11,1, 2001));
+        SearchKey key = SearchKey.buildSince(new DayMonthYear(11, 1, 2001));
         return new Input("since 11-Jan-2001", key);
     }
-    
+
     public static Input on() {
-        SearchKey key = SearchKey.buildOn(new DayMonthYear(1,2, 2001));
+        SearchKey key = SearchKey.buildOn(new DayMonthYear(1, 2, 2001));
         return new Input("on 1-Feb-2001", key);
     }
-    
+
     public static Input stringUnquoted() {
         SearchKey key = SearchKey.buildFrom("Smith");
         return new Input("FROM Smith", key);
     }
-    
+
     public static Input stringQuoted() {
         SearchKey key = SearchKey.buildFrom("Smith And Jones");
         return new Input("FROM \"Smith And Jones\"", key);
     }
-    
+
     public static Input draft() {
         SearchKey key = SearchKey.buildDraft();
         return new Input("DRAFT", key);
     }
-    
+
     public static Input unanswered() {
         SearchKey key = SearchKey.buildUnanswered();
         return new Input("unanswered", key);
     }
-    
+
     public static final class Input {
         public String input;
+
         public SearchKey key;
-        
+
         public Input(String input, SearchKey key) {
             super();
             this.input = input;
             this.key = key;
         }
     }
-    
+
     SearchCommandParser parser;
+
     Mock mockCommandFactory;
+
     Mock mockMessageFactory;
+
     Mock mockCommand;
+
     Mock mockMessage;
+
     ImapCommand command;
+
     ImapMessage message;
-    
+
     protected void setUp() throws Exception {
         super.setUp();
         parser = new SearchCommandParser();
@@ -151,7 +165,8 @@ public class SearchCommandParserAndParenthesesTest extends MockObjectTestCase {
         mockMessage = mock(ImapMessage.class);
         message = (ImapMessage) mockMessage.proxy();
         parser.init((Imap4Rev1CommandFactory) mockCommandFactory.proxy());
-        parser.setMessageFactory((Imap4Rev1MessageFactory) mockMessageFactory.proxy());
+        parser.setMessageFactory((Imap4Rev1MessageFactory) mockMessageFactory
+                .proxy());
     }
 
     protected void tearDown() throws Exception {
@@ -161,30 +176,36 @@ public class SearchCommandParserAndParenthesesTest extends MockObjectTestCase {
     public void testShouldParseTopLevelParentheses() throws Exception {
         check(and(variety, true));
     }
-    
+
     public void testShouldParseDeepParentheses() throws Exception {
-        Input[] deep = {and(variety, true), and(variety, true), sequence(), and(variety, true), draft(), mailingListHeader()};
-        Input[] mid = {and(deep, true), since(), and(variety, true), unanswered()};
-        Input[] top = {uid(), and(deep, true), and(mid, true), stringQuoted(), and(mid, true)};
+        Input[] deep = { and(variety, true), and(variety, true), sequence(),
+                and(variety, true), draft(), mailingListHeader() };
+        Input[] mid = { and(deep, true), since(), and(variety, true),
+                unanswered() };
+        Input[] top = { uid(), and(deep, true), and(mid, true), stringQuoted(),
+                and(mid, true) };
         check(and(top, true));
     }
-    
+
     public void testShouldParseParenthesesOnTopLevel() throws Exception {
-        Input[] deep = {and(variety, true), and(variety, true), sequence(), and(variety, true), draft(), mailingListHeader()};
-        Input[] mid = {and(deep, true), since(), and(variety, true), unanswered()};
-        Input[] top = {uid(), and(deep, true), and(mid, true), stringQuoted(), and(mid, true)};
+        Input[] deep = { and(variety, true), and(variety, true), sequence(),
+                and(variety, true), draft(), mailingListHeader() };
+        Input[] mid = { and(deep, true), since(), and(variety, true),
+                unanswered() };
+        Input[] top = { uid(), and(deep, true), and(mid, true), stringQuoted(),
+                and(mid, true) };
         check(and(top, false));
     }
-    
-    private void check(Input in) throws UnsupportedEncodingException, ProtocolException {
+
+    private void check(Input in) throws UnsupportedEncodingException,
+            ProtocolException {
         String input = in.input + "\r\n";
         ImapRequestLineReader reader = new ImapRequestLineReader(
-                new ByteArrayInputStream(input.getBytes("US-ASCII")), 
-                    new ByteArrayOutputStream());
+                new ByteArrayInputStream(input.getBytes("US-ASCII")),
+                new ByteArrayOutputStream());
 
         final SearchKey result = parser.decode(reader);
         assertEquals(in.key, result);
     }
-
 
 }

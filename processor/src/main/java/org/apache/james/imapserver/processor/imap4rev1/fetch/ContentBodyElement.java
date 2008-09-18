@@ -31,8 +31,9 @@ import org.apache.james.mailboxmanager.MessageResult.Content;
 
 final class ContentBodyElement implements BodyElement {
     private final String name;
+
     private final MessageResult.Content content;
-    
+
     public ContentBodyElement(final String name, final Content content) {
         super();
         this.name = name;
@@ -45,14 +46,14 @@ final class ContentBodyElement implements BodyElement {
     public String getName() {
         return name;
     }
-    
+
     /**
      * @see org.apache.james.imap.message.response.imap4rev1.FetchResponse.BodyElement#size()
      */
     public long size() {
         return content.size();
     }
-    
+
     /**
      * @see org.apache.james.imap.message.response.imap4rev1.FetchResponse.BodyElement#writeTo(WritableByteChannel)
      */

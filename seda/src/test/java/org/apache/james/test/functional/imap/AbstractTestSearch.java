@@ -21,35 +21,34 @@ package org.apache.james.test.functional.imap;
 
 import java.util.Locale;
 
+abstract public class AbstractTestSearch extends
+        AbstractTestForAuthenticatedState {
 
-abstract public class AbstractTestSearch extends AbstractTestForAuthenticatedState {
-
-    public AbstractTestSearch(HostSystem system) throws Exception
-    {
+    public AbstractTestSearch(HostSystem system) throws Exception {
         super(system);
     }
-        
+
     public void testSearchAtomsUS() throws Exception {
-        scriptTest("SearchAtoms", Locale.US); 
+        scriptTest("SearchAtoms", Locale.US);
     }
-    
+
     public void testSearchAtomsITALY() throws Exception {
-        scriptTest("SearchAtoms", Locale.ITALY); 
+        scriptTest("SearchAtoms", Locale.ITALY);
     }
-    
+
     public void testSearchAtomsKOREA() throws Exception {
-        scriptTest("SearchAtoms", Locale.KOREA); 
+        scriptTest("SearchAtoms", Locale.KOREA);
     }
-    
+
     public void testSearchCombinationsUS() throws Exception {
-        scriptTest("SearchCombinations", Locale.US); 
+        scriptTest("SearchCombinations", Locale.US);
     }
-    
+
     public void testSearchCombinationsITALY() throws Exception {
-        scriptTest("SearchCombinations", Locale.ITALY); 
+        scriptTest("SearchCombinations", Locale.ITALY);
     }
-    
+
     public void testSearchCombinationsKOREA() throws Exception {
-        scriptTest("SearchCombinations", Locale.KOREA); 
+        scriptTest("SearchCombinations", Locale.KOREA);
     }
 }

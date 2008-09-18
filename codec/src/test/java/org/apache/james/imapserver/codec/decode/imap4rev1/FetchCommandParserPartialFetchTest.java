@@ -38,13 +38,19 @@ import org.jmock.core.Constraint;
 public class FetchCommandParserPartialFetchTest extends MockObjectTestCase {
 
     FetchCommandParser parser;
+
     Mock mockCommandFactory;
+
     Mock mockMessageFactory;
+
     Mock mockCommand;
+
     Mock mockMessage;
+
     ImapCommand command;
+
     ImapMessage message;
-    
+
     protected void setUp() throws Exception {
         super.setUp();
         parser = new FetchCommandParser();
@@ -56,7 +62,8 @@ public class FetchCommandParserPartialFetchTest extends MockObjectTestCase {
         mockMessage = mock(ImapMessage.class);
         message = (ImapMessage) mockMessage.proxy();
         parser.init((Imap4Rev1CommandFactory) mockCommandFactory.proxy());
-        parser.setMessageFactory((Imap4Rev1MessageFactory) mockMessageFactory.proxy());
+        parser.setMessageFactory((Imap4Rev1MessageFactory) mockMessageFactory
+                .proxy());
     }
 
     protected void tearDown() throws Exception {
@@ -64,38 +71,42 @@ public class FetchCommandParserPartialFetchTest extends MockObjectTestCase {
     }
 
     public void testShouldParseZeroAndLength() throws Exception {
-        IdRange[] ranges = {new IdRange(1)};
+        IdRange[] ranges = { new IdRange(1) };
         FetchData data = new FetchData();
-        data.add(new BodyFetchElement("BODY[]", BodyFetchElement.CONTENT, null, null, 
-                new Long(0), new Long(100)), false);
+        data.add(new BodyFetchElement("BODY[]", BodyFetchElement.CONTENT, null,
+                null, new Long(0), new Long(100)), false);
         check("1 (BODY[]<0.100>)\r\n", ranges, false, data, "A01");
     }
-    
+
     public void testShouldParseNonZeroAndLength() throws Exception {
-        IdRange[] ranges = {new IdRange(1)};
+        IdRange[] ranges = { new IdRange(1) };
         FetchData data = new FetchData();
-        data.add(new BodyFetchElement("BODY[]", BodyFetchElement.CONTENT, null, null, 
-                new Long(20), new Long(12342348)), false);
+        data.add(new BodyFetchElement("BODY[]", BodyFetchElement.CONTENT, null,
+                null, new Long(20), new Long(12342348)), false);
         check("1 (BODY[]<20.12342348>)\r\n", ranges, false, data, "A01");
     }
-    
+
     public void testShouldNotParseZeroLength() throws Exception {
         try {
-            ImapRequestLineReader reader = new ImapRequestLineReader(new ByteArrayInputStream("1 (BODY[]<20.0>)\r\n".getBytes("US-ASCII")), 
-                    new ByteArrayOutputStream());        
+            ImapRequestLineReader reader = new ImapRequestLineReader(
+                    new ByteArrayInputStream("1 (BODY[]<20.0>)\r\n"
+                            .getBytes("US-ASCII")), new ByteArrayOutputStream());
             parser.decode(command, reader, "A01", false);
             fail("Number of octets must be non-zero");
         } catch (ProtocolException e) {
             // expected
         }
     }
-    
-    
-    private void check(String input, final IdRange[] idSet, final boolean useUids, FetchData data, String tag) throws Exception {
-        ImapRequestLineReader reader = new ImapRequestLineReader(new ByteArrayInputStream(input.getBytes("US-ASCII")), 
-                    new ByteArrayOutputStream());        
-        Constraint[] constraints = {eq(command), eq(useUids), eq(idSet), eq(data), same(tag)};
-        mockMessageFactory.expects(once()).method("createFetchMessage").with(constraints).will(returnValue(message));
+
+    private void check(String input, final IdRange[] idSet,
+            final boolean useUids, FetchData data, String tag) throws Exception {
+        ImapRequestLineReader reader = new ImapRequestLineReader(
+                new ByteArrayInputStream(input.getBytes("US-ASCII")),
+                new ByteArrayOutputStream());
+        Constraint[] constraints = { eq(command), eq(useUids), eq(idSet),
+                eq(data), same(tag) };
+        mockMessageFactory.expects(once()).method("createFetchMessage").with(
+                constraints).will(returnValue(message));
         parser.decode(command, reader, tag, useUids);
     }
 }

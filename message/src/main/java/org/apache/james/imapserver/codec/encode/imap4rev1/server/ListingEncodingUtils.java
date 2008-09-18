@@ -28,16 +28,19 @@ import org.apache.james.imap.message.response.imap4rev1.server.AbstractListingRe
 import org.apache.james.imapserver.codec.encode.ImapResponseComposer;
 
 public class ListingEncodingUtils {
-    
-    public static void encodeListingResponse(final String responseTypeName, final ImapResponseComposer composer, final AbstractListingResponse response) throws IOException {
+
+    public static void encodeListingResponse(final String responseTypeName,
+            final ImapResponseComposer composer,
+            final AbstractListingResponse response) throws IOException {
         final List attributes = getNameAttributes(response);
-        
+
         final String name = response.getName();
         final String hierarchyDelimiter = response.getHierarchyDelimiter();
-        
-        composer.listResponse(responseTypeName, attributes, hierarchyDelimiter, name);
+
+        composer.listResponse(responseTypeName, attributes, hierarchyDelimiter,
+                name);
     }
-    
+
     private static List getNameAttributes(final AbstractListingResponse response) {
         final List attributes;
         if (response.isNameAttributed()) {

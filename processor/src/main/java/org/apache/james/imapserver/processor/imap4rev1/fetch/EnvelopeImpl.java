@@ -27,20 +27,29 @@ import org.apache.james.imap.message.response.imap4rev1.FetchResponse;
 final class EnvelopeImpl implements FetchResponse.Envelope {
 
     private final Address[] bcc;
+
     private final Address[] cc;
+
     private final String date;
+
     private final Address[] from;
+
     private final String inReplyTo;
+
     private final String messageId;
+
     private final Address[] replyTo;
+
     private final Address[] sender;
-    private final String subject;                  
+
+    private final String subject;
+
     private final Address[] to;
-    
-    public EnvelopeImpl(final String date, final String subject, final Address[] from, 
-            final Address[] sender, final Address[] replyTo, final Address[] to, 
-            final Address[] cc, final Address[] bcc, final String inReplyTo, 
-            final String messageId) {
+
+    public EnvelopeImpl(final String date, final String subject,
+            final Address[] from, final Address[] sender,
+            final Address[] replyTo, final Address[] to, final Address[] cc,
+            final Address[] bcc, final String inReplyTo, final String messageId) {
         super();
         this.bcc = bcc;
         this.cc = cc;

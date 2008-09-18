@@ -31,22 +31,24 @@ import org.apache.james.imap.message.response.imap4rev1.Literal;
 import org.apache.james.imapserver.codec.encode.ImapResponseWriter;
 
 /**
- * Class providing methods to send response messages from the server
- * to the client.
+ * Class providing methods to send response messages from the server to the
+ * client.
  */
-public class ByteImapResponseWriter extends AbstractLogEnabled implements ImapConstants, ImapResponseWriter {
-    
+public class ByteImapResponseWriter extends AbstractLogEnabled implements
+        ImapConstants, ImapResponseWriter {
+
     private static final int LOWER_CASE_OFFSET = 'a' - 'A';
-    
+
     private PrintWriter writer;
+
     private ByteArrayOutputStream out;
+
     private boolean skipNextSpace;
-    
-    public ByteImapResponseWriter(  )
-    {
+
+    public ByteImapResponseWriter() {
         clear();
     }
-    
+
     public byte[] getBytes() throws Exception {
         writer.flush();
         out.flush();
@@ -54,71 +56,65 @@ public class ByteImapResponseWriter extends AbstractLogEnabled implements ImapCo
     }
 
     /**
-     * Writes the message provided to the client, prepended with the
-     * untagged marker "*".
-     *
-     * @param message The message to write to the client.
+     * Writes the message provided to the client, prepended with the untagged
+     * marker "*".
+     * 
+     * @param message
+     *            The message to write to the client.
      */
-    public void untaggedResponse( String message )
-    {
+    public void untaggedResponse(String message) {
         untagged();
-        message( message );
+        message(message);
         end();
     }
-    
-    public void byeResponse( String message ) {
+
+    public void byeResponse(String message) {
         untaggedResponse(BYE + SP + message);
     }
 
-    public void untagged()
-    {
-        writer.print( UNTAGGED );
+    public void untagged() {
+        writer.print(UNTAGGED);
     }
 
-    public void tag(String tag)
-    {
-        writer.print( tag );
+    public void tag(String tag) {
+        writer.print(tag);
     }
 
-    public void message( String message )
-    {
-        if ( message != null ) {
+    public void message(String message) {
+        if (message != null) {
             space();
-            writer.print( message );
+            writer.print(message);
         }
     }
 
-    public void message( long number )
-    {
+    public void message(long number) {
         space();
-        writer.print( number );
+        writer.print(number);
     }
 
-    public void responseCode( String responseCode )
-    {
-        if ( responseCode != null ) {
-            writer.print( " [" );
-            writer.print( responseCode );
-            writer.print( "]" );
+    public void responseCode(String responseCode) {
+        if (responseCode != null) {
+            writer.print(" [");
+            writer.print(responseCode);
+            writer.print("]");
         }
     }
 
-    public void end()
-    {
+    public void end() {
         writer.println();
         writer.flush();
     }
 
     public void commandName(String commandName) {
         space();
-        writer.print( commandName );
+        writer.print(commandName);
     }
 
     public void quote(String message) {
         space();
         writer.print(DQUOTE);
         final int length = message.length();
-        for (int i=0;i<length;i++) {
+        for (int i = 0; i < length; i++) {
             char character = message.charAt(i);
             if (character == ImapConstants.BACK_SLASH || character == DQUOTE) {
                 writer.print(ImapConstants.BACK_SLASH);
@@ -127,7 +123,7 @@ public class ByteImapResponseWriter extends AbstractLogEnabled implements ImapCo
         }
         writer.print(DQUOTE);
     }
-    
+
     public void closeParen() {
         closeBracket(CLOSING_PARENTHESIS);
     }
@@ -146,21 +142,21 @@ public class ByteImapResponseWriter extends AbstractLogEnabled implements ImapCo
         writer.print(bracket);
         skipNextSpace();
     }
-    
+
     public void clear() {
         this.out = new ByteArrayOutputStream();
-        this.writer = new InternetPrintWriter( out, true );
+        this.writer = new InternetPrintWriter(out, true);
         this.skipNextSpace = false;
     }
-    
+
     private void clearSkipNextSpace() {
         skipNextSpace = false;
     }
-    
+
     public void skipNextSpace() {
         skipNextSpace = true;
     }
-    
+
     public void space() {
         if (skipNextSpace) {
             skipNextSpace = false;
@@ -191,10 +187,11 @@ public class ByteImapResponseWriter extends AbstractLogEnabled implements ImapCo
 
     private void upperCaseAscii(String message, boolean quote) {
         space();
-        if (quote) writer.print(DQUOTE);
+        if (quote)
+            writer.print(DQUOTE);
         // message is ASCII
         final int length = message.length();
-        for (int i=0;i<length;i++) {
+        for (int i = 0; i < length; i++) {
             final char next = message.charAt(i);
             if (next >= 'a' && next <= 'z') {
                 writer.print(next + LOWER_CASE_OFFSET);
@@ -202,7 +199,8 @@ public class ByteImapResponseWriter extends AbstractLogEnabled implements ImapCo
                 writer.print(next);
             }
         }
-        if (quote) writer.print(DQUOTE);
+        if (quote)
+            writer.print(DQUOTE);
     }
 
     public void quoteUpperCaseAscii(String message) {

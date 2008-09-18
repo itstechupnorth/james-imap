@@ -36,7 +36,7 @@ public class UidToMsnConverter implements MailboxListener {
     protected SortedMap uidToMsn;
 
     protected long highestUid = 0;
-    
+
     protected int highestMsn = 0;
 
     public UidToMsnConverter(final Collection uids) {
@@ -46,7 +46,7 @@ public class UidToMsnConverter implements MailboxListener {
             int msn = 1;
             List uidsInOrder = new ArrayList(uids);
             Collections.sort(uidsInOrder);
-            for (final Iterator it=uidsInOrder.iterator();it.hasNext();msn++) {
+            for (final Iterator it = uidsInOrder.iterator(); it.hasNext(); msn++) {
                 final Long uid = (Long) it.next();
                 highestUid = uid.longValue();
                 highestMsn = msn;
@@ -93,32 +93,32 @@ public class UidToMsnConverter implements MailboxListener {
         uidToMsn.put(uidLong, msnInteger);
     }
 
-    
-    
     public synchronized void expunge(long uid) {
-        int msn=getMsn(uid);
-        remove(msn,uid);
-        List renumberMsns=new ArrayList(msnToUid.tailMap(new Integer(msn+1)).keySet());
+        int msn = getMsn(uid);
+        remove(msn, uid);
+        List renumberMsns = new ArrayList(msnToUid
+                .tailMap(new Integer(msn + 1)).keySet());
         for (Iterator iter = renumberMsns.iterator(); iter.hasNext();) {
             int aMsn = ((Integer) iter.next()).intValue();
-            long aUid= getUid(aMsn);
-            remove(aMsn,aUid);
-            add(aMsn-1,aUid);
+            long aUid = getUid(aMsn);
+            remove(aMsn, aUid);
+            add(aMsn - 1, aUid);
         }
         highestMsn--;
         assertValidity();
     }
-    
-    protected void remove(int msn,long uid) {
+
+    protected void remove(int msn, long uid) {
         uidToMsn.remove(new Long(uid));
         msnToUid.remove(new Integer(msn));
     }
-    
+
     synchronized void assertValidity() {
-        Integer[] msns=(Integer[])msnToUid.keySet().toArray(new Integer[0]);
+        Integer[] msns = (Integer[]) msnToUid.keySet().toArray(new Integer[0]);
         for (int i = 0; i < msns.length; i++) {
-            if (msns[i].intValue()!=(i+1)) {
-                throw new AssertionError("Msn at position "+(i+1)+" was "+msns[i].intValue());
+            if (msns[i].intValue() != (i + 1)) {
+                throw new AssertionError("Msn at position " + (i + 1) + " was "
+                        + msns[i].intValue());
             }
         }
         if (msns.length > 0) {
@@ -136,12 +136,14 @@ public class UidToMsnConverter implements MailboxListener {
         if (!msnToUid.keySet().equals(new TreeSet(uidToMsn.values()))) {
             System.out.println(msnToUid.keySet());
             System.out.println(uidToMsn.values());
-            throw new AssertionError("msnToUid.keySet() does not equal uidToMsn.values()");
+            throw new AssertionError(
+                    "msnToUid.keySet() does not equal uidToMsn.values()");
         }
         if (!uidToMsn.keySet().equals(new TreeSet(msnToUid.values()))) {
             System.out.println(uidToMsn.keySet());
             System.out.println(msnToUid.values());
-            throw new AssertionError("uidToMsn.keySet() does not equal msnToUid.values()");
+            throw new AssertionError(
+                    "uidToMsn.keySet() does not equal msnToUid.values()");
         }
 
     }

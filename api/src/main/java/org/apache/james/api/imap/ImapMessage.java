@@ -19,14 +19,12 @@
 
 package org.apache.james.api.imap;
 
-
 /**
  * <p>
  * Marker interface for IMAP messages.
  * </p>
  * <p>
- * <strong>Note:</strong> this is a transitional API
- * and is liable to change.
+ * <strong>Note:</strong> this is a transitional API and is liable to change.
  * </p>
  */
 public interface ImapMessage {

@@ -31,16 +31,18 @@ import org.apache.james.mailboxmanager.MessageResult;
 final class ByteContent implements MessageResult.Content {
 
     private final byte[] contents;
+
     private final long size;
+
     public ByteContent(final byte[] contents) {
         this.contents = contents;
         size = contents.length + MessageUtils.countUnnormalLines(contents);
     }
-    
+
     public long size() {
         return size;
     }
-    
+
     public void writeTo(StringBuffer buffer) {
         MessageUtils.normalisedWriteTo(contents, buffer);
     }

@@ -17,36 +17,34 @@
  * under the License.                                           *
  ****************************************************************/
 
-
 package org.apache.james.test.functional.imap;
 
 import java.io.InputStream;
 import java.util.Locale;
 
 /**
- * A Protocol test which reads the test protocol session from a file. The
- * file read is taken as "<test-name>.test", where <test-name> is the value
- * passed into the constructor.
- * Subclasses of this test can set up {@link #preElements} and {@link #postElements}
- * for extra elements not defined in the protocol session file.
+ * A Protocol test which reads the test protocol session from a file. The file
+ * read is taken as "<test-name>.test", where <test-name> is the value passed
+ * into the constructor. Subclasses of this test can set up {@link #preElements}
+ * and {@link #postElements} for extra elements not defined in the protocol
+ * session file.
  */
-public abstract class AbstractSimpleScriptedTestProtocol
-        extends AbstractProtocolTest
-{    
-    private FileProtocolSessionBuilder builder =
-            new FileProtocolSessionBuilder();
+public abstract class AbstractSimpleScriptedTestProtocol extends
+        AbstractProtocolTest {
+    private FileProtocolSessionBuilder builder = new FileProtocolSessionBuilder();
 
     private static final Locale BASE_DEFAULT_LOCALE = Locale.getDefault();
-    
+
     /**
-     * Sets up a SimpleFileProtocolTest which reads the protocol session from
-     * a file of name "<fileName>.test". This file should be available in the classloader
-     * in the same location as this test class.
-     * @param fileName The name of the file to read protocol elements from.
+     * Sets up a SimpleFileProtocolTest which reads the protocol session from a
+     * file of name "<fileName>.test". This file should be available in the
+     * classloader in the same location as this test class.
+     * 
+     * @param fileName
+     *            The name of the file to read protocol elements from.
      */
-    public AbstractSimpleScriptedTestProtocol( HostSystem hostSystem  )
-    {
-        super( hostSystem );
+    public AbstractSimpleScriptedTestProtocol(HostSystem hostSystem) {
+        super(hostSystem);
     }
 
     protected void tearDown() throws Exception {
@@ -54,36 +52,38 @@ public abstract class AbstractSimpleScriptedTestProtocol
         super.tearDown();
     }
 
-
-
     /**
      * Reads test elements from the protocol session file and adds them to the
      * {@link #testElements} ProtocolSession. Then calls {@link #runSessions}.
-     * @param locale TODO
+     * 
+     * @param locale
+     *            TODO
      */
-    protected void scriptTest(String fileName, Locale locale) throws Exception
-    {
+    protected void scriptTest(String fileName, Locale locale) throws Exception {
         Locale.setDefault(locale);
-        addTestFile( fileName + ".test", testElements );
+        addTestFile(fileName + ".test", testElements);
         runSessions();
     }
 
     /**
      * Finds the protocol session file identified by the test name, and builds
-     * protocol elements from it. All elements from the definition file are added
-     * to the supplied ProtocolSession.
-     * @param fileName The name of the file to read
-     * @param session The ProtocolSession to add elements to.
-     */ 
-    protected void addTestFile( String fileName, ProtocolSession session) throws Exception
-    {
+     * protocol elements from it. All elements from the definition file are
+     * added to the supplied ProtocolSession.
+     * 
+     * @param fileName
+     *            The name of the file to read
+     * @param session
+     *            The ProtocolSession to add elements to.
+     */
+    protected void addTestFile(String fileName, ProtocolSession session)
+            throws Exception {
         fileName = "/org/apache/james/test/functional/imap/scripts/" + fileName;
         // Need to find local resource.
-        InputStream is = this.getClass().getResourceAsStream( fileName );
-        if ( is == null ) {
-            throw new Exception( "Test Resource '" + fileName + "' not found." );
+        InputStream is = this.getClass().getResourceAsStream(fileName);
+        if (is == null) {
+            throw new Exception("Test Resource '" + fileName + "' not found.");
         }
 
-        builder.addProtocolLinesFromStream( is, session, fileName );
+        builder.addProtocolLinesFromStream(is, session, fileName);
     }
 }

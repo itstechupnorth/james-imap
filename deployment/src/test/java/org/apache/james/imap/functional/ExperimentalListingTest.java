@@ -26,5 +26,5 @@ public class ExperimentalListingTest extends AbstractTestListing {
     public ExperimentalListingTest() throws Exception {
         super(HostSystemFactory.createStandardImap());
     }
-    
+
 }

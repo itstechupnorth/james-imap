@@ -25,42 +25,47 @@ package org.apache.james.api.imap.message.request;
 public class DayMonthYear {
 
     private final int day;
+
     private final int month;
+
     private final int year;
-    
+
     public DayMonthYear(final int day, final int month, final int year) {
         super();
         this.day = day;
         this.month = month;
         this.year = year;
     }
-    
+
     /**
      * Gets the day component of this date.
+     * 
      * @return the day of the month, one based
      */
     public final int getDay() {
         return day;
     }
-    
+
     /**
      * Gets the month component of this date.
+     * 
      * @return the month of the year, one based
      */
     public final int getMonth() {
         return month;
     }
-    
+
     /**
      * Gets the year component of this date.
+     * 
      * @return the year
      */
     public final int getYear() {
         return year;
     }
-    
+
     public String toString() {
-        return day + "-" + month + "-" + year; 
+        return day + "-" + month + "-" + year;
     }
 
     /**
@@ -94,6 +99,5 @@ public class DayMonthYear {
             return false;
         return true;
     }
-    
-    
+
 }

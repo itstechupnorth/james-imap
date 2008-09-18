@@ -20,14 +20,14 @@
 package org.apache.james.mailboxmanager.util;
 
 public class UidRange implements Comparable {
-    
+
     private long fromUid;
-    
+
     private long toUid;
-    
-    public UidRange(long fromUid,long toUid) {
-        this.fromUid=fromUid;
-        this.toUid=toUid;
+
+    public UidRange(long fromUid, long toUid) {
+        this.fromUid = fromUid;
+        this.toUid = toUid;
     }
 
     public long getFromUid() {
@@ -37,9 +37,9 @@ public class UidRange implements Comparable {
     public long getToUid() {
         return toUid;
     }
-    
+
     public String toString() {
-        return fromUid+":"+toUid;
+        return fromUid + ":" + toUid;
     }
 
     public int compareTo(Object o) {

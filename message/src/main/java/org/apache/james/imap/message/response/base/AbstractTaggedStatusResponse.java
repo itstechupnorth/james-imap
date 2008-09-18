@@ -22,13 +22,17 @@ package org.apache.james.imap.message.response.base;
 import org.apache.james.api.imap.ImapCommand;
 import org.apache.james.api.imap.message.response.ImapResponseMessage;
 
-abstract public class AbstractTaggedStatusResponse implements ImapResponseMessage {
+abstract public class AbstractTaggedStatusResponse implements
+        ImapResponseMessage {
 
     private final String text;
+
     private final String code;
+
     private final ImapCommand command;
+
     private final String tag;
-    
+
     public AbstractTaggedStatusResponse(final String text, final String code,
             final ImapCommand command, final String tag) {
         super();
@@ -54,5 +58,4 @@ abstract public class AbstractTaggedStatusResponse implements ImapResponseMessag
         return tag;
     }
 
-    
 }

@@ -25,15 +25,21 @@ package org.apache.james.imap.message.response.imap4rev1.server;
 public abstract class AbstractListingResponse {
 
     private final boolean noInferiors;
+
     private final boolean noSelect;
+
     private final boolean marked;
+
     private final boolean unmarked;
+
     private final String hierarchyDelimiter;
+
     private final String name;
 
-    public AbstractListingResponse(final boolean noInferiors, final boolean noSelect, 
-            final boolean marked, final boolean unmarked, 
-            final String hierarchyDelimiter, final String name) {
+    public AbstractListingResponse(final boolean noInferiors,
+            final boolean noSelect, final boolean marked,
+            final boolean unmarked, final String hierarchyDelimiter,
+            final String name) {
         super();
         this.noInferiors = noInferiors;
         this.noSelect = noSelect;
@@ -45,8 +51,8 @@ public abstract class AbstractListingResponse {
 
     /**
      * Gets hierarchy delimiter.
-     * @return hierarchy delimiter, 
-     * or null if no hierarchy exists
+     * 
+     * @return hierarchy delimiter, or null if no hierarchy exists
      */
     public final String getHierarchyDelimiter() {
         return hierarchyDelimiter;
@@ -54,6 +60,7 @@ public abstract class AbstractListingResponse {
 
     /**
      * Is <code>Marked</code> name attribute set?
+     * 
      * @return true if <code>Marked</code>, false otherwise
      */
     public final boolean isMarked() {
@@ -62,6 +69,7 @@ public abstract class AbstractListingResponse {
 
     /**
      * Gets the listed name.
+     * 
      * @return name of the listed mailbox, not null
      */
     public final String getName() {
@@ -70,8 +78,8 @@ public abstract class AbstractListingResponse {
 
     /**
      * Is <code>Noinferiors</code> name attribute set?
-     * @return true if <code>Noinferiors</code>,
-     * false otherwise
+     * 
+     * @return true if <code>Noinferiors</code>, false otherwise
      */
     public final boolean isNoInferiors() {
         return noInferiors;
@@ -79,8 +87,8 @@ public abstract class AbstractListingResponse {
 
     /**
      * Is <code>Noselect</code> name attribute set?
-     * @return true if <code>Noselect</code>,
-     * false otherwise
+     * 
+     * @return true if <code>Noselect</code>, false otherwise
      */
     public final boolean isNoSelect() {
         return noSelect;
@@ -88,8 +96,8 @@ public abstract class AbstractListingResponse {
 
     /**
      * Is <code>Unmarked</code> name attribute set?
-     * @return true if <code>Unmarked</code>,
-     * false otherwise
+     * 
+     * @return true if <code>Unmarked</code>, false otherwise
      */
     public final boolean isUnmarked() {
         return unmarked;
@@ -97,9 +105,9 @@ public abstract class AbstractListingResponse {
 
     /**
      * Are any name attributes set?
-     * @return true if {@link #isNoInferiors()}, 
-     * {@link #isNoSelect()}, {@link #isMarked()} or 
-     * {@link #isUnmarked(){
+     * 
+     * @return true if {@link #isNoInferiors()}, {@link #isNoSelect()},
+     *         {@link #isMarked()} or {@link #isUnmarked(){
      */
     public final boolean isNameAttributed() {
         return noInferiors || noSelect || marked || unmarked;
@@ -111,7 +119,10 @@ public abstract class AbstractListingResponse {
     public int hashCode() {
         final int PRIME = 31;
         int result = 1;
-        result = PRIME * result + ((hierarchyDelimiter == null) ? 0 : hierarchyDelimiter.hashCode());
+        result = PRIME
+                * result
+                + ((hierarchyDelimiter == null) ? 0 : hierarchyDelimiter
+                        .hashCode());
         result = PRIME * result + (marked ? 1231 : 1237);
         result = PRIME * result + ((name == null) ? 0 : name.hashCode());
         result = PRIME * result + (noInferiors ? 1231 : 1237);
@@ -154,24 +165,20 @@ public abstract class AbstractListingResponse {
 
     /**
      * Renders object as a string suitable for logging.
-     * @return a <code>String</code> representation 
-     * of this object.
+     * 
+     * @return a <code>String</code> representation of this object.
      */
-    public String toString()
-    {
+    public String toString() {
         final String TAB = " ";
-        
-        String retValue = getClass().getName() + " ( "
-            + "noInferiors = " + this.noInferiors + TAB
-            + "noSelect = " + this.noSelect + TAB
-            + "marked = " + this.marked + TAB
-            + "unmarked = " + this.unmarked + TAB
-            + "hierarchyDelimiter = " + this.hierarchyDelimiter + TAB
-            + "name = " + this.name + TAB
-            + " )";
-    
+
+        String retValue = getClass().getName() + " ( " + "noInferiors = "
+                + this.noInferiors + TAB + "noSelect = " + this.noSelect + TAB
+                + "marked = " + this.marked + TAB + "unmarked = "
+                + this.unmarked + TAB + "hierarchyDelimiter = "
+                + this.hierarchyDelimiter + TAB + "name = " + this.name + TAB
+                + " )";
+
         return retValue;
     }
-    
-    
+
 }

@@ -23,7 +23,8 @@ import org.apache.james.api.imap.ImapMessage;
 import org.apache.james.api.imap.imap4rev1.Imap4Rev1CommandFactory;
 import org.apache.james.imapserver.codec.decode.InitialisableCommandFactory;
 
-class LsubCommandParser extends ListCommandParser  implements InitialisableCommandFactory {
+class LsubCommandParser extends ListCommandParser implements
+        InitialisableCommandFactory {
 
     public LsubCommandParser() {
     }
@@ -31,14 +32,15 @@ class LsubCommandParser extends ListCommandParser  implements InitialisableComma
     /**
      * @see org.apache.james.imapserver.codec.decode.InitialisableCommandFactory#init(org.apache.james.api.imap.imap4rev1.Imap4Rev1CommandFactory)
      */
-    public void init(Imap4Rev1CommandFactory factory)
-    {
+    public void init(Imap4Rev1CommandFactory factory) {
         final ImapCommand command = factory.getLsub();
         setCommand(command);
     }
-    
-    protected ImapMessage createMessage(ImapCommand command, String referenceName, String mailboxPattern, String tag) {
-        final ImapMessage result = getMessageFactory().createLsubMessage(command, referenceName, mailboxPattern, tag);
+
+    protected ImapMessage createMessage(ImapCommand command,
+            String referenceName, String mailboxPattern, String tag) {
+        final ImapMessage result = getMessageFactory().createLsubMessage(
+                command, referenceName, mailboxPattern, tag);
         return result;
     }
 }

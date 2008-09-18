@@ -25,9 +25,9 @@ import org.apache.james.mailboxmanager.mock.TorqueMailboxManagerProviderSingleto
 import org.apache.torque.TorqueException;
 
 public abstract class AbstractTorqueTestCase extends TestCase {
-    
+
     public TorqueMailboxSession session;
-    
+
     public AbstractTorqueTestCase() throws TorqueException {
         super();
         session = new TorqueMailboxSession(10);

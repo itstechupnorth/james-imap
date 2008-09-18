@@ -31,84 +31,83 @@ public abstract class AbstractTestForNonAuthenticatedState extends
     public void testNoopUS() throws Exception {
         scriptTest("Noop", Locale.US);
     }
-    
+
     public void testLogoutUS() throws Exception {
         scriptTest("Logout", Locale.US);
     }
-    
+
     public void testCapabilityUS() throws Exception {
         scriptTest("Capability", Locale.US);
     }
-    
+
     public void testLoginUS() throws Exception {
         scriptTest("Login", Locale.US);
     }
-    
+
     public void testValidAuthenticatedUS() throws Exception {
         scriptTest("ValidAuthenticated", Locale.US);
     }
-    
+
     public void testValidSelectedUS() throws Exception {
         scriptTest("ValidSelected", Locale.US);
     }
-    
+
     public void testAuthenticateUS() throws Exception {
         scriptTest("Authenticate", Locale.US);
     }
-    
 
     public void testNoopITALY() throws Exception {
         scriptTest("Noop", Locale.ITALY);
     }
-    
+
     public void testLogoutITALY() throws Exception {
         scriptTest("Logout", Locale.ITALY);
     }
-    
+
     public void testCapabilityITALY() throws Exception {
         scriptTest("Capability", Locale.ITALY);
     }
-    
+
     public void testLoginITALY() throws Exception {
         scriptTest("Login", Locale.ITALY);
     }
-    
+
     public void testValidAuthenticatedITALY() throws Exception {
         scriptTest("ValidAuthenticated", Locale.ITALY);
     }
-    
+
     public void testValidSelectedITALY() throws Exception {
         scriptTest("ValidSelected", Locale.ITALY);
     }
-    
+
     public void testAuthenticateITALY() throws Exception {
         scriptTest("Authenticate", Locale.ITALY);
     }
-    
+
     public void testNoopKOREA() throws Exception {
         scriptTest("Noop", Locale.KOREA);
     }
-    
+
     public void testLogoutKOREA() throws Exception {
         scriptTest("Logout", Locale.KOREA);
     }
-    
+
     public void testCapabilityKOREA() throws Exception {
         scriptTest("Capability", Locale.KOREA);
     }
-    
+
     public void testLoginKOREA() throws Exception {
         scriptTest("Login", Locale.KOREA);
     }
-    
+
     public void testValidAuthenticatedKOREA() throws Exception {
         scriptTest("ValidAuthenticated", Locale.KOREA);
     }
-    
+
     public void testValidSelectedKOREA() throws Exception {
         scriptTest("ValidSelected", Locale.KOREA);
     }
-    
+
     public void testAuthenticateKOREA() throws Exception {
         scriptTest("Authenticate", Locale.KOREA);
     }

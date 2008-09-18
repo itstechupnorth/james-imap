@@ -21,16 +21,15 @@ package org.apache.james.test.functional.imap;
 
 import java.util.Locale;
 
+abstract public class AbstractTestListing extends
+        AbstractTestForAuthenticatedState {
 
-abstract public class AbstractTestListing extends AbstractTestForAuthenticatedState {
-
-    public AbstractTestListing(HostSystem system) throws Exception
-    {
+    public AbstractTestListing(HostSystem system) throws Exception {
         super(system);
     }
 
     public void testListPlusUS() throws Exception {
-        scriptTest("ListPlus", Locale.US); 
+        scriptTest("ListPlus", Locale.US);
     }
-    
+
 }

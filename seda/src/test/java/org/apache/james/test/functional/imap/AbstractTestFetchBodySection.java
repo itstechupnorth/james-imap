@@ -21,7 +21,8 @@ package org.apache.james.test.functional.imap;
 
 import java.util.Locale;
 
-public abstract class AbstractTestFetchBodySection extends AbstractTestSelectedStateBase {
+public abstract class AbstractTestFetchBodySection extends
+        AbstractTestSelectedStateBase {
 
     public AbstractTestFetchBodySection(HostSystem system) {
         super(system);
@@ -42,23 +43,23 @@ public abstract class AbstractTestFetchBodySection extends AbstractTestSelectedS
     public void testFetchMultipartMixedUS() throws Exception {
         scriptTest("FetchMultipartMixed", Locale.US);
     }
-    
+
     public void testFetchMultipartMixedITALY() throws Exception {
         scriptTest("FetchMultipartMixed", Locale.ITALY);
     }
-    
+
     public void testFetchMultipartMixedKOREA() throws Exception {
         scriptTest("FetchMultipartMixed", Locale.KOREA);
     }
-    
+
     public void testFetchMultipartMixedComplexUS() throws Exception {
         scriptTest("FetchMultipartMixedComplex", Locale.US);
     }
-    
+
     public void testFetchMultipartMixedComplexITALY() throws Exception {
         scriptTest("FetchMultipartMixedComplex", Locale.ITALY);
     }
-    
+
     public void testFetchMultipartMixedComplexKOREA() throws Exception {
         scriptTest("FetchMultipartMixedComplex", Locale.KOREA);
     }

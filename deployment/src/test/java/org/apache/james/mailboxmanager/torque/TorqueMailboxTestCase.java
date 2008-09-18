@@ -50,22 +50,23 @@ public class TorqueMailboxTestCase extends AbstractTorqueTestCase {
     public void testAppendGetDeleteMessage() throws Exception {
         MailboxRow mr = new MailboxRow("#users.tuser.INBOX", 100);
         mr.save();
-        mr=MailboxRowPeer.retrieveByName("#users.tuser.INBOX");
-        Mailbox torqueMailbox = new TorqueMailbox(mr, new WriterPreferenceReadWriteLock(),null);
+        mr = MailboxRowPeer.retrieveByName("#users.tuser.INBOX");
+        Mailbox torqueMailbox = new TorqueMailbox(mr,
+                new WriterPreferenceReadWriteLock(), null);
         torqueMailbox.addListener(new MailboxListenerCollector());
-        assertEquals(0,torqueMailbox.getMessageCount(session));
-        
+        assertEquals(0, torqueMailbox.getMessageCount(session));
+
         long time = System.currentTimeMillis();
         time = time - (time % 1000);
         Date date = new Date(time);
-        MimeMessage mm=TestUtil.createMessage();
-        Flags flags=new Flags();
+        MimeMessage mm = TestUtil.createMessage();
+        Flags flags = new Flags();
         flags.add(Flags.Flag.ANSWERED);
         flags.add(Flags.Flag.SEEN);
-        mm.setFlags(flags,true);
+        mm.setFlags(flags, true);
         mm.writeTo(System.out);
         torqueMailbox.appendMessage(mm, date, FetchGroupImpl.MINIMAL, session);
-        assertEquals(1,torqueMailbox.getMessageCount(session));
+        assertEquals(1, torqueMailbox.getMessageCount(session));
         List l = MessageRowPeer.doSelect(new Criteria());
         assertEquals(1, l.size());
         MessageRow msg = (MessageRow) l.get(0);
@@ -77,13 +78,15 @@ public class TorqueMailboxTestCase extends AbstractTorqueTestCase {
 
         mr = MailboxRowPeer.retrieveByPK(mr.getMailboxId());
         assertEquals(1, mr.getLastUid());
-        
-        Flags f=new Flags();
+
+        Flags f = new Flags();
         f.add(Flags.Flag.DELETED);
-        torqueMailbox.setFlags(f,true,false, MessageRangeImpl.oneUid(1l), FetchGroupImpl.MINIMAL, session);
-        List messageResults=IteratorUtils.toList(torqueMailbox.expunge(MessageRangeImpl.all(),FetchGroupImpl.MINIMAL, session));
-        assertEquals(1,messageResults.size());
-        assertEquals(1l,((MessageResult)messageResults.get(0)).getUid());
+        torqueMailbox.setFlags(f, true, false, MessageRangeImpl.oneUid(1l),
+                FetchGroupImpl.MINIMAL, session);
+        List messageResults = IteratorUtils.toList(torqueMailbox.expunge(
+                MessageRangeImpl.all(), FetchGroupImpl.MINIMAL, session));
+        assertEquals(1, messageResults.size());
+        assertEquals(1l, ((MessageResult) messageResults.get(0)).getUid());
     }
 
 }

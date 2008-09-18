@@ -20,8 +20,8 @@
 package org.apache.james.mailboxmanager;
 
 /**
- * Indicates that the failure is caused by a reference
- * to a mailbox which does not exist.
+ * Indicates that the failure is caused by a reference to a mailbox which does
+ * not exist.
  */
 public class MailboxNotFoundException extends MailboxManagerException {
 
@@ -36,12 +36,13 @@ public class MailboxNotFoundException extends MailboxManagerException {
         }
         return result;
     }
-    
+
     private final String mailboxName;
-    
+
     /**
      * 
-     * @param mailboxName name of the mailbox, not null
+     * @param mailboxName
+     *            name of the mailbox, not null
      */
     public MailboxNotFoundException(String mailboxName) {
         super(message(mailboxName));
@@ -50,6 +51,7 @@ public class MailboxNotFoundException extends MailboxManagerException {
 
     /**
      * Gets the name of the mailbox which cannot be found.
+     * 
      * @return name
      */
     public final String getMailboxName() {

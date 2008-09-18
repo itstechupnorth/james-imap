@@ -23,18 +23,23 @@ import org.apache.james.api.imap.ImapCommand;
 import org.apache.james.api.imap.display.HumanReadableTextKey;
 import org.jmock.MockObjectTestCase;
 
-abstract public class AbstractTestForStatusResponseFactory extends MockObjectTestCase {
+abstract public class AbstractTestForStatusResponseFactory extends
+        MockObjectTestCase {
 
     private static final String TAG = "ATAG";
-    private static final HumanReadableTextKey KEY = new HumanReadableTextKey("KEY", "TEXT");
-    private static final StatusResponse.ResponseCode CODE = StatusResponse.ResponseCode.alert();
-    
+
+    private static final HumanReadableTextKey KEY = new HumanReadableTextKey(
+            "KEY", "TEXT");
+
+    private static final StatusResponse.ResponseCode CODE = StatusResponse.ResponseCode
+            .alert();
+
     private ImapCommand command;
-    
+
     StatusResponseFactory factory;
-    
+
     abstract protected StatusResponseFactory createInstance();
-    
+
     protected void setUp() throws Exception {
         super.setUp();
         factory = createInstance();
@@ -150,14 +155,16 @@ abstract public class AbstractTestForStatusResponseFactory extends MockObjectTes
     public void testPreauth() {
         StatusResponse response = factory.preauth(KEY);
         assertNotNull(response);
-        assertEquals(StatusResponse.Type.PREAUTH, response.getServerResponseType());
+        assertEquals(StatusResponse.Type.PREAUTH, response
+                .getServerResponseType());
         assertEquals(null, response.getTag());
         assertEquals(KEY, response.getTextKey());
         assertNull(response.getResponseCode());
         assertNull(response.getCommand());
         response = factory.preauth(KEY, CODE);
         assertNotNull(response);
-        assertEquals(StatusResponse.Type.PREAUTH, response.getServerResponseType());
+        assertEquals(StatusResponse.Type.PREAUTH, response
+                .getServerResponseType());
         assertEquals(null, response.getTag());
         assertEquals(KEY, response.getTextKey());
         assertEquals(CODE, response.getResponseCode());

@@ -25,7 +25,7 @@ package org.apache.james.mailboxmanager;
 public class UnsupportedCriteriaException extends MailboxManagerException {
 
     private static final long serialVersionUID = 3791907285083231285L;
-    
+
     public UnsupportedCriteriaException(String string) {
         super(string);
     }

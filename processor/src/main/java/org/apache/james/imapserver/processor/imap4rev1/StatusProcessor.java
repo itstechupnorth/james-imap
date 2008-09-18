@@ -40,7 +40,8 @@ import org.apache.james.mailboxmanager.manager.MailboxManagerProvider;
 public class StatusProcessor extends AbstractMailboxAwareProcessor {
 
     public StatusProcessor(final ImapProcessor next,
-            final MailboxManagerProvider mailboxManagerProvider, final StatusResponseFactory factory) {
+            final MailboxManagerProvider mailboxManagerProvider,
+            final StatusResponseFactory factory) {
         super(next, mailboxManagerProvider, factory);
     }
 
@@ -48,14 +49,15 @@ public class StatusProcessor extends AbstractMailboxAwareProcessor {
         return (message instanceof StatusRequest);
     }
 
-    protected void doProcess(ImapRequest message,
-            ImapSession session, String tag, ImapCommand command, Responder responder) {
+    protected void doProcess(ImapRequest message, ImapSession session,
+            String tag, ImapCommand command, Responder responder) {
         final StatusRequest request = (StatusRequest) message;
         final String mailboxName = request.getMailboxName();
         final StatusDataItems statusDataItems = request.getStatusDataItems();
         final Log logger = getLog();
-        final MailboxSession mailboxSession = ImapSessionUtils.getMailboxSession(session);
-        
+        final MailboxSession mailboxSession = ImapSessionUtils
+                .getMailboxSession(session);
+
         try {
             String fullMailboxName = buildFullName(session, mailboxName);
 
@@ -65,26 +67,32 @@ public class StatusProcessor extends AbstractMailboxAwareProcessor {
             }
 
             final MailboxManager mailboxManager = getMailboxManager(session);
-            final Mailbox mailbox = mailboxManager
-                    .getMailbox(fullMailboxName, false);
-            
-            final Long messages = messages(statusDataItems, mailboxSession, mailbox);
+            final Mailbox mailbox = mailboxManager.getMailbox(fullMailboxName,
+                    false);
+
+            final Long messages = messages(statusDataItems, mailboxSession,
+                    mailbox);
             final Long recent = recent(statusDataItems, mailboxSession, mailbox);
-            final Long uidNext = uidNext(statusDataItems, mailboxSession, mailbox);
-            final Long uidValidity = uidValidity(statusDataItems, mailboxSession, mailbox);
+            final Long uidNext = uidNext(statusDataItems, mailboxSession,
+                    mailbox);
+            final Long uidValidity = uidValidity(statusDataItems,
+                    mailboxSession, mailbox);
             final Long unseen = unseen(statusDataItems, mailboxSession, mailbox);
-            
-            final STATUSResponse response = new STATUSResponse(messages, recent, uidNext, uidValidity, unseen, mailboxName);
+
+            final STATUSResponse response = new STATUSResponse(messages,
+                    recent, uidNext, uidValidity, unseen, mailboxName);
             responder.respond(response);
             unsolicitedResponses(session, responder, false);
             okComplete(command, tag, responder);
-            
+
         } catch (MailboxManagerException e) {
             no(command, tag, responder, e);
         }
     }
 
-    private Long unseen(final StatusDataItems statusDataItems, final MailboxSession mailboxSession, final Mailbox mailbox) throws MailboxManagerException {
+    private Long unseen(final StatusDataItems statusDataItems,
+            final MailboxSession mailboxSession, final Mailbox mailbox)
+            throws MailboxManagerException {
         final Long unseen;
         if (statusDataItems.isUnseen()) {
             final int unseenCountValue = mailbox.getUnseenCount(mailboxSession);
@@ -95,10 +103,13 @@ public class StatusProcessor extends AbstractMailboxAwareProcessor {
         return unseen;
     }
 
-    private Long uidValidity(final StatusDataItems statusDataItems, final MailboxSession mailboxSession, final Mailbox mailbox) throws MailboxManagerException {
+    private Long uidValidity(final StatusDataItems statusDataItems,
+            final MailboxSession mailboxSession, final Mailbox mailbox)
+            throws MailboxManagerException {
         final Long uidValidity;
         if (statusDataItems.isUidValidity()) {
-            final long uidValidityValue = mailbox.getUidValidity(mailboxSession);
+            final long uidValidityValue = mailbox
+                    .getUidValidity(mailboxSession);
             uidValidity = new Long(uidValidityValue);
         } else {
             uidValidity = null;
@@ -106,7 +117,9 @@ public class StatusProcessor extends AbstractMailboxAwareProcessor {
         return uidValidity;
     }
 
-    private Long uidNext(final StatusDataItems statusDataItems, final MailboxSession mailboxSession, final Mailbox mailbox) throws MailboxManagerException {
+    private Long uidNext(final StatusDataItems statusDataItems,
+            final MailboxSession mailboxSession, final Mailbox mailbox)
+            throws MailboxManagerException {
         final Long uidNext;
         if (statusDataItems.isUidNext()) {
             final long uidNextValue = mailbox.getUidNext(mailboxSession);
@@ -117,7 +130,9 @@ public class StatusProcessor extends AbstractMailboxAwareProcessor {
         return uidNext;
     }
 
-    private Long recent(final StatusDataItems statusDataItems, final MailboxSession mailboxSession, final Mailbox mailbox) throws MailboxManagerException {
+    private Long recent(final StatusDataItems statusDataItems,
+            final MailboxSession mailboxSession, final Mailbox mailbox)
+            throws MailboxManagerException {
         final Long recent;
         if (statusDataItems.isRecent()) {
             final int recentCount = mailbox.recent(false, mailboxSession).length;
@@ -128,7 +143,9 @@ public class StatusProcessor extends AbstractMailboxAwareProcessor {
         return recent;
     }
 
-    private Long messages(final StatusDataItems statusDataItems, final MailboxSession mailboxSession, final Mailbox mailbox) throws MailboxManagerException {
+    private Long messages(final StatusDataItems statusDataItems,
+            final MailboxSession mailboxSession, final Mailbox mailbox)
+            throws MailboxManagerException {
         final Long messages;
         if (statusDataItems.isMessages()) {
             final int messageCount = mailbox.getMessageCount(mailboxSession);

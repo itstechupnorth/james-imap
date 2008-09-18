@@ -34,62 +34,66 @@ import org.apache.james.mailboxmanager.MessageResult.Content;
 import org.apache.james.mailboxmanager.torque.om.MessageHeader;
 
 final class Header implements MessageResult.Header, MessageResult.Content {
-        private final String name;
-        private final String value;
-        private final long size;
-        
-        public Header(final MessageHeader header) {
-            this(header.getField(), header.getValue());
-        }
-        
-        public Header(String name, String value) {
-            this.name = name;
-            this.value = value;
-            size = name.length() + value.length() + 2;
-        }
-        
-        public Content getContent() throws MessagingException {
-            return this;
-        }
+    private final String name;
 
-        public String getName() throws MailboxManagerException {
-            return name;
-        }
+    private final String value;
 
-        public String getValue() throws MailboxManagerException {
-            return value;
-        }
+    private final long size;
 
-        public long size() {
-            return size;
-        }
+    public Header(final MessageHeader header) {
+        this(header.getField(), header.getValue());
+    }
 
-        public void writeTo(StringBuffer buffer) {
-// TODO: sort out encoding
-            for (int i=0; i<name.length();i++) {
-                buffer.append((char)(byte) name.charAt(i));
-            }
-            buffer.append(':');
-            buffer.append(' ');
-            for (int i=0; i<value.length();i++) {
-                buffer.append((char)(byte) value.charAt(i));
-            }
-        }
+    public Header(String name, String value) {
+        this.name = name;
+        this.value = value;
+        size = name.length() + value.length() + 2;
+    }
 
-        public void writeTo(WritableByteChannel channel) throws IOException {
-            writeAll(channel, MessageRowUtils.US_ASCII.encode(name));
-            ByteBuffer buffer = ByteBuffer.wrap(MessageRowUtils.BYTES_HEADER_FIELD_VALUE_SEP);
-            writeAll(channel, buffer);
-            writeAll(channel, MessageRowUtils.US_ASCII.encode(value));
+    public Content getContent() throws MessagingException {
+        return this;
+    }
+
+    public String getName() throws MailboxManagerException {
+        return name;
+    }
+
+    public String getValue() throws MailboxManagerException {
+        return value;
+    }
+
+    public long size() {
+        return size;
+    }
+
+    public void writeTo(StringBuffer buffer) {
+        // TODO: sort out encoding
+        for (int i = 0; i < name.length(); i++) {
+            buffer.append((char) (byte) name.charAt(i));
         }
-        
-        private void writeAll(WritableByteChannel channel, ByteBuffer buffer) throws IOException {
-            while (channel.write(buffer) > 0) {
-                // write more
-            }
-        }
-        
-        public String toString() {
-            return "[HEADER " + name + ": " + value + "]";
+        buffer.append(':');
+        buffer.append(' ');
+        for (int i = 0; i < value.length(); i++) {
+            buffer.append((char) (byte) value.charAt(i));
         }
     }
+
+    public void writeTo(WritableByteChannel channel) throws IOException {
+        writeAll(channel, MessageRowUtils.US_ASCII.encode(name));
+        ByteBuffer buffer = ByteBuffer
+                .wrap(MessageRowUtils.BYTES_HEADER_FIELD_VALUE_SEP);
+        writeAll(channel, buffer);
+        writeAll(channel, MessageRowUtils.US_ASCII.encode(value));
+    }
+
+    private void writeAll(WritableByteChannel channel, ByteBuffer buffer)
+            throws IOException {
+        while (channel.write(buffer) > 0) {
+            // write more
+        }
+    }
+
+    public String toString() {
+        return "[HEADER " + name + ": " + value + "]";
+    }
+}

@@ -17,16 +17,17 @@
  * under the License.                                           *
  ****************************************************************/
 
-
 package org.apache.james.test.functional.imap;
 
-
 /**
- * <p>Runs tests for commands valid in the AUTHENTICATED state. A login session precedes
- * the execution of the test elements.
- * </p><p>
+ * <p>
+ * Runs tests for commands valid in the AUTHENTICATED state. A login session
+ * precedes the execution of the test elements.
+ * </p>
+ * <p>
  * Suggested tests:
- * </p><ul>
+ * </p>
+ * <ul>
  * <li>ValidSelected</li>
  * <li>ValidNonAuthenticated</li>
  * <li>Capability</li>
@@ -43,36 +44,37 @@ package org.apache.james.test.functional.imap;
  * <li>Subscribe</li>
  * <li>Delete</li>
  * <li>Append</li>
- * <li>Compound:<ul>
+ * <li>Compound:
+ * <ul>
  * <li>AppendExpunge</li>
  * <li>SelectAppend</li>
  * <li>StringArgs</li>
- * </ul></li>
+ * </ul>
+ * </li>
  * </ul>
  * </p>
  */
-public abstract class AbstractTestForAuthenticatedState
-        extends AbstractSimpleScriptedTestProtocol implements ImapTestConstants
-{
-    public AbstractTestForAuthenticatedState( HostSystem hostSystem)
-    {
-        super( hostSystem );
+public abstract class AbstractTestForAuthenticatedState extends
+        AbstractSimpleScriptedTestProtocol implements ImapTestConstants {
+    public AbstractTestForAuthenticatedState(HostSystem hostSystem) {
+        super(hostSystem);
     }
 
     /**
-     * Sets up {@link #preElements} with a welcome message and login request/response.
+     * Sets up {@link #preElements} with a welcome message and login
+     * request/response.
+     * 
      * @throws Exception
      */
-    public void setUp() throws Exception
-    {
+    public void setUp() throws Exception {
         super.setUp();
-        addTestFile( "Welcome.test", preElements );
-        addLogin( USER, PASSWORD );
+        addTestFile("Welcome.test", preElements);
+        addLogin(USER, PASSWORD);
     }
 
-    protected void addLogin( String username, String password )
-    {
-        preElements.CL( "a001 LOGIN " + username + " " + password );
-        preElements.SL( "a001 OK LOGIN completed.", "AbstractTestForAuthenticatedState.java:53" );
+    protected void addLogin(String username, String password) {
+        preElements.CL("a001 LOGIN " + username + " " + password);
+        preElements.SL("a001 OK LOGIN completed.",
+                "AbstractTestForAuthenticatedState.java:53");
     }
 }

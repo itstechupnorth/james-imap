@@ -29,7 +29,7 @@ public class SubscriptionException extends Exception {
     private static final long serialVersionUID = -2057022968413471837L;
 
     private final HumanReadableTextKey key;
-    
+
     public SubscriptionException(HumanReadableTextKey key, Throwable cause) {
         super(key.toString(), cause);
         this.key = key;
@@ -47,11 +47,11 @@ public class SubscriptionException extends Exception {
 
     /**
      * Gets the message key.
+     * 
      * @return the key, possibly null
      */
     public final HumanReadableTextKey getKey() {
         return key;
     }
-    
-    
+
 }

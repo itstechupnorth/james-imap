@@ -15,7 +15,7 @@
  * KIND, either express or implied.  See the License for the    *
  * specific language governing permissions and limitations      *
  * under the License.                                           *
- ****************************************************************/ 
+ ****************************************************************/
 package org.apache.james.mailboxmanager.torque.om;
 
 import java.sql.Connection;
@@ -35,7 +35,6 @@ import org.apache.torque.util.Criteria;
  */
 public class MailboxRowPeer extends
         org.apache.james.mailboxmanager.torque.om.BaseMailboxRowPeer {
-
 
     private static final long serialVersionUID = -1906212927584890188L;
 

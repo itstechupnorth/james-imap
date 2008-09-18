@@ -32,5 +32,5 @@ public final class RecentResponse implements ImapResponseMessage {
 
     public final int getNumberFlaggedRecent() {
         return numberFlaggedRecent;
-    }   
+    }
 }

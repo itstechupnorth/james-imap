@@ -28,13 +28,16 @@ import org.apache.james.api.imap.ImapMessage;
  */
 public interface ImapEncoder {
 
-    
     /**
-     * Writes response.
-     * TODO: pass in writer rather than composer
-     * @param message <code>ImapMessage</code>, not null
-     * @param composer <code>ImapResponseComposer</code>, not null
-     * @throws IOException TODO
+     * Writes response. TODO: pass in writer rather than composer
+     * 
+     * @param message
+     *            <code>ImapMessage</code>, not null
+     * @param composer
+     *            <code>ImapResponseComposer</code>, not null
+     * @throws IOException
+     *             TODO
      */
-    void encode( ImapMessage message, ImapResponseComposer composer ) throws IOException;
+    void encode(ImapMessage message, ImapResponseComposer composer)
+            throws IOException;
 }

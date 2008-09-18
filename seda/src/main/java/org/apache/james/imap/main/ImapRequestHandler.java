@@ -44,70 +44,76 @@ import org.apache.james.imapserver.codec.encode.base.ImapResponseComposerImpl;
  */
 public final class ImapRequestHandler extends AbstractLogEnabled {
 
-    private static final byte[] ABANDON_SIGNOFF = {'*',' ', 'B', 'Y', 'E', ' ', 
-        'A','b','a','n','d','o','n','e','d','\r', '\n'};
-    
-    private static final byte[] MAILBOX_DELETED_SIGNOFF = {'*',' ','B','Y','E',' ',
-        'S','e','l','e','c','t','e','d',' ','m','a','i','l','b','o','x',' ','h','a',
-        's',' ','b','e','e','n',' ','d','e','l','e','t','e','d','\r','\n'};
-    
+    private static final byte[] ABANDON_SIGNOFF = { '*', ' ', 'B', 'Y', 'E',
+            ' ', 'A', 'b', 'a', 'n', 'd', 'o', 'n', 'e', 'd', '\r', '\n' };
+
+    private static final byte[] MAILBOX_DELETED_SIGNOFF = { '*', ' ', 'B', 'Y',
+            'E', ' ', 'S', 'e', 'l', 'e', 'c', 't', 'e', 'd', ' ', 'm', 'a',
+            'i', 'l', 'b', 'o', 'x', ' ', 'h', 'a', 's', ' ', 'b', 'e', 'e',
+            'n', ' ', 'd', 'e', 'l', 'e', 't', 'e', 'd', '\r', '\n' };
+
     private final ImapDecoder decoder;
+
     private final ImapProcessor processor;
+
     private final ImapEncoder encoder;
-    
-    public ImapRequestHandler(final ImapDecoder decoder, final ImapProcessor processor, final ImapEncoder encoder) {
+
+    public ImapRequestHandler(final ImapDecoder decoder,
+            final ImapProcessor processor, final ImapEncoder encoder) {
         this.decoder = decoder;
         this.processor = processor;
         this.encoder = encoder;
     }
-    
+
     /**
      * @see org.apache.avalon.framework.logger.AbstractLogEnabled#enableLogging(org.apache.avalon.framework.logger.Logger)
      */
-    public void setLog(Log logger) { 
+    public void setLog(Log logger) {
         super.setLog(logger);
         setupLogger(decoder);
         setupLogger(processor);
     }
-    
+
     /**
      * This method parses IMAP commands read off the wire in handleConnection.
      * Actual processing of the command (possibly including additional back and
      * forth communication with the client) is delegated to one of a number of
-     * command specific handler methods.  The primary purpose of this method is
+     * command specific handler methods. The primary purpose of this method is
      * to parse the raw command string to determine exactly which handler should
-     * be called.  It returns true if expecting additional commands, false otherwise.
-     *
+     * be called. It returns true if expecting additional commands, false
+     * otherwise.
+     * 
      * @return whether additional commands are expected.
      */
-    public boolean handleRequest( InputStream input,
-                                  OutputStream output,
-                                  ImapSession session )
-    {
+    public boolean handleRequest(InputStream input, OutputStream output,
+            ImapSession session) {
         final boolean result;
         if (isSelectedMailboxDeleted(session)) {
             writeSignoff(output);
             result = false;
         } else {
-            ImapRequestLineReader request = new ImapRequestLineReader( input, output );
+            ImapRequestLineReader request = new ImapRequestLineReader(input,
+                    output);
             setupLogger(request);
-            
+
             final Log logger = getLog();
             try {
                 request.nextChar();
-            }
-            catch ( ProtocolException e ) {
-                logger.debug("Unexpected end of line. Cannot handle request: ", e);
+            } catch (ProtocolException e) {
+                logger.debug("Unexpected end of line. Cannot handle request: ",
+                        e);
                 return false;
             }
-    
-            ImapResponseComposerImpl response = new ImapResponseComposerImpl( new OutputStreamImapResponseWriter( output ));
-            response.setLog(logger); 
-    
-            if (doProcessRequest( request, response, session )) {
-        
+
+            ImapResponseComposerImpl response = new ImapResponseComposerImpl(
+                    new OutputStreamImapResponseWriter(output));
+            response.setLog(logger);
+
+            if (doProcessRequest(request, response, session)) {
+
                 try {
-                    // Consume the rest of the line, throwing away any extras. This allows us
+                    // Consume the rest of the line, throwing away any extras.
+                    // This allows us
                     // to clean up after a protocol error.
                     request.consumeLine();
                 } catch (ProtocolException e) {
@@ -120,7 +126,7 @@ public final class ImapRequestHandler extends AbstractLogEnabled {
                     session.logout();
                     abandon(output);
                 }
-        
+
                 result = !(ImapSessionState.LOGOUT == session.getState());
             } else {
                 result = false;
@@ -157,13 +163,12 @@ public final class ImapRequestHandler extends AbstractLogEnabled {
             getLog().debug("Failed to write ABANDON_SIGNOFF", t);
         }
     }
-    
-    private boolean doProcessRequest( ImapRequestLineReader request,
-                                   ImapResponseComposer response,
-                                   ImapSession session)
-    {
+
+    private boolean doProcessRequest(ImapRequestLineReader request,
+            ImapResponseComposer response, ImapSession session) {
         ImapMessage message = decoder.decode(request, session);
-        final ResponseEncoder responseEncoder = new ResponseEncoder(encoder, response);
+        final ResponseEncoder responseEncoder = new ResponseEncoder(encoder,
+                response);
         processor.process(message, responseEncoder, session);
         final boolean result;
         final IOException failure = responseEncoder.getFailure();
@@ -182,20 +187,21 @@ public final class ImapRequestHandler extends AbstractLogEnabled {
 
     private static final class ResponseEncoder implements Responder {
         private final ImapEncoder encoder;
+
         private final ImapResponseComposer composer;
 
         private IOException failure;
-        
-        
-        public ResponseEncoder(final ImapEncoder encoder, final ImapResponseComposer composer) {
+
+        public ResponseEncoder(final ImapEncoder encoder,
+                final ImapResponseComposer composer) {
             super();
             this.encoder = encoder;
             this.composer = composer;
         }
-        
+
         public void respond(final ImapResponseMessage message) {
             try {
-            encoder.encode(message, composer);
+                encoder.encode(message, composer);
             } catch (IOException failure) {
                 this.failure = failure;
             }
@@ -203,13 +209,12 @@ public final class ImapRequestHandler extends AbstractLogEnabled {
 
         /**
          * Gets the recorded failure.
-         * @return the failure, 
-         * or null when no failure has occurred
+         * 
+         * @return the failure, or null when no failure has occurred
          */
         public final IOException getFailure() {
             return failure;
         }
-        
-        
+
     }
 }

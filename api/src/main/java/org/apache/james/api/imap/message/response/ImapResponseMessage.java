@@ -21,14 +21,14 @@ package org.apache.james.api.imap.message.response;
 
 import org.apache.james.api.imap.ImapMessage;
 
-
 /**
- * <p>Responds to an IMAP command.</p>
  * <p>
- * <strong>Note:</strong> this is a transitional API
- * and is liable to change.
+ * Responds to an IMAP command.
+ * </p>
+ * <p>
+ * <strong>Note:</strong> this is a transitional API and is liable to change.
  * </p>
  */
 public interface ImapResponseMessage extends ImapMessage {
-    
+
 }

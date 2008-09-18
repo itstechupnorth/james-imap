@@ -29,8 +29,9 @@ import org.apache.james.mailboxmanager.MessageResult.FetchGroup;
 public interface Headers {
     /**
      * Gets headers for the message.
-     * @return <code>Header</code> <code>Iterator</code>, 
-     * or null if {@link FetchGroup#HEADERS} was not fetched
+     * 
+     * @return <code>Header</code> <code>Iterator</code>, or null if
+     *         {@link FetchGroup#HEADERS} was not fetched
      */
     Iterator headers() throws MailboxManagerException;
 }

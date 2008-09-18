@@ -30,7 +30,8 @@ import org.apache.james.imapserver.processor.base.AbstractImapRequestProcessor;
 
 public class NoopProcessor extends AbstractImapRequestProcessor {
 
-    public NoopProcessor(final ImapProcessor next, final StatusResponseFactory factory) {
+    public NoopProcessor(final ImapProcessor next,
+            final StatusResponseFactory factory) {
         super(next, factory);
     }
 
@@ -38,8 +39,8 @@ public class NoopProcessor extends AbstractImapRequestProcessor {
         return (message instanceof NoopRequest);
     }
 
-    protected void doProcess(ImapRequest message,
-            ImapSession session, String tag, ImapCommand command, Responder responder) {
+    protected void doProcess(ImapRequest message, ImapSession session,
+            String tag, ImapCommand command, Responder responder) {
         final NoopRequest request = (NoopRequest) message;
         // TODO: untagged responses?
         // TODO: NOOP is used to check for new mail: need to return untagged

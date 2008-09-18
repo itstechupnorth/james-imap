@@ -32,36 +32,41 @@ import org.apache.james.mailboxmanager.manager.MailboxManagerProvider;
 import junit.framework.TestCase;
 
 public abstract class AbstractMailboxManagerSelfTestCase extends TestCase {
-    
+
     protected MailboxManager mailboxManager;
+
     protected MailboxManagerProvider mailboxManagerProvider;
-    
+
     public void testCreateList() throws MailboxManagerException {
         ListResult[] listResult;
-        listResult=mailboxManager.list(new MailboxExpression("","*", '*', '%'));
+        listResult = mailboxManager.list(new MailboxExpression("", "*", '*',
+                '%'));
         assertNotNull(listResult);
-        assertEquals(0,mailboxManager.list(new MailboxExpression("","*", '*', '%')).length);
-        List boxes=new ArrayList();
+        assertEquals(0, mailboxManager.list(new MailboxExpression("", "*", '*',
+                '%')).length);
+        List boxes = new ArrayList();
         boxes.add("#users.joachim.INBOX");
         boxes.add("#users.joachim.INBOX.Drafts");
         boxes.add("#users.joachim2.INBOX");
         for (Iterator iter = boxes.iterator(); iter.hasNext();) {
             String box = (String) iter.next();
-            mailboxManager.createMailbox(box);    
+            mailboxManager.createMailbox(box);
         }
-        listResult=mailboxManager.list(new MailboxExpression("","*", '*', '%'));
-        assertEquals(3,listResult.length);
+        listResult = mailboxManager.list(new MailboxExpression("", "*", '*',
+                '%'));
+        assertEquals(3, listResult.length);
         for (int i = 0; i < listResult.length; i++) {
             assertTrue(boxes.contains(listResult[i].getName()));
         }
     }
-    
+
     public void testListOne() throws MailboxManagerException {
-        mailboxManager.createMailbox("test1");    
+        mailboxManager.createMailbox("test1");
         mailboxManager.createMailbox("INBOX");
         mailboxManager.createMailbox("INBOX2");
-        
-        ListResult[] listResult=mailboxManager.list(new MailboxExpression("","*", '*', '%'));
+
+        ListResult[] listResult = mailboxManager.list(new MailboxExpression("",
+                "*", '*', '%'));
         assertNotNull(listResult);
         assertEquals(3, listResult.length);
     }

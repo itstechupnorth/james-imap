@@ -21,7 +21,6 @@ package org.apache.james.imap.message.response.imap4rev1;
 
 import org.apache.james.api.imap.message.response.ImapResponseMessage;
 
-
 public final class ExpungeResponse implements ImapResponseMessage {
 
     private final int messageSequenceNumber;
@@ -34,7 +33,7 @@ public final class ExpungeResponse implements ImapResponseMessage {
     public final int getMessageSequenceNumber() {
         return messageSequenceNumber;
     }
-    
+
     public String toString() {
         return "EXPUNGE " + messageSequenceNumber;
     }

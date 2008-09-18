@@ -38,19 +38,20 @@ public class CapabilityResponseEncoder extends AbstractChainedImapEncoder {
         super(next);
     }
 
-    protected void doEncode(ImapMessage acceptableMessage, ImapResponseComposer composer) throws IOException {
+    protected void doEncode(ImapMessage acceptableMessage,
+            ImapResponseComposer composer) throws IOException {
         CapabilityResponse response = (CapabilityResponse) acceptableMessage;
         // TODO: inject capability text
-        composer.untaggedResponse( ImapConstants.CAPABILITY_RESPONSE );
+        composer.untaggedResponse(ImapConstants.CAPABILITY_RESPONSE);
         List unsolicitedResponses = response.getUnsolicatedResponses();
         chainEncodeAll(unsolicitedResponses, composer);
         String tag = response.getTag();
         ImapCommand command = response.getCommand();
-        composer.commandComplete( command , tag ); 
+        composer.commandComplete(command, tag);
     }
 
     protected boolean isAcceptable(ImapMessage message) {
         return (message instanceof CapabilityResponse);
     }
-    
+
 }

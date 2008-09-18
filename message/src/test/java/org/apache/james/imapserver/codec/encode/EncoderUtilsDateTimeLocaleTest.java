@@ -27,7 +27,7 @@ import junit.framework.TestCase;
 public class EncoderUtilsDateTimeLocaleTest extends TestCase {
 
     private static final Locale BASE_DEFAULT_LOCALE = Locale.getDefault();
-    
+
     protected void setUp() throws Exception {
         super.setUp();
     }
@@ -40,64 +40,78 @@ public class EncoderUtilsDateTimeLocaleTest extends TestCase {
     public void testUS() throws Exception {
         runTests(Locale.US);
     }
-    
+
     public void testUK() throws Exception {
         runTests(Locale.UK);
     }
-    
+
     public void testITALY() throws Exception {
         runTests(Locale.ITALY);
     }
-    
+
     public void testGERMANY() throws Exception {
         runTests(Locale.GERMANY);
     }
-    
+
     public void testFRANCE() throws Exception {
         runTests(Locale.FRANCE);
     }
-    
+
     public void testCANADA() throws Exception {
         runTests(Locale.CANADA);
     }
-    
+
     public void testCHINA() throws Exception {
         runTests(Locale.CHINA);
     }
-    
+
     public void testJAPAN() throws Exception {
         runTests(Locale.JAPAN);
     }
-    
+
     public void testKOREA() throws Exception {
         runTests(Locale.KOREA);
     }
-    
+
     public void testTAIWAN() throws Exception {
         runTests(Locale.TAIWAN);
     }
-    
+
     private void runTests(Locale locale) {
         Locale.setDefault(locale);
         runEncodeDateTime();
     }
-    
+
     private void runEncodeDateTime() {
-        assertEquals("03-Sep-2004 05:08:43 +0000", EncoderUtils.encodeDateTime(new Date(1094188123661L)));
-        assertEquals("10-Dec-2005 04:15:23 +0000", EncoderUtils.encodeDateTime(new Date(1134188123661L)));
-        assertEquals("11-Jul-2007 21:08:43 +0000", EncoderUtils.encodeDateTime(new Date(1184188123661L)));
-        assertEquals("04-Nov-2007 14:55:23 +0000", EncoderUtils.encodeDateTime(new Date(1194188123661L)));
-        assertEquals("31-Aug-2353 20:32:24 +0000", EncoderUtils.encodeDateTime(new Date(12107305944309L)));
-        assertEquals("03-Jan-2322 11:42:52 +0000", EncoderUtils.encodeDateTime(new Date(11108230972614L)));
-        assertEquals("30-Oct-2321 21:19:44 +0000", EncoderUtils.encodeDateTime(new Date(11102649584790L)));
-        assertEquals("30-Sep-2321 05:22:54 +0000", EncoderUtils.encodeDateTime(new Date(11100000174728L)));
-        assertEquals("08-Jun-2353 08:38:17 +0000", EncoderUtils.encodeDateTime(new Date(12100005497072L)));
-        assertEquals("14-Jun-2353 01:11:35 +0000", EncoderUtils.encodeDateTime(new Date(12100497095056L)));
-        assertEquals("13-Jul-2353 18:06:29 +0000", EncoderUtils.encodeDateTime(new Date(12103063589157L)));
-        assertEquals("05-Feb-2290 02:32:14 +0000", EncoderUtils.encodeDateTime(new Date(10101292334681L)));
-        assertEquals("20-Oct-2321 06:24:33 +0000", EncoderUtils.encodeDateTime(new Date(11101731873573L)));
-        assertEquals("31-Jan-2290 02:12:49 +0000", EncoderUtils.encodeDateTime(new Date(10100859169426L)));
-        
+        assertEquals("03-Sep-2004 05:08:43 +0000", EncoderUtils
+                .encodeDateTime(new Date(1094188123661L)));
+        assertEquals("10-Dec-2005 04:15:23 +0000", EncoderUtils
+                .encodeDateTime(new Date(1134188123661L)));
+        assertEquals("11-Jul-2007 21:08:43 +0000", EncoderUtils
+                .encodeDateTime(new Date(1184188123661L)));
+        assertEquals("04-Nov-2007 14:55:23 +0000", EncoderUtils
+                .encodeDateTime(new Date(1194188123661L)));
+        assertEquals("31-Aug-2353 20:32:24 +0000", EncoderUtils
+                .encodeDateTime(new Date(12107305944309L)));
+        assertEquals("03-Jan-2322 11:42:52 +0000", EncoderUtils
+                .encodeDateTime(new Date(11108230972614L)));
+        assertEquals("30-Oct-2321 21:19:44 +0000", EncoderUtils
+                .encodeDateTime(new Date(11102649584790L)));
+        assertEquals("30-Sep-2321 05:22:54 +0000", EncoderUtils
+                .encodeDateTime(new Date(11100000174728L)));
+        assertEquals("08-Jun-2353 08:38:17 +0000", EncoderUtils
+                .encodeDateTime(new Date(12100005497072L)));
+        assertEquals("14-Jun-2353 01:11:35 +0000", EncoderUtils
+                .encodeDateTime(new Date(12100497095056L)));
+        assertEquals("13-Jul-2353 18:06:29 +0000", EncoderUtils
+                .encodeDateTime(new Date(12103063589157L)));
+        assertEquals("05-Feb-2290 02:32:14 +0000", EncoderUtils
+                .encodeDateTime(new Date(10101292334681L)));
+        assertEquals("20-Oct-2321 06:24:33 +0000", EncoderUtils
+                .encodeDateTime(new Date(11101731873573L)));
+        assertEquals("31-Jan-2290 02:12:49 +0000", EncoderUtils
+                .encodeDateTime(new Date(10100859169426L)));
+
     }
 
 }

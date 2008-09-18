@@ -36,7 +36,8 @@ import org.apache.james.mailboxmanager.mailbox.Mailbox;
 
 public class CloseProcessor extends AbstractImapRequestProcessor {
 
-    public CloseProcessor(final ImapProcessor next, final StatusResponseFactory factory) {
+    public CloseProcessor(final ImapProcessor next,
+            final StatusResponseFactory factory) {
         super(next, factory);
     }
 
@@ -44,14 +45,15 @@ public class CloseProcessor extends AbstractImapRequestProcessor {
         return (message instanceof CloseRequest);
     }
 
-    protected void doProcess(ImapRequest message,
-            ImapSession session, String tag, ImapCommand command, Responder responder) {
+    protected void doProcess(ImapRequest message, ImapSession session,
+            String tag, ImapCommand command, Responder responder) {
         Mailbox mailbox = ImapSessionUtils.getMailbox(session);
         if (mailbox.isWriteable()) {
             try {
-                final MailboxSession mailboxSession = ImapSessionUtils.getMailboxSession(session);
-                mailbox.expunge(MessageRangeImpl.all(),
-                        FetchGroupImpl.MINIMAL, mailboxSession);
+                final MailboxSession mailboxSession = ImapSessionUtils
+                        .getMailboxSession(session);
+                mailbox.expunge(MessageRangeImpl.all(), FetchGroupImpl.MINIMAL,
+                        mailboxSession);
                 session.deselect();
                 // TODO: the following comment was present in the code before
                 // refactoring

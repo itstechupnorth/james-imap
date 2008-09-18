@@ -34,7 +34,8 @@ import org.apache.james.mailboxmanager.manager.MailboxManagerProvider;
 public class CreateProcessor extends AbstractMailboxAwareProcessor {
 
     public CreateProcessor(final ImapProcessor next,
-            final MailboxManagerProvider mailboxManagerProvider, final StatusResponseFactory factory) {
+            final MailboxManagerProvider mailboxManagerProvider,
+            final StatusResponseFactory factory) {
         super(next, mailboxManagerProvider, factory);
     }
 
@@ -42,8 +43,8 @@ public class CreateProcessor extends AbstractMailboxAwareProcessor {
         return (message instanceof CreateRequest);
     }
 
-    protected void doProcess(ImapRequest message,
-            ImapSession session, String tag, ImapCommand command, Responder responder) {
+    protected void doProcess(ImapRequest message, ImapSession session,
+            String tag, ImapCommand command, Responder responder) {
         final CreateRequest request = (CreateRequest) message;
         final String mailboxName = request.getMailboxName();
         try {

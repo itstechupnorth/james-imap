@@ -33,20 +33,24 @@ import org.apache.james.mime4j.MimeException;
 import org.apache.james.mime4j.parser.MimeTokenStream;
 
 /**
- * Searches an email for content.
- * This class should be safe for use by concurrent threads.
+ * Searches an email for content. This class should be safe for use by
+ * concurrent threads.
  */
 class MessageSearcher {
-    
+
     private Log logger;
-    
+
     private CharSequence searchContent = null;
+
     private boolean isCaseInsensitive = false;
+
     private boolean includeHeaders = false;
-    
-    public MessageSearcher() {}
-    
-    public MessageSearcher(CharSequence searchContent, boolean isCaseInsensitive, boolean includeHeaders) {
+
+    public MessageSearcher() {
+    }
+
+    public MessageSearcher(CharSequence searchContent,
+            boolean isCaseInsensitive, boolean includeHeaders) {
         super();
         this.searchContent = searchContent;
         this.isCaseInsensitive = isCaseInsensitive;
@@ -55,8 +59,8 @@ class MessageSearcher {
 
     /**
      * Is the search to include headers?
-     * @return true if header values are included,
-     * false otherwise
+     * 
+     * @return true if header values are included, false otherwise
      */
     public boolean isIncludeHeaders() {
         return includeHeaders;
@@ -64,8 +68,9 @@ class MessageSearcher {
 
     /**
      * Sets whether the search should include headers.
-     * @param true if header values are included,
-     * false otherwise
+     * 
+     * @param true
+     *            if header values are included, false otherwise
      */
     public synchronized void setIncludeHeaders(boolean includesHeaders) {
         this.includeHeaders = includesHeaders;
@@ -73,47 +78,54 @@ class MessageSearcher {
 
     /**
      * Is this search case insensitive?
-     * @return true if the search should be case insensitive,
-     * false otherwise
+     * 
+     * @return true if the search should be case insensitive, false otherwise
      */
     public boolean isCaseInsensitive() {
         return isCaseInsensitive;
     }
-    
+
     /**
      * Sets whether the search should be case insensitive.
-     * @param isCaseInsensitive true for case insensitive searches,
-     * false otherwise
+     * 
+     * @param isCaseInsensitive
+     *            true for case insensitive searches, false otherwise
      */
     public synchronized void setCaseInsensitive(boolean isCaseInsensitive) {
         this.isCaseInsensitive = isCaseInsensitive;
     }
-    
+
     /**
      * Gets the content to be searched for.
+     * 
      * @return search content, initially null
      */
     public CharSequence getSearchContent() {
         return searchContent;
     }
-    
+
     /**
      * Sets the content sought.
-     * @param searchContent content sought
+     * 
+     * @param searchContent
+     *            content sought
      */
     public synchronized void setSearchContent(CharSequence searchContent) {
         this.searchContent = searchContent;
     }
-    
+
     /**
      * Is {@link #getSearchContent()} found in the given input?
-     * @param input <code>InputStream</code> containing an email
-     * @return true if the content exists and the stream contains the content, 
-     * false otherwise
+     * 
+     * @param input
+     *            <code>InputStream</code> containing an email
+     * @return true if the content exists and the stream contains the content,
+     *         false otherwise
      * @throws IOException
      * @throws MimeException
      */
-    public boolean isFoundIn(final InputStream input) throws IOException, MimeException {
+    public boolean isFoundIn(final InputStream input) throws IOException,
+            MimeException {
         final boolean includeHeaders;
         final CharSequence searchContent;
         final boolean isCaseInsensitive;
@@ -128,14 +140,16 @@ class MessageSearcher {
             logger.debug("Nothing to search for. ");
             result = false;
         } else {
-            final CharBuffer buffer = createBuffer(searchContent, isCaseInsensitive);
-            result = parse(input, isCaseInsensitive, includeHeaders, buffer); 
+            final CharBuffer buffer = createBuffer(searchContent,
+                    isCaseInsensitive);
+            result = parse(input, isCaseInsensitive, includeHeaders, buffer);
         }
         return result;
     }
 
-    private boolean parse(final InputStream input, final boolean isCaseInsensitive, 
-            final boolean includeHeaders, final CharBuffer buffer) throws IOException, MimeException {
+    private boolean parse(final InputStream input,
+            final boolean isCaseInsensitive, final boolean includeHeaders,
+            final CharBuffer buffer) throws IOException, MimeException {
         try {
             boolean result = false;
             MimeTokenStream parser = new MimeTokenStream();
@@ -146,11 +160,13 @@ class MessageSearcher {
                     case MimeTokenStream.T_BODY:
                     case MimeTokenStream.T_PREAMBLE:
                     case MimeTokenStream.T_EPILOGUE:
-                        result = checkBody(isCaseInsensitive, buffer, result, parser);
+                        result = checkBody(isCaseInsensitive, buffer, result,
+                                parser);
                         break;
                     case MimeTokenStream.T_FIELD:
                         if (includeHeaders) {
-                            result = checkHeader(isCaseInsensitive, buffer, result, parser);
+                            result = checkHeader(isCaseInsensitive, buffer,
+                                    result, parser);
                         }
                         break;
                 }
@@ -166,7 +182,9 @@ class MessageSearcher {
         return false;
     }
 
-    private boolean checkHeader(final boolean isCaseInsensitive, final CharBuffer buffer, boolean result, MimeTokenStream parser) throws IOException {
+    private boolean checkHeader(final boolean isCaseInsensitive,
+            final CharBuffer buffer, boolean result, MimeTokenStream parser)
+            throws IOException {
         final String value = parser.getFieldValue();
         final StringReader reader = new StringReader(value);
         if (isFoundIn(reader, buffer, isCaseInsensitive)) {
@@ -175,7 +193,9 @@ class MessageSearcher {
         return result;
     }
 
-    private boolean checkBody(final boolean isCaseInsensitive, final CharBuffer buffer, boolean result, MimeTokenStream parser) throws IOException {
+    private boolean checkBody(final boolean isCaseInsensitive,
+            final CharBuffer buffer, boolean result, MimeTokenStream parser)
+            throws IOException {
         final Reader reader = parser.getReader();
         if (isFoundIn(reader, buffer, isCaseInsensitive)) {
             result = true;
@@ -183,12 +203,13 @@ class MessageSearcher {
         return result;
     }
 
-    private CharBuffer createBuffer(final CharSequence searchContent, final boolean isCaseInsensitive) {
+    private CharBuffer createBuffer(final CharSequence searchContent,
+            final boolean isCaseInsensitive) {
         final CharBuffer buffer;
         if (isCaseInsensitive) {
             final int length = searchContent.length();
             buffer = CharBuffer.allocate(length);
-            for (int i=0;i<length;i++) {
+            for (int i = 0; i < length; i++) {
                 final char next = searchContent.charAt(i);
                 final char upperCase = Character.toUpperCase(next);
                 buffer.put(upperCase);
@@ -199,24 +220,25 @@ class MessageSearcher {
         }
         return buffer;
     }
-    
-    protected void handle(Exception e) throws IOException, MimeException { 
+
+    protected void handle(Exception e) throws IOException, MimeException {
         final Log logger = getLogger();
         logger.warn("Cannot read MIME body.");
         logger.debug("Failed to read body.", e);
     }
-    
-    private boolean isFoundIn(final Reader reader, final CharBuffer buffer, final boolean isCaseInsensitive) throws IOException {
+
+    private boolean isFoundIn(final Reader reader, final CharBuffer buffer,
+            final boolean isCaseInsensitive) throws IOException {
         boolean result = false;
         int read;
         while (!result && (read = reader.read()) != -1) {
-           final char next;
-           if (isCaseInsensitive) {
-               next = Character.toUpperCase((char) read);
-           } else {
-               next = (char) read;
-           }
-           result = matches(buffer, next);
+            final char next;
+            if (isCaseInsensitive) {
+                next = Character.toUpperCase((char) read);
+            } else {
+                next = (char) read;
+            }
+            result = matches(buffer, next);
         }
         return result;
     }
@@ -224,14 +246,14 @@ class MessageSearcher {
     private boolean matches(final CharBuffer buffer, final char next) {
         boolean result = false;
         if (buffer.hasRemaining()) {
-            final boolean partialMatch = (buffer.position() > 0); 
+            final boolean partialMatch = (buffer.position() > 0);
             final char matching = buffer.get();
             if (next != matching) {
                 buffer.rewind();
                 if (partialMatch) {
                     result = matches(buffer, next);
                 }
-            } 
+            }
         } else {
             result = true;
         }
@@ -242,7 +264,7 @@ class MessageSearcher {
         if (logger == null) {
             logger = LogFactory.getLog(MessageSearcher.class);
         }
-        return logger; 
+        return logger;
     }
 
     public final void setLogger(Log logger) {

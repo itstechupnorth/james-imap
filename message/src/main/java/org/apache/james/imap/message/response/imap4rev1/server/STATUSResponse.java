@@ -22,20 +22,25 @@ package org.apache.james.imap.message.response.imap4rev1.server;
 import org.apache.james.api.imap.message.response.ImapResponseMessage;
 
 /**
- * Represents a <code>STATUS</code> response.
- * See <code>RFC3501 7.2.4</code>.
+ * Represents a <code>STATUS</code> response. See <code>RFC3501 7.2.4</code>.
  */
 public class STATUSResponse implements ImapResponseMessage {
 
     private final Long messages;
+
     private final Long recent;
+
     private final Long uidNext;
+
     private final Long uidValidity;
+
     private final Long unseen;
+
     private final String mailbox;
-    
-    public STATUSResponse(final Long messages, final Long recent, final Long uidNext, 
-            final Long uidValidity, final Long unseen, final String mailbox) {
+
+    public STATUSResponse(final Long messages, final Long recent,
+            final Long uidNext, final Long uidValidity, final Long unseen,
+            final String mailbox) {
         super();
         this.messages = messages;
         this.recent = recent;
@@ -44,50 +49,47 @@ public class STATUSResponse implements ImapResponseMessage {
         this.unseen = unseen;
         this.mailbox = mailbox;
     }
-    
+
     /**
-     * Gets the <code>MESSAGES</code> 
-     * count for the mailbox.
-     * @return the message count for the mailbox (if requested)
-     * or null (if not)
+     * Gets the <code>MESSAGES</code> count for the mailbox.
+     * 
+     * @return the message count for the mailbox (if requested) or null (if not)
      */
     public final Long getMessages() {
         return messages;
     }
-    
+
     /**
-     * Gets the <code>RECENT</code>
-     * count for the mailbox.
-     * @return the recent count (if requested)
-     * or null (if not)
+     * Gets the <code>RECENT</code> count for the mailbox.
+     * 
+     * @return the recent count (if requested) or null (if not)
      */
     public final Long getRecent() {
         return recent;
     }
-    
+
     /**
      * Gets the mailbox <code>UIDNEXT</code>.
-     * @return the mailbox uidNext (if requested)
-     * or null (if not)
+     * 
+     * @return the mailbox uidNext (if requested) or null (if not)
      */
     public final Long getUidNext() {
         return uidNext;
     }
-    
+
     /**
      * Gets the mailbox <code>UIDVALIDITY</code>.
-     * @return the mailbox uidValidity (if requested)
-     * or null (if not)
+     * 
+     * @return the mailbox uidValidity (if requested) or null (if not)
      */
     public final Long getUidValidity() {
         return uidValidity;
     }
-    
+
     /**
-     * Gets the <code>UNSEEN</code> count 
-     * for the mailbox.
-     * @return the unseen count (if requested)
-     * or null (if not)
+     * Gets the <code>UNSEEN</code> count for the mailbox.
+     * 
+     * @return the unseen count (if requested) or null (if not)
      */
     public final Long getUnseen() {
         return unseen;
@@ -95,6 +97,7 @@ public class STATUSResponse implements ImapResponseMessage {
 
     /**
      * Gets the mailbox name.
+     * 
      * @return the mailbox name, not null
      */
     public final String getMailbox() {
@@ -102,12 +105,8 @@ public class STATUSResponse implements ImapResponseMessage {
     }
 
     public String toString() {
-        return "Status response[mailbox='"
-            + mailbox + "' messages=" + messages
-            + " recent=" + recent
-            + " uidnext=" + uidNext
-            + " uidvalidity=" + uidValidity
-            + " unseen=" + unseen
-            + "]";
+        return "Status response[mailbox='" + mailbox + "' messages=" + messages
+                + " recent=" + recent + " uidnext=" + uidNext + " uidvalidity="
+                + uidValidity + " unseen=" + unseen + "]";
     }
 }

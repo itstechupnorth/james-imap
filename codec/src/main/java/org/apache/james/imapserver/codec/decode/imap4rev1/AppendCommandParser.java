@@ -33,71 +33,67 @@ import org.apache.james.imapserver.codec.decode.ImapRequestLineReader;
 import org.apache.james.imapserver.codec.decode.InitialisableCommandFactory;
 import org.apache.james.imapserver.codec.decode.base.AbstractImapCommandParser;
 
-class AppendCommandParser extends AbstractImapCommandParser implements InitialisableCommandFactory {        
+class AppendCommandParser extends AbstractImapCommandParser implements
+        InitialisableCommandFactory {
 
     public AppendCommandParser() {
     }
-    
+
     /**
      * @see org.apache.james.imapserver.codec.decode.InitialisableCommandFactory#init(org.apache.james.api.imap.imap4rev1.Imap4Rev1CommandFactory)
      */
-    public void init(Imap4Rev1CommandFactory factory)
-    {
+    public void init(Imap4Rev1CommandFactory factory) {
         final ImapCommand command = factory.getAppend();
         setCommand(command);
     }
 
     /**
-     * If the next character in the request is a '(', tries to read
-     * a "flag_list" argument from the request. If not, returns a
-     * MessageFlags with no flags set.
+     * If the next character in the request is a '(', tries to read a
+     * "flag_list" argument from the request. If not, returns a MessageFlags
+     * with no flags set.
      */
-    public Flags optionalAppendFlags( ImapRequestLineReader request )
-            throws ProtocolException
-    {
+    public Flags optionalAppendFlags(ImapRequestLineReader request)
+            throws ProtocolException {
         char next = request.nextWordChar();
-        if ( next == '(' ) {
-            return flagList( request );
-        }
-        else {
+        if (next == '(') {
+            return flagList(request);
+        } else {
             return null;
         }
     }
 
     /**
-     * If the next character in the request is a '"', tries to read
-     * a DateTime argument. If not, returns null.
+     * If the next character in the request is a '"', tries to read a DateTime
+     * argument. If not, returns null.
      */
-    public Date optionalDateTime( ImapRequestLineReader request )
-            throws ProtocolException
-    {
+    public Date optionalDateTime(ImapRequestLineReader request)
+            throws ProtocolException {
         char next = request.nextWordChar();
-        if ( next == '"' ) {
-            return dateTime( request );
-        }
-        else {
+        if (next == '"') {
+            return dateTime(request);
+        } else {
             return null;
         }
     }
 
     /**
-     * Reads a MimeMessage encoded as a string literal from the request.
-     * TODO shouldn't need to read as a string and write out bytes
-     *      use FixedLengthInputStream instead. Hopefully it can then be dynamic.
-     * @param request The Imap APPEND request
+     * Reads a MimeMessage encoded as a string literal from the request. TODO
+     * shouldn't need to read as a string and write out bytes use
+     * FixedLengthInputStream instead. Hopefully it can then be dynamic.
+     * 
+     * @param request
+     *            The Imap APPEND request
      * @return A MimeMessage read off the request.
      */
-    public MimeMessage mimeMessage( ImapRequestLineReader request )
-            throws ProtocolException
-    {
+    public MimeMessage mimeMessage(ImapRequestLineReader request)
+            throws ProtocolException {
         request.nextWordChar();
         String mailString = consumeLiteral(request, null);
         MimeMessage mm = null;
 
         try {
             byte[] messageBytes = mailString.getBytes("US-ASCII");
-            mm = new MimeMessage(null, new ByteArrayInputStream(
-                    messageBytes));
+            mm = new MimeMessage(null, new ByteArrayInputStream(messageBytes));
         } catch (Exception e) {
             throw new ProtocolException("UnexpectedException: "
                     + e.getMessage(), e);
@@ -106,21 +102,22 @@ class AppendCommandParser extends AbstractImapCommandParser implements Initialis
         return mm;
     }
 
-    protected ImapMessage decode(ImapCommand command, ImapRequestLineReader request, String tag) throws ProtocolException {
-        String mailboxName = mailbox( request );
-        Flags flags = optionalAppendFlags( request );
-        if ( flags == null ) {
+    protected ImapMessage decode(ImapCommand command,
+            ImapRequestLineReader request, String tag) throws ProtocolException {
+        String mailboxName = mailbox(request);
+        Flags flags = optionalAppendFlags(request);
+        if (flags == null) {
             flags = new Flags();
         }
-        Date datetime = optionalDateTime( request );
-        if ( datetime == null ) {
+        Date datetime = optionalDateTime(request);
+        if (datetime == null) {
             datetime = new Date();
         }
-        MimeMessage message = mimeMessage( request );
-        endLine( request );
+        MimeMessage message = mimeMessage(request);
+        endLine(request);
         final Imap4Rev1MessageFactory factory = getMessageFactory();
-        final ImapMessage result = factory.createAppendMessage(command, mailboxName, 
-                flags, datetime, message, tag);
+        final ImapMessage result = factory.createAppendMessage(command,
+                mailboxName, flags, datetime, message, tag);
         return result;
     }
 }

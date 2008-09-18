@@ -26,11 +26,15 @@ import org.apache.james.imap.message.response.imap4rev1.FetchResponse;
 
 final class AddressImpl implements FetchResponse.Envelope.Address {
     private final String atDomainList;
+
     private final String hostName;
+
     private final String mailboxName;
+
     private final String personalName;
 
-    public AddressImpl(final String atDomainList, final String hostName, final String mailboxName, final String personalName) {
+    public AddressImpl(final String atDomainList, final String hostName,
+            final String mailboxName, final String personalName) {
         super();
         this.atDomainList = atDomainList;
         this.hostName = hostName;

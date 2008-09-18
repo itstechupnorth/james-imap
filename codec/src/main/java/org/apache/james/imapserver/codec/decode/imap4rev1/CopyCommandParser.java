@@ -26,7 +26,8 @@ import org.apache.james.imapserver.codec.ProtocolException;
 import org.apache.james.imapserver.codec.decode.ImapRequestLineReader;
 import org.apache.james.imapserver.codec.decode.InitialisableCommandFactory;
 
-class CopyCommandParser extends AbstractUidCommandParser  implements InitialisableCommandFactory {
+class CopyCommandParser extends AbstractUidCommandParser implements
+        InitialisableCommandFactory {
 
     public CopyCommandParser() {
     }
@@ -34,19 +35,20 @@ class CopyCommandParser extends AbstractUidCommandParser  implements Initialisab
     /**
      * @see org.apache.james.imapserver.codec.decode.InitialisableCommandFactory#init(org.apache.james.api.imap.imap4rev1.Imap4Rev1CommandFactory)
      */
-    public void init(Imap4Rev1CommandFactory factory)
-    {
+    public void init(Imap4Rev1CommandFactory factory) {
         final ImapCommand command = factory.getCopy();
         setCommand(command);
     }
-    
-    protected ImapMessage decode(ImapCommand command, 
-            ImapRequestLineReader request, String tag, boolean useUids) throws ProtocolException {
-        IdRange[] idSet = parseIdRange( request );
-        String mailboxName = mailbox( request );
-        endLine( request );
-        final ImapMessage result = getMessageFactory().createCopyMessage(command, idSet, mailboxName, useUids, tag);
+
+    protected ImapMessage decode(ImapCommand command,
+            ImapRequestLineReader request, String tag, boolean useUids)
+            throws ProtocolException {
+        IdRange[] idSet = parseIdRange(request);
+        String mailboxName = mailbox(request);
+        endLine(request);
+        final ImapMessage result = getMessageFactory().createCopyMessage(
+                command, idSet, mailboxName, useUids, tag);
         return result;
     }
-    
+
 }

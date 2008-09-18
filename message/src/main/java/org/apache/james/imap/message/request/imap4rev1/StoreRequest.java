@@ -24,20 +24,22 @@ import org.apache.james.api.imap.ImapCommand;
 import org.apache.james.api.imap.message.IdRange;
 
 public class StoreRequest extends AbstractImapRequest {
-    
+
     private final IdRange[] idSet;
 
     private final Flags flags;
 
     private final boolean useUids;
-    
+
     private final boolean silent;
+
     private final boolean signedMinus;
+
     private final boolean signedPlus;
 
     public StoreRequest(final ImapCommand command, final IdRange[] idSet,
-            final boolean silent, final Flags flags,
-            final boolean useUids, final String tag, final Boolean sign) {
+            final boolean silent, final Flags flags, final boolean useUids,
+            final String tag, final Boolean sign) {
         super(tag, command);
         this.idSet = idSet;
         this.silent = silent;
@@ -57,17 +59,17 @@ public class StoreRequest extends AbstractImapRequest {
 
     /**
      * Is this store silent?
-     * @return true if store silent, 
-     * false otherwise
+     * 
+     * @return true if store silent, false otherwise
      */
     public final boolean isSilent() {
         return silent;
     }
-    
+
     /**
-     * Is the store signed MINUS?
-     * Note that {@link #isSignedPlus()} must be false
-     * when this property is true.
+     * Is the store signed MINUS? Note that {@link #isSignedPlus()} must be
+     * false when this property is true.
+     * 
      * @return true if the store is subtractive
      */
     public final boolean isSignedMinus() {
@@ -75,9 +77,9 @@ public class StoreRequest extends AbstractImapRequest {
     }
 
     /**
-     * Is the store signed PLUS?
-     * Note that {@link #isSignedMinus()} must be false
-     * when this property is true.
+     * Is the store signed PLUS? Note that {@link #isSignedMinus()} must be
+     * false when this property is true.
+     * 
      * @return true if the store is additive
      */
     public final boolean isSignedPlus() {
@@ -95,7 +97,7 @@ public class StoreRequest extends AbstractImapRequest {
     public final boolean isUseUids() {
         return useUids;
     }
-    
+
     public String toString() {
         final StringBuffer buffer = new StringBuffer(100);
         buffer.append("STORE ");
@@ -104,7 +106,7 @@ public class StoreRequest extends AbstractImapRequest {
         }
         if (isSilent()) {
             buffer.append("SILENT ");
-            
+
         }
         if (isSignedPlus()) {
             buffer.append("+ ");

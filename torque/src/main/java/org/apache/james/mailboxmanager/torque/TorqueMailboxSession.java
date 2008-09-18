@@ -27,15 +27,16 @@ import org.apache.james.mailboxmanager.MailboxSession;
 public class TorqueMailboxSession implements MailboxSession {
 
     private final long sessionId;
+
     private boolean open;
-    
+
     public TorqueMailboxSession(final long sessionId) {
         super();
         this.sessionId = sessionId;
     }
 
     public void close() {
-       open = false;
+        open = false;
     }
 
     public long getSessionId() {
@@ -48,18 +49,15 @@ public class TorqueMailboxSession implements MailboxSession {
 
     /**
      * Renders suitably for logging.
-     * @return a <code>String</code> representation 
-     * of this object.
+     * 
+     * @return a <code>String</code> representation of this object.
      */
-    public String toString()
-    {
+    public String toString() {
         final String TAB = " ";
-        
-        String retValue = "TorqueMailboxSession ( "
-            + "sessionId = " + this.sessionId + TAB
-            + "open = " + this.open + TAB
-            + " )";
-    
+
+        String retValue = "TorqueMailboxSession ( " + "sessionId = "
+                + this.sessionId + TAB + "open = " + this.open + TAB + " )";
+
         return retValue;
     }
 

@@ -25,7 +25,7 @@ import org.apache.james.mailboxmanager.torque.AbstractMailboxRowTestCase;
 import org.apache.torque.TorqueException;
 import org.apache.torque.util.Transaction;
 
-public class MailboxRowPeerTest extends AbstractMailboxRowTestCase { 
+public class MailboxRowPeerTest extends AbstractMailboxRowTestCase {
 
     public MailboxRowPeerTest() throws TorqueException {
         super();
@@ -41,7 +41,8 @@ public class MailboxRowPeerTest extends AbstractMailboxRowTestCase {
                     retry = false;
                     try {
                         c = Transaction.begin("mailboxmanager");
-                        c.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
+                        c
+                                .setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
                         c.setAutoCommit(false);
                         MailboxRow m = MailboxRowPeer.retrieveByPK(id, c);
                         System.out.println("Thread " + no + " sleeps.");
@@ -54,22 +55,24 @@ public class MailboxRowPeerTest extends AbstractMailboxRowTestCase {
                     } catch (TorqueException e) {
 
                         int errorCode = -1;
-                        String state ="";
+                        String state = "";
                         Transaction.safeRollback(c);
                         Throwable t = e.getCause();
                         if (t instanceof SQLException) {
-                            errorCode=((SQLException) t).getErrorCode();
-                            if (errorCode==1213) retry=true;
+                            errorCode = ((SQLException) t).getErrorCode();
+                            if (errorCode == 1213)
+                                retry = true;
                             state = ((SQLException) t).getSQLState();
                         }
-                        System.out.println("Thread " + no + " State: "+state+ " SQLERROR"+errorCode + " " + e);
+                        System.out.println("Thread " + no + " State: " + state
+                                + " SQLERROR" + errorCode + " " + e);
                     } catch (SQLException e) {
                         System.out.println("SQLException!");
                         e.printStackTrace();
-                    } 
-//                        catch (InterruptedException e) {
-//                        e.printStackTrace();
-//                    }
+                    }
+                    // catch (InterruptedException e) {
+                    // e.printStackTrace();
+                    // }
                 } while (retry);
 
             }
@@ -79,12 +82,13 @@ public class MailboxRowPeerTest extends AbstractMailboxRowTestCase {
         return t;
     }
 
-    public void testConcurrentSerializableMailboxRowUidUpdate() throws Exception {
-         MailboxRow m=new MailboxRow();
-         m.setName("#users.joachim.INBOX");
-         m.save();
-         m=MailboxRowPeer.retrieveByName("#users.joachim.INBOX");
-         long id=m.getMailboxId();
+    public void testConcurrentSerializableMailboxRowUidUpdate()
+            throws Exception {
+        MailboxRow m = new MailboxRow();
+        m.setName("#users.joachim.INBOX");
+        m.save();
+        m = MailboxRowPeer.retrieveByName("#users.joachim.INBOX");
+        long id = m.getMailboxId();
 
         Thread t[] = new Thread[16];
         for (int i = 0; i < t.length; i++) {
@@ -98,7 +102,8 @@ public class MailboxRowPeerTest extends AbstractMailboxRowTestCase {
     }
 
     public void runBare() throws Throwable {
-        // This avoid unittest to be ran because it doesn't work with derby, don't know why.
+        // This avoid unittest to be ran because it doesn't work with derby,
+        // don't know why.
         // TODO fix and enable (removing this empty method)
     }
 

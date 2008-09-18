@@ -15,7 +15,7 @@
  * KIND, either express or implied.  See the License for the    *
  * specific language governing permissions and limitations      *
  * under the License.                                           *
- ****************************************************************/ 
+ ****************************************************************/
 package org.apache.james.imapserver.codec.decode.main;
 
 import org.apache.commons.logging.Log;
@@ -32,33 +32,34 @@ import org.apache.james.imapserver.codec.decode.ImapDecoder;
 import org.apache.james.imapserver.codec.decode.ImapRequestLineReader;
 import org.apache.james.imapserver.codec.decode.base.AbstractImapCommandParser;
 
-public class DefaultImapDecoder extends AbstractLogEnabled implements ImapDecoder {
+public class DefaultImapDecoder extends AbstractLogEnabled implements
+        ImapDecoder {
 
     private final Imap4Rev1MessageFactory messageFactory;
+
     private final ImapCommandParserFactory imapCommands;
-    
-    
-    public DefaultImapDecoder (final Imap4Rev1MessageFactory messageFactory, final ImapCommandParserFactory imapCommands) {
+
+    public DefaultImapDecoder(final Imap4Rev1MessageFactory messageFactory,
+            final ImapCommandParserFactory imapCommands) {
         this.messageFactory = messageFactory;
         this.imapCommands = imapCommands;
     }
-    
-    public void setLog(Log logger) { 
+
+    public void setLog(Log logger) {
         super.setLog(logger);
         setupLogger(imapCommands);
     }
-    
+
     public ImapMessage decode(ImapRequestLineReader request, ImapSession session) {
         ImapMessage message;
-        final Log logger = getLog(); 
-        
+        final Log logger = getLog();
+
         try {
-            final String tag = AbstractImapCommandParser.tag( request );    
+            final String tag = AbstractImapCommandParser.tag(request);
             message = decodeCommandTagged(request, logger, tag, session);
-        }
-        catch ( ProtocolException e ) {
+        } catch (ProtocolException e) {
             logger.debug("Cannot parse tag", e);
-            
+
             // When the tag cannot be read, there is something seriously wrong.
             // It is probably not possible to recover
             // and (since this may indicate an attack) wiser not to try
@@ -67,18 +68,19 @@ public class DefaultImapDecoder extends AbstractLogEnabled implements ImapDecode
         return message;
     }
 
-    private ImapMessage decodeCommandTagged(final ImapRequestLineReader request, final Log logger, 
+    private ImapMessage decodeCommandTagged(
+            final ImapRequestLineReader request, final Log logger,
             final String tag, final ImapSession session) {
         ImapMessage message;
-        if (logger.isDebugEnabled()) { 
-            logger.debug( "Got <tag>: " + tag );
+        if (logger.isDebugEnabled()) {
+            logger.debug("Got <tag>: " + tag);
         }
         try {
-            final String commandName = AbstractImapCommandParser.atom( request );
-            message = decodeCommandNamed(request, tag, commandName, logger, session);
-        }
-        catch ( ProtocolException e ) {
-            logger.debug("Error during initial request parsing", e);    
+            final String commandName = AbstractImapCommandParser.atom(request);
+            message = decodeCommandNamed(request, tag, commandName, logger,
+                    session);
+        } catch (ProtocolException e) {
+            logger.debug("Error during initial request parsing", e);
             message = unknownCommand(tag, session);
         }
         return message;
@@ -88,26 +90,29 @@ public class DefaultImapDecoder extends AbstractLogEnabled implements ImapDecode
             final ImapSession session) {
         ImapMessage message;
         if (session.getState() == ImapSessionState.NON_AUTHENTICATED) {
-            message = messageFactory.bye(HumanReadableTextKey.BYE_UNKNOWN_COMMAND);
+            message = messageFactory
+                    .bye(HumanReadableTextKey.BYE_UNKNOWN_COMMAND);
             session.logout();
         } else {
-            message = messageFactory.taggedBad(tag, null, HumanReadableTextKey.UNKNOWN_COMMAND);
+            message = messageFactory.taggedBad(tag, null,
+                    HumanReadableTextKey.UNKNOWN_COMMAND);
         }
         return message;
     }
 
-    private ImapMessage decodeCommandNamed(final ImapRequestLineReader request, 
-            final String tag, String commandName, final Log logger, final ImapSession session) {
+    private ImapMessage decodeCommandNamed(final ImapRequestLineReader request,
+            final String tag, String commandName, final Log logger,
+            final ImapSession session) {
         ImapMessage message;
-        if (logger.isDebugEnabled()) { 
-            logger.debug( "Got <command>: " + commandName); 
+        if (logger.isDebugEnabled()) {
+            logger.debug("Got <command>: " + commandName);
         }
-        final ImapCommandParser command = imapCommands.getParser( commandName );
-        if ( command == null ) {
+        final ImapCommandParser command = imapCommands.getParser(commandName);
+        if (command == null) {
             logger.info("Missing command implementation.");
             message = unknownCommand(tag, session);
         } else {
-            message = command.parse( request, tag );
+            message = command.parse(request, tag);
         }
         return message;
     }

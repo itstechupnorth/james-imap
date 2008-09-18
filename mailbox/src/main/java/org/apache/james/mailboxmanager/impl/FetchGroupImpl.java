@@ -31,35 +31,41 @@ import org.apache.james.mailboxmanager.MessageResult.MimePath;
  * Specifies a fetch group.
  */
 public class FetchGroupImpl implements MessageResult.FetchGroup {
-    
-    public static final MessageResult.FetchGroup MINIMAL 
-            = new FetchGroupImpl(MessageResult.FetchGroup.MINIMAL);
-    public static final MessageResult.FetchGroup SIZE 
-            = new FetchGroupImpl(MessageResult.FetchGroup.SIZE);
-    public static final MessageResult.FetchGroup INTERNAL_DATE 
-            = new FetchGroupImpl(MessageResult.FetchGroup.INTERNAL_DATE);
-    public static final MessageResult.FetchGroup FLAGS 
-            = new FetchGroupImpl(MessageResult.FetchGroup.FLAGS);
-    public static final MessageResult.FetchGroup HEADERS 
-            = new FetchGroupImpl(MessageResult.FetchGroup.HEADERS);
-    public static final MessageResult.FetchGroup FULL_CONTENT 
-            = new FetchGroupImpl(MessageResult.FetchGroup.FULL_CONTENT);
-    public static final MessageResult.FetchGroup BODY_CONTENT 
-            = new FetchGroupImpl(MessageResult.FetchGroup.BODY_CONTENT);
-    
-    
+
+    public static final MessageResult.FetchGroup MINIMAL = new FetchGroupImpl(
+            MessageResult.FetchGroup.MINIMAL);
+
+    public static final MessageResult.FetchGroup SIZE = new FetchGroupImpl(
+            MessageResult.FetchGroup.SIZE);
+
+    public static final MessageResult.FetchGroup INTERNAL_DATE = new FetchGroupImpl(
+            MessageResult.FetchGroup.INTERNAL_DATE);
+
+    public static final MessageResult.FetchGroup FLAGS = new FetchGroupImpl(
+            MessageResult.FetchGroup.FLAGS);
+
+    public static final MessageResult.FetchGroup HEADERS = new FetchGroupImpl(
+            MessageResult.FetchGroup.HEADERS);
+
+    public static final MessageResult.FetchGroup FULL_CONTENT = new FetchGroupImpl(
+            MessageResult.FetchGroup.FULL_CONTENT);
+
+    public static final MessageResult.FetchGroup BODY_CONTENT = new FetchGroupImpl(
+            MessageResult.FetchGroup.BODY_CONTENT);
+
     private int content = MessageResult.FetchGroup.MINIMAL;
+
     private Set partContentDescriptors;
-    
+
     public FetchGroupImpl() {
         super();
     }
-    
+
     public FetchGroupImpl(int content) {
         super();
         this.content = content;
     }
-    
+
     public FetchGroupImpl(int content, Set partContentDescriptors) {
         super();
         this.content = content;
@@ -69,18 +75,20 @@ public class FetchGroupImpl implements MessageResult.FetchGroup {
     public int content() {
         return content;
     }
-    
+
     public void or(int content) {
         this.content = this.content | content;
     }
-    
+
     public String toString() {
         return "Fetch " + content;
     }
 
     /**
      * Gets content descriptors for the parts to be fetched.
-     * @return <code>Set</code> of {@link FetchGroup.PartContentDescriptor}, possibly null
+     * 
+     * @return <code>Set</code> of {@link FetchGroup.PartContentDescriptor},
+     *         possibly null
      */
     public Set getPartContentDescriptors() {
         return partContentDescriptors;
@@ -88,16 +96,20 @@ public class FetchGroupImpl implements MessageResult.FetchGroup {
 
     /**
      * Adds content for the particular part.
-     * @param path <code>MimePath</code>, not null
-     * @param content bitwise content constant
+     * 
+     * @param path
+     *            <code>MimePath</code>, not null
+     * @param content
+     *            bitwise content constant
      */
     public void addPartContent(MimePath path, int content) {
         if (partContentDescriptors == null) {
             partContentDescriptors = new HashSet();
         }
         PartContentDescriptorImpl currentDescriptor = null;
-        for (Iterator it=partContentDescriptors.iterator();it.hasNext();) {
-            PartContentDescriptorImpl descriptor = (PartContentDescriptorImpl) it.next();
+        for (Iterator it = partContentDescriptors.iterator(); it.hasNext();) {
+            PartContentDescriptorImpl descriptor = (PartContentDescriptorImpl) it
+                    .next();
             if (path.equals(descriptor.path())) {
                 currentDescriptor = descriptor;
                 break;
@@ -107,7 +119,7 @@ public class FetchGroupImpl implements MessageResult.FetchGroup {
             currentDescriptor = new PartContentDescriptorImpl(path);
             partContentDescriptors.add(currentDescriptor);
         }
-        
+
         currentDescriptor.or(content);
     }
 }

@@ -36,7 +36,8 @@ import org.apache.james.mailboxmanager.manager.SubscriptionException;
 
 public class SubscribeProcessor extends AbstractMailboxAwareProcessor {
 
-    public SubscribeProcessor(final ImapProcessor next, final MailboxManagerProvider mailboxManagerProvider,
+    public SubscribeProcessor(final ImapProcessor next,
+            final MailboxManagerProvider mailboxManagerProvider,
             final StatusResponseFactory factory) {
         super(next, mailboxManagerProvider, factory);
     }
@@ -45,22 +46,22 @@ public class SubscribeProcessor extends AbstractMailboxAwareProcessor {
         return (message instanceof SubscribeRequest);
     }
 
-    protected void doProcess(ImapRequest message,
-            ImapSession session, String tag, ImapCommand command, Responder responder) {
+    protected void doProcess(ImapRequest message, ImapSession session,
+            String tag, ImapCommand command, Responder responder) {
         final SubscribeRequest request = (SubscribeRequest) message;
         final String mailboxName = request.getMailboxName();
         final String userName = ImapSessionUtils.getUserName(session);
         try {
             final MailboxManager manager = getMailboxManager(session);
             manager.subscribe(userName, mailboxName);
-            
+
             unsolicitedResponses(session, responder, false);
             okComplete(command, tag, responder);
-            
+
         } catch (SubscriptionException e) {
             getLog().debug("Subscription failed", e);
             unsolicitedResponses(session, responder, false);
-            
+
             final HumanReadableTextKey exceptionKey = e.getKey();
             final HumanReadableTextKey displayTextKey;
             if (exceptionKey == null) {
@@ -72,7 +73,7 @@ public class SubscribeProcessor extends AbstractMailboxAwareProcessor {
         } catch (MailboxManagerException e) {
             getLog().debug("Subscription failed", e);
             unsolicitedResponses(session, responder, false);
-            
+
             final HumanReadableTextKey displayTextKey = HumanReadableTextKey.GENERIC_SUBSCRIPTION_FAILURE;
             no(command, tag, responder, displayTextKey);
         }

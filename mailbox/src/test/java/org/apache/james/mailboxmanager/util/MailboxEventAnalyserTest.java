@@ -32,9 +32,9 @@ import org.jmock.MockObjectTestCase;
 public class MailboxEventAnalyserTest extends MockObjectTestCase {
 
     private static final long BASE_SESSION_ID = 99;
-    
+
     MailboxEventAnalyser analyser;
-    
+
     protected void setUp() throws Exception {
         super.setUp();
         analyser = new MailboxEventAnalyser(BASE_SESSION_ID);
@@ -46,33 +46,35 @@ public class MailboxEventAnalyserTest extends MockObjectTestCase {
 
     public void testShouldBeNoSizeChangeOnOtherEvent() throws Exception {
         final Mock mock = mock(MailboxListener.Event.class);
-        mock.expects(atLeastOnce()).method("getSessionId").will(returnValue(11L));
+        mock.expects(atLeastOnce()).method("getSessionId").will(
+                returnValue(11L));
         analyser.event((MailboxListener.Event) mock.proxy());
         assertFalse(analyser.isSizeChanged());
     }
-    
+
     public void testShouldBeNoSizeChangeOnAdded() throws Exception {
         analyser.event(new MockMailboxListenerAdded(78, 11));
         assertTrue(analyser.isSizeChanged());
     }
-    
+
     public void testShouldNoSizeChangeAfterReset() throws Exception {
         analyser.event(new MockMailboxListenerAdded(99, 11));
         analyser.reset();
         assertFalse(analyser.isSizeChanged());
     }
-    
+
     public void testShouldNotSetUidWhenNoSystemFlagChange() throws Exception {
-        final MockMailboxListenerFlagsUpdate update 
-            = new MockMailboxListenerFlagsUpdate(90, new Flags(), 11);
+        final MockMailboxListenerFlagsUpdate update = new MockMailboxListenerFlagsUpdate(
+                90, new Flags(), 11);
         analyser.event(update);
         assertNotNull(analyser.flagUpdateUids());
         assertFalse(analyser.flagUpdateUids().hasNext());
     }
-    
+
     public void testShouldSetUidWhenSystemFlagChange() throws Exception {
         final long uid = 900L;
-        final MockMailboxListenerFlagsUpdate update = new MockMailboxListenerFlagsUpdate(uid, new Flags(), 11);
+        final MockMailboxListenerFlagsUpdate update = new MockMailboxListenerFlagsUpdate(
+                uid, new Flags(), 11);
         update.flags.add(Flags.Flag.ANSWERED);
         analyser.event(update);
         final Iterator iterator = analyser.flagUpdateUids();
@@ -81,20 +83,23 @@ public class MailboxEventAnalyserTest extends MockObjectTestCase {
         assertEquals(new Long(uid), iterator.next());
         assertFalse(iterator.hasNext());
     }
-    
+
     public void testShouldClearFlagUidsUponReset() throws Exception {
         final long uid = 900L;
-        final MockMailboxListenerFlagsUpdate update = new MockMailboxListenerFlagsUpdate(uid, new Flags(), 11);
+        final MockMailboxListenerFlagsUpdate update = new MockMailboxListenerFlagsUpdate(
+                uid, new Flags(), 11);
         update.flags.add(Flags.Flag.ANSWERED);
         analyser.event(update);
         analyser.reset();
         assertNotNull(analyser.flagUpdateUids());
         assertFalse(analyser.flagUpdateUids().hasNext());
     }
-    
-    public void testShouldNotSetUidWhenSystemFlagChangeDifferentSessionInSilentMode() throws Exception {
+
+    public void testShouldNotSetUidWhenSystemFlagChangeDifferentSessionInSilentMode()
+            throws Exception {
         final long uid = 900L;
-        final MockMailboxListenerFlagsUpdate update = new MockMailboxListenerFlagsUpdate(uid, new Flags(), 11);
+        final MockMailboxListenerFlagsUpdate update = new MockMailboxListenerFlagsUpdate(
+                uid, new Flags(), 11);
         update.flags.add(Flags.Flag.ANSWERED);
         analyser.setSilentFlagChanges(true);
         analyser.event(update);
@@ -104,9 +109,11 @@ public class MailboxEventAnalyserTest extends MockObjectTestCase {
         assertEquals(new Long(uid), iterator.next());
         assertFalse(iterator.hasNext());
     }
-    
-    public void testShouldNotSetUidWhenSystemFlagChangeSameSessionInSilentMode() throws Exception {
-        final MockMailboxListenerFlagsUpdate update = new MockMailboxListenerFlagsUpdate(345, new Flags(), BASE_SESSION_ID);
+
+    public void testShouldNotSetUidWhenSystemFlagChangeSameSessionInSilentMode()
+            throws Exception {
+        final MockMailboxListenerFlagsUpdate update = new MockMailboxListenerFlagsUpdate(
+                345, new Flags(), BASE_SESSION_ID);
         update.flags.add(Flags.Flag.ANSWERED);
         analyser.setSilentFlagChanges(true);
         analyser.event(update);
@@ -114,13 +121,14 @@ public class MailboxEventAnalyserTest extends MockObjectTestCase {
         assertNotNull(iterator);
         assertFalse(iterator.hasNext());
     }
-    
+
     public void testShouldNotSetUidWhenOnlyRecentFlagUpdated() throws Exception {
-        final MockMailboxListenerFlagsUpdate update = new MockMailboxListenerFlagsUpdate(886, new Flags(), BASE_SESSION_ID);
+        final MockMailboxListenerFlagsUpdate update = new MockMailboxListenerFlagsUpdate(
+                886, new Flags(), BASE_SESSION_ID);
         update.flags.add(Flags.Flag.RECENT);
         analyser.event(update);
         final Iterator iterator = analyser.flagUpdateUids();
         assertNotNull(iterator);
-        assertFalse(iterator.hasNext()); 
+        assertFalse(iterator.hasNext());
     }
 }

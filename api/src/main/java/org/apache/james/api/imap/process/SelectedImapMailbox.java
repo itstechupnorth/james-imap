@@ -27,27 +27,28 @@ public interface SelectedImapMailbox {
 
     public abstract List unsolicitedResponses(boolean omitExpunged,
             boolean useUid);
-    
+
     public int msn(long uid);
 
     public abstract long uid(int i);
-    
+
     public boolean addRecent(long uid);
-    
+
     public boolean removeRecent(long uid);
-    
+
     public long[] getRecent();
-    
+
     public int recentCount();
-    
+
     public String getName();
 
     public boolean isRecent(long uid);
-    
+
     /**
      * Is the mailbox deleted?
-     * @return true when the mailbox has been deleted by another session, 
-     * false otherwise
+     * 
+     * @return true when the mailbox has been deleted by another session, false
+     *         otherwise
      */
     public boolean isDeletedByOtherSession();
 }

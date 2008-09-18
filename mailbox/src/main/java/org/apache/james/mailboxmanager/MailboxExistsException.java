@@ -20,15 +20,14 @@
 package org.apache.james.mailboxmanager;
 
 /**
- * Indicates that the operation failed
- * since the mailbox already exists.
+ * Indicates that the operation failed since the mailbox already exists.
  */
 public class MailboxExistsException extends MailboxManagerException {
 
     private static final long serialVersionUID = -486951759505030166L;
 
     private final String mailboxName;
-    
+
     public MailboxExistsException(String mailboxName) {
         super("Mailbox '" + mailboxName + "' already exists.");
         this.mailboxName = mailboxName;
@@ -36,6 +35,7 @@ public class MailboxExistsException extends MailboxManagerException {
 
     /**
      * Gets the name of the mailbox which alredy exists.
+     * 
      * @return the mailboxName, not null
      */
     public final String getMailboxName() {

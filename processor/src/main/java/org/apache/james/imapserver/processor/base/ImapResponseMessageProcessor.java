@@ -35,7 +35,8 @@ public class ImapResponseMessageProcessor extends AbstractChainedImapProcessor {
         return result;
     }
 
-    protected void doProcess(ImapMessage acceptableMessage, Responder responder, ImapSession session) {
+    protected void doProcess(ImapMessage acceptableMessage,
+            Responder responder, ImapSession session) {
         final ImapResponseMessage result = (ImapResponseMessage) acceptableMessage;
         responder.respond(result);
     }

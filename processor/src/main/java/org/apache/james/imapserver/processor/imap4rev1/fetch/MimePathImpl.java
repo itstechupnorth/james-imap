@@ -28,7 +28,7 @@ import org.apache.james.mailboxmanager.MessageResult;
 
 final class MimePathImpl implements MessageResult.MimePath {
     private final int[] positions;
-    
+
     public MimePathImpl(final int[] positions) {
         super();
         this.positions = positions;
@@ -54,7 +54,7 @@ final class MimePathImpl implements MessageResult.MimePath {
             return false;
         return true;
     }
-    
+
     public String toString() {
         final StringBuffer buffer = new StringBuffer("MIMEPath:");
         boolean isFirst = false;

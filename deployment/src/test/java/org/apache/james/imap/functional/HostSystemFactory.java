@@ -30,35 +30,36 @@ import org.apache.james.mailboxmanager.mock.TorqueMailboxManagerProviderSingleto
 import org.apache.james.test.functional.imap.HostSystem;
 
 public class HostSystemFactory {
-    
+
     public static final String META_DATA_DIRECTORY = "target/user-meta-data";
-    
+
     public static void resetUserMetaData() throws Exception {
-        
+
         File dir = new File(META_DATA_DIRECTORY);
         if (dir.exists()) {
             FileUtils.deleteDirectory(dir);
         }
         dir.mkdirs();
     }
-    
+
     public static HostSystem createStandardImap() throws Exception {
-        
+
         ExperimentalHostSystem host = TorqueMailboxManagerProviderSingleton.host;
         final DefaultImapProcessorFactory defaultImapProcessorFactory = new DefaultImapProcessorFactory();
         resetUserMetaData();
-        defaultImapProcessorFactory.configure(
-                MailboxManagerProviderSingleton.getMailboxManagerProviderInstance());
-        host.configure(new DefaultImapDecoderFactory().buildImapDecoder(), 
-                new DefaultImapEncoderFactory().buildImapEncoder(), 
-                defaultImapProcessorFactory.buildImapProcessor(), new ExperimentalHostSystem.Resetable() {
+        defaultImapProcessorFactory.configure(MailboxManagerProviderSingleton
+                .getMailboxManagerProviderInstance());
+        host.configure(new DefaultImapDecoderFactory().buildImapDecoder(),
+                new DefaultImapEncoderFactory().buildImapEncoder(),
+                defaultImapProcessorFactory.buildImapProcessor(),
+                new ExperimentalHostSystem.Resetable() {
 
                     public void reset() throws Exception {
                         MailboxManagerProviderSingleton.reset();
                         resetUserMetaData();
                     }
-            
-        });
+
+                });
         return host;
     }
 }

@@ -35,7 +35,7 @@ public class CapabilityProcessor extends AbstractImapRequestProcessor {
 
     // TODO: capability text should be injected
 
-    public CapabilityProcessor(final ImapProcessor next, 
+    public CapabilityProcessor(final ImapProcessor next,
             final StatusResponseFactory factory) {
         super(next, factory);
     }
@@ -44,8 +44,8 @@ public class CapabilityProcessor extends AbstractImapRequestProcessor {
         return (message instanceof CapabilityRequest);
     }
 
-    protected void doProcess(ImapRequest message,
-            ImapSession session, String tag, ImapCommand command, Responder responder) {
+    protected void doProcess(ImapRequest message, ImapSession session,
+            String tag, ImapCommand command, Responder responder) {
         final CapabilityRequest request = (CapabilityRequest) message;
         final ImapResponseMessage result = doProcess(request, session, tag,
                 command);

@@ -29,7 +29,7 @@ import org.apache.james.imapserver.codec.encode.ImapResponseWriter;
 public class MockImapResponseWriter implements ImapResponseWriter {
 
     public final List operations = new ArrayList();
-    
+
     public void commandName(String commandName) {
         operations.add(new CommandNameOperation(commandName));
 
@@ -67,15 +67,16 @@ public class MockImapResponseWriter implements ImapResponseWriter {
         public int hashCode() {
             return 3;
         }
-        
+
     }
-    
+
     public void quote(String message) {
         operations.add(new QuoteMessageOperation(message));
     }
-    
+
     public static class QuoteMessageOperation {
         public final String message;
+
         public QuoteMessageOperation(final String message) {
             this.message = message;
         }
@@ -83,7 +84,8 @@ public class MockImapResponseWriter implements ImapResponseWriter {
         public int hashCode() {
             final int PRIME = 31;
             int result = 1;
-            result = PRIME * result + ((message == null) ? 0 : message.hashCode());
+            result = PRIME * result
+                    + ((message == null) ? 0 : message.hashCode());
             return result;
         }
 
@@ -103,18 +105,21 @@ public class MockImapResponseWriter implements ImapResponseWriter {
             return true;
         }
     }
-    
+
     public static class TextMessageOperation {
         public final String text;
+
         public TextMessageOperation(String text) {
             this.text = text;
         }
+
         public int hashCode() {
             final int PRIME = 31;
             int result = 1;
             result = PRIME * result + ((text == null) ? 0 : text.hashCode());
             return result;
         }
+
         public boolean equals(Object obj) {
             if (this == obj)
                 return true;
@@ -130,20 +135,23 @@ public class MockImapResponseWriter implements ImapResponseWriter {
                 return false;
             return true;
         }
-        
+
     }
-    
+
     public static class NumericMessageOperation {
         public final long number;
+
         public NumericMessageOperation(long number) {
             this.number = number;
         }
+
         public int hashCode() {
             final int PRIME = 31;
             int result = 1;
             result = (int) (PRIME * result + number);
             return result;
         }
+
         public boolean equals(Object obj) {
             if (this == obj)
                 return true;
@@ -156,10 +164,9 @@ public class MockImapResponseWriter implements ImapResponseWriter {
                 return false;
             return true;
         }
-        
+
     }
-    
-    
+
     public static class ResponseCodeOperation {
         public final String responseCode;
 
@@ -171,7 +178,8 @@ public class MockImapResponseWriter implements ImapResponseWriter {
         public int hashCode() {
             final int PRIME = 31;
             int result = 1;
-            result = PRIME * result + ((responseCode == null) ? 0 : responseCode.hashCode());
+            result = PRIME * result
+                    + ((responseCode == null) ? 0 : responseCode.hashCode());
             return result;
         }
 
@@ -190,9 +198,9 @@ public class MockImapResponseWriter implements ImapResponseWriter {
                 return false;
             return true;
         }
-        
+
     }
-    
+
     public static class CommandNameOperation {
         public final String commandName;
 
@@ -204,7 +212,8 @@ public class MockImapResponseWriter implements ImapResponseWriter {
         public int hashCode() {
             final int PRIME = 31;
             int result = 1;
-            result = PRIME * result + ((commandName == null) ? 0 : commandName.hashCode());
+            result = PRIME * result
+                    + ((commandName == null) ? 0 : commandName.hashCode());
             return result;
         }
 
@@ -223,9 +232,9 @@ public class MockImapResponseWriter implements ImapResponseWriter {
                 return false;
             return true;
         }
-        
+
     }
-    
+
     public static class UntaggedOperation {
         public boolean equals(Object obj) {
             return obj instanceof UntaggedOperation;
@@ -234,21 +243,24 @@ public class MockImapResponseWriter implements ImapResponseWriter {
         public int hashCode() {
             return 2;
         }
-        
+
     }
-    
+
     public static class TagOperation {
 
         private final String tag;
+
         public TagOperation(String tag) {
             this.tag = tag;
         }
+
         public int hashCode() {
             final int PRIME = 31;
             int result = 1;
             result = PRIME * result + ((tag == null) ? 0 : tag.hashCode());
             return result;
         }
+
         public boolean equals(Object obj) {
             if (this == obj)
                 return true;
@@ -264,7 +276,7 @@ public class MockImapResponseWriter implements ImapResponseWriter {
                 return false;
             return true;
         }
-        
+
     }
 
     public void closeParen() {
@@ -276,24 +288,27 @@ public class MockImapResponseWriter implements ImapResponseWriter {
     }
 
     public static class BracketOperation {
-        
+
         public static BracketOperation openSquare() {
             return new BracketOperation(true, true);
         }
-        
+
         public static BracketOperation closeSquare() {
             return new BracketOperation(false, true);
         }
-        
+
         private final boolean open;
+
         private final boolean square;
+
         public BracketOperation(final boolean open, boolean square) {
             this.open = open;
             this.square = square;
         }
-        
+
         /**
          * Is this an open paren?
+         * 
          * @return the open
          */
         public final boolean isOpen() {
@@ -302,8 +317,8 @@ public class MockImapResponseWriter implements ImapResponseWriter {
 
         /**
          * Is this a square bracket?
-         * @return true if this is a square bracket, 
-         * false otherwise
+         * 
+         * @return true if this is a square bracket, false otherwise
          */
         public final boolean isSquare() {
             return square;
@@ -332,15 +347,15 @@ public class MockImapResponseWriter implements ImapResponseWriter {
             return true;
         }
 
-        
     }
 
     public void literal(Literal literal) throws IOException {
         operations.add(new LiteralOperation(literal));
     }
-    
+
     public static final class LiteralOperation {
         public final Literal literal;
+
         public LiteralOperation(Literal literal) {
             this.literal = literal;
         }
@@ -348,10 +363,11 @@ public class MockImapResponseWriter implements ImapResponseWriter {
         public int hashCode() {
             final int PRIME = 31;
             int result = 1;
-            result = PRIME * result + ((literal == null) ? 0 : literal.hashCode());
+            result = PRIME * result
+                    + ((literal == null) ? 0 : literal.hashCode());
             return result;
         }
-        
+
         public boolean equals(Object obj) {
             if (this == obj)
                 return true;
@@ -383,10 +399,12 @@ public class MockImapResponseWriter implements ImapResponseWriter {
     public void upperCaseAscii(String message) throws IOException {
         operations.add(new UpperCaseASCIIOperation(message, false));
     }
-    
+
     public static final class UpperCaseASCIIOperation {
         public final String message;
+
         public final boolean quote;
+
         public UpperCaseASCIIOperation(String message, boolean quote) {
             this.message = message;
             this.quote = quote;
@@ -395,10 +413,11 @@ public class MockImapResponseWriter implements ImapResponseWriter {
         public int hashCode() {
             final int PRIME = 31;
             int result = 1;
-            result = PRIME * result + ((message == null) ? 0 : message.hashCode());
+            result = PRIME * result
+                    + ((message == null) ? 0 : message.hashCode());
             return result;
         }
-        
+
         public boolean equals(Object obj) {
             if (this == obj)
                 return true;
@@ -414,8 +433,7 @@ public class MockImapResponseWriter implements ImapResponseWriter {
                 return false;
             return true;
         }
-        
-        
+
     }
 
     public void quoteUpperCaseAscii(String message) throws IOException {
@@ -423,5 +441,5 @@ public class MockImapResponseWriter implements ImapResponseWriter {
     }
 
     public void space() {
-    }    
+    }
 }

@@ -25,8 +25,8 @@ public abstract class AbstractMailboxSelectionRequest extends
         AbstractImapRequest {
     private final String mailboxName;
 
-    public AbstractMailboxSelectionRequest(final ImapCommand command, final String mailboxName,
-            final String tag) {
+    public AbstractMailboxSelectionRequest(final ImapCommand command,
+            final String mailboxName, final String tag) {
         super(tag, command);
         this.mailboxName = mailboxName;
     }

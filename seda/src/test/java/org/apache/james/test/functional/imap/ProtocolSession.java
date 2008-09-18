@@ -17,7 +17,6 @@
  * under the License.                                           *
  ****************************************************************/
 
-
 package org.apache.james.test.functional.imap;
 
 import java.io.IOException;
@@ -30,26 +29,31 @@ import org.apache.james.test.functional.imap.HostSystem.Session;
 
 /**
  * A protocol session which can be run against a reader and writer, which checks
- * the server response against the expected values.
- * TODO make ProtocolSession itself be a permissible ProtocolElement,
- * so that we can nest and reuse sessions.
- * @author  Darrell DeBoer <darrell@apache.org>
- *
+ * the server response against the expected values. TODO make ProtocolSession
+ * itself be a permissible ProtocolElement, so that we can nest and reuse
+ * sessions.
+ * 
+ * @author Darrell DeBoer <darrell@apache.org>
+ * 
  * @version $Revision$
  */
-public class ProtocolSession
-{
+public class ProtocolSession {
     private boolean continued = false;
+
     private boolean continuationExpected = false;
+
     private int maxSessionNumber;
+
     protected List testElements = new ArrayList();
+
     private Iterator elementsIterator;
+
     private HostSystem.Session[] sessions;
+
     private ProtocolElement nextTest;
+
     private boolean continueAfterFailure = false;
-    
-    
-    
+
     public final boolean isContinueAfterFailure() {
         return continueAfterFailure;
     }
@@ -59,9 +63,9 @@ public class ProtocolSession
     }
 
     /**
-     * Returns the number of sessions required to run this ProtocolSession.
-     * If the number of readers and writers provided is less than this number,
-     * an exception will occur when running the tests.
+     * Returns the number of sessions required to run this ProtocolSession. If
+     * the number of readers and writers provided is less than this number, an
+     * exception will occur when running the tests.
      */
     public int getSessionCount() {
         return maxSessionNumber + 1;
@@ -69,21 +73,24 @@ public class ProtocolSession
 
     /**
      * Executes the ProtocolSession in real time against the readers and writers
-     * supplied, writing client requests and reading server responses in the order
-     * that they appear in the test elements. The index of a reader/writer in the array
-     * corresponds to the number of the session.
-     * If an exception occurs, no more test elements are executed.
-     * @param out The client requests are written to here.
-     * @param in The server responses are read from here.
+     * supplied, writing client requests and reading server responses in the
+     * order that they appear in the test elements. The index of a reader/writer
+     * in the array corresponds to the number of the session. If an exception
+     * occurs, no more test elements are executed.
+     * 
+     * @param out
+     *            The client requests are written to here.
+     * @param in
+     *            The server responses are read from here.
      */
     public void runSessions(HostSystem.Session[] sessions) throws Exception {
         this.sessions = sessions;
         elementsIterator = testElements.iterator();
-        while( elementsIterator.hasNext() ) {
+        while (elementsIterator.hasNext()) {
             Object obj = elementsIterator.next();
-            if ( obj instanceof ProtocolElement ) {
-                ProtocolElement test = ( ProtocolElement ) obj;
-                test.testProtocol( sessions, continueAfterFailure );
+            if (obj instanceof ProtocolElement) {
+                ProtocolElement test = (ProtocolElement) obj;
+                test.testProtocol(sessions, continueAfterFailure);
             }
         }
     }
@@ -92,15 +99,15 @@ public class ProtocolSession
         try {
             if (continuationExpected) {
                 continued = true;
-                while( elementsIterator.hasNext() ) {
+                while (elementsIterator.hasNext()) {
                     Object obj = elementsIterator.next();
-                    if ( obj instanceof ProtocolElement ) {
-                        nextTest = ( ProtocolElement ) obj;
-                       
+                    if (obj instanceof ProtocolElement) {
+                        nextTest = (ProtocolElement) obj;
+
                         if (!nextTest.isClient()) {
                             break;
                         }
-                        nextTest.testProtocol( sessions, continueAfterFailure );
+                        nextTest.testProtocol(sessions, continueAfterFailure);
                     }
                 }
                 if (!elementsIterator.hasNext()) {
@@ -113,85 +120,85 @@ public class ProtocolSession
             throw new RuntimeException(e);
         }
     }
-    
+
     /**
      * adds a new Client request line to the test elements
      */
-    public void CL( String clientLine )
-    {
-        testElements.add( new ClientRequest( clientLine ) );
+    public void CL(String clientLine) {
+        testElements.add(new ClientRequest(clientLine));
     }
 
     /**
-     * adds a new Server Response line to the test elements, with the specified location.
+     * adds a new Server Response line to the test elements, with the specified
+     * location.
      */
-    public void SL( String serverLine, String location )
-    {
-        testElements.add( new ServerResponse( serverLine, location ) );
+    public void SL(String serverLine, String location) {
+        testElements.add(new ServerResponse(serverLine, location));
     }
 
     /**
      * adds a new Server Unordered Block to the test elements.
      */
-    public void SUB( List serverLines, String location )
-    {
-        testElements.add( new ServerUnorderedBlockResponse( serverLines, location ) );
+    public void SUB(List serverLines, String location) {
+        testElements
+                .add(new ServerUnorderedBlockResponse(serverLines, location));
     }
 
     /**
      * adds a new Client request line to the test elements
      */
-    public void CL( int sessionNumber, String clientLine )
-    {
+    public void CL(int sessionNumber, String clientLine) {
         this.maxSessionNumber = Math.max(this.maxSessionNumber, sessionNumber);
-        testElements.add( new ClientRequest( sessionNumber, clientLine ) );
+        testElements.add(new ClientRequest(sessionNumber, clientLine));
     }
 
     /**
-     * Adds a continuation.
-     * To allow one thread to be used for testing.
+     * Adds a continuation. To allow one thread to be used for testing.
      */
     public void CONT(int sessionNumber) throws Exception {
         this.maxSessionNumber = Math.max(this.maxSessionNumber, sessionNumber);
-        testElements.add( new ContinuationElement(sessionNumber));
+        testElements.add(new ContinuationElement(sessionNumber));
     }
-    
+
     /**
-     * adds a new Server Response line to the test elements, with the specified location.
+     * adds a new Server Response line to the test elements, with the specified
+     * location.
      */
-    public void SL( int sessionNumber, String serverLine, String location, String lastClientMessage )
-    {
+    public void SL(int sessionNumber, String serverLine, String location,
+            String lastClientMessage) {
         this.maxSessionNumber = Math.max(this.maxSessionNumber, sessionNumber);
-        testElements.add( new ServerResponse( sessionNumber, serverLine, location, lastClientMessage ) );
+        testElements.add(new ServerResponse(sessionNumber, serverLine,
+                location, lastClientMessage));
     }
 
     /**
      * adds a new Server Unordered Block to the test elements.
      */
-    public void SUB( int sessionNumber, List serverLines, String location, String lastClientMessage )
-    {
+    public void SUB(int sessionNumber, List serverLines, String location,
+            String lastClientMessage) {
         this.maxSessionNumber = Math.max(this.maxSessionNumber, sessionNumber);
-        testElements.add( new ServerUnorderedBlockResponse( sessionNumber, serverLines, location, lastClientMessage ) );
+        testElements.add(new ServerUnorderedBlockResponse(sessionNumber,
+                serverLines, location, lastClientMessage));
     }
 
     /**
      * A client request, which write the specified message to a Writer.
      */
-    private class ClientRequest implements ProtocolElement
-    {
+    private class ClientRequest implements ProtocolElement {
         private int sessionNumber;
+
         private String message;
 
         /**
          * Initialises the ClientRequest with the supplied message.
          */
-        public ClientRequest( String message )
-        {
+        public ClientRequest(String message) {
             this(-1, message);
         }
 
         /**
          * Initialises the ClientRequest, with a message and session number.
+         * 
          * @param sessionNumber
          * @param message
          */
@@ -201,20 +208,20 @@ public class ProtocolSession
         }
 
         /**
-         * Writes the request message to the PrintWriters. If the sessionNumber == -1,
-         * the request is written to *all* supplied writers, otherwise, only the
-         * writer for this session is writted to.
-         * @throws Exception 
+         * Writes the request message to the PrintWriters. If the sessionNumber ==
+         * -1, the request is written to *all* supplied writers, otherwise, only
+         * the writer for this session is writted to.
+         * 
+         * @throws Exception
          */
-        public void testProtocol( HostSystem.Session[] sessions, boolean continueAfterFailure ) throws Exception
-        {
+        public void testProtocol(HostSystem.Session[] sessions,
+                boolean continueAfterFailure) throws Exception {
             if (sessionNumber < 0) {
                 for (int i = 0; i < sessions.length; i++) {
                     HostSystem.Session session = sessions[i];
                     writeMessage(session);
                 }
-            }
-            else {
+            } else {
                 HostSystem.Session session = sessions[sessionNumber];
                 writeMessage(session);
             }
@@ -230,37 +237,45 @@ public class ProtocolSession
     }
 
     /**
-     * Represents a single-line server response, which reads a line
-     * from a reader, and compares it with the defined regular expression
-     * definition of this line.
+     * Represents a single-line server response, which reads a line from a
+     * reader, and compares it with the defined regular expression definition of
+     * this line.
      */
-    private class ServerResponse implements ProtocolElement
-    {
+    private class ServerResponse implements ProtocolElement {
         private String lastClientMessage;
+
         private int sessionNumber;
+
         private String expectedLine;
+
         protected String location;
 
         /**
          * Sets up a server response.
-         * @param expectedPattern A Perl regular expression pattern used to test
-         *                        the line recieved.
-         * @param location A descriptive value to use in error messages.
+         * 
+         * @param expectedPattern
+         *            A Perl regular expression pattern used to test the line
+         *            recieved.
+         * @param location
+         *            A descriptive value to use in error messages.
          */
-        public ServerResponse( String expectedPattern, String location )
-        {
+        public ServerResponse(String expectedPattern, String location) {
             this(-1, expectedPattern, location, null);
         }
 
         /**
          * Sets up a server response.
-         * @param sessionNumber The number of session for a multi-session test
-         * @param expectedPattern A Perl regular expression pattern used to test
-         *                        the line recieved.
-         * @param location A descriptive value to use in error messages.
+         * 
+         * @param sessionNumber
+         *            The number of session for a multi-session test
+         * @param expectedPattern
+         *            A Perl regular expression pattern used to test the line
+         *            recieved.
+         * @param location
+         *            A descriptive value to use in error messages.
          */
-        public ServerResponse( int sessionNumber, String expectedPattern, String location, String lastClientMessage )
-        {
+        public ServerResponse(int sessionNumber, String expectedPattern,
+                String location, String lastClientMessage) {
             this.sessionNumber = sessionNumber;
             this.expectedLine = expectedPattern;
             this.location = location;
@@ -268,71 +283,74 @@ public class ProtocolSession
         }
 
         /**
-         * Reads a line from the supplied reader, and tests that it matches
-         * the expected regular expression. If the sessionNumber == -1, then all
-         * readers are tested, otherwise, only the reader for this session is tested.
-         * @param out Is ignored.
-         * @param in The server response is read from here.
-         * @throws InvalidServerResponseException If the actual server response didn't
-         *          match the regular expression expected.
+         * Reads a line from the supplied reader, and tests that it matches the
+         * expected regular expression. If the sessionNumber == -1, then all
+         * readers are tested, otherwise, only the reader for this session is
+         * tested.
+         * 
+         * @param out
+         *            Is ignored.
+         * @param in
+         *            The server response is read from here.
+         * @throws InvalidServerResponseException
+         *             If the actual server response didn't match the regular
+         *             expression expected.
          */
-        public void testProtocol( HostSystem.Session[] sessions, boolean continueAfterFailure)
-                throws Exception
-        {
+        public void testProtocol(HostSystem.Session[] sessions,
+                boolean continueAfterFailure) throws Exception {
             if (sessionNumber < 0) {
                 for (int i = 0; i < sessions.length; i++) {
                     HostSystem.Session session = sessions[i];
                     checkResponse(session, continueAfterFailure);
                 }
-            }
-            else {
+            } else {
                 HostSystem.Session session = sessions[sessionNumber];
                 checkResponse(session, continueAfterFailure);
             }
         }
 
-        protected void checkResponse(HostSystem.Session session, boolean continueAfterFailure) throws Exception {
+        protected void checkResponse(HostSystem.Session session,
+                boolean continueAfterFailure) throws Exception {
             String testLine = readLine(session);
-            if ( ! match( expectedLine, testLine ) ) {
-                String errMsg = "\nLocation: " + location +
-                        "\nLastClientMsg: " + lastClientMessage +
-                        "\nExpected: '" + expectedLine +
-                        "'\nActual   : '" + testLine + "'";
+            if (!match(expectedLine, testLine)) {
+                String errMsg = "\nLocation: " + location + "\nLastClientMsg: "
+                        + lastClientMessage + "\nExpected: '" + expectedLine
+                        + "'\nActual   : '" + testLine + "'";
                 if (continueAfterFailure) {
                     System.out.println(errMsg);
                 } else {
-                    throw new InvalidServerResponseException( errMsg );
+                    throw new InvalidServerResponseException(errMsg);
                 }
             }
         }
 
         /**
-         * A convenience method which returns true if the actual string
-         * matches the expected regular expression.
-         * @param expected The regular expression used for matching.
-         * @param actual The actual message to match.
+         * A convenience method which returns true if the actual string matches
+         * the expected regular expression.
+         * 
+         * @param expected
+         *            The regular expression used for matching.
+         * @param actual
+         *            The actual message to match.
          * @return <code>true</code> if the actual matches the expected.
          */
-        protected boolean match( String expected, String actual )
-        {            
-            final boolean result = Pattern.matches( expected, actual );
+        protected boolean match(String expected, String actual) {
+            final boolean result = Pattern.matches(expected, actual);
             return result;
         }
 
         /**
          * Grabs a line from the server and throws an error message if it
          * doesn't work out
+         * 
          * @return String of the line from the server
          */
-        protected String readLine( HostSystem.Session session )
-                throws Exception
-        {
+        protected String readLine(HostSystem.Session session) throws Exception {
             try {
                 return session.readLine();
             } catch (IOException e) {
-                String errMsg = "\nLocation: " + location +
-                                "\nExpected: " + expectedLine +
-                                "\nReason: Server Timeout.";
+                String errMsg = "\nLocation: " + location + "\nExpected: "
+                        + expectedLine + "\nReason: Server Timeout.";
                 throw new InvalidServerResponseException(errMsg);
             }
         }
@@ -343,36 +361,43 @@ public class ProtocolSession
     }
 
     /**
-     * Represents a set of lines which must be recieved from the server,
-     * in a non-specified order.
+     * Represents a set of lines which must be recieved from the server, in a
+     * non-specified order.
      */
-    private class ServerUnorderedBlockResponse extends ServerResponse
-    {
+    private class ServerUnorderedBlockResponse extends ServerResponse {
         private List expectedLines = new ArrayList();
 
         /**
-         * Sets up a ServerUnorderedBlockResponse with the list of expected lines.
-         * @param expectedLines A list containing a reqular expression for each
-         *                      expected line.
-         * @param location A descriptive location string for error messages.
+         * Sets up a ServerUnorderedBlockResponse with the list of expected
+         * lines.
+         * 
+         * @param expectedLines
+         *            A list containing a reqular expression for each expected
+         *            line.
+         * @param location
+         *            A descriptive location string for error messages.
          */
-        public ServerUnorderedBlockResponse( List expectedLines, String location )
-        {
+        public ServerUnorderedBlockResponse(List expectedLines, String location) {
             this(-1, expectedLines, location, null);
         }
 
         /**
-         * Sets up a ServerUnorderedBlockResponse with the list of expected lines.
-         * @param sessionNumber The number of the session to expect this block,
-         *              for a multi-session test.
-         * @param expectedLines A list containing a reqular expression for each
-         *                      expected line.
-         * @param location A descriptive location string for error messages.
+         * Sets up a ServerUnorderedBlockResponse with the list of expected
+         * lines.
+         * 
+         * @param sessionNumber
+         *            The number of the session to expect this block, for a
+         *            multi-session test.
+         * @param expectedLines
+         *            A list containing a reqular expression for each expected
+         *            line.
+         * @param location
+         *            A descriptive location string for error messages.
          */
-        public ServerUnorderedBlockResponse( int sessionNumber,
-                                             List expectedLines, String location, String lastClientMessage)
-        {
-            super( sessionNumber, "<Unordered Block>", location, lastClientMessage);
+        public ServerUnorderedBlockResponse(int sessionNumber,
+                List expectedLines, String location, String lastClientMessage) {
+            super(sessionNumber, "<Unordered Block>", location,
+                    lastClientMessage);
             this.expectedLines = expectedLines;
         }
 
@@ -380,11 +405,15 @@ public class ProtocolSession
          * Reads lines from the server response and matches them against the
          * list of expected regular expressions. Each regular expression in the
          * expected list must be matched by only one server response line.
-         * @param reader Server responses are read from here.
-         * @throws InvalidServerResponseException If a line is encountered which doesn't
-         *              match one of the expected lines.
+         * 
+         * @param reader
+         *            Server responses are read from here.
+         * @throws InvalidServerResponseException
+         *             If a line is encountered which doesn't match one of the
+         *             expected lines.
          */
-        protected void checkResponse(HostSystem.Session session, boolean continueAfterFailure) throws Exception {
+        protected void checkResponse(HostSystem.Session session,
+                boolean continueAfterFailure) throws Exception {
             List testLines = new ArrayList(expectedLines);
             while (testLines.size() > 0) {
                 String actualLine = readLine(session);
@@ -400,51 +429,51 @@ public class ProtocolSession
                 }
 
                 if (!foundMatch) {
-                    StringBuffer errMsg = new StringBuffer()
-                            .append("\nLocation: ")
-                            .append(location)
-                            .append("\nExpected one of: ");
+                    StringBuffer errMsg = new StringBuffer().append(
+                            "\nLocation: ").append(location).append(
+                            "\nExpected one of: ");
                     Iterator iter = expectedLines.iterator();
                     while (iter.hasNext()) {
                         errMsg.append("\n    ");
                         errMsg.append(iter.next());
                     }
-                    errMsg.append("\nActual: ")
-                            .append(actualLine);
+                    errMsg.append("\nActual: ").append(actualLine);
                     if (continueAfterFailure) {
                         System.out.println(errMsg.toString());
                     } else {
-                        throw new InvalidServerResponseException(errMsg.toString());
+                        throw new InvalidServerResponseException(errMsg
+                                .toString());
                     }
                 }
             }
         }
     }
-    
+
     private class ContinuationElement implements ProtocolElement {
 
         private final int sessionNumber;
-        
+
         public ContinuationElement(final int sessionNumber) throws Exception {
-            this.sessionNumber = sessionNumber < 0 ? 0 : sessionNumber ;
+            this.sessionNumber = sessionNumber < 0 ? 0 : sessionNumber;
         }
-        
-        public void testProtocol(Session[] sessions, boolean continueAfterFailure) throws Exception {
+
+        public void testProtocol(Session[] sessions,
+                boolean continueAfterFailure) throws Exception {
             HostSystem.Session session = sessions[sessionNumber];
             continuationExpected = true;
             continued = false;
             String testLine = session.readLine();
-            if ( ! "+".equals(testLine) || ! continued) {
+            if (!"+".equals(testLine) || !continued) {
                 final String message = "Expected continuation";
                 if (continueAfterFailure) {
                     System.out.print(message);
                 } else {
-                    throw new InvalidServerResponseException( message );
+                    throw new InvalidServerResponseException(message);
                 }
             }
             continuationExpected = false;
             continued = false;
-            
+
             if (nextTest != null) {
                 nextTest.testProtocol(sessions, continueAfterFailure);
             }
@@ -456,31 +485,32 @@ public class ProtocolSession
     }
 
     /**
-     * Represents a generic protocol element, which may write requests to the server,
-     * read responses from the server, or both. Implementations should test the server
-     * response against an expected response, and throw an exception on mismatch.
+     * Represents a generic protocol element, which may write requests to the
+     * server, read responses from the server, or both. Implementations should
+     * test the server response against an expected response, and throw an
+     * exception on mismatch.
      */
-    private interface ProtocolElement
-    {
+    private interface ProtocolElement {
         /**
          * Executes the ProtocolElement against the supplied session.
-         * @param continueAfterFailure TODO
-         * @throws Exception 
+         * 
+         * @param continueAfterFailure
+         *            TODO
+         * @throws Exception
          */
-        void testProtocol( HostSystem.Session[] sessions, boolean continueAfterFailure) throws Exception;
-        
+        void testProtocol(HostSystem.Session[] sessions,
+                boolean continueAfterFailure) throws Exception;
+
         boolean isClient();
     }
 
     /**
-     * An exception which is thrown when the actual response from a server
-     * is different from that expected.
+     * An exception which is thrown when the actual response from a server is
+     * different from that expected.
      */
-    public class InvalidServerResponseException extends Exception
-    {
-        public InvalidServerResponseException( String message )
-        {
-            super( message );
+    public class InvalidServerResponseException extends Exception {
+        public InvalidServerResponseException(String message) {
+            super(message);
         }
     }
 }

@@ -26,16 +26,17 @@ import org.apache.james.api.imap.ImapMessage;
  * Parses IMAP request into a command message.
  * </p>
  * <p>
- * <strong>Note:</strong> this is a transitional API
- * and is liable to change.
+ * <strong>Note:</strong> this is a transitional API and is liable to change.
  * </p>
  */
 public interface ImapCommandParser {
     /**
-     * Parses IMAP request.
-     * TODO: consider error handling
-     * @param request <code>ImapRequestLineReader</code>, not null
-     * @param tag TODO
+     * Parses IMAP request. TODO: consider error handling
+     * 
+     * @param request
+     *            <code>ImapRequestLineReader</code>, not null
+     * @param tag
+     *            TODO
      * @return <code>ImapCommandMessage</code>
      */
     ImapMessage parse(ImapRequestLineReader request, String tag);

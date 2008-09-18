@@ -30,7 +30,8 @@ import org.apache.james.imapserver.processor.base.AbstractImapRequestProcessor;
 
 public class LogoutProcessor extends AbstractImapRequestProcessor {
 
-    public LogoutProcessor(final ImapProcessor next, final StatusResponseFactory factory) {
+    public LogoutProcessor(final ImapProcessor next,
+            final StatusResponseFactory factory) {
         super(next, factory);
     }
 
@@ -38,8 +39,8 @@ public class LogoutProcessor extends AbstractImapRequestProcessor {
         return (message instanceof LogoutRequest);
     }
 
-    protected void doProcess(ImapRequest message,
-            ImapSession session, String tag, ImapCommand command, Responder responder) {
+    protected void doProcess(ImapRequest message, ImapSession session,
+            String tag, ImapCommand command, Responder responder) {
         session.logout();
         bye(responder);
         okComplete(command, tag, responder);

@@ -33,19 +33,19 @@ import org.apache.james.imapserver.codec.encode.base.AbstractChainedImapEncoder;
  */
 public class ListResponseEncoder extends AbstractChainedImapEncoder {
 
-    
     public ListResponseEncoder(ImapEncoder next) {
         super(next);
     }
-    protected void doEncode(final ImapMessage acceptableMessage, 
-                                final ImapResponseComposer composer) throws IOException {
+
+    protected void doEncode(final ImapMessage acceptableMessage,
+            final ImapResponseComposer composer) throws IOException {
         final AbstractListingResponse response = (AbstractListingResponse) acceptableMessage;
-        ListingEncodingUtils.encodeListingResponse(ImapConstants.LIST_RESPONSE_NAME, 
-                composer, response);
+        ListingEncodingUtils.encodeListingResponse(
+                ImapConstants.LIST_RESPONSE_NAME, composer, response);
     }
 
     protected boolean isAcceptable(ImapMessage message) {
         return (message instanceof ListResponse);
     }
-    
+
 }

@@ -37,9 +37,11 @@ public class ExpungeResponseEncoder extends AbstractChainedImapEncoder {
         return (message instanceof ExpungeResponse);
     }
 
-    protected void doEncode(ImapMessage acceptableMessage, ImapResponseComposer composer) throws IOException {
+    protected void doEncode(ImapMessage acceptableMessage,
+            ImapResponseComposer composer) throws IOException {
         final ExpungeResponse expungeResponse = (ExpungeResponse) acceptableMessage;
-        final int messageSequenceNumber = expungeResponse.getMessageSequenceNumber();
+        final int messageSequenceNumber = expungeResponse
+                .getMessageSequenceNumber();
         composer.expungeResponse(messageSequenceNumber);
     }
 }

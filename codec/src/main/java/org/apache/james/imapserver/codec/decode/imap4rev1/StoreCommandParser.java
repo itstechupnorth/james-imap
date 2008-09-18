@@ -28,51 +28,49 @@ import org.apache.james.imapserver.codec.ProtocolException;
 import org.apache.james.imapserver.codec.decode.ImapRequestLineReader;
 import org.apache.james.imapserver.codec.decode.InitialisableCommandFactory;
 
-class StoreCommandParser extends AbstractUidCommandParser implements InitialisableCommandFactory
-{
+class StoreCommandParser extends AbstractUidCommandParser implements
+        InitialisableCommandFactory {
     public StoreCommandParser() {
     }
 
     /**
      * @see org.apache.james.imapserver.codec.decode.InitialisableCommandFactory#init(org.apache.james.api.imap.imap4rev1.Imap4Rev1CommandFactory)
      */
-    public void init(Imap4Rev1CommandFactory factory)
-    {
+    public void init(Imap4Rev1CommandFactory factory) {
         final ImapCommand command = factory.getStore();
         setCommand(command);
     }
 
-    protected ImapMessage decode(ImapCommand command, ImapRequestLineReader request, String tag, boolean useUids) throws ProtocolException {
-        final IdRange[] idSet = parseIdRange( request );
+    protected ImapMessage decode(ImapCommand command,
+            ImapRequestLineReader request, String tag, boolean useUids)
+            throws ProtocolException {
+        final IdRange[] idSet = parseIdRange(request);
         final Boolean sign;
         boolean silent = false;
 
         char next = request.nextWordChar();
-        if ( next == '+' ) {
+        if (next == '+') {
             sign = Boolean.TRUE;
             request.consume();
-        }
-        else if ( next == '-' ) {
+        } else if (next == '-') {
             sign = Boolean.FALSE;
             request.consume();
-        }
-        else {
+        } else {
             sign = null;
         }
 
-        String directive = consumeWord( request, new NoopCharValidator() );
-        if ( "FLAGS".equalsIgnoreCase( directive ) ) {
+        String directive = consumeWord(request, new NoopCharValidator());
+        if ("FLAGS".equalsIgnoreCase(directive)) {
             silent = false;
-        }
-        else if ( "FLAGS.SILENT".equalsIgnoreCase( directive ) ) {
+        } else if ("FLAGS.SILENT".equalsIgnoreCase(directive)) {
             silent = true;
+        } else {
+            throw new ProtocolException("Invalid Store Directive: '"
+                    + directive + "'");
         }
-        else {
-            throw new ProtocolException( "Invalid Store Directive: '" + directive + "'" );
-        }
-        
-        final Flags flags = flagList( request );
-        endLine( request );
+
+        final Flags flags = flagList(request);
+        endLine(request);
         final ImapMessage result = getMessageFactory().createStoreMessage(
                 command, idSet, silent, sign, flags, useUids, tag);
         return result;

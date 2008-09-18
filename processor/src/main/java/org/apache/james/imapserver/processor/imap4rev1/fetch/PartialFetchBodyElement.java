@@ -11,12 +11,15 @@ import org.apache.james.imap.message.response.imap4rev1.FetchResponse.BodyElemen
 final class PartialFetchBodyElement implements BodyElement {
 
     private final BodyElement delegate;
+
     private final long firstOctet;
+
     private final long numberOfOctets;
+
     private final String name;
-    
-    public PartialFetchBodyElement(final BodyElement delegate, final long firstOctet, 
-            final long numberOfOctets) {
+
+    public PartialFetchBodyElement(final BodyElement delegate,
+            final long firstOctet, final long numberOfOctets) {
         super();
         this.delegate = delegate;
         this.firstOctet = firstOctet;
@@ -43,9 +46,9 @@ final class PartialFetchBodyElement implements BodyElement {
     }
 
     public void writeTo(WritableByteChannel channel) throws IOException {
-        PartialWritableByteChannel partialChannel = 
-            new PartialWritableByteChannel(channel, firstOctet, size());
+        PartialWritableByteChannel partialChannel = new PartialWritableByteChannel(
+                channel, firstOctet, size());
         delegate.writeTo(partialChannel);
     }
-    
+
 }

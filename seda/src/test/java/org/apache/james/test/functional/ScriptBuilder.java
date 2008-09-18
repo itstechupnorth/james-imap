@@ -31,9 +31,8 @@ import java.nio.charset.Charset;
 
 import org.apache.commons.lang.StringUtils;
 
-
 public class ScriptBuilder {
-    
+
     public static ScriptBuilder open(String host, int port) throws Exception {
         InetSocketAddress address = new InetSocketAddress(host, port);
         SocketChannel socket = SocketChannel.open(address);
@@ -41,29 +40,40 @@ public class ScriptBuilder {
         Client client = new Client(socket, socket);
         return new ScriptBuilder(client);
     }
-    
+
     private int tagCount = 0;
-    
+
     private boolean uidSearch = false;
+
     private boolean peek = false;
+
     private int messageNumber = 1;
+
     private String user = "imapuser";
+
     private String password = "password";
+
     private String mailbox = "testmailbox";
+
     private String file = "rfc822.mail";
+
     private String basedir = "/org/apache/james/test/functional/";
+
     private boolean createdMailbox = false;
+
     private final Client client;
+
     private Fetch fetch = new Fetch();
+
     private Search search = new Search();
+
     private String partialFetch = "";
-    
-    
+
     public ScriptBuilder(final Client client) {
         super();
         this.client = client;
     }
-    
+
     public final boolean isPeek() {
         return peek;
     }
@@ -95,12 +105,13 @@ public class ScriptBuilder {
     public final void setFile(String file) {
         this.file = file;
     }
-    
+
     private InputStream openFile() throws Exception {
-        InputStream result = this.getClass().getResourceAsStream( basedir + file );
+        InputStream result = this.getClass()
+                .getResourceAsStream(basedir + file);
         return new IgnoreHeaderInputStream(result);
     }
-    
+
     public final Fetch getFetch() {
         return fetch;
     }
@@ -108,12 +119,12 @@ public class ScriptBuilder {
     public final void setFetch(Fetch fetch) {
         this.fetch = fetch;
     }
-    
+
     public final Fetch resetFetch() {
         this.fetch = new Fetch();
         return fetch;
     }
-    
+
     public final int getMessageNumber() {
         return messageNumber;
     }
@@ -157,59 +168,59 @@ public class ScriptBuilder {
         lineEnd();
         response();
     }
-    
+
     public ScriptBuilder rename(String to) throws Exception {
         return rename(getMailbox(), to);
     }
-    
+
     public ScriptBuilder rename(String from, String to) throws Exception {
         command("RENAME " + from + " " + to);
         return this;
     }
-    
+
     public ScriptBuilder select() throws Exception {
         command("SELECT " + mailbox);
         return this;
     }
-    
+
     public ScriptBuilder create() throws Exception {
         command("CREATE " + mailbox);
         createdMailbox = true;
         return this;
     }
-    
+
     public ScriptBuilder flagDeleted() throws Exception {
         store(new Flags().deleted().msn(messageNumber));
         return this;
     }
-    
+
     public ScriptBuilder expunge() throws Exception {
         command("EXPUNGE");
         return this;
     }
-    
+
     public void delete() throws Exception {
         if (createdMailbox) {
             command("DELETE " + mailbox);
         }
     }
-    
+
     public void search() throws Exception {
         search.setUidSearch(uidSearch);
         command(search.command());
         search = new Search();
     }
-    
+
     public ScriptBuilder all() {
         search.all();
         return this;
     }
-    
+
     public ScriptBuilder answered() {
         search.answered();
         return this;
     }
-    
+
     public ScriptBuilder bcc(String address) {
         search.bcc(address);
         return this;
@@ -219,11 +230,11 @@ public class ScriptBuilder {
         search.before(year, month, day);
         return this;
     }
-    
+
     public ScriptBuilder body(String text) {
         search.body(text);
         return this;
-    }    
+    }
 
     public ScriptBuilder cc(String address) {
         search.cc(address);
@@ -234,7 +245,7 @@ public class ScriptBuilder {
         search.deleted();
         return this;
     }
-    
+
     public ScriptBuilder draft() {
         search.draft();
         return this;
@@ -252,14 +263,14 @@ public class ScriptBuilder {
 
     public ScriptBuilder header(String field, String value) {
         search.header(field, value);
-        return this; 
+        return this;
     }
-    
+
     public ScriptBuilder keyword(String flag) {
         search.keyword(flag);
         return this;
     }
-    
+
     public ScriptBuilder larger(long size) {
         search.larger(size);
         return this;
@@ -269,17 +280,17 @@ public class ScriptBuilder {
         search.NEW();
         return this;
     }
-    
+
     public ScriptBuilder not() {
         search.not();
         return this;
     }
-    
+
     public ScriptBuilder old() {
         search.old();
         return this;
     }
-    
+
     public ScriptBuilder on(int year, int month, int day) {
         search.on(year, month, day);
         return this;
@@ -307,19 +318,19 @@ public class ScriptBuilder {
 
     public ScriptBuilder senton(int year, int month, int day) {
         search.senton(year, month, day);
-        return this; 
+        return this;
     }
 
     public ScriptBuilder sentsince(int year, int month, int day) {
         search.sentsince(year, month, day);
         return this;
     }
-    
+
     public ScriptBuilder since(int year, int month, int day) {
         search.since(year, month, day);
-        return this; 
+        return this;
     }
-    
+
     public ScriptBuilder smaller(int size) {
         search.smaller(size);
         return this;
@@ -329,17 +340,17 @@ public class ScriptBuilder {
         search.subject(address);
         return this;
     }
-    
+
     public ScriptBuilder text(String text) {
         search.text(text);
         return this;
     }
-    
+
     public ScriptBuilder to(String address) {
         search.to(address);
         return this;
     }
-    
+
     public ScriptBuilder uid() {
         search.uid();
         return this;
@@ -349,7 +360,7 @@ public class ScriptBuilder {
         search.unanswered();
         return this;
     }
-    
+
     public ScriptBuilder undeleted() {
         search.undeleted();
         return this;
@@ -359,7 +370,7 @@ public class ScriptBuilder {
         search.undraft();
         return this;
     }
-    
+
     public ScriptBuilder unflagged() {
         search.unflagged();
         return this;
@@ -369,55 +380,55 @@ public class ScriptBuilder {
         search.unkeyword(flag);
         return this;
     }
-    
+
     public ScriptBuilder unseen() {
         search.unseen();
         return this;
     }
-    
+
     public ScriptBuilder openParen() {
         search.openParen();
         return this;
     }
-    
+
     public ScriptBuilder closeParen() {
         search.closeParen();
         return this;
     }
-    
+
     public ScriptBuilder msn(int low, int high) {
         search.msn(low, high);
         return this;
     }
-    
+
     public ScriptBuilder msnAndUp(int limit) {
         search.msnAndUp(limit);
         return this;
     }
-    
+
     public ScriptBuilder msnAndDown(int limit) {
         search.msnAndDown(limit);
         return this;
     }
-    
+
     public Flags flags() {
         return new Flags();
     }
-    
+
     public void store(Flags flags) throws Exception {
         String command = flags.command();
         command(command);
     }
-    
+
     public Search getSearch() throws Exception {
         return search;
     }
-    
+
     public ScriptBuilder partial(long start, long octets) {
-        partialFetch = "<" + start +  "." + octets + ">";
+        partialFetch = "<" + start + "." + octets + ">";
         return this;
     }
-    
+
     public ScriptBuilder fetchSection(String section) throws Exception {
         final String body;
         if (peek) {
@@ -425,35 +436,36 @@ public class ScriptBuilder {
         } else {
             body = " (BODY[";
         }
-        final String command = "FETCH " + messageNumber + body + section + "]" + partialFetch + ")";
+        final String command = "FETCH " + messageNumber + body + section + "]"
+                + partialFetch + ")";
         command(command);
         return this;
     }
-    
+
     public void fetchAllMessages() throws Exception {
         final String command = fetch.command();
         command(command);
     }
-    
+
     public ScriptBuilder list() throws Exception {
         command("LIST \"\" \"*\"");
         return this;
     }
-    
+
     public void fetchBody() throws Exception {
-        
+
     }
-    
+
     public void fetch() throws Exception {
         final String command = fetch.command(messageNumber);
         command(command);
     }
-    
+
     public void fetchFlags() throws Exception {
         final String command = "FETCH " + messageNumber + " (FLAGS)";
         command(command);
     }
-    
+
     public void append() throws Exception {
         tag();
         write("APPEND " + mailbox);
@@ -469,12 +481,12 @@ public class ScriptBuilder {
     private void response() throws Exception {
         client.readResponse();
     }
-    
+
     private void tag() throws Exception {
         client.lineStart();
         write("A" + ++tagCount + " ");
     }
-    
+
     private void lineEnd() throws Exception {
         client.lineEnd();
     }
@@ -482,29 +494,34 @@ public class ScriptBuilder {
     private void write(String phrase) throws Exception {
         client.write(phrase);
     }
-     
+
     public void close() throws Exception {
         client.close();
     }
-    
+
     public void logout() throws Exception {
         command("LOGOUT");
     }
-    
+
     public void quit() throws Exception {
         delete();
         logout();
         close();
     }
-    
+
     public static final class Flags {
         private StringBuffer flags;
+
         private StringBuffer msn;
+
         private boolean first;
+
         private boolean silent;
+
         private boolean add;
+
         private boolean subtract;
-        
+
         public Flags() {
             add = false;
             subtract = false;
@@ -513,13 +530,13 @@ public class ScriptBuilder {
             flags = new StringBuffer("(");
             msn = new StringBuffer();
         }
-        
+
         public Flags msn(long number) {
             msn.append(number);
             msn.append(' ');
             return this;
         }
-        
+
         public Flags range(long low, long high) {
             msn.append(low);
             msn.append(':');
@@ -527,63 +544,63 @@ public class ScriptBuilder {
             msn.append(' ');
             return this;
         }
-        
+
         public Flags rangeTill(long number) {
             msn.append("*:");
             msn.append(number);
             msn.append(' ');
             return this;
         }
-        
+
         public Flags rangeFrom(long number) {
             msn.append(number);
             msn.append(":* ");
             return this;
         }
-        
+
         public Flags add() {
             add = true;
             subtract = false;
             return this;
         }
-        
+
         public Flags subtract() {
             add = false;
             subtract = true;
             return this;
         }
-        
+
         public Flags silent() {
             silent = true;
             return this;
         }
-        
+
         public Flags deleted() {
             return append("\\DELETED");
         }
-        
+
         public Flags flagged() {
             return append("\\FLAGGED");
         }
-        
+
         public Flags answered() {
             return append("\\ANSWERED");
         }
-        
+
         public Flags seen() {
             return append("\\SEEN");
         }
-        
+
         public Flags draft() {
             return append("\\DRAFT");
         }
-        
+
         public String command() {
             String flags;
             if (add) {
-                flags =" +FLAGS " ;
+                flags = " +FLAGS ";
             } else if (subtract) {
-                flags =" -FLAGS " ;
+                flags = " -FLAGS ";
             } else {
                 flags = " FLAGS ";
             }
@@ -592,7 +609,7 @@ public class ScriptBuilder {
             }
             return "STORE " + msn + flags + this.flags + ")";
         }
-        
+
         private Flags append(String term) {
             if (first) {
                 first = false;
@@ -603,17 +620,19 @@ public class ScriptBuilder {
             return this;
         }
     }
-    
+
     public static final class Search {
 
         private StringBuffer buffer;
+
         private boolean first;
+
         private boolean uidSearch = false;
-        
+
         public Search() {
             clear();
         }
-        
+
         public final boolean isUidSearch() {
             return uidSearch;
         }
@@ -629,16 +648,16 @@ public class ScriptBuilder {
                 return "SEARCH " + buffer.toString();
             }
         }
-        
+
         public void clear() {
             buffer = new StringBuffer();
-            first = true;            
+            first = true;
         }
-        
+
         private Search append(long term) {
             return append(new Long(term).toString());
         }
-        
+
         private Search append(String term) {
             if (first) {
                 first = false;
@@ -648,59 +667,59 @@ public class ScriptBuilder {
             buffer.append(term);
             return this;
         }
-        
+
         private Search date(int year, int month, int day) {
             append(day);
             switch (month) {
-                case 1: 
+                case 1:
                     buffer.append("-Jan-");
                     break;
-                case 2: 
+                case 2:
                     buffer.append("-Feb-");
                     break;
-                case 3: 
+                case 3:
                     buffer.append("-Mar-");
                     break;
-                case 4: 
+                case 4:
                     buffer.append("-Apr-");
                     break;
-                case 5: 
+                case 5:
                     buffer.append("-May-");
                     break;
-                case 6: 
+                case 6:
                     buffer.append("-Jun-");
                     break;
-                case 7: 
+                case 7:
                     buffer.append("-Jul-");
                     break;
-                case 8: 
+                case 8:
                     buffer.append("-Aug-");
                     break;
-                case 9: 
+                case 9:
                     buffer.append("-Sep-");
                     break;
-                case 10: 
+                case 10:
                     buffer.append("-Oct-");
                     break;
-                case 11: 
+                case 11:
                     buffer.append("-Nov-");
                     break;
-                case 12: 
+                case 12:
                     buffer.append("-Dec-");
                     break;
             }
             buffer.append(year);
             return this;
         }
-        
+
         public Search all() {
             return append("ALL");
         }
-        
+
         public Search answered() {
             return append("ANSWERED");
         }
-        
+
         public Search bcc(String address) {
             return append("BCC " + address);
         }
@@ -708,10 +727,10 @@ public class ScriptBuilder {
         public Search before(int year, int month, int day) {
             return append("BEFORE").date(year, month, day);
         }
-        
+
         public Search body(String text) {
             return append("BODY").append(text);
-        }    
+        }
 
         public Search cc(String address) {
             return append("CC").append(address);
@@ -720,7 +739,7 @@ public class ScriptBuilder {
         public Search deleted() {
             return append("DELETED");
         }
-        
+
         public Search draft() {
             return append("DRAFT");
         }
@@ -734,13 +753,13 @@ public class ScriptBuilder {
         }
 
         public Search header(String field, String value) {
-            return append("HEADER").append(field).append(value); 
+            return append("HEADER").append(field).append(value);
         }
-        
+
         public Search keyword(String flag) {
             return append("KEYWORD").append(flag);
         }
-        
+
         public Search larger(long size) {
             return append("LARGER").append(size);
         }
@@ -748,15 +767,15 @@ public class ScriptBuilder {
         public Search NEW() {
             return append("NEW");
         }
-        
+
         public Search not() {
             return append("NOT");
         }
-        
+
         public Search old() {
             return append("OLD");
         }
-        
+
         public Search on(int year, int month, int day) {
             return append("ON").date(year, month, day);
         }
@@ -778,32 +797,33 @@ public class ScriptBuilder {
         }
 
         public Search senton(int year, int month, int day) {
-            return append("SENTON").date(year, month, day); 
+            return append("SENTON").date(year, month, day);
         }
 
         public Search sentsince(int year, int month, int day) {
             return append("SENTSINCE").date(year, month, day);
         }
-        
+
         public Search since(int year, int month, int day) {
-            return append("SINCE").date(year, month, day); 
+            return append("SINCE").date(year, month, day);
         }
-        
+
         public Search smaller(int size) {
-            return append("SMALLER").append(size);}
+            return append("SMALLER").append(size);
+        }
 
         public Search subject(String address) {
             return append("SUBJECT").append(address);
         }
-        
+
         public Search text(String text) {
             return append("TEXT").append(text);
         }
-        
+
         public Search to(String address) {
             return append("TO").append(address);
         }
-        
+
         public Search uid() {
             return append("UID");
         }
@@ -811,7 +831,7 @@ public class ScriptBuilder {
         public Search unanswered() {
             return append("UNANSWERED");
         }
-        
+
         public Search undeleted() {
             return append("UNDELETED");
         }
@@ -819,7 +839,7 @@ public class ScriptBuilder {
         public Search undraft() {
             return append("UNDRAFT");
         }
-        
+
         public Search unflagged() {
             return append("UNFLAGGED");
         }
@@ -827,54 +847,63 @@ public class ScriptBuilder {
         public Search unkeyword(String flag) {
             return append("UNKEYWORD").append(flag);
         }
-        
+
         public Search unseen() {
             return append("UNSEEN");
         }
-        
+
         public Search openParen() {
             return append("(");
         }
-        
+
         public Search closeParen() {
             return append(")");
         }
-        
+
         public Search msn(int low, int high) {
             return append(low + ":" + high);
         }
-        
+
         public Search msnAndUp(int limit) {
             return append(limit + ":*");
         }
-        
+
         public Search msnAndDown(int limit) {
             return append("*:" + limit);
         }
     }
-    
+
     public static final class Fetch {
-        
-        
-        public static final String[] COMPREHENSIVE_HEADERS = {"DATE", "FROM", "TO", "CC", "SUBJECT", 
-            "REFERENCES", "IN-REPLY-TO", "MESSAGE-ID", "MIME-VERSION", "CONTENT-TYPE", 
-            "X-MAILING-LIST", "X-LOOP", "LIST-ID", "LIST-POST", "MAILING-LIST", "ORIGINATOR", "X-LIST", 
-            "SENDER", "RETURN-PATH", "X-BEENTHERE"};
-        
-        
-        public static final String[] SELECT_HEADERS = {"DATE", "FROM", "TO", "ORIGINATOR", "X-LIST"};
-        
+
+        public static final String[] COMPREHENSIVE_HEADERS = { "DATE", "FROM",
+                "TO", "CC", "SUBJECT", "REFERENCES", "IN-REPLY-TO",
+                "MESSAGE-ID", "MIME-VERSION", "CONTENT-TYPE", "X-MAILING-LIST",
+                "X-LOOP", "LIST-ID", "LIST-POST", "MAILING-LIST", "ORIGINATOR",
+                "X-LIST", "SENDER", "RETURN-PATH", "X-BEENTHERE" };
+
+        public static final String[] SELECT_HEADERS = { "DATE", "FROM", "TO",
+                "ORIGINATOR", "X-LIST" };
+
         private boolean flagsFetch = false;
+
         private boolean rfc822Size = false;
+
         private boolean rfc = false;
+
         private boolean rfcText = false;
+
         private boolean rfcHeaders = false;
+
         private boolean internalDate = false;
+
         private boolean uid = false;
+
         private String body = null;
+
         private boolean bodyFetch = false;
+
         private boolean bodyStructureFetch = false;
-        
+
         public final boolean isBodyFetch() {
             return bodyFetch;
         }
@@ -896,11 +925,11 @@ public class ScriptBuilder {
         public String command(int messageNumber) {
             return "FETCH " + messageNumber + "(" + fetchData() + ")";
         }
-        
+
         public String command() {
             return "FETCH 1:* (" + fetchData() + ")";
         }
-        
+
         public final boolean isFlagsFetch() {
             return flagsFetch;
         }
@@ -909,7 +938,7 @@ public class ScriptBuilder {
             this.flagsFetch = flagsFetch;
             return this;
         }
-        
+
         public final boolean isUid() {
             return uid;
         }
@@ -927,7 +956,7 @@ public class ScriptBuilder {
             this.rfc822Size = rfc822Size;
             return this;
         }
-        
+
         public final boolean isRfc() {
             return rfc;
         }
@@ -963,7 +992,7 @@ public class ScriptBuilder {
             this.internalDate = internalDate;
             return this;
         }
-        
+
         public final String getBody() {
             return body;
         }
@@ -975,27 +1004,27 @@ public class ScriptBuilder {
         public void bodyPeekCompleteMessage() {
             setBody(buildBody(true, ""));
         }
-        
+
         public void bodyPeekNotHeaders(String[] fields) {
             setBody(buildBody(true, buildHeaderFields(fields, true)));
         }
-        
+
         public Fetch bodyPeekHeaders(String[] fields) {
             setBody(buildBody(true, buildHeaderFields(fields, false)));
             return this;
         }
-        
+
         public String buildBody(boolean peek, String section) {
             String result;
             if (peek) {
-                result  = "BODY.PEEK[";
+                result = "BODY.PEEK[";
             } else {
                 result = "BODY[";
             }
             result = result + section + "]";
             return result;
         }
-        
+
         public String buildHeaderFields(String[] fields, boolean not) {
             String result;
             if (not) {
@@ -1004,7 +1033,7 @@ public class ScriptBuilder {
                 result = "HEADER.FIELDS (";
             }
             for (int i = 0; i < fields.length; i++) {
-                if (i>0) {
+                if (i > 0) {
                     result = result + " ";
                 }
                 result = result + fields[i];
@@ -1012,7 +1041,7 @@ public class ScriptBuilder {
             result = result + ")";
             return result;
         }
-        
+
         public String fetchData() {
             final StringBuffer buffer = new StringBuffer();
             boolean first = true;
@@ -1047,7 +1076,8 @@ public class ScriptBuilder {
             return buffer.toString();
         }
 
-        private boolean add(final StringBuffer buffer, boolean first, String atom) {
+        private boolean add(final StringBuffer buffer, boolean first,
+                String atom) {
             if (atom != null) {
                 if (first) {
                     first = false;
@@ -1059,26 +1089,34 @@ public class ScriptBuilder {
             return first;
         }
     }
-    
+
     public static final class Client {
-        
+
         private static final Charset ASCII = Charset.forName("us-ascii");
-        
+
         private final Out out;
+
         private final ReadableByteChannel source;
+
         private final WritableByteChannel sump;
+
         private ByteBuffer inBuffer = ByteBuffer.allocate(256);
+
         private final ByteBuffer outBuffer = ByteBuffer.allocate(262144);
+
         private final ByteBuffer crlf;
+
         private boolean isLineTagged = false;
+
         private int continuationBytes = 0;
-        
-        public Client(ReadableByteChannel source, WritableByteChannel sump) throws Exception {
+
+        public Client(ReadableByteChannel source, WritableByteChannel sump)
+                throws Exception {
             super();
             this.source = source;
             this.sump = sump;
             this.out = new Out();
-            byte[] crlf = {'\r', '\n'};
+            byte[] crlf = { '\r', '\n' };
             this.crlf = ByteBuffer.wrap(crlf);
             inBuffer.flip();
             readLine();
@@ -1086,14 +1124,14 @@ public class ScriptBuilder {
 
         public void write(InputStream in) throws Exception {
             outBuffer.clear();
-            int next = in.read(); 
-            while(next != -1) {
+            int next = in.read();
+            while (next != -1) {
                 if (next == '\n') {
-                    outBufferNext((byte)'\r');
-                    outBufferNext((byte)'\n');
+                    outBufferNext((byte) '\r');
+                    outBufferNext((byte) '\n');
                 } else if (next == '\r') {
-                    outBufferNext((byte)'\r');
-                    outBufferNext((byte)'\n');
+                    outBufferNext((byte) '\r');
+                    outBufferNext((byte) '\n');
                     next = in.read();
                     if (next == '\n') {
                         next = in.read();
@@ -1105,10 +1143,10 @@ public class ScriptBuilder {
                 }
                 next = in.read();
             }
-            
+
             writeOutBuffer();
         }
-        
+
         public void outBufferNext(byte next) throws Exception {
             outBuffer.put(next);
         }
@@ -1122,7 +1160,7 @@ public class ScriptBuilder {
             out.client();
             while (outBuffer.hasRemaining()) {
                 final byte next = outBuffer.get();
-                print (next);
+                print(next);
                 if (next == '\n') {
                     out.client();
                 }
@@ -1139,7 +1177,7 @@ public class ScriptBuilder {
                 readLine();
             }
         }
-        
+
         private byte next() throws Exception {
             byte result;
             if (inBuffer.hasRemaining()) {
@@ -1148,32 +1186,34 @@ public class ScriptBuilder {
             } else {
                 inBuffer.compact();
                 int i = 0;
-                while ((i = source.read(inBuffer)) == 0);
-                if (i == -1) throw new RuntimeException("Unexpected EOF");
+                while ((i = source.read(inBuffer)) == 0)
+                    ;
+                if (i == -1)
+                    throw new RuntimeException("Unexpected EOF");
                 inBuffer.flip();
                 result = next();
             }
             return result;
         }
-        
+
         private void print(char next) {
             out.print(next);
         }
-            
+
         private void print(byte next) {
             print((char) next);
         }
-        
+
         public void lineStart() throws Exception {
             out.client();
         }
-        
+
         public void write(String phrase) throws Exception {
             out.print(phrase);
             final ByteBuffer buffer = ASCII.encode(phrase);
             writeRemaining(buffer);
         }
-        
+
         public void writeLine(String line) throws Exception {
             lineStart();
             write(line);
@@ -1185,16 +1225,16 @@ public class ScriptBuilder {
                 sump.write(buffer);
             }
         }
-        
+
         public void lineEnd() throws Exception {
             out.lineEnd();
             crlf.rewind();
             writeRemaining(crlf);
         }
-        
+
         private void readLine() throws Exception {
             out.server();
-            
+
             final byte next = next();
             isLineTagged = next != '*';
             readRestOfLine(next);
@@ -1214,10 +1254,10 @@ public class ScriptBuilder {
             continuationBytes = 0;
             continuation();
         }
-        
+
         private void continuation() throws Exception {
             byte next = next();
-            switch(next) {
+            switch (next) {
                 case '0':
                     continuationDigit(0);
                     break;
@@ -1250,7 +1290,7 @@ public class ScriptBuilder {
                     break;
                 case '+':
                     next();
-                    next();                   
+                    next();
                     readContinuation();
                     break;
                 default:
@@ -1260,47 +1300,46 @@ public class ScriptBuilder {
                     break;
             }
         }
-        
+
         private void readContinuation() throws Exception {
-           out.server();
+            out.server();
             while (continuationBytes-- > 0) {
                 int next = next();
                 if (next == '\n') {
-                   out.server();
+                    out.server();
                 }
             }
         }
-        
+
         private void continuationDigit(int digit) throws Exception {
-            continuationBytes = 10*continuationBytes + digit;
+            continuationBytes = 10 * continuationBytes + digit;
             continuation();
         }
-        
+
         public void close() throws Exception {
             source.close();
             sump.close();
         }
     }
-    
+
     private static final class Out {
-        private static final String[] IGNORE_LINES_STARTING_WITH = {  
-                                                        "S: \\* OK \\[PERMANENTFLAGS",
-                                                        "C: A22 LOGOUT",
-                                                        "S: \\* BYE Logging out", 
-                                                        "S: \\* OK Dovecot ready\\."};
+        private static final String[] IGNORE_LINES_STARTING_WITH = {
+                "S: \\* OK \\[PERMANENTFLAGS", "C: A22 LOGOUT",
+                "S: \\* BYE Logging out", "S: \\* OK Dovecot ready\\." };
+
         private static final String[] IGNORE_LINES_CONTAINING = {
-                                        "OK Logout completed.",
-                                        "LOGIN imapuser password", 
-                                        "OK Logged in",
-                                        "LOGOUT"};
-        
+                "OK Logout completed.", "LOGIN imapuser password",
+                "OK Logged in", "LOGOUT" };
+
         private final CharBuffer lineBuffer = CharBuffer.allocate(131072);
+
         private boolean isClient = false;
+
         public void client() {
             lineBuffer.put("C: ");
             isClient = true;
         }
-        
+
         public void print(char next) {
             if (!isClient) {
                 escape(next);
@@ -1309,8 +1348,9 @@ public class ScriptBuilder {
         }
 
         private void escape(char next) {
-            if (next == '\\' || next == '*' || next=='.' || next == '[' || next == ']' || next == '+'
-                || next == '(' || next == ')' || next == '{' || next == '}' || next == '?') {
+            if (next == '\\' || next == '*' || next == '.' || next == '['
+                    || next == ']' || next == '+' || next == '(' || next == ')'
+                    || next == '{' || next == '}' || next == '?') {
                 lineBuffer.put('\\');
             }
         }
@@ -1319,7 +1359,7 @@ public class ScriptBuilder {
             lineBuffer.put("S: ");
             isClient = false;
         }
-        
+
         public void print(String phrase) {
             if (!isClient) {
                 phrase = StringUtils.replace(phrase, "\\", "\\\\");
@@ -1336,28 +1376,42 @@ public class ScriptBuilder {
             }
             lineBuffer.put(phrase);
         }
-        
+
         public void lineEnd() {
             lineBuffer.flip();
             final String text = lineBuffer.toString();
             String[] lines = text.split("\r\n");
             for (int i = 0; i < lines.length; i++) {
-                String line = StringUtils.chomp(lines[i]);    
+                String line = StringUtils.chomp(lines[i]);
                 if (!ignoreLine(line)) {
-                    line = StringUtils.replace(line, "OK Create completed", "OK CREATE completed");
-                    line = StringUtils.replace(line, "OK Fetch completed", "OK FETCH completed");
-                    line = StringUtils.replace(line, "OK Append completed", "OK APPEND completed");
-                    line = StringUtils.replace(line, "OK Delete completed", "OK DELETE completed");
-                    line = StringUtils.replace(line, "OK Store completed", "OK STORE completed");
-                    line = StringUtils.replace(line, "OK Rename completed", "OK RENAME completed");
-                    line = StringUtils.replace(line, "OK Expunge completed", "OK EXPUNGE completed");
-                    line = StringUtils.replace(line, "OK List completed", "OK LIST completed");
-                    line = StringUtils.replace(line, "Select completed", "SELECT completed");
-                    line = StringUtils.replace(line, "\\\\Seen \\\\Draft", "\\\\Draft \\\\Seen");
-                    line = StringUtils.replace(line, "\\\\Flagged \\\\Deleted", "\\\\Deleted \\\\Flagged");
-                    line = StringUtils.replace(line, "\\\\Flagged \\\\Draft", "\\\\Draft \\\\Flagged");
-                    line = StringUtils.replace(line, "\\\\Seen \\\\Recent", "\\\\Recent \\\\Seen");
-                    line = StringUtils.replace(line, "\\] First unseen\\.", "\\](.)*");
+                    line = StringUtils.replace(line, "OK Create completed",
+                            "OK CREATE completed");
+                    line = StringUtils.replace(line, "OK Fetch completed",
+                            "OK FETCH completed");
+                    line = StringUtils.replace(line, "OK Append completed",
+                            "OK APPEND completed");
+                    line = StringUtils.replace(line, "OK Delete completed",
+                            "OK DELETE completed");
+                    line = StringUtils.replace(line, "OK Store completed",
+                            "OK STORE completed");
+                    line = StringUtils.replace(line, "OK Rename completed",
+                            "OK RENAME completed");
+                    line = StringUtils.replace(line, "OK Expunge completed",
+                            "OK EXPUNGE completed");
+                    line = StringUtils.replace(line, "OK List completed",
+                            "OK LIST completed");
+                    line = StringUtils.replace(line, "Select completed",
+                            "SELECT completed");
+                    line = StringUtils.replace(line, "\\\\Seen \\\\Draft",
+                            "\\\\Draft \\\\Seen");
+                    line = StringUtils.replace(line, "\\\\Flagged \\\\Deleted",
+                            "\\\\Deleted \\\\Flagged");
+                    line = StringUtils.replace(line, "\\\\Flagged \\\\Draft",
+                            "\\\\Draft \\\\Flagged");
+                    line = StringUtils.replace(line, "\\\\Seen \\\\Recent",
+                            "\\\\Recent \\\\Seen");
+                    line = StringUtils.replace(line, "\\] First unseen\\.",
+                            "\\](.)*");
                     if (line.startsWith("S: \\* OK \\[UIDVALIDITY ")) {
                         line = "S: \\* OK \\[UIDVALIDITY \\d+\\]";
                     } else if (line.startsWith("S: \\* OK \\[UIDNEXT")) {
@@ -1377,7 +1431,7 @@ public class ScriptBuilder {
                     break;
                 }
             }
-            for (int i = 0; i < IGNORE_LINES_STARTING_WITH.length && ! result; i++) {
+            for (int i = 0; i < IGNORE_LINES_STARTING_WITH.length && !result; i++) {
                 if (line.startsWith(IGNORE_LINES_STARTING_WITH[i])) {
                     result = true;
                     break;
@@ -1386,12 +1440,13 @@ public class ScriptBuilder {
             return result;
         }
     }
-    
+
     private static final class IgnoreHeaderInputStream extends InputStream {
 
         private boolean isFinishedHeaders = false;
+
         private final InputStream delegate;
-        
+
         public IgnoreHeaderInputStream(final InputStream delegate) {
             super();
             this.delegate = delegate;
@@ -1412,14 +1467,14 @@ public class ScriptBuilder {
                         readLine();
                         result = read();
                         break;
-                        
+
                     case '\r':
                     case '\n':
                     case ' ':
                     case '\t':
                         result = read();
                         break;
-                        
+
                     default:
                         isFinishedHeaders = true;
                         result = next;
@@ -1428,9 +1483,10 @@ public class ScriptBuilder {
             }
             return result;
         }
+
         private void readLine() throws IOException {
             int next = delegate.read();
-            while (next != -1 && next !='\r' && next !='\n') {
+            while (next != -1 && next != '\r' && next != '\n') {
                 next = delegate.read();
             }
         }

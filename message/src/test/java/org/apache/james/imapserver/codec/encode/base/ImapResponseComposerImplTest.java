@@ -31,8 +31,9 @@ public class ImapResponseComposerImplTest extends
         AbstractTestImapResponseComposer {
 
     ImapResponseComposerImpl composer;
+
     ByteImapResponseWriter writer;
-    
+
     protected void setUp() throws Exception {
         super.setUp();
         writer = new ByteImapResponseWriter();
@@ -43,7 +44,8 @@ public class ImapResponseComposerImplTest extends
         super.tearDown();
     }
 
-    protected byte[] encodeListResponse(String typeName, List attributes, String hierarchyDelimiter, String name) throws Exception {
+    protected byte[] encodeListResponse(String typeName, List attributes,
+            String hierarchyDelimiter, String name) throws Exception {
         composer.listResponse(typeName, attributes, hierarchyDelimiter, name);
         return writer.getBytes();
     }
@@ -62,13 +64,19 @@ public class ImapResponseComposerImplTest extends
         return writer.getBytes();
     }
 
-    protected byte[] encodeStatusResponse(Long messages, Long recent, Long uidNext, Long uidValidity, Long unseen, String mailbox) throws Exception {
-        composer.statusResponse(messages, recent, uidNext, uidValidity, unseen, mailbox);
+    protected byte[] encodeStatusResponse(Long messages, Long recent,
+            Long uidNext, Long uidValidity, Long unseen, String mailbox)
+            throws Exception {
+        composer.statusResponse(messages, recent, uidNext, uidValidity, unseen,
+                mailbox);
         return writer.getBytes();
     }
 
-    protected byte[] encodeStatusResponse(String tag, ImapCommand command, String type, String responseCode, Collection parameters, int number, String text) throws Exception {
-        composer.statusResponse(tag, command, type, responseCode, parameters, number, text);
+    protected byte[] encodeStatusResponse(String tag, ImapCommand command,
+            String type, String responseCode, Collection parameters,
+            int number, String text) throws Exception {
+        composer.statusResponse(tag, command, type, responseCode, parameters,
+                number, text);
         return writer.getBytes();
     }
 

@@ -35,13 +35,19 @@ import org.jmock.MockObjectTestCase;
 
 public class SearchCommandParserOrTest extends MockObjectTestCase {
     SearchCommandParser parser;
+
     Mock mockCommandFactory;
+
     Mock mockMessageFactory;
+
     Mock mockCommand;
+
     Mock mockMessage;
+
     ImapCommand command;
+
     ImapMessage message;
-    
+
     protected void setUp() throws Exception {
         super.setUp();
         parser = new SearchCommandParser();
@@ -53,52 +59,53 @@ public class SearchCommandParserOrTest extends MockObjectTestCase {
         mockMessage = mock(ImapMessage.class);
         message = (ImapMessage) mockMessage.proxy();
         parser.init((Imap4Rev1CommandFactory) mockCommandFactory.proxy());
-        parser.setMessageFactory((Imap4Rev1MessageFactory) mockMessageFactory.proxy());
+        parser.setMessageFactory((Imap4Rev1MessageFactory) mockMessageFactory
+                .proxy());
     }
 
     protected void tearDown() throws Exception {
         super.tearDown();
     }
-    
+
     public Input sequence() {
-        IdRange[] range = {new IdRange(Long.MAX_VALUE, 100), new IdRange(110), new IdRange(200, 201),
-                new IdRange(400, Long.MAX_VALUE)};
+        IdRange[] range = { new IdRange(Long.MAX_VALUE, 100), new IdRange(110),
+                new IdRange(200, 201), new IdRange(400, Long.MAX_VALUE) };
         SearchKey key = SearchKey.buildSequenceSet(range);
         return new Input("*:100,110,200:201,400:*", key);
     }
-    
+
     public Input uid() {
-        IdRange[] range = {new IdRange(Long.MAX_VALUE, 100), new IdRange(110), new IdRange(200, 201),
-                new IdRange(400, Long.MAX_VALUE)};
+        IdRange[] range = { new IdRange(Long.MAX_VALUE, 100), new IdRange(110),
+                new IdRange(200, 201), new IdRange(400, Long.MAX_VALUE) };
         SearchKey key = SearchKey.buildUidSet(range);
         return new Input("UID *:100,110,200:201,400:*", key);
     }
-    
+
     public Input header() {
         SearchKey key = SearchKey.buildHeader("FROM", "Smith");
         return new Input("HEADER FROM Smith", key);
     }
-    
+
     public Input date() {
-        SearchKey key = SearchKey.buildSince(new DayMonthYear(11,1, 2001));
+        SearchKey key = SearchKey.buildSince(new DayMonthYear(11, 1, 2001));
         return new Input("since 11-Jan-2001", key);
     }
-    
+
     public Input stringUnquoted() {
         SearchKey key = SearchKey.buildFrom("Smith");
         return new Input("FROM Smith", key);
     }
-    
+
     public Input stringQuoted() {
         SearchKey key = SearchKey.buildFrom("Smith And Jones");
         return new Input("FROM \"Smith And Jones\"", key);
     }
-    
+
     public Input draft() {
         SearchKey key = SearchKey.buildDraft();
         return new Input("DRAFT", key);
     }
-    
+
     public void testDraftPermutations() throws Exception {
         checkValid(draft(), draft());
         checkValid(draft(), stringQuoted());
@@ -108,7 +115,7 @@ public class SearchCommandParserOrTest extends MockObjectTestCase {
         checkValid(draft(), date());
         checkValid(draft(), uid());
     }
-    
+
     public void testDatePermutations() throws Exception {
         checkValid(date(), draft());
         checkValid(date(), stringQuoted());
@@ -118,7 +125,7 @@ public class SearchCommandParserOrTest extends MockObjectTestCase {
         checkValid(date(), date());
         checkValid(date(), uid());
     }
-    
+
     public void testHeaderPermutations() throws Exception {
         checkValid(header(), draft());
         checkValid(header(), stringQuoted());
@@ -128,7 +135,7 @@ public class SearchCommandParserOrTest extends MockObjectTestCase {
         checkValid(header(), date());
         checkValid(header(), uid());
     }
-    
+
     public void testSequencePermutations() throws Exception {
         checkValid(sequence(), draft());
         checkValid(sequence(), stringQuoted());
@@ -138,7 +145,7 @@ public class SearchCommandParserOrTest extends MockObjectTestCase {
         checkValid(sequence(), date());
         checkValid(sequence(), uid());
     }
-    
+
     public void testStringQuotedPermutations() throws Exception {
         checkValid(stringQuoted(), draft());
         checkValid(stringQuoted(), stringQuoted());
@@ -148,7 +155,7 @@ public class SearchCommandParserOrTest extends MockObjectTestCase {
         checkValid(stringQuoted(), date());
         checkValid(stringQuoted(), uid());
     }
-    
+
     public void testStringUnquotedPermutations() throws Exception {
         checkValid(stringUnquoted(), draft());
         checkValid(stringUnquoted(), stringQuoted());
@@ -158,7 +165,7 @@ public class SearchCommandParserOrTest extends MockObjectTestCase {
         checkValid(stringUnquoted(), date());
         checkValid(stringUnquoted(), uid());
     }
-    
+
     public void testUidPermutations() throws Exception {
         checkValid(uid(), draft());
         checkValid(uid(), stringQuoted());
@@ -168,20 +175,22 @@ public class SearchCommandParserOrTest extends MockObjectTestCase {
         checkValid(uid(), date());
         checkValid(uid(), uid());
     }
-    
+
     private void checkValid(Input one, Input two) throws Exception {
         String input = "OR " + one.input + " " + two.input + "\r\n";
         SearchKey key = SearchKey.buildOr(one.key, two.key);
-        ImapRequestLineReader reader = new ImapRequestLineReader(new ByteArrayInputStream(input.getBytes("US-ASCII")), 
+        ImapRequestLineReader reader = new ImapRequestLineReader(
+                new ByteArrayInputStream(input.getBytes("US-ASCII")),
                 new ByteArrayOutputStream());
 
         assertEquals(key, parser.searchKey(reader, null, false));
     }
-    
+
     public class Input {
         public String input;
+
         public SearchKey key;
-        
+
         public Input(String input, SearchKey key) {
             super();
             this.input = input;

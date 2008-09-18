@@ -48,30 +48,55 @@ import org.jmock.MockObjectTestCase;
 
 public class SearchProcessorTest extends MockObjectTestCase {
     private static final int DAY = 6;
+
     private static final int MONTH = 6;
+
     private static final int YEAR = 1944;
-    private static final DayMonthYear DAY_MONTH_YEAR = new DayMonthYear(DAY, MONTH, YEAR);
+
+    private static final DayMonthYear DAY_MONTH_YEAR = new DayMonthYear(DAY,
+            MONTH, YEAR);
+
     private static final long SIZE = 1729;
+
     private static final String KEYWORD = "BD3";
+
     private static final long[] EMPTY = {};
+
     private static final String TAG = "TAG";
+
     private static final String ADDRESS = "John Smith <john@example.org>";
+
     private static final String SUBJECT = "Myriad Harbour";
-    private static final IdRange[] IDS = {new IdRange(1), new IdRange(42, 1048)};
-    private static final SearchQuery.NumericRange[] RANGES = {new SearchQuery.NumericRange(1), new SearchQuery.NumericRange(42, 1048)};
-    
+
+    private static final IdRange[] IDS = { new IdRange(1),
+            new IdRange(42, 1048) };
+
+    private static final SearchQuery.NumericRange[] RANGES = {
+            new SearchQuery.NumericRange(1),
+            new SearchQuery.NumericRange(42, 1048) };
+
     SearchProcessor processor;
+
     Mock next;
+
     Mock responder;
+
     Mock result;
+
     Mock session;
+
     Mock command;
+
     Mock serverResponseFactory;
+
     Mock statusResponse;
+
     Mock mailbox;
+
     ImapCommand imapCommand;
+
     ImapProcessor.Responder responderImpl;
-    
+
     protected void setUp() throws Exception {
         super.setUp();
         serverResponseFactory = mock(StatusResponseFactory.class);
@@ -91,45 +116,62 @@ public class SearchProcessorTest extends MockObjectTestCase {
     protected void tearDown() throws Exception {
         super.tearDown();
     }
-    
+
     public void testSequenceSetLowerUnlimited() throws Exception {
-        final IdRange[] ids = {new IdRange(Long.MAX_VALUE, 1729)};
-        final SearchQuery.NumericRange[] ranges = {new SearchQuery.NumericRange(Long.MAX_VALUE, 1729L)};
+        final IdRange[] ids = { new IdRange(Long.MAX_VALUE, 1729) };
+        final SearchQuery.NumericRange[] ranges = { new SearchQuery.NumericRange(
+                Long.MAX_VALUE, 1729L) };
         Mock selectedMailbox = mock(SelectedImapMailbox.class);
-        selectedMailbox.expects(once()).method("uid").with(eq(1729)).will(returnValue(1729L));
-        session.expects(atLeastOnce()).method("getSelected").will(returnValue(selectedMailbox.proxy()));
-        selectedMailbox.expects(once()).method("getRecent").will(returnValue(EMPTY));
+        selectedMailbox.expects(once()).method("uid").with(eq(1729)).will(
+                returnValue(1729L));
+        session.expects(atLeastOnce()).method("getSelected").will(
+                returnValue(selectedMailbox.proxy()));
+        selectedMailbox.expects(once()).method("getRecent").will(
+                returnValue(EMPTY));
         check(SearchKey.buildSequenceSet(ids), SearchQuery.uid(ranges));
     }
-    
+
     public void testSequenceSetUpperUnlimited() throws Exception {
-        final IdRange[] ids = {new IdRange(1, Long.MAX_VALUE)};
-        final SearchQuery.NumericRange[] ranges = {new SearchQuery.NumericRange(42, Long.MAX_VALUE)};
+        final IdRange[] ids = { new IdRange(1, Long.MAX_VALUE) };
+        final SearchQuery.NumericRange[] ranges = { new SearchQuery.NumericRange(
+                42, Long.MAX_VALUE) };
         Mock selectedMailbox = mock(SelectedImapMailbox.class);
-        selectedMailbox.expects(once()).method("uid").with(eq(1)).will(returnValue(42L));
-        session.expects(atLeastOnce()).method("getSelected").will(returnValue(selectedMailbox.proxy()));
-        selectedMailbox.expects(once()).method("getRecent").will(returnValue(EMPTY));
+        selectedMailbox.expects(once()).method("uid").with(eq(1)).will(
+                returnValue(42L));
+        session.expects(atLeastOnce()).method("getSelected").will(
+                returnValue(selectedMailbox.proxy()));
+        selectedMailbox.expects(once()).method("getRecent").will(
+                returnValue(EMPTY));
         check(SearchKey.buildSequenceSet(ids), SearchQuery.uid(ranges));
     }
 
     public void testSequenceSetMsnRange() throws Exception {
-        final IdRange[] ids = {new IdRange(1, 5)};
-        final SearchQuery.NumericRange[] ranges = {new SearchQuery.NumericRange(42, 1729)};
+        final IdRange[] ids = { new IdRange(1, 5) };
+        final SearchQuery.NumericRange[] ranges = { new SearchQuery.NumericRange(
+                42, 1729) };
         Mock selectedMailbox = mock(SelectedImapMailbox.class);
-        selectedMailbox.expects(once()).method("uid").with(eq(1)).will(returnValue(42L));
-        selectedMailbox.expects(once()).method("uid").with(eq(5)).will(returnValue(1729L));
-        selectedMailbox.expects(once()).method("getRecent").will(returnValue(EMPTY));
-        session.expects(atLeastOnce()).method("getSelected").will(returnValue(selectedMailbox.proxy()));
+        selectedMailbox.expects(once()).method("uid").with(eq(1)).will(
+                returnValue(42L));
+        selectedMailbox.expects(once()).method("uid").with(eq(5)).will(
+                returnValue(1729L));
+        selectedMailbox.expects(once()).method("getRecent").will(
+                returnValue(EMPTY));
+        session.expects(atLeastOnce()).method("getSelected").will(
+                returnValue(selectedMailbox.proxy()));
         check(SearchKey.buildSequenceSet(ids), SearchQuery.uid(ranges));
     }
-    
+
     public void testSequenceSetSingleMsn() throws Exception {
-        final IdRange[] ids = {new IdRange(1)};
-        final SearchQuery.NumericRange[] ranges = {new SearchQuery.NumericRange(42)};
+        final IdRange[] ids = { new IdRange(1) };
+        final SearchQuery.NumericRange[] ranges = { new SearchQuery.NumericRange(
+                42) };
         Mock selectedMailbox = mock(SelectedImapMailbox.class);
-        selectedMailbox.expects(exactly(2)).method("uid").with(eq(1)).will(returnValue(42L));
-        selectedMailbox.expects(once()).method("getRecent").will(returnValue(EMPTY));
-        session.expects(atLeastOnce()).method("getSelected").will(returnValue(selectedMailbox.proxy()));
+        selectedMailbox.expects(exactly(2)).method("uid").with(eq(1)).will(
+                returnValue(42L));
+        selectedMailbox.expects(once()).method("getRecent").will(
+                returnValue(EMPTY));
+        session.expects(atLeastOnce()).method("getSelected").will(
+                returnValue(selectedMailbox.proxy()));
         check(SearchKey.buildSequenceSet(ids), SearchQuery.uid(ranges));
     }
 
@@ -145,12 +187,14 @@ public class SearchProcessorTest extends MockObjectTestCase {
 
     public void testBCC() throws Exception {
         session.expects(once()).method("getSelected").will(returnValue(null));
-        check(SearchKey.buildBcc(ADDRESS), SearchQuery.headerContains(ImapConstants.RFC822_BCC, ADDRESS));
+        check(SearchKey.buildBcc(ADDRESS), SearchQuery.headerContains(
+                ImapConstants.RFC822_BCC, ADDRESS));
     }
 
     public void testBEFORE() throws Exception {
         session.expects(once()).method("getSelected").will(returnValue(null));
-        check(SearchKey.buildBefore(DAY_MONTH_YEAR), SearchQuery.internalDateBefore(DAY, MONTH, YEAR));
+        check(SearchKey.buildBefore(DAY_MONTH_YEAR), SearchQuery
+                .internalDateBefore(DAY, MONTH, YEAR));
     }
 
     public void testBODY() throws Exception {
@@ -160,7 +204,8 @@ public class SearchProcessorTest extends MockObjectTestCase {
 
     public void testCC() throws Exception {
         session.expects(once()).method("getSelected").will(returnValue(null));
-        check(SearchKey.buildCc(ADDRESS), SearchQuery.headerContains(ImapConstants.RFC822_CC, ADDRESS));
+        check(SearchKey.buildCc(ADDRESS), SearchQuery.headerContains(
+                ImapConstants.RFC822_CC, ADDRESS));
     }
 
     public void testDELETED() throws Exception {
@@ -177,16 +222,18 @@ public class SearchProcessorTest extends MockObjectTestCase {
         session.expects(once()).method("getSelected").will(returnValue(null));
         check(SearchKey.buildFlagged(), SearchQuery.flagIsSet(Flag.FLAGGED));
     }
-    
 
     public void testFROM() throws Exception {
         session.expects(once()).method("getSelected").will(returnValue(null));
-        check(SearchKey.buildFrom(ADDRESS), SearchQuery.headerContains(ImapConstants.RFC822_FROM, ADDRESS));
+        check(SearchKey.buildFrom(ADDRESS), SearchQuery.headerContains(
+                ImapConstants.RFC822_FROM, ADDRESS));
     }
 
-    public void testHEADER () throws Exception {
+    public void testHEADER() throws Exception {
         session.expects(once()).method("getSelected").will(returnValue(null));
-        check(SearchKey.buildHeader(ImapConstants.RFC822_IN_REPLY_TO, ADDRESS), SearchQuery.headerContains(ImapConstants.RFC822_IN_REPLY_TO, ADDRESS));
+        check(SearchKey.buildHeader(ImapConstants.RFC822_IN_REPLY_TO, ADDRESS),
+                SearchQuery.headerContains(ImapConstants.RFC822_IN_REPLY_TO,
+                        ADDRESS));
     }
 
     public void testKEYWORD() throws Exception {
@@ -201,14 +248,14 @@ public class SearchProcessorTest extends MockObjectTestCase {
 
     public void testNEW() throws Exception {
         session.expects(once()).method("getSelected").will(returnValue(null));
-        check(SearchKey.buildNew(), 
-                SearchQuery.and(SearchQuery.flagIsSet(Flag.RECENT), SearchQuery.flagIsUnSet(Flag.SEEN)));
+        check(SearchKey.buildNew(), SearchQuery.and(SearchQuery
+                .flagIsSet(Flag.RECENT), SearchQuery.flagIsUnSet(Flag.SEEN)));
     }
 
     public void testNOT() throws Exception {
         session.expects(once()).method("getSelected").will(returnValue(null));
-        check(SearchKey.buildNot(SearchKey.buildOn(DAY_MONTH_YEAR)), 
-                SearchQuery.not(SearchQuery.internalDateOn(DAY, MONTH, YEAR)));   
+        check(SearchKey.buildNot(SearchKey.buildOn(DAY_MONTH_YEAR)),
+                SearchQuery.not(SearchQuery.internalDateOn(DAY, MONTH, YEAR)));
     }
 
     public void testOLD() throws Exception {
@@ -218,7 +265,8 @@ public class SearchProcessorTest extends MockObjectTestCase {
 
     public void testON() throws Exception {
         session.expects(once()).method("getSelected").will(returnValue(null));
-        check(SearchKey.buildOn(DAY_MONTH_YEAR), SearchQuery.internalDateOn(DAY, MONTH, YEAR));
+        check(SearchKey.buildOn(DAY_MONTH_YEAR), SearchQuery.internalDateOn(
+                DAY, MONTH, YEAR));
     }
 
     public void testAND() throws Exception {
@@ -233,11 +281,12 @@ public class SearchProcessorTest extends MockObjectTestCase {
         criteria.add(SearchQuery.sizeGreaterThan(SIZE));
         check(SearchKey.buildAnd(keys), SearchQuery.and(criteria));
     }
-    
+
     public void testOR() throws Exception {
         session.expects(once()).method("getSelected").will(returnValue(null));
-        check(SearchKey.buildOr(SearchKey.buildOn(DAY_MONTH_YEAR), SearchKey.buildOld()), 
-                SearchQuery.or(SearchQuery.internalDateOn(DAY, MONTH, YEAR), SearchQuery.flagIsUnSet(Flag.RECENT)));
+        check(SearchKey.buildOr(SearchKey.buildOn(DAY_MONTH_YEAR), SearchKey
+                .buildOld()), SearchQuery.or(SearchQuery.internalDateOn(DAY,
+                MONTH, YEAR), SearchQuery.flagIsUnSet(Flag.RECENT)));
     }
 
     public void testRECENT() throws Exception {
@@ -252,32 +301,37 @@ public class SearchProcessorTest extends MockObjectTestCase {
 
     public void testSENTBEFORE() throws Exception {
         session.expects(once()).method("getSelected").will(returnValue(null));
-        check(SearchKey.buildSentBefore(DAY_MONTH_YEAR), SearchQuery.headerDateBefore(ImapConstants.RFC822_DATE, DAY, MONTH, YEAR));
+        check(SearchKey.buildSentBefore(DAY_MONTH_YEAR), SearchQuery
+                .headerDateBefore(ImapConstants.RFC822_DATE, DAY, MONTH, YEAR));
     }
 
     public void testSENTON() throws Exception {
         session.expects(once()).method("getSelected").will(returnValue(null));
-        check(SearchKey.buildSentOn(DAY_MONTH_YEAR), SearchQuery.headerDateOn(ImapConstants.RFC822_DATE, DAY, MONTH, YEAR));
+        check(SearchKey.buildSentOn(DAY_MONTH_YEAR), SearchQuery.headerDateOn(
+                ImapConstants.RFC822_DATE, DAY, MONTH, YEAR));
     }
 
     public void testSENTSINCE() throws Exception {
         session.expects(once()).method("getSelected").will(returnValue(null));
-        check(SearchKey.buildSentSince(DAY_MONTH_YEAR), SearchQuery.headerDateAfter(ImapConstants.RFC822_DATE, DAY, MONTH, YEAR));
+        check(SearchKey.buildSentSince(DAY_MONTH_YEAR), SearchQuery
+                .headerDateAfter(ImapConstants.RFC822_DATE, DAY, MONTH, YEAR));
     }
 
     public void testSINCE() throws Exception {
         session.expects(once()).method("getSelected").will(returnValue(null));
-        check(SearchKey.buildSince(DAY_MONTH_YEAR), SearchQuery.internalDateAfter(DAY, MONTH, YEAR));
+        check(SearchKey.buildSince(DAY_MONTH_YEAR), SearchQuery
+                .internalDateAfter(DAY, MONTH, YEAR));
     }
 
     public void testSMALLER() throws Exception {
         session.expects(once()).method("getSelected").will(returnValue(null));
-        check(SearchKey.buildSmaller(SIZE), SearchQuery.sizeLessThan(SIZE));        
+        check(SearchKey.buildSmaller(SIZE), SearchQuery.sizeLessThan(SIZE));
     }
 
     public void testSUBJECT() throws Exception {
         session.expects(once()).method("getSelected").will(returnValue(null));
-        check(SearchKey.buildSubject(SUBJECT), SearchQuery.headerContains(ImapConstants.RFC822_SUBJECT, SUBJECT));
+        check(SearchKey.buildSubject(SUBJECT), SearchQuery.headerContains(
+                ImapConstants.RFC822_SUBJECT, SUBJECT));
     }
 
     public void testTEXT() throws Exception {
@@ -285,9 +339,10 @@ public class SearchProcessorTest extends MockObjectTestCase {
         check(SearchKey.buildText(SUBJECT), SearchQuery.mailContains(SUBJECT));
     }
 
-    public void testTO () throws Exception {
+    public void testTO() throws Exception {
         session.expects(once()).method("getSelected").will(returnValue(null));
-        check(SearchKey.buildTo(ADDRESS), SearchQuery.headerContains(ImapConstants.RFC822_TO, ADDRESS));
+        check(SearchKey.buildTo(ADDRESS), SearchQuery.headerContains(
+                ImapConstants.RFC822_TO, ADDRESS));
     }
 
     public void testUID() throws Exception {
@@ -297,7 +352,8 @@ public class SearchProcessorTest extends MockObjectTestCase {
 
     public void testUNANSWERED() throws Exception {
         session.expects(once()).method("getSelected").will(returnValue(null));
-        check(SearchKey.buildUnanswered(), SearchQuery.flagIsUnSet(Flag.ANSWERED));
+        check(SearchKey.buildUnanswered(), SearchQuery
+                .flagIsUnSet(Flag.ANSWERED));
     }
 
     public void testUNDELETED() throws Exception {
@@ -317,43 +373,48 @@ public class SearchProcessorTest extends MockObjectTestCase {
 
     public void testUNKEYWORD() throws Exception {
         session.expects(once()).method("getSelected").will(returnValue(null));
-        check(SearchKey.buildUnkeyword(KEYWORD), SearchQuery.flagIsUnSet(KEYWORD));
+        check(SearchKey.buildUnkeyword(KEYWORD), SearchQuery
+                .flagIsUnSet(KEYWORD));
     }
 
     public void testUNSEEN() throws Exception {
         session.expects(once()).method("getSelected").will(returnValue(null));
         check(SearchKey.buildUnseen(), SearchQuery.flagIsUnSet(Flag.SEEN));
     }
-    
-    private void check(SearchKey key, SearchQuery.Criterion criterion) throws Exception {
+
+    private void check(SearchKey key, SearchQuery.Criterion criterion)
+            throws Exception {
         SearchQuery query = new SearchQuery();
         query.andCriteria(criterion);
         check(key, query);
     }
-    
+
     private void check(SearchKey key, SearchQuery query) throws Exception {
-        MailboxSession mailboxSession = (MailboxSession) mock(MailboxSession.class).proxy();
-        session.expects(once()).method("getAttribute")
-            .with(eq(ImapSessionUtils.MAILBOX_SESSION_ATTRIBUTE_SESSION_KEY))
-            .will(returnValue((MailboxSession) mailboxSession));
-        session.expects(once()).method("getAttribute")
-            .with(eq(ImapSessionUtils.SELECTED_MAILBOX_ATTRIBUTE_SESSION_KEY))
-            .will(returnValue((Mailbox) mailbox.proxy()));
-        session.expects(once()).method("unsolicitedResponses").with(eq(true), eq(false)).will(returnValue(new ArrayList()));
-        mailbox.expects(once()).method("search")
-            .with(eq(query), eq(FetchGroupImpl.MINIMAL), eq(mailboxSession))
-            .will(returnValue(new ArrayList().iterator()));
-        responder.expects(once()).method("respond").with(eq(new SearchResponse(EMPTY)));
+        MailboxSession mailboxSession = (MailboxSession) mock(
+                MailboxSession.class).proxy();
+        session.expects(once()).method("getAttribute").with(
+                eq(ImapSessionUtils.MAILBOX_SESSION_ATTRIBUTE_SESSION_KEY))
+                .will(returnValue((MailboxSession) mailboxSession));
+        session.expects(once()).method("getAttribute").with(
+                eq(ImapSessionUtils.SELECTED_MAILBOX_ATTRIBUTE_SESSION_KEY))
+                .will(returnValue((Mailbox) mailbox.proxy()));
+        session.expects(once()).method("unsolicitedResponses").with(eq(true),
+                eq(false)).will(returnValue(new ArrayList()));
+        mailbox.expects(once()).method("search").with(eq(query),
+                eq(FetchGroupImpl.MINIMAL), eq(mailboxSession)).will(
+                returnValue(new ArrayList().iterator()));
+        responder.expects(once()).method("respond").with(
+                eq(new SearchResponse(EMPTY)));
         SearchRequest message = new SearchRequest(imapCommand, key, false, TAG);
-        processor.doProcess(message, (ImapSession) session.proxy(), TAG, (ImapCommand) command.proxy(), 
-                (Responder) responder.proxy());
+        processor.doProcess(message, (ImapSession) session.proxy(), TAG,
+                (ImapCommand) command.proxy(), (Responder) responder.proxy());
     }
-    
+
     private void expectOk() {
         StatusResponse response = (StatusResponse) statusResponse.proxy();
-        serverResponseFactory.expects(once()).method("taggedOk")
-            .with(eq(TAG), same(imapCommand), eq(HumanReadableTextKey.COMPLETED))
-                .will(returnValue(response));
+        serverResponseFactory.expects(once()).method("taggedOk").with(eq(TAG),
+                same(imapCommand), eq(HumanReadableTextKey.COMPLETED)).will(
+                returnValue(response));
         responder.expects(once()).method("respond").with(same(response));
     }
 }

@@ -30,11 +30,11 @@ public abstract class AbstractTestEvents extends AbstractTestSelectedStateBase {
     public void testAppendToSelectedUS() throws Exception {
         scriptTest("AppendToSelected", Locale.US);
     }
-    
+
     public void testAppendToSelectedKOREA() throws Exception {
         scriptTest("AppendToSelected", Locale.KOREA);
     }
-    
+
     public void testAppendToSelectedITALY() throws Exception {
         scriptTest("AppendToSelected", Locale.ITALY);
     }

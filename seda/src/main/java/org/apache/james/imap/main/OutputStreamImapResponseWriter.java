@@ -24,15 +24,14 @@ import java.io.OutputStream;
 import java.nio.channels.Channels;
 
 /**
- * Class providing methods to send response messages from the server
- * to the client.
+ * Class providing methods to send response messages from the server to the
+ * client.
  */
 public class OutputStreamImapResponseWriter extends ChannelImapResponseWriter {
-    
+
     private final OutputStream output;
 
-    public OutputStreamImapResponseWriter( OutputStream output )
-    {
+    public OutputStreamImapResponseWriter(OutputStream output) {
         super(Channels.newChannel(output));
         this.output = output;
     }
@@ -41,6 +40,5 @@ public class OutputStreamImapResponseWriter extends ChannelImapResponseWriter {
         super.flush();
         output.flush();
     }
-    
-    
+
 }

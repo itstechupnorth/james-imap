@@ -67,30 +67,30 @@ final class MockLogger implements Log {
     }
 
     public void warn(Object arg0) {
-        
+
     }
 
     public void warn(Object arg0, Throwable arg1) {
-        
+
     }
 
-	public void fatal(Object arg0) {
-	}
+    public void fatal(Object arg0) {
+    }
 
-	public void fatal(Object arg0, Throwable arg1) {
-	}
+    public void fatal(Object arg0, Throwable arg1) {
+    }
 
-	public boolean isFatalEnabled() {
-		return false;
-	}
+    public boolean isFatalEnabled() {
+        return false;
+    }
 
-	public boolean isTraceEnabled() {
-		return false;
-	}
+    public boolean isTraceEnabled() {
+        return false;
+    }
 
-	public void trace(Object arg0) {
-	}
+    public void trace(Object arg0) {
+    }
 
-	public void trace(Object arg0, Throwable arg1) {
-	}
+    public void trace(Object arg0, Throwable arg1) {
+    }
 }

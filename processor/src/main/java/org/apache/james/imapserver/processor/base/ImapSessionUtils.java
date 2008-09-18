@@ -30,50 +30,56 @@ import org.apache.james.mailboxmanager.MailboxSession;
 import org.apache.james.mailboxmanager.mailbox.Mailbox;
 
 public class ImapSessionUtils {
-    
-    public static final String MAILBOX_USER_ATTRIBUTE_SESSION_KEY 
-        = "org.apache.james.api.imap.MAILBOX_USER_ATTRIBUTE_SESSION_KEY";
-    public static final String MAILBOX_MANAGER_ATTRIBUTE_SESSION_KEY 
-        = "org.apache.james.api.imap.MAILBOX_MANAGER_ATTRIBUTE_SESSION_KEY";
-    public static final String SELECTED_MAILBOX_ATTRIBUTE_SESSION_KEY 
-        = "org.apache.james.api.imap.SELECTED_MAILBOX_ATTRIBUTE_SESSION_KEY";
-    public static final String MAILBOX_SESSION_ATTRIBUTE_SESSION_KEY 
-    = "org.apache.james.api.imap.MAILBOX_SESSION_ATTRIBUTE_SESSION_KEY";
-    
-    public static void addUnsolicitedResponses(AbstractImapResponse response, ImapSession session, boolean useUids) {
+
+    public static final String MAILBOX_USER_ATTRIBUTE_SESSION_KEY = "org.apache.james.api.imap.MAILBOX_USER_ATTRIBUTE_SESSION_KEY";
+
+    public static final String MAILBOX_MANAGER_ATTRIBUTE_SESSION_KEY = "org.apache.james.api.imap.MAILBOX_MANAGER_ATTRIBUTE_SESSION_KEY";
+
+    public static final String SELECTED_MAILBOX_ATTRIBUTE_SESSION_KEY = "org.apache.james.api.imap.SELECTED_MAILBOX_ATTRIBUTE_SESSION_KEY";
+
+    public static final String MAILBOX_SESSION_ATTRIBUTE_SESSION_KEY = "org.apache.james.api.imap.MAILBOX_SESSION_ATTRIBUTE_SESSION_KEY";
+
+    public static void addUnsolicitedResponses(AbstractImapResponse response,
+            ImapSession session, boolean useUids) {
         List unsolicitedResponses = session.unsolicitedResponses(useUids);
         response.addUnsolicitedResponses(unsolicitedResponses);
     }
-    
-    public static void addUnsolicitedResponses(ImapSession session, boolean useUids, final Responder responder) {
+
+    public static void addUnsolicitedResponses(ImapSession session,
+            boolean useUids, final Responder responder) {
         final List unsolicitedResponses = session.unsolicitedResponses(useUids);
-        for (Iterator it = unsolicitedResponses.iterator();it.hasNext();) {
+        for (Iterator it = unsolicitedResponses.iterator(); it.hasNext();) {
             ImapResponseMessage message = (ImapResponseMessage) it.next();
             responder.respond(message);
         }
     }
-    
-    public static Mailbox getMailbox( final ImapSession session ) {
-        Mailbox result 
-            = (Mailbox) session.getAttribute(SELECTED_MAILBOX_ATTRIBUTE_SESSION_KEY);
+
+    public static Mailbox getMailbox(final ImapSession session) {
+        Mailbox result = (Mailbox) session
+                .getAttribute(SELECTED_MAILBOX_ATTRIBUTE_SESSION_KEY);
         return result;
     }
 
-    public static MailboxSession getMailboxSession( final ImapSession session) {
-        final MailboxSession result = (MailboxSession) session.getAttribute( ImapSessionUtils.MAILBOX_SESSION_ATTRIBUTE_SESSION_KEY );
+    public static MailboxSession getMailboxSession(final ImapSession session) {
+        final MailboxSession result = (MailboxSession) session
+                .getAttribute(ImapSessionUtils.MAILBOX_SESSION_ATTRIBUTE_SESSION_KEY);
         return result;
     }
-    
-    public static void setMailboxSession(final ImapSession session, final MailboxSession mailboxSession) {
-        session.setAttribute(ImapSessionUtils.MAILBOX_SESSION_ATTRIBUTE_SESSION_KEY, mailboxSession);
+
+    public static void setMailboxSession(final ImapSession session,
+            final MailboxSession mailboxSession) {
+        session.setAttribute(
+                ImapSessionUtils.MAILBOX_SESSION_ATTRIBUTE_SESSION_KEY,
+                mailboxSession);
     }
-    
-    public static String getUserName( final ImapSession session ) {
-        final String result = (String) session.getAttribute(MAILBOX_USER_ATTRIBUTE_SESSION_KEY);
+
+    public static String getUserName(final ImapSession session) {
+        final String result = (String) session
+                .getAttribute(MAILBOX_USER_ATTRIBUTE_SESSION_KEY);
         return result;
     }
-    
-    public static void setUserName( final ImapSession session, final String user) {
+
+    public static void setUserName(final ImapSession session, final String user) {
         session.setAttribute(MAILBOX_USER_ATTRIBUTE_SESSION_KEY, user);
     }
 

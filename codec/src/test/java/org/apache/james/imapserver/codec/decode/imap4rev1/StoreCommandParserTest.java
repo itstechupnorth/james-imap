@@ -37,13 +37,19 @@ import org.jmock.core.Constraint;
 public class StoreCommandParserTest extends MockObjectTestCase {
 
     StoreCommandParser parser;
+
     Mock mockCommandFactory;
+
     Mock mockMessageFactory;
+
     Mock mockCommand;
+
     Mock mockMessage;
+
     ImapCommand command;
+
     ImapMessage message;
-    
+
     protected void setUp() throws Exception {
         super.setUp();
         parser = new StoreCommandParser();
@@ -55,7 +61,8 @@ public class StoreCommandParserTest extends MockObjectTestCase {
         mockMessage = mock(ImapMessage.class);
         message = (ImapMessage) mockMessage.proxy();
         parser.init((Imap4Rev1CommandFactory) mockCommandFactory.proxy());
-        parser.setMessageFactory((Imap4Rev1MessageFactory) mockMessageFactory.proxy());
+        parser.setMessageFactory((Imap4Rev1MessageFactory) mockMessageFactory
+                .proxy());
     }
 
     protected void tearDown() throws Exception {
@@ -63,22 +70,25 @@ public class StoreCommandParserTest extends MockObjectTestCase {
     }
 
     public void testShouldParseSilentDraftFlagged() throws Exception {
-        IdRange[] ranges = {new IdRange(1)};
+        IdRange[] ranges = { new IdRange(1) };
         Flags flags = new Flags();
         flags.add(Flags.Flag.DRAFT);
         flags.add(Flags.Flag.FLAGGED);
-        check("1 FLAGS.SILENT (\\Draft \\Flagged)\r\n", ranges, true, null, flags, 
-                false, "A01");
+        check("1 FLAGS.SILENT (\\Draft \\Flagged)\r\n", ranges, true, null,
+                flags, false, "A01");
     }
-    
-    private void check(String input, final IdRange[] idSet, boolean silent, Boolean sign, 
-            final Flags flags, final boolean useUids, String tag) throws Exception {
-        ImapRequestLineReader reader = new ImapRequestLineReader(new ByteArrayInputStream(input.getBytes("US-ASCII")), 
-                    new ByteArrayOutputStream());
 
-        Constraint[] constraints = {eq(command), eq(idSet), eq(silent), eq(sign), 
-                eq(flags), eq(useUids), same(tag)};
-        mockMessageFactory.expects(once()).method("createStoreMessage").with(constraints).will(returnValue(message));
+    private void check(String input, final IdRange[] idSet, boolean silent,
+            Boolean sign, final Flags flags, final boolean useUids, String tag)
+            throws Exception {
+        ImapRequestLineReader reader = new ImapRequestLineReader(
+                new ByteArrayInputStream(input.getBytes("US-ASCII")),
+                new ByteArrayOutputStream());
+
+        Constraint[] constraints = { eq(command), eq(idSet), eq(silent),
+                eq(sign), eq(flags), eq(useUids), same(tag) };
+        mockMessageFactory.expects(once()).method("createStoreMessage").with(
+                constraints).will(returnValue(message));
         parser.decode(command, reader, tag, useUids);
     }
 }

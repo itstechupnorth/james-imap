@@ -29,7 +29,7 @@ import junit.framework.TestCase;
 public class FetchPartPathDecoderTest extends TestCase {
 
     FetchPartPathDecoder decoder;
-    
+
     protected void setUp() throws Exception {
         super.setUp();
         decoder = new FetchPartPathDecoder();
@@ -43,44 +43,55 @@ public class FetchPartPathDecoderTest extends TestCase {
         assertEquals(FetchPartPathDecoder.TEXT, decoder.decode("TEXT"));
         assertEquals(FetchPartPathDecoder.TEXT, decoder.decode("3.TEXT"));
         assertEquals(FetchPartPathDecoder.TEXT, decoder.decode("3.1.TEXT"));
-        assertEquals(FetchPartPathDecoder.TEXT, decoder.decode("3.2.5.7.8.TEXT"));
+        assertEquals(FetchPartPathDecoder.TEXT, decoder
+                .decode("3.2.5.7.8.TEXT"));
     }
 
     public void testShouldDetectHeader() throws Exception {
         assertEquals(FetchPartPathDecoder.HEADER, decoder.decode("HEADER"));
         assertEquals(FetchPartPathDecoder.HEADER, decoder.decode("4.HEADER"));
         assertEquals(FetchPartPathDecoder.HEADER, decoder.decode("10.1.HEADER"));
-        assertEquals(FetchPartPathDecoder.HEADER, decoder.decode("8.3.5.11.HEADER"));
+        assertEquals(FetchPartPathDecoder.HEADER, decoder
+                .decode("8.3.5.11.HEADER"));
     }
 
     public void testShouldDetectHeaderFields() throws Exception {
-        assertEquals(FetchPartPathDecoder.HEADER_FIELDS, decoder.decode("HEADER.FIELDS ()"));
-        assertEquals(FetchPartPathDecoder.HEADER_FIELDS, decoder.decode("4.HEADER.FIELDS ()"));
-        assertEquals(FetchPartPathDecoder.HEADER_FIELDS, decoder.decode("10.1.HEADER.FIELDS ()"));
-        assertEquals(FetchPartPathDecoder.HEADER_FIELDS, decoder.decode("8.3.5.11.HEADER.FIELDS ()"));
+        assertEquals(FetchPartPathDecoder.HEADER_FIELDS, decoder
+                .decode("HEADER.FIELDS ()"));
+        assertEquals(FetchPartPathDecoder.HEADER_FIELDS, decoder
+                .decode("4.HEADER.FIELDS ()"));
+        assertEquals(FetchPartPathDecoder.HEADER_FIELDS, decoder
+                .decode("10.1.HEADER.FIELDS ()"));
+        assertEquals(FetchPartPathDecoder.HEADER_FIELDS, decoder
+                .decode("8.3.5.11.HEADER.FIELDS ()"));
     }
 
     public void testShouldDetectHeaderFieldsNot() throws Exception {
-        assertEquals(FetchPartPathDecoder.HEADER_NOT_FIELDS, decoder.decode("HEADER.FIELDS.NOT ()"));
-        assertEquals(FetchPartPathDecoder.HEADER_NOT_FIELDS, decoder.decode("4.HEADER.FIELDS.NOT ()"));
-        assertEquals(FetchPartPathDecoder.HEADER_NOT_FIELDS, decoder.decode("10.1.HEADER.FIELDS.NOT ()"));
-        assertEquals(FetchPartPathDecoder.HEADER_NOT_FIELDS, decoder.decode("8.3.5.11.HEADER.FIELDS.NOT ()"));
+        assertEquals(FetchPartPathDecoder.HEADER_NOT_FIELDS, decoder
+                .decode("HEADER.FIELDS.NOT ()"));
+        assertEquals(FetchPartPathDecoder.HEADER_NOT_FIELDS, decoder
+                .decode("4.HEADER.FIELDS.NOT ()"));
+        assertEquals(FetchPartPathDecoder.HEADER_NOT_FIELDS, decoder
+                .decode("10.1.HEADER.FIELDS.NOT ()"));
+        assertEquals(FetchPartPathDecoder.HEADER_NOT_FIELDS, decoder
+                .decode("8.3.5.11.HEADER.FIELDS.NOT ()"));
     }
-    
+
     public void testShouldDetectMime() throws Exception {
         assertEquals(FetchPartPathDecoder.MIME, decoder.decode("MIME"));
         assertEquals(FetchPartPathDecoder.MIME, decoder.decode("6.MIME"));
         assertEquals(FetchPartPathDecoder.MIME, decoder.decode("2.88.MIME"));
-        assertEquals(FetchPartPathDecoder.MIME, decoder.decode("32.3.15.11.MIME"));
+        assertEquals(FetchPartPathDecoder.MIME, decoder
+                .decode("32.3.15.11.MIME"));
     }
-    
+
     public void testShouldDetectContent() throws Exception {
         assertEquals(FetchPartPathDecoder.CONTENT, decoder.decode("34"));
         assertEquals(FetchPartPathDecoder.CONTENT, decoder.decode("6"));
         assertEquals(FetchPartPathDecoder.CONTENT, decoder.decode("9.88"));
         assertEquals(FetchPartPathDecoder.CONTENT, decoder.decode("17.3.15.11"));
     }
-    
+
     public void testShouldIgnoreCase() throws Exception {
         assertEquals(FetchPartPathDecoder.MIME, decoder.decode("6.MIME"));
         assertEquals(FetchPartPathDecoder.MIME, decoder.decode("6.mime"));
@@ -95,69 +106,70 @@ public class FetchPartPathDecoderTest extends TestCase {
         assertEquals(FetchPartPathDecoder.TEXT, decoder.decode("6.TExt"));
         assertEquals(FetchPartPathDecoder.TEXT, decoder.decode("6.teXT"));
     }
-    
+
     public void testMimimalPath() throws Exception {
-        int[] values = {6};
+        int[] values = { 6 };
         checkEndingPermutations(values);
     }
-    
+
     public void testLongPath() throws Exception {
-        int[] values = {3, 11, 345, 231, 11, 3, 1, 1, 1, 3, 8, 8};
+        int[] values = { 3, 11, 345, 231, 11, 3, 1, 1, 1, 3, 8, 8 };
         checkEndingPermutations(values);
     }
-    
-    public void testShouldThrowProtocolExceptionWhenSpecifierBogus() throws Exception {
+
+    public void testShouldThrowProtocolExceptionWhenSpecifierBogus()
+            throws Exception {
         try {
             decoder.decode("1.34.BOGUS");
             fail("Expected protocol exception to be thrown");
         } catch (ProtocolException e) {
-            // expected 
+            // expected
         }
     }
-    
-    public void testShouldThrowProtocolExceptionWhenPathBogus() throws Exception {
+
+    public void testShouldThrowProtocolExceptionWhenPathBogus()
+            throws Exception {
         try {
             decoder.decode("1.34.BOGUS.44.34234.324");
             fail("Expected protocol exception to be thrown");
         } catch (ProtocolException e) {
-            // expected 
+            // expected
         }
     }
-    
+
     public void testShouldReadShortFieldNames() throws Exception {
-        String[] names = {"A", "B", "C", "D", "E", "F"};
+        String[] names = { "A", "B", "C", "D", "E", "F" };
         checkReadNames("1.8.HEADER.FIELDS", names);
     }
-    
+
     public void testShouldReadShortFieldNotNames() throws Exception {
-        String[] names = {"A", "B", "C", "D", "E", "F"};
+        String[] names = { "A", "B", "C", "D", "E", "F" };
         checkReadNames("1.8.9.HEADER.FIELDS.NOT", names);
     }
-    
-    
+
     public void testShouldReadOneFieldNames() throws Exception {
-        String[] names = {"AFieldName"};
+        String[] names = { "AFieldName" };
         checkReadNames("1.8.HEADER.FIELDS", names);
     }
-    
+
     public void testShouldReadOneFieldNotNames() throws Exception {
-        String[] names = {"AFieldName"};
+        String[] names = { "AFieldName" };
         checkReadNames("1.8.9.HEADER.FIELDS.NOT", names);
     }
-    
+
     public void testShouldReadManyFieldNames() throws Exception {
-        String[] names = {"ONE", "TWO", "THREE", "FOUR", "FIVE", "345345"};
+        String[] names = { "ONE", "TWO", "THREE", "FOUR", "FIVE", "345345" };
         checkReadNames("1.8.HEADER.FIELDS", names);
     }
-    
+
     public void testShouldReadManyFieldNotNames() throws Exception {
-        String[] names = {"ONE", "TWO", "THREE", "FOUR", "FIVE", "345345"};
+        String[] names = { "ONE", "TWO", "THREE", "FOUR", "FIVE", "345345" };
         checkReadNames("1.8.HEADER.FIELDS.NOT", names);
     }
-    
+
     private void checkReadNames(String base, String[] names) throws Exception {
         base = base + " (";
-        for (int i=0;i<names.length;i++) {
+        for (int i = 0; i < names.length; i++) {
             base = base + ' ' + names[i];
         }
         base = base + ')';
@@ -165,15 +177,15 @@ public class FetchPartPathDecoderTest extends TestCase {
         Collection results = decoder.getNames();
         assertNotNull(results);
         Iterator it = results.iterator();
-        for (int i=0;i<names.length;i++) {
+        for (int i = 0; i < names.length; i++) {
             assertEquals(names[i], it.next());
         }
     }
-    
+
     private void checkEndingPermutations(int[] values) throws Exception {
         String base = "";
         boolean first = true;
-        for (int i=0;i<values.length; i++) {
+        for (int i = 0; i < values.length; i++) {
             if (first) {
                 first = false;
             } else {
@@ -188,13 +200,13 @@ public class FetchPartPathDecoderTest extends TestCase {
         checkPath(values, base + ".HEADER.FIELDS.NOT ()");
         checkPath(values, base + ".HEADER.FIELDS ()");
     }
-    
+
     private void checkPath(int[] expected, String encoded) throws Exception {
         decoder.decode(encoded);
         final int[] path = decoder.getPath();
         assertNotNull(path);
         assertEquals(expected.length, path.length);
-        for (int i=0;i<expected.length; i++) {
+        for (int i = 0; i < expected.length; i++) {
             assertEquals(expected[i], path[i]);
         }
     }

@@ -21,13 +21,15 @@ package org.apache.james.imap.message.response.base;
 
 import org.apache.james.api.imap.message.response.ImapResponseMessage;
 
-abstract public class AbstractUntaggedStatusResponse implements ImapResponseMessage {
+abstract public class AbstractUntaggedStatusResponse implements
+        ImapResponseMessage {
 
     // TODO: this should be an interface to allow i18n
     private final String text;
+
     // TODO: this should be a interface coded in the encoder
     private final String code;
-    
+
     public AbstractUntaggedStatusResponse(final String text, final String code) {
         super();
         this.text = text;

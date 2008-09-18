@@ -27,11 +27,11 @@ import org.apache.james.mailboxmanager.MessageResult.FetchGroup;
  * Wraps a fetch group and ORs content.
  */
 public final class OrFetchGroup implements FetchGroup {
-    
 
     private final FetchGroup delegate;
+
     private final int or;
-    
+
     public OrFetchGroup(final FetchGroup delegate, final int or) {
         super();
         this.delegate = delegate;

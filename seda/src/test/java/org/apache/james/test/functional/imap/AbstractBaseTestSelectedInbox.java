@@ -17,18 +17,18 @@
  * under the License.                                           *
  ****************************************************************/
 
-
 package org.apache.james.test.functional.imap;
 
-
-
 /**
- * <p>Tests commands which are valid in AUTHENTICATED and NONAUTHENTICATED by running
- * them in the SELECTED state. Many commands function identically, while others
- * are invalid in this state.
- * </p><p>
+ * <p>
+ * Tests commands which are valid in AUTHENTICATED and NONAUTHENTICATED by
+ * running them in the SELECTED state. Many commands function identically, while
+ * others are invalid in this state.
+ * </p>
+ * <p>
  * Recommended scripts:
- * </p><ul>
+ * </p>
+ * <ul>
  * <li>ValidNonAuthenticated</li>
  * <li>Capability</li>
  * <li>Noop</li>
@@ -44,33 +44,31 @@ package org.apache.james.test.functional.imap;
  * <li>Append</li>
  * <li>Delete</li>
  * </ul>
- *
- * @author  Darrell DeBoer <darrell@apache.org>
- *
+ * 
+ * @author Darrell DeBoer <darrell@apache.org>
+ * 
  * @version $Revision: 560719 $
  */
-public abstract class AbstractBaseTestSelectedInbox
-        extends AbstractTestForAuthenticatedState
-{
-    public AbstractBaseTestSelectedInbox( HostSystem system )
-    {
-        super( system );
+public abstract class AbstractBaseTestSelectedInbox extends
+        AbstractTestForAuthenticatedState {
+    public AbstractBaseTestSelectedInbox(HostSystem system) {
+        super(system);
     }
 
     /**
-     * Superclass sets up welcome message and login session in {@link #preElements}.
-     * A "SELECT INBOX" session is then added to these elements.
+     * Superclass sets up welcome message and login session in
+     * {@link #preElements}. A "SELECT INBOX" session is then added to these
+     * elements.
+     * 
      * @throws Exception
      */
-    public void setUp() throws Exception
-    {
+    public void setUp() throws Exception {
         super.setUp();
-        addTestFile( "SelectInbox.test", preElements );
+        addTestFile("SelectInbox.test", preElements);
     }
 
-    protected void addCloseInbox()
-    {
-        postElements.CL( "a CLOSE");
-        postElements.SL( ".*", "AbstractBaseTestSelectedInbox.java:76");
+    protected void addCloseInbox() {
+        postElements.CL("a CLOSE");
+        postElements.SL(".*", "AbstractBaseTestSelectedInbox.java:76");
     }
 }

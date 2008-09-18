@@ -23,32 +23,34 @@ import java.util.Collection;
 import java.util.HashSet;
 
 public class UserDetails {
-	private final String userName;
-	private String password;
-	private final Collection subscriptions;
-	
-	public UserDetails(final String userName) {
-		this.userName = userName;
-		this.subscriptions = new HashSet();
-	}
+    private final String userName;
 
-	public String getPassword() {
-		return password;
-	}
+    private String password;
 
-	public void setPassword(String password) {
-		this.password = password;
-	}
-	
-	public Collection getSubscriptions() {
-		return subscriptions;
-	}
-	
-	public void addSubscription(String subscription) {
-		this.subscriptions.add(subscription);
-	}
+    private final Collection subscriptions;
 
-	public void removeSubscription(String mailbox) {
-		this.subscriptions.remove(mailbox);
-	}
+    public UserDetails(final String userName) {
+        this.userName = userName;
+        this.subscriptions = new HashSet();
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public Collection getSubscriptions() {
+        return subscriptions;
+    }
+
+    public void addSubscription(String subscription) {
+        this.subscriptions.add(subscription);
+    }
+
+    public void removeSubscription(String mailbox) {
+        this.subscriptions.remove(mailbox);
+    }
 }

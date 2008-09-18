@@ -27,9 +27,11 @@ public interface UserManager {
 
     public boolean isAuthentic(String userid, String passwd);
 
-    public void subscribe(String user, String mailbox) throws SubscriptionException;
+    public void subscribe(String user, String mailbox)
+            throws SubscriptionException;
 
     public Collection subscriptions(String user) throws SubscriptionException;
 
-    public void unsubscribe(String user, String mailbox) throws SubscriptionException;
+    public void unsubscribe(String user, String mailbox)
+            throws SubscriptionException;
 }

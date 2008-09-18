@@ -21,73 +21,71 @@ package org.apache.james.test.functional.imap;
 
 import junit.framework.TestCase;
 
-
 /**
  * Abstract Protocol Test is the root of all of the James Imap Server test
- * cases.  It provides basic functionality for running a protocol session
- * as a JUnit test, and failing if exceptions are thrown.
- * To create a test which reads the entire protocol session from a single
- * protocol definition file, use the {@link AbstractSimpleScriptedTestProtocol}.
- *
+ * cases. It provides basic functionality for running a protocol session as a
+ * JUnit test, and failing if exceptions are thrown. To create a test which
+ * reads the entire protocol session from a single protocol definition file, use
+ * the {@link AbstractSimpleScriptedTestProtocol}.
+ * 
  * @author Darrell DeBoer
  * @author Andrew C. Oliver
  */
-public abstract class AbstractProtocolTest
-        extends TestCase implements ImapTestConstants
-{
+public abstract class AbstractProtocolTest extends TestCase implements
+        ImapTestConstants {
     /** The Protocol session which is run before the testElements */
     protected ProtocolSession preElements = new ProtocolSession();
+
     /** The Protocol session which contains the tests elements */
     protected ProtocolSession testElements = new ProtocolSession();
+
     /** The Protocol session which is run after the testElements. */
     protected ProtocolSession postElements = new ProtocolSession();
-    
+
     private final HostSystem hostSystem;
-    
-    public AbstractProtocolTest( HostSystem hostSystem )
-    {
+
+    public AbstractProtocolTest(HostSystem hostSystem) {
         this.hostSystem = hostSystem;
     }
-    
-    protected void setUp() throws Exception
-    {
+
+    protected void setUp() throws Exception {
         super.setUp();
         setUpEnvironment();
     }
-    
+
     protected void continueAfterFailure() {
         preElements.setContinueAfterFailure(true);
         testElements.setContinueAfterFailure(true);
         postElements.setContinueAfterFailure(true);
     }
 
-
     /**
-     * Runs the pre,test and post protocol sessions against a local copy of the ImapServer.
-     * This does not require that James be running, and is useful for rapid development and
-     * debugging.
-     *
-     * Instead of sending requests to a socket connected to a running instance of James,
-     * this method uses the {@link MockImapServer} to simplify testing. One mock instance
-     * is required per protocol session/connection. These share the same underlying 
-     * Mailboxes, because of the way {@link MockImapServer#getImapSession()} works.
+     * Runs the pre,test and post protocol sessions against a local copy of the
+     * ImapServer. This does not require that James be running, and is useful
+     * for rapid development and debugging.
+     * 
+     * Instead of sending requests to a socket connected to a running instance
+     * of James, this method uses the {@link MockImapServer} to simplify
+     * testing. One mock instance is required per protocol session/connection.
+     * These share the same underlying Mailboxes, because of the way
+     * {@link MockImapServer#getImapSession()} works.
      */
-    protected void runSessions() throws Exception
-    {
+    protected void runSessions() throws Exception {
         class SessionContinuation implements HostSystem.Continuation {
 
             public ProtocolSession session;
-            
+
             public void doContinue() {
                 if (session != null) {
                     session.doContinue();
                 }
             }
-            
+
         }
         SessionContinuation continuation = new SessionContinuation();
-        
-        HostSystem.Session[] sessions = new HostSystem.Session[testElements.getSessionCount()];
+
+        HostSystem.Session[] sessions = new HostSystem.Session[testElements
+                .getSessionCount()];
 
         for (int i = 0; i < sessions.length; i++) {
             sessions[i] = hostSystem.newSession(continuation);
@@ -95,9 +93,9 @@ public abstract class AbstractProtocolTest
         }
         try {
             continuation.session = preElements;
-            preElements.runSessions( sessions );
+            preElements.runSessions(sessions);
             continuation.session = testElements;
-            testElements.runSessions( sessions );
+            testElements.runSessions(sessions);
             continuation.session = postElements;
             postElements.runSessions(sessions);
         } finally {
@@ -110,9 +108,8 @@ public abstract class AbstractProtocolTest
     /**
      * Initialises the UsersRepository and ImapHost on first call.
      */
-    private void setUpEnvironment() throws Exception
-    {
+    private void setUpEnvironment() throws Exception {
         hostSystem.reset();
-        hostSystem.addUser( USER, PASSWORD );
+        hostSystem.addUser(USER, PASSWORD);
     }
 }

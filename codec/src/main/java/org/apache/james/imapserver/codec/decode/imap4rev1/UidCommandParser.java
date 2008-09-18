@@ -29,21 +29,21 @@ import org.apache.james.imapserver.codec.decode.ImapRequestLineReader;
 import org.apache.james.imapserver.codec.decode.InitialisableCommandFactory;
 import org.apache.james.imapserver.codec.decode.base.AbstractImapCommandParser;
 
-class UidCommandParser extends AbstractImapCommandParser implements DelegatingImapCommandParser,InitialisableCommandFactory {
+class UidCommandParser extends AbstractImapCommandParser implements
+        DelegatingImapCommandParser, InitialisableCommandFactory {
     private ImapCommandParserFactory parserFactory;
 
     public UidCommandParser() {
     }
-    
+
     /**
      * @see org.apache.james.imapserver.codec.decode.InitialisableCommandFactory#init(org.apache.james.api.imap.imap4rev1.Imap4Rev1CommandFactory)
      */
-    public void init(Imap4Rev1CommandFactory factory)
-    {
+    public void init(Imap4Rev1CommandFactory factory) {
         final ImapCommand command = factory.getUid();
         setCommand(command);
     }
-    
+
     /**
      * @see org.apache.james.imapserver.codec.decode.DelegatingImapCommandParser#getParserFactory()
      */
@@ -54,27 +54,28 @@ class UidCommandParser extends AbstractImapCommandParser implements DelegatingIm
     /**
      * @see org.apache.james.imapserver.codec.decode.DelegatingImapCommandParser#setParserFactory(org.apache.james.experimental.imapserver.decode.imap4rev1.Imap4Rev1CommandParserFactory)
      */
-    public void setParserFactory( ImapCommandParserFactory imapCommandFactory )
-    {
+    public void setParserFactory(ImapCommandParserFactory imapCommandFactory) {
         this.parserFactory = imapCommandFactory;
     }
 
-    protected ImapMessage decode(ImapCommand command, ImapRequestLineReader request, String tag) throws ProtocolException {
+    protected ImapMessage decode(ImapCommand command,
+            ImapRequestLineReader request, String tag) throws ProtocolException {
         // TODO: check the logic against the specification:
         // TODO: suspect that it is now bust
         // TODO: the command written may be wrong
         // TODO: this will be easier to fix a little later
-        // TODO: also not sure whether the old implementation shares this flaw 
-        String commandName = atom( request );
-        ImapCommandParser helperCommand = parserFactory.getParser( commandName );
+        // TODO: also not sure whether the old implementation shares this flaw
+        String commandName = atom(request);
+        ImapCommandParser helperCommand = parserFactory.getParser(commandName);
         // TODO: replace abstract class with interface
-        if ( helperCommand == null ||
-             ! (helperCommand instanceof AbstractUidCommandParser ) ) {
-            throw new ProtocolException("Invalid UID command: '" + commandName + "'" );
+        if (helperCommand == null
+                || !(helperCommand instanceof AbstractUidCommandParser)) {
+            throw new ProtocolException("Invalid UID command: '" + commandName
+                    + "'");
         }
         final AbstractUidCommandParser uidEnabled = (AbstractUidCommandParser) helperCommand;
-        final ImapMessage result = uidEnabled.decode( request, tag, true );
+        final ImapMessage result = uidEnabled.decode(request, tag, true);
         return result;
     }
-    
+
 }

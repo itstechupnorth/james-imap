@@ -30,10 +30,11 @@ import org.apache.james.api.imap.message.response.imap4rev1.StatusResponseFactor
 import org.apache.james.api.imap.process.ImapProcessor;
 import org.apache.james.api.imap.process.ImapSession;
 
-public class UnknownRequestImapProcessor extends AbstractLogEnabled implements ImapProcessor {
+public class UnknownRequestImapProcessor extends AbstractLogEnabled implements
+        ImapProcessor {
 
     private final StatusResponseFactory factory;
-    
+
     public UnknownRequestImapProcessor(StatusResponseFactory factory) {
         super();
         this.factory = factory;
@@ -49,14 +50,16 @@ public class UnknownRequestImapProcessor extends AbstractLogEnabled implements I
             ImapRequest request = (ImapRequest) message;
             final String tag = request.getTag();
             final ImapCommand command = request.getCommand();
-            result = factory.taggedBad(tag, command, HumanReadableTextKey.UNKNOWN_COMMAND);
+            result = factory.taggedBad(tag, command,
+                    HumanReadableTextKey.UNKNOWN_COMMAND);
         } else {
             result = factory.untaggedBad(HumanReadableTextKey.UNKNOWN_COMMAND);
         }
         return result;
     }
 
-    public void process(ImapMessage message, Responder responder, ImapSession session) {
+    public void process(ImapMessage message, Responder responder,
+            ImapSession session) {
         final ImapResponseMessage response = process(message, session);
         responder.respond(response);
     }

@@ -28,5 +28,5 @@ public class CapabilityResponse extends AbstractImapResponse {
 
     public CapabilityResponse(ImapCommand command, String tag) {
         super(command, tag);
-    }    
+    }
 }

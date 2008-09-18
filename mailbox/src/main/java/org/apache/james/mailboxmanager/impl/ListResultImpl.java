@@ -24,21 +24,24 @@ import org.apache.james.mailboxmanager.ListResult;
 public class ListResultImpl implements ListResult, Comparable {
 
     public static ListResult createNoSelect(String name, String delimiter) {
-        return new ListResultImpl(name, delimiter, false, SELECTABILITY_FLAG_NOSELECT);
+        return new ListResultImpl(name, delimiter, false,
+                SELECTABILITY_FLAG_NOSELECT);
     }
 
-    
     private final String name;
+
     private final String delimiter;
+
     private final boolean noInferiors;
+
     private final int selectability;
 
     public ListResultImpl(String name, String delimiter) {
         this(name, delimiter, false, SELECTABILITY_FLAG_NONE);
     }
-   
-    public ListResultImpl(final String name, final String delimiter, final boolean noInferiors, 
-            final int selectability) {
+
+    public ListResultImpl(final String name, final String delimiter,
+            final boolean noInferiors, final int selectability) {
         super();
         this.name = name;
         this.delimiter = delimiter;
@@ -48,6 +51,7 @@ public class ListResultImpl implements ListResult, Comparable {
 
     /**
      * Is this mailbox <code>\Noinferiors</code> as per RFC3501.
+     * 
      * @return true if marked, false otherwise
      */
     public final boolean isNoInferiors() {
@@ -56,15 +60,15 @@ public class ListResultImpl implements ListResult, Comparable {
 
     /**
      * Gets the RFC3501 Selectability flag setting.
+     * 
      * @return {@link ListResult#SELECTABILITY_FLAG_NONE},
-     * {@link ListResult#SELECTABILITY_FLAG_MARKED},
-     * {@link ListResult#SELECTABILITY_FLAG_NOSELECT},
-     * or {@link ListResult#SELECTABILITY_FLAG_UNMARKED}
+     *         {@link ListResult#SELECTABILITY_FLAG_MARKED},
+     *         {@link ListResult#SELECTABILITY_FLAG_NOSELECT}, or
+     *         {@link ListResult#SELECTABILITY_FLAG_UNMARKED}
      */
     public final int getSelectability() {
         return selectability;
     }
-
 
     public String getHierarchyDelimiter() {
         return delimiter;
@@ -117,13 +121,12 @@ public class ListResultImpl implements ListResult, Comparable {
             result = 1;
         } else if (this.name == null) {
             result = otherName == null ? 0 : 1;
-        } else if (otherName == null){
+        } else if (otherName == null) {
             result = -1;
         } else {
             result = name.compareTo(otherName);
         }
         return result;
     }
-    
-    
+
 }

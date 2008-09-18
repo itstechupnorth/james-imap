@@ -34,9 +34,11 @@ import org.apache.james.mailboxmanager.MessageResult;
 
 final class HeaderBodyElement implements BodyElement {
     private final String name;
+
     private final List headers;
+
     private final long size;
-    
+
     public HeaderBodyElement(final String name, final List headers) {
         super();
         this.name = name;
@@ -47,7 +49,7 @@ final class HeaderBodyElement implements BodyElement {
     public String getName() {
         return name;
     }
-    
+
     private long calculateSize(List headers) {
         final int result;
         if (headers.isEmpty()) {
@@ -73,10 +75,12 @@ final class HeaderBodyElement implements BodyElement {
         for (final Iterator it = headers.iterator(); it.hasNext();) {
             MessageResult.Header header = (MessageResult.Header) it.next();
             header.writeTo(channel);
-            while (channel.write(endLine) > 0) {}
+            while (channel.write(endLine) > 0) {
+            }
             endLine.rewind();
         }
-        while (channel.write(endLine) > 0) {}
+        while (channel.write(endLine) > 0) {
+        }
     }
-    
+
 }

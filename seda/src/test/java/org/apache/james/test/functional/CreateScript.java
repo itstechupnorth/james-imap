@@ -20,24 +20,34 @@
 package org.apache.james.test.functional;
 
 public class CreateScript {
-    
+
     public static final String RE = "Re:";
+
     public static final String HEADER = "Delivered-To";
+
     public static final String ANOTHER_HEADER = "Received";
+
     public static final String COMMON_LETTER = "o";
+
     public static final String COMMON_WORD = "the";
+
     public static final String UNCOMMON_WORD = "thy";
+
     public static final String UNCOMMON_PHRASE = "\"nothing worthy prove\"";
+
     public static final String ANOTHER_NAME = "Robert";
+
     public static final String NAME = "tim";
+
     public static final String DOMAIN = "example.org";
+
     public static final String ANOTHER_DOMAIN = "apache.org";
 
     public static final void main(String[] args) throws Exception {
         ScriptBuilder builder = ScriptBuilder.open("localhost", 143);
         rfcFetch(builder);
     }
-    
+
     public static void rfcFetch(ScriptBuilder builder) throws Exception {
         try {
             setup(builder);
@@ -72,8 +82,9 @@ public class CreateScript {
             builder.quit();
         }
     }
-    
-    public static void bodyStructureEmbedded(ScriptBuilder builder) throws Exception {
+
+    public static void bodyStructureEmbedded(ScriptBuilder builder)
+            throws Exception {
         builder.login();
         builder.create();
         builder.select();
@@ -103,8 +114,9 @@ public class CreateScript {
         builder.fetchAllMessages();
         builder.quit();
     }
-    
-    public static void bodyStructureComplex(ScriptBuilder builder) throws Exception {
+
+    public static void bodyStructureComplex(ScriptBuilder builder)
+            throws Exception {
         builder.login();
         builder.create();
         builder.select();
@@ -121,7 +133,7 @@ public class CreateScript {
         builder.setFile("mime-plain-text.mail");
         builder.append();
         builder.fetchAllMessages();
-        for (int i=1;i<7;i++) {
+        for (int i = 1; i < 7; i++) {
             builder.setMessageNumber(i);
             builder.fetchSection("");
             builder.fetchSection("TEXT");
@@ -148,8 +160,9 @@ public class CreateScript {
         builder.fetchAllMessages();
         builder.quit();
     }
-    
-    public static void bodyStructureSimple(ScriptBuilder builder) throws Exception {
+
+    public static void bodyStructureSimple(ScriptBuilder builder)
+            throws Exception {
         builder.login();
         builder.create();
         builder.select();
@@ -184,8 +197,9 @@ public class CreateScript {
         builder.fetchAllMessages();
         builder.quit();
     }
-    
-    public static void bodyStructureMultipart(ScriptBuilder builder) throws Exception {
+
+    public static void bodyStructureMultipart(ScriptBuilder builder)
+            throws Exception {
         builder.login();
         builder.create();
         builder.select();
@@ -218,7 +232,7 @@ public class CreateScript {
         builder.fetchAllMessages();
         builder.quit();
     }
-    
+
     public static void renameSelected(ScriptBuilder builder) throws Exception {
         builder.login();
         builder.create();
@@ -233,7 +247,8 @@ public class CreateScript {
         builder.setFile("rfc822-multiple-addresses.mail");
         builder.append();
         builder.select();
-        builder.getFetch().setFlagsFetch(true).bodyPeekHeaders(ScriptBuilder.Fetch.SELECT_HEADERS).setUid(true);
+        builder.getFetch().setFlagsFetch(true).bodyPeekHeaders(
+                ScriptBuilder.Fetch.SELECT_HEADERS).setUid(true);
         builder.fetchAllMessages();
         builder.list();
         builder.rename("anothermailbox");
@@ -248,7 +263,7 @@ public class CreateScript {
         builder.fetchAllMessages();
         builder.quit();
     }
-    
+
     public static void renameHierarchy(ScriptBuilder builder) throws Exception {
         builder.login();
         builder.setMailbox("one").create();
@@ -272,16 +287,18 @@ public class CreateScript {
         builder.list();
         builder.quit();
     }
-    
+
     public static void rename(ScriptBuilder builder) throws Exception {
         setupSearch(builder, true);
         builder.select();
         String originalMailbox = builder.getMailbox();
-        builder.getFetch().setFlagsFetch(true).bodyPeekHeaders(ScriptBuilder.Fetch.SELECT_HEADERS).setUid(true);
+        builder.getFetch().setFlagsFetch(true).bodyPeekHeaders(
+                ScriptBuilder.Fetch.SELECT_HEADERS).setUid(true);
         builder.fetchAllMessages();
         builder.setMailbox("other").create().select().append();
         builder.setMailbox("base").create().select();
-        builder.rename(originalMailbox, "moved").setMailbox("moved").select().fetchAllMessages();
+        builder.rename(originalMailbox, "moved").setMailbox("moved").select()
+                .fetchAllMessages();
         builder.setMailbox(originalMailbox).select();
         builder.rename("other", "base");
         builder.setMailbox(originalMailbox).select();
@@ -306,7 +323,8 @@ public class CreateScript {
         builder.setMailbox("other").select();
         builder.setMailbox("base").select();
         builder.setMailbox("BOGUS").select();
-        builder.setMailbox("WHATEVER").select();;
+        builder.setMailbox("WHATEVER").select();
+        ;
         builder.setMailbox("BOGUS").delete();
         builder.setMailbox("WHATEVER").delete();
         builder.setMailbox(originalMailbox).delete();
@@ -315,7 +333,7 @@ public class CreateScript {
         builder.setMailbox("moved").delete();
         builder.quit();
     }
-    
+
     public static void mimePartialFetch(ScriptBuilder builder) throws Exception {
         builder.login();
         builder.create();
@@ -346,8 +364,9 @@ public class CreateScript {
         builder.partial(10000, 2048).fetchSection("4.1.MIME");
         builder.quit();
     }
-    
-    public static void headerPartialFetch(ScriptBuilder builder) throws Exception {
+
+    public static void headerPartialFetch(ScriptBuilder builder)
+            throws Exception {
         builder.login();
         builder.create();
         builder.select();
@@ -377,8 +396,7 @@ public class CreateScript {
         builder.partial(10000, 2048).fetchSection("HEADER");
         builder.quit();
     }
-    
-    
+
     public static void textPartialFetch(ScriptBuilder builder) throws Exception {
         builder.login();
         builder.create();
@@ -409,8 +427,7 @@ public class CreateScript {
         builder.partial(10000, 2048).fetchSection("TEXT");
         builder.quit();
     }
-    
-    
+
     public static void bodyPartialFetch(ScriptBuilder builder) throws Exception {
         builder.login();
         builder.create();
@@ -435,38 +452,52 @@ public class CreateScript {
         builder.partial(10000, 100000).fetchSection("");
         builder.quit();
     }
-    
-    public static void searchCombinations(ScriptBuilder builder, boolean uids) throws Exception {
+
+    public static void searchCombinations(ScriptBuilder builder, boolean uids)
+            throws Exception {
         setupSearch(builder, uids);
         builder.body(COMMON_LETTER).undraft().unflagged().answered().search();
         builder.to(COMMON_LETTER).draft().flagged().answered().search();
         builder.to(COMMON_LETTER).smaller(10000).all().draft().search();
         builder.bcc(COMMON_LETTER).larger(1000).search();
         builder.from(COMMON_LETTER).larger(1000).flagged().search();
-        builder.from(COMMON_LETTER).to(COMMON_LETTER).answered().flagged().all().body(COMMON_LETTER).sentbefore(2009, 1, 1).search();
-        builder.or().openParen().from(COMMON_LETTER).to(COMMON_LETTER).answered().flagged()
-            .all().body(COMMON_LETTER).sentbefore(2009, 1, 1).closeParen()
-            .openParen().header(HEADER, "\"\"").draft().closeParen().search();
-        builder.or().openParen().cc(COMMON_LETTER).text(COMMON_LETTER).unseen().larger(1000)
-            .all().body(COMMON_LETTER).senton(2008, 4, 8).closeParen()
-            .openParen().header(HEADER, "\"\"").draft().closeParen().search();
-        builder.or().openParen().cc(COMMON_LETTER).to(COMMON_LETTER).draft().unseen()
-            .all().text(COMMON_LETTER).sentsince(2000, 1, 1).closeParen()
-            .openParen().header(HEADER, "\"\"").draft().closeParen().search();
-        builder.or().openParen().or().openParen().or().openParen().not().text(COMMON_LETTER).cc(COMMON_LETTER).unseen().flagged()
-            .all().body(COMMON_LETTER).not().senton(2008, 3, 1).closeParen()
-            .openParen().header(HEADER, DOMAIN).flagged().closeParen().closeParen().
-            openParen().from(COMMON_LETTER).to(COMMON_LETTER).answered().flagged().all().body(COMMON_LETTER).sentbefore(2009, 1, 1)
-            .closeParen().closeParen().openParen().answered().flagged().draft().closeParen().all().deleted().search();
-        builder.or().openParen().or().openParen().or().openParen().from(COMMON_LETTER).to(COMMON_LETTER).answered().flagged()
-            .all().body(COMMON_LETTER).sentbefore(2009, 1, 1).closeParen()
-            .openParen().header(HEADER, "\"\"").draft().closeParen().closeParen().
-            openParen().from(COMMON_LETTER).to(COMMON_LETTER).answered().flagged().all().body(COMMON_LETTER).sentbefore(2009, 1, 1)
-            .closeParen().closeParen().openParen().answered().flagged().draft().closeParen().all().unanswered().search();
+        builder.from(COMMON_LETTER).to(COMMON_LETTER).answered().flagged()
+                .all().body(COMMON_LETTER).sentbefore(2009, 1, 1).search();
+        builder.or().openParen().from(COMMON_LETTER).to(COMMON_LETTER)
+                .answered().flagged().all().body(COMMON_LETTER).sentbefore(
+                        2009, 1, 1).closeParen().openParen().header(HEADER,
+                        "\"\"").draft().closeParen().search();
+        builder.or().openParen().cc(COMMON_LETTER).text(COMMON_LETTER).unseen()
+                .larger(1000).all().body(COMMON_LETTER).senton(2008, 4, 8)
+                .closeParen().openParen().header(HEADER, "\"\"").draft()
+                .closeParen().search();
+        builder.or().openParen().cc(COMMON_LETTER).to(COMMON_LETTER).draft()
+                .unseen().all().text(COMMON_LETTER).sentsince(2000, 1, 1)
+                .closeParen().openParen().header(HEADER, "\"\"").draft()
+                .closeParen().search();
+        builder.or().openParen().or().openParen().or().openParen().not().text(
+                COMMON_LETTER).cc(COMMON_LETTER).unseen().flagged().all().body(
+                COMMON_LETTER).not().senton(2008, 3, 1).closeParen()
+                .openParen().header(HEADER, DOMAIN).flagged().closeParen()
+                .closeParen().openParen().from(COMMON_LETTER).to(COMMON_LETTER)
+                .answered().flagged().all().body(COMMON_LETTER).sentbefore(
+                        2009, 1, 1).closeParen().closeParen().openParen()
+                .answered().flagged().draft().closeParen().all().deleted()
+                .search();
+        builder.or().openParen().or().openParen().or().openParen().from(
+                COMMON_LETTER).to(COMMON_LETTER).answered().flagged().all()
+                .body(COMMON_LETTER).sentbefore(2009, 1, 1).closeParen()
+                .openParen().header(HEADER, "\"\"").draft().closeParen()
+                .closeParen().openParen().from(COMMON_LETTER).to(COMMON_LETTER)
+                .answered().flagged().all().body(COMMON_LETTER).sentbefore(
+                        2009, 1, 1).closeParen().closeParen().openParen()
+                .answered().flagged().draft().closeParen().all().unanswered()
+                .search();
         builder.quit();
     }
-    
-    public static void searchAtoms(ScriptBuilder builder, boolean uids) throws Exception {
+
+    public static void searchAtoms(ScriptBuilder builder, boolean uids)
+            throws Exception {
         setupSearch(builder, uids);
         builder.all().search();
         builder.answered().search();
@@ -581,7 +612,8 @@ public class CreateScript {
         builder.quit();
     }
 
-    private static void setupSearch(ScriptBuilder builder, boolean uids) throws Exception {
+    private static void setupSearch(ScriptBuilder builder, boolean uids)
+            throws Exception {
         builder.setUidSearch(uids);
         setup(builder);
         padUids(builder);
@@ -602,7 +634,7 @@ public class CreateScript {
         builder.store(builder.flags().add().draft().msn(13));
         builder.store(builder.flags().add().draft().msn(15));
         builder.store(builder.flags().add().draft().msn(17));
-        builder.store(builder.flags().add().deleted().range(1,3));
+        builder.store(builder.flags().add().deleted().range(1, 3));
     }
 
     private static void setup(ScriptBuilder builder) throws Exception {
@@ -613,12 +645,12 @@ public class CreateScript {
 
     private static void padUids(ScriptBuilder builder) throws Exception {
         builder.setFile("rfc822.mail");
-        for (int i=0;i<20;i++) {
+        for (int i = 0; i < 20; i++) {
             builder.append();
             builder.flagDeleted().expunge();
         }
     }
-    
+
     private static void loadLotsOfMail(ScriptBuilder builder) throws Exception {
         builder.append();
         builder.setFile("wild-example.mail");
@@ -658,7 +690,7 @@ public class CreateScript {
         builder.setFile("wild-alt-reply4.mail");
         builder.append();
     }
-    
+
     public static void notHeaderFetches(ScriptBuilder builder) throws Exception {
         builder.login();
         builder.create();
@@ -684,13 +716,15 @@ public class CreateScript {
         builder.getFetch().bodyPeekCompleteMessage();
         builder.fetchAllMessages();
         builder.resetFetch();
-        builder.getFetch().bodyPeekNotHeaders(ScriptBuilder.Fetch.SELECT_HEADERS);
+        builder.getFetch().bodyPeekNotHeaders(
+                ScriptBuilder.Fetch.SELECT_HEADERS);
         builder.fetchAllMessages();
         builder.select();
         builder.quit();
     }
-    
-    public static void simpleCombinedFetches(ScriptBuilder builder) throws Exception {
+
+    public static void simpleCombinedFetches(ScriptBuilder builder)
+            throws Exception {
         builder.login();
         builder.create();
         builder.select();
@@ -715,12 +749,13 @@ public class CreateScript {
         builder.getFetch().bodyPeekCompleteMessage();
         builder.fetchAllMessages();
         builder.resetFetch();
-        builder.getFetch().bodyPeekHeaders(ScriptBuilder.Fetch.COMPREHENSIVE_HEADERS);
+        builder.getFetch().bodyPeekHeaders(
+                ScriptBuilder.Fetch.COMPREHENSIVE_HEADERS);
         builder.fetchAllMessages();
         builder.select();
         builder.quit();
     }
-    
+
     public static void recent(ScriptBuilder builder) throws Exception {
         builder.login();
         builder.create();
@@ -733,12 +768,14 @@ public class CreateScript {
         builder.quit();
     }
 
-    public static void multipartMixedMessagesPeek(ScriptBuilder builder) throws Exception {
+    public static void multipartMixedMessagesPeek(ScriptBuilder builder)
+            throws Exception {
         builder.setPeek(true);
         multipartMixedMessages(builder);
     }
-    
-    public static void multipartMixedMessages(ScriptBuilder builder) throws Exception {
+
+    public static void multipartMixedMessages(ScriptBuilder builder)
+            throws Exception {
         builder.login();
         builder.create();
         builder.select();
@@ -768,13 +805,15 @@ public class CreateScript {
         builder.select();
         builder.quit();
     }
-    
-    public static void multipartAlternativePeek(ScriptBuilder builder) throws Exception {
+
+    public static void multipartAlternativePeek(ScriptBuilder builder)
+            throws Exception {
         builder.setPeek(true);
         multipartAlternative(builder);
     }
-    
-    public static void multipartAlternative(ScriptBuilder builder) throws Exception {
+
+    public static void multipartAlternative(ScriptBuilder builder)
+            throws Exception {
         builder.login();
         builder.create();
         builder.select();
@@ -790,12 +829,13 @@ public class CreateScript {
         builder.select();
         builder.quit();
     }
-    
-    public static void multipartMixedPeek(ScriptBuilder builder) throws Exception {
+
+    public static void multipartMixedPeek(ScriptBuilder builder)
+            throws Exception {
         builder.setPeek(true);
         multipartMixed(builder);
     }
-    
+
     public static void multipartMixed(ScriptBuilder builder) throws Exception {
         builder.login();
         builder.create();
@@ -813,5 +853,5 @@ public class CreateScript {
         builder.select();
         builder.quit();
     }
-    
+
 }

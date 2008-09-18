@@ -21,7 +21,8 @@ package org.apache.james.imap.functional;
 
 import org.apache.james.test.functional.imap.AbstractTestConcurrentSessions;
 
-public class ExperimentalConcurrentSessionsTest extends AbstractTestConcurrentSessions {
+public class ExperimentalConcurrentSessionsTest extends
+        AbstractTestConcurrentSessions {
 
     public ExperimentalConcurrentSessionsTest() throws Exception {
         super(HostSystemFactory.createStandardImap());

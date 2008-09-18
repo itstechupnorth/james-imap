@@ -28,19 +28,23 @@ import org.jmock.MockObjectTestCase;
 
 public class ListResponseEncoderTest extends MockObjectTestCase {
 
-    private static final long[] IDS = {1, 4, 9, 16};
-    
+    private static final long[] IDS = { 1, 4, 9, 16 };
+
     SearchResponse response;
+
     SearchResponseEncoder encoder;
+
     Mock mockNextEncoder;
+
     Mock composer;
-    
+
     protected void setUp() throws Exception {
         super.setUp();
         mockNextEncoder = mock(ImapEncoder.class);
-        composer = mock(ImapResponseComposer.class);    
+        composer = mock(ImapResponseComposer.class);
         response = new SearchResponse(IDS);
-        encoder = new SearchResponseEncoder((ImapEncoder) mockNextEncoder.proxy());
+        encoder = new SearchResponseEncoder((ImapEncoder) mockNextEncoder
+                .proxy());
     }
 
     protected void tearDown() throws Exception {
@@ -49,12 +53,13 @@ public class ListResponseEncoderTest extends MockObjectTestCase {
 
     public void testIsAcceptable() {
         assertTrue(encoder.isAcceptable(response));
-        assertFalse(encoder.isAcceptable((ImapMessage) mock(ImapMessage.class).proxy()));
+        assertFalse(encoder.isAcceptable((ImapMessage) mock(ImapMessage.class)
+                .proxy()));
         assertFalse(encoder.isAcceptable(null));
     }
-    
+
     public void testEncode() throws Exception {
-        composer.expects(once()).method("searchResponse").with(same(IDS));      
+        composer.expects(once()).method("searchResponse").with(same(IDS));
         encoder.encode(response, (ImapResponseComposer) composer.proxy());
     }
 }

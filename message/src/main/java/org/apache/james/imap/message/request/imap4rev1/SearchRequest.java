@@ -18,7 +18,6 @@
  ****************************************************************/
 package org.apache.james.imap.message.request.imap4rev1;
 
-
 import org.apache.james.api.imap.ImapCommand;
 import org.apache.james.api.imap.message.request.SearchKey;
 
@@ -28,8 +27,8 @@ public class SearchRequest extends AbstractImapRequest {
 
     private final boolean useUids;
 
-    public SearchRequest(final ImapCommand command,
-            final SearchKey SearchKey, final boolean useUids, final String tag) {
+    public SearchRequest(final ImapCommand command, final SearchKey SearchKey,
+            final boolean useUids, final String tag) {
         super(tag, command);
         this.searchKey = SearchKey;
         this.useUids = useUids;

@@ -42,7 +42,8 @@ import org.apache.james.mailboxmanager.manager.MailboxManagerProvider;
 public class ExpungeProcessor extends AbstractImapRequestProcessor {
 
     public ExpungeProcessor(final ImapProcessor next,
-            final MailboxManagerProvider mailboxManagerProvider, final StatusResponseFactory factory) {
+            final MailboxManagerProvider mailboxManagerProvider,
+            final StatusResponseFactory factory) {
         super(next, factory);
     }
 
@@ -50,18 +51,21 @@ public class ExpungeProcessor extends AbstractImapRequestProcessor {
         return (message instanceof ExpungeRequest);
     }
 
-    protected void doProcess(ImapRequest message,
-            ImapSession session, String tag, ImapCommand command, Responder responder) {
+    protected void doProcess(ImapRequest message, ImapSession session,
+            String tag, ImapCommand command, Responder responder) {
         Mailbox mailbox = ImapSessionUtils.getMailbox(session);
         if (!mailbox.isWriteable()) {
-            no(command, tag, responder, HumanReadableTextKey.MAILBOX_IS_READ_ONLY);
+            no(command, tag, responder,
+                    HumanReadableTextKey.MAILBOX_IS_READ_ONLY);
         } else {
             try {
                 final Iterator it = mailbox.expunge(MessageRangeImpl.all(),
-                        FetchGroupImpl.MINIMAL, ImapSessionUtils.getMailboxSession(session));
-                final SelectedImapMailbox mailboxSession = session.getSelected();
+                        FetchGroupImpl.MINIMAL, ImapSessionUtils
+                                .getMailboxSession(session));
+                final SelectedImapMailbox mailboxSession = session
+                        .getSelected();
                 if (mailboxSession != null) {
-                    while(it.hasNext()) {
+                    while (it.hasNext()) {
                         final MessageResult result = (MessageResult) it.next();
                         final long uid = result.getUid();
                         mailboxSession.removeRecent(uid);

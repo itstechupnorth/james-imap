@@ -30,7 +30,8 @@ import org.apache.james.imapserver.processor.base.AbstractImapRequestProcessor;
 
 public class CheckProcessor extends AbstractImapRequestProcessor {
 
-    public CheckProcessor(final ImapProcessor next, final StatusResponseFactory factory) {
+    public CheckProcessor(final ImapProcessor next,
+            final StatusResponseFactory factory) {
         super(next, factory);
     }
 
@@ -38,8 +39,8 @@ public class CheckProcessor extends AbstractImapRequestProcessor {
         return (message instanceof CheckRequest);
     }
 
-    protected void doProcess(ImapRequest message,
-            ImapSession session, String tag, ImapCommand command, Responder responder) {
+    protected void doProcess(ImapRequest message, ImapSession session,
+            String tag, ImapCommand command, Responder responder) {
         unsolicitedResponses(session, responder, false);
         okComplete(command, tag, responder);
     }

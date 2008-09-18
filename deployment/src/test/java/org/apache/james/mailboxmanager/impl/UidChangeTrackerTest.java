@@ -28,84 +28,83 @@ import junit.framework.TestCase;
 import org.apache.james.mailboxmanager.util.UidRange;
 
 public class UidChangeTrackerTest extends TestCase {
-    
+
     protected UidChangeTracker tracker;
-    
+
     protected MailboxListenerCollector collector;
-    
+
     public void setUp() {
-        tracker=new UidChangeTracker(1000);
-        collector=new MailboxListenerCollector();
+        tracker = new UidChangeTracker(1000);
+        collector = new MailboxListenerCollector();
         tracker.addMailboxListener(collector);
     }
-    
-    
-    
+
     protected void assertCollectorSizes(int added, int expunged, int flags) {
-        assertEquals(added,collector.getAddedList(false).size());
-        assertEquals(expunged,collector.getExpungedList(false).size());
-        assertEquals(flags,collector.getFlaggedList(false).size());
+        assertEquals(added, collector.getAddedList(false).size());
+        assertEquals(expunged, collector.getExpungedList(false).size());
+        assertEquals(flags, collector.getFlaggedList(false).size());
     }
-    
-    
+
     public void testFound() throws Exception {
         MessageResultImpl[] results;
-        
-        results=new MessageResultImpl[1];
-        
-        results[0]=new MessageResultImpl(1000l);
-        tracker.found(new UidRange(1000,1000),Arrays.asList(results));
-        assertCollectorSizes(0,0,0);
-        
-        results[0]=new MessageResultImpl(1001l);
-        tracker.found(new UidRange(1001,1001),Arrays.asList(results));
-        assertCollectorSizes(1,0,0);
-        assertEquals(1001,((Long) collector.getAddedList(true).get(0)).longValue());
-        assertCollectorSizes(0,0,0);
-        
-        results[0]=new MessageResultImpl(1001l,new Flags(Flags.Flag.FLAGGED));
-        tracker.found(new UidRange(1001,1001),Arrays.asList(results));
-        
+
+        results = new MessageResultImpl[1];
+
+        results[0] = new MessageResultImpl(1000l);
+        tracker.found(new UidRange(1000, 1000), Arrays.asList(results));
+        assertCollectorSizes(0, 0, 0);
+
+        results[0] = new MessageResultImpl(1001l);
+        tracker.found(new UidRange(1001, 1001), Arrays.asList(results));
+        assertCollectorSizes(1, 0, 0);
+        assertEquals(1001, ((Long) collector.getAddedList(true).get(0))
+                .longValue());
+        assertCollectorSizes(0, 0, 0);
+
+        results[0] = new MessageResultImpl(1001l, new Flags(Flags.Flag.FLAGGED));
+        tracker.found(new UidRange(1001, 1001), Arrays.asList(results));
+
         // nothing changed
-        tracker.found(new UidRange(1001,1001),Arrays.asList(results));
-        assertCollectorSizes(0,0,0);
-        
+        tracker.found(new UidRange(1001, 1001), Arrays.asList(results));
+        assertCollectorSizes(0, 0, 0);
+
         // 1000 got expunged
-        tracker.found(new UidRange(1000,1001),Arrays.asList(results));
-        assertCollectorSizes(0,1,0);
-        assertEquals(new Long(1000),collector.getExpungedList(true).get(0));
-        
-        
+        tracker.found(new UidRange(1000, 1001), Arrays.asList(results));
+        assertCollectorSizes(0, 1, 0);
+        assertEquals(new Long(1000), collector.getExpungedList(true).get(0));
+
     }
 
-    public void testShouldNotIssueFlagsUpdateEventWhenFlagsNotIncluded() throws Exception {
+    public void testShouldNotIssueFlagsUpdateEventWhenFlagsNotIncluded()
+            throws Exception {
         MessageResultImpl[] results = new MessageResultImpl[1];
-        
-        results[0]=new MessageResultImpl(1000l,new Flags(Flags.Flag.FLAGGED));
-        tracker.found(new UidRange(1000,1000),Arrays.asList(results));
-        assertCollectorSizes(0,0,0);
-        
-        results[0]=new MessageResultImpl(1000l);
-        tracker.found(new UidRange(1000,1000),Arrays.asList(results));
-        assertCollectorSizes(0,0,0);
 
-        results[0]=new MessageResultImpl(1000l,new Flags(Flags.Flag.FLAGGED));
-        tracker.found(new UidRange(1000,1000),Arrays.asList(results));
+        results[0] = new MessageResultImpl(1000l, new Flags(Flags.Flag.FLAGGED));
+        tracker.found(new UidRange(1000, 1000), Arrays.asList(results));
+        assertCollectorSizes(0, 0, 0);
 
-        results[0]=new MessageResultImpl(1000l,new Flags(Flags.Flag.SEEN));
-        tracker.found(new UidRange(1000,1000),Arrays.asList(results));
-        assertCollectorSizes(0,0,1);
-        MessageFlags messageFlags =(MessageFlags) collector.getFlaggedList(true).get(0);
-        assertEquals(1000,messageFlags.getUid());
-        assertEquals(new Flags(Flags.Flag.SEEN),messageFlags.getFlags());
-        
-        results[0]=new MessageResultImpl(1000l);
-        tracker.found(new UidRange(1000,1000),Arrays.asList(results));
-        assertCollectorSizes(0,0,0);
-        
-        results[0]=new MessageResultImpl(1000l,new Flags(Flags.Flag.DRAFT));
-        tracker.found(new UidRange(1000,1000),Arrays.asList(results));
-        assertCollectorSizes(0,0,1);
-        
+        results[0] = new MessageResultImpl(1000l);
+        tracker.found(new UidRange(1000, 1000), Arrays.asList(results));
+        assertCollectorSizes(0, 0, 0);
+
+        results[0] = new MessageResultImpl(1000l, new Flags(Flags.Flag.FLAGGED));
+        tracker.found(new UidRange(1000, 1000), Arrays.asList(results));
+
+        results[0] = new MessageResultImpl(1000l, new Flags(Flags.Flag.SEEN));
+        tracker.found(new UidRange(1000, 1000), Arrays.asList(results));
+        assertCollectorSizes(0, 0, 1);
+        MessageFlags messageFlags = (MessageFlags) collector.getFlaggedList(
+                true).get(0);
+        assertEquals(1000, messageFlags.getUid());
+        assertEquals(new Flags(Flags.Flag.SEEN), messageFlags.getFlags());
+
+        results[0] = new MessageResultImpl(1000l);
+        tracker.found(new UidRange(1000, 1000), Arrays.asList(results));
+        assertCollectorSizes(0, 0, 0);
+
+        results[0] = new MessageResultImpl(1000l, new Flags(Flags.Flag.DRAFT));
+        tracker.found(new UidRange(1000, 1000), Arrays.asList(results));
+        assertCollectorSizes(0, 0, 1);
+
     }
 }

@@ -22,21 +22,25 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-
-public class FetchData
-{
+public class FetchData {
     private boolean flags;
+
     private boolean uid;
+
     private boolean internalDate;
+
     private boolean size;
+
     private boolean envelope;
+
     private boolean body;
+
     private boolean bodyStructure;
-    
+
     private boolean setSeen = false;
-    
+
     private Set bodyElements = new HashSet();
-    
+
     public Collection getBodyElements() {
         return bodyElements;
     }
@@ -101,8 +105,7 @@ public class FetchData
         return setSeen;
     }
 
-    public void add( BodyFetchElement element, boolean peek )
-    {
+    public void add(BodyFetchElement element, boolean peek) {
         if (!peek) {
             setSeen = true;
         }
@@ -113,7 +116,8 @@ public class FetchData
         final int PRIME = 31;
         int result = 1;
         result = PRIME * result + (body ? 1231 : 1237);
-        result = PRIME * result + ((bodyElements == null) ? 0 : bodyElements.hashCode());
+        result = PRIME * result
+                + ((bodyElements == null) ? 0 : bodyElements.hashCode());
         result = PRIME * result + (bodyStructure ? 1231 : 1237);
         result = PRIME * result + (envelope ? 1231 : 1237);
         result = PRIME * result + (flags ? 1231 : 1237);
