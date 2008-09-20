@@ -69,6 +69,10 @@
       <groupId>commons-lang</groupId>
       <artifactId>commons-lang</artifactId>
     </dependency>
+    <dependency>
+      <groupId>commons-io</groupId>
+      <artifactId>commons-io</artifactId>
+    </dependency>
     <!-- used by torque -->
     <dependency>
       <groupId>commons-pool</groupId>
