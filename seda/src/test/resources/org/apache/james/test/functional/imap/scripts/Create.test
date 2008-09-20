@@ -52,6 +52,12 @@ S: \* LIST \(\) "." "alpha.beta"
 S: \* LIST \(\) "." "alpha.beta.gamma"
 S: 18 OK LIST completed.
 
+#
+# When mailbox already exists, ensure message is user friendly
+#
+C: 19 CREATE alpha
+S: 19 NO CREATE failed. Mailbox already exists.
+
 # Cleanup
 C: a1 DELETE test1.subfolder1
 S: a1 OK DELETE completed.

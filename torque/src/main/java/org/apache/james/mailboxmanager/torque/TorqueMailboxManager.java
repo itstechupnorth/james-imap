@@ -138,7 +138,11 @@ public class TorqueMailboxManager implements MailboxManager {
                     }
                     index = namespaceName.indexOf(HIERARCHY_DELIMITER, ++index);
                 }
-                doCreate(namespaceName);
+                if (existsMailbox(namespaceName)) {
+                    throw new MailboxExistsException(namespaceName); 
+                } else {
+                    doCreate(namespaceName);
+                }
             }
         }
     }
