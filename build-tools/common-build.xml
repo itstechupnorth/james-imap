@@ -232,7 +232,7 @@ JAMES requires Ant 1.7 or higher. Please install a more modern version of Ant.
                 <fileset dir="${lib.dir}/${path.lib.james}">
                     <include name="${jars-prefix}mailbox-${version}.jar" />
                     <include name="${jars-prefix}message-${version}.jar" />
-                    <include name="${jars-prefix}codec-${version}.jar" />
+                    <include name="${jars-prefix}decode-${version}.jar" />
                 </fileset>
             </path> 
             <path 
@@ -260,7 +260,7 @@ JAMES requires Ant 1.7 or higher. Please install a more modern version of Ant.
                 <fileset dir="${lib.dir}/${path.lib.james}">
                     <include name="${jars-prefix}mailbox-test-${version}.jar" />
                     <include name="${jars-prefix}message-test-${version}.jar" />
-                    <include name="${jars-prefix}codec-test-${version}.jar" />
+                    <include name="${jars-prefix}decode-test-${version}.jar" />
                 </fileset>
             </path> 
             <path 
