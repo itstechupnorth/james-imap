@@ -17,23 +17,23 @@
  * under the License.                                           *
  ****************************************************************/
 
-package org.apache.james.imapserver.codec.encode.main;
+package org.apache.james.imap.encode.main;
 
-import org.apache.james.imapserver.codec.encode.ImapEncoder;
-import org.apache.james.imapserver.codec.encode.ImapEncoderFactory;
-import org.apache.james.imapserver.codec.encode.base.EndImapEncoder;
-import org.apache.james.imapserver.codec.encode.imap4rev1.ExistsResponseEncoder;
-import org.apache.james.imapserver.codec.encode.imap4rev1.ExpungeResponseEncoder;
-import org.apache.james.imapserver.codec.encode.imap4rev1.FetchResponseEncoder;
-import org.apache.james.imapserver.codec.encode.imap4rev1.FlagsResponseEncoder;
-import org.apache.james.imapserver.codec.encode.imap4rev1.RecentResponseEncoder;
-import org.apache.james.imapserver.codec.encode.imap4rev1.StatusResponseEncoder;
-import org.apache.james.imapserver.codec.encode.imap4rev1.legacy.CapabilityResponseEncoder;
-import org.apache.james.imapserver.codec.encode.imap4rev1.server.LSubResponseEncoder;
-import org.apache.james.imapserver.codec.encode.imap4rev1.server.ListResponseEncoder;
-import org.apache.james.imapserver.codec.encode.imap4rev1.server.STATUSResponseEncoder;
-import org.apache.james.imapserver.codec.encode.imap4rev1.server.SearchResponseEncoder;
-import org.apache.james.imapserver.codec.encode.imap4rev1.status.UntaggedNoResponseEncoder;
+import org.apache.james.imap.encode.ImapEncoder;
+import org.apache.james.imap.encode.ImapEncoderFactory;
+import org.apache.james.imap.encode.base.EndImapEncoder;
+import org.apache.james.imap.encode.imap4rev1.ExistsResponseEncoder;
+import org.apache.james.imap.encode.imap4rev1.ExpungeResponseEncoder;
+import org.apache.james.imap.encode.imap4rev1.FetchResponseEncoder;
+import org.apache.james.imap.encode.imap4rev1.FlagsResponseEncoder;
+import org.apache.james.imap.encode.imap4rev1.RecentResponseEncoder;
+import org.apache.james.imap.encode.imap4rev1.StatusResponseEncoder;
+import org.apache.james.imap.encode.imap4rev1.legacy.CapabilityResponseEncoder;
+import org.apache.james.imap.encode.imap4rev1.server.LSubResponseEncoder;
+import org.apache.james.imap.encode.imap4rev1.server.ListResponseEncoder;
+import org.apache.james.imap.encode.imap4rev1.server.STATUSResponseEncoder;
+import org.apache.james.imap.encode.imap4rev1.server.SearchResponseEncoder;
+import org.apache.james.imap.encode.imap4rev1.status.UntaggedNoResponseEncoder;
 
 /**
  * TODO: perhaps a POJO would be better

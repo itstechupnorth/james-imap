@@ -17,11 +17,11 @@
  * under the License.                                           *
  ****************************************************************/
 
-package org.apache.james.imapserver.processor.imap4rev1;
+package org.apache.james.imap.processor.imap4rev1;
 
 import org.apache.james.api.imap.message.response.imap4rev1.StatusResponseFactory;
 import org.apache.james.api.imap.process.ImapProcessor;
-import org.apache.james.imapserver.processor.imap4rev1.fetch.FetchProcessor;
+import org.apache.james.imap.processor.imap4rev1.fetch.FetchProcessor;
 import org.apache.james.mailboxmanager.manager.MailboxManagerProvider;
 
 /**

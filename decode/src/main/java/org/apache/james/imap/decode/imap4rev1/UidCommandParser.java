@@ -16,18 +16,18 @@
  * specific language governing permissions and limitations      *
  * under the License.                                           *
  ****************************************************************/
-package org.apache.james.imapserver.codec.decode.imap4rev1;
+package org.apache.james.imap.decode.imap4rev1;
 
 import org.apache.james.api.imap.ImapCommand;
 import org.apache.james.api.imap.ImapMessage;
 import org.apache.james.api.imap.imap4rev1.Imap4Rev1CommandFactory;
-import org.apache.james.imapserver.codec.ProtocolException;
-import org.apache.james.imapserver.codec.decode.DelegatingImapCommandParser;
-import org.apache.james.imapserver.codec.decode.ImapCommandParser;
-import org.apache.james.imapserver.codec.decode.ImapCommandParserFactory;
-import org.apache.james.imapserver.codec.decode.ImapRequestLineReader;
-import org.apache.james.imapserver.codec.decode.InitialisableCommandFactory;
-import org.apache.james.imapserver.codec.decode.base.AbstractImapCommandParser;
+import org.apache.james.imap.decode.DelegatingImapCommandParser;
+import org.apache.james.imap.decode.ImapCommandParser;
+import org.apache.james.imap.decode.ImapCommandParserFactory;
+import org.apache.james.imap.decode.ImapRequestLineReader;
+import org.apache.james.imap.decode.InitialisableCommandFactory;
+import org.apache.james.imap.decode.ProtocolException;
+import org.apache.james.imap.decode.base.AbstractImapCommandParser;
 
 class UidCommandParser extends AbstractImapCommandParser implements
         DelegatingImapCommandParser, InitialisableCommandFactory {
@@ -37,7 +37,7 @@ class UidCommandParser extends AbstractImapCommandParser implements
     }
 
     /**
-     * @see org.apache.james.imapserver.codec.decode.InitialisableCommandFactory#init(org.apache.james.api.imap.imap4rev1.Imap4Rev1CommandFactory)
+     * @see org.apache.james.imap.decode.InitialisableCommandFactory#init(org.apache.james.api.imap.imap4rev1.Imap4Rev1CommandFactory)
      */
     public void init(Imap4Rev1CommandFactory factory) {
         final ImapCommand command = factory.getUid();
@@ -45,14 +45,14 @@ class UidCommandParser extends AbstractImapCommandParser implements
     }
 
     /**
-     * @see org.apache.james.imapserver.codec.decode.DelegatingImapCommandParser#getParserFactory()
+     * @see org.apache.james.imap.decode.DelegatingImapCommandParser#getParserFactory()
      */
     public ImapCommandParserFactory getParserFactory() {
         return parserFactory;
     }
 
     /**
-     * @see org.apache.james.imapserver.codec.decode.DelegatingImapCommandParser#setParserFactory(org.apache.james.experimental.imapserver.decode.imap4rev1.Imap4Rev1CommandParserFactory)
+     * @see org.apache.james.imap.decode.DelegatingImapCommandParser#setParserFactory(org.apache.james.imap.decode.imap4rev1.Imap4Rev1CommandParserFactory)
      */
     public void setParserFactory(ImapCommandParserFactory imapCommandFactory) {
         this.parserFactory = imapCommandFactory;

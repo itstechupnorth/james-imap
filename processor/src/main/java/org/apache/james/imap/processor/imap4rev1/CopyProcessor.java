@@ -17,7 +17,7 @@
  * under the License.                                           *
  ****************************************************************/
 
-package org.apache.james.imapserver.processor.imap4rev1;
+package org.apache.james.imap.processor.imap4rev1;
 
 import org.apache.james.api.imap.ImapCommand;
 import org.apache.james.api.imap.ImapMessage;
@@ -29,8 +29,8 @@ import org.apache.james.api.imap.message.response.imap4rev1.StatusResponse.Respo
 import org.apache.james.api.imap.process.ImapProcessor;
 import org.apache.james.api.imap.process.ImapSession;
 import org.apache.james.imap.message.request.imap4rev1.CopyRequest;
-import org.apache.james.imapserver.processor.base.AbstractMailboxAwareProcessor;
-import org.apache.james.imapserver.processor.base.ImapSessionUtils;
+import org.apache.james.imap.processor.base.AbstractMailboxAwareProcessor;
+import org.apache.james.imap.processor.base.ImapSessionUtils;
 import org.apache.james.mailboxmanager.MailboxManagerException;
 import org.apache.james.mailboxmanager.MailboxSession;
 import org.apache.james.mailboxmanager.MessageRange;

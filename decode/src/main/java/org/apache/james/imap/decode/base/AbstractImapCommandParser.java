@@ -17,7 +17,7 @@
  * under the License.                                           *
  ****************************************************************/
 
-package org.apache.james.imapserver.codec.decode.base;
+package org.apache.james.imap.decode.base;
 
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
@@ -42,11 +42,11 @@ import org.apache.james.api.imap.imap4rev1.Imap4Rev1MessageFactory;
 import org.apache.james.api.imap.message.IdRange;
 import org.apache.james.api.imap.message.request.DayMonthYear;
 import org.apache.james.api.imap.message.response.imap4rev1.StatusResponseFactory;
-import org.apache.james.imapserver.codec.ProtocolException;
-import org.apache.james.imapserver.codec.decode.DecoderUtils;
-import org.apache.james.imapserver.codec.decode.ImapCommandParser;
-import org.apache.james.imapserver.codec.decode.ImapRequestLineReader;
-import org.apache.james.imapserver.codec.decode.MessagingImapCommandParser;
+import org.apache.james.imap.decode.DecoderUtils;
+import org.apache.james.imap.decode.ImapCommandParser;
+import org.apache.james.imap.decode.ImapRequestLineReader;
+import org.apache.james.imap.decode.MessagingImapCommandParser;
+import org.apache.james.imap.decode.ProtocolException;
 
 /**
  * <p>
@@ -80,14 +80,14 @@ public abstract class AbstractImapCommandParser extends AbstractLogEnabled
     }
 
     /**
-     * @see org.apache.james.imapserver.codec.decode.MessagingImapCommandParser#getMessageFactory()
+     * @see org.apache.james.imap.decode.MessagingImapCommandParser#getMessageFactory()
      */
     public Imap4Rev1MessageFactory getMessageFactory() {
         return messageFactory;
     }
 
     /**
-     * @see org.apache.james.imapserver.codec.decode.MessagingImapCommandParser#setMessageFactory(org.apache.james.api.imap.imap4rev1.Imap4Rev1MessageFactory)
+     * @see org.apache.james.imap.decode.MessagingImapCommandParser#setMessageFactory(org.apache.james.api.imap.imap4rev1.Imap4Rev1MessageFactory)
      */
     public void setMessageFactory(Imap4Rev1MessageFactory messageFactory) {
         this.messageFactory = messageFactory;

@@ -17,7 +17,9 @@
  * under the License.                                           *
  ****************************************************************/
 
-package org.apache.james.imapserver.codec.decode;
+package org.apache.james.imap.decode;
+
+import org.apache.james.imap.decode.DecoderUtils;
 
 import java.util.Locale;
 

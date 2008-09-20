@@ -17,7 +17,7 @@
  * under the License.                                           *
  ****************************************************************/
 
-package org.apache.james.imapserver.codec.encode.imap4rev1;
+package org.apache.james.imap.encode.imap4rev1;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -28,9 +28,9 @@ import org.apache.james.api.imap.display.HumanReadableTextKey;
 import org.apache.james.api.imap.message.response.imap4rev1.StatusResponse;
 import org.apache.james.api.imap.message.response.imap4rev1.StatusResponse.ResponseCode;
 import org.apache.james.api.imap.message.response.imap4rev1.StatusResponse.Type;
-import org.apache.james.imapserver.codec.encode.ImapEncoder;
-import org.apache.james.imapserver.codec.encode.ImapResponseComposer;
-import org.apache.james.imapserver.codec.encode.base.AbstractChainedImapEncoder;
+import org.apache.james.imap.encode.ImapEncoder;
+import org.apache.james.imap.encode.ImapResponseComposer;
+import org.apache.james.imap.encode.base.AbstractChainedImapEncoder;
 
 public class StatusResponseEncoder extends AbstractChainedImapEncoder {
 

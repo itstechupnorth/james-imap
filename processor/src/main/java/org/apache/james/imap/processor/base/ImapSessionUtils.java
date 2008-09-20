@@ -17,7 +17,7 @@
  * under the License.                                           *
  ****************************************************************/
 
-package org.apache.james.imapserver.processor.base;
+package org.apache.james.imap.processor.base;
 
 import java.util.Iterator;
 import java.util.List;

@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations      *
  * under the License.                                           *
  ****************************************************************/
-package org.apache.james.imapserver.codec.decode;
+package org.apache.james.imap.decode;
 
 import org.apache.james.api.imap.imap4rev1.Imap4Rev1MessageFactory;
 import org.apache.james.api.imap.message.response.imap4rev1.StatusResponseFactory;

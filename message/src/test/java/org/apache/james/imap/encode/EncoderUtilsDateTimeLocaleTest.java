@@ -17,7 +17,9 @@
  * under the License.                                           *
  ****************************************************************/
 
-package org.apache.james.imapserver.codec.encode;
+package org.apache.james.imap.encode;
+
+import org.apache.james.imap.encode.EncoderUtils;
 
 import java.util.Date;
 import java.util.Locale;

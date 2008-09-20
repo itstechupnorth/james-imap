@@ -17,7 +17,7 @@
  * under the License.                                           *
  ****************************************************************/
 
-package org.apache.james.imapserver.codec.encode.imap4rev1;
+package org.apache.james.imap.encode.imap4rev1;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -33,12 +33,12 @@ import javax.mail.Flags;
 import org.apache.commons.logging.Log;
 import org.apache.james.api.imap.ImapConstants;
 import org.apache.james.api.imap.ImapMessage;
+import org.apache.james.imap.encode.EncoderUtils;
+import org.apache.james.imap.encode.ImapEncoder;
+import org.apache.james.imap.encode.ImapResponseComposer;
+import org.apache.james.imap.encode.base.AbstractChainedImapEncoder;
 import org.apache.james.imap.message.response.imap4rev1.FetchResponse;
 import org.apache.james.imap.message.response.imap4rev1.FetchResponse.Structure;
-import org.apache.james.imapserver.codec.encode.EncoderUtils;
-import org.apache.james.imapserver.codec.encode.ImapEncoder;
-import org.apache.james.imapserver.codec.encode.ImapResponseComposer;
-import org.apache.james.imapserver.codec.encode.base.AbstractChainedImapEncoder;
 
 public class FetchResponseEncoder extends AbstractChainedImapEncoder {
 

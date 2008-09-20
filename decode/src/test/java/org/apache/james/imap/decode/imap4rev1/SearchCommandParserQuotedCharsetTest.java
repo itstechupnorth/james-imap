@@ -17,7 +17,7 @@
  * under the License.                                           *
  ****************************************************************/
 
-package org.apache.james.imapserver.codec.decode.imap4rev1;
+package org.apache.james.imap.decode.imap4rev1;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -35,8 +35,9 @@ import org.apache.james.api.imap.imap4rev1.Imap4Rev1MessageFactory;
 import org.apache.james.api.imap.message.request.SearchKey;
 import org.apache.james.api.imap.message.response.imap4rev1.StatusResponse;
 import org.apache.james.api.imap.message.response.imap4rev1.StatusResponseFactory;
-import org.apache.james.imapserver.codec.ProtocolException;
-import org.apache.james.imapserver.codec.decode.ImapRequestLineReader;
+import org.apache.james.imap.decode.ImapRequestLineReader;
+import org.apache.james.imap.decode.ProtocolException;
+import org.apache.james.imap.decode.imap4rev1.SearchCommandParser;
 import org.jmock.Mock;
 import org.jmock.MockObjectTestCase;
 

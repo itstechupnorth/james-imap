@@ -17,7 +17,7 @@
  * under the License.                                           *
  ****************************************************************/
 
-package org.apache.james.imapserver.processor.base;
+package org.apache.james.imap.processor.base;
 
 /**
  * Thrown when a user attempts to do something (e.g. alter mailbox) for which

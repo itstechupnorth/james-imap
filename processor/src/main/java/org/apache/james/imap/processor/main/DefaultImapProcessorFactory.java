@@ -17,15 +17,15 @@
  * under the License.                                           *
  ****************************************************************/
 
-package org.apache.james.imapserver.processor.main;
+package org.apache.james.imap.processor.main;
 
 import org.apache.james.api.imap.message.response.imap4rev1.StatusResponseFactory;
 import org.apache.james.api.imap.process.ImapProcessor;
 import org.apache.james.api.imap.process.ImapProcessorFactory;
 import org.apache.james.imap.message.response.imap4rev1.status.UnpooledStatusResponseFactory;
-import org.apache.james.imapserver.processor.base.ImapResponseMessageProcessor;
-import org.apache.james.imapserver.processor.base.UnknownRequestImapProcessor;
-import org.apache.james.imapserver.processor.imap4rev1.Imap4Rev1ProcessorFactory;
+import org.apache.james.imap.processor.base.ImapResponseMessageProcessor;
+import org.apache.james.imap.processor.base.UnknownRequestImapProcessor;
+import org.apache.james.imap.processor.imap4rev1.Imap4Rev1ProcessorFactory;
 import org.apache.james.mailboxmanager.manager.MailboxManagerProvider;
 
 /**

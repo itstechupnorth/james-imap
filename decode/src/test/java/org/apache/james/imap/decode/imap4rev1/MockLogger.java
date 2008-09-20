@@ -20,7 +20,7 @@
 /**
  * 
  */
-package org.apache.james.imapserver.codec.decode.imap4rev1;
+package org.apache.james.imap.decode.imap4rev1;
 
 import org.apache.commons.logging.Log;
 

@@ -17,7 +17,7 @@
  * under the License.                                           *
  ****************************************************************/
 
-package org.apache.james.imapserver.codec.decode.imap4rev1;
+package org.apache.james.imap.decode.imap4rev1;
 
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;

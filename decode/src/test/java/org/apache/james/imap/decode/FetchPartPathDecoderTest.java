@@ -17,12 +17,12 @@
  * under the License.                                           *
  ****************************************************************/
 
-package org.apache.james.imapserver.codec.decode;
+package org.apache.james.imap.decode;
 
 import java.util.Collection;
 import java.util.Iterator;
 
-import org.apache.james.imapserver.codec.ProtocolException;
+import org.apache.james.imap.decode.FetchPartPathDecoder;
 
 import junit.framework.TestCase;
 

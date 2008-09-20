@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations      *
  * under the License.                                           *
  ****************************************************************/
-package org.apache.james.imapserver.codec.decode.main;
+package org.apache.james.imap.decode.main;
 
 import org.apache.commons.logging.Log;
 import org.apache.james.api.imap.AbstractLogEnabled;
@@ -25,12 +25,12 @@ import org.apache.james.api.imap.ImapSessionState;
 import org.apache.james.api.imap.display.HumanReadableTextKey;
 import org.apache.james.api.imap.imap4rev1.Imap4Rev1MessageFactory;
 import org.apache.james.api.imap.process.ImapSession;
-import org.apache.james.imapserver.codec.ProtocolException;
-import org.apache.james.imapserver.codec.decode.ImapCommandParser;
-import org.apache.james.imapserver.codec.decode.ImapCommandParserFactory;
-import org.apache.james.imapserver.codec.decode.ImapDecoder;
-import org.apache.james.imapserver.codec.decode.ImapRequestLineReader;
-import org.apache.james.imapserver.codec.decode.base.AbstractImapCommandParser;
+import org.apache.james.imap.decode.ImapCommandParser;
+import org.apache.james.imap.decode.ImapCommandParserFactory;
+import org.apache.james.imap.decode.ImapDecoder;
+import org.apache.james.imap.decode.ImapRequestLineReader;
+import org.apache.james.imap.decode.ProtocolException;
+import org.apache.james.imap.decode.base.AbstractImapCommandParser;
 
 public class DefaultImapDecoder extends AbstractLogEnabled implements
         ImapDecoder {

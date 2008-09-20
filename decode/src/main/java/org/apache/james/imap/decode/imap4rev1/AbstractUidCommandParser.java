@@ -17,13 +17,13 @@
  * under the License.                                           *
  ****************************************************************/
 
-package org.apache.james.imapserver.codec.decode.imap4rev1;
+package org.apache.james.imap.decode.imap4rev1;
 
 import org.apache.james.api.imap.ImapCommand;
 import org.apache.james.api.imap.ImapMessage;
-import org.apache.james.imapserver.codec.ProtocolException;
-import org.apache.james.imapserver.codec.decode.ImapRequestLineReader;
-import org.apache.james.imapserver.codec.decode.base.AbstractImapCommandParser;
+import org.apache.james.imap.decode.ImapRequestLineReader;
+import org.apache.james.imap.decode.ProtocolException;
+import org.apache.james.imap.decode.base.AbstractImapCommandParser;
 
 abstract class AbstractUidCommandParser extends AbstractImapCommandParser {
 

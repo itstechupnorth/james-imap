@@ -17,7 +17,7 @@
  * under the License.                                           *
  ****************************************************************/
 
-package org.apache.james.imapserver.codec.encode.base;
+package org.apache.james.imap.encode.base;
 
 import java.io.OutputStream;
 import java.io.PrintWriter;

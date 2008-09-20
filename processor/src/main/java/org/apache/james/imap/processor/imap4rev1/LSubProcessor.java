@@ -17,7 +17,7 @@
  * under the License.                                           *
  ****************************************************************/
 
-package org.apache.james.imapserver.processor.imap4rev1;
+package org.apache.james.imap.processor.imap4rev1;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -33,8 +33,8 @@ import org.apache.james.api.imap.process.ImapProcessor;
 import org.apache.james.api.imap.process.ImapSession;
 import org.apache.james.imap.message.request.imap4rev1.LsubRequest;
 import org.apache.james.imap.message.response.imap4rev1.server.LSubResponse;
-import org.apache.james.imapserver.processor.base.AbstractMailboxAwareProcessor;
-import org.apache.james.imapserver.processor.base.ImapSessionUtils;
+import org.apache.james.imap.processor.base.AbstractMailboxAwareProcessor;
+import org.apache.james.imap.processor.base.ImapSessionUtils;
 import org.apache.james.mailboxmanager.MailboxManagerException;
 import org.apache.james.mailboxmanager.manager.MailboxExpression;
 import org.apache.james.mailboxmanager.manager.MailboxManager;

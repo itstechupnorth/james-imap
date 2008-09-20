@@ -20,8 +20,8 @@
 package org.apache.james.imap.main;
 
 import org.apache.james.api.imap.process.ImapProcessor;
-import org.apache.james.imapserver.codec.decode.ImapDecoder;
-import org.apache.james.imapserver.codec.encode.ImapEncoder;
+import org.apache.james.imap.decode.ImapDecoder;
+import org.apache.james.imap.encode.ImapEncoder;
 
 /**
  * Provides a number of server-wide constant values to the ImapHandlers

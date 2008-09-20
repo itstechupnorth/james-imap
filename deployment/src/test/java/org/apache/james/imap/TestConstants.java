@@ -17,7 +17,7 @@
  * under the License.                                           *
  ****************************************************************/
 
-package org.apache.james.imapserver;
+package org.apache.james.imap;
 
 public interface TestConstants {
     final static String USER_NAME = "tuser";

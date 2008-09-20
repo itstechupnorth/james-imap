@@ -17,7 +17,7 @@
  * under the License.                                           *
  ****************************************************************/
 
-package org.apache.james.imapserver.codec.encode.base;
+package org.apache.james.imap.encode.base;
 
 import java.util.Collection;
 import java.util.List;
@@ -25,7 +25,8 @@ import java.util.List;
 import javax.mail.Flags;
 
 import org.apache.james.api.imap.ImapCommand;
-import org.apache.james.imapserver.codec.encode.AbstractTestImapResponseComposer;
+import org.apache.james.imap.encode.AbstractTestImapResponseComposer;
+import org.apache.james.imap.encode.base.ImapResponseComposerImpl;
 
 public class ImapResponseComposerImplTest extends
         AbstractTestImapResponseComposer {

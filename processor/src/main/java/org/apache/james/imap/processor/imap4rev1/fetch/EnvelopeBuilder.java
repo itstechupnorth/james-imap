@@ -20,7 +20,7 @@
 /**
  * 
  */
-package org.apache.james.imapserver.processor.imap4rev1.fetch;
+package org.apache.james.imap.processor.imap4rev1.fetch;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -17,7 +17,7 @@
  * under the License.                                           *
  ****************************************************************/
 
-package org.apache.james.imapserver.processor.imap4rev1;
+package org.apache.james.imap.processor.imap4rev1;
 
 import org.apache.james.api.imap.ImapCommand;
 import org.apache.james.api.imap.ImapMessage;
@@ -28,8 +28,8 @@ import org.apache.james.api.imap.process.ImapProcessor;
 import org.apache.james.api.imap.process.ImapSession;
 import org.apache.james.imap.message.request.imap4rev1.CapabilityRequest;
 import org.apache.james.imap.message.response.imap4rev1.legacy.CapabilityResponse;
-import org.apache.james.imapserver.processor.base.AbstractImapRequestProcessor;
-import org.apache.james.imapserver.processor.base.ImapSessionUtils;
+import org.apache.james.imap.processor.base.AbstractImapRequestProcessor;
+import org.apache.james.imap.processor.base.ImapSessionUtils;
 
 public class CapabilityProcessor extends AbstractImapRequestProcessor {
 

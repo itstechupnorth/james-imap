@@ -17,7 +17,7 @@
  * under the License.                                           *
  ****************************************************************/
 
-package org.apache.james.imapserver.codec.decode.base;
+package org.apache.james.imap.decode.base;
 
 import java.io.FilterInputStream;
 import java.io.IOException;

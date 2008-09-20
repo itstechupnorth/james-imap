@@ -17,15 +17,15 @@
  * under the License.                                           *
  ****************************************************************/
 
-package org.apache.james.imapserver.codec.encode.base;
+package org.apache.james.imap.encode.base;
 
 import java.io.IOException;
 
 import org.apache.commons.logging.Log;
 import org.apache.james.api.imap.AbstractLogEnabled;
 import org.apache.james.api.imap.ImapMessage;
-import org.apache.james.imapserver.codec.encode.ImapEncoder;
-import org.apache.james.imapserver.codec.encode.ImapResponseComposer;
+import org.apache.james.imap.encode.ImapEncoder;
+import org.apache.james.imap.encode.ImapResponseComposer;
 
 public class EndImapEncoder extends AbstractLogEnabled implements ImapEncoder {
 

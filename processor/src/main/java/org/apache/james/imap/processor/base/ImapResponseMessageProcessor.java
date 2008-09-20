@@ -17,7 +17,7 @@
  * under the License.                                           *
  ****************************************************************/
 
-package org.apache.james.imapserver.processor.base;
+package org.apache.james.imap.processor.base;
 
 import org.apache.james.api.imap.ImapMessage;
 import org.apache.james.api.imap.message.response.ImapResponseMessage;

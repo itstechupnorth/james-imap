@@ -17,7 +17,7 @@
  * under the License.                                           *
  ****************************************************************/
 
-package org.apache.james.imapserver.codec.encode.base;
+package org.apache.james.imap.encode.base;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -26,8 +26,8 @@ import java.util.Iterator;
 import org.apache.commons.logging.Log;
 import org.apache.james.api.imap.AbstractLogEnabled;
 import org.apache.james.api.imap.ImapMessage;
-import org.apache.james.imapserver.codec.encode.ImapEncoder;
-import org.apache.james.imapserver.codec.encode.ImapResponseComposer;
+import org.apache.james.imap.encode.ImapEncoder;
+import org.apache.james.imap.encode.ImapResponseComposer;
 
 abstract public class AbstractChainedImapEncoder extends AbstractLogEnabled
         implements ImapEncoder {

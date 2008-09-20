@@ -22,10 +22,10 @@ package org.apache.james.imap.functional;
 import java.io.File;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.james.imap.encode.main.DefaultImapEncoderFactory;
 import org.apache.james.imap.main.DefaultImapDecoderFactory;
-import org.apache.james.imapserver.codec.encode.main.DefaultImapEncoderFactory;
-import org.apache.james.imapserver.mock.MailboxManagerProviderSingleton;
-import org.apache.james.imapserver.processor.main.DefaultImapProcessorFactory;
+import org.apache.james.imap.mock.MailboxManagerProviderSingleton;
+import org.apache.james.imap.processor.main.DefaultImapProcessorFactory;
 import org.apache.james.mailboxmanager.mock.TorqueMailboxManagerProviderSingleton;
 import org.apache.james.test.functional.imap.HostSystem;
 

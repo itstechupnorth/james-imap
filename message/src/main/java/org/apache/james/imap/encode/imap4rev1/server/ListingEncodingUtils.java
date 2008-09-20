@@ -17,15 +17,15 @@
  * under the License.                                           *
  ****************************************************************/
 
-package org.apache.james.imapserver.codec.encode.imap4rev1.server;
+package org.apache.james.imap.encode.imap4rev1.server;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.james.api.imap.ImapConstants;
+import org.apache.james.imap.encode.ImapResponseComposer;
 import org.apache.james.imap.message.response.imap4rev1.server.AbstractListingResponse;
-import org.apache.james.imapserver.codec.encode.ImapResponseComposer;
 
 public class ListingEncodingUtils {
 

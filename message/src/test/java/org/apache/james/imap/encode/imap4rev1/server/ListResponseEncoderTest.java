@@ -17,12 +17,13 @@
  * under the License.                                           *
  ****************************************************************/
 
-package org.apache.james.imapserver.codec.encode.imap4rev1.server;
+package org.apache.james.imap.encode.imap4rev1.server;
 
 import org.apache.james.api.imap.ImapMessage;
+import org.apache.james.imap.encode.ImapEncoder;
+import org.apache.james.imap.encode.ImapResponseComposer;
+import org.apache.james.imap.encode.imap4rev1.server.SearchResponseEncoder;
 import org.apache.james.imap.message.response.imap4rev1.server.SearchResponse;
-import org.apache.james.imapserver.codec.encode.ImapEncoder;
-import org.apache.james.imapserver.codec.encode.ImapResponseComposer;
 import org.jmock.Mock;
 import org.jmock.MockObjectTestCase;
 

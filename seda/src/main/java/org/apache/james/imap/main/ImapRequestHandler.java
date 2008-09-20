@@ -32,12 +32,12 @@ import org.apache.james.api.imap.process.ImapProcessor;
 import org.apache.james.api.imap.process.ImapSession;
 import org.apache.james.api.imap.process.SelectedImapMailbox;
 import org.apache.james.api.imap.process.ImapProcessor.Responder;
-import org.apache.james.imapserver.codec.ProtocolException;
-import org.apache.james.imapserver.codec.decode.ImapDecoder;
-import org.apache.james.imapserver.codec.decode.ImapRequestLineReader;
-import org.apache.james.imapserver.codec.encode.ImapEncoder;
-import org.apache.james.imapserver.codec.encode.ImapResponseComposer;
-import org.apache.james.imapserver.codec.encode.base.ImapResponseComposerImpl;
+import org.apache.james.imap.decode.ImapDecoder;
+import org.apache.james.imap.decode.ImapRequestLineReader;
+import org.apache.james.imap.decode.ProtocolException;
+import org.apache.james.imap.encode.ImapEncoder;
+import org.apache.james.imap.encode.ImapResponseComposer;
+import org.apache.james.imap.encode.base.ImapResponseComposerImpl;
 
 /**
  * @version $Revision: 109034 $

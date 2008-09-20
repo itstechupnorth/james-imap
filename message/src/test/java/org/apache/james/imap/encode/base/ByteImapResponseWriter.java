@@ -17,7 +17,7 @@
  * under the License.                                           *
  ****************************************************************/
 
-package org.apache.james.imapserver.codec.encode.base;
+package org.apache.james.imap.encode.base;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -27,8 +27,8 @@ import java.nio.channels.WritableByteChannel;
 
 import org.apache.james.api.imap.AbstractLogEnabled;
 import org.apache.james.api.imap.ImapConstants;
+import org.apache.james.imap.encode.ImapResponseWriter;
 import org.apache.james.imap.message.response.imap4rev1.Literal;
-import org.apache.james.imapserver.codec.encode.ImapResponseWriter;
 
 /**
  * Class providing methods to send response messages from the server to the

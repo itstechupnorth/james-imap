@@ -17,7 +17,7 @@
  * under the License.                                           *
  ****************************************************************/
 
-package org.apache.james.imapserver.mock;
+package org.apache.james.imap.mock;
 
 import org.apache.james.mailboxmanager.manager.MailboxManagerProvider;
 import org.apache.james.mailboxmanager.mock.TorqueMailboxManagerProviderSingleton;

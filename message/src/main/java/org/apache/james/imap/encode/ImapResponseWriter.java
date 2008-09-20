@@ -17,7 +17,7 @@
  * under the License.                                           *
  ****************************************************************/
 
-package org.apache.james.imapserver.codec.encode;
+package org.apache.james.imap.encode;
 
 import java.io.IOException;
 

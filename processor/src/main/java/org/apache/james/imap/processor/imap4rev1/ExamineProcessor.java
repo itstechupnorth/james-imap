@@ -17,7 +17,7 @@
  * under the License.                                           *
  ****************************************************************/
 
-package org.apache.james.imapserver.processor.imap4rev1;
+package org.apache.james.imap.processor.imap4rev1;
 
 import org.apache.james.api.imap.ImapMessage;
 import org.apache.james.api.imap.message.response.imap4rev1.StatusResponseFactory;

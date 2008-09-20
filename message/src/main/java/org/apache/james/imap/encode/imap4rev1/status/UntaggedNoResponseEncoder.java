@@ -17,15 +17,15 @@
  * under the License.                                           *
  ****************************************************************/
 
-package org.apache.james.imapserver.codec.encode.imap4rev1.status;
+package org.apache.james.imap.encode.imap4rev1.status;
 
 import java.io.IOException;
 
 import org.apache.james.api.imap.ImapMessage;
+import org.apache.james.imap.encode.ImapEncoder;
+import org.apache.james.imap.encode.ImapResponseComposer;
+import org.apache.james.imap.encode.base.AbstractChainedImapEncoder;
 import org.apache.james.imap.message.response.imap4rev1.status.UntaggedNoResponse;
-import org.apache.james.imapserver.codec.encode.ImapEncoder;
-import org.apache.james.imapserver.codec.encode.ImapResponseComposer;
-import org.apache.james.imapserver.codec.encode.base.AbstractChainedImapEncoder;
 
 public class UntaggedNoResponseEncoder extends AbstractChainedImapEncoder {
 

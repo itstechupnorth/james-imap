@@ -17,7 +17,7 @@
  * under the License.                                           *
  ****************************************************************/
 
-package org.apache.james.imapserver.codec.decode.imap4rev1;
+package org.apache.james.imap.decode.imap4rev1;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -28,11 +28,11 @@ import org.apache.james.api.imap.ImapConstants;
 import org.apache.james.api.imap.imap4rev1.Imap4Rev1CommandFactory;
 import org.apache.james.api.imap.imap4rev1.Imap4Rev1MessageFactory;
 import org.apache.james.api.imap.message.response.imap4rev1.StatusResponseFactory;
-import org.apache.james.imapserver.codec.decode.DelegatingImapCommandParser;
-import org.apache.james.imapserver.codec.decode.ImapCommandParser;
-import org.apache.james.imapserver.codec.decode.ImapCommandParserFactory;
-import org.apache.james.imapserver.codec.decode.InitialisableCommandFactory;
-import org.apache.james.imapserver.codec.decode.MessagingImapCommandParser;
+import org.apache.james.imap.decode.DelegatingImapCommandParser;
+import org.apache.james.imap.decode.ImapCommandParser;
+import org.apache.james.imap.decode.ImapCommandParserFactory;
+import org.apache.james.imap.decode.InitialisableCommandFactory;
+import org.apache.james.imap.decode.MessagingImapCommandParser;
 
 /**
  * A factory for ImapCommand instances, provided based on the command name.
@@ -131,10 +131,8 @@ public class Imap4Rev1CommandParserFactory extends AbstractLogEnabled implements
                 UidCommandParser.class);
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.apache.james.experimental.imapserver.decode.imap4rev1.ImapCommandParserFactory#getParser(java.lang.String)
+    /**
+     * @see org.apache.james.imap.decode.imap4rev1.ImapCommandParserFactory#getParser(java.lang.String)
      */
     public ImapCommandParser getParser(String commandName) {
         Class cmdClass = (Class) _imapCommands.get(commandName.toUpperCase());

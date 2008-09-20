@@ -17,12 +17,11 @@
  * under the License.                                           *
  ****************************************************************/
 
-package org.apache.james.imapserver.codec.decode;
+package org.apache.james.imap.decode;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.james.imapserver.codec.ProtocolException;
 
 public class FetchPartPathDecoder {
 

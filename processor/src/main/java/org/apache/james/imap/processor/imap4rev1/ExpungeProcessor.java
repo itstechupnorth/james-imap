@@ -17,7 +17,7 @@
  * under the License.                                           *
  ****************************************************************/
 
-package org.apache.james.imapserver.processor.imap4rev1;
+package org.apache.james.imap.processor.imap4rev1;
 
 import java.util.Iterator;
 
@@ -30,8 +30,8 @@ import org.apache.james.api.imap.process.ImapProcessor;
 import org.apache.james.api.imap.process.ImapSession;
 import org.apache.james.api.imap.process.SelectedImapMailbox;
 import org.apache.james.imap.message.request.imap4rev1.ExpungeRequest;
-import org.apache.james.imapserver.processor.base.AbstractImapRequestProcessor;
-import org.apache.james.imapserver.processor.base.ImapSessionUtils;
+import org.apache.james.imap.processor.base.AbstractImapRequestProcessor;
+import org.apache.james.imap.processor.base.ImapSessionUtils;
 import org.apache.james.mailboxmanager.MailboxManagerException;
 import org.apache.james.mailboxmanager.MessageResult;
 import org.apache.james.mailboxmanager.impl.FetchGroupImpl;

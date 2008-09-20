@@ -16,17 +16,17 @@
  * specific language governing permissions and limitations      *
  * under the License.                                           *
  ****************************************************************/
-package org.apache.james.imapserver.codec.encode.imap4rev1.server;
+package org.apache.james.imap.encode.imap4rev1.server;
 
 import java.io.IOException;
 
 import org.apache.james.api.imap.ImapConstants;
 import org.apache.james.api.imap.ImapMessage;
+import org.apache.james.imap.encode.ImapEncoder;
+import org.apache.james.imap.encode.ImapResponseComposer;
+import org.apache.james.imap.encode.base.AbstractChainedImapEncoder;
 import org.apache.james.imap.message.response.imap4rev1.server.AbstractListingResponse;
 import org.apache.james.imap.message.response.imap4rev1.server.ListResponse;
-import org.apache.james.imapserver.codec.encode.ImapEncoder;
-import org.apache.james.imapserver.codec.encode.ImapResponseComposer;
-import org.apache.james.imapserver.codec.encode.base.AbstractChainedImapEncoder;
 
 /**
  * Encoders IMAP4rev1 <code>List</code> responses.

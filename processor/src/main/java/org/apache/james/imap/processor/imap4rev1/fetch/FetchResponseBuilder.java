@@ -20,7 +20,7 @@
 /**
  * 
  */
-package org.apache.james.imapserver.processor.imap4rev1.fetch;
+package org.apache.james.imap.processor.imap4rev1.fetch;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -37,7 +37,7 @@ import org.apache.james.api.imap.message.FetchData;
 import org.apache.james.api.imap.process.ImapSession;
 import org.apache.james.api.imap.process.SelectedImapMailbox;
 import org.apache.james.imap.message.response.imap4rev1.FetchResponse;
-import org.apache.james.imapserver.processor.base.ImapSessionUtils;
+import org.apache.james.imap.processor.base.ImapSessionUtils;
 import org.apache.james.mailboxmanager.Headers;
 import org.apache.james.mailboxmanager.MailboxManagerException;
 import org.apache.james.mailboxmanager.MailboxSession;

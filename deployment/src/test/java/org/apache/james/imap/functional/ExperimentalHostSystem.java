@@ -30,10 +30,10 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.apache.james.api.imap.process.ImapProcessor;
+import org.apache.james.imap.decode.ImapDecoder;
+import org.apache.james.imap.encode.ImapEncoder;
 import org.apache.james.imap.main.ImapRequestHandler;
 import org.apache.james.imap.main.ImapSessionImpl;
-import org.apache.james.imapserver.codec.decode.ImapDecoder;
-import org.apache.james.imapserver.codec.encode.ImapEncoder;
 import org.apache.james.mailboxmanager.mock.TorqueMailboxManagerProviderSingleton;
 import org.apache.james.test.functional.imap.HostSystem;
 

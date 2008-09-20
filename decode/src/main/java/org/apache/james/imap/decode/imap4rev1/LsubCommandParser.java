@@ -16,12 +16,12 @@
  * specific language governing permissions and limitations      *
  * under the License.                                           *
  ****************************************************************/
-package org.apache.james.imapserver.codec.decode.imap4rev1;
+package org.apache.james.imap.decode.imap4rev1;
 
 import org.apache.james.api.imap.ImapCommand;
 import org.apache.james.api.imap.ImapMessage;
 import org.apache.james.api.imap.imap4rev1.Imap4Rev1CommandFactory;
-import org.apache.james.imapserver.codec.decode.InitialisableCommandFactory;
+import org.apache.james.imap.decode.InitialisableCommandFactory;
 
 class LsubCommandParser extends ListCommandParser implements
         InitialisableCommandFactory {
@@ -30,7 +30,7 @@ class LsubCommandParser extends ListCommandParser implements
     }
 
     /**
-     * @see org.apache.james.imapserver.codec.decode.InitialisableCommandFactory#init(org.apache.james.api.imap.imap4rev1.Imap4Rev1CommandFactory)
+     * @see org.apache.james.imap.decode.InitialisableCommandFactory#init(org.apache.james.api.imap.imap4rev1.Imap4Rev1CommandFactory)
      */
     public void init(Imap4Rev1CommandFactory factory) {
         final ImapCommand command = factory.getLsub();

@@ -17,14 +17,14 @@
  * under the License.                                           *
  ****************************************************************/
 
-package org.apache.james.imapserver.codec.encode.imap4rev1.legacy;
+package org.apache.james.imap.encode.imap4rev1.legacy;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.james.imap.encode.ImapResponseWriter;
 import org.apache.james.imap.message.response.imap4rev1.Literal;
-import org.apache.james.imapserver.codec.encode.ImapResponseWriter;
 
 public class MockImapResponseWriter implements ImapResponseWriter {
 

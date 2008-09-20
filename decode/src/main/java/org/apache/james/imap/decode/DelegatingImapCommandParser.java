@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations      *
  * under the License.                                           *
  ****************************************************************/
-package org.apache.james.imapserver.codec.decode;
+package org.apache.james.imap.decode;
 
 public interface DelegatingImapCommandParser {
 
