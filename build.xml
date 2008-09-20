@@ -31,7 +31,7 @@ Master build file for JAMES IMAP.
  -->
  <property name='module.api' location='api'/>
  <property name='module.message' location='message'/>
- <property name='module.codec' location='codec'/>
+ <property name='module.decode' location='decode'/>
  <property name='module.mailbox' location='mailbox'/>
  <property name='module.processor' location='processor'/>
  <property name='module.seda' location='seda'/>
@@ -53,7 +53,7 @@ Master build file for JAMES IMAP.
               <filelist dir='${basedir}'>
                  <file name='${module.api}'/>
                  <file name='${module.message}'/>
-                 <file name='${module.codec}'/>
+                 <file name='${module.decode}'/>
                  <file name='${module.mailbox}'/>
                  <file name='${module.processor}'/>
                  <file name='${module.seda}'/>

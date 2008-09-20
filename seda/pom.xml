@@ -38,7 +38,7 @@
     </dependency>
     <dependency>
       <groupId>org.apache.james</groupId>
-      <artifactId>apache-james-imap-codec</artifactId>
+      <artifactId>apache-james-imap-decode</artifactId>
     </dependency>
     <dependency>
       <groupId>concurrent</groupId>

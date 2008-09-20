@@ -37,7 +37,7 @@
     <module>stage</module>
     <module>api</module>
     <module>message</module>
-    <module>codec</module>
+    <module>decode</module>
     <module>mailbox</module>
     <module>processor</module>
     <module>torque</module>
@@ -215,7 +215,7 @@
     </dependency>
     <dependency>
       <groupId>org.apache.james</groupId>
-      <artifactId>apache-james-imap-codec</artifactId>
+      <artifactId>apache-james-imap-decode</artifactId>
       <version>0.1-SNAPSHOT</version>
     </dependency>
     <dependency>
