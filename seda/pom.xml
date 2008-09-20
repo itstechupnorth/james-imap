@@ -26,7 +26,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.apache.james</groupId>
   <artifactId>apache-james-imap-seda</artifactId>
-  <name>Apache JAMES *Experimental* IMAP function</name>
+  <name>Apache JAMES IMAP function</name>
   <dependencies>
     <dependency>
       <groupId>org.apache.james</groupId>
