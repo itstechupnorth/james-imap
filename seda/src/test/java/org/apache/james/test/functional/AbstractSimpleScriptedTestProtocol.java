@@ -31,7 +31,7 @@ import java.util.Locale;
  * session file.
  */
 public abstract class AbstractSimpleScriptedTestProtocol extends
-        AbstractProtocolTest {
+        AbstractProtocolTestFramework {
     private FileProtocolSessionBuilder builder = new FileProtocolSessionBuilder();
 
     private static final Locale BASE_DEFAULT_LOCALE = Locale.getDefault();

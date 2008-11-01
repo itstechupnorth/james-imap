@@ -31,7 +31,7 @@ import junit.framework.TestCase;
  * @author Darrell DeBoer
  * @author Andrew C. Oliver
  */
-public abstract class AbstractProtocolTest extends TestCase {
+public abstract class AbstractProtocolTestFramework extends TestCase {
     /** The Protocol session which is run before the testElements */
     protected ProtocolSession preElements = new ProtocolSession();
 
@@ -46,7 +46,7 @@ public abstract class AbstractProtocolTest extends TestCase {
     private final String userName;
     private final String password;
 
-    public AbstractProtocolTest(HostSystem hostSystem, String userName, String password) {
+    public AbstractProtocolTestFramework(HostSystem hostSystem, String userName, String password) {
         this.hostSystem = hostSystem;
         this.userName = userName;
         this.password = password;
