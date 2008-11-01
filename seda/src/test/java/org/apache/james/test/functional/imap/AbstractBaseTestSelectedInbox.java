@@ -19,6 +19,8 @@
 
 package org.apache.james.test.functional.imap;
 
+import org.apache.james.test.functional.HostSystem;
+
 /**
  * <p>
  * Tests commands which are valid in AUTHENTICATED and NONAUTHENTICATED by

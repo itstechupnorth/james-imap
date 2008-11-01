@@ -21,8 +21,9 @@ package org.apache.james.test.functional.imap;
 
 import java.util.Locale;
 
-public abstract class AbstractTestSecurity extends
-        AbstractSimpleScriptedTestProtocol {
+import org.apache.james.test.functional.HostSystem;
+
+public abstract class AbstractTestSecurity extends AbstractImapProtocolTestFramework {
 
     public AbstractTestSecurity(HostSystem system) {
         super(system);

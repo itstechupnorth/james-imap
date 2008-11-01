@@ -19,6 +19,8 @@
 
 package org.apache.james.test.functional.imap;
 
+import org.apache.james.test.functional.HostSystem;
+
 /**
  * <p>
  * Runs tests for commands valid in the NON_AUTHENTICATED state. A welcome
@@ -37,8 +39,7 @@ package org.apache.james.test.functional.imap;
  * <li>Login</li>
  * </ul>
  */
-public abstract class AbstractTestNonAuthenticatedState extends
-        AbstractSimpleScriptedTestProtocol {
+public abstract class AbstractTestNonAuthenticatedState extends AbstractImapProtocolTestFramework {
     public AbstractTestNonAuthenticatedState(HostSystem system) {
         super(system);
     }

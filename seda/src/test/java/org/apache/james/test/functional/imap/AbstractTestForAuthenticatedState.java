@@ -19,6 +19,8 @@
 
 package org.apache.james.test.functional.imap;
 
+import org.apache.james.test.functional.HostSystem;
+
 /**
  * <p>
  * Runs tests for commands valid in the AUTHENTICATED state. A login session
@@ -55,7 +57,7 @@ package org.apache.james.test.functional.imap;
  * </p>
  */
 public abstract class AbstractTestForAuthenticatedState extends
-        AbstractSimpleScriptedTestProtocol implements ImapTestConstants {
+        AbstractImapProtocolTestFramework implements ImapTestConstants {
     public AbstractTestForAuthenticatedState(HostSystem hostSystem) {
         super(hostSystem);
     }

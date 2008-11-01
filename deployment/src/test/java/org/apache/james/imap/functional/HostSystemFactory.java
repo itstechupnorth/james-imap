@@ -27,7 +27,7 @@ import org.apache.james.imap.main.DefaultImapDecoderFactory;
 import org.apache.james.imap.mock.MailboxManagerProviderSingleton;
 import org.apache.james.imap.processor.main.DefaultImapProcessorFactory;
 import org.apache.james.mailboxmanager.mock.TorqueMailboxManagerProviderSingleton;
-import org.apache.james.test.functional.imap.HostSystem;
+import org.apache.james.test.functional.HostSystem;
 
 public class HostSystemFactory {
 

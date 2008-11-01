@@ -24,7 +24,7 @@ import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 import java.nio.charset.Charset;
 
-import org.apache.james.test.functional.imap.HostSystem;
+import org.apache.james.test.functional.HostSystem;
 
 public class ExternalHostSystem implements HostSystem {
 

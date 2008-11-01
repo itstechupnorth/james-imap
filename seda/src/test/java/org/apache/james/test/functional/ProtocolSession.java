@@ -17,7 +17,7 @@
  * under the License.                                           *
  ****************************************************************/
 
-package org.apache.james.test.functional.imap;
+package org.apache.james.test.functional;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -25,7 +25,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import org.apache.james.test.functional.imap.HostSystem.Session;
 
 /**
  * A protocol session which can be run against a reader and writer, which checks
@@ -457,7 +456,7 @@ public class ProtocolSession {
             this.sessionNumber = sessionNumber < 0 ? 0 : sessionNumber;
         }
 
-        public void testProtocol(Session[] sessions,
+        public void testProtocol(HostSystem.Session[] sessions,
                 boolean continueAfterFailure) throws Exception {
             HostSystem.Session session = sessions[sessionNumber];
             continuationExpected = true;

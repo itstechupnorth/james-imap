@@ -35,7 +35,7 @@ import org.apache.james.imap.encode.ImapEncoder;
 import org.apache.james.imap.main.ImapRequestHandler;
 import org.apache.james.imap.main.ImapSessionImpl;
 import org.apache.james.mailboxmanager.mock.TorqueMailboxManagerProviderSingleton;
-import org.apache.james.test.functional.imap.HostSystem;
+import org.apache.james.test.functional.HostSystem;
 
 public class ExperimentalHostSystem implements HostSystem {
 

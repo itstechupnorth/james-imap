@@ -17,7 +17,7 @@
  * under the License.                                           *
  ****************************************************************/
 
-package org.apache.james.test.functional.imap;
+package org.apache.james.test.functional;
 
 import junit.framework.TestCase;
 
@@ -31,8 +31,7 @@ import junit.framework.TestCase;
  * @author Darrell DeBoer
  * @author Andrew C. Oliver
  */
-public abstract class AbstractProtocolTest extends TestCase implements
-        ImapTestConstants {
+public abstract class AbstractProtocolTest extends TestCase {
     /** The Protocol session which is run before the testElements */
     protected ProtocolSession preElements = new ProtocolSession();
 
@@ -43,9 +42,14 @@ public abstract class AbstractProtocolTest extends TestCase implements
     protected ProtocolSession postElements = new ProtocolSession();
 
     private final HostSystem hostSystem;
+    
+    private final String userName;
+    private final String password;
 
-    public AbstractProtocolTest(HostSystem hostSystem) {
+    public AbstractProtocolTest(HostSystem hostSystem, String userName, String password) {
         this.hostSystem = hostSystem;
+        this.userName = userName;
+        this.password = password;
     }
 
     protected void setUp() throws Exception {
@@ -110,6 +114,6 @@ public abstract class AbstractProtocolTest extends TestCase implements
      */
     private void setUpEnvironment() throws Exception {
         hostSystem.reset();
-        hostSystem.addUser(USER, PASSWORD);
+        hostSystem.addUser(userName, password);
     }
 }

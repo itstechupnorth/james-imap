@@ -17,10 +17,11 @@
  * under the License.                                           *
  ****************************************************************/
 
-package org.apache.james.test.functional.imap;
+package org.apache.james.test.functional;
 
 import java.io.InputStream;
 import java.util.Locale;
+
 
 /**
  * A Protocol test which reads the test protocol session from a file. The file
@@ -43,8 +44,8 @@ public abstract class AbstractSimpleScriptedTestProtocol extends
      * @param fileName
      *            The name of the file to read protocol elements from.
      */
-    public AbstractSimpleScriptedTestProtocol(HostSystem hostSystem) {
-        super(hostSystem);
+    public AbstractSimpleScriptedTestProtocol(HostSystem hostSystem, String userName, String password) {
+        super(hostSystem, userName, password);
     }
 
     protected void tearDown() throws Exception {

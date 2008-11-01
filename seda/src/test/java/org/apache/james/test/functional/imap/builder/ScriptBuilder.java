@@ -17,7 +17,7 @@
  * under the License.                                           *
  ****************************************************************/
 
-package org.apache.james.test.functional;
+package org.apache.james.test.functional.imap.builder;
 
 import java.io.IOException;
 import java.io.InputStream;

@@ -16,62 +16,19 @@
  * specific language governing permissions and limitations      *
  * under the License.                                           *
  ****************************************************************/
-
 package org.apache.james.test.functional.imap;
 
+import org.apache.james.test.functional.AbstractSimpleScriptedTestProtocol;
+import org.apache.james.test.functional.HostSystem;
+
 /**
- * Host system under test.
- * 
+ * Specialise the protocol test framework for IMAP.
  */
-public interface HostSystem {
+public abstract class AbstractImapProtocolTestFramework extends
+        AbstractSimpleScriptedTestProtocol implements ImapTestConstants {
 
-    /**
-     * Resets host system to initial state.
-     * 
-     * @throws Exception
-     */
-    public void reset() throws Exception;
-
-    /**
-     * Add a user for testing.
-     * 
-     * @param user
-     *            user name
-     * @param password
-     *            user password
-     * @throws Exception
-     */
-    public boolean addUser(String user, String password) throws Exception;
-
-    /**
-     * Creates a new session for functional testing.
-     * 
-     * @return <code>Session</code>, not null
-     * @throws Exception
-     */
-    public Session newSession(Continuation continuation) throws Exception;
-
-    public interface Session {
-        public String readLine() throws Exception;
-
-        public void writeLine(String line) throws Exception;
-
-        /**
-         * Opens the session.
-         * 
-         * @throws Exception
-         */
-        public void start() throws Exception;
-
-        /**
-         * Closes the session.
-         * 
-         * @throws Exception
-         */
-        public void stop() throws Exception;
+    public AbstractImapProtocolTestFramework(final HostSystem hostSystem) {
+        super(hostSystem, USER, PASSWORD);
     }
 
-    public interface Continuation {
-        public void doContinue();
-    }
 }

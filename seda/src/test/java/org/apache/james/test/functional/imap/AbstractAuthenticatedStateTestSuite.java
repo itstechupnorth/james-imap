@@ -21,6 +21,8 @@ package org.apache.james.test.functional.imap;
 
 import java.util.Locale;
 
+import org.apache.james.test.functional.HostSystem;
+
 abstract public class AbstractAuthenticatedStateTestSuite extends
         AbstractTestForAuthenticatedState {
 
