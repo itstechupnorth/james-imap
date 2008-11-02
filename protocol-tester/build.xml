@@ -17,8 +17,8 @@
   specific language governing permissions and limitations
   under the License.    
 -->
-<project default="main" name="seda">
-  <description>Builds seda module. This is an function module.</description>
-  <property name="name.module" value="seda" />
-  <import file="../build-tools/function-build.xml" optional="no" />
+<project default="main" name="protocol-tester">
+  <description>Builds protocol tester module. This is an function module.</description>
+  <property name="name.module" value="protocol-tester" />
+  <import file="../build-tools/base-build.xml" optional="no" />
 </project>

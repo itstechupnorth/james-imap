@@ -233,6 +233,7 @@ JAMES requires Ant 1.7 or higher. Please install a more modern version of Ant.
                     <include name="${jars-prefix}mailbox-${version}.jar" />
                     <include name="${jars-prefix}message-${version}.jar" />
                     <include name="${jars-prefix}decode-${version}.jar" />
+                	<include name="${jars-prefix}protocol-tester-${version}.jar" />
                 </fileset>
             </path> 
             <path 
