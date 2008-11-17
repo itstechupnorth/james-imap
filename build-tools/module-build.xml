@@ -98,7 +98,7 @@ Main User Targets
         description='Builds and creates distribution without cleaning'
         depends='build, check-environment, conditional-clean, test'
         unless='dont.build.module'>
-        <CreateJar 
+        <CreateOSGiJar 
             name='${name.module}'   
             bin='${dir.build.bin}'
             lib='${dir.stage.james}'/>  

@@ -371,10 +371,40 @@ JAMES requires Ant 1.7 or higher. Please install a more modern version of Ant.
                     <attribute name='Implementation-Vendor' value='@{vendor.impl}'/>
                     <attribute name="Implementation-Vendor-Id" value="@{vendor.id}"/>   
                 </manifest>  
-            </jar>   
+            </jar>  
         </sequential>   
     </macrodef>
  
+	   <macrodef name="CreateOSGiJar">
+	        <attribute name='name'/>
+	        <attribute name='bin'/>  
+	        <attribute name='lib'/>
+	        <attribute name='prefix' default='${jars-prefix}'/>
+	        <attribute name='version' default='${version}'/>   
+	        <attribute name='vendor.impl' default='${vendor.impl}'/> 
+	        <attribute name='vendor.spec' default='${vendor.spec}'/>   
+	        <attribute name='vendor.id' default='${vendor.id}'/>   
+	        <attribute name='vendor.impl.title' default='${vendor.impl.title}'/>   
+	        <sequential>
+	        	<CreateJar 
+	        		name='@{name}' 
+	        		bin='@{bin}' 
+	        		lib='@{lib}'
+	        		prefix='@{prefix}'
+	        		version='@{version}'
+	        		vendor.impl='@{vendor.impl}'
+	        		vendor.spec='@{vendor.spec}'
+	        		vendor.id='@{vendor.id}'
+	        		vendor.impl.title='@{vendor.impl.title}'/>
+	        	<!-- OSGi Enable -->
+	            <taskdef resource="aQute/bnd/ant/taskdef.properties" classpath="${bnd.jar}" />
+	            <bndwrap 
+	                jars='@{lib}/@{prefix}@{name}-@{version}.jar' 
+	                output='@{lib}/@{prefix}@{name}-@{version}.jar' 
+	                definitions="." />
+	        </sequential>   
+	    </macrodef>
+	
     <macrodef name='CreateJavaDocs'>
         <attribute name='bin' default='${build.javadocs}'/> 
         <attribute name='src' default='${dir.src.java}'/> 
