@@ -225,7 +225,8 @@
           <targetjdk>1.4</targetjdk>
           <rulesets>
             <ruleset>/rulesets/basic.xml</ruleset>
-            <ruleset>/rulesets/controversial.xml</ruleset>
+            <ruleset>/rulesets/unusedcode.xml</ruleset>
+            <ruleset>/rulesets/imports.xml</ruleset>
           </rulesets>
           <format>xml</format>
           <linkXref>true</linkXref>
