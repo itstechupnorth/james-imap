@@ -131,15 +131,6 @@ JAMES requires Ant 1.7 or higher. Please install a more modern version of Ant.
                 -->
             </javac>
             <copy todir='@{bin}'>
-                <!-- We should not have resources in the java src tree -->
-                <!-- 
-                <fileset dir='@{src}'>
-                    <include name='**/*.properties'/>
-                    <include name='**/*.xinfo'/>
-                    <include name='**/*.xml'/>
-                    <include name='**/*.mxinfo'/>
-                </fileset>
-                 -->
                 <fileset dir='@{resources}'>
                     <include name='**/*'/>
                 </fileset>   
@@ -436,19 +427,9 @@ JAMES requires Ant 1.7 or higher. Please install a more modern version of Ant.
                     <param name="-use"/>
                     <param name="-breakiterator"/>
                     <param name="-link" value="http://java.sun.com/j2se/1.4/docs/api"/>
-                    <param name="-link" value="http://java.sun.com/j2ee/sdk_1.3/techdocs/api"/>
-                    <param name="-link" value="http://avalon.apache.org/api"/>
-                    <param name="-link" value="http://avalon.apache.org/phoenix/api"/>
-                    <param name="-link" value="http://avalon.apache.org/cornerstone/api"/>
-                    <param name="-link" value="http://avalon.apache.org/logkit/api"/>
                     <param name="-doctitle" value="${Name} ${version}"/>
                     <param name="-windowtitle" value="${Name} API"/>
                     <param name="-bottom" value="Licensed to the Apache Software Foundation (ASF) under one or more contributor license agreements. The ASF licenses this file to you under the Apache License, Version 2.0 (http://www.apache.org/licenses/LICENSE-2.0)."/>
-                    <param name="-tag" value="phoenix\:mx\-topic:X"/>
-                    <param name="-tag" value="phoenix\:mx\-operation:X"/>
-                    <param name="-tag" value="phoenix\:mx\-description:X"/>
-                    <param name="-tag" value="phoenix\:mx\-attribute:X"/>
-                    <param name="-tag" value="phoenix\:mx\-isWriteable:X"/>
                 </doclet>
             </javadoc>     
             <PopulateMetaData bin='@{bin}' src='.' />   
