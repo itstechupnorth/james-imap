@@ -17,7 +17,7 @@
  * under the License.                                           *
  ****************************************************************/
 
-package org.apache.james.mailboxmanager.mock;
+package org.apache.james.mailboxmanager.torque;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;

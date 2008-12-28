@@ -20,7 +20,6 @@
 package org.apache.james.mailboxmanager.torque;
 
 import org.apache.james.mailboxmanager.AbstractMailboxManagerSelfTestCase;
-import org.apache.james.mailboxmanager.mock.TorqueMailboxManagerProviderSingleton;
 import org.apache.torque.TorqueException;
 
 public class TorqueMailboxManagerSelfTest extends

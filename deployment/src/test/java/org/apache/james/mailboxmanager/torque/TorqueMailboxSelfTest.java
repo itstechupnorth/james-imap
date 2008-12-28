@@ -21,7 +21,6 @@ package org.apache.james.mailboxmanager.torque;
 
 import org.apache.james.mailboxmanager.AbstractMailboxSelfTestCase;
 import org.apache.james.mailboxmanager.manager.MailboxManagerProvider;
-import org.apache.james.mailboxmanager.mock.TorqueMailboxManagerProviderSingleton;
 import org.apache.torque.TorqueException;
 
 public class TorqueMailboxSelfTest extends AbstractMailboxSelfTestCase {

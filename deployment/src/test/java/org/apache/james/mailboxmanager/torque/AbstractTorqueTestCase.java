@@ -21,7 +21,6 @@ package org.apache.james.mailboxmanager.torque;
 
 import junit.framework.TestCase;
 
-import org.apache.james.mailboxmanager.mock.TorqueMailboxManagerProviderSingleton;
 import org.apache.torque.TorqueException;
 
 public abstract class AbstractTorqueTestCase extends TestCase {

@@ -20,7 +20,7 @@
 package org.apache.james.imap.mock;
 
 import org.apache.james.mailboxmanager.manager.MailboxManagerProvider;
-import org.apache.james.mailboxmanager.mock.TorqueMailboxManagerProviderSingleton;
+import org.apache.james.mailboxmanager.torque.TorqueMailboxManagerProviderSingleton;
 
 public class MailboxManagerProviderSingleton {
 
