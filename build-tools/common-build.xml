@@ -205,6 +205,19 @@ JAMES requires Ant 1.7 or higher. Please install a more modern version of Ant.
                     <include name="${commons-configuration.jar}"/>
                     <include name="${commons-digester.jar}"/>       
                 </fileset> 
+            </path> 
+        	
+            <path id='classpath.jpa'>  
+                <fileset dir="${lib.dir}">
+                	<include name="${commons-io.jar}"/>
+                	<include name="${commons-collections.jar}"/>
+                    <include name="${commons-dbcp.jar}"/>
+                    <include name="${commons-pool.jar}"/>
+                    <include name="${torque.jar}"/>
+                    <include name="${village.jar}"/>
+                    <include name="${commons-configuration.jar}"/>
+                    <include name="${commons-digester.jar}"/>       
+                </fileset> 
             </path>  
   
             <path id='classpath.base.test'>  

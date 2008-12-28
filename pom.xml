@@ -42,6 +42,7 @@
     <module>mailbox</module>
     <module>processor</module>
     <module>torque</module>
+    <module>jpa</module>
     <module>seda</module>
     <module>deployment</module>
   </modules>
@@ -275,6 +276,11 @@
     <dependency>
       <groupId>org.apache.james</groupId>
       <artifactId>apache-james-imap-seda</artifactId>
+      <version>0.1-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.james</groupId>
+      <artifactId>apache-james-imap-jpa</artifactId>
       <version>0.1-SNAPSHOT</version>
     </dependency>
     <dependency>
