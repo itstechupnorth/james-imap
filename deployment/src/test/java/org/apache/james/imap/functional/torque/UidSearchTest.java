@@ -17,15 +17,14 @@
  * under the License.                                           *
  ****************************************************************/
 
-package org.apache.james.imap.functional;
+package org.apache.james.imap.functional.torque;
 
-import org.apache.james.imap.functional.suite.Security;
+import org.apache.james.imap.functional.suite.UidSearch;
 import org.apache.james.mailboxmanager.torque.TorqueHostSystemFactory;
 
-public class ExperimentalSecurityTest extends Security {
+public class UidSearchTest extends UidSearch {
 
-    public ExperimentalSecurityTest() throws Exception {
+    public UidSearchTest() throws Exception {
         super(TorqueHostSystemFactory.createStandardImap());
     }
-
 }

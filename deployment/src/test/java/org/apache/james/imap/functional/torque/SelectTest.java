@@ -17,15 +17,14 @@
  * under the License.                                           *
  ****************************************************************/
 
-package org.apache.james.imap.functional;
+package org.apache.james.imap.functional.torque;
 
-import org.apache.james.imap.functional.suite.FetchBodySection;
+import org.apache.james.imap.functional.suite.Select;
 import org.apache.james.mailboxmanager.torque.TorqueHostSystemFactory;
 
-public class ExperimentalFetchBodySectionTest extends
-        FetchBodySection {
+public class SelectTest extends Select {
 
-    public ExperimentalFetchBodySectionTest() throws Exception {
+    public SelectTest() throws Exception {
         super(TorqueHostSystemFactory.createStandardImap());
     }
 

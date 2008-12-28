@@ -17,16 +17,14 @@
  * under the License.                                           *
  ****************************************************************/
 
-package org.apache.james.imap.functional;
+package org.apache.james.imap.functional.torque;
 
-import org.apache.james.imap.functional.suite.ConcurrentSessions;
+import org.apache.james.imap.functional.suite.AuthenticatedState;
 import org.apache.james.mailboxmanager.torque.TorqueHostSystemFactory;
 
-public class ExperimentalConcurrentSessionsTest extends
-        ConcurrentSessions {
-
-    public ExperimentalConcurrentSessionsTest() throws Exception {
+public class AuthenticatedStateTest extends
+        AuthenticatedState {
+    public AuthenticatedStateTest() throws Exception {
         super(TorqueHostSystemFactory.createStandardImap());
     }
-
 }

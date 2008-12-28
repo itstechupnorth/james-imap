@@ -17,15 +17,14 @@
  * under the License.                                           *
  ****************************************************************/
 
-package org.apache.james.imap.functional;
+package org.apache.james.imap.functional.torque;
 
-import org.apache.james.imap.functional.suite.NonAuthenticatedState;
+import org.apache.james.imap.functional.suite.SelectedState;
 import org.apache.james.mailboxmanager.torque.TorqueHostSystemFactory;
 
-public class ExperimentalNonAuthenticatedStateTest extends
-        NonAuthenticatedState {
+public class SelectedStateTest extends SelectedState {
 
-    public ExperimentalNonAuthenticatedStateTest() throws Exception {
+    public SelectedStateTest() throws Exception {
         super(TorqueHostSystemFactory.createStandardImap());
     }
 }

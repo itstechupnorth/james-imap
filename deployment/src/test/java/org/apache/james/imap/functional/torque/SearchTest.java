@@ -17,14 +17,14 @@
  * under the License.                                           *
  ****************************************************************/
 
-package org.apache.james.imap.functional;
+package org.apache.james.imap.functional.torque;
 
-import org.apache.james.imap.functional.suite.SelectedInbox;
+import org.apache.james.imap.functional.suite.Search;
 import org.apache.james.mailboxmanager.torque.TorqueHostSystemFactory;
 
-public class ExperimentalSelectedInboxTest extends SelectedInbox {
+public class SearchTest extends Search {
 
-    public ExperimentalSelectedInboxTest() throws Exception {
+    public SearchTest() throws Exception {
         super(TorqueHostSystemFactory.createStandardImap());
     }
 }

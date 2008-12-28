@@ -17,14 +17,14 @@
  * under the License.                                           *
  ****************************************************************/
 
-package org.apache.james.imap.functional;
+package org.apache.james.imap.functional.torque;
 
-import org.apache.james.imap.functional.suite.Events;
+import org.apache.james.imap.functional.suite.FetchHeaders;
 import org.apache.james.mailboxmanager.torque.TorqueHostSystemFactory;
 
-public class ExperimentalEventTest extends Events {
+public class FetchHeadersTest extends FetchHeaders {
 
-    public ExperimentalEventTest() throws Exception {
+    public FetchHeadersTest() throws Exception {
         super(TorqueHostSystemFactory.createStandardImap());
     }
 

@@ -17,14 +17,14 @@
  * under the License.                                           *
  ****************************************************************/
 
-package org.apache.james.imap.functional;
+package org.apache.james.imap.functional.torque;
 
-import org.apache.james.imap.functional.suite.Rename;
+import org.apache.james.imap.functional.suite.Security;
 import org.apache.james.mailboxmanager.torque.TorqueHostSystemFactory;
 
-public class ExperimentalRenameTest extends Rename {
+public class SecurityTest extends Security {
 
-    public ExperimentalRenameTest() throws Exception {
+    public SecurityTest() throws Exception {
         super(TorqueHostSystemFactory.createStandardImap());
     }
 

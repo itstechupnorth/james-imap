@@ -17,14 +17,14 @@
  * under the License.                                           *
  ****************************************************************/
 
-package org.apache.james.imap.functional;
+package org.apache.james.imap.functional.torque;
 
-import org.apache.james.imap.functional.suite.Search;
+import org.apache.james.imap.functional.suite.Fetch;
 import org.apache.james.mailboxmanager.torque.TorqueHostSystemFactory;
 
-public class ExperimentalSearchTest extends Search {
+public class FetchTest extends Fetch {
 
-    public ExperimentalSearchTest() throws Exception {
+    public FetchTest() throws Exception {
         super(TorqueHostSystemFactory.createStandardImap());
     }
 }
