@@ -28,7 +28,7 @@ public abstract class ImapProtocolFramework extends
         AbstractSimpleScriptedTestProtocol implements ImapTestConstants {
 
     public ImapProtocolFramework(final HostSystem hostSystem) {
-        super(hostSystem, USER, PASSWORD);
+        super(hostSystem, USER, PASSWORD, "/org/apache/james/imap/scripts/");
     }
 
 }

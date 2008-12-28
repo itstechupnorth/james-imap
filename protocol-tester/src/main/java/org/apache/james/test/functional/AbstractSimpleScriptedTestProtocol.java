@@ -36,16 +36,19 @@ public abstract class AbstractSimpleScriptedTestProtocol extends
 
     private static final Locale BASE_DEFAULT_LOCALE = Locale.getDefault();
 
+    private final String scriptDirectory;
+
     /**
      * Sets up a SimpleFileProtocolTest which reads the protocol session from a
      * file of name "<fileName>.test". This file should be available in the
      * classloader in the same location as this test class.
-     * 
+     * @param scriptDirectory name of the directory containing the scripts to be run
      * @param fileName
      *            The name of the file to read protocol elements from.
      */
-    public AbstractSimpleScriptedTestProtocol(HostSystem hostSystem, String userName, String password) {
+    public AbstractSimpleScriptedTestProtocol(HostSystem hostSystem, String userName, String password, String scriptDirectory) {
         super(hostSystem, userName, password);
+        this.scriptDirectory = scriptDirectory;
     }
 
     protected void tearDown() throws Exception {
@@ -58,7 +61,7 @@ public abstract class AbstractSimpleScriptedTestProtocol extends
      * {@link #testElements} ProtocolSession. Then calls {@link #runSessions}.
      * 
      * @param locale
-     *            TODO
+     *            execute the test using this locale
      */
     protected void scriptTest(String fileName, Locale locale) throws Exception {
         Locale.setDefault(locale);
@@ -76,9 +79,8 @@ public abstract class AbstractSimpleScriptedTestProtocol extends
      * @param session
      *            The ProtocolSession to add elements to.
      */
-    protected void addTestFile(String fileName, ProtocolSession session)
-            throws Exception {
-        fileName = "/org/apache/james/test/functional/imap/scripts/" + fileName;
+    protected void addTestFile(String fileName, ProtocolSession session) throws Exception {
+        fileName = scriptDirectory + fileName;
         // Need to find local resource.
         InputStream is = this.getClass().getResourceAsStream(fileName);
         if (is == null) {
