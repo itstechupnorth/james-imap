@@ -17,7 +17,7 @@
  * under the License.                                           *
  ****************************************************************/
 
-package org.apache.james.mailboxmanager;
+package org.apache.james.mailboxmanager.torque;
 
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.james.mailboxmanager.torque.CRLFOutputStream;

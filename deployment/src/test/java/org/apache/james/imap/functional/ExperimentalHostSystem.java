@@ -115,7 +115,7 @@ public class ExperimentalHostSystem implements HostSystem {
             out = new ByteBufferOutputStream(continuation);
             in = new ByteBufferInputStream();
             handler = new ImapRequestHandler(decoder, processor, encoder);
-            handler.setLog(new MockLogger());
+            handler.setLog(new FakeLogger());
             session = new ImapSessionImpl();
         }
 

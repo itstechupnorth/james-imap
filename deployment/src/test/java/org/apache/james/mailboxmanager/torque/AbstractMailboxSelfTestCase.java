@@ -17,7 +17,7 @@
  * under the License.                                           *
  ****************************************************************/
 
-package org.apache.james.mailboxmanager;
+package org.apache.james.mailboxmanager.torque;
 
 import java.util.Date;
 import java.util.Iterator;
@@ -30,6 +30,9 @@ import javax.mail.internet.MimeMessage;
 import junit.framework.TestCase;
 
 import org.apache.commons.collections.IteratorUtils;
+import org.apache.james.mailboxmanager.MailboxManagerException;
+import org.apache.james.mailboxmanager.MailboxSession;
+import org.apache.james.mailboxmanager.MessageResult;
 import org.apache.james.mailboxmanager.impl.FetchGroupImpl;
 import org.apache.james.mailboxmanager.impl.MessageRangeImpl;
 import org.apache.james.mailboxmanager.impl.MailboxListenerCollector;

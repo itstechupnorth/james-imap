@@ -19,12 +19,13 @@
 
 package org.apache.james.imap.functional;
 
+import org.apache.james.mailboxmanager.torque.TorqueHostSystemFactory;
 import org.apache.james.test.functional.imap.AbstractTestRename;
 
 public class ExperimentalRenameTest extends AbstractTestRename {
 
     public ExperimentalRenameTest() throws Exception {
-        super(HostSystemFactory.createStandardImap());
+        super(TorqueHostSystemFactory.createStandardImap());
     }
 
 }

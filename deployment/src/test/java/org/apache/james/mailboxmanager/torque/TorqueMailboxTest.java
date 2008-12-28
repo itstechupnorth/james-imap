@@ -27,7 +27,6 @@ import javax.mail.internet.MimeMessage;
 
 import org.apache.commons.collections.IteratorUtils;
 import org.apache.james.mailboxmanager.MessageResult;
-import org.apache.james.mailboxmanager.TestUtil;
 import org.apache.james.mailboxmanager.impl.FetchGroupImpl;
 import org.apache.james.mailboxmanager.impl.MessageRangeImpl;
 import org.apache.james.mailboxmanager.impl.MailboxListenerCollector;

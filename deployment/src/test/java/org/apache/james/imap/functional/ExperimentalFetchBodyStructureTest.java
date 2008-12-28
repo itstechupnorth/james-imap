@@ -19,13 +19,14 @@
 
 package org.apache.james.imap.functional;
 
+import org.apache.james.mailboxmanager.torque.TorqueHostSystemFactory;
 import org.apache.james.test.functional.imap.AbstractTestFetchBodyStructure;
 
 public class ExperimentalFetchBodyStructureTest extends
         AbstractTestFetchBodyStructure {
 
     public ExperimentalFetchBodyStructureTest() throws Exception {
-        super(HostSystemFactory.createStandardImap());
+        super(TorqueHostSystemFactory.createStandardImap());
     }
 
 }

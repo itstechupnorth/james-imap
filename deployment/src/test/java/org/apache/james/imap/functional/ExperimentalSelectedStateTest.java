@@ -19,11 +19,12 @@
 
 package org.apache.james.imap.functional;
 
+import org.apache.james.mailboxmanager.torque.TorqueHostSystemFactory;
 import org.apache.james.test.functional.imap.AbstractTestSelectedState;
 
 public class ExperimentalSelectedStateTest extends AbstractTestSelectedState {
 
     public ExperimentalSelectedStateTest() throws Exception {
-        super(HostSystemFactory.createStandardImap());
+        super(TorqueHostSystemFactory.createStandardImap());
     }
 }

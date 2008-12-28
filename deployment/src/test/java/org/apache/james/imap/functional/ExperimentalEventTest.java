@@ -19,12 +19,13 @@
 
 package org.apache.james.imap.functional;
 
+import org.apache.james.mailboxmanager.torque.TorqueHostSystemFactory;
 import org.apache.james.test.functional.imap.AbstractTestEvents;
 
 public class ExperimentalEventTest extends AbstractTestEvents {
 
     public ExperimentalEventTest() throws Exception {
-        super(HostSystemFactory.createStandardImap());
+        super(TorqueHostSystemFactory.createStandardImap());
     }
 
 }
