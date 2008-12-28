@@ -24,7 +24,7 @@ import org.apache.james.imap.functional.suite.Security;
 public class SecurityTest extends Security {
 
     public SecurityTest() throws Exception {
-        super(JPAHostSystemFactory.createStandardImap());
+        super(JPAHostSystem.build());
     }
 
 }

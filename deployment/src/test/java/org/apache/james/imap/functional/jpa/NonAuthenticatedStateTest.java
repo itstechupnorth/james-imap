@@ -25,6 +25,6 @@ public class NonAuthenticatedStateTest extends
         NonAuthenticatedState {
 
     public NonAuthenticatedStateTest() throws Exception {
-        super(JPAHostSystemFactory.createStandardImap());
+        super(JPAHostSystem.build());
     }
 }

@@ -17,8 +17,9 @@
  * under the License.                                           *
  ****************************************************************/
 
-package org.apache.james.mailboxmanager.torque;
+package org.apache.james.imap.functional.jpa;
 
+import java.io.File;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
@@ -26,20 +27,56 @@ import java.sql.SQLException;
 import java.util.Locale;
 
 import org.apache.commons.configuration.BaseConfiguration;
+import org.apache.commons.io.FileUtils;
+import org.apache.james.imap.encode.main.DefaultImapEncoderFactory;
 import org.apache.james.imap.functional.ImapHostSystem;
-import org.apache.james.imap.functional.SimpleMailboxManagerProvider;
+import org.apache.james.imap.jpa.om.MessageFlagsPeer;
+import org.apache.james.imap.jpa.om.MessageRowPeer;
+import org.apache.james.imap.main.DefaultImapDecoderFactory;
+import org.apache.james.imap.processor.main.DefaultImapProcessorFactory;
 import org.apache.james.mailboxmanager.manager.MailboxManagerProvider;
 import org.apache.james.mailboxmanager.torque.TorqueMailboxManager;
 import org.apache.james.mailboxmanager.torque.om.MailboxRowPeer;
 import org.apache.james.mailboxmanager.torque.om.MessageBodyPeer;
-import org.apache.james.mailboxmanager.torque.om.MessageFlagsPeer;
 import org.apache.james.mailboxmanager.torque.om.MessageHeaderPeer;
-import org.apache.james.mailboxmanager.torque.om.MessageRowPeer;
+import org.apache.james.imap.functional.SimpleMailboxManagerProvider;
+import org.apache.james.test.functional.HostSystem;
 import org.apache.torque.Torque;
 import org.apache.torque.util.BasePeer;
 import org.apache.torque.util.Transaction;
 
-public class TorqueMailboxManagerProviderSingleton {
+public class JPAHostSystem extends ImapHostSystem {
+
+    private static TorqueMailboxManager TORQUE_MAILBOX_MANAGER;
+
+    private static SimpleUserManager USER_MANAGER;
+
+    private static SimpleMailboxManagerProvider PROVIDER;
+
+    public static final ImapHostSystem HOST = new JPAHostSystem();
+    
+    public static final String META_DATA_DIRECTORY = "target/user-meta-data";
+
+    public static void resetUserMetaData() throws Exception {
+
+        File dir = new File(META_DATA_DIRECTORY);
+        if (dir.exists()) {
+            FileUtils.deleteDirectory(dir);
+        }
+        dir.mkdirs();
+    }
+
+    public static HostSystem build() throws Exception {
+
+        ImapHostSystem host = HOST;
+        final DefaultImapProcessorFactory defaultImapProcessorFactory = new DefaultImapProcessorFactory();
+        resetUserMetaData();
+        defaultImapProcessorFactory.configure(getTorqueMailboxManagerProviderInstance());
+        host.configure(new DefaultImapDecoderFactory().buildImapDecoder(),
+                new DefaultImapEncoderFactory().buildImapEncoder(),
+                defaultImapProcessorFactory.buildImapProcessor());
+        return host;
+    }
 
     private static final String[] tableNames = new String[] {
             MailboxRowPeer.TABLE_NAME, MessageRowPeer.TABLE_NAME,
@@ -159,13 +196,6 @@ public class TorqueMailboxManagerProviderSingleton {
         return torqueConf;
     }
 
-    private static TorqueMailboxManager TORQUE_MAILBOX_MANAGER;
-
-    private static SimpleUserManager USER_MANAGER;
-
-    private static SimpleMailboxManagerProvider PROVIDER;
-
-    public static final ImapHostSystem HOST = new TorqueHostSystem();
 
     public synchronized static MailboxManagerProvider getTorqueMailboxManagerProviderInstance()
             throws Exception {
@@ -178,8 +208,9 @@ public class TorqueMailboxManagerProviderSingleton {
 
     }
 
-    public static void addUser(String user, String password) {
+    public boolean addUser(String user, String password) {
         USER_MANAGER.addUser(user, password);
+        return true;
     }
 
     private static TorqueMailboxManager getMailboxManager() throws Exception {
@@ -191,7 +222,8 @@ public class TorqueMailboxManagerProviderSingleton {
         return TORQUE_MAILBOX_MANAGER;
     }
 
-    public static void reset() throws Exception {
+    public void resetData() throws Exception {
+        resetUserMetaData();
         getMailboxManager().deleteEverything();
     }
 

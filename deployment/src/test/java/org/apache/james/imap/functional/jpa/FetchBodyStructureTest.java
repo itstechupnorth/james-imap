@@ -25,7 +25,7 @@ public class FetchBodyStructureTest extends
         FetchBodyStructure {
 
     public FetchBodyStructureTest() throws Exception {
-        super(JPAHostSystemFactory.createStandardImap());
+        super(JPAHostSystem.build());
     }
 
 }

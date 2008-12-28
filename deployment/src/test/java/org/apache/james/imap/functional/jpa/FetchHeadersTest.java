@@ -24,7 +24,7 @@ import org.apache.james.imap.functional.suite.FetchHeaders;
 public class FetchHeadersTest extends FetchHeaders {
 
     public FetchHeadersTest() throws Exception {
-        super(JPAHostSystemFactory.createStandardImap());
+        super(JPAHostSystem.build());
     }
 
 }

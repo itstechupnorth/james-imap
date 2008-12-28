@@ -24,7 +24,7 @@ import org.apache.james.imap.functional.suite.PartialFetch;
 public class PartialFetchTest extends PartialFetch {
 
     public PartialFetchTest() throws Exception {
-        super(JPAHostSystemFactory.createStandardImap());
+        super(JPAHostSystem.build());
     }
 
 }

@@ -25,7 +25,7 @@ public class ConcurrentSessionsTest extends
         ConcurrentSessions {
 
     public ConcurrentSessionsTest() throws Exception {
-        super(JPAHostSystemFactory.createStandardImap());
+        super(JPAHostSystem.build());
     }
 
 }

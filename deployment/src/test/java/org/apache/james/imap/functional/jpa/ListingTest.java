@@ -24,7 +24,7 @@ import org.apache.james.imap.functional.suite.Listing;
 public class ListingTest extends Listing {
 
     public ListingTest() throws Exception {
-        super(JPAHostSystemFactory.createStandardImap());
+        super(JPAHostSystem.build());
     }
 
 }

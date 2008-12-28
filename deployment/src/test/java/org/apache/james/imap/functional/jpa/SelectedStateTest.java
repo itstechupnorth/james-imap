@@ -24,6 +24,6 @@ import org.apache.james.imap.functional.suite.SelectedState;
 public class SelectedStateTest extends SelectedState {
 
     public SelectedStateTest() throws Exception {
-        super(JPAHostSystemFactory.createStandardImap());
+        super(JPAHostSystem.build());
     }
 }

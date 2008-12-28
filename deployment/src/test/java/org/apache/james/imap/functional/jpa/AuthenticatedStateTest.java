@@ -24,6 +24,6 @@ import org.apache.james.imap.functional.suite.AuthenticatedState;
 public class AuthenticatedStateTest extends
         AuthenticatedState {
     public AuthenticatedStateTest() throws Exception {
-        super(JPAHostSystemFactory.createStandardImap());
+        super(JPAHostSystem.build());
     }
 }

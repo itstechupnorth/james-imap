@@ -25,7 +25,7 @@ public class FetchBodySectionTest extends
         FetchBodySection {
 
     public FetchBodySectionTest() throws Exception {
-        super(JPAHostSystemFactory.createStandardImap());
+        super(JPAHostSystem.build());
     }
 
 }

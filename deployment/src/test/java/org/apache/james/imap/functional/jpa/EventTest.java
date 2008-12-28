@@ -24,7 +24,7 @@ import org.apache.james.imap.functional.suite.Events;
 public class EventTest extends Events {
 
     public EventTest() throws Exception {
-        super(JPAHostSystemFactory.createStandardImap());
+        super(JPAHostSystem.build());
     }
 
 }

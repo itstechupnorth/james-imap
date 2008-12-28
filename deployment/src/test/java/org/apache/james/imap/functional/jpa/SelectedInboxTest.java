@@ -24,6 +24,6 @@ import org.apache.james.imap.functional.suite.SelectedInbox;
 public class SelectedInboxTest extends SelectedInbox {
 
     public SelectedInboxTest() throws Exception {
-        super(JPAHostSystemFactory.createStandardImap());
+        super(JPAHostSystem.build());
     }
 }

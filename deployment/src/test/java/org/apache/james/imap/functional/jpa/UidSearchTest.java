@@ -24,6 +24,6 @@ import org.apache.james.imap.functional.suite.UidSearch;
 public class UidSearchTest extends UidSearch {
 
     public UidSearchTest() throws Exception {
-        super(JPAHostSystemFactory.createStandardImap());
+        super(JPAHostSystem.build());
     }
 }
