@@ -17,7 +17,7 @@
  * under the License.                                           *
  ****************************************************************/
 
-package org.apache.james.test.functional.imap.builder;
+package org.apache.james.imap.functional.builder;
 
 public class CreateScript {
 

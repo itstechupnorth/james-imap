@@ -17,40 +17,40 @@
  * under the License.                                           *
  ****************************************************************/
 
-package org.apache.james.test.functional.imap;
-
-import java.util.Locale;
+package org.apache.james.imap.functional;
 
 import org.apache.james.test.functional.HostSystem;
 
-abstract public class AbstractTestSearch extends
-        AbstractTestForAuthenticatedState {
-
-    public AbstractTestSearch(HostSystem system) throws Exception {
+/**
+ * <p>
+ * Runs tests for commands valid in the NON_AUTHENTICATED state. A welcome
+ * message precedes the execution of the test elements.
+ * </p>
+ * <p>
+ * Recommended test scripts:
+ * </p>
+ * <ul>
+ * <li>ValidAuthenticated</li>
+ * <li>ValidSelected</li>
+ * <li>Capability</li>
+ * <li>Noop</li>
+ * <li>Logout</li>
+ * <li>Authenticate</li>
+ * <li>Login</li>
+ * </ul>
+ */
+public abstract class FrameworkForNonAuthenticatedState extends ImapProtocolFramework {
+    public FrameworkForNonAuthenticatedState(HostSystem system) {
         super(system);
     }
 
-    public void testSearchAtomsUS() throws Exception {
-        scriptTest("SearchAtoms", Locale.US);
-    }
-
-    public void testSearchAtomsITALY() throws Exception {
-        scriptTest("SearchAtoms", Locale.ITALY);
-    }
-
-    public void testSearchAtomsKOREA() throws Exception {
-        scriptTest("SearchAtoms", Locale.KOREA);
-    }
-
-    public void testSearchCombinationsUS() throws Exception {
-        scriptTest("SearchCombinations", Locale.US);
-    }
-
-    public void testSearchCombinationsITALY() throws Exception {
-        scriptTest("SearchCombinations", Locale.ITALY);
-    }
-
-    public void testSearchCombinationsKOREA() throws Exception {
-        scriptTest("SearchCombinations", Locale.KOREA);
+    /**
+     * Adds a welcome message to the {@link #preElements}.
+     * 
+     * @throws Exception
+     */
+    public void setUp() throws Exception {
+        super.setUp();
+        addTestFile("Welcome.test", preElements);
     }
 }

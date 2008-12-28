@@ -17,16 +17,16 @@
  * under the License.                                           *
  ****************************************************************/
 
-package org.apache.james.test.functional.imap;
+package org.apache.james.imap.functional.suite;
 
 import java.util.Locale;
 
+import org.apache.james.imap.functional.FrameworkForAuthenticatedState;
 import org.apache.james.test.functional.HostSystem;
 
-abstract public class AbstractAuthenticatedStateTestSuite extends
-        AbstractTestForAuthenticatedState {
+public class AuthenticatedState extends FrameworkForAuthenticatedState {
 
-    public AbstractAuthenticatedStateTestSuite(HostSystem system)
+    public AuthenticatedState(HostSystem system)
             throws Exception {
         super(system);
     }

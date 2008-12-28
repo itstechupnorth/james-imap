@@ -17,7 +17,7 @@
  * under the License.                                           *
  ****************************************************************/
 
-package org.apache.james.test.functional.imap;
+package org.apache.james.imap.functional;
 
 import org.apache.james.test.functional.HostSystem;
 
@@ -51,9 +51,8 @@ import org.apache.james.test.functional.HostSystem;
  * 
  * @version $Revision: 560719 $
  */
-public abstract class AbstractBaseTestSelectedInbox extends
-        AbstractTestForAuthenticatedState {
-    public AbstractBaseTestSelectedInbox(HostSystem system) {
+public abstract class FrameworkForSelectedInbox extends FrameworkForAuthenticatedState {
+    public FrameworkForSelectedInbox(HostSystem system) {
         super(system);
     }
 

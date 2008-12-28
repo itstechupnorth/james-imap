@@ -16,41 +16,19 @@
  * specific language governing permissions and limitations      *
  * under the License.                                           *
  ****************************************************************/
+package org.apache.james.imap.functional;
 
-package org.apache.james.test.functional.imap;
-
-import java.util.Locale;
-
+import org.apache.james.test.functional.AbstractSimpleScriptedTestProtocol;
 import org.apache.james.test.functional.HostSystem;
 
-public abstract class AbstractTestFetchHeaders extends
-        AbstractTestSelectedStateBase {
+/**
+ * Specialise the protocol test framework for IMAP.
+ */
+public abstract class ImapProtocolFramework extends
+        AbstractSimpleScriptedTestProtocol implements ImapTestConstants {
 
-    public AbstractTestFetchHeaders(HostSystem system) {
-        super(system);
+    public ImapProtocolFramework(final HostSystem hostSystem) {
+        super(hostSystem, USER, PASSWORD);
     }
 
-    public void testFetchHeaderFieldsUS() throws Exception {
-        scriptTest("FetchHeaderFields", Locale.US);
-    }
-
-    public void testFetchHeaderFieldsITALY() throws Exception {
-        scriptTest("FetchHeaderFields", Locale.ITALY);
-    }
-
-    public void testFetchHeaderFieldsKOREA() throws Exception {
-        scriptTest("FetchHeaderFields", Locale.KOREA);
-    }
-
-    public void testFetchHeaderFieldsNotUS() throws Exception {
-        scriptTest("FetchHeaderFieldsNot", Locale.US);
-    }
-
-    public void testFetchHeaderFieldsNotITALY() throws Exception {
-        scriptTest("FetchHeaderFieldsNot", Locale.ITALY);
-    }
-
-    public void testFetchHeaderFieldsNotKOREA() throws Exception {
-        scriptTest("FetchHeaderFieldsNot", Locale.KOREA);
-    }
 }

@@ -17,7 +17,7 @@
  * under the License.                                           *
  ****************************************************************/
 
-package org.apache.james.test.functional.imap;
+package org.apache.james.imap.functional;
 
 /**
  * Some constants to use when running Imap tests.

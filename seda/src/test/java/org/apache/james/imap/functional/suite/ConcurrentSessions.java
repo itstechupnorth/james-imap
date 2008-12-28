@@ -17,16 +17,16 @@
  * under the License.                                           *
  ****************************************************************/
 
-package org.apache.james.test.functional.imap;
+package org.apache.james.imap.functional.suite;
 
 import java.util.Locale;
 
+import org.apache.james.imap.functional.FrameworkForAuthenticatedState;
 import org.apache.james.test.functional.HostSystem;
 
-public abstract class AbstractTestConcurrentSessions extends
-        AbstractTestForAuthenticatedState {
+public class ConcurrentSessions extends FrameworkForAuthenticatedState {
 
-    public AbstractTestConcurrentSessions(HostSystem system) {
+    public ConcurrentSessions(HostSystem system) {
         super(system);
     }
 

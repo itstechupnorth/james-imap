@@ -19,10 +19,10 @@
 
 package org.apache.james.imap.functional;
 
+import org.apache.james.imap.functional.suite.PartialFetch;
 import org.apache.james.mailboxmanager.torque.TorqueHostSystemFactory;
-import org.apache.james.test.functional.imap.AbstractTestPartialFetch;
 
-public class ExperimentalPartialFetchTest extends AbstractTestPartialFetch {
+public class ExperimentalPartialFetchTest extends PartialFetch {
 
     public ExperimentalPartialFetchTest() throws Exception {
         super(TorqueHostSystemFactory.createStandardImap());

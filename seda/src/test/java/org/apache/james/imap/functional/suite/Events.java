@@ -17,21 +17,28 @@
  * under the License.                                           *
  ****************************************************************/
 
-package org.apache.james.test.functional.imap;
+package org.apache.james.imap.functional.suite;
 
 import java.util.Locale;
 
+import org.apache.james.imap.functional.FrameworkForSelectedStateBase;
 import org.apache.james.test.functional.HostSystem;
 
-abstract public class AbstractTestListing extends
-        AbstractTestForAuthenticatedState {
+public class Events extends FrameworkForSelectedStateBase {
 
-    public AbstractTestListing(HostSystem system) throws Exception {
+    public Events(HostSystem system) {
         super(system);
     }
 
-    public void testListPlusUS() throws Exception {
-        scriptTest("ListPlus", Locale.US);
+    public void testAppendToSelectedUS() throws Exception {
+        scriptTest("AppendToSelected", Locale.US);
     }
 
+    public void testAppendToSelectedKOREA() throws Exception {
+        scriptTest("AppendToSelected", Locale.KOREA);
+    }
+
+    public void testAppendToSelectedITALY() throws Exception {
+        scriptTest("AppendToSelected", Locale.ITALY);
+    }
 }

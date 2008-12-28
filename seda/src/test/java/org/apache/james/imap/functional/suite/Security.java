@@ -17,15 +17,16 @@
  * under the License.                                           *
  ****************************************************************/
 
-package org.apache.james.test.functional.imap;
+package org.apache.james.imap.functional.suite;
 
 import java.util.Locale;
 
+import org.apache.james.imap.functional.ImapProtocolFramework;
 import org.apache.james.test.functional.HostSystem;
 
-public abstract class AbstractTestSecurity extends AbstractImapProtocolTestFramework {
+public class Security extends ImapProtocolFramework {
 
-    public AbstractTestSecurity(HostSystem system) {
+    public Security(HostSystem system) {
         super(system);
     }
 

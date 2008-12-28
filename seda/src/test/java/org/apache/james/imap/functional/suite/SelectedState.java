@@ -17,16 +17,16 @@
  * under the License.                                           *
  ****************************************************************/
 
-package org.apache.james.test.functional.imap;
+package org.apache.james.imap.functional.suite;
 
 import java.util.Locale;
 
+import org.apache.james.imap.functional.FrameworkForSelectedStateBase;
 import org.apache.james.test.functional.HostSystem;
 
-public abstract class AbstractTestSelectedState extends
-        AbstractTestSelectedStateBase {
+public class SelectedState extends FrameworkForSelectedStateBase {
 
-    public AbstractTestSelectedState(HostSystem system) {
+    public SelectedState(HostSystem system) {
         super(system);
     }
 

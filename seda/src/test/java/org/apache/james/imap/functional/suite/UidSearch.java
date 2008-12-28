@@ -16,19 +16,42 @@
  * specific language governing permissions and limitations      *
  * under the License.                                           *
  ****************************************************************/
-package org.apache.james.test.functional.imap;
 
-import org.apache.james.test.functional.AbstractSimpleScriptedTestProtocol;
+package org.apache.james.imap.functional.suite;
+
+import java.util.Locale;
+
+import org.apache.james.imap.functional.FrameworkForAuthenticatedState;
 import org.apache.james.test.functional.HostSystem;
 
-/**
- * Specialise the protocol test framework for IMAP.
- */
-public abstract class AbstractImapProtocolTestFramework extends
-        AbstractSimpleScriptedTestProtocol implements ImapTestConstants {
+public class UidSearch extends
+        FrameworkForAuthenticatedState {
 
-    public AbstractImapProtocolTestFramework(final HostSystem hostSystem) {
-        super(hostSystem, USER, PASSWORD);
+    public UidSearch(HostSystem system) throws Exception {
+        super(system);
     }
 
+    public void testSearchAtomsUS() throws Exception {
+        scriptTest("UidSearchAtoms", Locale.US);
+    }
+
+    public void testSearchAtomsITALY() throws Exception {
+        scriptTest("UidSearchAtoms", Locale.ITALY);
+    }
+
+    public void testSearchAtomsKOREA() throws Exception {
+        scriptTest("UidSearchAtoms", Locale.KOREA);
+    }
+
+    public void testSearchCombinationsUS() throws Exception {
+        scriptTest("UidSearchCombinations", Locale.US);
+    }
+
+    public void testSearchCombinationsITALY() throws Exception {
+        scriptTest("UidSearchCombinations", Locale.ITALY);
+    }
+
+    public void testSearchCombinationsKOREA() throws Exception {
+        scriptTest("UidSearchCombinations", Locale.KOREA);
+    }
 }

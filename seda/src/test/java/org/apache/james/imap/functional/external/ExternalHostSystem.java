@@ -17,7 +17,7 @@
  * under the License.                                           *
  ****************************************************************/
 
-package org.apache.james.test.functional.imap.manual;
+package org.apache.james.imap.functional.external;
 
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;

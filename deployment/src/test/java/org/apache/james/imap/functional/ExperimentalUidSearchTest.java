@@ -19,10 +19,10 @@
 
 package org.apache.james.imap.functional;
 
+import org.apache.james.imap.functional.suite.UidSearch;
 import org.apache.james.mailboxmanager.torque.TorqueHostSystemFactory;
-import org.apache.james.test.functional.imap.AbstractTestUidSearch;
 
-public class ExperimentalUidSearchTest extends AbstractTestUidSearch {
+public class ExperimentalUidSearchTest extends UidSearch {
 
     public ExperimentalUidSearchTest() throws Exception {
         super(TorqueHostSystemFactory.createStandardImap());

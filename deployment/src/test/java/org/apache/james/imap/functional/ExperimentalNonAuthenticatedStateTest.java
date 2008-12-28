@@ -19,11 +19,11 @@
 
 package org.apache.james.imap.functional;
 
+import org.apache.james.imap.functional.suite.NonAuthenticatedState;
 import org.apache.james.mailboxmanager.torque.TorqueHostSystemFactory;
-import org.apache.james.test.functional.imap.AbstractTestForNonAuthenticatedState;
 
 public class ExperimentalNonAuthenticatedStateTest extends
-        AbstractTestForNonAuthenticatedState {
+        NonAuthenticatedState {
 
     public ExperimentalNonAuthenticatedStateTest() throws Exception {
         super(TorqueHostSystemFactory.createStandardImap());

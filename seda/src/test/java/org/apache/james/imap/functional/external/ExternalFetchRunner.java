@@ -17,15 +17,15 @@
  * under the License.                                           *
  ****************************************************************/
 
-package org.apache.james.test.functional.imap.manual;
+package org.apache.james.imap.functional.external;
 
-import org.apache.james.test.functional.imap.AbstractTestFetch;
+import org.apache.james.imap.functional.suite.Fetch;
 
 /**
  * Script verification against local IMAP.
  * 
  */
-public class ExternalFetchRunner extends AbstractTestFetch {
+public class ExternalFetchRunner extends Fetch {
 
     public ExternalFetchRunner() {
         super(ExternalHostSystem.createLocalImap());

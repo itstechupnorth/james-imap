@@ -17,16 +17,16 @@
  * under the License.                                           *
  ****************************************************************/
 
-package org.apache.james.test.functional.imap;
+package org.apache.james.imap.functional.suite;
 
 import java.util.Locale;
 
+import org.apache.james.imap.functional.FrameworkForSelectedInbox;
 import org.apache.james.test.functional.HostSystem;
 
-public abstract class AbstractTestSelectedInbox extends
-        AbstractBaseTestSelectedInbox {
+public class SelectedInbox extends FrameworkForSelectedInbox {
 
-    public AbstractTestSelectedInbox(HostSystem system) {
+    public SelectedInbox(HostSystem system) {
         super(system);
     }
 

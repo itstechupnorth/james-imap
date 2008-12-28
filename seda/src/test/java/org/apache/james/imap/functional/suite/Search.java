@@ -17,28 +17,40 @@
  * under the License.                                           *
  ****************************************************************/
 
-package org.apache.james.test.functional.imap;
+package org.apache.james.imap.functional.suite;
 
 import java.util.Locale;
 
+import org.apache.james.imap.functional.FrameworkForAuthenticatedState;
 import org.apache.james.test.functional.HostSystem;
 
-abstract public class AbstractTestSelect extends
-        AbstractTestForAuthenticatedState {
+public class Search extends FrameworkForAuthenticatedState {
 
-    public AbstractTestSelect(HostSystem system) throws Exception {
+    public Search(HostSystem system) throws Exception {
         super(system);
     }
 
-    public void testSelectUnseenUS() throws Exception {
-        scriptTest("SelectUnseen", Locale.US);
+    public void testSearchAtomsUS() throws Exception {
+        scriptTest("SearchAtoms", Locale.US);
     }
 
-    public void testSelectUnseenKOREA() throws Exception {
-        scriptTest("SelectUnseen", Locale.KOREA);
+    public void testSearchAtomsITALY() throws Exception {
+        scriptTest("SearchAtoms", Locale.ITALY);
     }
 
-    public void testSelectUnseenITALY() throws Exception {
-        scriptTest("SelectUnseen", Locale.ITALY);
+    public void testSearchAtomsKOREA() throws Exception {
+        scriptTest("SearchAtoms", Locale.KOREA);
+    }
+
+    public void testSearchCombinationsUS() throws Exception {
+        scriptTest("SearchCombinations", Locale.US);
+    }
+
+    public void testSearchCombinationsITALY() throws Exception {
+        scriptTest("SearchCombinations", Locale.ITALY);
+    }
+
+    public void testSearchCombinationsKOREA() throws Exception {
+        scriptTest("SearchCombinations", Locale.KOREA);
     }
 }

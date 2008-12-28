@@ -19,10 +19,10 @@
 
 package org.apache.james.imap.functional;
 
+import org.apache.james.imap.functional.suite.Listing;
 import org.apache.james.mailboxmanager.torque.TorqueHostSystemFactory;
-import org.apache.james.test.functional.imap.AbstractTestListing;
 
-public class ExperimentalListingTest extends AbstractTestListing {
+public class ExperimentalListingTest extends Listing {
 
     public ExperimentalListingTest() throws Exception {
         super(TorqueHostSystemFactory.createStandardImap());

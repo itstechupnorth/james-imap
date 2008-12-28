@@ -17,27 +17,40 @@
  * under the License.                                           *
  ****************************************************************/
 
-package org.apache.james.test.functional.imap;
+package org.apache.james.imap.functional.suite;
 
 import java.util.Locale;
 
+import org.apache.james.imap.functional.FrameworkForSelectedStateBase;
 import org.apache.james.test.functional.HostSystem;
 
-public abstract class AbstractTestEvents extends AbstractTestSelectedStateBase {
+public class FetchHeaders extends FrameworkForSelectedStateBase {
 
-    public AbstractTestEvents(HostSystem system) {
+    public FetchHeaders(HostSystem system) {
         super(system);
     }
 
-    public void testAppendToSelectedUS() throws Exception {
-        scriptTest("AppendToSelected", Locale.US);
+    public void testFetchHeaderFieldsUS() throws Exception {
+        scriptTest("FetchHeaderFields", Locale.US);
     }
 
-    public void testAppendToSelectedKOREA() throws Exception {
-        scriptTest("AppendToSelected", Locale.KOREA);
+    public void testFetchHeaderFieldsITALY() throws Exception {
+        scriptTest("FetchHeaderFields", Locale.ITALY);
     }
 
-    public void testAppendToSelectedITALY() throws Exception {
-        scriptTest("AppendToSelected", Locale.ITALY);
+    public void testFetchHeaderFieldsKOREA() throws Exception {
+        scriptTest("FetchHeaderFields", Locale.KOREA);
+    }
+
+    public void testFetchHeaderFieldsNotUS() throws Exception {
+        scriptTest("FetchHeaderFieldsNot", Locale.US);
+    }
+
+    public void testFetchHeaderFieldsNotITALY() throws Exception {
+        scriptTest("FetchHeaderFieldsNot", Locale.ITALY);
+    }
+
+    public void testFetchHeaderFieldsNotKOREA() throws Exception {
+        scriptTest("FetchHeaderFieldsNot", Locale.KOREA);
     }
 }

@@ -17,51 +17,28 @@
  * under the License.                                           *
  ****************************************************************/
 
-package org.apache.james.test.functional.imap;
+package org.apache.james.imap.functional.suite;
 
 import java.util.Locale;
 
+import org.apache.james.imap.functional.FrameworkForAuthenticatedState;
 import org.apache.james.test.functional.HostSystem;
 
-public abstract class AbstractTestRename extends AbstractTestSelectedStateBase {
+public class Select extends FrameworkForAuthenticatedState {
 
-    public AbstractTestRename(HostSystem system) {
+    public Select(HostSystem system) throws Exception {
         super(system);
     }
 
-    public void testRenameUS() throws Exception {
-        scriptTest("Rename", Locale.US);
+    public void testSelectUnseenUS() throws Exception {
+        scriptTest("SelectUnseen", Locale.US);
     }
 
-    public void testRenameKOREA() throws Exception {
-        scriptTest("Rename", Locale.KOREA);
+    public void testSelectUnseenKOREA() throws Exception {
+        scriptTest("SelectUnseen", Locale.KOREA);
     }
 
-    public void testRenameITALY() throws Exception {
-        scriptTest("Rename", Locale.ITALY);
-    }
-
-    public void testRenameHierarchyUS() throws Exception {
-        scriptTest("RenameHierarchy", Locale.US);
-    }
-
-    public void testRenameHierarchyKO() throws Exception {
-        scriptTest("RenameHierarchy", Locale.KOREA);
-    }
-
-    public void testRenameHierarchyIT() throws Exception {
-        scriptTest("RenameHierarchy", Locale.ITALY);
-    }
-
-    public void testRenameSelectedUS() throws Exception {
-        scriptTest("RenameSelected", Locale.US);
-    }
-
-    public void testRenameSelectedIT() throws Exception {
-        scriptTest("RenameSelected", Locale.ITALY);
-    }
-
-    public void testRenameSelectedKO() throws Exception {
-        scriptTest("RenameSelected", Locale.KOREA);
+    public void testSelectUnseenITALY() throws Exception {
+        scriptTest("SelectUnseen", Locale.ITALY);
     }
 }
