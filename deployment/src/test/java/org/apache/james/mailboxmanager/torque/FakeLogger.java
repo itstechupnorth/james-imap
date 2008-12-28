@@ -17,7 +17,7 @@
  * under the License.                                           *
  ****************************************************************/
 
-package org.apache.james.imap.functional;
+package org.apache.james.mailboxmanager.torque;
 
 import org.apache.commons.logging.Log;
 

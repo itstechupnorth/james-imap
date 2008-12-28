@@ -23,10 +23,9 @@ import java.io.File;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.james.imap.encode.main.DefaultImapEncoderFactory;
-import org.apache.james.imap.functional.ExperimentalHostSystem;
-import org.apache.james.imap.functional.ExperimentalHostSystem.Resetable;
 import org.apache.james.imap.main.DefaultImapDecoderFactory;
 import org.apache.james.imap.processor.main.DefaultImapProcessorFactory;
+import org.apache.james.mailboxmanager.torque.TorqueHostSystem.Resetable;
 import org.apache.james.test.functional.HostSystem;
 
 public class TorqueHostSystemFactory {
@@ -44,7 +43,7 @@ public class TorqueHostSystemFactory {
 
     public static HostSystem createStandardImap() throws Exception {
 
-        ExperimentalHostSystem host = TorqueMailboxManagerProviderSingleton.host;
+        TorqueHostSystem host = TorqueMailboxManagerProviderSingleton.host;
         final DefaultImapProcessorFactory defaultImapProcessorFactory = new DefaultImapProcessorFactory();
         resetUserMetaData();
         defaultImapProcessorFactory.configure(TorqueMailboxManagerProviderSingleton
@@ -52,7 +51,7 @@ public class TorqueHostSystemFactory {
         host.configure(new DefaultImapDecoderFactory().buildImapDecoder(),
                 new DefaultImapEncoderFactory().buildImapEncoder(),
                 defaultImapProcessorFactory.buildImapProcessor(),
-                new ExperimentalHostSystem.Resetable() {
+                new TorqueHostSystem.Resetable() {
 
                     public void reset() throws Exception {
                         TorqueMailboxManagerProviderSingleton.reset();

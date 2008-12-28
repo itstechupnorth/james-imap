@@ -26,7 +26,6 @@ import java.sql.SQLException;
 import java.util.Locale;
 
 import org.apache.commons.configuration.BaseConfiguration;
-import org.apache.james.imap.functional.ExperimentalHostSystem;
 import org.apache.james.mailboxmanager.manager.MailboxManagerProvider;
 import org.apache.james.mailboxmanager.torque.TorqueMailboxManager;
 import org.apache.james.mailboxmanager.torque.om.MailboxRowPeer;
@@ -173,7 +172,7 @@ public class TorqueMailboxManagerProviderSingleton {
 
     private static SimpleMailboxManagerProvider provider;
 
-    public static final ExperimentalHostSystem host = new ExperimentalHostSystem();
+    public static final TorqueHostSystem host = new TorqueHostSystem();
 
     public synchronized static MailboxManagerProvider getTorqueMailboxManagerProviderInstance()
             throws Exception {

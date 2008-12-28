@@ -17,7 +17,7 @@
  * under the License.                                           *
  ****************************************************************/
 
-package org.apache.james.imap.functional;
+package org.apache.james.mailboxmanager.torque;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -34,10 +34,9 @@ import org.apache.james.imap.decode.ImapDecoder;
 import org.apache.james.imap.encode.ImapEncoder;
 import org.apache.james.imap.main.ImapRequestHandler;
 import org.apache.james.imap.main.ImapSessionImpl;
-import org.apache.james.mailboxmanager.torque.TorqueMailboxManagerProviderSingleton;
 import org.apache.james.test.functional.HostSystem;
 
-public class ExperimentalHostSystem implements HostSystem {
+public class TorqueHostSystem implements HostSystem {
 
     private ImapDecoder decoder;
 
@@ -49,7 +48,7 @@ public class ExperimentalHostSystem implements HostSystem {
 
     private final Set users;
 
-    public ExperimentalHostSystem() {
+    public TorqueHostSystem() {
         super();
         users = new HashSet();
     }
