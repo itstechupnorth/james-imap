@@ -46,9 +46,6 @@ import org.apache.james.mailboxmanager.manager.MailboxManager;
 import org.apache.james.mailboxmanager.manager.SubscriptionException;
 import org.apache.torque.TorqueException;
 
-import EDU.oswego.cs.dl.util.concurrent.ReadWriteLock;
-import EDU.oswego.cs.dl.util.concurrent.ReentrantWriterPreferenceReadWriteLock;
-
 public class JPAMailboxManager implements MailboxManager {
 
     private static final char SQL_WILDCARD_CHAR = '%';
@@ -56,9 +53,6 @@ public class JPAMailboxManager implements MailboxManager {
     private final static Random random = new Random();
 
     protected Log log = LogFactory.getLog(JPAMailboxManager.class);
-
-    private final ReadWriteLock lock;
-
     private final Map mailboxes;
 
     private final UserManager userManager;
@@ -66,7 +60,6 @@ public class JPAMailboxManager implements MailboxManager {
     private final MailboxMapper mapper;
 
     public JPAMailboxManager(final UserManager userManager) {
-        this.lock = new ReentrantWriterPreferenceReadWriteLock();
         mailboxes = new HashMap();
         this.userManager = userManager;
         this.mapper = new MailboxMapper();
@@ -93,8 +86,7 @@ public class JPAMailboxManager implements MailboxManager {
                     JPAMailbox torqueMailbox = (JPAMailbox) mailboxes
                             .get(mailboxName);
                     if (torqueMailbox == null) {
-                        torqueMailbox = new JPAMailbox(mailboxRow, lock,
-                                getLog());
+                        torqueMailbox = new JPAMailbox(mailboxRow, getLog());
                         mailboxes.put(mailboxName, torqueMailbox);
                     }
 
