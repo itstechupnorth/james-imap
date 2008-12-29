@@ -145,31 +145,34 @@ public class MessageMapper {
         MessageRowPeer.doDelete(todelc);
     }
     
-    public List findUnseen(MailboxRow row) throws TorqueException {
-        Criteria c = new Criteria();
-        c.addAscendingOrderByColumn(MessageRowPeer.UID);
-        c.setLimit(1);
-        c.setSingleRecord(true);
+    public List findUnseen(final long mailboxId) throws TorqueException {
+        Criteria criteria = new Criteria();
+        criteria.addAscendingOrderByColumn(MessageRowPeer.UID);
+        criteria.setLimit(1);
+        criteria.setSingleRecord(true);
 
-        c.addJoin(MessageFlagsPeer.MAILBOX_ID,
+        criteria.addJoin(MessageFlagsPeer.MAILBOX_ID,
                 MessageRowPeer.MAILBOX_ID);
-        c.addJoin(MessageRowPeer.UID, MessageFlagsPeer.UID);
+        criteria.addJoin(MessageRowPeer.UID, MessageFlagsPeer.UID);
 
-        MessageMapper.addFlagsToCriteria(new Flags(Flags.Flag.SEEN),
-                false, c);
-        List messageRows = row.getMessageRows(c);
+        MessageMapper.addFlagsToCriteria(new Flags(Flags.Flag.SEEN), false, criteria);
+        criteria.add(MessageRowPeer.MAILBOX_ID, mailboxId);
+        
+        final List messageRows = MessageRowPeer.doSelect(criteria);
         return messageRows;
     }
     
-    public List findRecent(final MailboxRow mailboxRow) throws TorqueException {
-        final Criteria criterion = new Criteria();
-        criterion.addJoin(MessageFlagsPeer.MAILBOX_ID,
+    public List findRecent(final long mailboxId) throws TorqueException {
+        final Criteria criteria = new Criteria();
+        criteria.addJoin(MessageFlagsPeer.MAILBOX_ID,
                 MessageRowPeer.MAILBOX_ID);
-        criterion.addJoin(MessageRowPeer.UID, MessageFlagsPeer.UID);
+        criteria.addJoin(MessageRowPeer.UID, MessageFlagsPeer.UID);
         
         MessageMapper.addFlagsToCriteria(new Flags(Flags.Flag.RECENT), true,
-                criterion);
-        final List messageRows = mailboxRow.getMessageRows(criterion);
+                criteria);
+        criteria.add(MessageRowPeer.MAILBOX_ID, mailboxId);
+        
+        final List messageRows = MessageRowPeer.doSelect(criteria);
         return messageRows;
     }
     

@@ -240,7 +240,7 @@ abstract class BaseMailboxRow extends BaseObject {
      * @return the collection of associated objects
      * @throws TorqueException
      */
-    public List getMessageRows() throws TorqueException {
+    List getMessageRows() throws TorqueException {
         if (collMessageRows == null) {
             collMessageRows = getMessageRows(new Criteria(10));
         }

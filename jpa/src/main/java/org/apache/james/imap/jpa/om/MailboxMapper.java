@@ -70,10 +70,6 @@ public class MailboxMapper {
                 Criteria.GREATER_THAN));
     }
 
-    public MailboxRow refresh(MailboxRow mailboxRow) throws TorqueException {
-        return MailboxRowPeer.retrieveByPK(mailboxRow.getPrimaryKey());
-    }
-
     public int countOnName(String mailboxName) throws TorqueException {
         int count;
         Criteria c = new Criteria();
@@ -91,14 +87,13 @@ public class MailboxMapper {
         return rows;
     }
 
-    public List findMarkedForDeletionInMailbox(final MessageRange set, final MailboxRow mailboxRow) throws TorqueException, MailboxManagerException {
-        final Criteria c = criteriaForMessageSet(set);
-        c.addJoin(MessageRowPeer.MAILBOX_ID, MessageFlagsPeer.MAILBOX_ID);
-        c.addJoin(MessageRowPeer.UID, MessageFlagsPeer.UID);
-        c.add(MessageRowPeer.MAILBOX_ID, mailboxRow.getMailboxId());
-        c.add(MessageFlagsPeer.DELETED, true);
-
-        final List messageRows = mailboxRow.getMessageRows(c);
+    public List findMarkedForDeletionInMailbox(final MessageRange set, final long mailboxId) throws TorqueException, MailboxManagerException {
+        final Criteria criteria = criteriaForMessageSet(set);
+        criteria.addJoin(MessageRowPeer.MAILBOX_ID, MessageFlagsPeer.MAILBOX_ID);
+        criteria.addJoin(MessageRowPeer.UID, MessageFlagsPeer.UID);
+        criteria.add(MessageFlagsPeer.DELETED, true);
+        criteria.add(MessageRowPeer.MAILBOX_ID, mailboxId);
+        final List messageRows = MessageRowPeer.doSelect(criteria);
         return messageRows;
     }
 
