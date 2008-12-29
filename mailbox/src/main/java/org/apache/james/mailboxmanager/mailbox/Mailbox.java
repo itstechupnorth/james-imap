@@ -44,7 +44,7 @@ public interface Mailbox {
      * @return Full folder name with namespace
      * @throws MailboxManagerException
      */
-    String getName();
+    String getName() throws MailboxManagerException;
 
     int getMessageCount(MailboxSession mailboxSession)
             throws MailboxManagerException;

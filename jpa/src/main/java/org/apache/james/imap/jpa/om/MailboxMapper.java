@@ -21,16 +21,11 @@ package org.apache.james.imap.jpa.om;
 
 import java.util.List;
 
-import javax.mail.Flags;
-
 import org.apache.james.mailboxmanager.MailboxManagerException;
 import org.apache.james.mailboxmanager.MessageRange;
 import org.apache.torque.TorqueException;
 import org.apache.torque.util.CountHelper;
 import org.apache.torque.util.Criteria;
-
-import com.workingdogs.village.DataSetException;
-import com.workingdogs.village.Record;
 
 /**
  * Data access management for mailbox.
@@ -133,6 +128,10 @@ public class MailboxMapper {
                     + set.getType());
         }
         return criteria;
+    }
+
+    public MailboxRow findById(long mailboxId) throws TorqueException {
+        return MailboxRowPeer.retrieveByPK(mailboxId);
     }
 
 }

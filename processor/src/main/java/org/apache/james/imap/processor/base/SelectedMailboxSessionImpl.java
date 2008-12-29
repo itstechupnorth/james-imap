@@ -61,6 +61,8 @@ public class SelectedMailboxSessionImpl extends AbstractLogEnabled implements
 
     private boolean recentUidRemoved;
 
+    private final String name;
+
     public SelectedMailboxSessionImpl(Mailbox mailbox, List uids,
             MailboxSession mailboxSession) throws MailboxManagerException {
         this.mailbox = mailbox;
@@ -74,6 +76,7 @@ public class SelectedMailboxSessionImpl extends AbstractLogEnabled implements
         mailbox.addListener(events);
         converter = new UidToMsnConverter(uids);
         mailbox.addListener(converter);
+        name = mailbox.getName();
     }
 
     /**
@@ -254,7 +257,7 @@ public class SelectedMailboxSessionImpl extends AbstractLogEnabled implements
     }
 
     public String getName() {
-        return mailbox.getName();
+        return name;
     }
 
     private void checkExpungedRecents() {

@@ -56,8 +56,6 @@ import org.apache.james.mailboxmanager.impl.FetchGroupImpl;
 import org.apache.james.mailboxmanager.impl.UidChangeTracker;
 import org.apache.james.mailboxmanager.mailbox.Mailbox;
 import org.apache.james.mailboxmanager.util.UidRange;
-import org.apache.torque.NoRowsException;
-import org.apache.torque.TooManyRowsException;
 import org.apache.torque.TorqueException;
 
 import EDU.oswego.cs.dl.util.concurrent.ReadWriteLock;
@@ -70,14 +68,14 @@ public class JPAMailbox extends AbstractLogEnabled implements Mailbox {
 
     private boolean open = true;
 
-    private MailboxRow mailboxRow;
+    private long mailboxId;
 
     private final UidChangeTracker tracker;
 
     private final ReadWriteLock lock;
 
     private final MessageSearches searches;
-    
+
     private final MailboxMapper mapper;
     private final MessageMapper messageMapper;
 
@@ -85,20 +83,24 @@ public class JPAMailbox extends AbstractLogEnabled implements Mailbox {
             final Log log) {
         this.searches = new MessageSearches();
         setLog(log);
-        this.mailboxRow = mailboxRow;
+        this.mailboxId = mailboxRow.getMailboxId();
         this.tracker = new UidChangeTracker(mailboxRow.getLastUid());
         this.lock = lock;
         this.mapper = new MailboxMapper();
         this.messageMapper = new MessageMapper();
     }
 
-    public synchronized String getName() {
+    public synchronized String getName() throws MailboxManagerException {
         checkAccess();
-        return mailboxRow.getName();
+        try {
+            return getMailboxRow().getName();
+        } catch (TorqueException e) {
+            throw new MailboxManagerException(e);
+        }
     }
 
     public int getMessageCount(MailboxSession mailboxSession)
-            throws MailboxManagerException {
+    throws MailboxManagerException {
         try {
             lock.readLock().acquire();
             try {
@@ -118,14 +120,14 @@ public class JPAMailbox extends AbstractLogEnabled implements Mailbox {
 
     public MessageResult appendMessage(MimeMessage message, Date internalDate,
             FetchGroup fetchGroup, MailboxSession mailboxSession)
-            throws MailboxManagerException {
+    throws MailboxManagerException {
 
         try {
             checkAccess();
 
-            final MailboxRow myMailboxRow = reserveNextUid();
+            final MailboxRow mailbox = reserveNextUid();
 
-            if (myMailboxRow != null) {
+            if (mailbox != null) {
                 try {
                     // To be thread safe, we first get our own copy and the
                     // exclusive
@@ -135,8 +137,7 @@ public class JPAMailbox extends AbstractLogEnabled implements Mailbox {
                     // is
                     // inserted long before 4, when
                     // mail 4 is big and comes over a slow connection.
-                    long uid = myMailboxRow.getLastUid();
-                    this.mailboxRow = myMailboxRow;
+                    long uid = mailbox.getLastUid();
 
                     MessageRow messageRow = new MessageRow();
                     messageRow.setMailboxId(getMailboxRow().getMailboxId());
@@ -170,20 +171,20 @@ public class JPAMailbox extends AbstractLogEnabled implements Mailbox {
     }
 
     private void populateFlags(MimeMessage message, MessageRow messageRow)
-            throws MessagingException, TorqueException {
+    throws MessagingException, TorqueException {
         final Flags flags = message.getFlags();
         buildFlags(messageRow, flags);
     }
 
     private void buildFlags(MessageRow messageRow, final Flags flags)
-            throws TorqueException {
+    throws TorqueException {
         MessageFlags messageFlags = new MessageFlags();
         messageFlags.setFlags(flags);
         messageRow.addMessageFlags(messageFlags);
     }
 
     private MessageBody populateBody(MimeMessage message) throws IOException,
-            MessagingException {
+    MessagingException {
         MessageBody mb = new MessageBody();
 
         InputStream is = message.getInputStream();
@@ -194,11 +195,11 @@ public class JPAMailbox extends AbstractLogEnabled implements Mailbox {
     }
 
     private void addHeaders(MimeMessage message, MessageRow messageRow)
-            throws MessagingException, TorqueException {
+    throws MessagingException, TorqueException {
         int line_number = 0;
 
         for (Enumeration lines = message.getAllHeaderLines(); lines
-                .hasMoreElements();) {
+        .hasMoreElements();) {
             String line = (String) lines.nextElement();
             int colon = line.indexOf(": ");
             if (colon > 0) {
@@ -214,7 +215,7 @@ public class JPAMailbox extends AbstractLogEnabled implements Mailbox {
     }
 
     private int size(MimeMessage message) throws IOException,
-            MessagingException {
+    MessagingException {
         // TODO very ugly size mesurement
         ByteArrayOutputStream sizeBos = new ByteArrayOutputStream();
         message.writeTo(new CRLFOutputStream(sizeBos));
@@ -223,7 +224,7 @@ public class JPAMailbox extends AbstractLogEnabled implements Mailbox {
     }
 
     private void save(MessageRow messageRow) throws TorqueException,
-            InterruptedException {
+    InterruptedException {
         try {
             lock.writeLock().acquire();
             messageMapper.save(messageRow);
@@ -233,7 +234,7 @@ public class JPAMailbox extends AbstractLogEnabled implements Mailbox {
     }
 
     private MailboxRow reserveNextUid() throws InterruptedException,
-            MailboxManagerException {
+    MailboxManagerException {
         final MailboxRow myMailboxRow;
         try {
             lock.writeLock().acquire();
@@ -274,14 +275,14 @@ public class JPAMailbox extends AbstractLogEnabled implements Mailbox {
     }
 
     private JPAResultIterator getMessages(FetchGroup result, UidRange range,List rows) 
-                throws TorqueException, MessagingException, MailboxManagerException {
+    throws TorqueException, MessagingException, MailboxManagerException {
         final JPAResultIterator results = getResults(result, rows);
         getUidChangeTracker().found(range, results.getMessageFlags());
         return results;
     }
 
     private JPAResultIterator getResults(FetchGroup result, List rows)
-            throws TorqueException {
+    throws TorqueException {
         Collections.sort(rows, MessageRowUtils.getUidComparator());
         final JPAResultIterator results = new JPAResultIterator(rows,
                 result);
@@ -289,7 +290,7 @@ public class JPAMailbox extends AbstractLogEnabled implements Mailbox {
     }
 
     private static UidRange uidRangeForMessageSet(MessageRange set)
-            throws MailboxManagerException {
+    throws MailboxManagerException {
         if (set.getType() == MessageRange.TYPE_UID) {
             return new UidRange(set.getUidFrom(), set.getUidTo());
         } else if (set.getType() == MessageRange.TYPE_ALL) {
@@ -317,7 +318,7 @@ public class JPAMailbox extends AbstractLogEnabled implements Mailbox {
     }
 
     public long[] recent(boolean reset, MailboxSession mailboxSession)
-            throws MailboxManagerException {
+    throws MailboxManagerException {
         try {
             lock.readLock().acquire();
             try {
@@ -383,7 +384,7 @@ public class JPAMailbox extends AbstractLogEnabled implements Mailbox {
 
 
     public int getUnseenCount(MailboxSession mailboxSession)
-            throws MailboxManagerException {
+    throws MailboxManagerException {
         try {
             lock.readLock().acquire();
             try {
@@ -421,12 +422,12 @@ public class JPAMailbox extends AbstractLogEnabled implements Mailbox {
     }
 
     private Iterator doExpunge(final MessageRange set, FetchGroup fetchGroup)
-            throws MailboxManagerException {
+    throws MailboxManagerException {
         checkAccess();
         try {
             // TODO put this into a serializable transaction
             final MailboxRow mailboxRow = getMailboxRow();
-            
+
             final List messageRows = mapper.findMarkedForDeletionInMailbox(set, mailboxRow);
             final long[] uids = uids(messageRows);
             final OrFetchGroup orFetchGroup = new OrFetchGroup(fetchGroup,
@@ -507,7 +508,7 @@ public class JPAMailbox extends AbstractLogEnabled implements Mailbox {
             final JPAResultIterator resultIterator = new JPAResultIterator(
                     messageRows, orFetchGroup);
             final org.apache.james.mailboxmanager.impl.MessageFlags[] messageFlags = resultIterator
-                    .getMessageFlags();
+            .getMessageFlags();
             tracker.flagsUpdated(messageFlags, mailboxSession.getSessionId());
             tracker.found(uidRange, messageFlags);
             return resultIterator;
@@ -517,7 +518,7 @@ public class JPAMailbox extends AbstractLogEnabled implements Mailbox {
     }
 
     public void addListener(MailboxListener listener)
-            throws MailboxManagerException {
+    throws MailboxManagerException {
         checkAccess();
         tracker.addMailboxListener(listener);
     }
@@ -530,7 +531,7 @@ public class JPAMailbox extends AbstractLogEnabled implements Mailbox {
     }
 
     public long getUidValidity(MailboxSession mailboxSession)
-            throws MailboxManagerException {
+    throws MailboxManagerException {
         try {
             lock.readLock().acquire();
             try {
@@ -543,39 +544,33 @@ public class JPAMailbox extends AbstractLogEnabled implements Mailbox {
 
         } catch (InterruptedException e) {
             throw new MailboxManagerException(e);
+        } catch (TorqueException e) {
+            throw new MailboxManagerException(e);
         }
 
     }
 
     public long getUidNext(MailboxSession mailboxSession)
-            throws MailboxManagerException {
+    throws MailboxManagerException {
         try {
             lock.readLock().acquire();
             try {
                 checkAccess();
-                try {
-                    MailboxRow myMailboxRow = mapper.refresh(mailboxRow);
-                    if (myMailboxRow != null) {
-                        mailboxRow = myMailboxRow;
-                        getUidChangeTracker().foundLastUid(
-                                mailboxRow.getLastUid());
-                        return getUidChangeTracker().getLastUid() + 1;
-                    } else {
-                        throw new MailboxManagerException(
-                                "Mailbox has been deleted");
-                    }
-                } catch (NoRowsException e) {
-                    throw new MailboxManagerException(e);
-                } catch (TooManyRowsException e) {
-                    throw new MailboxManagerException(e);
-                } catch (TorqueException e) {
-                    throw new MailboxManagerException(e);
+                MailboxRow mailbox = getMailboxRow();
+                if (mailbox != null) {
+                    getUidChangeTracker().foundLastUid(mailbox.getLastUid());
+                    return getUidChangeTracker().getLastUid() + 1;
+                } else {
+                    throw new MailboxManagerException(
+                            "Mailbox has been deleted");
                 }
             } finally {
                 lock.readLock().release();
             }
 
         } catch (InterruptedException e) {
+            throw new MailboxManagerException(e);
+        }  catch (TorqueException e) {
             throw new MailboxManagerException(e);
         }
     }
@@ -590,12 +585,8 @@ public class JPAMailbox extends AbstractLogEnabled implements Mailbox {
         return tracker;
     }
 
-    protected MailboxRow getMailboxRow() {
-        return mailboxRow;
-    }
-
-    protected void setMailboxRow(MailboxRow mailboxRow) {
-        this.mailboxRow = mailboxRow;
+    protected MailboxRow getMailboxRow() throws TorqueException {
+        return mapper.findById(mailboxId);
     }
 
     public Iterator search(SearchQuery query, FetchGroup fetchGroup,
@@ -615,9 +606,9 @@ public class JPAMailbox extends AbstractLogEnabled implements Mailbox {
                         }
                     } catch (TorqueException e) {
                         getLog()
-                                .info(
-                                        "Cannot test message against search criteria. Will continue to test other messages.",
-                                        e);
+                        .info(
+                                "Cannot test message against search criteria. Will continue to test other messages.",
+                                e);
                         if (getLog().isDebugEnabled())
                             getLog().debug("UID: " + row.getUid());
                     }
@@ -669,7 +660,7 @@ public class JPAMailbox extends AbstractLogEnabled implements Mailbox {
     }
 
     private void copy(List rows, MailboxSession session)
-            throws MailboxManagerException {
+    throws MailboxManagerException {
         try {
             for (Iterator iter = rows.iterator(); iter.hasNext();) {
                 MessageRow fromRow = (MessageRow) iter.next();
@@ -685,7 +676,6 @@ public class JPAMailbox extends AbstractLogEnabled implements Mailbox {
                     // inserted long before 4, when
                     // mail 4 is big and comes over a slow connection.
                     long uid = mailbox.getLastUid();
-                    this.mailboxRow = mailbox;
 
                     MessageRow newRow = new MessageRow();
                     newRow.setMailboxId(getMailboxRow().getMailboxId());
@@ -697,9 +687,9 @@ public class JPAMailbox extends AbstractLogEnabled implements Mailbox {
 
                     final List headers = fromRow.getMessageHeaders();
                     for (Iterator iterator = headers.iterator(); iterator
-                            .hasNext();) {
+                    .hasNext();) {
                         final MessageHeader fromHeader = (MessageHeader) iterator
-                                .next();
+                        .next();
                         final MessageHeader newHeader = new MessageHeader(
                                 fromHeader.getField(), fromHeader.getValue(),
                                 fromHeader.getLineNumber());
