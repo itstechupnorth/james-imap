@@ -207,7 +207,12 @@ JAMES requires Ant 1.7 or higher. Please install a more modern version of Ant.
                     <include name="${torque.jar}"/>
                     <include name="${village.jar}"/>
                     <include name="${commons-configuration.jar}"/>
-                    <include name="${commons-digester.jar}"/>       
+                    <include name="${commons-digester.jar}"/>    
+                    <include name="${jpa.jar}"/> 
+                    <!-- Open JPA -->
+                    <include name="${openjpa.jar}"/>
+                    <include name="${serp.jar}"/>
+                    <include name="${h2.jar}"/>
                 </fileset> 
             </path>  
   
