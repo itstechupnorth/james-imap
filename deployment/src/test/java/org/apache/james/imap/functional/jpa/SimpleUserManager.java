@@ -23,8 +23,8 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.james.mailboxmanager.manager.SubscriptionException;
 import org.apache.james.imap.jpa.UserManager;
+import org.apache.james.mailboxmanager.manager.SubscriptionException;
 
 public class SimpleUserManager implements UserManager {
 

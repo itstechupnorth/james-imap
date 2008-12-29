@@ -1,10 +1,8 @@
 package org.apache.james.imap.jpa.om.map;
 
-import java.util.Date;
-
+import org.apache.james.imap.jpa.om.Init;
 import org.apache.torque.Torque;
 import org.apache.torque.TorqueException;
-import org.apache.torque.map.ColumnMap;
 import org.apache.torque.map.DatabaseMap;
 import org.apache.torque.map.MapBuilder;
 import org.apache.torque.map.TableMap;
@@ -60,73 +58,7 @@ public class MessageRowMapBuilder implements MapBuilder {
 
         dbMap.addTable("message");
         TableMap tMap = dbMap.getTable("message");
-        tMap.setJavaName("MessageRow");
-        tMap
-                .setOMClass(org.apache.james.imap.jpa.om.MessageRow.class);
-        tMap
-                .setPeerClass(org.apache.james.imap.jpa.om.MessageRowPeer.class);
-        tMap.setDescription("");
-        tMap.setPrimaryKeyMethod("none");
-
-        ColumnMap cMap = null;
-
-        // ------------- Column: mailbox_id --------------------
-        cMap = new ColumnMap("mailbox_id", tMap);
-        cMap.setType(new Long(0));
-        cMap.setTorqueType("BIGINT");
-        cMap.setUsePrimitive(true);
-        cMap.setPrimaryKey(true);
-        cMap.setNotNull(true);
-        cMap.setJavaName("MailboxId");
-        cMap.setAutoIncrement(false);
-        cMap.setProtected(false);
-        cMap.setDescription("Mailbox Id");
-        cMap.setInheritance("false");
-        cMap.setForeignKey("mailbox", "mailbox_id");
-        cMap.setPosition(1);
-        tMap.addColumn(cMap);
-        // ------------- Column: uid --------------------
-        cMap = new ColumnMap("uid", tMap);
-        cMap.setType(new Long(0));
-        cMap.setTorqueType("BIGINT");
-        cMap.setUsePrimitive(true);
-        cMap.setPrimaryKey(true);
-        cMap.setNotNull(true);
-        cMap.setJavaName("Uid");
-        cMap.setAutoIncrement(false);
-        cMap.setProtected(false);
-        cMap.setDescription("the last used uid (default 0)");
-        cMap.setInheritance("false");
-        cMap.setPosition(2);
-        tMap.addColumn(cMap);
-        // ------------- Column: internal_date --------------------
-        cMap = new ColumnMap("internal_date", tMap);
-        cMap.setType(new Date());
-        cMap.setTorqueType("DATE");
-        cMap.setUsePrimitive(true);
-        cMap.setPrimaryKey(false);
-        cMap.setNotNull(false);
-        cMap.setJavaName("InternalDate");
-        cMap.setAutoIncrement(false);
-        cMap.setProtected(false);
-        cMap.setDescription("internal date");
-        cMap.setInheritance("false");
-        cMap.setPosition(3);
-        tMap.addColumn(cMap);
-        // ------------- Column: size --------------------
-        cMap = new ColumnMap("size", tMap);
-        cMap.setType(new Integer(0));
-        cMap.setTorqueType("INTEGER");
-        cMap.setUsePrimitive(true);
-        cMap.setPrimaryKey(false);
-        cMap.setNotNull(false);
-        cMap.setJavaName("Size");
-        cMap.setAutoIncrement(false);
-        cMap.setProtected(false);
-        cMap.setDescription("message size");
-        cMap.setInheritance("false");
-        cMap.setPosition(4);
-        tMap.addColumn(cMap);
-        tMap.setUseInheritance(false);
+        Init.populateMessageRow(tMap);
     }
+
 }

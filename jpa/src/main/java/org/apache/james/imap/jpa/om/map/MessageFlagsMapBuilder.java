@@ -3,7 +3,6 @@ package org.apache.james.imap.jpa.om.map;
 import org.apache.james.imap.jpa.om.Init;
 import org.apache.torque.Torque;
 import org.apache.torque.TorqueException;
-import org.apache.torque.map.ColumnMap;
 import org.apache.torque.map.DatabaseMap;
 import org.apache.torque.map.MapBuilder;
 import org.apache.torque.map.TableMap;

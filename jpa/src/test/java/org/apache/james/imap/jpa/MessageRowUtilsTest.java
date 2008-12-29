@@ -19,9 +19,9 @@
 
 package org.apache.james.imap.jpa;
 
-import org.apache.james.imap.jpa.om.MessageRow;
-
 import junit.framework.TestCase;
+
+import org.apache.james.imap.jpa.om.MessageRow;
 
 public class MessageRowUtilsTest extends TestCase {
 

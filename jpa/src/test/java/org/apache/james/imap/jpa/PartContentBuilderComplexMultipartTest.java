@@ -24,9 +24,9 @@ import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.util.List;
 
-import org.apache.james.imap.jpa.PartContentBuilder.PartNotFoundException;
-
 import junit.framework.TestCase;
+
+import org.apache.james.imap.jpa.PartContentBuilder.PartNotFoundException;
 
 public class PartContentBuilderComplexMultipartTest extends TestCase {
 

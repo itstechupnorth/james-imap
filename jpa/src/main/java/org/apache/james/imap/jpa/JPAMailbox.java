@@ -45,7 +45,6 @@ import org.apache.james.imap.jpa.om.MessageFlags;
 import org.apache.james.imap.jpa.om.MessageHeader;
 import org.apache.james.imap.jpa.om.MessageMapper;
 import org.apache.james.imap.jpa.om.MessageRow;
-import org.apache.james.imap.jpa.om.MessageRowPeer;
 import org.apache.james.mailboxmanager.MailboxListener;
 import org.apache.james.mailboxmanager.MailboxManagerException;
 import org.apache.james.mailboxmanager.MailboxSession;
@@ -53,8 +52,6 @@ import org.apache.james.mailboxmanager.MessageRange;
 import org.apache.james.mailboxmanager.MessageResult;
 import org.apache.james.mailboxmanager.SearchQuery;
 import org.apache.james.mailboxmanager.MessageResult.FetchGroup;
-import org.apache.james.mailboxmanager.SearchQuery.Criterion;
-import org.apache.james.mailboxmanager.SearchQuery.NumericRange;
 import org.apache.james.mailboxmanager.impl.FetchGroupImpl;
 import org.apache.james.mailboxmanager.impl.UidChangeTracker;
 import org.apache.james.mailboxmanager.mailbox.Mailbox;
@@ -62,7 +59,6 @@ import org.apache.james.mailboxmanager.util.UidRange;
 import org.apache.torque.NoRowsException;
 import org.apache.torque.TooManyRowsException;
 import org.apache.torque.TorqueException;
-import org.apache.torque.util.Criteria;
 
 import EDU.oswego.cs.dl.util.concurrent.ReadWriteLock;
 
@@ -442,12 +438,7 @@ public class JPAMailbox extends AbstractLogEnabled implements Mailbox {
 
             for (Iterator iter = messageRows.iterator(); iter.hasNext();) {
                 MessageRow messageRow = (MessageRow) iter.next();
-                Criteria todelc = new Criteria();
-                todelc
-                        .add(MessageRowPeer.MAILBOX_ID, messageRow
-                                .getMailboxId());
-                todelc.add(MessageRowPeer.UID, messageRow.getUid());
-                MessageRowPeer.doDelete(todelc);
+                messageMapper.delete(messageRow);
             }
             getUidChangeTracker().expunged(uids);
             return messageResults.iterator();
@@ -455,7 +446,6 @@ public class JPAMailbox extends AbstractLogEnabled implements Mailbox {
             throw new MailboxManagerException(e);
         }
     }
-
 
     private long[] uids(List messageRows) {
         final int size = messageRows.size();
@@ -615,9 +605,7 @@ public class JPAMailbox extends AbstractLogEnabled implements Mailbox {
             try {
                 checkAccess();
 
-                final Criteria criterion = preSelect(query);
-                final List rows = MessageRowPeer
-                        .doSelectJoinMessageFlags(criterion);
+                final List rows = messageMapper.find(query);
                 final List filteredMessages = new ArrayList();
                 for (Iterator it = rows.iterator(); it.hasNext();) {
                     final MessageRow row = (MessageRow) it.next();
@@ -646,43 +634,7 @@ public class JPAMailbox extends AbstractLogEnabled implements Mailbox {
         }
     }
 
-    private Criteria preSelect(SearchQuery query) {
-        final Criteria results = new Criteria();
-        final List criteria = query.getCriterias();
-        if (criteria.size() == 1) {
-            final Criterion criterion = (Criterion) criteria.get(0);
-            if (criterion instanceof SearchQuery.UidCriterion) {
-                final SearchQuery.UidCriterion uidCriterion = (SearchQuery.UidCriterion) criterion;
-                preSelectUid(results, uidCriterion);
-            }
-        }
-        return results;
-    }
 
-    private void preSelectUid(final Criteria results,
-            final SearchQuery.UidCriterion uidCriterion) {
-        final NumericRange[] ranges = uidCriterion.getOperator().getRange();
-        for (int i = 0; i < ranges.length; i++) {
-            final long low = ranges[i].getLowValue();
-            final long high = ranges[i].getHighValue();
-            if (low == Long.MAX_VALUE) {
-                results.add(MessageRowPeer.UID, high, Criteria.LESS_EQUAL);
-            } else if (low == high) {
-                results.add(MessageRowPeer.UID, low);
-            } else {
-                final Criteria.Criterion fromCriterion = results
-                        .getNewCriterion(MessageRowPeer.UID, new Long(low),
-                                Criteria.GREATER_EQUAL);
-                if (high > 0 && high < Long.MAX_VALUE) {
-                    final Criteria.Criterion toCriterion = results
-                            .getNewCriterion(MessageRowPeer.UID,
-                                    new Long(high), Criteria.LESS_EQUAL);
-                    fromCriterion.and(toCriterion);
-                }
-                results.add(fromCriterion);
-            }
-        }
-    }
 
     public boolean isWriteable() {
         return true;

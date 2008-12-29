@@ -19,9 +19,6 @@
 
 package org.apache.james.mailboxmanager.torque;
 
-import org.apache.commons.lang.builder.HashCodeBuilder;
-import org.apache.james.mailboxmanager.torque.CRLFOutputStream;
-
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Arrays;
@@ -36,6 +33,8 @@ import javax.mail.MessagingException;
 import javax.mail.Session;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
+
+import org.apache.commons.lang.builder.HashCodeBuilder;
 
 public class TestUtil {
 

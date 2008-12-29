@@ -20,18 +20,16 @@
 package org.apache.james.mailboxmanager.torque;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
+
+import junit.framework.TestCase;
 
 import org.apache.james.mailboxmanager.ListResult;
 import org.apache.james.mailboxmanager.MailboxManagerException;
 import org.apache.james.mailboxmanager.manager.MailboxExpression;
 import org.apache.james.mailboxmanager.manager.MailboxManager;
 import org.apache.james.mailboxmanager.manager.MailboxManagerProvider;
-
-import junit.framework.TestCase;
 
 public abstract class AbstractMailboxManagerSelfTestCase extends TestCase {
 

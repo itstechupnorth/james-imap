@@ -83,7 +83,7 @@ public class MailboxMapper {
     public List findInMailbox(MessageRange set, long mailboxId) throws MailboxManagerException, TorqueException {
         Criteria c = criteriaForMessageSet(set);
         c.add(MessageFlagsPeer.MAILBOX_ID, mailboxId);
-        List rows = MessageRowPeer.doSelectJoinMessageFlags(c);
+        List rows = MessageMapper.doSelectJoinMessageFlags(c);
         return rows;
     }
     

@@ -24,7 +24,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.james.mailboxmanager.manager.SubscriptionException;
-import org.apache.james.mailboxmanager.torque.UserManager;
 
 public class SimpleUserManager implements UserManager {
 

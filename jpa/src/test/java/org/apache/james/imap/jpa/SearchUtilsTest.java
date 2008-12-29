@@ -25,14 +25,14 @@ import java.util.Date;
 
 import javax.mail.Flags;
 
+import junit.framework.TestCase;
+
 import org.apache.james.api.imap.ImapConstants;
 import org.apache.james.imap.jpa.om.MessageFlags;
 import org.apache.james.imap.jpa.om.MessageHeader;
 import org.apache.james.imap.jpa.om.MessageRow;
 import org.apache.james.mailboxmanager.SearchQuery;
 import org.apache.torque.TorqueException;
-
-import junit.framework.TestCase;
 
 public class SearchUtilsTest extends TestCase {
 
