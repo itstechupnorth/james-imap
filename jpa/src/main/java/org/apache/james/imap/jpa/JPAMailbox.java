@@ -66,8 +66,6 @@ public class JPAMailbox extends AbstractLogEnabled implements Mailbox {
 
     private Log log;
 
-    private boolean open = true;
-
     private long mailboxId;
 
     private final UidChangeTracker tracker;
@@ -91,7 +89,6 @@ public class JPAMailbox extends AbstractLogEnabled implements Mailbox {
     }
 
     public synchronized String getName() throws MailboxManagerException {
-        checkAccess();
         try {
             return getMailboxRow().getName();
         } catch (TorqueException e) {
@@ -104,7 +101,6 @@ public class JPAMailbox extends AbstractLogEnabled implements Mailbox {
         try {
             lock.readLock().acquire();
             try {
-                checkAccess();
                 try {
                     return messageMapper.countMessages(getMailboxRow().getMailboxId());
                 } catch (Exception e) {
@@ -123,8 +119,6 @@ public class JPAMailbox extends AbstractLogEnabled implements Mailbox {
     throws MailboxManagerException {
 
         try {
-            checkAccess();
-
             final MailboxRow mailbox = reserveNextUid();
 
             if (mailbox != null) {
@@ -255,7 +249,6 @@ public class JPAMailbox extends AbstractLogEnabled implements Mailbox {
         try {
             lock.readLock().acquire();
             try {
-                checkAccess();
                 UidRange range = uidRangeForMessageSet(set);
                 try {
                     final long mailboxId = getMailboxRow().getMailboxId();
@@ -322,7 +315,6 @@ public class JPAMailbox extends AbstractLogEnabled implements Mailbox {
         try {
             lock.readLock().acquire();
             try {
-                checkAccess();
                 final MailboxRow mailboxRow = getMailboxRow();
                 final List messageRows = messageMapper.findRecent(mailboxRow);
                 final long[] results = new long[messageRows.size()];
@@ -354,7 +346,6 @@ public class JPAMailbox extends AbstractLogEnabled implements Mailbox {
         try {
             lock.readLock().acquire();
             try {
-                checkAccess();
                 try {
                     List messageRows = messageMapper.findUnseen(getMailboxRow());
                     if (messageRows.size() > 0) {
@@ -388,7 +379,6 @@ public class JPAMailbox extends AbstractLogEnabled implements Mailbox {
         try {
             lock.readLock().acquire();
             try {
-                checkAccess();
                 try {
                     final int count = messageMapper.countMessages(
                             new Flags(Flags.Flag.SEEN), false, getMailboxRow().getMailboxId());
@@ -423,7 +413,6 @@ public class JPAMailbox extends AbstractLogEnabled implements Mailbox {
 
     private Iterator doExpunge(final MessageRange set, FetchGroup fetchGroup)
     throws MailboxManagerException {
-        checkAccess();
         try {
             // TODO put this into a serializable transaction
             final MailboxRow mailboxRow = getMailboxRow();
@@ -478,7 +467,6 @@ public class JPAMailbox extends AbstractLogEnabled implements Mailbox {
     private Iterator doSetFlags(Flags flags, boolean value, boolean replace,
             final MessageRange set, FetchGroup fetchGroup,
             MailboxSession mailboxSession) throws MailboxManagerException {
-        checkAccess();
         try {
             // TODO put this into a serializeable transaction
             final List messageRows = mapper.findInMailbox(set, getMailboxRow().getMailboxId());
@@ -519,14 +507,10 @@ public class JPAMailbox extends AbstractLogEnabled implements Mailbox {
 
     public void addListener(MailboxListener listener)
     throws MailboxManagerException {
-        checkAccess();
         tracker.addMailboxListener(listener);
     }
 
     public void removeListener(MailboxListener mailboxListener) {
-        if (!open) {
-            throw new RuntimeException("mailbox not open");
-        }
         tracker.removeMailboxListener(mailboxListener);
     }
 
@@ -535,7 +519,6 @@ public class JPAMailbox extends AbstractLogEnabled implements Mailbox {
         try {
             lock.readLock().acquire();
             try {
-                checkAccess();
                 final long result = getMailboxRow().getUidValidity();
                 return result;
             } finally {
@@ -555,7 +538,6 @@ public class JPAMailbox extends AbstractLogEnabled implements Mailbox {
         try {
             lock.readLock().acquire();
             try {
-                checkAccess();
                 MailboxRow mailbox = getMailboxRow();
                 if (mailbox != null) {
                     getUidChangeTracker().foundLastUid(mailbox.getLastUid());
@@ -575,12 +557,6 @@ public class JPAMailbox extends AbstractLogEnabled implements Mailbox {
         }
     }
 
-    private void checkAccess() {
-        if (!open) {
-            throw new RuntimeException("mailbox is closed");
-        }
-    }
-
     protected UidChangeTracker getUidChangeTracker() {
         return tracker;
     }
@@ -594,7 +570,6 @@ public class JPAMailbox extends AbstractLogEnabled implements Mailbox {
         try {
             lock.readLock().acquire();
             try {
-                checkAccess();
 
                 final List rows = messageMapper.find(query);
                 final List filteredMessages = new ArrayList();
@@ -642,7 +617,6 @@ public class JPAMailbox extends AbstractLogEnabled implements Mailbox {
         try {
             lock.readLock().acquire();
             try {
-                checkAccess();
                 try {
                     List rows = mapper.findInMailbox(set, getMailboxRow().getMailboxId());
                     toMailbox.copy(rows, session);
