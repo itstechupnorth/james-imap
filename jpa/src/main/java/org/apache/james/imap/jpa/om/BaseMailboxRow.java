@@ -2,7 +2,6 @@ package org.apache.james.imap.jpa.om;
 
 import java.sql.Connection;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.lang.ObjectUtils;
@@ -257,7 +256,7 @@ abstract class BaseMailboxRow extends BaseObject {
      * 
      * @throws TorqueException
      */
-    public List getMessageRows(Criteria criteria) throws TorqueException {
+    List getMessageRows(Criteria criteria) throws TorqueException {
         if (collMessageRows == null) {
             if (isNew()) {
                 collMessageRows = new ArrayList();
@@ -289,7 +288,7 @@ abstract class BaseMailboxRow extends BaseObject {
      * so that referenced objects can also be obtained using a Connection that
      * is taken as input
      */
-    public List getMessageRows(Connection con) throws TorqueException {
+    List getMessageRows(Connection con) throws TorqueException {
         if (collMessageRows == null) {
             collMessageRows = getMessageRows(new Criteria(10), con);
         }
@@ -305,7 +304,7 @@ abstract class BaseMailboxRow extends BaseObject {
      * takes in the Connection also as input so that referenced objects can also
      * be obtained using a Connection that is taken as input
      */
-    public List getMessageRows(Criteria criteria, Connection con)
+    List getMessageRows(Criteria criteria, Connection con)
             throws TorqueException {
         if (collMessageRows == null) {
             if (isNew()) {
@@ -367,55 +366,6 @@ abstract class BaseMailboxRow extends BaseObject {
     }
 
     private static List fieldNames = null;
-
-    /**
-     * Generate a list of field names.
-     * 
-     * @return a list of field names
-     */
-    public static synchronized List getFieldNames() {
-        if (fieldNames == null) {
-            fieldNames = new ArrayList();
-            fieldNames.add("MailboxId");
-            fieldNames.add("Name");
-            fieldNames.add("UidValidity");
-            fieldNames.add("LastUid");
-            fieldNames.add("MessageCount");
-            fieldNames.add("Size");
-            fieldNames = Collections.unmodifiableList(fieldNames);
-        }
-        return fieldNames;
-    }
-
-    /**
-     * Retrieves a field from the object by field (Java) name passed in as a
-     * String.
-     * 
-     * @param name
-     *            field name
-     * @return value
-     */
-    public Object getByName(String name) {
-        if (name.equals("MailboxId")) {
-            return new Long(getMailboxId());
-        }
-        if (name.equals("Name")) {
-            return getName();
-        }
-        if (name.equals("UidValidity")) {
-            return new Long(getUidValidity());
-        }
-        if (name.equals("LastUid")) {
-            return new Long(getLastUid());
-        }
-        if (name.equals("MessageCount")) {
-            return new Integer(getMessageCount());
-        }
-        if (name.equals("Size")) {
-            return new Long(getSize());
-        }
-        return null;
-    }
 
     /**
      * Set a field in the object by field (Java) name.
@@ -513,110 +463,6 @@ abstract class BaseMailboxRow extends BaseObject {
             return new Long(getSize());
         }
         return null;
-    }
-
-    /**
-     * Set field values by Peer Field Name
-     * 
-     * @param name
-     *            field name
-     * @param value
-     *            field value
-     * @return True if value was set, false if not (invalid name / protected
-     *         field).
-     * @throws IllegalArgumentException
-     *             if object type of value does not match field object type.
-     * @throws TorqueException
-     *             If a problem occures with the set[Field] method.
-     */
-    public boolean setByPeerName(String name, Object value)
-            throws TorqueException, IllegalArgumentException {
-        if (MailboxRowPeer.MAILBOX_ID.equals(name)) {
-            return setByName("MailboxId", value);
-        }
-        if (MailboxRowPeer.NAME.equals(name)) {
-            return setByName("Name", value);
-        }
-        if (MailboxRowPeer.UID_VALIDITY.equals(name)) {
-            return setByName("UidValidity", value);
-        }
-        if (MailboxRowPeer.LAST_UID.equals(name)) {
-            return setByName("LastUid", value);
-        }
-        if (MailboxRowPeer.MESSAGE_COUNT.equals(name)) {
-            return setByName("MessageCount", value);
-        }
-        if (MailboxRowPeer.SIZE.equals(name)) {
-            return setByName("Size", value);
-        }
-        return false;
-    }
-
-    /**
-     * Retrieves a field from the object by Position as specified in the xml
-     * schema. Zero-based.
-     * 
-     * @param pos
-     *            position in xml schema
-     * @return value
-     */
-    public Object getByPosition(int pos) {
-        if (pos == 0) {
-            return new Long(getMailboxId());
-        }
-        if (pos == 1) {
-            return getName();
-        }
-        if (pos == 2) {
-            return new Long(getUidValidity());
-        }
-        if (pos == 3) {
-            return new Long(getLastUid());
-        }
-        if (pos == 4) {
-            return new Integer(getMessageCount());
-        }
-        if (pos == 5) {
-            return new Long(getSize());
-        }
-        return null;
-    }
-
-    /**
-     * Set field values by its position (zero based) in the XML schema.
-     * 
-     * @param position
-     *            The field position
-     * @param value
-     *            field value
-     * @return True if value was set, false if not (invalid position / protected
-     *         field).
-     * @throws IllegalArgumentException
-     *             if object type of value does not match field object type.
-     * @throws TorqueException
-     *             If a problem occures with the set[Field] method.
-     */
-    public boolean setByPosition(int position, Object value)
-            throws TorqueException, IllegalArgumentException {
-        if (position == 0) {
-            return setByName("MailboxId", value);
-        }
-        if (position == 1) {
-            return setByName("Name", value);
-        }
-        if (position == 2) {
-            return setByName("UidValidity", value);
-        }
-        if (position == 3) {
-            return setByName("LastUid", value);
-        }
-        if (position == 4) {
-            return setByName("MessageCount", value);
-        }
-        if (position == 5) {
-            return setByName("Size", value);
-        }
-        return false;
     }
 
     /**

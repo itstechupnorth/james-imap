@@ -632,7 +632,7 @@ abstract class BaseMessageFlags extends BaseObject {
      * 
      * @throws Exception
      */
-    public void save() throws Exception {
+    public void save() throws TorqueException {
         save(MessageFlagsPeer.DATABASE_NAME);
     }
 

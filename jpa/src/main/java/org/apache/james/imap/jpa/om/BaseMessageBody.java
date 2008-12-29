@@ -54,7 +54,7 @@ abstract class BaseMessageBody extends BaseObject {
      * @param v
      *            new value
      */
-    public void setMailboxId(long v) throws TorqueException {
+    void setMailboxId(long v) throws TorqueException {
 
         if (this.mailboxId != v) {
             this.mailboxId = v;
@@ -82,7 +82,7 @@ abstract class BaseMessageBody extends BaseObject {
      * @param v
      *            new value
      */
-    public void setUid(long v) throws TorqueException {
+    void setUid(long v) throws TorqueException {
 
         if (this.uid != v) {
             this.uid = v;
@@ -128,7 +128,7 @@ abstract class BaseMessageBody extends BaseObject {
      *            MessageRow
      * @throws TorqueException
      */
-    public void setMessageRow(MessageRow v) throws TorqueException {
+    void setMessageRow(MessageRow v) throws TorqueException {
         if (v == null) {
             setMailboxId(0);
         } else {

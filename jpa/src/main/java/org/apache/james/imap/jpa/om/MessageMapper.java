@@ -169,4 +169,12 @@ public class MessageMapper {
             c.add(MessageFlagsPeer.SEEN, value);
         }
     }
+
+    public void save(MessageFlags messageFlags) throws TorqueException {
+        messageFlags.save();
+    }
+
+    public void save(MessageRow messageRow) throws TorqueException {
+        messageRow.save();
+    }
 }

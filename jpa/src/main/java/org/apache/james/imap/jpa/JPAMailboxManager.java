@@ -153,8 +153,8 @@ public class JPAMailboxManager implements MailboxManager {
         mr.setLastUid(0);
         mr.setUidValidity(Math.abs(random.nextInt()));
         try {
-            mr.save();
-        } catch (Exception e) {
+            mapper.save(mr);
+        } catch (TorqueException e) {
             throw new MailboxManagerException(e);
         }
     }
@@ -198,7 +198,7 @@ public class JPAMailboxManager implements MailboxManager {
                     throw new MailboxNotFoundException(from);
                 }
                 mr.setName(to);
-                mr.save();
+                mapper.save(mr);
 
                 mailboxes.remove(from);
 
@@ -210,7 +210,7 @@ public class JPAMailboxManager implements MailboxManager {
                     String subNewName = to
                             + subOrigName.substring(from.length());
                     sub.setName(to + sub.getName().substring(from.length()));
-                    sub.save();
+                    mapper.save(sub);
                     getLog().info(
                             "renameMailbox sub-mailbox " + subOrigName + " to "
                                     + subNewName);

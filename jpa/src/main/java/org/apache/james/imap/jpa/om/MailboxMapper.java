@@ -32,6 +32,10 @@ import org.apache.torque.util.Criteria;
  */
 public class MailboxMapper {
 
+    public void save(MailboxRow mailbox) throws TorqueException {
+        mailbox.save();
+    }
+    
     /**
      * Finds a mailbox by name.
      * @param name not null

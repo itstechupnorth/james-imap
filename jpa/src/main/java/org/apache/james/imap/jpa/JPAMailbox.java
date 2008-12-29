@@ -226,7 +226,7 @@ public class JPAMailbox extends AbstractLogEnabled implements Mailbox {
             InterruptedException {
         try {
             lock.writeLock().acquire();
-            messageRow.save();
+            messageMapper.save(messageRow);
         } finally {
             lock.writeLock().release();
         }
@@ -499,7 +499,7 @@ public class JPAMailbox extends AbstractLogEnabled implements Mailbox {
                         }
                         messageFlags.setFlags(current);
                     }
-                    messageFlags.save();
+                    messageMapper.save(messageFlags);
                 }
             }
             final OrFetchGroup orFetchGroup = new OrFetchGroup(fetchGroup,

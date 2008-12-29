@@ -651,7 +651,7 @@ abstract class BaseMessageRow extends BaseObject {
      * 
      * @throws TorqueException
      */
-    public List getMessageBodys(Criteria criteria) throws TorqueException {
+    List getMessageBodys(Criteria criteria) throws TorqueException {
         if (collMessageBodys == null) {
             if (isNew()) {
                 collMessageBodys = new ArrayList();
