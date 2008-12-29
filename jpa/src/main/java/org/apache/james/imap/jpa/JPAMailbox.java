@@ -64,8 +64,6 @@ import com.workingdogs.village.DataSetException;
 
 public class JPAMailbox extends AbstractLogEnabled implements Mailbox {
 
-    private Log log;
-
     private long mailboxId;
 
     private final UidChangeTracker tracker;
@@ -608,7 +606,6 @@ public class JPAMailbox extends AbstractLogEnabled implements Mailbox {
 
     public void setLog(Log log) {
         super.setLog(log);
-        this.log = log;
         searches.setLog(log);
     }
 
