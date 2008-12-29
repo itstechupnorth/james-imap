@@ -104,7 +104,7 @@ public class JPAMailbox extends AbstractLogEnabled implements Mailbox {
             try {
                 checkAccess();
                 try {
-                    return getMailboxRow().countMessages();
+                    return messageMapper.countMessages(getMailboxRow().getMailboxId());
                 } catch (Exception e) {
                     throw new MailboxManagerException(e);
                 }
@@ -237,7 +237,7 @@ public class JPAMailbox extends AbstractLogEnabled implements Mailbox {
         final MailboxRow myMailboxRow;
         try {
             lock.writeLock().acquire();
-            myMailboxRow = getMailboxRow().consumeNextUid();
+            myMailboxRow = messageMapper.consumeNextUid(getMailboxRow().getMailboxId());
         } catch (TorqueException e) {
             throw new MailboxManagerException(e);
         } catch (SQLException e) {
@@ -332,7 +332,7 @@ public class JPAMailbox extends AbstractLogEnabled implements Mailbox {
                 }
 
                 if (reset) {
-                    mailboxRow.resetRecent();
+                    messageMapper.resetRecent(mailboxRow.getMailboxId());
                 }
                 return results;
             } catch (TorqueException e) {
@@ -389,8 +389,8 @@ public class JPAMailbox extends AbstractLogEnabled implements Mailbox {
             try {
                 checkAccess();
                 try {
-                    final int count = getMailboxRow().countMessages(
-                            new Flags(Flags.Flag.SEEN), false);
+                    final int count = messageMapper.countMessages(
+                            new Flags(Flags.Flag.SEEN), false, getMailboxRow().getMailboxId());
                     return count;
                 } catch (TorqueException e) {
                     throw new MailboxManagerException(e);

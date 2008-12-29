@@ -21,11 +21,16 @@ package org.apache.james.imap.jpa.om;
 
 import java.util.List;
 
+import javax.mail.Flags;
+
 import org.apache.james.mailboxmanager.MailboxManagerException;
 import org.apache.james.mailboxmanager.MessageRange;
 import org.apache.torque.TorqueException;
 import org.apache.torque.util.CountHelper;
 import org.apache.torque.util.Criteria;
+
+import com.workingdogs.village.DataSetException;
+import com.workingdogs.village.Record;
 
 /**
  * Data access management for mailbox.
@@ -35,7 +40,7 @@ public class MailboxMapper {
     public void save(MailboxRow mailbox) throws TorqueException {
         mailbox.save();
     }
-    
+
     /**
      * Finds a mailbox by name.
      * @param name not null
@@ -90,7 +95,7 @@ public class MailboxMapper {
         List rows = MessageMapper.doSelectJoinMessageFlags(c);
         return rows;
     }
-    
+
     public List findMarkedForDeletionInMailbox(final MessageRange set, final MailboxRow mailboxRow) throws TorqueException, MailboxManagerException {
         final Criteria c = criteriaForMessageSet(set);
         c.addJoin(MessageRowPeer.MAILBOX_ID, MessageFlagsPeer.MAILBOX_ID);
@@ -101,7 +106,7 @@ public class MailboxMapper {
         final List messageRows = mailboxRow.getMessageRows(c);
         return messageRows;
     }
-    
+
     private Criteria criteriaForMessageSet(MessageRange set) throws MailboxManagerException {
         Criteria criteria = new Criteria();
         criteria.addAscendingOrderByColumn(MessageRowPeer.UID);

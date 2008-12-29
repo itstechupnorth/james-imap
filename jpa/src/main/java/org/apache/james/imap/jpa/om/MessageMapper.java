@@ -18,6 +18,8 @@
  ****************************************************************/
 package org.apache.james.imap.jpa.om;
 
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,11 +31,64 @@ import org.apache.james.mailboxmanager.SearchQuery.NumericRange;
 import org.apache.torque.TorqueException;
 import org.apache.torque.util.BasePeer;
 import org.apache.torque.util.Criteria;
+import org.apache.torque.util.Transaction;
 
+import com.workingdogs.village.DataSetException;
 import com.workingdogs.village.Record;
 
 public class MessageMapper {
     
+    public MailboxRow consumeNextUid(long mailboxId) throws SQLException, TorqueException {
+        Connection c = Transaction.begin(MailboxRowPeer.DATABASE_NAME);
+        int ti = c.getTransactionIsolation();
+        boolean ac = c.getAutoCommit();
+        c.setTransactionIsolation(Connection.TRANSACTION_REPEATABLE_READ);
+        c.setAutoCommit(false);
+        try {
+            String sql = "UPDATE " + MailboxRowPeer.TABLE_NAME + " set "
+                    + MailboxRowPeer.LAST_UID + " = " + MailboxRowPeer.LAST_UID
+                    + "+1 WHERE " + MailboxRowPeer.MAILBOX_ID + " = "
+                    + mailboxId;
+            MailboxRowPeer.executeStatement(sql, c);
+            MailboxRow mr = MailboxRowPeer.retrieveByPK(mailboxId, c);
+            Transaction.commit(c);
+            return mr;
+        } catch (TorqueException e) {
+            Transaction.safeRollback(c);
+            throw e;
+        } finally {
+            try {
+                c.setTransactionIsolation(ti);
+                c.setAutoCommit(ac);
+            } catch (Exception e) {
+                // TODO: Log?
+            }
+        }
+    }
+
+    public void resetRecent(long mailboxId) throws TorqueException {
+        String sql = "UPDATE " + MessageFlagsPeer.TABLE_NAME + " set "
+                + MessageFlagsPeer.RECENT + " = 0 WHERE "
+                + MessageFlagsPeer.MAILBOX_ID + " = " + mailboxId
+                + " AND " + MessageFlagsPeer.RECENT + " = 1 ";
+        MessageFlagsPeer.executeStatement(sql);
+    }
+    
+    public int countMessages(long mailboxId) throws TorqueException, DataSetException {
+        return countMessages(new Flags(), true, mailboxId);
+    }
+    
+    public int countMessages(Flags flags, boolean value, long mailboxId)
+            throws TorqueException, DataSetException {
+        Criteria criteria = new Criteria();
+        criteria.addSelectColumn(" COUNT(" + MessageFlagsPeer.UID + ") ");
+        criteria.add(MessageFlagsPeer.MAILBOX_ID, mailboxId);
+        MessageMapper.addFlagsToCriteria(flags, value, criteria);
+        List result = MessageFlagsPeer.doSelectVillageRecords(criteria);
+        Record record = (Record) result.get(0);
+        int numberOfRecords = record.getValue(1).asInt();
+        return numberOfRecords;
+    }
 
     public List find(SearchQuery query) throws TorqueException {
         final Criteria criterion = preSelect(query);
