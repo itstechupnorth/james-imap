@@ -26,7 +26,7 @@ import org.apache.james.imap.jpa.om.MessageHeaderPeer;
 import org.apache.james.imap.jpa.om.MessageRowPeer;
 import org.apache.torque.util.Criteria;
 
-class TorqueCriteriaBuilder {
+class JPACriteriaBuilder {
 
     private final Criteria masterCriteria;
 
@@ -34,7 +34,7 @@ class TorqueCriteriaBuilder {
 
     private boolean flagsJoin = false;
 
-    public TorqueCriteriaBuilder() {
+    public JPACriteriaBuilder() {
         masterCriteria = new Criteria();
     }
 

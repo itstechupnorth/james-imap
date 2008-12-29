@@ -35,10 +35,10 @@ import org.apache.james.imap.jpa.om.MessageRowPeer;
 import org.apache.james.imap.main.DefaultImapDecoderFactory;
 import org.apache.james.imap.processor.main.DefaultImapProcessorFactory;
 import org.apache.james.mailboxmanager.manager.MailboxManagerProvider;
-import org.apache.james.mailboxmanager.torque.TorqueMailboxManager;
-import org.apache.james.mailboxmanager.torque.om.MailboxRowPeer;
-import org.apache.james.mailboxmanager.torque.om.MessageBodyPeer;
-import org.apache.james.mailboxmanager.torque.om.MessageHeaderPeer;
+import org.apache.james.imap.jpa.JPAMailboxManager;
+import org.apache.james.imap.jpa.om.MailboxRowPeer;
+import org.apache.james.imap.jpa.om.MessageBodyPeer;
+import org.apache.james.imap.jpa.om.MessageHeaderPeer;
 import org.apache.james.imap.functional.SimpleMailboxManagerProvider;
 import org.apache.james.test.functional.HostSystem;
 import org.apache.torque.Torque;
@@ -47,7 +47,7 @@ import org.apache.torque.util.Transaction;
 
 public class JPAHostSystem extends ImapHostSystem {
 
-    private static TorqueMailboxManager TORQUE_MAILBOX_MANAGER;
+    private static JPAMailboxManager TORQUE_MAILBOX_MANAGER;
 
     private static SimpleUserManager USER_MANAGER;
 
@@ -213,11 +213,11 @@ public class JPAHostSystem extends ImapHostSystem {
         return true;
     }
 
-    private static TorqueMailboxManager getMailboxManager() throws Exception {
+    private static JPAMailboxManager getMailboxManager() throws Exception {
         if (TORQUE_MAILBOX_MANAGER == null) {
             USER_MANAGER = new SimpleUserManager();
             initialize();
-            TORQUE_MAILBOX_MANAGER = new TorqueMailboxManager(USER_MANAGER);
+            TORQUE_MAILBOX_MANAGER = new JPAMailboxManager(USER_MANAGER);
         }
         return TORQUE_MAILBOX_MANAGER;
     }

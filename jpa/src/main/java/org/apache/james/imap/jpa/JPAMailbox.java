@@ -68,7 +68,7 @@ import EDU.oswego.cs.dl.util.concurrent.ReadWriteLock;
 
 import com.workingdogs.village.DataSetException;
 
-public class TorqueMailbox extends AbstractLogEnabled implements Mailbox {
+public class JPAMailbox extends AbstractLogEnabled implements Mailbox {
 
     private Log log;
 
@@ -82,7 +82,7 @@ public class TorqueMailbox extends AbstractLogEnabled implements Mailbox {
 
     private final MessageSearches searches;
 
-    TorqueMailbox(final MailboxRow mailboxRow, final ReadWriteLock lock,
+    JPAMailbox(final MailboxRow mailboxRow, final ReadWriteLock lock,
             final Log log) {
         this.searches = new MessageSearches();
         setLog(log);
@@ -301,19 +301,19 @@ public class TorqueMailbox extends AbstractLogEnabled implements Mailbox {
         }
     }
 
-    private TorqueResultIterator getMessages(FetchGroup result, UidRange range,
+    private JPAResultIterator getMessages(FetchGroup result, UidRange range,
             Criteria c) throws TorqueException, MessagingException,
             MailboxManagerException {
         List rows = MessageRowPeer.doSelectJoinMessageFlags(c);
-        final TorqueResultIterator results = getResults(result, rows);
+        final JPAResultIterator results = getResults(result, rows);
         getUidChangeTracker().found(range, results.getMessageFlags());
         return results;
     }
 
-    private TorqueResultIterator getResults(FetchGroup result, List rows)
+    private JPAResultIterator getResults(FetchGroup result, List rows)
             throws TorqueException {
         Collections.sort(rows, MessageRowUtils.getUidComparator());
-        final TorqueResultIterator results = new TorqueResultIterator(rows,
+        final JPAResultIterator results = new JPAResultIterator(rows,
                 result);
         return results;
     }
@@ -485,7 +485,7 @@ public class TorqueMailbox extends AbstractLogEnabled implements Mailbox {
             final long[] uids = uids(messageRows);
             final OrFetchGroup orFetchGroup = new OrFetchGroup(fetchGroup,
                     FetchGroup.FLAGS);
-            final TorqueResultIterator resultIterator = new TorqueResultIterator(
+            final JPAResultIterator resultIterator = new JPAResultIterator(
                     messageRows, orFetchGroup);
             // ensure all results are loaded before deletion
             Collection messageResults = IteratorUtils.toList(resultIterator);
@@ -564,7 +564,7 @@ public class TorqueMailbox extends AbstractLogEnabled implements Mailbox {
             }
             final OrFetchGroup orFetchGroup = new OrFetchGroup(fetchGroup,
                     FetchGroup.FLAGS);
-            final TorqueResultIterator resultIterator = new TorqueResultIterator(
+            final JPAResultIterator resultIterator = new JPAResultIterator(
                     messageRows, orFetchGroup);
             final org.apache.james.mailboxmanager.impl.MessageFlags[] messageFlags = resultIterator
                     .getMessageFlags();
@@ -745,7 +745,7 @@ public class TorqueMailbox extends AbstractLogEnabled implements Mailbox {
         searches.setLog(log);
     }
 
-    public void copyTo(MessageRange set, TorqueMailbox toMailbox,
+    public void copyTo(MessageRange set, JPAMailbox toMailbox,
             MailboxSession session) throws MailboxManagerException {
         try {
             lock.readLock().acquire();

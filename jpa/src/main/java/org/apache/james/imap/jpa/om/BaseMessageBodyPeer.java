@@ -83,7 +83,7 @@ public abstract class BaseMessageBodyPeer extends BasePeer {
     public static final int numColumns = 3;
 
     /** A class that can be returned by this peer. */
-    protected static final String CLASSNAME_DEFAULT = "org.apache.james.mailboxmanager.torque.om.MessageBody";
+    protected static final String CLASSNAME_DEFAULT = MessageBody.class.getName();
 
     /** A class that can be returned by this peer. */
     protected static final Class CLASS_DEFAULT = initClass(CLASSNAME_DEFAULT);

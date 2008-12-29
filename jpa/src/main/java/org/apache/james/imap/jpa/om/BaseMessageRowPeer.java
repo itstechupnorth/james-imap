@@ -88,7 +88,7 @@ public abstract class BaseMessageRowPeer extends BasePeer {
     public static final int numColumns = 4;
 
     /** A class that can be returned by this peer. */
-    protected static final String CLASSNAME_DEFAULT = "org.apache.james.mailboxmanager.torque.om.MessageRow";
+    protected static final String CLASSNAME_DEFAULT = MessageRow.class.getName();
 
     /** A class that can be returned by this peer. */
     protected static final Class CLASS_DEFAULT = initClass(CLASSNAME_DEFAULT);

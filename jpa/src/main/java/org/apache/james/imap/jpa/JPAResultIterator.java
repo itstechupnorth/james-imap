@@ -38,13 +38,13 @@ import org.apache.james.mailboxmanager.impl.FetchGroupImpl;
 import org.apache.james.mailboxmanager.impl.MessageFlags;
 import org.apache.torque.TorqueException;
 
-public class TorqueResultIterator implements Iterator {
+public class JPAResultIterator implements Iterator {
 
     private final Buffer messageRows;
 
     private final FetchGroup fetchGroup;
 
-    public TorqueResultIterator(final Collection messageRows,
+    public JPAResultIterator(final Collection messageRows,
             final FetchGroup fetchGroup) {
         super();
         if (messageRows == null || messageRows.isEmpty()) {

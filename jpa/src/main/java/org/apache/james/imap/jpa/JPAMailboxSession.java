@@ -24,13 +24,13 @@ import org.apache.james.mailboxmanager.MailboxSession;
 /**
  * Describes a mailbox session.
  */
-public class TorqueMailboxSession implements MailboxSession {
+public class JPAMailboxSession implements MailboxSession {
 
     private final long sessionId;
 
     private boolean open;
 
-    public TorqueMailboxSession(final long sessionId) {
+    public JPAMailboxSession(final long sessionId) {
         super();
         this.sessionId = sessionId;
     }

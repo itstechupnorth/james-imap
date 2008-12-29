@@ -51,13 +51,13 @@ import org.apache.torque.util.Criteria;
 import EDU.oswego.cs.dl.util.concurrent.ReadWriteLock;
 import EDU.oswego.cs.dl.util.concurrent.ReentrantWriterPreferenceReadWriteLock;
 
-public class TorqueMailboxManager implements MailboxManager {
+public class JPAMailboxManager implements MailboxManager {
 
     private static final char SQL_WILDCARD_CHAR = '%';
 
     private final static Random random = new Random();
 
-    protected Log log = LogFactory.getLog(TorqueMailboxManager.class);
+    protected Log log = LogFactory.getLog(JPAMailboxManager.class);
 
     private final ReadWriteLock lock;
 
@@ -65,7 +65,7 @@ public class TorqueMailboxManager implements MailboxManager {
 
     private final UserManager userManager;
 
-    public TorqueMailboxManager(final UserManager userManager) {
+    public JPAMailboxManager(final UserManager userManager) {
         this.lock = new ReentrantWriterPreferenceReadWriteLock();
         mailboxes = new HashMap();
         this.userManager = userManager;
@@ -76,7 +76,7 @@ public class TorqueMailboxManager implements MailboxManager {
         return doGetMailbox(mailboxName, autoCreate);
     }
 
-    private TorqueMailbox doGetMailbox(String mailboxName, boolean autoCreate)
+    private JPAMailbox doGetMailbox(String mailboxName, boolean autoCreate)
             throws MailboxManagerException {
         if (autoCreate && !existsMailbox(mailboxName)) {
             getLog().info("autocreated mailbox  " + mailboxName);
@@ -90,10 +90,10 @@ public class TorqueMailboxManager implements MailboxManager {
                 if (mailboxRow != null) {
                     getLog().debug("Loaded mailbox " + mailboxName);
 
-                    TorqueMailbox torqueMailbox = (TorqueMailbox) mailboxes
+                    JPAMailbox torqueMailbox = (JPAMailbox) mailboxes
                             .get(mailboxName);
                     if (torqueMailbox == null) {
-                        torqueMailbox = new TorqueMailbox(mailboxRow, lock,
+                        torqueMailbox = new JPAMailbox(mailboxRow, lock,
                                 getLog());
                         mailboxes.put(mailboxName, torqueMailbox);
                     }
@@ -170,7 +170,7 @@ public class TorqueMailboxManager implements MailboxManager {
                     throw new MailboxNotFoundException("Mailbox not found");
                 }
                 MailboxRowPeer.doDelete(mr);
-                TorqueMailbox mailbox = (TorqueMailbox) mailboxes
+                JPAMailbox mailbox = (JPAMailbox) mailboxes
                         .remove(mailboxName);
                 if (mailbox != null) {
                     mailbox.deleted(session);
@@ -227,8 +227,8 @@ public class TorqueMailboxManager implements MailboxManager {
 
     public void copyMessages(MessageRange set, String from, String to,
             MailboxSession session) throws MailboxManagerException {
-        TorqueMailbox toMailbox = doGetMailbox(to, false);
-        TorqueMailbox fromMailbox = doGetMailbox(from, false);
+        JPAMailbox toMailbox = doGetMailbox(to, false);
+        JPAMailbox fromMailbox = doGetMailbox(from, false);
         fromMailbox.copyTo(set, toMailbox, session);
     }
 
@@ -323,7 +323,7 @@ public class TorqueMailboxManager implements MailboxManager {
     }
 
     public MailboxSession createSession() {
-        return new TorqueMailboxSession(random.nextLong());
+        return new JPAMailboxSession(random.nextLong());
     }
 
     public String resolve(final String userName, String mailboxPath) {

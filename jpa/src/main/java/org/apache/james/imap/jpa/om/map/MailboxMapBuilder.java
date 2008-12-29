@@ -16,7 +16,7 @@ public class MailboxMapBuilder implements MapBuilder {
     /**
      * The name of this class
      */
-    public static final String CLASS_NAME = "org.apache.james.mailboxmanager.torque.om.map.MailboxMapBuilder";
+    public static final String CLASS_NAME = MailboxMapBuilder.class.getName();
 
     /**
      * The database map.
