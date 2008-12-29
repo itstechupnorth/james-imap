@@ -42,8 +42,8 @@ import org.apache.james.imap.jpa.om.MailboxMapper;
 import org.apache.james.imap.jpa.om.MailboxRow;
 import org.apache.james.imap.jpa.om.MessageBody;
 import org.apache.james.imap.jpa.om.MessageFlags;
-import org.apache.james.imap.jpa.om.MessageFlagsPeer;
 import org.apache.james.imap.jpa.om.MessageHeader;
+import org.apache.james.imap.jpa.om.MessageMapper;
 import org.apache.james.imap.jpa.om.MessageRow;
 import org.apache.james.imap.jpa.om.MessageRowPeer;
 import org.apache.james.mailboxmanager.MailboxListener;
@@ -83,6 +83,7 @@ public class JPAMailbox extends AbstractLogEnabled implements Mailbox {
     private final MessageSearches searches;
     
     private final MailboxMapper mapper;
+    private final MessageMapper messageMapper;
 
     JPAMailbox(final MailboxRow mailboxRow, final ReadWriteLock lock,
             final Log log) {
@@ -92,6 +93,7 @@ public class JPAMailbox extends AbstractLogEnabled implements Mailbox {
         this.tracker = new UidChangeTracker(mailboxRow.getLastUid());
         this.lock = lock;
         this.mapper = new MailboxMapper();
+        this.messageMapper = new MessageMapper();
     }
 
     public synchronized String getName() {
@@ -250,34 +252,6 @@ public class JPAMailbox extends AbstractLogEnabled implements Mailbox {
         return myMailboxRow;
     }
 
-    private Criteria criteriaForMessageSet(MessageRange set)
-            throws MailboxManagerException {
-        Criteria criteria = new Criteria();
-        criteria.addAscendingOrderByColumn(MessageRowPeer.UID);
-        if (set.getType() == MessageRange.TYPE_ALL) {
-            // empty Criteria = everything
-        } else if (set.getType() == MessageRange.TYPE_UID) {
-
-            if (set.getUidFrom() == set.getUidTo()) {
-                criteria.add(MessageRowPeer.UID, set.getUidFrom());
-            } else {
-                Criteria.Criterion criterion1 = criteria.getNewCriterion(
-                        MessageRowPeer.UID, new Long(set.getUidFrom()),
-                        Criteria.GREATER_EQUAL);
-                if (set.getUidTo() > 0) {
-                    Criteria.Criterion criterion2 = criteria.getNewCriterion(
-                            MessageRowPeer.UID, new Long(set.getUidTo()),
-                            Criteria.LESS_EQUAL);
-                    criterion1.and(criterion2);
-                }
-                criteria.add(criterion1);
-            }
-        } else {
-            throw new MailboxManagerException("Unsupported MessageSet: "
-                    + set.getType());
-        }
-        return criteria;
-    }
 
     public Iterator getMessages(final MessageRange set, FetchGroup fetchGroup,
             MailboxSession mailboxSession) throws MailboxManagerException {
@@ -287,10 +261,9 @@ public class JPAMailbox extends AbstractLogEnabled implements Mailbox {
                 checkAccess();
                 UidRange range = uidRangeForMessageSet(set);
                 try {
-                    Criteria c = criteriaForMessageSet(set);
-                    c.add(MessageFlagsPeer.MAILBOX_ID, getMailboxRow()
-                            .getMailboxId());
-                    return getMessages(fetchGroup, range, c);
+                    final long mailboxId = getMailboxRow().getMailboxId();
+                    List rows = mapper.findInMailbox(set, mailboxId);
+                    return getMessages(fetchGroup, range, rows);
                 } catch (TorqueException e) {
                     throw new MailboxManagerException(e);
                 } catch (MessagingException e) {
@@ -304,10 +277,8 @@ public class JPAMailbox extends AbstractLogEnabled implements Mailbox {
         }
     }
 
-    private JPAResultIterator getMessages(FetchGroup result, UidRange range,
-            Criteria c) throws TorqueException, MessagingException,
-            MailboxManagerException {
-        List rows = MessageRowPeer.doSelectJoinMessageFlags(c);
+    private JPAResultIterator getMessages(FetchGroup result, UidRange range,List rows) 
+                throws TorqueException, MessagingException, MailboxManagerException {
         final JPAResultIterator results = getResults(result, rows);
         getUidChangeTracker().found(range, results.getMessageFlags());
         return results;
@@ -355,9 +326,8 @@ public class JPAMailbox extends AbstractLogEnabled implements Mailbox {
             lock.readLock().acquire();
             try {
                 checkAccess();
-                final Criteria criterion = queryRecentFlagSet();
-                final List messageRows = getMailboxRow().getMessageRows(
-                        criterion);
+                final MailboxRow mailboxRow = getMailboxRow();
+                final List messageRows = messageMapper.findRecent(mailboxRow);
                 final long[] results = new long[messageRows.size()];
                 int count = 0;
                 for (Iterator it = messageRows.iterator(); it.hasNext();) {
@@ -366,7 +336,7 @@ public class JPAMailbox extends AbstractLogEnabled implements Mailbox {
                 }
 
                 if (reset) {
-                    getMailboxRow().resetRecent();
+                    mailboxRow.resetRecent();
                 }
                 return results;
             } catch (TorqueException e) {
@@ -380,16 +350,7 @@ public class JPAMailbox extends AbstractLogEnabled implements Mailbox {
 
     }
 
-    private Criteria queryRecentFlagSet() {
-        final Criteria criterion = new Criteria();
-        criterion.addJoin(MessageFlagsPeer.MAILBOX_ID,
-                MessageRowPeer.MAILBOX_ID);
-        criterion.addJoin(MessageRowPeer.UID, MessageFlagsPeer.UID);
 
-        MessageFlagsPeer.addFlagsToCriteria(new Flags(Flags.Flag.RECENT), true,
-                criterion);
-        return criterion;
-    }
 
     public MessageResult getFirstUnseen(FetchGroup fetchGroup,
             MailboxSession mailboxSession) throws MailboxManagerException {
@@ -397,20 +358,8 @@ public class JPAMailbox extends AbstractLogEnabled implements Mailbox {
             lock.readLock().acquire();
             try {
                 checkAccess();
-                Criteria c = new Criteria();
-                c.addAscendingOrderByColumn(MessageRowPeer.UID);
-                c.setLimit(1);
-                c.setSingleRecord(true);
-
-                c.addJoin(MessageFlagsPeer.MAILBOX_ID,
-                        MessageRowPeer.MAILBOX_ID);
-                c.addJoin(MessageRowPeer.UID, MessageFlagsPeer.UID);
-
-                MessageFlagsPeer.addFlagsToCriteria(new Flags(Flags.Flag.SEEN),
-                        false, c);
-
                 try {
-                    List messageRows = getMailboxRow().getMessageRows(c);
+                    List messageRows = messageMapper.findUnseen(getMailboxRow());
                     if (messageRows.size() > 0) {
                         MessageResult messageResult = fillMessageResult(
                                 (MessageRow) messageRows.get(0), fetchGroup);
@@ -434,6 +383,8 @@ public class JPAMailbox extends AbstractLogEnabled implements Mailbox {
             throw new MailboxManagerException(e);
         }
     }
+
+
 
     public int getUnseenCount(MailboxSession mailboxSession)
             throws MailboxManagerException {
@@ -478,13 +429,9 @@ public class JPAMailbox extends AbstractLogEnabled implements Mailbox {
         checkAccess();
         try {
             // TODO put this into a serializable transaction
-            final Criteria c = criteriaForMessageSet(set);
-            c.addJoin(MessageRowPeer.MAILBOX_ID, MessageFlagsPeer.MAILBOX_ID);
-            c.addJoin(MessageRowPeer.UID, MessageFlagsPeer.UID);
-            c.add(MessageRowPeer.MAILBOX_ID, getMailboxRow().getMailboxId());
-            c.add(MessageFlagsPeer.DELETED, true);
-
-            final List messageRows = getMailboxRow().getMessageRows(c);
+            final MailboxRow mailboxRow = getMailboxRow();
+            
+            final List messageRows = mapper.findMarkedForDeletionInMailbox(set, mailboxRow);
             final long[] uids = uids(messageRows);
             final OrFetchGroup orFetchGroup = new OrFetchGroup(fetchGroup,
                     FetchGroup.FLAGS);
@@ -508,6 +455,7 @@ public class JPAMailbox extends AbstractLogEnabled implements Mailbox {
             throw new MailboxManagerException(e);
         }
     }
+
 
     private long[] uids(List messageRows) {
         final int size = messageRows.size();
@@ -542,8 +490,7 @@ public class JPAMailbox extends AbstractLogEnabled implements Mailbox {
         checkAccess();
         try {
             // TODO put this into a serializeable transaction
-            final List messageRows = getMailboxRow().getMessageRows(
-                    criteriaForMessageSet(set));
+            final List messageRows = mapper.findInMailbox(set, getMailboxRow().getMailboxId());
             UidRange uidRange = uidRangeForMessageSet(set);
             getUidChangeTracker().found(uidRange,
                     MessageRowUtils.toMessageFlags(messageRows));
@@ -754,10 +701,7 @@ public class JPAMailbox extends AbstractLogEnabled implements Mailbox {
             try {
                 checkAccess();
                 try {
-                    Criteria c = criteriaForMessageSet(set);
-                    c.add(MessageFlagsPeer.MAILBOX_ID, getMailboxRow()
-                            .getMailboxId());
-                    List rows = MessageRowPeer.doSelectJoinMessageFlags(c);
+                    List rows = mapper.findInMailbox(set, getMailboxRow().getMailboxId());
                     toMailbox.copy(rows, session);
                 } catch (TorqueException e) {
                     throw new MailboxManagerException(e);

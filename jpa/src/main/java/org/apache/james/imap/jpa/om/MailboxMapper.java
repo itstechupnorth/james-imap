@@ -21,6 +21,8 @@ package org.apache.james.imap.jpa.om;
 
 import java.util.List;
 
+import org.apache.james.mailboxmanager.MailboxManagerException;
+import org.apache.james.mailboxmanager.MessageRange;
 import org.apache.torque.TorqueException;
 import org.apache.torque.util.CountHelper;
 import org.apache.torque.util.Criteria;
@@ -29,7 +31,7 @@ import org.apache.torque.util.Criteria;
  * Data access management for mailbox.
  */
 public class MailboxMapper {
- 
+
     /**
      * Finds a mailbox by name.
      * @param name not null
@@ -39,7 +41,7 @@ public class MailboxMapper {
     public MailboxRow findByName(String name) throws TorqueException {
         return MailboxRowPeer.retrieveByName(name);
     }
-    
+
     /**
      * Deletes the given mailbox.
      * @param mailbox not null
@@ -48,7 +50,7 @@ public class MailboxMapper {
     public static void delete(MailboxRow mailbox) throws TorqueException {
         MailboxRowPeer.doDelete(mailbox);
     }
-    
+
     public List findNameLike(String name) throws TorqueException {
         Criteria c = new Criteria();
         c.add(MailboxRowPeer.NAME,
@@ -57,7 +59,7 @@ public class MailboxMapper {
         List l = MailboxRowPeer.doSelect(c);
         return l;
     }
-   
+
     public void deleteAll() throws TorqueException {
         MailboxRowPeer.doDelete(new Criteria().and(
                 MailboxRowPeer.MAILBOX_ID, new Integer(-1),
@@ -67,7 +69,7 @@ public class MailboxMapper {
     public MailboxRow refresh(MailboxRow mailboxRow) throws TorqueException {
         return MailboxRowPeer.retrieveByPK(mailboxRow.getPrimaryKey());
     }
-    
+
     public int countOnName(String mailboxName) throws TorqueException {
         int count;
         Criteria c = new Criteria();
@@ -76,4 +78,52 @@ public class MailboxMapper {
         count = countHelper.count(c);
         return count;
     }
+
+
+    public List findInMailbox(MessageRange set, long mailboxId) throws MailboxManagerException, TorqueException {
+        Criteria c = criteriaForMessageSet(set);
+        c.add(MessageFlagsPeer.MAILBOX_ID, mailboxId);
+        List rows = MessageRowPeer.doSelectJoinMessageFlags(c);
+        return rows;
+    }
+    
+    public List findMarkedForDeletionInMailbox(final MessageRange set, final MailboxRow mailboxRow) throws TorqueException, MailboxManagerException {
+        final Criteria c = criteriaForMessageSet(set);
+        c.addJoin(MessageRowPeer.MAILBOX_ID, MessageFlagsPeer.MAILBOX_ID);
+        c.addJoin(MessageRowPeer.UID, MessageFlagsPeer.UID);
+        c.add(MessageRowPeer.MAILBOX_ID, mailboxRow.getMailboxId());
+        c.add(MessageFlagsPeer.DELETED, true);
+
+        final List messageRows = mailboxRow.getMessageRows(c);
+        return messageRows;
+    }
+    
+    private Criteria criteriaForMessageSet(MessageRange set) throws MailboxManagerException {
+        Criteria criteria = new Criteria();
+        criteria.addAscendingOrderByColumn(MessageRowPeer.UID);
+        if (set.getType() == MessageRange.TYPE_ALL) {
+            // empty Criteria = everything
+        } else if (set.getType() == MessageRange.TYPE_UID) {
+
+            if (set.getUidFrom() == set.getUidTo()) {
+                criteria.add(MessageRowPeer.UID, set.getUidFrom());
+            } else {
+                Criteria.Criterion criterion1 = criteria.getNewCriterion(
+                        MessageRowPeer.UID, new Long(set.getUidFrom()),
+                        Criteria.GREATER_EQUAL);
+                if (set.getUidTo() > 0) {
+                    Criteria.Criterion criterion2 = criteria.getNewCriterion(
+                            MessageRowPeer.UID, new Long(set.getUidTo()),
+                            Criteria.LESS_EQUAL);
+                    criterion1.and(criterion2);
+                }
+                criteria.add(criterion1);
+            }
+        } else {
+            throw new MailboxManagerException("Unsupported MessageSet: "
+                    + set.getType());
+        }
+        return criteria;
+    }
+
 }

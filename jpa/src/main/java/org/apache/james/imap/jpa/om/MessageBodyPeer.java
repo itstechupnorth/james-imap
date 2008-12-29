@@ -27,7 +27,7 @@ package org.apache.james.imap.jpa.om;
  * requirements. This class will only be generated as long as it does not
  * already exist in the output directory.
  */
-public class MessageBodyPeer extends
+class MessageBodyPeer extends
         org.apache.james.imap.jpa.om.BaseMessageBodyPeer {
 
     /**

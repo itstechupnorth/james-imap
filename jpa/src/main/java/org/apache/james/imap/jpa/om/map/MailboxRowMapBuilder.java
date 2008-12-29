@@ -58,7 +58,7 @@ public class MailboxRowMapBuilder implements MapBuilder {
 
         dbMap.addTable("mailbox");
         TableMap tMap = dbMap.getTable("mailbox");
-        Init.populate(tMap);
+        Init.populateMailboxRow(tMap);
     }
 
 }

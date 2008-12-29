@@ -36,8 +36,197 @@ public class Init {
                 .getMapBuilder();
     }
     
+    public static void populateMessageFlags(TableMap tMap) {
+        tMap.setJavaName("MessageFlags");
+        tMap
+                .setOMClass(org.apache.james.imap.jpa.om.MessageFlags.class);
+        tMap
+                .setPeerClass(org.apache.james.imap.jpa.om.MessageFlagsPeer.class);
+        tMap.setPrimaryKeyMethod("none");
 
-    public static void populate(TableMap tMap) {
+        ColumnMap cMap = null;
+
+        // ------------- Column: mailbox_id --------------------
+        cMap = new ColumnMap("mailbox_id", tMap);
+        cMap.setType(new Long(0));
+        cMap.setTorqueType("BIGINT");
+        cMap.setUsePrimitive(true);
+        cMap.setPrimaryKey(true);
+        cMap.setNotNull(true);
+        cMap.setJavaName("MailboxId");
+        cMap.setAutoIncrement(false);
+        cMap.setProtected(false);
+        cMap.setDescription("Mailbox Id");
+        cMap.setInheritance("false");
+        cMap.setForeignKey("message", "mailbox_id");
+        cMap.setPosition(1);
+        tMap.addColumn(cMap);
+        // ------------- Column: uid --------------------
+        cMap = new ColumnMap("uid", tMap);
+        cMap.setType(new Long(0));
+        cMap.setTorqueType("BIGINT");
+        cMap.setUsePrimitive(true);
+        cMap.setPrimaryKey(true);
+        cMap.setNotNull(true);
+        cMap.setJavaName("Uid");
+        cMap.setAutoIncrement(false);
+        cMap.setProtected(false);
+        cMap.setDescription("");
+        cMap.setInheritance("false");
+        cMap.setForeignKey("message", "uid");
+        cMap.setPosition(2);
+        tMap.addColumn(cMap);
+        // ------------- Column: answered --------------------
+        cMap = new ColumnMap("answered", tMap);
+        cMap.setType(new Integer(0));
+        cMap.setTorqueType("BOOLEANINT");
+        cMap.setUsePrimitive(true);
+        cMap.setPrimaryKey(false);
+        cMap.setNotNull(true);
+        cMap.setJavaName("Answered");
+        cMap.setAutoIncrement(false);
+        cMap.setProtected(false);
+        cMap.setDescription("");
+        cMap.setDefault("0");
+        cMap.setInheritance("false");
+        cMap.setPosition(3);
+        tMap.addColumn(cMap);
+        // ------------- Column: deleted --------------------
+        cMap = new ColumnMap("deleted", tMap);
+        cMap.setType(new Integer(0));
+        cMap.setTorqueType("BOOLEANINT");
+        cMap.setUsePrimitive(true);
+        cMap.setPrimaryKey(false);
+        cMap.setNotNull(true);
+        cMap.setJavaName("Deleted");
+        cMap.setAutoIncrement(false);
+        cMap.setProtected(false);
+        cMap.setDescription("");
+        cMap.setDefault("0");
+        cMap.setInheritance("false");
+        cMap.setPosition(4);
+        tMap.addColumn(cMap);
+        // ------------- Column: draft --------------------
+        cMap = new ColumnMap("draft", tMap);
+        cMap.setType(new Integer(0));
+        cMap.setTorqueType("BOOLEANINT");
+        cMap.setUsePrimitive(true);
+        cMap.setPrimaryKey(false);
+        cMap.setNotNull(true);
+        cMap.setJavaName("Draft");
+        cMap.setAutoIncrement(false);
+        cMap.setProtected(false);
+        cMap.setDescription("");
+        cMap.setDefault("0");
+        cMap.setInheritance("false");
+        cMap.setPosition(5);
+        tMap.addColumn(cMap);
+        // ------------- Column: flagged --------------------
+        cMap = new ColumnMap("flagged", tMap);
+        cMap.setType(new Integer(0));
+        cMap.setTorqueType("BOOLEANINT");
+        cMap.setUsePrimitive(true);
+        cMap.setPrimaryKey(false);
+        cMap.setNotNull(true);
+        cMap.setJavaName("Flagged");
+        cMap.setAutoIncrement(false);
+        cMap.setProtected(false);
+        cMap.setDescription("");
+        cMap.setDefault("0");
+        cMap.setInheritance("false");
+        cMap.setPosition(6);
+        tMap.addColumn(cMap);
+        // ------------- Column: recent --------------------
+        cMap = new ColumnMap("recent", tMap);
+        cMap.setType(new Integer(0));
+        cMap.setTorqueType("BOOLEANINT");
+        cMap.setUsePrimitive(true);
+        cMap.setPrimaryKey(false);
+        cMap.setNotNull(true);
+        cMap.setJavaName("Recent");
+        cMap.setAutoIncrement(false);
+        cMap.setProtected(false);
+        cMap.setDescription("");
+        cMap.setDefault("0");
+        cMap.setInheritance("false");
+        cMap.setPosition(7);
+        tMap.addColumn(cMap);
+        // ------------- Column: seen --------------------
+        cMap = new ColumnMap("seen", tMap);
+        cMap.setType(new Integer(0));
+        cMap.setTorqueType("BOOLEANINT");
+        cMap.setUsePrimitive(true);
+        cMap.setPrimaryKey(false);
+        cMap.setNotNull(true);
+        cMap.setJavaName("Seen");
+        cMap.setAutoIncrement(false);
+        cMap.setProtected(false);
+        cMap.setDescription("");
+        cMap.setDefault("0");
+        cMap.setInheritance("false");
+        cMap.setPosition(8);
+        tMap.addColumn(cMap);
+        tMap.setUseInheritance(false);
+    }
+    
+    public static void populateMessageBody(TableMap tMap) {
+        tMap.setJavaName("MessageBody");
+        tMap
+                .setOMClass(org.apache.james.imap.jpa.om.MessageBody.class);
+        tMap
+                .setPeerClass(org.apache.james.imap.jpa.om.MessageBodyPeer.class);
+        tMap.setPrimaryKeyMethod("none");
+
+        ColumnMap cMap = null;
+
+        // ------------- Column: mailbox_id --------------------
+        cMap = new ColumnMap("mailbox_id", tMap);
+        cMap.setType(new Long(0));
+        cMap.setTorqueType("BIGINT");
+        cMap.setUsePrimitive(true);
+        cMap.setPrimaryKey(true);
+        cMap.setNotNull(true);
+        cMap.setJavaName("MailboxId");
+        cMap.setAutoIncrement(false);
+        cMap.setProtected(false);
+        cMap.setDescription("Mailbox Id");
+        cMap.setInheritance("false");
+        cMap.setForeignKey("message", "mailbox_id");
+        cMap.setPosition(1);
+        tMap.addColumn(cMap);
+        // ------------- Column: uid --------------------
+        cMap = new ColumnMap("uid", tMap);
+        cMap.setType(new Long(0));
+        cMap.setTorqueType("BIGINT");
+        cMap.setUsePrimitive(true);
+        cMap.setPrimaryKey(true);
+        cMap.setNotNull(true);
+        cMap.setJavaName("Uid");
+        cMap.setAutoIncrement(false);
+        cMap.setProtected(false);
+        cMap.setDescription("");
+        cMap.setInheritance("false");
+        cMap.setForeignKey("message", "uid");
+        cMap.setPosition(2);
+        tMap.addColumn(cMap);
+        // ------------- Column: body --------------------
+        cMap = new ColumnMap("body", tMap);
+        cMap.setType(new Object());
+        cMap.setTorqueType("BLOB");
+        cMap.setUsePrimitive(true);
+        cMap.setPrimaryKey(false);
+        cMap.setNotNull(true);
+        cMap.setJavaName("Body");
+        cMap.setAutoIncrement(false);
+        cMap.setProtected(false);
+        cMap.setDescription("value");
+        cMap.setInheritance("false");
+        cMap.setPosition(3);
+        tMap.addColumn(cMap);
+        tMap.setUseInheritance(false);
+    }
+    
+    public static void populateMailboxRow(TableMap tMap) {
         tMap.setJavaName("MailboxRow");
         tMap
                 .setOMClass(org.apache.james.imap.jpa.om.MailboxRow.class);

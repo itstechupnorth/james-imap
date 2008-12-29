@@ -94,7 +94,7 @@ public class MailboxRow extends
         Criteria criteria = new Criteria();
         criteria.addSelectColumn(" COUNT(" + MessageFlagsPeer.UID + ") ");
         criteria.add(MessageFlagsPeer.MAILBOX_ID, getMailboxId());
-        MessageFlagsPeer.addFlagsToCriteria(flags, value, criteria);
+        MessageMapper.addFlagsToCriteria(flags, value, criteria);
         List result = MessageFlagsPeer.doSelectVillageRecords(criteria);
         Record record = (Record) result.get(0);
         int numberOfRecords = record.getValue(1).asInt();
