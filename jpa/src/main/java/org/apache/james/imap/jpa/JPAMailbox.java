@@ -38,8 +38,8 @@ import javax.mail.internet.MimeMessage;
 import org.apache.commons.collections.IteratorUtils;
 import org.apache.commons.logging.Log;
 import org.apache.james.api.imap.AbstractLogEnabled;
+import org.apache.james.imap.jpa.om.MailboxMapper;
 import org.apache.james.imap.jpa.om.MailboxRow;
-import org.apache.james.imap.jpa.om.MailboxRowPeer;
 import org.apache.james.imap.jpa.om.MessageBody;
 import org.apache.james.imap.jpa.om.MessageFlags;
 import org.apache.james.imap.jpa.om.MessageFlagsPeer;
@@ -81,6 +81,8 @@ public class JPAMailbox extends AbstractLogEnabled implements Mailbox {
     private final ReadWriteLock lock;
 
     private final MessageSearches searches;
+    
+    private final MailboxMapper mapper;
 
     JPAMailbox(final MailboxRow mailboxRow, final ReadWriteLock lock,
             final Log log) {
@@ -89,6 +91,7 @@ public class JPAMailbox extends AbstractLogEnabled implements Mailbox {
         this.mailboxRow = mailboxRow;
         this.tracker = new UidChangeTracker(mailboxRow.getLastUid());
         this.lock = lock;
+        this.mapper = new MailboxMapper();
     }
 
     public synchronized String getName() {
@@ -614,8 +617,7 @@ public class JPAMailbox extends AbstractLogEnabled implements Mailbox {
             try {
                 checkAccess();
                 try {
-                    MailboxRow myMailboxRow = MailboxRowPeer
-                            .retrieveByPK(mailboxRow.getPrimaryKey());
+                    MailboxRow myMailboxRow = mapper.refresh(mailboxRow);
                     if (myMailboxRow != null) {
                         mailboxRow = myMailboxRow;
                         getUidChangeTracker().foundLastUid(

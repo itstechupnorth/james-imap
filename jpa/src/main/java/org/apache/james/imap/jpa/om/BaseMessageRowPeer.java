@@ -1,5 +1,12 @@
 package org.apache.james.imap.jpa.om;
 
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+
 import org.apache.james.imap.jpa.om.map.MessageRowMapBuilder;
 import org.apache.torque.NoRowsException;
 import org.apache.torque.TooManyRowsException;
@@ -16,13 +23,6 @@ import com.workingdogs.village.DataSetException;
 import com.workingdogs.village.QueryDataSet;
 import com.workingdogs.village.Record;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-
 /**
  * 
  * 
@@ -31,7 +31,7 @@ import java.util.List;
  * [Sun Dec 09 17:45:09 GMT 2007]
  * 
  */
-public abstract class BaseMessageRowPeer extends BasePeer {
+abstract class BaseMessageRowPeer extends BasePeer {
     /** Serial version */
     private static final long serialVersionUID = 1197222309712L;
 

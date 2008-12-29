@@ -30,16 +30,12 @@ import org.apache.commons.configuration.BaseConfiguration;
 import org.apache.commons.io.FileUtils;
 import org.apache.james.imap.encode.main.DefaultImapEncoderFactory;
 import org.apache.james.imap.functional.ImapHostSystem;
-import org.apache.james.imap.jpa.om.MessageFlagsPeer;
-import org.apache.james.imap.jpa.om.MessageRowPeer;
+import org.apache.james.imap.functional.SimpleMailboxManagerProvider;
+import org.apache.james.imap.jpa.JPAMailboxManager;
+import org.apache.james.imap.jpa.om.OmConstants;
 import org.apache.james.imap.main.DefaultImapDecoderFactory;
 import org.apache.james.imap.processor.main.DefaultImapProcessorFactory;
 import org.apache.james.mailboxmanager.manager.MailboxManagerProvider;
-import org.apache.james.imap.jpa.JPAMailboxManager;
-import org.apache.james.imap.jpa.om.MailboxRowPeer;
-import org.apache.james.imap.jpa.om.MessageBodyPeer;
-import org.apache.james.imap.jpa.om.MessageHeaderPeer;
-import org.apache.james.imap.functional.SimpleMailboxManagerProvider;
 import org.apache.james.test.functional.HostSystem;
 import org.apache.torque.Torque;
 import org.apache.torque.util.BasePeer;
@@ -78,10 +74,7 @@ public class JPAHostSystem extends ImapHostSystem {
         return host;
     }
 
-    private static final String[] tableNames = new String[] {
-            MailboxRowPeer.TABLE_NAME, MessageRowPeer.TABLE_NAME,
-            MessageFlagsPeer.TABLE_NAME, MessageHeaderPeer.TABLE_NAME,
-            MessageBodyPeer.TABLE_NAME };
+
 
     private static final String[] CREATE_STATEMENTS = {
             "CREATE TABLE mailbox"
@@ -139,12 +132,12 @@ public class JPAHostSystem extends ImapHostSystem {
         BaseConfiguration torqueConf = configureDefaults();
         Connection conn = null;
         Torque.init(torqueConf);
-        conn = Transaction.begin(MailboxRowPeer.DATABASE_NAME);
+        conn = Transaction.begin(OmConstants.DATABASE_NAME);
 
         DatabaseMetaData dbMetaData = conn.getMetaData();
 
-        for (int i = 0; i < tableNames.length; i++) {
-            if (!tableExists(dbMetaData, tableNames[i])) {
+        for (int i = 0; i < OmConstants.TABLE_NAMES.length; i++) {
+            if (!tableExists(dbMetaData, OmConstants.TABLE_NAMES[i])) {
                 BasePeer.executeStatement(CREATE_STATEMENTS[i], conn);
             }
         }

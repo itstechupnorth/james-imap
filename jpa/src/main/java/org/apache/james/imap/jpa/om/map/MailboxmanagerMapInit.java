@@ -1,5 +1,6 @@
 package org.apache.james.imap.jpa.om.map;
 
+import org.apache.james.imap.jpa.om.Init;
 import org.apache.torque.TorqueException;
 
 /**
@@ -13,15 +14,6 @@ import org.apache.torque.TorqueException;
  */
 public class MailboxmanagerMapInit {
     public static final void init() throws TorqueException {
-        org.apache.james.imap.jpa.om.MailboxRowPeer
-                .getMapBuilder();
-        org.apache.james.imap.jpa.om.MessageRowPeer
-                .getMapBuilder();
-        org.apache.james.imap.jpa.om.MessageFlagsPeer
-                .getMapBuilder();
-        org.apache.james.imap.jpa.om.MessageHeaderPeer
-                .getMapBuilder();
-        org.apache.james.imap.jpa.om.MessageBodyPeer
-                .getMapBuilder();
+        Init.init();
     }
 }

@@ -33,12 +33,12 @@ import org.apache.torque.util.Criteria;
  * requirements. This class will only be generated as long as it does not
  * already exist in the output directory.
  */
-public class MailboxRowPeer extends
+class MailboxRowPeer extends
         org.apache.james.imap.jpa.om.BaseMailboxRowPeer {
 
     private static final long serialVersionUID = -1906212927584890188L;
 
-    public static MailboxRow retrieveByName(String name) throws TorqueException {
+    static MailboxRow retrieveByName(String name) throws TorqueException {
         Criteria c = new Criteria();
         c.add(MailboxRowPeer.NAME, name);
         List l = MailboxRowPeer.doSelect(c);

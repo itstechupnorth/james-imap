@@ -25,7 +25,7 @@ import org.apache.torque.util.Transaction;
  * You should not use this class directly. It should not even be extended all
  * references should be to MailboxRow
  */
-public abstract class BaseMailboxRow extends BaseObject {
+abstract class BaseMailboxRow extends BaseObject {
     /** Serial version */
     private static final long serialVersionUID = 1197222309712L;
 

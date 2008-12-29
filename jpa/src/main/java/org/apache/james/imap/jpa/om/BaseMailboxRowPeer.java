@@ -1,5 +1,11 @@
 package org.apache.james.imap.jpa.om;
 
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+
 import org.apache.james.imap.jpa.om.map.MailboxRowMapBuilder;
 import org.apache.torque.NoRowsException;
 import org.apache.torque.TooManyRowsException;
@@ -16,12 +22,6 @@ import com.workingdogs.village.DataSetException;
 import com.workingdogs.village.QueryDataSet;
 import com.workingdogs.village.Record;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-
 /**
  * Mailbox Table
  * 
@@ -30,7 +30,7 @@ import java.util.List;
  * [Sun Dec 09 17:45:09 GMT 2007]
  * 
  */
-public abstract class BaseMailboxRowPeer extends BasePeer {
+abstract class BaseMailboxRowPeer extends BasePeer {
     /** Serial version */
     private static final long serialVersionUID = 1197222309712L;
 
@@ -55,7 +55,7 @@ public abstract class BaseMailboxRowPeer extends BasePeer {
     public static final String MAILBOX_ID;
 
     /** the column name for the name field */
-    public static final String NAME;
+    static final String NAME;
 
     /** the column name for the uid_validity field */
     public static final String UID_VALIDITY;
@@ -522,7 +522,7 @@ public abstract class BaseMailboxRowPeer extends BasePeer {
      *             Any exceptions caught during processing will be rethrown
      *             wrapped into a TorqueException.
      */
-    public static void doDelete(MailboxRow obj) throws TorqueException {
+    static void doDelete(MailboxRow obj) throws TorqueException {
         doDelete(buildSelectCriteria(obj));
     }
 
@@ -702,7 +702,7 @@ public abstract class BaseMailboxRowPeer extends BasePeer {
      * @throws TooManyRowsException
      *             Primary key was not found in database.
      */
-    public static MailboxRow retrieveByPK(ObjectKey pk) throws TorqueException,
+    static MailboxRow retrieveByPK(ObjectKey pk) throws TorqueException,
             NoRowsException, TooManyRowsException {
         Connection db = null;
         MailboxRow retVal = null;

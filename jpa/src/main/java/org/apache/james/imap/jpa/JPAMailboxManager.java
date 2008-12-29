@@ -31,8 +31,8 @@ import java.util.Random;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.logging.impl.SimpleLog;
+import org.apache.james.imap.jpa.om.MailboxMapper;
 import org.apache.james.imap.jpa.om.MailboxRow;
-import org.apache.james.imap.jpa.om.MailboxRowPeer;
 import org.apache.james.mailboxmanager.ListResult;
 import org.apache.james.mailboxmanager.MailboxExistsException;
 import org.apache.james.mailboxmanager.MailboxManagerException;
@@ -45,8 +45,6 @@ import org.apache.james.mailboxmanager.manager.MailboxExpression;
 import org.apache.james.mailboxmanager.manager.MailboxManager;
 import org.apache.james.mailboxmanager.manager.SubscriptionException;
 import org.apache.torque.TorqueException;
-import org.apache.torque.util.CountHelper;
-import org.apache.torque.util.Criteria;
 
 import EDU.oswego.cs.dl.util.concurrent.ReadWriteLock;
 import EDU.oswego.cs.dl.util.concurrent.ReentrantWriterPreferenceReadWriteLock;
@@ -64,11 +62,14 @@ public class JPAMailboxManager implements MailboxManager {
     private final Map mailboxes;
 
     private final UserManager userManager;
+    
+    private final MailboxMapper mapper;
 
     public JPAMailboxManager(final UserManager userManager) {
         this.lock = new ReentrantWriterPreferenceReadWriteLock();
         mailboxes = new HashMap();
         this.userManager = userManager;
+        this.mapper = new MailboxMapper();
     }
 
     public Mailbox getMailbox(String mailboxName, boolean autoCreate)
@@ -84,8 +85,7 @@ public class JPAMailboxManager implements MailboxManager {
         }
         try {
             synchronized (mailboxes) {
-                MailboxRow mailboxRow = MailboxRowPeer
-                        .retrieveByName(mailboxName);
+                MailboxRow mailboxRow = mapper.findByName(mailboxName);
 
                 if (mailboxRow != null) {
                     getLog().debug("Loaded mailbox " + mailboxName);
@@ -165,11 +165,11 @@ public class JPAMailboxManager implements MailboxManager {
         synchronized (mailboxes) {
             try {
                 // TODO put this into a serilizable transaction
-                MailboxRow mr = MailboxRowPeer.retrieveByName(mailboxName);
+                MailboxRow mr = mapper.findByName(mailboxName);
                 if (mr == null) {
                     throw new MailboxNotFoundException("Mailbox not found");
                 }
-                MailboxRowPeer.doDelete(mr);
+                mapper.delete(mr);
                 JPAMailbox mailbox = (JPAMailbox) mailboxes
                         .remove(mailboxName);
                 if (mailbox != null) {
@@ -192,7 +192,7 @@ public class JPAMailboxManager implements MailboxManager {
                 // TODO put this into a serilizable transaction
                 final MailboxRow mr;
 
-                mr = MailboxRowPeer.retrieveByName(from);
+                mr = mapper.findByName(from);
 
                 if (mr == null) {
                     throw new MailboxNotFoundException(from);
@@ -203,11 +203,7 @@ public class JPAMailboxManager implements MailboxManager {
                 mailboxes.remove(from);
 
                 // rename submailbox
-                Criteria c = new Criteria();
-                c.add(MailboxRowPeer.NAME,
-                        (Object) (from + HIERARCHY_DELIMITER + "%"),
-                        Criteria.LIKE);
-                List l = MailboxRowPeer.doSelect(c);
+                List l = mapper.findNameLike(from + HIERARCHY_DELIMITER + "%");
                 for (Iterator iter = l.iterator(); iter.hasNext();) {
                     MailboxRow sub = (MailboxRow) iter.next();
                     String subOrigName = sub.getName();
@@ -224,6 +220,8 @@ public class JPAMailboxManager implements MailboxManager {
             throw new MailboxManagerException(e);
         }
     }
+
+
 
     public void copyMessages(MessageRange set, String from, String to,
             MailboxSession session) throws MailboxManagerException {
@@ -248,10 +246,8 @@ public class JPAMailboxManager implements MailboxManager {
                 HIERARCHY_DELIMITER).replace(freeWildcard, SQL_WILDCARD_CHAR)
                 .replace(localWildcard, SQL_WILDCARD_CHAR);
 
-        Criteria criteria = new Criteria();
-        criteria.add(MailboxRowPeer.NAME, (Object) (search), Criteria.LIKE);
         try {
-            List mailboxRows = MailboxRowPeer.doSelect(criteria);
+            List mailboxRows = mapper.findNameLike(search);
             List listResults = new ArrayList(mailboxRows.size());
             for (Iterator iter = mailboxRows.iterator(); iter.hasNext();) {
                 final MailboxRow mailboxRow = (MailboxRow) iter.next();
@@ -274,19 +270,17 @@ public class JPAMailboxManager implements MailboxManager {
 
     }
 
+
     public void setSubscription(String mailboxName, boolean value) {
         // TODO implement subscriptions
     }
 
     public boolean existsMailbox(String mailboxName)
             throws MailboxManagerException {
-        Criteria c = new Criteria();
-        c.add(MailboxRowPeer.NAME, mailboxName);
-        CountHelper countHelper = new CountHelper();
         int count;
         try {
             synchronized (mailboxes) {
-                count = countHelper.count(c);
+                count = mapper.countOnName(mailboxName);
                 if (count == 0) {
                     mailboxes.remove(mailboxName);
                     return false;
@@ -304,16 +298,17 @@ public class JPAMailboxManager implements MailboxManager {
         }
     }
 
+
+
     public void deleteEverything() throws MailboxManagerException {
         try {
-            MailboxRowPeer.doDelete(new Criteria().and(
-                    MailboxRowPeer.MAILBOX_ID, new Integer(-1),
-                    Criteria.GREATER_THAN));
+            mapper.deleteAll();
             mailboxes.clear();
         } catch (TorqueException e) {
             throw new MailboxManagerException(e);
         }
     }
+
 
     protected Log getLog() {
         if (log == null) {

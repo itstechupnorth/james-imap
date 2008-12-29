@@ -1,5 +1,11 @@
 package org.apache.james.imap.jpa.om;
 
+import java.sql.Connection;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.torque.TorqueException;
 import org.apache.torque.map.TableMap;
@@ -11,12 +17,6 @@ import org.apache.torque.om.SimpleKey;
 import org.apache.torque.util.Criteria;
 import org.apache.torque.util.Transaction;
 
-import java.sql.Connection;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-
 /**
  * 
  * 
@@ -27,7 +27,7 @@ import java.util.List;
  * You should not use this class directly. It should not even be extended all
  * references should be to MessageRow
  */
-public abstract class BaseMessageRow extends BaseObject {
+abstract class BaseMessageRow extends BaseObject {
     /** Serial version */
     private static final long serialVersionUID = 1197222309712L;
 
