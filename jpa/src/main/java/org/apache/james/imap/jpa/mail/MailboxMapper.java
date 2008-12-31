@@ -17,13 +17,13 @@
  * under the License.                                           *
  ****************************************************************/
 
-package org.apache.james.imap.jpa.map;
+package org.apache.james.imap.jpa.mail;
 
 import java.util.List;
 
 import javax.persistence.EntityManager;
 
-import org.apache.james.imap.jpa.om.Mailbox;
+import org.apache.james.imap.jpa.mail.model.Mailbox;
 
 /**
  * Data access management for mailbox.

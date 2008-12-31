@@ -32,9 +32,9 @@ import javax.persistence.NoResultException;
 import javax.persistence.PersistenceException;
 
 import org.apache.james.api.imap.AbstractLogEnabled;
-import org.apache.james.imap.jpa.map.MailboxMapper;
-import org.apache.james.imap.jpa.om.Mailbox;
-import org.apache.james.imap.jpa.om.openjpa.OpenJPAMailboxMapper;
+import org.apache.james.imap.jpa.mail.MailboxMapper;
+import org.apache.james.imap.jpa.mail.map.openjpa.OpenJPAMailboxMapper;
+import org.apache.james.imap.jpa.mail.model.Mailbox;
 import org.apache.james.imap.mailbox.ListResult;
 import org.apache.james.imap.mailbox.MailboxExistsException;
 import org.apache.james.imap.mailbox.MailboxException;

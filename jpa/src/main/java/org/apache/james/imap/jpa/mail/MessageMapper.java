@@ -16,13 +16,13 @@
  * specific language governing permissions and limitations      *
  * under the License.                                           *
  ****************************************************************/
-package org.apache.james.imap.jpa.map;
+package org.apache.james.imap.jpa.mail;
 
 import java.util.List;
 
 import javax.persistence.EntityManager;
 
-import org.apache.james.imap.jpa.om.Message;
+import org.apache.james.imap.jpa.mail.model.Message;
 import org.apache.james.imap.mailbox.MessageRange;
 import org.apache.james.imap.mailbox.SearchQuery;
 import org.apache.james.imap.mailbox.SearchQuery.Criterion;

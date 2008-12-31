@@ -37,12 +37,12 @@ import javax.persistence.PersistenceException;
 
 import org.apache.commons.logging.Log;
 import org.apache.james.api.imap.AbstractLogEnabled;
-import org.apache.james.imap.jpa.map.MailboxMapper;
-import org.apache.james.imap.jpa.map.MessageMapper;
-import org.apache.james.imap.jpa.om.Header;
-import org.apache.james.imap.jpa.om.Mailbox;
-import org.apache.james.imap.jpa.om.Message;
-import org.apache.james.imap.jpa.om.openjpa.OpenJPAMailboxMapper;
+import org.apache.james.imap.jpa.mail.MailboxMapper;
+import org.apache.james.imap.jpa.mail.MessageMapper;
+import org.apache.james.imap.jpa.mail.map.openjpa.OpenJPAMailboxMapper;
+import org.apache.james.imap.jpa.mail.model.Header;
+import org.apache.james.imap.jpa.mail.model.Mailbox;
+import org.apache.james.imap.jpa.mail.model.Message;
 import org.apache.james.imap.mailbox.MailboxListener;
 import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.MailboxSession;

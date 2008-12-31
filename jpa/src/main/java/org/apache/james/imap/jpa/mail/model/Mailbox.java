@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations      *
  * under the License.                                           *
  ****************************************************************/
-package org.apache.james.imap.jpa.om;
+package org.apache.james.imap.jpa.mail.model;
 
 import javax.persistence.Basic;
 import javax.persistence.Entity;

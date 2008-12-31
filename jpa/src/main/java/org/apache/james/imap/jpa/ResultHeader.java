@@ -28,7 +28,7 @@ import java.nio.channels.WritableByteChannel;
 
 import javax.mail.MessagingException;
 
-import org.apache.james.imap.jpa.om.Header;
+import org.apache.james.imap.jpa.mail.model.Header;
 import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.MessageResult;
 import org.apache.james.imap.mailbox.MessageResult.Content;

@@ -34,8 +34,8 @@ import javax.mail.Flags;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.james.imap.jpa.om.Header;
-import org.apache.james.imap.jpa.om.Message;
+import org.apache.james.imap.jpa.mail.model.Header;
+import org.apache.james.imap.jpa.mail.model.Message;
 import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.SearchQuery;
 import org.apache.james.imap.mailbox.UnsupportedSearchException;

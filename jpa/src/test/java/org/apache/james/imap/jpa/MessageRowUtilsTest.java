@@ -21,7 +21,7 @@ package org.apache.james.imap.jpa;
 
 import junit.framework.TestCase;
 
-import org.apache.james.imap.jpa.om.Message;
+import org.apache.james.imap.jpa.mail.model.Message;
 
 public class MessageRowUtilsTest extends TestCase {    
     

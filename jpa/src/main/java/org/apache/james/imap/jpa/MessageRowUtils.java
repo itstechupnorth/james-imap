@@ -32,8 +32,8 @@ import java.util.List;
 
 import javax.mail.Flags;
 
-import org.apache.james.imap.jpa.om.Header;
-import org.apache.james.imap.jpa.om.Message;
+import org.apache.james.imap.jpa.mail.model.Header;
+import org.apache.james.imap.jpa.mail.model.Message;
 import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.MessageResult;
 import org.apache.james.imap.mailbox.MessageResult.Content;

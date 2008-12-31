@@ -28,7 +28,7 @@ import javax.mail.Flags;
 import junit.framework.TestCase;
 
 import org.apache.james.api.imap.ImapConstants;
-import org.apache.james.imap.jpa.om.Message;
+import org.apache.james.imap.jpa.mail.model.Message;
 import org.apache.james.imap.mailbox.SearchQuery;
 
 public class SearchUtilsTest extends TestCase {

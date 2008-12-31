@@ -54,7 +54,7 @@ public class JPAHostSystem extends ImapHostSystem {
         properties.put("openjpa.Log", "JDBC=WARN, SQL=WARN, Runtime=WARN");
         properties.put("openjpa.ConnectionFactoryProperties", "PrettyPrint=true, PrettyPrintLineLength=72");
         properties.put("openjpa.jdbc.SynchronizeMappings", "buildSchema(ForeignKeys=true)");
-        properties.put("openjpa.MetaDataFactory", "jpa(Types=org.apache.james.imap.jpa.om.Header;org.apache.james.imap.jpa.om.Mailbox;org.apache.james.imap.jpa.om.Message)");
+        properties.put("openjpa.MetaDataFactory", "jpa(Types=org.apache.james.imap.jpa.mail.model.Header;org.apache.james.imap.jpa.mail.model.Mailbox;org.apache.james.imap.jpa.mail.model.Message)");
         
         userManager = new InMemoryUserManager();
         final EntityManagerFactory entityManagerFactory = OpenJPAPersistence.getEntityManagerFactory(properties);

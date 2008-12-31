@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations      *
  * under the License.                                           *
  ****************************************************************/
-package org.apache.james.imap.jpa.om;
+package org.apache.james.imap.jpa.mail.model;
 
 import java.io.Serializable;
 import java.util.ArrayList;

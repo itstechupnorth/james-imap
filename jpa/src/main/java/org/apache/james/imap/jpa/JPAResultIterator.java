@@ -29,7 +29,7 @@ import java.util.NoSuchElementException;
 import javax.mail.Flags;
 import javax.mail.internet.MimeMessage;
 
-import org.apache.james.imap.jpa.om.Message;
+import org.apache.james.imap.jpa.mail.model.Message;
 import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.MessageResult;
 import org.apache.james.imap.mailbox.MessageResult.FetchGroup;
