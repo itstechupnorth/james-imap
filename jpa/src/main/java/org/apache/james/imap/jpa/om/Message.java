@@ -38,8 +38,6 @@ import javax.persistence.OneToMany;
 @Entity
 @IdClass(Message.MessageId.class)
 @NamedQueries({
-    @NamedQuery(name="resetRecentMessages",
-            query="UPDATE Message message SET message.recent = FALSE WHERE message.mailboxId = :idParam AND message.recent = FALSE"),
     @NamedQuery(name="findRecentMessagesInMailbox",
             query="SELECT message FROM Message message WHERE message.mailboxId = :idParam AND message.recent = TRUE"),
     @NamedQuery(name="findUnseenMessagesInMailboxOrderByUid",
@@ -238,6 +236,14 @@ public class Message {
      */
     public List<Header> getHeaders() {
         return Collections.unmodifiableList(headers);
+    }
+    
+    /**
+     * Sets {@link #isRecent()} to false.
+     * A message can only be recent once.
+     */
+    public void unsetRecent() {
+        recent = false;
     }
     
     public void setFlags(Flags flags) {

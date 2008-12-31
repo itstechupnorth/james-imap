@@ -133,12 +133,7 @@ public class MessageMapper extends Mapper {
             .setParameter("fromParam", from)
             .setParameter("toParam", to).getResultList();
     }
-    
 
-    public void resetRecentMessages(long mailboxId) {
-        entityManager.createNamedQuery("resetRecentMessages").setParameter("idParam", mailboxId).executeUpdate();
-    }
-    
     public long countMessagesInMailbox(long mailboxId) {
         return (Long) entityManager.createNamedQuery("countMessagesInMailbox").setParameter("idParam", mailboxId).getSingleResult();
     }

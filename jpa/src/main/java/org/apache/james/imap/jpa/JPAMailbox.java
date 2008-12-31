@@ -225,20 +225,19 @@ public class JPAMailbox extends AbstractLogEnabled implements org.apache.james.m
     public long[] recent(boolean reset, MailboxSession mailboxSession) throws MailboxManagerException {
         try {
             final MessageMapper mapper = new MessageMapper(entityManagerFactory.createEntityManager());
+            mapper.begin();
             final List<Message> messages = mapper.findRecentMessagesInMailbox(mailboxId);
             final long[] results = new long[messages.size()];
 
             int count = 0;
             for (Message message:messages) {
                 results[count++] = message.getUid();
+                if (reset) {
+                    message.unsetRecent();
+                }
             }
 
-            if (reset) {
-                final MessageMapper resetMapper = new MessageMapper(entityManagerFactory.createEntityManager());
-                resetMapper.begin();
-                resetMapper.resetRecentMessages(mailboxId);
-                resetMapper.commit();
-            }
+            mapper.commit();
             return results;
         } catch (PersistenceException e) {
             throw new MailboxManagerException(e);
@@ -472,8 +471,10 @@ public class JPAMailbox extends AbstractLogEnabled implements org.apache.james.m
                             FetchGroupImpl.MINIMAL);
                     toMailbox.getUidChangeTracker().found(messageResult);
                 }
-                mapper.commit();
             }
+            
+            mapper.commit();
+
         } catch (PersistenceException e) {
             throw new MailboxManagerException(e);
         } catch (MessagingException e) {
