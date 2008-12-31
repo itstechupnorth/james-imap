@@ -34,16 +34,15 @@ import javax.mail.Flags;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.james.imap.jpa.om.MessageFlags;
-import org.apache.james.imap.jpa.om.MessageHeader;
-import org.apache.james.imap.jpa.om.MessageRow;
+import org.apache.james.imap.jpa.om.Header;
+import org.apache.james.imap.jpa.om.Message;
+import org.apache.james.mailboxmanager.MailboxManagerException;
 import org.apache.james.mailboxmanager.SearchQuery;
 import org.apache.james.mailboxmanager.SearchQuery.NumericRange;
 import org.apache.james.mime4j.MimeException;
 import org.apache.james.mime4j.field.datetime.DateTime;
 import org.apache.james.mime4j.field.datetime.parser.DateTimeParser;
 import org.apache.james.mime4j.field.datetime.parser.ParseException;
-import org.apache.torque.TorqueException;
 
 /**
  * Uility methods to help perform search operations.
@@ -74,10 +73,10 @@ class MessageSearches {
      * @param row
      *            <code>MessageRow</code>, not null
      * @return true if the row matches the given criteria, false otherwise
-     * @throws TorqueException
+     * @throws MailboxManagerException 
      */
-    public boolean isMatch(final SearchQuery query, final MessageRow row)
-            throws TorqueException {
+    public boolean isMatch(final SearchQuery query, final Message message)
+            throws MailboxManagerException {
         final List criteria = query.getCriterias();
         final Collection recentMessageUids = query.getRecentMessageUids();
         boolean result = true;
@@ -85,7 +84,7 @@ class MessageSearches {
             for (Iterator it = criteria.iterator(); it.hasNext();) {
                 final SearchQuery.Criterion criterion = (SearchQuery.Criterion) it
                         .next();
-                if (!isMatch(criterion, row, recentMessageUids)) {
+                if (!isMatch(criterion, message, recentMessageUids)) {
                     result = false;
                     break;
                 }
@@ -99,31 +98,31 @@ class MessageSearches {
      * 
      * @param query
      *            <code>SearchQuery.Criterion</code>, not null
-     * @param row
+     * @param message
      *            <code>MessageRow</code>, not null
      * @return true if the row matches the given criterion, false otherwise
-     * @throws TorqueException
+     * @throws MailboxManagerException 
      */
-    public boolean isMatch(SearchQuery.Criterion criterion, MessageRow row,
-            final Collection recentMessageUids) throws TorqueException {
+    public boolean isMatch(SearchQuery.Criterion criterion, Message message,
+            final Collection recentMessageUids) throws MailboxManagerException {
         final boolean result;
         if (criterion instanceof SearchQuery.InternalDateCriterion) {
-            result = matches((SearchQuery.InternalDateCriterion) criterion, row);
+            result = matches((SearchQuery.InternalDateCriterion) criterion, message);
         } else if (criterion instanceof SearchQuery.SizeCriterion) {
-            result = matches((SearchQuery.SizeCriterion) criterion, row);
+            result = matches((SearchQuery.SizeCriterion) criterion, message);
         } else if (criterion instanceof SearchQuery.HeaderCriterion) {
-            result = matches((SearchQuery.HeaderCriterion) criterion, row);
+            result = matches((SearchQuery.HeaderCriterion) criterion, message);
         } else if (criterion instanceof SearchQuery.UidCriterion) {
-            result = matches((SearchQuery.UidCriterion) criterion, row);
+            result = matches((SearchQuery.UidCriterion) criterion, message);
         } else if (criterion instanceof SearchQuery.FlagCriterion) {
-            result = matches((SearchQuery.FlagCriterion) criterion, row,
+            result = matches((SearchQuery.FlagCriterion) criterion, message,
                     recentMessageUids);
         } else if (criterion instanceof SearchQuery.TextCriterion) {
-            result = matches((SearchQuery.TextCriterion) criterion, row);
+            result = matches((SearchQuery.TextCriterion) criterion, message);
         } else if (criterion instanceof SearchQuery.AllCriterion) {
             result = true;
         } else if (criterion instanceof SearchQuery.ConjunctionCriterion) {
-            result = matches((SearchQuery.ConjunctionCriterion) criterion, row,
+            result = matches((SearchQuery.ConjunctionCriterion) criterion, message,
                     recentMessageUids);
         } else {
             throw new UnsupportedSearchException();
@@ -131,8 +130,7 @@ class MessageSearches {
         return result;
     }
 
-    private boolean matches(SearchQuery.TextCriterion criterion, MessageRow row)
-            throws TorqueException {
+    private boolean matches(SearchQuery.TextCriterion criterion, Message message) throws MailboxManagerException  {
         try {
             final SearchQuery.ContainsOperator operator = criterion
                     .getOperator();
@@ -140,20 +138,20 @@ class MessageSearches {
             final int type = criterion.getType();
             switch (type) {
                 case SearchQuery.TextCriterion.BODY:
-                    return bodyContains(value, row);
+                    return bodyContains(value, message);
                 case SearchQuery.TextCriterion.FULL_MESSAGE:
-                    return messageContains(value, row);
+                    return messageContains(value, message);
                 default:
                     throw new UnsupportedSearchException();
             }
         } catch (IOException e) {
-            throw new TorqueException(e);
+            throw new MailboxManagerException(e);
         }
     }
 
-    private boolean bodyContains(String value, MessageRow row)
-            throws TorqueException, IOException, MimeException {
-        final InputStream input = MessageRowUtils.toInput(row);
+    private boolean bodyContains(String value, Message message)
+            throws IOException, MimeException {
+        final InputStream input = MessageRowUtils.toInput(message);
         final boolean result = isInMessage(value, input, false);
         return result;
     }
@@ -169,37 +167,36 @@ class MessageSearches {
         return result;
     }
 
-    private boolean messageContains(String value, MessageRow row)
-            throws TorqueException, IOException, MimeException {
-        final InputStream input = MessageRowUtils.toInput(row);
+    private boolean messageContains(String value, Message message)
+            throws IOException, MimeException {
+        final InputStream input = MessageRowUtils.toInput(message);
         final boolean result = isInMessage(value, input, true);
         return result;
     }
 
     private boolean matches(SearchQuery.ConjunctionCriterion criterion,
-            MessageRow row, final Collection recentMessageUids)
-            throws TorqueException {
+            Message message, final Collection recentMessageUids) throws MailboxManagerException {
         final int type = criterion.getType();
         final List criteria = criterion.getCriteria();
         switch (type) {
             case SearchQuery.ConjunctionCriterion.NOR:
-                return nor(criteria, row, recentMessageUids);
+                return nor(criteria, message, recentMessageUids);
             case SearchQuery.ConjunctionCriterion.OR:
-                return or(criteria, row, recentMessageUids);
+                return or(criteria, message, recentMessageUids);
             case SearchQuery.ConjunctionCriterion.AND:
-                return and(criteria, row, recentMessageUids);
+                return and(criteria, message, recentMessageUids);
             default:
                 return false;
         }
     }
 
-    private boolean and(final List criteria, final MessageRow row,
-            final Collection recentMessageUids) throws TorqueException {
+    private boolean and(final List criteria, final Message message, 
+            final Collection recentMessageUids) throws MailboxManagerException {
         boolean result = true;
         for (Iterator it = criteria.iterator(); it.hasNext();) {
             final SearchQuery.Criterion criterion = (SearchQuery.Criterion) it
                     .next();
-            final boolean matches = isMatch(criterion, row, recentMessageUids);
+            final boolean matches = isMatch(criterion, message, recentMessageUids);
             if (!matches) {
                 result = false;
                 break;
@@ -208,13 +205,13 @@ class MessageSearches {
         return result;
     }
 
-    private boolean or(final List criteria, final MessageRow row,
-            final Collection recentMessageUids) throws TorqueException {
+    private boolean or(final List criteria, final Message message,
+            final Collection recentMessageUids) throws MailboxManagerException {
         boolean result = false;
         for (Iterator it = criteria.iterator(); it.hasNext();) {
             final SearchQuery.Criterion criterion = (SearchQuery.Criterion) it
                     .next();
-            final boolean matches = isMatch(criterion, row, recentMessageUids);
+            final boolean matches = isMatch(criterion, message, recentMessageUids);
             if (matches) {
                 result = true;
                 break;
@@ -223,13 +220,13 @@ class MessageSearches {
         return result;
     }
 
-    private boolean nor(final List criteria, final MessageRow row,
-            final Collection recentMessageUids) throws TorqueException {
+    private boolean nor(final List criteria, final Message message,
+            final Collection recentMessageUids) throws MailboxManagerException {
         boolean result = true;
         for (Iterator it = criteria.iterator(); it.hasNext();) {
             final SearchQuery.Criterion criterion = (SearchQuery.Criterion) it
                     .next();
-            final boolean matches = isMatch(criterion, row, recentMessageUids);
+            final boolean matches = isMatch(criterion, message, recentMessageUids);
             if (matches) {
                 result = false;
                 break;
@@ -239,37 +236,34 @@ class MessageSearches {
     }
 
     private boolean matches(SearchQuery.FlagCriterion criterion,
-            MessageRow row, final Collection recentMessageUids)
-            throws TorqueException {
+            Message message, final Collection recentMessageUids) {
         final SearchQuery.BooleanOperator operator = criterion.getOperator();
         final boolean isSet = operator.isSet();
         final Flags.Flag flag = criterion.getFlag();
-        final MessageFlags messageFlags = row.getMessageFlags();
         final boolean result;
         if (flag == Flags.Flag.ANSWERED) {
-            result = isSet == messageFlags.getAnswered();
+            result = isSet == message.isAnswered();
         } else if (flag == Flags.Flag.SEEN) {
-            result = isSet == messageFlags.getSeen();
+            result = isSet == message.isSeen();
         } else if (flag == Flags.Flag.DRAFT) {
-            result = isSet == messageFlags.getDraft();
+            result = isSet == message.isDraft();
         } else if (flag == Flags.Flag.FLAGGED) {
-            result = isSet == messageFlags.getFlagged();
+            result = isSet == message.isFlagged();
         } else if (flag == Flags.Flag.RECENT) {
-            final long uid = row.getUid();
+            final long uid = message.getUid();
             result = isSet == recentMessageUids.contains(new Long(uid));
         } else if (flag == Flags.Flag.DELETED) {
-            result = isSet == messageFlags.getDeleted();
+            result = isSet == message.isDeleted();
         } else {
             result = false;
         }
         return result;
     }
 
-    private boolean matches(SearchQuery.UidCriterion criterion, MessageRow row)
-            throws TorqueException {
+    private boolean matches(SearchQuery.UidCriterion criterion, Message message) {
         final SearchQuery.InOperator operator = criterion.getOperator();
         final NumericRange[] ranges = operator.getRange();
-        final long uid = row.getUid();
+        final long uid = message.getUid();
         final int length = ranges.length;
         boolean result = false;
         for (int i = 0; i < length; i++) {
@@ -282,31 +276,26 @@ class MessageSearches {
         return result;
     }
 
-    private boolean matches(SearchQuery.HeaderCriterion criterion,
-            MessageRow row) throws TorqueException {
+    private boolean matches(SearchQuery.HeaderCriterion criterion, Message message) throws UnsupportedSearchException {
         final SearchQuery.HeaderOperator operator = criterion.getOperator();
         final String headerName = criterion.getHeaderName();
         final boolean result;
         if (operator instanceof SearchQuery.DateOperator) {
-            result = matches((SearchQuery.DateOperator) operator, headerName,
-                    row);
+            result = matches((SearchQuery.DateOperator) operator, headerName, message);
         } else if (operator instanceof SearchQuery.ContainsOperator) {
-            result = matches((SearchQuery.ContainsOperator) operator,
-                    headerName, row);
+            result = matches((SearchQuery.ContainsOperator) operator, headerName, message);
         } else if (operator instanceof SearchQuery.ExistsOperator) {
-            result = exists(headerName, row);
+            result = exists(headerName, message);
         } else {
             throw new UnsupportedSearchException();
         }
         return result;
     }
 
-    private boolean exists(String headerName, MessageRow row)
-            throws TorqueException {
+    private boolean exists(String headerName, Message message) {
         boolean result = false;
-        final List headers = row.getMessageHeaders();
-        for (Iterator it = headers.iterator(); it.hasNext();) {
-            final MessageHeader header = (MessageHeader) it.next();
+        final List<Header> headers = message.getHeaders();
+        for (Header header:headers) {
             final String name = header.getField();
             if (headerName.equalsIgnoreCase(name)) {
                 result = true;
@@ -317,13 +306,11 @@ class MessageSearches {
     }
 
     private boolean matches(final SearchQuery.ContainsOperator operator,
-            final String headerName, final MessageRow row)
-            throws TorqueException {
+            final String headerName, final Message message) {
         final String text = operator.getValue().toUpperCase();
         boolean result = false;
-        final List headers = row.getMessageHeaders();
-        for (Iterator it = headers.iterator(); it.hasNext();) {
-            final MessageHeader header = (MessageHeader) it.next();
+        final List<Header> headers = message.getHeaders();
+        for (Header header:headers) {
             final String name = header.getField();
             if (headerName.equalsIgnoreCase(name)) {
                 final String value = header.getValue();
@@ -339,13 +326,12 @@ class MessageSearches {
     }
 
     private boolean matches(final SearchQuery.DateOperator operator,
-            final String headerName, final MessageRow row)
-            throws TorqueException {
+            final String headerName, final Message message) throws UnsupportedSearchException {
         final int day = operator.getDay();
         final int month = operator.getMonth();
         final int year = operator.getYear();
         final int iso = toISODate(day, month, year);
-        final String value = headerValue(headerName, row);
+        final String value = headerValue(headerName, message);
         if (value == null) {
             return false;
         } else {
@@ -368,12 +354,10 @@ class MessageSearches {
         }
     }
 
-    private String headerValue(final String headerName, final MessageRow row)
-            throws TorqueException {
-        final List headers = row.getMessageHeaders();
+    private String headerValue(final String headerName, final Message message) {
+        final List<Header> headers = message.getHeaders();
         String value = null;
-        for (Iterator it = headers.iterator(); it.hasNext();) {
-            final MessageHeader header = (MessageHeader) it.next();
+        for (Header header:headers) {
             final String name = header.getField();
             if (headerName.equalsIgnoreCase(name)) {
                 value = header.getValue();
@@ -391,10 +375,10 @@ class MessageSearches {
         return isoFieldValue;
     }
 
-    private boolean matches(SearchQuery.SizeCriterion criterion, MessageRow row)
+    private boolean matches(SearchQuery.SizeCriterion criterion, Message message)
             throws UnsupportedSearchException {
         final SearchQuery.NumericOperator operator = criterion.getOperator();
-        final int size = row.getSize();
+        final int size = message.getSize();
         final long value = operator.getValue();
         final int type = operator.getType();
         switch (type) {
@@ -410,19 +394,19 @@ class MessageSearches {
     }
 
     private boolean matches(SearchQuery.InternalDateCriterion criterion,
-            MessageRow row) throws UnsupportedSearchException {
+            Message message) throws UnsupportedSearchException {
         final SearchQuery.DateOperator operator = criterion.getOperator();
-        final boolean result = matchesInternalDate(operator, row);
+        final boolean result = matchesInternalDate(operator, message);
         return result;
     }
 
     private boolean matchesInternalDate(
-            final SearchQuery.DateOperator operator, final MessageRow row)
+            final SearchQuery.DateOperator operator, final Message message)
             throws UnsupportedSearchException {
         final int day = operator.getDay();
         final int month = operator.getMonth();
         final int year = operator.getYear();
-        final Date internalDate = row.getInternalDate();
+        final Date internalDate = message.getInternalDate();
         final int type = operator.getType();
         switch (type) {
             case SearchQuery.DateOperator.ON:

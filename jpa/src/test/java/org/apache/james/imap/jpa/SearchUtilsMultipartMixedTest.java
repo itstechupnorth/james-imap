@@ -26,9 +26,7 @@ import java.util.Collection;
 import junit.framework.TestCase;
 
 import org.apache.james.api.imap.ImapConstants;
-import org.apache.james.imap.jpa.om.MessageBody;
-import org.apache.james.imap.jpa.om.MessageHeader;
-import org.apache.james.imap.jpa.om.MessageRow;
+import org.apache.james.imap.jpa.om.Message;
 import org.apache.james.mailboxmanager.SearchQuery;
 
 public class SearchUtilsMultipartMixedTest extends TestCase {
@@ -105,7 +103,7 @@ public class SearchUtilsMultipartMixedTest extends TestCase {
             + "  Than both your poets can in praise devise.\r\n"
             + "\r\n--2.50290787509--\r\n" + "\r\n--1729--\r\n";
 
-    MessageRow row;
+    Message row;
 
     MessageSearches searches;
 
@@ -113,19 +111,15 @@ public class SearchUtilsMultipartMixedTest extends TestCase {
 
     protected void setUp() throws Exception {
         super.setUp();
-        row = new MessageRow();
-        row.addMessageHeader(new MessageHeader(ImapConstants.RFC822_FROM,
-                "Alex <alex@example.org"));
-        row.addMessageHeader(new MessageHeader(ImapConstants.RFC822_TO,
-                "Harry <harry@example.org"));
-        row.addMessageHeader(new MessageHeader(ImapConstants.RFC822_SUBJECT,
-                "A Mixed Multipart Mail"));
-        row.addMessageHeader(new MessageHeader(ImapConstants.RFC822_DATE,
-                "Thu, 14 Feb 2008 12:00:00 +0000 (GMT)"));
-        row.addMessageHeader(new MessageHeader("Content-Type",
-                "multipart/mixed;boundary=1729"));
-        row.addMessageBody(new MessageBody(Charset.forName("us-ascii").encode(
-                BODY).array()));
+        final MessageBuilder builder = new MessageBuilder();
+        
+        builder.header(ImapConstants.RFC822_FROM, "Alex <alex@example.org");
+        builder.header(ImapConstants.RFC822_TO, "Harry <harry@example.org");
+        builder.header(ImapConstants.RFC822_SUBJECT, "A Mixed Multipart Mail");
+        builder.header(ImapConstants.RFC822_DATE, "Thu, 14 Feb 2008 12:00:00 +0000 (GMT)");
+        builder.header("Content-Type", "multipart/mixed;boundary=1729");
+        builder.body = Charset.forName("us-ascii").encode(BODY).array();
+        row = builder.build();
         searches = new MessageSearches();
         recent = new ArrayList();
     }

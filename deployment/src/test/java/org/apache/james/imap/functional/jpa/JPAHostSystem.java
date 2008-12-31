@@ -20,204 +20,71 @@
 package org.apache.james.imap.functional.jpa;
 
 import java.io.File;
-import java.sql.Connection;
-import java.sql.DatabaseMetaData;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.Locale;
+import java.util.HashMap;
 
-import org.apache.commons.configuration.BaseConfiguration;
+import javax.persistence.EntityManagerFactory;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.james.imap.encode.main.DefaultImapEncoderFactory;
 import org.apache.james.imap.functional.ImapHostSystem;
 import org.apache.james.imap.functional.SimpleMailboxManagerProvider;
 import org.apache.james.imap.jpa.JPAMailboxManager;
-import org.apache.james.imap.jpa.om.OmConstants;
 import org.apache.james.imap.main.DefaultImapDecoderFactory;
 import org.apache.james.imap.processor.main.DefaultImapProcessorFactory;
-import org.apache.james.mailboxmanager.manager.MailboxManagerProvider;
 import org.apache.james.test.functional.HostSystem;
-import org.apache.torque.Torque;
-import org.apache.torque.util.BasePeer;
-import org.apache.torque.util.Transaction;
+import org.apache.openjpa.persistence.OpenJPAPersistence;
 
 public class JPAHostSystem extends ImapHostSystem {
 
-    private static JPAMailboxManager TORQUE_MAILBOX_MANAGER;
-
-    private static SimpleUserManager USER_MANAGER;
-
-    private static SimpleMailboxManagerProvider PROVIDER;
-
-    public static final ImapHostSystem HOST = new JPAHostSystem();
-    
     public static final String META_DATA_DIRECTORY = "target/user-meta-data";
 
-    public static void resetUserMetaData() throws Exception {
+    public static HostSystem build() throws Exception {        
+        JPAHostSystem host =  new JPAHostSystem();
+        return host;
+    }
+    
+    private final JPAMailboxManager mailboxManager;
+    private final SimpleUserManager userManager; 
 
+    public JPAHostSystem() throws Exception {
+        HashMap<String, String> properties = new HashMap<String, String>();
+        properties.put("openjpa.ConnectionDriverName", "org.h2.Driver");
+        properties.put("openjpa.ConnectionURL", "jdbc:h2:mem:imap;DB_CLOSE_DELAY=-1");
+        properties.put("openjpa.Log", "JDBC=WARN, SQL=WARN, Runtime=WARN");
+        properties.put("openjpa.ConnectionFactoryProperties", "PrettyPrint=true, PrettyPrintLineLength=72");
+        properties.put("openjpa.jdbc.SynchronizeMappings", "buildSchema(ForeignKeys=true)");
+        properties.put("openjpa.MetaDataFactory", "jpa(Types=org.apache.james.imap.jpa.om.Header;org.apache.james.imap.jpa.om.Mailbox;org.apache.james.imap.jpa.om.Message)");
+        
+        userManager = new SimpleUserManager();
+        final EntityManagerFactory entityManagerFactory = OpenJPAPersistence.getEntityManagerFactory(properties);
+        mailboxManager = new JPAMailboxManager(userManager, entityManagerFactory);
+        
+        SimpleMailboxManagerProvider provider = new SimpleMailboxManagerProvider();
+        final DefaultImapProcessorFactory defaultImapProcessorFactory = new DefaultImapProcessorFactory();
+        provider.setMailboxManager(mailboxManager);
+        resetUserMetaData();
+        defaultImapProcessorFactory.configure(provider);
+        configure(new DefaultImapDecoderFactory().buildImapDecoder(),
+                new DefaultImapEncoderFactory().buildImapEncoder(),
+                defaultImapProcessorFactory.buildImapProcessor());
+    }
+
+    public boolean addUser(String user, String password) {
+        userManager.addUser(user, password);
+        return true;
+    }
+
+    public void resetData() throws Exception {
+        resetUserMetaData();
+        mailboxManager.deleteEverything();
+    }
+    
+    public void resetUserMetaData() throws Exception {
         File dir = new File(META_DATA_DIRECTORY);
         if (dir.exists()) {
             FileUtils.deleteDirectory(dir);
         }
         dir.mkdirs();
-    }
-
-    public static HostSystem build() throws Exception {
-
-        ImapHostSystem host = HOST;
-        final DefaultImapProcessorFactory defaultImapProcessorFactory = new DefaultImapProcessorFactory();
-        resetUserMetaData();
-        defaultImapProcessorFactory.configure(getTorqueMailboxManagerProviderInstance());
-        host.configure(new DefaultImapDecoderFactory().buildImapDecoder(),
-                new DefaultImapEncoderFactory().buildImapEncoder(),
-                defaultImapProcessorFactory.buildImapProcessor());
-        return host;
-    }
-
-
-
-    private static final String[] CREATE_STATEMENTS = {
-            "CREATE TABLE mailbox"
-                    + "("
-                    + "  mailbox_id BIGINT NOT NULL GENERATED ALWAYS AS IDENTITY,"
-                    + "        name VARCHAR(255) NOT NULL,"
-                    + "        uid_validity BIGINT NOT NULL,"
-                    + "        last_uid BIGINT NOT NULL,"
-                    + "        message_count INTEGER default 0,"
-                    + "        size BIGINT default 0,"
-                    + "        PRIMARY KEY(mailbox_id),"
-                    + "        UNIQUE (name))",
-            "        CREATE TABLE message"
-                    + "    ("
-                    + "        mailbox_id BIGINT NOT NULL,"
-                    + "        uid BIGINT NOT NULL,"
-                    + "        internal_date TIMESTAMP,"
-                    + "        size INTEGER,"
-                    + "        PRIMARY KEY(mailbox_id,uid),"
-                    + "        FOREIGN KEY (mailbox_id) REFERENCES mailbox (mailbox_id)"
-                    + "            ON DELETE CASCADE" + "      )",
-            "CREATE TABLE message_flags"
-                    + "    ("
-                    + "        mailbox_id BIGINT NOT NULL,"
-                    + "        uid BIGINT NOT NULL,"
-                    + "        answered INTEGER default 0 NOT NULL,"
-                    + "        deleted INTEGER default 0 NOT NULL,"
-                    + "        draft INTEGER default 0 NOT NULL,"
-                    + "        flagged INTEGER default 0 NOT NULL,"
-                    + "        recent INTEGER default 0 NOT NULL,"
-                    + "        seen INTEGER default 0 NOT NULL,"
-                    + "        PRIMARY KEY(mailbox_id,uid),"
-                    + "        FOREIGN KEY (mailbox_id, uid) REFERENCES message (mailbox_id, uid)"
-                    + "            ON DELETE CASCADE" + "      )",
-            "CREATE TABLE message_header"
-                    + "    ("
-                    + "        mailbox_id BIGINT NOT NULL,"
-                    + "        uid BIGINT NOT NULL,"
-                    + "        line_number INTEGER NOT NULL,"
-                    + "        field VARCHAR(256) NOT NULL,"
-                    + "        value VARCHAR(1024) NOT NULL,"
-                    + "        PRIMARY KEY(mailbox_id,uid,line_number),"
-                    + "        FOREIGN KEY (mailbox_id, uid) REFERENCES message (mailbox_id, uid)"
-                    + "            ON DELETE CASCADE" + "      )",
-            "CREATE TABLE message_body"
-                    + "    ("
-                    + "        mailbox_id BIGINT NOT NULL,"
-                    + "        uid BIGINT NOT NULL,"
-                    + "        body BLOB NOT NULL,"
-                    + "        PRIMARY KEY(mailbox_id,uid),"
-                    + "        FOREIGN KEY (mailbox_id, uid) REFERENCES message (mailbox_id, uid)"
-                    + "            ON DELETE CASCADE" + "      )" };
-
-    public static void initialize() throws Exception {
-        BaseConfiguration torqueConf = configureDefaults();
-        Connection conn = null;
-        Torque.init(torqueConf);
-        conn = Transaction.begin(OmConstants.DATABASE_NAME);
-
-        DatabaseMetaData dbMetaData = conn.getMetaData();
-
-        for (int i = 0; i < OmConstants.TABLE_NAMES.length; i++) {
-            if (!tableExists(dbMetaData, OmConstants.TABLE_NAMES[i])) {
-                BasePeer.executeStatement(CREATE_STATEMENTS[i], conn);
-            }
-        }
-
-        Transaction.commit(conn);
-    }
-
-    private static boolean tableExists(DatabaseMetaData dbMetaData,
-            String tableName) throws SQLException {
-        return (tableExistsCaseSensitive(dbMetaData, tableName)
-                || tableExistsCaseSensitive(dbMetaData, tableName
-                        .toUpperCase(Locale.US)) || tableExistsCaseSensitive(
-                dbMetaData, tableName.toLowerCase(Locale.US)));
-    }
-
-    private static boolean tableExistsCaseSensitive(
-            DatabaseMetaData dbMetaData, String tableName) throws SQLException {
-        ResultSet rsTables = dbMetaData.getTables(null, null, tableName, null);
-        try {
-            boolean found = rsTables.next();
-            return found;
-        } finally {
-            if (rsTables != null) {
-                rsTables.close();
-            }
-        }
-    }
-
-    public static BaseConfiguration configureDefaults()
-            throws org.apache.commons.configuration.ConfigurationException {
-        BaseConfiguration torqueConf = new BaseConfiguration();
-        torqueConf.addProperty("torque.database.default", "mailboxmanager");
-        torqueConf.addProperty("torque.database.mailboxmanager.adapter",
-                "derby");
-        torqueConf.addProperty("torque.dsfactory.mailboxmanager.factory",
-                "org.apache.torque.dsfactory.SharedPoolDataSourceFactory");
-        torqueConf.addProperty(
-                "torque.dsfactory.mailboxmanager.connection.driver",
-                "org.apache.derby.jdbc.EmbeddedDriver");
-        torqueConf.addProperty(
-                "torque.dsfactory.mailboxmanager.connection.url",
-                "jdbc:derby:target/testdb;create=true");
-        torqueConf.addProperty(
-                "torque.dsfactory.mailboxmanager.connection.user", "app");
-        torqueConf.addProperty(
-                "torque.dsfactory.mailboxmanager.connection.password", "app");
-        torqueConf.addProperty(
-                "torque.dsfactory.mailboxmanager.pool.maxActive", "100");
-        return torqueConf;
-    }
-
-
-    public synchronized static MailboxManagerProvider getTorqueMailboxManagerProviderInstance()
-            throws Exception {
-        if (PROVIDER == null) {
-            getMailboxManager();
-            PROVIDER = new SimpleMailboxManagerProvider();
-            PROVIDER.setMailboxManager(TORQUE_MAILBOX_MANAGER);
-        }
-        return PROVIDER;
-
-    }
-
-    public boolean addUser(String user, String password) {
-        USER_MANAGER.addUser(user, password);
-        return true;
-    }
-
-    private static JPAMailboxManager getMailboxManager() throws Exception {
-        if (TORQUE_MAILBOX_MANAGER == null) {
-            USER_MANAGER = new SimpleUserManager();
-            initialize();
-            TORQUE_MAILBOX_MANAGER = new JPAMailboxManager(USER_MANAGER);
-        }
-        return TORQUE_MAILBOX_MANAGER;
-    }
-
-    public void resetData() throws Exception {
-        resetUserMetaData();
-        getMailboxManager().deleteEverything();
     }
 
 }

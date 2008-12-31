@@ -19,12 +19,12 @@
 
 package org.apache.james.imap.jpa;
 
-import org.apache.torque.TorqueException;
+import org.apache.james.mailboxmanager.MailboxManagerException;
 
 /**
  * Indicates that the requested search is not supported by this implementation.
  */
-public class UnsupportedSearchException extends TorqueException {
+public class UnsupportedSearchException extends MailboxManagerException {
 
     private static final long serialVersionUID = -7442949630563672557L;
 

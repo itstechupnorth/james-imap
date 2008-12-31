@@ -28,23 +28,23 @@ import java.nio.channels.WritableByteChannel;
 
 import javax.mail.MessagingException;
 
-import org.apache.james.imap.jpa.om.MessageHeader;
+import org.apache.james.imap.jpa.om.Header;
 import org.apache.james.mailboxmanager.MailboxManagerException;
 import org.apache.james.mailboxmanager.MessageResult;
 import org.apache.james.mailboxmanager.MessageResult.Content;
 
-final class Header implements MessageResult.Header, MessageResult.Content {
+final class ResultHeader implements MessageResult.Header, MessageResult.Content {
     private final String name;
 
     private final String value;
 
     private final long size;
 
-    public Header(final MessageHeader header) {
+    public ResultHeader(final Header header) {
         this(header.getField(), header.getValue());
     }
 
-    public Header(String name, String value) {
+    public ResultHeader(String name, String value) {
         this.name = name;
         this.value = value;
         size = name.length() + value.length() + 2;

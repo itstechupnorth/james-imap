@@ -19,45 +19,42 @@
 
 package org.apache.james.imap.jpa;
 
-import java.util.Collection;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.List;
 import java.util.NoSuchElementException;
 
 import javax.mail.Flags;
 import javax.mail.internet.MimeMessage;
 
-import org.apache.commons.collections.Buffer;
-import org.apache.commons.collections.BufferUtils;
-import org.apache.commons.collections.buffer.BoundedFifoBuffer;
-import org.apache.james.imap.jpa.om.MessageRow;
+import org.apache.james.imap.jpa.om.Message;
 import org.apache.james.mailboxmanager.MailboxManagerException;
 import org.apache.james.mailboxmanager.MessageResult;
 import org.apache.james.mailboxmanager.MessageResult.FetchGroup;
 import org.apache.james.mailboxmanager.impl.FetchGroupImpl;
 import org.apache.james.mailboxmanager.impl.MessageFlags;
-import org.apache.torque.TorqueException;
 
 public class JPAResultIterator implements Iterator {
 
-    private final Buffer messageRows;
+    private final List<Message> messages;
 
     private final FetchGroup fetchGroup;
 
-    public JPAResultIterator(final Collection messageRows,
-            final FetchGroup fetchGroup) {
+    @SuppressWarnings("unchecked")
+    public JPAResultIterator(final List<Message> messages, final FetchGroup fetchGroup) {
         super();
-        if (messageRows == null || messageRows.isEmpty()) {
-            this.messageRows = BufferUtils.EMPTY_BUFFER;
+        if (messages == null) {
+            this.messages = Collections.EMPTY_LIST;
         } else {
-            this.messageRows = new BoundedFifoBuffer(messageRows);
+            this.messages = new ArrayList<Message>(messages);
         }
         this.fetchGroup = fetchGroup;
     }
 
-    public MessageFlags[] getMessageFlags() throws TorqueException {
-        final MessageFlags[] results = MessageRowUtils
-                .toMessageFlags(messageRows);
+    public MessageFlags[] getMessageFlags() {
+        final MessageFlags[] results = MessageRowUtils.toMessageFlags(messages);
         return results;
     }
 
@@ -67,28 +64,25 @@ public class JPAResultIterator implements Iterator {
      * @return <code>Iterator</code> for message rows
      */
     public final Iterator iterateRows() {
-        return messageRows.iterator();
+        return messages.iterator();
     }
 
     public boolean hasNext() {
-        return !messageRows.isEmpty();
+        return !messages.isEmpty();
     }
 
     public Object next() {
-        if (messageRows.isEmpty()) {
+        if (messages.isEmpty()) {
             throw new NoSuchElementException("No such element.");
         }
-        final MessageRow messageRow = (MessageRow) messageRows.remove();
+        final Message message = messages.get(0);
+        messages.remove(message);
         MessageResult result;
         try {
 
-            result = MessageRowUtils.loadMessageResult(messageRow,
-                    this.fetchGroup);
-        } catch (TorqueException e) {
-            result = new UnloadedMessageResult(messageRow,
-                    new MailboxManagerException(e));
+            result = MessageRowUtils.loadMessageResult(message, this.fetchGroup);
         } catch (MailboxManagerException e) {
-            result = new UnloadedMessageResult(messageRow, e);
+            result = new UnloadedMessageResult(message, e);
         }
         return result;
     }
@@ -97,6 +91,14 @@ public class JPAResultIterator implements Iterator {
         throw new UnsupportedOperationException("Read only iteration.");
     }
 
+    public List<MessageResult> toList() {
+        final List<MessageResult> results = new ArrayList<MessageResult>(messages.size());
+        while(hasNext()) {
+            results.add((MessageResult) next());
+        }
+        return results;
+    }
+    
     private static final class UnloadedMessageResult implements MessageResult {
         private static final FetchGroup FETCH_GROUP = new FetchGroupImpl(
                 FetchGroup.INTERNAL_DATE | FetchGroup.SIZE);
@@ -109,12 +111,12 @@ public class JPAResultIterator implements Iterator {
 
         private final long uid;
 
-        public UnloadedMessageResult(final MessageRow row,
+        public UnloadedMessageResult(final Message message,
                 final MailboxManagerException exception) {
             super();
-            internalDate = row.getInternalDate();
-            size = row.getSize();
-            uid = row.getUid();
+            internalDate = message.getInternalDate();
+            size = message.getSize();
+            uid = message.getUid();
             this.exception = exception;
         }
 

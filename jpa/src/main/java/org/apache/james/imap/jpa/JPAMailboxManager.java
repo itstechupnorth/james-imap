@@ -23,16 +23,18 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.commons.logging.impl.SimpleLog;
-import org.apache.james.imap.jpa.om.MailboxMapper;
-import org.apache.james.imap.jpa.om.MailboxRow;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.NoResultException;
+import javax.persistence.PersistenceException;
+
+import org.apache.james.api.imap.AbstractLogEnabled;
+import org.apache.james.imap.jpa.map.MailboxMapper;
+import org.apache.james.imap.jpa.om.Mailbox;
+import org.apache.james.imap.jpa.om.openjpa.OpenJPAMailboxMapper;
 import org.apache.james.mailboxmanager.ListResult;
 import org.apache.james.mailboxmanager.MailboxExistsException;
 import org.apache.james.mailboxmanager.MailboxManagerException;
@@ -40,32 +42,30 @@ import org.apache.james.mailboxmanager.MailboxNotFoundException;
 import org.apache.james.mailboxmanager.MailboxSession;
 import org.apache.james.mailboxmanager.MessageRange;
 import org.apache.james.mailboxmanager.impl.ListResultImpl;
-import org.apache.james.mailboxmanager.mailbox.Mailbox;
 import org.apache.james.mailboxmanager.manager.MailboxExpression;
 import org.apache.james.mailboxmanager.manager.MailboxManager;
 import org.apache.james.mailboxmanager.manager.SubscriptionException;
-import org.apache.torque.TorqueException;
 
-public class JPAMailboxManager implements MailboxManager {
+public class JPAMailboxManager extends AbstractLogEnabled implements MailboxManager {
 
+    
     private static final char SQL_WILDCARD_CHAR = '%';
 
     private final static Random random = new Random();
 
-    protected Log log = LogFactory.getLog(JPAMailboxManager.class);
-    private final Map mailboxes;
+    private final Map<String, JPAMailbox> mailboxes;
 
     private final UserManager userManager;
     
-    private final MailboxMapper mapper;
+    private final EntityManagerFactory entityManagerFactory;
 
-    public JPAMailboxManager(final UserManager userManager) {
-        mailboxes = new HashMap();
+    public JPAMailboxManager(final UserManager userManager, final EntityManagerFactory entityManagerFactory) {
+        mailboxes = new HashMap<String, JPAMailbox>();
         this.userManager = userManager;
-        this.mapper = new MailboxMapper();
+        this.entityManagerFactory = entityManagerFactory;
     }
 
-    public Mailbox getMailbox(String mailboxName, boolean autoCreate)
+    public org.apache.james.mailboxmanager.mailbox.Mailbox getMailbox(String mailboxName, boolean autoCreate)
             throws MailboxManagerException {
         return doGetMailbox(mailboxName, autoCreate);
     }
@@ -78,25 +78,29 @@ public class JPAMailboxManager implements MailboxManager {
         }
         try {
             synchronized (mailboxes) {
-                MailboxRow mailboxRow = mapper.findByName(mailboxName);
+                final MailboxMapper mapper = createMailboxMapper();
+                Mailbox mailboxRow = mapper.findMailboxByName(mailboxName);
 
-                if (mailboxRow != null) {
-                    getLog().debug("Loaded mailbox " + mailboxName);
-
-                    JPAMailbox torqueMailbox = (JPAMailbox) mailboxes
-                            .get(mailboxName);
-                    if (torqueMailbox == null) {
-                        torqueMailbox = new JPAMailbox(mailboxRow, getLog());
-                        mailboxes.put(mailboxName, torqueMailbox);
-                    }
-
-                    return torqueMailbox;
-                } else {
+                if (mailboxRow == null) {
                     getLog().info("Mailbox '" + mailboxName + "' not found.");
                     throw new MailboxNotFoundException(mailboxName);
+                    
+                } else {
+                    getLog().debug("Loaded mailbox " + mailboxName);
+
+                    JPAMailbox result = (JPAMailbox) mailboxes.get(mailboxName);
+                    if (result == null) {
+                        result = new JPAMailbox(mailboxRow, getLog(), entityManagerFactory);
+                        mailboxes.put(mailboxName, result);
+                    }
+                    return result;
                 }
             }
-        } catch (TorqueException e) {
+        } catch (NoResultException e) {
+            getLog().info("Mailbox '" + mailboxName + "' not found.");
+            throw new MailboxNotFoundException(mailboxName);
+            
+        } catch (PersistenceException e) {
             throw new MailboxManagerException(e);
         }
     }
@@ -140,13 +144,13 @@ public class JPAMailboxManager implements MailboxManager {
     }
 
     private void doCreate(String namespaceName) throws MailboxManagerException {
-        MailboxRow mr = new MailboxRow();
-        mr.setName(namespaceName);
-        mr.setLastUid(0);
-        mr.setUidValidity(Math.abs(random.nextInt()));
+        Mailbox mailbox = new Mailbox(namespaceName, Math.abs(random.nextInt()));
         try {
-            mapper.save(mr);
-        } catch (TorqueException e) {
+            final MailboxMapper mapper = createMailboxMapper();
+            mapper.begin();
+            mapper.save(mailbox);
+            mapper.commit();
+        } catch (PersistenceException e) {
             throw new MailboxManagerException(e);
         }
     }
@@ -157,17 +161,21 @@ public class JPAMailboxManager implements MailboxManager {
         synchronized (mailboxes) {
             try {
                 // TODO put this into a serilizable transaction
-                MailboxRow mr = mapper.findByName(mailboxName);
+                final MailboxMapper mapper = createMailboxMapper();
+                mapper.begin();
+                Mailbox mr = mapper.findMailboxByName(mailboxName);
                 if (mr == null) {
                     throw new MailboxNotFoundException("Mailbox not found");
                 }
                 mapper.delete(mr);
-                JPAMailbox mailbox = (JPAMailbox) mailboxes
-                        .remove(mailboxName);
+                mapper.commit();
+                final JPAMailbox mailbox = mailboxes.remove(mailboxName);
                 if (mailbox != null) {
                     mailbox.deleted(session);
                 }
-            } catch (TorqueException e) {
+            } catch (NoResultException e) {
+                throw new MailboxNotFoundException(mailboxName);
+            } catch (PersistenceException e) {
                 throw new MailboxManagerException(e);
             }
         }
@@ -181,23 +189,23 @@ public class JPAMailboxManager implements MailboxManager {
                 if (existsMailbox(to)) {
                     throw new MailboxExistsException(to);
                 }
+                
+                final MailboxMapper mapper = createMailboxMapper();                
+                mapper.begin();
                 // TODO put this into a serilizable transaction
-                final MailboxRow mr;
+                final Mailbox mailbox = mapper.findMailboxByName(from);
 
-                mr = mapper.findByName(from);
-
-                if (mr == null) {
+                if (mailbox == null) {
                     throw new MailboxNotFoundException(from);
                 }
-                mr.setName(to);
-                mapper.save(mr);
+                mailbox.setName(to);
+                mapper.save(mailbox);
 
                 mailboxes.remove(from);
 
                 // rename submailbox
-                List l = mapper.findNameLike(from + HIERARCHY_DELIMITER + "%");
-                for (Iterator iter = l.iterator(); iter.hasNext();) {
-                    MailboxRow sub = (MailboxRow) iter.next();
+                final List<Mailbox> subMailboxes = mapper.findMailboxWithNameLike(from + HIERARCHY_DELIMITER + "%");
+                for (Mailbox sub:subMailboxes) {
                     String subOrigName = sub.getName();
                     String subNewName = to
                             + subOrigName.substring(from.length());
@@ -207,8 +215,11 @@ public class JPAMailboxManager implements MailboxManager {
                             "renameMailbox sub-mailbox " + subOrigName + " to "
                                     + subNewName);
                 }
+                mapper.commit();
             }
-        } catch (TorqueException e) {
+        } catch (NoResultException e) {
+            throw new MailboxNotFoundException(from);
+        } catch (PersistenceException e) {
             throw new MailboxManagerException(e);
         }
     }
@@ -239,11 +250,11 @@ public class JPAMailboxManager implements MailboxManager {
                 .replace(localWildcard, SQL_WILDCARD_CHAR);
 
         try {
-            List mailboxRows = mapper.findNameLike(search);
-            List listResults = new ArrayList(mailboxRows.size());
-            for (Iterator iter = mailboxRows.iterator(); iter.hasNext();) {
-                final MailboxRow mailboxRow = (MailboxRow) iter.next();
-                final String name = mailboxRow.getName();
+            final MailboxMapper mapper = createMailboxMapper();
+            final List<Mailbox> mailboxes = mapper.findMailboxWithNameLike(search);
+            final List<ListResult> listResults = new ArrayList<ListResult>(mailboxes.size());
+            for (Mailbox mailbox: mailboxes) {
+                final String name = mailbox.getName();
                 if (name.startsWith(base)) {
                     final String match = name.substring(baseLength);
                     if (mailboxExpression.isExpressionMatch(match,
@@ -256,7 +267,7 @@ public class JPAMailboxManager implements MailboxManager {
                     .toArray(ListResult.EMPTY_ARRAY);
             Arrays.sort(results);
             return results;
-        } catch (TorqueException e) {
+        } catch (PersistenceException e) {
             throw new MailboxManagerException(e);
         }
 
@@ -269,10 +280,10 @@ public class JPAMailboxManager implements MailboxManager {
 
     public boolean existsMailbox(String mailboxName)
             throws MailboxManagerException {
-        int count;
         try {
             synchronized (mailboxes) {
-                count = mapper.countOnName(mailboxName);
+                final MailboxMapper mapper = createMailboxMapper();
+                final long count = mapper.countMailboxesWithName(mailboxName);
                 if (count == 0) {
                     mailboxes.remove(mailboxName);
                     return false;
@@ -280,12 +291,11 @@ public class JPAMailboxManager implements MailboxManager {
                     if (count == 1) {
                         return true;
                     } else {
-                        throw new MailboxManagerException("found " + count
-                                + " mailboxes");
+                        throw new MailboxManagerException("Expected one mailbox but found " + count + " mailboxes");
                     }
                 }
             }
-        } catch (TorqueException e) {
+        } catch (PersistenceException e) {
             throw new MailboxManagerException(e);
         }
     }
@@ -294,19 +304,19 @@ public class JPAMailboxManager implements MailboxManager {
 
     public void deleteEverything() throws MailboxManagerException {
         try {
+            final MailboxMapper mapper = createMailboxMapper();
+            mapper.begin();
             mapper.deleteAll();
+            mapper.commit();
             mailboxes.clear();
-        } catch (TorqueException e) {
+        } catch (PersistenceException e) {
             throw new MailboxManagerException(e);
         }
     }
 
-
-    protected Log getLog() {
-        if (log == null) {
-            log = new SimpleLog("TorqueMailboxManager");
-        }
-        return log;
+    private MailboxMapper createMailboxMapper() {
+        final MailboxMapper mapper = new OpenJPAMailboxMapper(entityManagerFactory.createEntityManager());
+        return mapper;
     }
 
     public MailboxSession createSession() {

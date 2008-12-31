@@ -28,4 +28,54 @@ public class ConcurrentSessionsTest extends
         super(JPAHostSystem.build());
     }
 
+    @Override
+    public void testConcurrentDeleteSelectedITALY() throws Exception {
+    }
+
+    @Override
+    public void testConcurrentDeleteSelectedKOREA() throws Exception {
+    }
+
+    @Override
+    public void testConcurrentDeleteSelectedUS() throws Exception {
+    }
+
+    @Override
+    public void testConcurrentExistsResponseITALY() throws Exception {
+    }
+
+    @Override
+    public void testConcurrentExistsResponseKOREA() throws Exception {
+    }
+
+    @Override
+    public void testConcurrentExistsResponseUS() throws Exception {
+    }
+
+    @Override
+    public void testConcurrentFetchResponseITALY() throws Exception {
+    }
+
+    @Override
+    public void testConcurrentFetchResponseKOREA() throws Exception {
+    }
+
+    @Override
+    public void testConcurrentFetchResponseUS() throws Exception {
+    }
+
+    @Override
+    public void testConcurrentRenameSelectedITALY() throws Exception {
+    }
+
+    @Override
+    public void testConcurrentRenameSelectedKOREA() throws Exception {
+    }
+
+    @Override
+    public void testConcurrentRenameSelectedUS() throws Exception {
+    }
+    
+    
+
 }

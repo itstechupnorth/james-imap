@@ -197,7 +197,7 @@ public class PartContentBuilderComplexMultipartTest extends TestCase {
             throws Exception {
         List headers = headers(position);
         assertEquals(1, headers.size());
-        Header header = (Header) headers.get(0);
+        ResultHeader header = (ResultHeader) headers.get(0);
         assertEquals(CONTENT_TYPE, header.getName());
         assertEquals(contentType, header.getValue());
     }

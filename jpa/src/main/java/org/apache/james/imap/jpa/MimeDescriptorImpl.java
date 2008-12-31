@@ -36,8 +36,7 @@ import org.apache.james.mime4j.parser.RecursionMode;
 
 public class MimeDescriptorImpl implements MessageResult.MimeDescriptor {
 
-    public static MimeDescriptorImpl build(final InputStream stream)
-            throws IOException {
+    public static MimeDescriptorImpl build(final InputStream stream) throws IOException {
         final MimeTokenStream parser = MimeTokenStream
                 .createMaximalDescriptorStream();
         parser.parse(stream);
@@ -53,7 +52,7 @@ public class MimeDescriptorImpl implements MessageResult.MimeDescriptor {
                 && next != MimeTokenStream.T_END_OF_STREAM
                 && next != MimeTokenStream.T_START_MULTIPART) {
             if (next == MimeTokenStream.T_FIELD) {
-                headers.add(new Header(parser.getFieldName(), parser
+                headers.add(new ResultHeader(parser.getFieldName(), parser
                         .getFieldValue().trim()));
             }
             next = parser.next();
@@ -140,25 +139,25 @@ public class MimeDescriptorImpl implements MessageResult.MimeDescriptor {
         for (final Iterator it = valuesByName.keySet().iterator(); it.hasNext();) {
             final String name = (String) it.next();
             final String value = (String) valuesByName.get(name);
-            contentTypeParameters.add(new Header(name, value));
+            contentTypeParameters.add(new ResultHeader(name, value));
         }
         final String codeset = descriptor.getCharset();
-        Header header;
+        ResultHeader header;
         if (codeset == null) {
             if ("TEXT".equals(type)) {
-                header = new Header("charset", "us-ascii");
+                header = new ResultHeader("charset", "us-ascii");
             } else {
                 header = null;
             }
         } else {
-            header = new Header("charset", codeset);
+            header = new ResultHeader("charset", codeset);
         }
         if (header != null) {
             contentTypeParameters.add(header);
         }
         final String boundary = descriptor.getBoundary();
         if (boundary != null) {
-            contentTypeParameters.add(new Header("boundary", boundary));
+            contentTypeParameters.add(new ResultHeader("boundary", boundary));
         }
         final List languages = descriptor.getContentLanguage();
         final String disposition = descriptor.getContentDispositionType();

@@ -205,7 +205,7 @@ public class PartContentBuilder {
                     case MimeTokenStream.T_FIELD:
                         final String fieldValue = parser.getFieldValue().trim();
                         final String fieldName = parser.getFieldName();
-                        Header header = new Header(fieldName, fieldValue);
+                        ResultHeader header = new ResultHeader(fieldName, fieldValue);
                         results.add(header);
                         break;
                 }
@@ -233,7 +233,7 @@ public class PartContentBuilder {
                             final String fieldValue = parser.getFieldValue()
                                     .trim();
                             final String fieldName = parser.getFieldName();
-                            Header header = new Header(fieldName, fieldValue);
+                            ResultHeader header = new ResultHeader(fieldName, fieldValue);
                             results.add(header);
                             break;
                     }

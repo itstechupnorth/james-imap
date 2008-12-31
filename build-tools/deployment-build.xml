@@ -35,7 +35,8 @@ Template build for deployment modules
            </path>
            <path id='classpath.test'>
                <path refid='classpath.main'/>   
-               <path refid='classpath.base.test'/>   
+               <path refid='classpath.base.test'/>  
+           	   <path refid='classpath.jpa'/>
                <path refid='classpath.test.dependencies.functions'/> 
            </path>   
            <path id='classpath.test.runtime'>

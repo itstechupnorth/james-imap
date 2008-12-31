@@ -113,7 +113,7 @@ public abstract class ImapHostSystem implements HostSystem {
             out = new ByteBufferOutputStream(continuation);
             in = new ByteBufferInputStream();
             handler = new ImapRequestHandler(decoder, processor, encoder);
-            handler.setLog(new FakeLogger());
+            handler.setLog(new SilentLog());
             session = new ImapSessionImpl();
         }
 

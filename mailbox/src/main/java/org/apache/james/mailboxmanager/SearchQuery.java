@@ -416,13 +416,13 @@ public class SearchQuery {
 
     private final Set recentMessageUids = new HashSet();
 
-    private final List criterias = new ArrayList();
+    private final List<Criterion> criterias = new ArrayList<Criterion>();
 
     public void andCriteria(Criterion crit) {
         criterias.add(crit);
     }
 
-    public List getCriterias() {
+    public List<Criterion> getCriterias() {
         return criterias;
     }
 
@@ -437,7 +437,7 @@ public class SearchQuery {
         return recentMessageUids;
     }
 
-    // @Override
+    @Override
     public String toString() {
         return "Search:" + criterias.toString();
     }
@@ -445,7 +445,7 @@ public class SearchQuery {
     /**
      * @see java.lang.Object#hashCode()
      */
-    // @Override
+    @Override
     public int hashCode() {
         final int PRIME = 31;
         int result = 1;
@@ -457,7 +457,7 @@ public class SearchQuery {
     /**
      * @see java.lang.Object#equals(java.lang.Object)
      */
-    // @Override
+    @Override
     public boolean equals(Object obj) {
         if (this == obj)
             return true;

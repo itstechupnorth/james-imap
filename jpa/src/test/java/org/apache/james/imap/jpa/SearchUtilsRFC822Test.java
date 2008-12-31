@@ -26,9 +26,7 @@ import java.util.Collection;
 import junit.framework.TestCase;
 
 import org.apache.james.api.imap.ImapConstants;
-import org.apache.james.imap.jpa.om.MessageBody;
-import org.apache.james.imap.jpa.om.MessageHeader;
-import org.apache.james.imap.jpa.om.MessageRow;
+import org.apache.james.imap.jpa.om.Message;
 import org.apache.james.mailboxmanager.SearchQuery;
 
 public class SearchUtilsRFC822Test extends TestCase {
@@ -45,7 +43,7 @@ public class SearchUtilsRFC822Test extends TestCase {
             + "It has " + RHUBARD + ".\r\n" + "It has " + CUSTARD + ".\r\n"
             + "It needs naught else.\r\n";
 
-    MessageRow row;
+    Message row;
 
     MessageSearches searches;
 
@@ -54,17 +52,13 @@ public class SearchUtilsRFC822Test extends TestCase {
     protected void setUp() throws Exception {
         super.setUp();
         recent = new ArrayList();
-        row = new MessageRow();
-        row.addMessageHeader(new MessageHeader(ImapConstants.RFC822_FROM,
-                "Alex <alex@example.org"));
-        row.addMessageHeader(new MessageHeader(ImapConstants.RFC822_TO,
-                FROM_ADDRESS));
-        row.addMessageHeader(new MessageHeader(ImapConstants.RFC822_SUBJECT,
-                "A " + SUBJECT_PART + " Multipart Mail"));
-        row.addMessageHeader(new MessageHeader(ImapConstants.RFC822_DATE,
-                "Thu, 14 Feb 2008 12:00:00 +0000 (GMT)"));
-        row.addMessageBody(new MessageBody(Charset.forName("us-ascii").encode(
-                BODY).array()));
+        MessageBuilder builder = new MessageBuilder();
+        builder.header(ImapConstants.RFC822_FROM, "Alex <alex@example.org");
+        builder.header(ImapConstants.RFC822_TO, FROM_ADDRESS);
+        builder.header(ImapConstants.RFC822_SUBJECT, "A " + SUBJECT_PART + " Multipart Mail");
+        builder.header(ImapConstants.RFC822_DATE, "Thu, 14 Feb 2008 12:00:00 +0000 (GMT)");
+        builder.body = Charset.forName("us-ascii").encode(BODY).array();
+        row = builder.build();
         searches = new MessageSearches();
     }
 

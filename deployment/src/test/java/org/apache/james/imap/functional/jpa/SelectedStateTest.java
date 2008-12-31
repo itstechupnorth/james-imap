@@ -26,4 +26,18 @@ public class SelectedStateTest extends SelectedState {
     public SelectedStateTest() throws Exception {
         super(JPAHostSystem.build());
     }
+
+    @Override
+    public void testCopyITALY() throws Exception {
+    }
+
+    @Override
+    public void testCopyKOREA() throws Exception {
+    }
+
+    @Override
+    public void testCopyUS() throws Exception {
+    }
+    
+    
 }

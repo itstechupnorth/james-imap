@@ -21,7 +21,7 @@ package org.apache.james.imap.functional;
 
 import org.apache.commons.logging.Log;
 
-final class FakeLogger implements Log {
+final class SilentLog implements Log {
     public void debug(Object arg0) {
     }
 

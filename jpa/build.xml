@@ -27,7 +27,7 @@
            depends='check-environment, master-module-template.set-classpath'>
            <path id='classpath.main'>
                <path refid='classpath.base'/>
-	       <path refid='classpath.jpa'/>
+	       	   <path refid='classpath.jpa'/>
                <path refid='classpath.dependencies.libraries'/>   
            </path>
            <path id='classpath.test'>
@@ -40,4 +40,31 @@
            </path>   
     </target>  
 	
+    <target 
+        name='build'
+        description='Builds without cleaning'
+        depends='check-environment, conditional-clean, set-classpath'
+        unless='dont.build.module'>
+          <echo>Building ${name.module}</echo>   
+          <CompileMainSource/>  
+            
+          <taskdef 
+                name="openjpac" 
+                classname="org.apache.openjpa.ant.PCEnhancerTask"
+                classpathref="classpath.main"/>
+         
+          <openjpac>
+            <fileset dir="${dir.src.java}">
+              <include name="org/apache/james/imap/jpa/om/*.java" />
+            </fileset>
+            <classpath>
+                <path refid='classpath.main'/>
+                <pathelement location="${dir.src.java}"/>   
+                <pathelement location="${dir.build.bin}"/>
+            </classpath>   
+            <config
+               log="TOOL=TRACE"   
+               metaDataFactory="jpa(Types=org.apache.james.imap.jpa.om.Header;org.apache.james.imap.jpa.om.Mailbox;org.apache.james.imap.jpa.om.Message)"/>   
+          </openjpac>
+    </target> 
 </project>
