@@ -24,7 +24,7 @@ import org.apache.james.api.imap.display.HumanReadableTextKey;
 /**
  * Indicates exception during subscription processing.
  */
-public class SubscriptionException extends Exception {
+public class SubscriptionException extends MailboxException {
 
     private static final long serialVersionUID = -2057022968413471837L;
 

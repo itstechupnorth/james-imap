@@ -23,26 +23,27 @@ import javax.mail.MessagingException;
 
 public class MailboxException extends MessagingException {
 
-    private static final long serialVersionUID = -7034955921835169361L;
+    private static final long serialVersionUID = -4076702573622808863L;
 
-    private Exception cause;
-
-    private String message;
-
-    public MailboxException(Exception e) {
-        cause = e;
-        message = "MailboxException caused by " + cause;
+    public MailboxException(final Exception cause) {
+        this(cause.getMessage(), cause);
+    }
+    
+    public MailboxException(final Throwable cause) {
+        this(cause.getMessage(), cause);
+    }
+    
+    public MailboxException(final String message, final Throwable cause) {
+        super(message);
+        initCause(cause);
+    }
+    
+    public MailboxException(final String message, final Exception cause) {
+        super(message, cause);
+        initCause(cause);
     }
 
-    public MailboxException(String string) {
-        message = string;
-    }
-
-    public Throwable getCause() {
-        return cause;
-    }
-
-    public String getMessage() {
-        return message;
+    public MailboxException(String message) {
+        super(message);
     }
 }
