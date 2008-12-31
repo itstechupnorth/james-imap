@@ -19,19 +19,17 @@
 
 package org.apache.james.imap.jpa;
 
-import java.util.Collection;
+/**
+ * Authenticates user credentials.
+ */
+public interface Authenticator {
 
-import org.apache.james.imap.mailbox.SubscriptionException;
-
-public interface UserManager {
-
-    public boolean isAuthentic(String userid, String passwd);
-
-    public void subscribe(String user, String mailbox)
-            throws SubscriptionException;
-
-    public Collection subscriptions(String user) throws SubscriptionException;
-
-    public void unsubscribe(String user, String mailbox)
-            throws SubscriptionException;
+    /**
+     * Is the given user authentic?
+     * @param userid not null
+     * @param passwd not null
+     * @return true when the user is authentic,
+     * false otherwise
+     */
+    public boolean isAuthentic(String userid, CharSequence passwd);
 }

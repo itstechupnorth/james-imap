@@ -17,40 +17,40 @@
  * under the License.                                           *
  ****************************************************************/
 
-package org.apache.james.imap.functional.jpa;
+package org.apache.james.imap.jpa;
 
 import java.util.Collection;
-import java.util.HashSet;
 
-public class UserDetails {
-    private final String userName;
+import org.apache.james.imap.mailbox.SubscriptionException;
 
-    private String password;
+/**
+ * Subscribes users.
+ */
+public interface Subscriber {
+    
+    /**
+     * Subscribes the named user to the given mailbox.
+     * @param user not null
+     * @param mailbox not null
+     * @throws SubscriptionException when subscription fails
+     */
+    public void subscribe(String user, String mailbox)
+            throws SubscriptionException;
 
-    private final Collection subscriptions;
+    /**
+     * Finds all subscriptions for the given user.
+     * @param user not null
+     * @return not null
+     * @throws SubscriptionException when subscriptions cannot be read
+     */
+    public Collection<String> subscriptions(String user) throws SubscriptionException;
 
-    public UserDetails(final String userName) {
-        this.userName = userName;
-        this.subscriptions = new HashSet();
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public Collection getSubscriptions() {
-        return subscriptions;
-    }
-
-    public void addSubscription(String subscription) {
-        this.subscriptions.add(subscription);
-    }
-
-    public void removeSubscription(String mailbox) {
-        this.subscriptions.remove(mailbox);
-    }
+    /**
+     * Unsubscribes the given user from the given mailbox.
+     * @param user not null
+     * @param mailbox not null
+     * @throws SubscriptionException when subscriptions cannot be read
+     */
+    public void unsubscribe(String user, String mailbox)
+            throws SubscriptionException;
 }

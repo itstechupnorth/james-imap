@@ -55,13 +55,16 @@ public class JPAMailboxManager extends AbstractLogEnabled implements MailboxMana
 
     private final Map<String, JPAMailbox> mailboxes;
 
-    private final UserManager userManager;
+    private final Authenticator authenticator;
+    
+    private final Subscriber subscriber;
     
     private final EntityManagerFactory entityManagerFactory;
 
-    public JPAMailboxManager(final UserManager userManager, final EntityManagerFactory entityManagerFactory) {
+    public JPAMailboxManager(final Authenticator authenticator, final Subscriber subscriber, final EntityManagerFactory entityManagerFactory) {
         mailboxes = new HashMap<String, JPAMailbox>();
-        this.userManager = userManager;
+        this.authenticator = authenticator;
+        this.subscriber = subscriber;
         this.entityManagerFactory = entityManagerFactory;
     }
 
@@ -333,21 +336,21 @@ public class JPAMailboxManager extends AbstractLogEnabled implements MailboxMana
     }
 
     public boolean isAuthentic(String userid, String passwd) {
-        return userManager.isAuthentic(userid, passwd);
+        return authenticator.isAuthentic(userid, passwd);
     }
 
     public void subscribe(String user, String mailbox)
             throws SubscriptionException {
-        userManager.subscribe(user, mailbox);
+        subscriber.subscribe(user, mailbox);
     }
 
     public Collection subscriptions(String user) throws SubscriptionException {
-        return userManager.subscriptions(user);
+        return subscriber.subscriptions(user);
     }
 
     public void unsubscribe(String user, String mailbox)
             throws SubscriptionException {
-        userManager.unsubscribe(user, mailbox);
+        subscriber.unsubscribe(user, mailbox);
     }
 
 }

@@ -17,48 +17,52 @@
  * under the License.                                           *
  ****************************************************************/
 
-package org.apache.james.imap.functional.jpa;
+package org.apache.james.imap.functional.jpa.user;
 
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.james.imap.jpa.UserManager;
+import org.apache.james.imap.jpa.Authenticator;
+import org.apache.james.imap.jpa.Subscriber;
 import org.apache.james.imap.mailbox.SubscriptionException;
 
-public class SimpleUserManager implements UserManager {
+/**
+ * Stores users in memory.
+ */
+public class InMemoryUserManager implements Authenticator, Subscriber {
 
-    private final Map users;
+    private final Map<String, User> users;
 
-    public SimpleUserManager() {
-        this.users = new HashMap();
+    public InMemoryUserManager() {
+        this.users = new HashMap<String, User>();
     }
 
-    public boolean isAuthentic(String userid, String passwd) {
-        UserDetails user = (UserDetails) users.get(userid);
+    public boolean isAuthentic(String userid, CharSequence password) {
+        User user = (User) users.get(userid);
         final boolean result;
         if (user == null) {
             result = false;
         } else {
-            result = (passwd.equals(user.getPassword()));
+            result = user.isPassword(password);
         }
         return result;
     }
 
     public void subscribe(String userid, String mailbox)
             throws SubscriptionException {
-        UserDetails user = (UserDetails) users.get(userid);
+        User user = (User) users.get(userid);
         if (user == null) {
-            user = new UserDetails(userid);
+            user = new User(userid);
             users.put(userid, user);
         }
         user.addSubscription(mailbox);
     }
 
-    public Collection subscriptions(String userid) throws SubscriptionException {
-        UserDetails user = (UserDetails) users.get(userid);
+    public Collection<String> subscriptions(String userid) throws SubscriptionException {
+        User user = (User) users.get(userid);
         if (user == null) {
-            user = new UserDetails(userid);
+            user = new User(userid);
             users.put(userid, user);
         }
         return user.getSubscriptions();
@@ -66,18 +70,18 @@ public class SimpleUserManager implements UserManager {
 
     public void unsubscribe(String userid, String mailbox)
             throws SubscriptionException {
-        UserDetails user = (UserDetails) users.get(userid);
+        User user = (User) users.get(userid);
         if (user == null) {
-            user = new UserDetails(userid);
+            user = new User(userid);
             users.put(userid, user);
         }
         user.removeSubscription(mailbox);
     }
 
-    public void addUser(String userid, String password) {
-        UserDetails user = (UserDetails) users.get(userid);
+    public void addUser(String userid, CharSequence password) {
+        User user = (User) users.get(userid);
         if (user == null) {
-            user = new UserDetails(userid);
+            user = new User(userid);
             users.put(userid, user);
         }
         user.setPassword(password);
