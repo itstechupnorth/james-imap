@@ -30,6 +30,7 @@ import org.apache.james.imap.functional.ImapHostSystem;
 import org.apache.james.imap.functional.SimpleMailboxManagerProvider;
 import org.apache.james.imap.functional.jpa.user.InMemoryUserManager;
 import org.apache.james.imap.jpa.JPAMailboxManager;
+import org.apache.james.imap.jpa.SubscriptionManager;
 import org.apache.james.imap.main.DefaultImapDecoderFactory;
 import org.apache.james.imap.processor.main.DefaultImapProcessorFactory;
 import org.apache.james.test.functional.HostSystem;
@@ -54,11 +55,13 @@ public class JPAHostSystem extends ImapHostSystem {
         properties.put("openjpa.Log", "JDBC=WARN, SQL=WARN, Runtime=WARN");
         properties.put("openjpa.ConnectionFactoryProperties", "PrettyPrint=true, PrettyPrintLineLength=72");
         properties.put("openjpa.jdbc.SynchronizeMappings", "buildSchema(ForeignKeys=true)");
-        properties.put("openjpa.MetaDataFactory", "jpa(Types=org.apache.james.imap.jpa.mail.model.Header;org.apache.james.imap.jpa.mail.model.Mailbox;org.apache.james.imap.jpa.mail.model.Message)");
+        properties.put("openjpa.MetaDataFactory", "jpa(Types=org.apache.james.imap.jpa.mail.model.Header;" +
+                "org.apache.james.imap.jpa.mail.model.Mailbox;org.apache.james.imap.jpa.mail.model.Message;" +
+                "org.apache.james.imap.jpa.user.model.Subscription)");
         
         userManager = new InMemoryUserManager();
         final EntityManagerFactory entityManagerFactory = OpenJPAPersistence.getEntityManagerFactory(properties);
-        mailboxManager = new JPAMailboxManager(userManager, userManager, entityManagerFactory);
+        mailboxManager = new JPAMailboxManager(userManager, new SubscriptionManager(entityManagerFactory), entityManagerFactory);
         
         SimpleMailboxManagerProvider provider = new SimpleMailboxManagerProvider();
         final DefaultImapProcessorFactory defaultImapProcessorFactory = new DefaultImapProcessorFactory();

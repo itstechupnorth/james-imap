@@ -48,17 +48,14 @@ import org.apache.james.imap.mailbox.util.ListResultImpl;
 
 public class JPAMailboxManager extends AbstractLogEnabled implements MailboxManager {
 
-    
     private static final char SQL_WILDCARD_CHAR = '%';
 
     private final static Random random = new Random();
 
     private final Map<String, JPAMailbox> mailboxes;
 
-    private final Authenticator authenticator;
-    
+    private final Authenticator authenticator;    
     private final Subscriber subscriber;
-    
     private final EntityManagerFactory entityManagerFactory;
 
     public JPAMailboxManager(final Authenticator authenticator, final Subscriber subscriber, final EntityManagerFactory entityManagerFactory) {

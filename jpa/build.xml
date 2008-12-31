@@ -64,7 +64,7 @@
             </classpath>   
             <config
                log="TOOL=TRACE"   
-               metaDataFactory="jpa(Types=org.apache.james.imap.jpa.mail.model.Header;org.apache.james.imap.jpa.mail.model.Mailbox;org.apache.james.imap.jpa.mail.model.Message)"/>   
+               metaDataFactory="jpa(Types=org.apache.james.imap.jpa.mail.model.Header;org.apache.james.imap.jpa.mail.model.Mailbox;org.apache.james.imap.jpa.mail.model.Message;org.apache.james.imap.jpa.user.model.Subscription)"/>   
           </openjpac>
     </target> 
 </project>
