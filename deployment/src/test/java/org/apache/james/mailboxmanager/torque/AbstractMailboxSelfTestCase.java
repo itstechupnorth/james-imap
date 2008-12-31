@@ -30,14 +30,14 @@ import javax.mail.internet.MimeMessage;
 import junit.framework.TestCase;
 
 import org.apache.commons.collections.IteratorUtils;
-import org.apache.james.mailboxmanager.MailboxManagerException;
-import org.apache.james.mailboxmanager.MailboxSession;
-import org.apache.james.mailboxmanager.MessageResult;
-import org.apache.james.mailboxmanager.impl.FetchGroupImpl;
-import org.apache.james.mailboxmanager.impl.MailboxListenerCollector;
-import org.apache.james.mailboxmanager.impl.MessageRangeImpl;
-import org.apache.james.mailboxmanager.mailbox.Mailbox;
-import org.apache.james.mailboxmanager.manager.MailboxManager;
+import org.apache.james.imap.mailbox.Mailbox;
+import org.apache.james.imap.mailbox.MailboxException;
+import org.apache.james.imap.mailbox.MailboxManager;
+import org.apache.james.imap.mailbox.MailboxSession;
+import org.apache.james.imap.mailbox.MessageResult;
+import org.apache.james.imap.mailbox.util.FetchGroupImpl;
+import org.apache.james.imap.mailbox.util.MailboxListenerCollector;
+import org.apache.james.imap.mailbox.util.MessageRangeImpl;
 
 public abstract class AbstractMailboxSelfTestCase extends TestCase {
 
@@ -61,7 +61,7 @@ public abstract class AbstractMailboxSelfTestCase extends TestCase {
         assertNotNull(mailbox);
     }
 
-    public void testGetFirstUnseen() throws MailboxManagerException,
+    public void testGetFirstUnseen() throws MailboxException,
             MessagingException {
         assertNotNull(mailbox);
         for (int i = 0; i < 5; i++) {

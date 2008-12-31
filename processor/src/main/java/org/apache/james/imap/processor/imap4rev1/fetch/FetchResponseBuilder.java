@@ -36,16 +36,16 @@ import org.apache.james.api.imap.message.BodyFetchElement;
 import org.apache.james.api.imap.message.FetchData;
 import org.apache.james.api.imap.process.ImapSession;
 import org.apache.james.api.imap.process.SelectedImapMailbox;
+import org.apache.james.imap.mailbox.Headers;
+import org.apache.james.imap.mailbox.Mailbox;
+import org.apache.james.imap.mailbox.MailboxException;
+import org.apache.james.imap.mailbox.MailboxSession;
+import org.apache.james.imap.mailbox.MessageResult;
+import org.apache.james.imap.mailbox.util.FetchGroupImpl;
+import org.apache.james.imap.mailbox.util.MessageRangeImpl;
+import org.apache.james.imap.mailbox.util.MessageResultUtils;
 import org.apache.james.imap.message.response.imap4rev1.FetchResponse;
 import org.apache.james.imap.processor.base.ImapSessionUtils;
-import org.apache.james.mailboxmanager.Headers;
-import org.apache.james.mailboxmanager.MailboxManagerException;
-import org.apache.james.mailboxmanager.MailboxSession;
-import org.apache.james.mailboxmanager.MessageResult;
-import org.apache.james.mailboxmanager.impl.FetchGroupImpl;
-import org.apache.james.mailboxmanager.impl.MessageRangeImpl;
-import org.apache.james.mailboxmanager.mailbox.Mailbox;
-import org.apache.james.mailboxmanager.util.MessageResultUtils;
 import org.apache.james.mime4j.field.address.parser.ParseException;
 
 final class FetchResponseBuilder {
@@ -280,7 +280,7 @@ final class FetchResponseBuilder {
 
     private FetchResponse.BodyElement text(final MessageResult messageResult,
             String name, final int[] path, final boolean isBase)
-            throws MailboxManagerException {
+            throws MailboxException {
         final FetchResponse.BodyElement result;
         final MessageResult.Content body;
         if (isBase) {
@@ -305,7 +305,7 @@ final class FetchResponseBuilder {
 
     private FetchResponse.BodyElement headers(
             final MessageResult messageResult, String name, final int[] path,
-            final boolean isBase) throws MailboxManagerException,
+            final boolean isBase) throws MailboxException,
             MessagingException {
         final FetchResponse.BodyElement result;
         final Iterator headers = getHeaders(messageResult, path, isBase);
@@ -317,7 +317,7 @@ final class FetchResponseBuilder {
     private FetchResponse.BodyElement fieldsNot(
             final MessageResult messageResult, String name, final int[] path,
             Collection names, final boolean isBase)
-            throws MailboxManagerException, MessagingException {
+            throws MailboxException, MessagingException {
         final FetchResponse.BodyElement result;
 
         final Iterator headers = getHeaders(messageResult, path, isBase);
@@ -329,7 +329,7 @@ final class FetchResponseBuilder {
 
     private FetchResponse.BodyElement fields(final MessageResult messageResult,
             String name, final int[] path, Collection names,
-            final boolean isBase) throws MailboxManagerException,
+            final boolean isBase) throws MailboxException,
             MessagingException {
         final FetchResponse.BodyElement result;
         final Iterator headers = getHeaders(messageResult, path, isBase);
@@ -340,7 +340,7 @@ final class FetchResponseBuilder {
 
     private Iterator getHeaders(final MessageResult messageResult,
             final int[] path, final boolean isBase)
-            throws MailboxManagerException {
+            throws MailboxException {
         final Iterator headers;
         if (isBase) {
             headers = messageResult.headers();

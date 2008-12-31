@@ -25,7 +25,11 @@ import javax.mail.Flags;
 
 import junit.framework.TestCase;
 
-import org.apache.james.mailboxmanager.util.UidRange;
+import org.apache.james.imap.mailbox.util.MailboxListenerCollector;
+import org.apache.james.imap.mailbox.util.MessageFlags;
+import org.apache.james.imap.mailbox.util.MessageResultImpl;
+import org.apache.james.imap.mailbox.util.UidChangeTracker;
+import org.apache.james.imap.mailbox.util.UidRange;
 
 public class UidChangeTrackerTest extends TestCase {
 

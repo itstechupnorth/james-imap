@@ -19,7 +19,7 @@
 
 package org.apache.james.imap.jpa;
 
-import org.apache.james.mailboxmanager.MailboxSession;
+import org.apache.james.imap.mailbox.MailboxSession;
 
 /**
  * Describes a mailbox session.

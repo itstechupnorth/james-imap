@@ -34,8 +34,8 @@ import org.apache.james.api.imap.message.response.imap4rev1.StatusResponse;
 import org.apache.james.api.imap.message.response.imap4rev1.StatusResponseFactory;
 import org.apache.james.api.imap.process.ImapProcessor;
 import org.apache.james.api.imap.process.ImapSession;
-import org.apache.james.mailboxmanager.MailboxExistsException;
-import org.apache.james.mailboxmanager.MailboxNotFoundException;
+import org.apache.james.imap.mailbox.MailboxExistsException;
+import org.apache.james.imap.mailbox.MailboxNotFoundException;
 
 abstract public class AbstractImapRequestProcessor extends
         AbstractChainedImapProcessor implements ImapConstants {

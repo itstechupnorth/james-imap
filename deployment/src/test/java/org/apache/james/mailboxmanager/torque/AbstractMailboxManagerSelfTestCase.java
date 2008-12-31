@@ -25,11 +25,11 @@ import java.util.List;
 
 import junit.framework.TestCase;
 
-import org.apache.james.mailboxmanager.ListResult;
-import org.apache.james.mailboxmanager.MailboxManagerException;
-import org.apache.james.mailboxmanager.manager.MailboxExpression;
-import org.apache.james.mailboxmanager.manager.MailboxManager;
-import org.apache.james.mailboxmanager.manager.MailboxManagerProvider;
+import org.apache.james.imap.mailbox.ListResult;
+import org.apache.james.imap.mailbox.MailboxException;
+import org.apache.james.imap.mailbox.MailboxExpression;
+import org.apache.james.imap.mailbox.MailboxManager;
+import org.apache.james.imap.mailbox.MailboxManagerProvider;
 
 public abstract class AbstractMailboxManagerSelfTestCase extends TestCase {
 
@@ -37,7 +37,7 @@ public abstract class AbstractMailboxManagerSelfTestCase extends TestCase {
 
     protected MailboxManagerProvider mailboxManagerProvider;
 
-    public void testCreateList() throws MailboxManagerException {
+    public void testCreateList() throws MailboxException {
         ListResult[] listResult;
         listResult = mailboxManager.list(new MailboxExpression("", "*", '*',
                 '%'));
@@ -60,7 +60,7 @@ public abstract class AbstractMailboxManagerSelfTestCase extends TestCase {
         }
     }
 
-    public void testListOne() throws MailboxManagerException {
+    public void testListOne() throws MailboxException {
         mailboxManager.createMailbox("test1");
         mailboxManager.createMailbox("INBOX");
         mailboxManager.createMailbox("INBOX2");

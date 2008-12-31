@@ -30,12 +30,12 @@ import java.util.Map;
 import javax.mail.MessagingException;
 
 import org.apache.james.api.imap.ImapConstants;
+import org.apache.james.imap.mailbox.MailboxException;
+import org.apache.james.imap.mailbox.MessageResult;
+import org.apache.james.imap.mailbox.MessageResult.MimeDescriptor;
 import org.apache.james.imap.message.response.imap4rev1.FetchResponse;
 import org.apache.james.imap.message.response.imap4rev1.FetchResponse.Envelope;
 import org.apache.james.imap.message.response.imap4rev1.FetchResponse.Structure;
-import org.apache.james.mailboxmanager.MailboxManagerException;
-import org.apache.james.mailboxmanager.MessageResult;
-import org.apache.james.mailboxmanager.MessageResult.MimeDescriptor;
 import org.apache.james.mime4j.field.address.parser.ParseException;
 
 final class MimeDescriptorStructure implements FetchResponse.Structure {
@@ -99,7 +99,7 @@ final class MimeDescriptorStructure implements FetchResponse.Structure {
     }
 
     private static String[] createParameters(MimeDescriptor descriptor)
-            throws MailboxManagerException {
+            throws MailboxException {
         final List results = new ArrayList();
         // TODO: consider revising this design
         for (Iterator it = descriptor.contentTypeParameters(); it.hasNext();) {

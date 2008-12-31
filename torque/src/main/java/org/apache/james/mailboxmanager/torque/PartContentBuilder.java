@@ -25,7 +25,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.james.mailboxmanager.MessageResult.Content;
+import org.apache.james.imap.mailbox.MessageResult.Content;
 import org.apache.james.mime4j.MimeException;
 import org.apache.james.mime4j.parser.MimeTokenStream;
 

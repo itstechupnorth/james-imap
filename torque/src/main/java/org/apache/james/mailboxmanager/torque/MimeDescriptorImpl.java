@@ -27,8 +27,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.james.mailboxmanager.MessageResult;
-import org.apache.james.mailboxmanager.MessageResult.MimeDescriptor;
+import org.apache.james.imap.mailbox.MessageResult;
+import org.apache.james.imap.mailbox.MessageResult.MimeDescriptor;
 import org.apache.james.mime4j.descriptor.MaximalBodyDescriptor;
 import org.apache.james.mime4j.MimeException;
 import org.apache.james.mime4j.parser.MimeTokenStream;

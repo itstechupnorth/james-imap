@@ -31,15 +31,15 @@ import org.apache.james.api.imap.message.request.ImapRequest;
 import org.apache.james.api.imap.message.response.imap4rev1.StatusResponseFactory;
 import org.apache.james.api.imap.process.ImapProcessor;
 import org.apache.james.api.imap.process.ImapSession;
+import org.apache.james.imap.mailbox.MailboxException;
+import org.apache.james.imap.mailbox.MailboxExpression;
+import org.apache.james.imap.mailbox.MailboxManager;
+import org.apache.james.imap.mailbox.MailboxManagerProvider;
+import org.apache.james.imap.mailbox.SubscriptionException;
 import org.apache.james.imap.message.request.imap4rev1.LsubRequest;
 import org.apache.james.imap.message.response.imap4rev1.server.LSubResponse;
 import org.apache.james.imap.processor.base.AbstractMailboxAwareProcessor;
 import org.apache.james.imap.processor.base.ImapSessionUtils;
-import org.apache.james.mailboxmanager.MailboxManagerException;
-import org.apache.james.mailboxmanager.manager.MailboxExpression;
-import org.apache.james.mailboxmanager.manager.MailboxManager;
-import org.apache.james.mailboxmanager.manager.MailboxManagerProvider;
-import org.apache.james.mailboxmanager.manager.SubscriptionException;
 
 public class LSubProcessor extends AbstractMailboxAwareProcessor {
 
@@ -80,7 +80,7 @@ public class LSubProcessor extends AbstractMailboxAwareProcessor {
                 displayTextKey = exceptionKey;
             }
             no(command, tag, responder, displayTextKey);
-        } catch (MailboxManagerException e) {
+        } catch (MailboxException e) {
             getLog().debug("Subscription failed", e);
             final HumanReadableTextKey displayTextKey = HumanReadableTextKey.GENERIC_LSUB_FAILURE;
             no(command, tag, responder, displayTextKey);
@@ -89,7 +89,7 @@ public class LSubProcessor extends AbstractMailboxAwareProcessor {
 
     private void listSubscriptions(ImapSession session, Responder responder,
             final String referenceName, final String mailboxPattern)
-            throws SubscriptionException, MailboxManagerException {
+            throws SubscriptionException, MailboxException {
         final String userName = ImapSessionUtils.getUserName(session);
         final MailboxManager manager = getMailboxManager(session);
         final Collection mailboxes = manager.subscriptions(userName);

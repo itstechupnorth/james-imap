@@ -35,16 +35,16 @@ import org.apache.james.api.imap.message.response.imap4rev1.StatusResponseFactor
 import org.apache.james.api.imap.process.ImapProcessor;
 import org.apache.james.api.imap.process.ImapSession;
 import org.apache.james.api.imap.process.SelectedImapMailbox;
+import org.apache.james.imap.mailbox.Mailbox;
+import org.apache.james.imap.mailbox.MailboxException;
+import org.apache.james.imap.mailbox.MailboxManager;
+import org.apache.james.imap.mailbox.MailboxManagerProvider;
+import org.apache.james.imap.mailbox.MailboxSession;
+import org.apache.james.imap.mailbox.MessageResult;
+import org.apache.james.imap.mailbox.util.FetchGroupImpl;
 import org.apache.james.imap.message.request.imap4rev1.AppendRequest;
 import org.apache.james.imap.processor.base.AbstractMailboxAwareProcessor;
 import org.apache.james.imap.processor.base.ImapSessionUtils;
-import org.apache.james.mailboxmanager.MailboxManagerException;
-import org.apache.james.mailboxmanager.MailboxSession;
-import org.apache.james.mailboxmanager.MessageResult;
-import org.apache.james.mailboxmanager.impl.FetchGroupImpl;
-import org.apache.james.mailboxmanager.mailbox.Mailbox;
-import org.apache.james.mailboxmanager.manager.MailboxManager;
-import org.apache.james.mailboxmanager.manager.MailboxManagerProvider;
 
 public class AppendProcessor extends AbstractMailboxAwareProcessor {
 
@@ -78,7 +78,7 @@ public class AppendProcessor extends AbstractMailboxAwareProcessor {
             appendToMailbox(mimeMessage, datetime, session, tag, command,
                     mailbox, responder);
 
-        } catch (MailboxManagerException mme) {
+        } catch (MailboxException mme) {
             // Mailbox API does not provide facilities for diagnosing the
             // problem
             // assume that
@@ -118,7 +118,7 @@ public class AppendProcessor extends AbstractMailboxAwareProcessor {
             }
             unsolicitedResponses(session, responder, false);
             okComplete(command, tag, responder);
-        } catch (MailboxManagerException e) {
+        } catch (MailboxException e) {
             // TODO why not TRYCREATE?
             no(command, tag, responder, e);
         } catch (MessagingException e) {

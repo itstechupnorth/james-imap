@@ -19,7 +19,7 @@
 
 package org.apache.james.mailboxmanager.manager;
 
-import org.apache.james.mailboxmanager.manager.MailboxExpression;
+import org.apache.james.imap.mailbox.MailboxExpression;
 
 import junit.framework.TestCase;
 

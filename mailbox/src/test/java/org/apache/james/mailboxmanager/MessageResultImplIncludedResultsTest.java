@@ -24,9 +24,10 @@ import java.util.Date;
 
 import javax.mail.Flags;
 
-import org.apache.james.mailboxmanager.MessageResult.FetchGroup;
-import org.apache.james.mailboxmanager.impl.MessageResultImpl;
-import org.apache.james.mailboxmanager.util.MessageResultUtils;
+import org.apache.james.imap.mailbox.MessageResult;
+import org.apache.james.imap.mailbox.MessageResult.FetchGroup;
+import org.apache.james.imap.mailbox.util.MessageResultImpl;
+import org.apache.james.imap.mailbox.util.MessageResultUtils;
 import org.jmock.MockObjectTestCase;
 
 public class MessageResultImplIncludedResultsTest extends MockObjectTestCase {

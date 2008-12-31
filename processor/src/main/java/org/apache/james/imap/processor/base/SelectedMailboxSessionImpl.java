@@ -30,20 +30,20 @@ import javax.mail.MessagingException;
 
 import org.apache.james.api.imap.AbstractLogEnabled;
 import org.apache.james.api.imap.process.SelectedImapMailbox;
+import org.apache.james.imap.mailbox.Mailbox;
+import org.apache.james.imap.mailbox.MailboxException;
+import org.apache.james.imap.mailbox.MailboxSession;
+import org.apache.james.imap.mailbox.MessageRange;
+import org.apache.james.imap.mailbox.MessageResult;
+import org.apache.james.imap.mailbox.util.FetchGroupImpl;
+import org.apache.james.imap.mailbox.util.MailboxEventAnalyser;
+import org.apache.james.imap.mailbox.util.MessageRangeImpl;
+import org.apache.james.imap.mailbox.util.UidToMsnConverter;
 import org.apache.james.imap.message.response.imap4rev1.ExistsResponse;
 import org.apache.james.imap.message.response.imap4rev1.ExpungeResponse;
 import org.apache.james.imap.message.response.imap4rev1.FetchResponse;
 import org.apache.james.imap.message.response.imap4rev1.RecentResponse;
 import org.apache.james.imap.message.response.imap4rev1.status.UntaggedNoResponse;
-import org.apache.james.mailboxmanager.MailboxManagerException;
-import org.apache.james.mailboxmanager.MailboxSession;
-import org.apache.james.mailboxmanager.MessageRange;
-import org.apache.james.mailboxmanager.MessageResult;
-import org.apache.james.mailboxmanager.impl.FetchGroupImpl;
-import org.apache.james.mailboxmanager.impl.MessageRangeImpl;
-import org.apache.james.mailboxmanager.mailbox.Mailbox;
-import org.apache.james.mailboxmanager.util.MailboxEventAnalyser;
-import org.apache.james.mailboxmanager.util.UidToMsnConverter;
 
 // TODO: deal with deleted or renamed mailboxes
 public class SelectedMailboxSessionImpl extends AbstractLogEnabled implements
@@ -64,7 +64,7 @@ public class SelectedMailboxSessionImpl extends AbstractLogEnabled implements
     private final String name;
 
     public SelectedMailboxSessionImpl(Mailbox mailbox, List uids,
-            MailboxSession mailboxSession) throws MailboxManagerException {
+            MailboxSession mailboxSession) throws MailboxException {
         this.mailbox = mailbox;
         this.mailboxSession = mailboxSession;
         recentUids = new TreeSet();
@@ -170,7 +170,7 @@ public class SelectedMailboxSessionImpl extends AbstractLogEnabled implements
 
     private void addFlagsResponses(final List responses, boolean useUid,
             final Mailbox mailbox, MessageRange messageSet)
-            throws MailboxManagerException {
+            throws MailboxException {
         final Iterator it = mailbox.getMessages(messageSet,
                 FetchGroupImpl.FLAGS, mailboxSession);
         while (it.hasNext()) {
@@ -217,7 +217,7 @@ public class SelectedMailboxSessionImpl extends AbstractLogEnabled implements
             // TODO: use factory
             ExistsResponse response = new ExistsResponse(messageCount);
             responses.add(response);
-        } catch (MailboxManagerException e) {
+        } catch (MailboxException e) {
             final String message = "Failed to retrieve exists count data";
             handleResponseException(responses, e, message);
         }

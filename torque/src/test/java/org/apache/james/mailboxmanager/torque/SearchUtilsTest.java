@@ -26,7 +26,7 @@ import java.util.Date;
 import javax.mail.Flags;
 
 import org.apache.james.api.imap.ImapConstants;
-import org.apache.james.mailboxmanager.SearchQuery;
+import org.apache.james.imap.mailbox.SearchQuery;
 import org.apache.james.mailboxmanager.torque.om.MessageFlags;
 import org.apache.james.mailboxmanager.torque.om.MessageHeader;
 import org.apache.james.mailboxmanager.torque.om.MessageRow;

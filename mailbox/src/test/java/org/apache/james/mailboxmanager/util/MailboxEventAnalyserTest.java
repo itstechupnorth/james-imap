@@ -23,7 +23,8 @@ import java.util.Iterator;
 
 import javax.mail.Flags;
 
-import org.apache.james.mailboxmanager.MailboxListener;
+import org.apache.james.imap.mailbox.MailboxListener;
+import org.apache.james.imap.mailbox.util.MailboxEventAnalyser;
 import org.apache.james.mailboxmanager.MockMailboxListenerAdded;
 import org.apache.james.mailboxmanager.MockMailboxListenerFlagsUpdate;
 import org.jmock.Mock;

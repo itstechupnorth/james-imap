@@ -32,13 +32,13 @@ import java.util.List;
 
 import javax.mail.Flags;
 
-import org.apache.james.mailboxmanager.MailboxManagerException;
-import org.apache.james.mailboxmanager.MessageResult;
-import org.apache.james.mailboxmanager.MessageResult.Content;
-import org.apache.james.mailboxmanager.MessageResult.FetchGroup;
-import org.apache.james.mailboxmanager.MessageResult.MimePath;
-import org.apache.james.mailboxmanager.impl.MessageFlags;
-import org.apache.james.mailboxmanager.impl.MessageResultImpl;
+import org.apache.james.imap.mailbox.MailboxException;
+import org.apache.james.imap.mailbox.MessageResult;
+import org.apache.james.imap.mailbox.MessageResult.Content;
+import org.apache.james.imap.mailbox.MessageResult.FetchGroup;
+import org.apache.james.imap.mailbox.MessageResult.MimePath;
+import org.apache.james.imap.mailbox.util.MessageFlags;
+import org.apache.james.imap.mailbox.util.MessageResultImpl;
 import org.apache.james.mailboxmanager.torque.om.MessageBody;
 import org.apache.james.mailboxmanager.torque.om.MessageHeader;
 import org.apache.james.mailboxmanager.torque.om.MessageRow;
@@ -124,7 +124,7 @@ public class MessageRowUtils {
 
     public static MessageResult loadMessageResult(final MessageRow messageRow,
             final FetchGroup fetchGroup) throws TorqueException,
-            MailboxManagerException {
+            MailboxException {
 
         MessageResultImpl messageResult = new MessageResultImpl();
         messageResult.setUid(messageRow.getUid());
@@ -187,7 +187,7 @@ public class MessageRowUtils {
 
     private static void addFullContent(final MessageRow messageRow,
             MessageResultImpl messageResult) throws TorqueException,
-            MailboxManagerException {
+            MailboxException {
         final List headers = messageResult.getHeaders();
         final Content content = createFullContent(messageRow, headers);
         messageResult.setFullContent(content);
@@ -207,7 +207,7 @@ public class MessageRowUtils {
 
     private static void addPartContent(final FetchGroup fetchGroup,
             MessageRow row, MessageResultImpl messageResult)
-            throws TorqueException, MailboxManagerException, IOException,
+            throws TorqueException, MailboxException, IOException,
             MimeException {
         Collection partContent = fetchGroup.getPartContentDescriptors();
         if (partContent != null) {
@@ -222,7 +222,7 @@ public class MessageRowUtils {
     private static void addPartContent(
             FetchGroup.PartContentDescriptor descriptor, MessageRow row,
             MessageResultImpl messageResult) throws TorqueException,
-            MailboxManagerException, IOException, MimeException {
+            MailboxException, IOException, MimeException {
         final MimePath mimePath = descriptor.path();
         final int content = descriptor.content();
         if ((content & MessageResult.FetchGroup.FULL_CONTENT) > 0) {
@@ -368,7 +368,7 @@ public class MessageRowUtils {
 
     private static void addFullContent(MessageRow row,
             MessageResultImpl messageResult, MimePath mimePath)
-            throws TorqueException, MailboxManagerException, IOException,
+            throws TorqueException, MailboxException, IOException,
             MimeException {
         final int[] path = path(mimePath);
         if (path == null) {

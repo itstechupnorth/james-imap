@@ -21,7 +21,7 @@ package org.apache.james.mailboxmanager.torque;
 
 import java.util.Set;
 
-import org.apache.james.mailboxmanager.MessageResult.FetchGroup;
+import org.apache.james.imap.mailbox.MessageResult.FetchGroup;
 
 /**
  * Wraps a fetch group and ORs content.

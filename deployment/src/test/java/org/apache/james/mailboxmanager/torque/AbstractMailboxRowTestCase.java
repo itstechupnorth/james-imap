@@ -19,7 +19,7 @@
 
 package org.apache.james.mailboxmanager.torque;
 
-import org.apache.james.mailboxmanager.manager.MailboxManager;
+import org.apache.james.imap.mailbox.MailboxManager;
 import org.apache.james.mailboxmanager.torque.om.MailboxRowPeer;
 import org.apache.torque.TorqueException;
 import org.apache.torque.util.Criteria;

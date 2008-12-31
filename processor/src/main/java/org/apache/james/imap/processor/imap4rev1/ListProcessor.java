@@ -27,16 +27,16 @@ import org.apache.james.api.imap.message.response.ImapResponseMessage;
 import org.apache.james.api.imap.message.response.imap4rev1.StatusResponseFactory;
 import org.apache.james.api.imap.process.ImapProcessor;
 import org.apache.james.api.imap.process.ImapSession;
+import org.apache.james.imap.mailbox.ListResult;
+import org.apache.james.imap.mailbox.MailboxException;
+import org.apache.james.imap.mailbox.MailboxExpression;
+import org.apache.james.imap.mailbox.MailboxManager;
+import org.apache.james.imap.mailbox.MailboxManagerProvider;
+import org.apache.james.imap.mailbox.util.ListResultImpl;
 import org.apache.james.imap.message.request.imap4rev1.ListRequest;
 import org.apache.james.imap.message.response.imap4rev1.server.ListResponse;
 import org.apache.james.imap.processor.base.AbstractMailboxAwareProcessor;
 import org.apache.james.imap.processor.base.ImapSessionUtils;
-import org.apache.james.mailboxmanager.ListResult;
-import org.apache.james.mailboxmanager.MailboxManagerException;
-import org.apache.james.mailboxmanager.impl.ListResultImpl;
-import org.apache.james.mailboxmanager.manager.MailboxExpression;
-import org.apache.james.mailboxmanager.manager.MailboxManager;
-import org.apache.james.mailboxmanager.manager.MailboxManagerProvider;
 
 public class ListProcessor extends AbstractMailboxAwareProcessor {
 
@@ -139,7 +139,7 @@ public class ListProcessor extends AbstractMailboxAwareProcessor {
             }
 
             okComplete(command, tag, responder);
-        } catch (MailboxManagerException e) {
+        } catch (MailboxException e) {
             no(command, tag, responder, e);
         }
     }
@@ -187,7 +187,7 @@ public class ListProcessor extends AbstractMailboxAwareProcessor {
     }
 
     protected final ListResult[] doList(ImapSession session, String base,
-            String pattern) throws MailboxManagerException {
+            String pattern) throws MailboxException {
         final MailboxManager mailboxManager = getMailboxManager(session);
         final ListResult[] result = mailboxManager.list(new MailboxExpression(
                 base, pattern, '*', '%'));

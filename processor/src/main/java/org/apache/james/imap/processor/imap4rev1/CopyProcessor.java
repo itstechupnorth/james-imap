@@ -28,16 +28,16 @@ import org.apache.james.api.imap.message.response.imap4rev1.StatusResponseFactor
 import org.apache.james.api.imap.message.response.imap4rev1.StatusResponse.ResponseCode;
 import org.apache.james.api.imap.process.ImapProcessor;
 import org.apache.james.api.imap.process.ImapSession;
+import org.apache.james.imap.mailbox.Mailbox;
+import org.apache.james.imap.mailbox.MailboxException;
+import org.apache.james.imap.mailbox.MailboxManager;
+import org.apache.james.imap.mailbox.MailboxManagerProvider;
+import org.apache.james.imap.mailbox.MailboxSession;
+import org.apache.james.imap.mailbox.MessageRange;
+import org.apache.james.imap.mailbox.util.MessageRangeImpl;
 import org.apache.james.imap.message.request.imap4rev1.CopyRequest;
 import org.apache.james.imap.processor.base.AbstractMailboxAwareProcessor;
 import org.apache.james.imap.processor.base.ImapSessionUtils;
-import org.apache.james.mailboxmanager.MailboxManagerException;
-import org.apache.james.mailboxmanager.MailboxSession;
-import org.apache.james.mailboxmanager.MessageRange;
-import org.apache.james.mailboxmanager.impl.MessageRangeImpl;
-import org.apache.james.mailboxmanager.mailbox.Mailbox;
-import org.apache.james.mailboxmanager.manager.MailboxManager;
-import org.apache.james.mailboxmanager.manager.MailboxManagerProvider;
 
 public class CopyProcessor extends AbstractMailboxAwareProcessor {
 
@@ -90,7 +90,7 @@ public class CopyProcessor extends AbstractMailboxAwareProcessor {
                 unsolicitedResponses(session, responder, useUids);
                 okComplete(command, tag, responder);
             }
-        } catch (MailboxManagerException e) {
+        } catch (MailboxException e) {
             no(command, tag, responder, e);
         }
     }

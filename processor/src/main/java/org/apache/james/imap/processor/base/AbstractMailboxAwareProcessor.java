@@ -21,10 +21,10 @@ package org.apache.james.imap.processor.base;
 import org.apache.james.api.imap.message.response.imap4rev1.StatusResponseFactory;
 import org.apache.james.api.imap.process.ImapProcessor;
 import org.apache.james.api.imap.process.ImapSession;
-import org.apache.james.mailboxmanager.MailboxManagerException;
-import org.apache.james.mailboxmanager.MailboxSession;
-import org.apache.james.mailboxmanager.manager.MailboxManager;
-import org.apache.james.mailboxmanager.manager.MailboxManagerProvider;
+import org.apache.james.imap.mailbox.MailboxException;
+import org.apache.james.imap.mailbox.MailboxManager;
+import org.apache.james.imap.mailbox.MailboxManagerProvider;
+import org.apache.james.imap.mailbox.MailboxSession;
 
 abstract public class AbstractMailboxAwareProcessor extends
         AbstractImapRequestProcessor {
@@ -39,13 +39,13 @@ abstract public class AbstractMailboxAwareProcessor extends
     }
 
     public String buildFullName(final ImapSession session, String mailboxName)
-            throws MailboxManagerException {
+            throws MailboxException {
         final String user = ImapSessionUtils.getUserName(session);
         return buildFullName(mailboxName, user);
     }
 
     private String buildFullName(String mailboxName, String user)
-            throws MailboxManagerException {
+            throws MailboxException {
         if (!mailboxName.startsWith(NAMESPACE_PREFIX)) {
             mailboxName = mailboxManagerProvider.getMailboxManager().resolve(
                     user, mailboxName);
@@ -54,7 +54,7 @@ abstract public class AbstractMailboxAwareProcessor extends
     }
 
     public MailboxManager getMailboxManager(final ImapSession session)
-            throws MailboxManagerException {
+            throws MailboxException {
         // TODO: removed badly implemented and ineffective check that mailbox
         // user matches current user
         // TODO: add check into user login methods

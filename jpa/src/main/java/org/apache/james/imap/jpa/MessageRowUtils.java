@@ -34,13 +34,13 @@ import javax.mail.Flags;
 
 import org.apache.james.imap.jpa.om.Header;
 import org.apache.james.imap.jpa.om.Message;
-import org.apache.james.mailboxmanager.MailboxManagerException;
-import org.apache.james.mailboxmanager.MessageResult;
-import org.apache.james.mailboxmanager.MessageResult.Content;
-import org.apache.james.mailboxmanager.MessageResult.FetchGroup;
-import org.apache.james.mailboxmanager.MessageResult.MimePath;
-import org.apache.james.mailboxmanager.impl.MessageFlags;
-import org.apache.james.mailboxmanager.impl.MessageResultImpl;
+import org.apache.james.imap.mailbox.MailboxException;
+import org.apache.james.imap.mailbox.MessageResult;
+import org.apache.james.imap.mailbox.MessageResult.Content;
+import org.apache.james.imap.mailbox.MessageResult.FetchGroup;
+import org.apache.james.imap.mailbox.MessageResult.MimePath;
+import org.apache.james.imap.mailbox.util.MessageFlags;
+import org.apache.james.imap.mailbox.util.MessageResultImpl;
 import org.apache.james.mime4j.MimeException;
 
 public class MessageRowUtils {
@@ -101,7 +101,7 @@ public class MessageRowUtils {
     }
 
     public static MessageResult loadMessageResult(final Message message, final FetchGroup fetchGroup) 
-                throws MailboxManagerException {
+                throws MailboxException {
 
         MessageResultImpl messageResult = new MessageResultImpl();
         messageResult.setUid(message.getUid());
@@ -137,12 +137,12 @@ public class MessageRowUtils {
                     content -= FetchGroup.MIME_DESCRIPTOR;
                 }
                 if (content != 0) {
-                    throw new MailboxManagerException("Unsupported result: " + content);
+                    throw new MailboxException("Unsupported result: " + content);
                 }
             
                 addPartContent(fetchGroup, message, messageResult);
             } catch (IOException e) {
-                throw new MailboxManagerException(e);
+                throw new MailboxException(e);
             }
         }
         return messageResult;
@@ -155,7 +155,7 @@ public class MessageRowUtils {
     }
 
     private static void addFullContent(final Message messageRow, MessageResultImpl messageResult) 
-            throws MailboxManagerException {
+            throws MailboxException {
         final List headers = messageResult.getHeaders();
         final Content content = createFullContent(messageRow, headers);
         messageResult.setFullContent(content);
@@ -175,7 +175,7 @@ public class MessageRowUtils {
 
     private static void addPartContent(final FetchGroup fetchGroup,
             Message message, MessageResultImpl messageResult)
-            throws MailboxManagerException, IOException,
+            throws MailboxException, IOException,
             MimeException {
         Collection partContent = fetchGroup.getPartContentDescriptors();
         if (partContent != null) {
@@ -190,7 +190,7 @@ public class MessageRowUtils {
     private static void addPartContent(
             FetchGroup.PartContentDescriptor descriptor, Message message,
             MessageResultImpl messageResult) throws 
-            MailboxManagerException, IOException, MimeException {
+            MailboxException, IOException, MimeException {
         final MimePath mimePath = descriptor.path();
         final int content = descriptor.content();
         if ((content & MessageResult.FetchGroup.FULL_CONTENT) > 0) {
@@ -331,7 +331,7 @@ public class MessageRowUtils {
 
     private static void addFullContent(Message message,
             MessageResultImpl messageResult, MimePath mimePath)
-            throws MailboxManagerException, IOException,
+            throws MailboxException, IOException,
             MimeException {
         final int[] path = path(mimePath);
         if (path == null) {

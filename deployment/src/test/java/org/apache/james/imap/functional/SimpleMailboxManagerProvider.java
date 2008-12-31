@@ -19,9 +19,9 @@
 
 package org.apache.james.imap.functional;
 
-import org.apache.james.mailboxmanager.MailboxManagerException;
-import org.apache.james.mailboxmanager.manager.MailboxManager;
-import org.apache.james.mailboxmanager.manager.MailboxManagerProvider;
+import org.apache.james.imap.mailbox.MailboxException;
+import org.apache.james.imap.mailbox.MailboxManager;
+import org.apache.james.imap.mailbox.MailboxManagerProvider;
 
 public class SimpleMailboxManagerProvider implements MailboxManagerProvider {
 
@@ -31,7 +31,7 @@ public class SimpleMailboxManagerProvider implements MailboxManagerProvider {
         this.manager = manager;
     }
 
-    public MailboxManager getMailboxManager() throws MailboxManagerException {
+    public MailboxManager getMailboxManager() throws MailboxException {
         return manager;
     }
 

@@ -23,10 +23,10 @@ import org.apache.james.api.imap.ImapCommand;
 import org.apache.james.api.imap.message.response.imap4rev1.StatusResponseFactory;
 import org.apache.james.api.imap.process.ImapProcessor;
 import org.apache.james.api.imap.process.ImapSession;
+import org.apache.james.imap.mailbox.ListResult;
+import org.apache.james.imap.mailbox.MailboxManagerProvider;
 import org.apache.james.imap.message.response.imap4rev1.server.ListResponse;
 import org.apache.james.imap.processor.imap4rev1.ListProcessor;
-import org.apache.james.mailboxmanager.ListResult;
-import org.apache.james.mailboxmanager.manager.MailboxManagerProvider;
 import org.jmock.Mock;
 import org.jmock.MockObjectTestCase;
 

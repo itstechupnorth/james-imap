@@ -27,15 +27,15 @@ import org.apache.james.api.imap.message.request.ImapRequest;
 import org.apache.james.api.imap.message.response.imap4rev1.StatusResponseFactory;
 import org.apache.james.api.imap.process.ImapProcessor;
 import org.apache.james.api.imap.process.ImapSession;
+import org.apache.james.imap.mailbox.Mailbox;
+import org.apache.james.imap.mailbox.MailboxException;
+import org.apache.james.imap.mailbox.MailboxManager;
+import org.apache.james.imap.mailbox.MailboxManagerProvider;
+import org.apache.james.imap.mailbox.MailboxSession;
 import org.apache.james.imap.message.request.imap4rev1.StatusRequest;
 import org.apache.james.imap.message.response.imap4rev1.server.STATUSResponse;
 import org.apache.james.imap.processor.base.AbstractMailboxAwareProcessor;
 import org.apache.james.imap.processor.base.ImapSessionUtils;
-import org.apache.james.mailboxmanager.MailboxManagerException;
-import org.apache.james.mailboxmanager.MailboxSession;
-import org.apache.james.mailboxmanager.mailbox.Mailbox;
-import org.apache.james.mailboxmanager.manager.MailboxManager;
-import org.apache.james.mailboxmanager.manager.MailboxManagerProvider;
 
 public class StatusProcessor extends AbstractMailboxAwareProcessor {
 
@@ -85,14 +85,14 @@ public class StatusProcessor extends AbstractMailboxAwareProcessor {
             unsolicitedResponses(session, responder, false);
             okComplete(command, tag, responder);
 
-        } catch (MailboxManagerException e) {
+        } catch (MailboxException e) {
             no(command, tag, responder, e);
         }
     }
 
     private Long unseen(final StatusDataItems statusDataItems,
             final MailboxSession mailboxSession, final Mailbox mailbox)
-            throws MailboxManagerException {
+            throws MailboxException {
         final Long unseen;
         if (statusDataItems.isUnseen()) {
             final int unseenCountValue = mailbox.getUnseenCount(mailboxSession);
@@ -105,7 +105,7 @@ public class StatusProcessor extends AbstractMailboxAwareProcessor {
 
     private Long uidValidity(final StatusDataItems statusDataItems,
             final MailboxSession mailboxSession, final Mailbox mailbox)
-            throws MailboxManagerException {
+            throws MailboxException {
         final Long uidValidity;
         if (statusDataItems.isUidValidity()) {
             final long uidValidityValue = mailbox
@@ -119,7 +119,7 @@ public class StatusProcessor extends AbstractMailboxAwareProcessor {
 
     private Long uidNext(final StatusDataItems statusDataItems,
             final MailboxSession mailboxSession, final Mailbox mailbox)
-            throws MailboxManagerException {
+            throws MailboxException {
         final Long uidNext;
         if (statusDataItems.isUidNext()) {
             final long uidNextValue = mailbox.getUidNext(mailboxSession);
@@ -132,7 +132,7 @@ public class StatusProcessor extends AbstractMailboxAwareProcessor {
 
     private Long recent(final StatusDataItems statusDataItems,
             final MailboxSession mailboxSession, final Mailbox mailbox)
-            throws MailboxManagerException {
+            throws MailboxException {
         final Long recent;
         if (statusDataItems.isRecent()) {
             final int recentCount = mailbox.recent(false, mailboxSession).length;
@@ -145,7 +145,7 @@ public class StatusProcessor extends AbstractMailboxAwareProcessor {
 
     private Long messages(final StatusDataItems statusDataItems,
             final MailboxSession mailboxSession, final Mailbox mailbox)
-            throws MailboxManagerException {
+            throws MailboxException {
         final Long messages;
         if (statusDataItems.isMessages()) {
             final int messageCount = mailbox.getMessageCount(mailboxSession);

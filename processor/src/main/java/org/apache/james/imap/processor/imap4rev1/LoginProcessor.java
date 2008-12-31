@@ -26,12 +26,12 @@ import org.apache.james.api.imap.message.request.ImapRequest;
 import org.apache.james.api.imap.message.response.imap4rev1.StatusResponseFactory;
 import org.apache.james.api.imap.process.ImapProcessor;
 import org.apache.james.api.imap.process.ImapSession;
+import org.apache.james.imap.mailbox.MailboxException;
+import org.apache.james.imap.mailbox.MailboxManager;
+import org.apache.james.imap.mailbox.MailboxManagerProvider;
 import org.apache.james.imap.message.request.imap4rev1.LoginRequest;
 import org.apache.james.imap.processor.base.AbstractMailboxAwareProcessor;
 import org.apache.james.imap.processor.base.ImapSessionUtils;
-import org.apache.james.mailboxmanager.MailboxManagerException;
-import org.apache.james.mailboxmanager.manager.MailboxManager;
-import org.apache.james.mailboxmanager.manager.MailboxManagerProvider;
 
 /**
  * Processes a <code>LOGIN</code> command.
@@ -83,7 +83,7 @@ public class LoginProcessor extends AbstractMailboxAwareProcessor {
                     session.logout();
                 }
             }
-        } catch (MailboxManagerException e) {
+        } catch (MailboxException e) {
             getLog().debug("Login failed", e);
             final HumanReadableTextKey displayTextKey = HumanReadableTextKey.INVALID_LOGIN;
             no(command, tag, responder, displayTextKey);

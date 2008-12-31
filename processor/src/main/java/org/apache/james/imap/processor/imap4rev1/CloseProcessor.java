@@ -25,14 +25,14 @@ import org.apache.james.api.imap.message.request.ImapRequest;
 import org.apache.james.api.imap.message.response.imap4rev1.StatusResponseFactory;
 import org.apache.james.api.imap.process.ImapProcessor;
 import org.apache.james.api.imap.process.ImapSession;
+import org.apache.james.imap.mailbox.Mailbox;
+import org.apache.james.imap.mailbox.MailboxException;
+import org.apache.james.imap.mailbox.MailboxSession;
+import org.apache.james.imap.mailbox.util.FetchGroupImpl;
+import org.apache.james.imap.mailbox.util.MessageRangeImpl;
 import org.apache.james.imap.message.request.imap4rev1.CloseRequest;
 import org.apache.james.imap.processor.base.AbstractImapRequestProcessor;
 import org.apache.james.imap.processor.base.ImapSessionUtils;
-import org.apache.james.mailboxmanager.MailboxManagerException;
-import org.apache.james.mailboxmanager.MailboxSession;
-import org.apache.james.mailboxmanager.impl.FetchGroupImpl;
-import org.apache.james.mailboxmanager.impl.MessageRangeImpl;
-import org.apache.james.mailboxmanager.mailbox.Mailbox;
 
 public class CloseProcessor extends AbstractImapRequestProcessor {
 
@@ -62,7 +62,7 @@ public class CloseProcessor extends AbstractImapRequestProcessor {
                 // Don't send unsolicited responses on close.
                 unsolicitedResponses(session, responder, false);
                 okComplete(command, tag, responder);
-            } catch (MailboxManagerException e) {
+            } catch (MailboxException e) {
                 no(command, tag, responder, e);
             }
         }

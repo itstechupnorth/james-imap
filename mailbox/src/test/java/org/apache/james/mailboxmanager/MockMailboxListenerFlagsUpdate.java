@@ -25,7 +25,7 @@ import java.util.List;
 
 import javax.mail.Flags;
 
-import org.apache.james.mailboxmanager.MailboxListener.FlagsUpdated;
+import org.apache.james.imap.mailbox.MailboxListener.FlagsUpdated;
 
 public class MockMailboxListenerFlagsUpdate extends FlagsUpdated {
 

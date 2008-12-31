@@ -29,9 +29,9 @@ import java.nio.channels.WritableByteChannel;
 import javax.mail.MessagingException;
 
 import org.apache.james.imap.jpa.om.Header;
-import org.apache.james.mailboxmanager.MailboxManagerException;
-import org.apache.james.mailboxmanager.MessageResult;
-import org.apache.james.mailboxmanager.MessageResult.Content;
+import org.apache.james.imap.mailbox.MailboxException;
+import org.apache.james.imap.mailbox.MessageResult;
+import org.apache.james.imap.mailbox.MessageResult.Content;
 
 final class ResultHeader implements MessageResult.Header, MessageResult.Content {
     private final String name;
@@ -54,11 +54,11 @@ final class ResultHeader implements MessageResult.Header, MessageResult.Content 
         return this;
     }
 
-    public String getName() throws MailboxManagerException {
+    public String getName() throws MailboxException {
         return name;
     }
 
-    public String getValue() throws MailboxManagerException {
+    public String getValue() throws MailboxException {
         return value;
     }
 

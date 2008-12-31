@@ -34,6 +34,15 @@ import org.apache.james.api.imap.message.response.imap4rev1.StatusResponse.Respo
 import org.apache.james.api.imap.process.ImapProcessor;
 import org.apache.james.api.imap.process.ImapSession;
 import org.apache.james.api.imap.process.SelectedImapMailbox;
+import org.apache.james.imap.mailbox.Mailbox;
+import org.apache.james.imap.mailbox.MailboxException;
+import org.apache.james.imap.mailbox.MailboxManager;
+import org.apache.james.imap.mailbox.MailboxManagerProvider;
+import org.apache.james.imap.mailbox.MailboxNotFoundException;
+import org.apache.james.imap.mailbox.MailboxSession;
+import org.apache.james.imap.mailbox.MessageResult;
+import org.apache.james.imap.mailbox.util.FetchGroupImpl;
+import org.apache.james.imap.mailbox.util.MessageRangeImpl;
 import org.apache.james.imap.message.request.imap4rev1.AbstractMailboxSelectionRequest;
 import org.apache.james.imap.message.response.imap4rev1.ExistsResponse;
 import org.apache.james.imap.message.response.imap4rev1.FlagsResponse;
@@ -41,15 +50,6 @@ import org.apache.james.imap.message.response.imap4rev1.RecentResponse;
 import org.apache.james.imap.processor.base.AbstractMailboxAwareProcessor;
 import org.apache.james.imap.processor.base.ImapSessionUtils;
 import org.apache.james.imap.processor.base.SelectedMailboxSessionImpl;
-import org.apache.james.mailboxmanager.MailboxManagerException;
-import org.apache.james.mailboxmanager.MailboxNotFoundException;
-import org.apache.james.mailboxmanager.MailboxSession;
-import org.apache.james.mailboxmanager.MessageResult;
-import org.apache.james.mailboxmanager.impl.FetchGroupImpl;
-import org.apache.james.mailboxmanager.impl.MessageRangeImpl;
-import org.apache.james.mailboxmanager.mailbox.Mailbox;
-import org.apache.james.mailboxmanager.manager.MailboxManager;
-import org.apache.james.mailboxmanager.manager.MailboxManagerProvider;
 
 abstract public class AbstractMailboxSelectionProcessor extends
         AbstractMailboxAwareProcessor {
@@ -87,13 +87,13 @@ abstract public class AbstractMailboxSelectionProcessor extends
         } catch (MailboxNotFoundException e) {
             responder.respond(statusResponseFactory.taggedNo(tag, command,
                     HumanReadableTextKey.FAILURE_NO_SUCH_MAILBOX));
-        } catch (MailboxManagerException e) {
+        } catch (MailboxException e) {
             no(command, tag, responder, e);
         }
     }
 
     private void respond(String tag, ImapCommand command, ImapSession session,
-            Responder responder) throws MailboxManagerException {
+            Responder responder) throws MailboxException {
 
         Mailbox mailbox = ImapSessionUtils.getMailbox(session);
         final MailboxSession mailboxSession = ImapSessionUtils
@@ -139,7 +139,7 @@ abstract public class AbstractMailboxSelectionProcessor extends
 
     private void unseen(Responder responder, Mailbox mailbox,
             final MailboxSession mailboxSession,
-            final SelectedImapMailbox selected) throws MailboxManagerException {
+            final SelectedImapMailbox selected) throws MailboxException {
         final MessageResult firstUnseen = mailbox.getFirstUnseen(
                 FetchGroupImpl.MINIMAL, mailboxSession);
         if (firstUnseen != null) {
@@ -153,7 +153,7 @@ abstract public class AbstractMailboxSelectionProcessor extends
     }
 
     private void uidValidity(Responder responder, Mailbox mailbox,
-            final MailboxSession mailboxSession) throws MailboxManagerException {
+            final MailboxSession mailboxSession) throws MailboxException {
         final long uidValidity = mailbox.getUidValidity(mailboxSession);
         final StatusResponse untaggedOk = statusResponseFactory.untaggedOk(
                 HumanReadableTextKey.UID_VALIDITY, ResponseCode
@@ -168,14 +168,14 @@ abstract public class AbstractMailboxSelectionProcessor extends
     }
 
     private void exists(Responder responder, Mailbox mailbox,
-            final MailboxSession mailboxSession) throws MailboxManagerException {
+            final MailboxSession mailboxSession) throws MailboxException {
         final int messageCount = mailbox.getMessageCount(mailboxSession);
         final ExistsResponse existsResponse = new ExistsResponse(messageCount);
         responder.respond(existsResponse);
     }
 
     private void selectMailbox(String mailboxName, ImapSession session)
-            throws MailboxManagerException {
+            throws MailboxException {
         final MailboxManager mailboxManager = getMailboxManager(session);
         final Mailbox mailbox = mailboxManager.getMailbox(mailboxName, false);
         final MailboxSession mailboxSession = ImapSessionUtils
@@ -195,7 +195,7 @@ abstract public class AbstractMailboxSelectionProcessor extends
 
     private SelectedImapMailbox createNewSelectedMailbox(final Mailbox mailbox,
             final MailboxSession mailboxSession, ImapSession session)
-            throws MailboxManagerException {
+            throws MailboxException {
         final SelectedImapMailbox sessionMailbox;
         final Iterator it = mailbox.getMessages(MessageRangeImpl.all(),
                 FetchGroupImpl.MINIMAL, mailboxSession);
@@ -215,7 +215,7 @@ abstract public class AbstractMailboxSelectionProcessor extends
 
     private void addRecent(final Mailbox mailbox,
             final MailboxSession mailboxSession,
-            SelectedImapMailbox sessionMailbox) throws MailboxManagerException {
+            SelectedImapMailbox sessionMailbox) throws MailboxException {
         final long[] recentUids = mailbox.recent(!openReadOnly, mailboxSession);
         for (int i = 0; i < recentUids.length; i++) {
             long uid = recentUids[i];

@@ -38,17 +38,17 @@ import org.apache.james.api.imap.message.response.imap4rev1.StatusResponseFactor
 import org.apache.james.api.imap.process.ImapProcessor;
 import org.apache.james.api.imap.process.ImapSession;
 import org.apache.james.api.imap.process.SelectedImapMailbox;
+import org.apache.james.imap.mailbox.Mailbox;
+import org.apache.james.imap.mailbox.MailboxException;
+import org.apache.james.imap.mailbox.MessageResult;
+import org.apache.james.imap.mailbox.SearchQuery;
+import org.apache.james.imap.mailbox.MessageResult.FetchGroup;
+import org.apache.james.imap.mailbox.SearchQuery.Criterion;
+import org.apache.james.imap.mailbox.util.FetchGroupImpl;
 import org.apache.james.imap.message.request.imap4rev1.SearchRequest;
 import org.apache.james.imap.message.response.imap4rev1.server.SearchResponse;
 import org.apache.james.imap.processor.base.AbstractImapRequestProcessor;
 import org.apache.james.imap.processor.base.ImapSessionUtils;
-import org.apache.james.mailboxmanager.MailboxManagerException;
-import org.apache.james.mailboxmanager.MessageResult;
-import org.apache.james.mailboxmanager.SearchQuery;
-import org.apache.james.mailboxmanager.MessageResult.FetchGroup;
-import org.apache.james.mailboxmanager.SearchQuery.Criterion;
-import org.apache.james.mailboxmanager.impl.FetchGroupImpl;
-import org.apache.james.mailboxmanager.mailbox.Mailbox;
 
 public class SearchProcessor extends AbstractImapRequestProcessor {
 
@@ -81,7 +81,7 @@ public class SearchProcessor extends AbstractImapRequestProcessor {
             boolean omitExpunged = (!useUids);
             unsolicitedResponses(session, responder, omitExpunged, useUids);
             okComplete(command, tag, responder);
-        } catch (MailboxManagerException e) {
+        } catch (MailboxException e) {
             no(command, tag, responder, e);
         }
     }
@@ -99,7 +99,7 @@ public class SearchProcessor extends AbstractImapRequestProcessor {
     private Collection findIds(final boolean useUids,
             final ImapSession session, Mailbox mailbox,
             final FetchGroup fetchGroup, final SearchQuery query)
-            throws MailboxManagerException {
+            throws MailboxException {
         final Iterator it = mailbox.search(query, fetchGroup, ImapSessionUtils
                 .getMailboxSession(session));
 

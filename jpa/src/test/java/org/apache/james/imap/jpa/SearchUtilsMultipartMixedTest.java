@@ -27,7 +27,7 @@ import junit.framework.TestCase;
 
 import org.apache.james.api.imap.ImapConstants;
 import org.apache.james.imap.jpa.om.Message;
-import org.apache.james.mailboxmanager.SearchQuery;
+import org.apache.james.imap.mailbox.SearchQuery;
 
 public class SearchUtilsMultipartMixedTest extends TestCase {
 

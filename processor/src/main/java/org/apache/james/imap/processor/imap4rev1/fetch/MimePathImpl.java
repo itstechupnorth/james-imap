@@ -24,7 +24,7 @@ package org.apache.james.imap.processor.imap4rev1.fetch;
 
 import java.util.Arrays;
 
-import org.apache.james.mailboxmanager.MessageResult;
+import org.apache.james.imap.mailbox.MessageResult;
 
 final class MimePathImpl implements MessageResult.MimePath {
     private final int[] positions;

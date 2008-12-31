@@ -36,14 +36,14 @@ import org.apache.james.api.imap.process.ImapProcessor;
 import org.apache.james.api.imap.process.ImapSession;
 import org.apache.james.api.imap.process.SelectedImapMailbox;
 import org.apache.james.api.imap.process.ImapProcessor.Responder;
+import org.apache.james.imap.mailbox.Mailbox;
+import org.apache.james.imap.mailbox.MailboxSession;
+import org.apache.james.imap.mailbox.SearchQuery;
+import org.apache.james.imap.mailbox.util.FetchGroupImpl;
 import org.apache.james.imap.message.request.imap4rev1.SearchRequest;
 import org.apache.james.imap.message.response.imap4rev1.server.SearchResponse;
 import org.apache.james.imap.processor.base.ImapSessionUtils;
 import org.apache.james.imap.processor.imap4rev1.SearchProcessor;
-import org.apache.james.mailboxmanager.MailboxSession;
-import org.apache.james.mailboxmanager.SearchQuery;
-import org.apache.james.mailboxmanager.impl.FetchGroupImpl;
-import org.apache.james.mailboxmanager.mailbox.Mailbox;
 import org.jmock.Mock;
 import org.jmock.MockObjectTestCase;
 

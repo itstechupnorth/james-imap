@@ -19,6 +19,8 @@
 
 package org.apache.james.mailboxmanager;
 
+import org.apache.james.imap.mailbox.MailboxListener;
+
 public class MockMailboxListenerAdded extends MailboxListener.Added {
 
     public long subjectUid;

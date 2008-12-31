@@ -29,15 +29,15 @@ import org.apache.james.api.imap.message.response.imap4rev1.StatusResponseFactor
 import org.apache.james.api.imap.process.ImapProcessor;
 import org.apache.james.api.imap.process.ImapSession;
 import org.apache.james.api.imap.process.SelectedImapMailbox;
+import org.apache.james.imap.mailbox.Mailbox;
+import org.apache.james.imap.mailbox.MailboxException;
+import org.apache.james.imap.mailbox.MailboxManagerProvider;
+import org.apache.james.imap.mailbox.MessageResult;
+import org.apache.james.imap.mailbox.util.FetchGroupImpl;
+import org.apache.james.imap.mailbox.util.MessageRangeImpl;
 import org.apache.james.imap.message.request.imap4rev1.ExpungeRequest;
 import org.apache.james.imap.processor.base.AbstractImapRequestProcessor;
 import org.apache.james.imap.processor.base.ImapSessionUtils;
-import org.apache.james.mailboxmanager.MailboxManagerException;
-import org.apache.james.mailboxmanager.MessageResult;
-import org.apache.james.mailboxmanager.impl.FetchGroupImpl;
-import org.apache.james.mailboxmanager.impl.MessageRangeImpl;
-import org.apache.james.mailboxmanager.mailbox.Mailbox;
-import org.apache.james.mailboxmanager.manager.MailboxManagerProvider;
 
 public class ExpungeProcessor extends AbstractImapRequestProcessor {
 
@@ -73,7 +73,7 @@ public class ExpungeProcessor extends AbstractImapRequestProcessor {
                 }
                 unsolicitedResponses(session, responder, false);
                 okComplete(command, tag, responder);
-            } catch (MailboxManagerException e) {
+            } catch (MailboxException e) {
                 no(command, tag, responder, e);
             }
         }

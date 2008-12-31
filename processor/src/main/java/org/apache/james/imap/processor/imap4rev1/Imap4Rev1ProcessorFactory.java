@@ -21,8 +21,8 @@ package org.apache.james.imap.processor.imap4rev1;
 
 import org.apache.james.api.imap.message.response.imap4rev1.StatusResponseFactory;
 import org.apache.james.api.imap.process.ImapProcessor;
+import org.apache.james.imap.mailbox.MailboxManagerProvider;
 import org.apache.james.imap.processor.imap4rev1.fetch.FetchProcessor;
-import org.apache.james.mailboxmanager.manager.MailboxManagerProvider;
 
 /**
  * TODO: perhaps this should be a POJO

@@ -19,12 +19,12 @@
 
 package org.apache.james.imap.jpa;
 
-import org.apache.james.mailboxmanager.MailboxManagerException;
+import org.apache.james.imap.mailbox.MailboxException;
 
 /**
  * Indicates that the requested search is not supported by this implementation.
  */
-public class UnsupportedSearchException extends MailboxManagerException {
+public class UnsupportedSearchException extends MailboxException {
 
     private static final long serialVersionUID = -7442949630563672557L;
 

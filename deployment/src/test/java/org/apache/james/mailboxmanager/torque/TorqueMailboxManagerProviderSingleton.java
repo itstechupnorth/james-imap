@@ -28,7 +28,7 @@ import java.util.Locale;
 import org.apache.commons.configuration.BaseConfiguration;
 import org.apache.james.imap.functional.ImapHostSystem;
 import org.apache.james.imap.functional.SimpleMailboxManagerProvider;
-import org.apache.james.mailboxmanager.manager.MailboxManagerProvider;
+import org.apache.james.imap.mailbox.MailboxManagerProvider;
 import org.apache.james.mailboxmanager.torque.om.MailboxRowPeer;
 import org.apache.james.mailboxmanager.torque.om.MessageBodyPeer;
 import org.apache.james.mailboxmanager.torque.om.MessageFlagsPeer;

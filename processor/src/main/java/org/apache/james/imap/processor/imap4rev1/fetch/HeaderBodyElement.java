@@ -29,8 +29,8 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.apache.james.api.imap.ImapConstants;
+import org.apache.james.imap.mailbox.MessageResult;
 import org.apache.james.imap.message.response.imap4rev1.FetchResponse.BodyElement;
-import org.apache.james.mailboxmanager.MessageResult;
 
 final class HeaderBodyElement implements BodyElement {
     private final String name;

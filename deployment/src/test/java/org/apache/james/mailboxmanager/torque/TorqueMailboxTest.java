@@ -26,11 +26,11 @@ import javax.mail.Flags;
 import javax.mail.internet.MimeMessage;
 
 import org.apache.commons.collections.IteratorUtils;
-import org.apache.james.mailboxmanager.MessageResult;
-import org.apache.james.mailboxmanager.impl.FetchGroupImpl;
-import org.apache.james.mailboxmanager.impl.MailboxListenerCollector;
-import org.apache.james.mailboxmanager.impl.MessageRangeImpl;
-import org.apache.james.mailboxmanager.mailbox.Mailbox;
+import org.apache.james.imap.mailbox.Mailbox;
+import org.apache.james.imap.mailbox.MessageResult;
+import org.apache.james.imap.mailbox.util.FetchGroupImpl;
+import org.apache.james.imap.mailbox.util.MailboxListenerCollector;
+import org.apache.james.imap.mailbox.util.MessageRangeImpl;
 import org.apache.james.mailboxmanager.torque.om.MailboxRow;
 import org.apache.james.mailboxmanager.torque.om.MailboxRowPeer;
 import org.apache.james.mailboxmanager.torque.om.MessageRow;

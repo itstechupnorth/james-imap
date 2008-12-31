@@ -21,7 +21,7 @@ package org.apache.james.imap.jpa;
 
 import java.util.Collection;
 
-import org.apache.james.mailboxmanager.manager.SubscriptionException;
+import org.apache.james.imap.mailbox.SubscriptionException;
 
 public interface UserManager {
 

@@ -38,18 +38,19 @@ import javax.mail.internet.MimeMessage;
 import org.apache.commons.collections.IteratorUtils;
 import org.apache.commons.logging.Log;
 import org.apache.james.api.imap.AbstractLogEnabled;
-import org.apache.james.mailboxmanager.MailboxListener;
-import org.apache.james.mailboxmanager.MailboxManagerException;
-import org.apache.james.mailboxmanager.MailboxSession;
-import org.apache.james.mailboxmanager.MessageRange;
-import org.apache.james.mailboxmanager.MessageResult;
-import org.apache.james.mailboxmanager.SearchQuery;
-import org.apache.james.mailboxmanager.MessageResult.FetchGroup;
-import org.apache.james.mailboxmanager.SearchQuery.Criterion;
-import org.apache.james.mailboxmanager.SearchQuery.NumericRange;
-import org.apache.james.mailboxmanager.impl.FetchGroupImpl;
-import org.apache.james.mailboxmanager.impl.UidChangeTracker;
-import org.apache.james.mailboxmanager.mailbox.Mailbox;
+import org.apache.james.imap.mailbox.Mailbox;
+import org.apache.james.imap.mailbox.MailboxListener;
+import org.apache.james.imap.mailbox.MailboxException;
+import org.apache.james.imap.mailbox.MailboxSession;
+import org.apache.james.imap.mailbox.MessageRange;
+import org.apache.james.imap.mailbox.MessageResult;
+import org.apache.james.imap.mailbox.SearchQuery;
+import org.apache.james.imap.mailbox.MessageResult.FetchGroup;
+import org.apache.james.imap.mailbox.SearchQuery.Criterion;
+import org.apache.james.imap.mailbox.SearchQuery.NumericRange;
+import org.apache.james.imap.mailbox.util.FetchGroupImpl;
+import org.apache.james.imap.mailbox.util.UidChangeTracker;
+import org.apache.james.imap.mailbox.util.UidRange;
 import org.apache.james.mailboxmanager.torque.om.MailboxRow;
 import org.apache.james.mailboxmanager.torque.om.MailboxRowPeer;
 import org.apache.james.mailboxmanager.torque.om.MessageBody;
@@ -58,7 +59,6 @@ import org.apache.james.mailboxmanager.torque.om.MessageFlagsPeer;
 import org.apache.james.mailboxmanager.torque.om.MessageHeader;
 import org.apache.james.mailboxmanager.torque.om.MessageRow;
 import org.apache.james.mailboxmanager.torque.om.MessageRowPeer;
-import org.apache.james.mailboxmanager.util.UidRange;
 import org.apache.torque.NoRowsException;
 import org.apache.torque.TooManyRowsException;
 import org.apache.torque.TorqueException;
@@ -97,7 +97,7 @@ public class TorqueMailbox extends AbstractLogEnabled implements Mailbox {
     }
 
     public int getMessageCount(MailboxSession mailboxSession)
-            throws MailboxManagerException {
+            throws MailboxException {
         try {
             lock.readLock().acquire();
             try {
@@ -105,19 +105,19 @@ public class TorqueMailbox extends AbstractLogEnabled implements Mailbox {
                 try {
                     return getMailboxRow().countMessages();
                 } catch (Exception e) {
-                    throw new MailboxManagerException(e);
+                    throw new MailboxException(e);
                 }
             } finally {
                 lock.readLock().release();
             }
         } catch (InterruptedException e) {
-            throw new MailboxManagerException(e);
+            throw new MailboxException(e);
         }
     }
 
     public MessageResult appendMessage(MimeMessage message, Date internalDate,
             FetchGroup fetchGroup, MailboxSession mailboxSession)
-            throws MailboxManagerException {
+            throws MailboxException {
 
         try {
             checkAccess();
@@ -157,14 +157,14 @@ public class TorqueMailbox extends AbstractLogEnabled implements Mailbox {
                     getUidChangeTracker().found(messageResult);
                     return messageResult;
                 } catch (Exception e) {
-                    throw new MailboxManagerException(e);
+                    throw new MailboxException(e);
                 }
             } else {
                 // mailboxRow==null
-                throw new MailboxManagerException("Mailbox has been deleted");
+                throw new MailboxException("Mailbox has been deleted");
             }
         } catch (InterruptedException e) {
-            throw new MailboxManagerException(e);
+            throw new MailboxException(e);
         }
     }
 
@@ -232,15 +232,15 @@ public class TorqueMailbox extends AbstractLogEnabled implements Mailbox {
     }
 
     private MailboxRow reserveNextUid() throws InterruptedException,
-            MailboxManagerException {
+            MailboxException {
         final MailboxRow myMailboxRow;
         try {
             lock.writeLock().acquire();
             myMailboxRow = getMailboxRow().consumeNextUid();
         } catch (TorqueException e) {
-            throw new MailboxManagerException(e);
+            throw new MailboxException(e);
         } catch (SQLException e) {
-            throw new MailboxManagerException(e);
+            throw new MailboxException(e);
         } finally {
             lock.writeLock().release();
         }
@@ -248,7 +248,7 @@ public class TorqueMailbox extends AbstractLogEnabled implements Mailbox {
     }
 
     private Criteria criteriaForMessageSet(MessageRange set)
-            throws MailboxManagerException {
+            throws MailboxException {
         Criteria criteria = new Criteria();
         criteria.addAscendingOrderByColumn(MessageRowPeer.UID);
         if (set.getType() == MessageRange.TYPE_ALL) {
@@ -270,14 +270,14 @@ public class TorqueMailbox extends AbstractLogEnabled implements Mailbox {
                 criteria.add(criterion1);
             }
         } else {
-            throw new MailboxManagerException("Unsupported MessageSet: "
+            throw new MailboxException("Unsupported MessageSet: "
                     + set.getType());
         }
         return criteria;
     }
 
     public Iterator getMessages(final MessageRange set, FetchGroup fetchGroup,
-            MailboxSession mailboxSession) throws MailboxManagerException {
+            MailboxSession mailboxSession) throws MailboxException {
         try {
             lock.readLock().acquire();
             try {
@@ -289,21 +289,21 @@ public class TorqueMailbox extends AbstractLogEnabled implements Mailbox {
                             .getMailboxId());
                     return getMessages(fetchGroup, range, c);
                 } catch (TorqueException e) {
-                    throw new MailboxManagerException(e);
+                    throw new MailboxException(e);
                 } catch (MessagingException e) {
-                    throw new MailboxManagerException(e);
+                    throw new MailboxException(e);
                 }
             } finally {
                 lock.readLock().release();
             }
         } catch (InterruptedException e) {
-            throw new MailboxManagerException(e);
+            throw new MailboxException(e);
         }
     }
 
     private TorqueResultIterator getMessages(FetchGroup result, UidRange range,
             Criteria c) throws TorqueException, MessagingException,
-            MailboxManagerException {
+            MailboxException {
         List rows = MessageRowPeer.doSelectJoinMessageFlags(c);
         final TorqueResultIterator results = getResults(result, rows);
         getUidChangeTracker().found(range, results.getMessageFlags());
@@ -319,20 +319,20 @@ public class TorqueMailbox extends AbstractLogEnabled implements Mailbox {
     }
 
     private static UidRange uidRangeForMessageSet(MessageRange set)
-            throws MailboxManagerException {
+            throws MailboxException {
         if (set.getType() == MessageRange.TYPE_UID) {
             return new UidRange(set.getUidFrom(), set.getUidTo());
         } else if (set.getType() == MessageRange.TYPE_ALL) {
             return new UidRange(1, -1);
         } else {
-            throw new MailboxManagerException("unsupported MessageSet: "
+            throw new MailboxException("unsupported MessageSet: "
                     + set.getType());
         }
     }
 
     public MessageResult fillMessageResult(MessageRow messageRow,
             FetchGroup result) throws TorqueException, MessagingException,
-            MailboxManagerException {
+            MailboxException {
         return MessageRowUtils.loadMessageResult(messageRow, result);
     }
 
@@ -347,7 +347,7 @@ public class TorqueMailbox extends AbstractLogEnabled implements Mailbox {
     }
 
     public long[] recent(boolean reset, MailboxSession mailboxSession)
-            throws MailboxManagerException {
+            throws MailboxException {
         try {
             lock.readLock().acquire();
             try {
@@ -367,12 +367,12 @@ public class TorqueMailbox extends AbstractLogEnabled implements Mailbox {
                 }
                 return results;
             } catch (TorqueException e) {
-                throw new MailboxManagerException(e);
+                throw new MailboxException(e);
             } finally {
                 lock.readLock().release();
             }
         } catch (InterruptedException e) {
-            throw new MailboxManagerException(e);
+            throw new MailboxException(e);
         }
 
     }
@@ -389,7 +389,7 @@ public class TorqueMailbox extends AbstractLogEnabled implements Mailbox {
     }
 
     public MessageResult getFirstUnseen(FetchGroup fetchGroup,
-            MailboxSession mailboxSession) throws MailboxManagerException {
+            MailboxSession mailboxSession) throws MailboxException {
         try {
             lock.readLock().acquire();
             try {
@@ -420,20 +420,20 @@ public class TorqueMailbox extends AbstractLogEnabled implements Mailbox {
                         return null;
                     }
                 } catch (TorqueException e) {
-                    throw new MailboxManagerException(e);
+                    throw new MailboxException(e);
                 } catch (MessagingException e) {
-                    throw new MailboxManagerException(e);
+                    throw new MailboxException(e);
                 }
             } finally {
                 lock.readLock().release();
             }
         } catch (InterruptedException e) {
-            throw new MailboxManagerException(e);
+            throw new MailboxException(e);
         }
     }
 
     public int getUnseenCount(MailboxSession mailboxSession)
-            throws MailboxManagerException {
+            throws MailboxException {
         try {
             lock.readLock().acquire();
             try {
@@ -443,20 +443,20 @@ public class TorqueMailbox extends AbstractLogEnabled implements Mailbox {
                             new Flags(Flags.Flag.SEEN), false);
                     return count;
                 } catch (TorqueException e) {
-                    throw new MailboxManagerException(e);
+                    throw new MailboxException(e);
                 } catch (DataSetException e) {
-                    throw new MailboxManagerException(e);
+                    throw new MailboxException(e);
                 }
             } finally {
                 lock.readLock().release();
             }
         } catch (InterruptedException e) {
-            throw new MailboxManagerException(e);
+            throw new MailboxException(e);
         }
     }
 
     public Iterator expunge(MessageRange set, FetchGroup fetchGroup,
-            MailboxSession mailboxSession) throws MailboxManagerException {
+            MailboxSession mailboxSession) throws MailboxException {
         try {
             lock.writeLock().acquire();
             try {
@@ -466,12 +466,12 @@ public class TorqueMailbox extends AbstractLogEnabled implements Mailbox {
             }
 
         } catch (InterruptedException e) {
-            throw new MailboxManagerException(e);
+            throw new MailboxException(e);
         }
     }
 
     private Iterator doExpunge(final MessageRange set, FetchGroup fetchGroup)
-            throws MailboxManagerException {
+            throws MailboxException {
         checkAccess();
         try {
             // TODO put this into a serializable transaction
@@ -502,7 +502,7 @@ public class TorqueMailbox extends AbstractLogEnabled implements Mailbox {
             getUidChangeTracker().expunged(uids);
             return messageResults.iterator();
         } catch (Exception e) {
-            throw new MailboxManagerException(e);
+            throw new MailboxException(e);
         }
     }
 
@@ -518,7 +518,7 @@ public class TorqueMailbox extends AbstractLogEnabled implements Mailbox {
 
     public Iterator setFlags(Flags flags, boolean value, boolean replace,
             MessageRange set, FetchGroup fetchGroup,
-            MailboxSession mailboxSession) throws MailboxManagerException {
+            MailboxSession mailboxSession) throws MailboxException {
         try {
             lock.writeLock().acquire();
             try {
@@ -529,13 +529,13 @@ public class TorqueMailbox extends AbstractLogEnabled implements Mailbox {
             }
 
         } catch (InterruptedException e) {
-            throw new MailboxManagerException(e);
+            throw new MailboxException(e);
         }
     }
 
     private Iterator doSetFlags(Flags flags, boolean value, boolean replace,
             final MessageRange set, FetchGroup fetchGroup,
-            MailboxSession mailboxSession) throws MailboxManagerException {
+            MailboxSession mailboxSession) throws MailboxException {
         checkAccess();
         try {
             // TODO put this into a serializeable transaction
@@ -566,18 +566,18 @@ public class TorqueMailbox extends AbstractLogEnabled implements Mailbox {
                     FetchGroup.FLAGS);
             final TorqueResultIterator resultIterator = new TorqueResultIterator(
                     messageRows, orFetchGroup);
-            final org.apache.james.mailboxmanager.impl.MessageFlags[] messageFlags = resultIterator
+            final org.apache.james.imap.mailbox.util.MessageFlags[] messageFlags = resultIterator
                     .getMessageFlags();
             tracker.flagsUpdated(messageFlags, mailboxSession.getSessionId());
             tracker.found(uidRange, messageFlags);
             return resultIterator;
         } catch (Exception e) {
-            throw new MailboxManagerException(e);
+            throw new MailboxException(e);
         }
     }
 
     public void addListener(MailboxListener listener)
-            throws MailboxManagerException {
+            throws MailboxException {
         checkAccess();
         tracker.addMailboxListener(listener);
     }
@@ -590,7 +590,7 @@ public class TorqueMailbox extends AbstractLogEnabled implements Mailbox {
     }
 
     public long getUidValidity(MailboxSession mailboxSession)
-            throws MailboxManagerException {
+            throws MailboxException {
         try {
             lock.readLock().acquire();
             try {
@@ -602,13 +602,13 @@ public class TorqueMailbox extends AbstractLogEnabled implements Mailbox {
             }
 
         } catch (InterruptedException e) {
-            throw new MailboxManagerException(e);
+            throw new MailboxException(e);
         }
 
     }
 
     public long getUidNext(MailboxSession mailboxSession)
-            throws MailboxManagerException {
+            throws MailboxException {
         try {
             lock.readLock().acquire();
             try {
@@ -622,22 +622,22 @@ public class TorqueMailbox extends AbstractLogEnabled implements Mailbox {
                                 mailboxRow.getLastUid());
                         return getUidChangeTracker().getLastUid() + 1;
                     } else {
-                        throw new MailboxManagerException(
+                        throw new MailboxException(
                                 "Mailbox has been deleted");
                     }
                 } catch (NoRowsException e) {
-                    throw new MailboxManagerException(e);
+                    throw new MailboxException(e);
                 } catch (TooManyRowsException e) {
-                    throw new MailboxManagerException(e);
+                    throw new MailboxException(e);
                 } catch (TorqueException e) {
-                    throw new MailboxManagerException(e);
+                    throw new MailboxException(e);
                 }
             } finally {
                 lock.readLock().release();
             }
 
         } catch (InterruptedException e) {
-            throw new MailboxManagerException(e);
+            throw new MailboxException(e);
         }
     }
 
@@ -660,7 +660,7 @@ public class TorqueMailbox extends AbstractLogEnabled implements Mailbox {
     }
 
     public Iterator search(SearchQuery query, FetchGroup fetchGroup,
-            MailboxSession mailboxSession) throws MailboxManagerException {
+            MailboxSession mailboxSession) throws MailboxException {
         try {
             lock.readLock().acquire();
             try {
@@ -688,12 +688,12 @@ public class TorqueMailbox extends AbstractLogEnabled implements Mailbox {
 
                 return getResults(fetchGroup, filteredMessages);
             } catch (TorqueException e) {
-                throw new MailboxManagerException(e);
+                throw new MailboxException(e);
             } finally {
                 lock.readLock().release();
             }
         } catch (InterruptedException e) {
-            throw new MailboxManagerException(e);
+            throw new MailboxException(e);
         }
     }
 
@@ -746,7 +746,7 @@ public class TorqueMailbox extends AbstractLogEnabled implements Mailbox {
     }
 
     public void copyTo(MessageRange set, TorqueMailbox toMailbox,
-            MailboxSession session) throws MailboxManagerException {
+            MailboxSession session) throws MailboxException {
         try {
             lock.readLock().acquire();
             try {
@@ -758,20 +758,20 @@ public class TorqueMailbox extends AbstractLogEnabled implements Mailbox {
                     List rows = MessageRowPeer.doSelectJoinMessageFlags(c);
                     toMailbox.copy(rows, session);
                 } catch (TorqueException e) {
-                    throw new MailboxManagerException(e);
+                    throw new MailboxException(e);
                 } catch (MessagingException e) {
-                    throw new MailboxManagerException(e);
+                    throw new MailboxException(e);
                 }
             } finally {
                 lock.readLock().release();
             }
         } catch (InterruptedException e) {
-            throw new MailboxManagerException(e);
+            throw new MailboxException(e);
         }
     }
 
     private void copy(List rows, MailboxSession session)
-            throws MailboxManagerException {
+            throws MailboxException {
         try {
             for (Iterator iter = rows.iterator(); iter.hasNext();) {
                 MessageRow fromRow = (MessageRow) iter.next();
@@ -818,11 +818,11 @@ public class TorqueMailbox extends AbstractLogEnabled implements Mailbox {
                 }
             }
         } catch (TorqueException e) {
-            throw new MailboxManagerException(e);
+            throw new MailboxException(e);
         } catch (InterruptedException e) {
-            throw new MailboxManagerException(e);
+            throw new MailboxException(e);
         } catch (MessagingException e) {
-            throw new MailboxManagerException(e);
+            throw new MailboxException(e);
         }
     }
 

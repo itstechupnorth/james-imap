@@ -26,13 +26,13 @@ import org.apache.james.api.imap.message.request.ImapRequest;
 import org.apache.james.api.imap.message.response.imap4rev1.StatusResponseFactory;
 import org.apache.james.api.imap.process.ImapProcessor;
 import org.apache.james.api.imap.process.ImapSession;
+import org.apache.james.imap.mailbox.MailboxException;
+import org.apache.james.imap.mailbox.MailboxManager;
+import org.apache.james.imap.mailbox.MailboxManagerProvider;
+import org.apache.james.imap.mailbox.SubscriptionException;
 import org.apache.james.imap.message.request.imap4rev1.SubscribeRequest;
 import org.apache.james.imap.processor.base.AbstractMailboxAwareProcessor;
 import org.apache.james.imap.processor.base.ImapSessionUtils;
-import org.apache.james.mailboxmanager.MailboxManagerException;
-import org.apache.james.mailboxmanager.manager.MailboxManager;
-import org.apache.james.mailboxmanager.manager.MailboxManagerProvider;
-import org.apache.james.mailboxmanager.manager.SubscriptionException;
 
 public class SubscribeProcessor extends AbstractMailboxAwareProcessor {
 
@@ -70,7 +70,7 @@ public class SubscribeProcessor extends AbstractMailboxAwareProcessor {
                 displayTextKey = exceptionKey;
             }
             no(command, tag, responder, displayTextKey);
-        } catch (MailboxManagerException e) {
+        } catch (MailboxException e) {
             getLog().debug("Subscription failed", e);
             unsolicitedResponses(session, responder, false);
 

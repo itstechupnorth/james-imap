@@ -36,9 +36,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.james.imap.jpa.om.Header;
 import org.apache.james.imap.jpa.om.Message;
-import org.apache.james.mailboxmanager.MailboxManagerException;
-import org.apache.james.mailboxmanager.SearchQuery;
-import org.apache.james.mailboxmanager.SearchQuery.NumericRange;
+import org.apache.james.imap.mailbox.MailboxException;
+import org.apache.james.imap.mailbox.SearchQuery;
+import org.apache.james.imap.mailbox.SearchQuery.NumericRange;
 import org.apache.james.mime4j.MimeException;
 import org.apache.james.mime4j.field.datetime.DateTime;
 import org.apache.james.mime4j.field.datetime.parser.DateTimeParser;
@@ -73,10 +73,10 @@ class MessageSearches {
      * @param row
      *            <code>MessageRow</code>, not null
      * @return true if the row matches the given criteria, false otherwise
-     * @throws MailboxManagerException 
+     * @throws MailboxException 
      */
     public boolean isMatch(final SearchQuery query, final Message message)
-            throws MailboxManagerException {
+            throws MailboxException {
         final List criteria = query.getCriterias();
         final Collection recentMessageUids = query.getRecentMessageUids();
         boolean result = true;
@@ -101,10 +101,10 @@ class MessageSearches {
      * @param message
      *            <code>MessageRow</code>, not null
      * @return true if the row matches the given criterion, false otherwise
-     * @throws MailboxManagerException 
+     * @throws MailboxException 
      */
     public boolean isMatch(SearchQuery.Criterion criterion, Message message,
-            final Collection recentMessageUids) throws MailboxManagerException {
+            final Collection recentMessageUids) throws MailboxException {
         final boolean result;
         if (criterion instanceof SearchQuery.InternalDateCriterion) {
             result = matches((SearchQuery.InternalDateCriterion) criterion, message);
@@ -130,7 +130,7 @@ class MessageSearches {
         return result;
     }
 
-    private boolean matches(SearchQuery.TextCriterion criterion, Message message) throws MailboxManagerException  {
+    private boolean matches(SearchQuery.TextCriterion criterion, Message message) throws MailboxException  {
         try {
             final SearchQuery.ContainsOperator operator = criterion
                     .getOperator();
@@ -145,7 +145,7 @@ class MessageSearches {
                     throw new UnsupportedSearchException();
             }
         } catch (IOException e) {
-            throw new MailboxManagerException(e);
+            throw new MailboxException(e);
         }
     }
 
@@ -175,7 +175,7 @@ class MessageSearches {
     }
 
     private boolean matches(SearchQuery.ConjunctionCriterion criterion,
-            Message message, final Collection recentMessageUids) throws MailboxManagerException {
+            Message message, final Collection recentMessageUids) throws MailboxException {
         final int type = criterion.getType();
         final List criteria = criterion.getCriteria();
         switch (type) {
@@ -191,7 +191,7 @@ class MessageSearches {
     }
 
     private boolean and(final List criteria, final Message message, 
-            final Collection recentMessageUids) throws MailboxManagerException {
+            final Collection recentMessageUids) throws MailboxException {
         boolean result = true;
         for (Iterator it = criteria.iterator(); it.hasNext();) {
             final SearchQuery.Criterion criterion = (SearchQuery.Criterion) it
@@ -206,7 +206,7 @@ class MessageSearches {
     }
 
     private boolean or(final List criteria, final Message message,
-            final Collection recentMessageUids) throws MailboxManagerException {
+            final Collection recentMessageUids) throws MailboxException {
         boolean result = false;
         for (Iterator it = criteria.iterator(); it.hasNext();) {
             final SearchQuery.Criterion criterion = (SearchQuery.Criterion) it
@@ -221,7 +221,7 @@ class MessageSearches {
     }
 
     private boolean nor(final List criteria, final Message message,
-            final Collection recentMessageUids) throws MailboxManagerException {
+            final Collection recentMessageUids) throws MailboxException {
         boolean result = true;
         for (Iterator it = criteria.iterator(); it.hasNext();) {
             final SearchQuery.Criterion criterion = (SearchQuery.Criterion) it

@@ -20,7 +20,7 @@ package org.apache.james.mailboxmanager.torque;
 
 import java.util.List;
 
-import org.apache.james.mailboxmanager.MailboxManagerException;
+import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.mailboxmanager.torque.om.MailboxRow;
 import org.apache.james.mailboxmanager.torque.om.MailboxRowPeer;
 import org.apache.torque.TorqueException;
@@ -33,7 +33,7 @@ public class TorqueMailboxManagerTest extends AbstractMailboxRowTestCase {
     }
 
     public void testCreateRenameDeleteMailbox() throws TorqueException,
-            MailboxManagerException {
+            MailboxException {
         mm.createMailbox("#users.tuser.INBOX");
         List l = MailboxRowPeer.doSelect(new Criteria());
         assertEquals(1, l.size());

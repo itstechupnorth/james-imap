@@ -28,7 +28,7 @@ import java.nio.channels.WritableByteChannel;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.james.mailboxmanager.MessageResult;
+import org.apache.james.imap.mailbox.MessageResult;
 
 final class FullContent implements MessageResult.Content {
     private final byte[] contents;

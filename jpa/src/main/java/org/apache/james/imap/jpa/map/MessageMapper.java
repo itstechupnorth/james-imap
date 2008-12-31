@@ -23,10 +23,10 @@ import java.util.List;
 import javax.persistence.EntityManager;
 
 import org.apache.james.imap.jpa.om.Message;
-import org.apache.james.mailboxmanager.MessageRange;
-import org.apache.james.mailboxmanager.SearchQuery;
-import org.apache.james.mailboxmanager.SearchQuery.Criterion;
-import org.apache.james.mailboxmanager.SearchQuery.NumericRange;
+import org.apache.james.imap.mailbox.MessageRange;
+import org.apache.james.imap.mailbox.SearchQuery;
+import org.apache.james.imap.mailbox.SearchQuery.Criterion;
+import org.apache.james.imap.mailbox.SearchQuery.NumericRange;
 
 public class MessageMapper extends Mapper {
     

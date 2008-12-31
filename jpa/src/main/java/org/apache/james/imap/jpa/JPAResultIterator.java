@@ -30,11 +30,11 @@ import javax.mail.Flags;
 import javax.mail.internet.MimeMessage;
 
 import org.apache.james.imap.jpa.om.Message;
-import org.apache.james.mailboxmanager.MailboxManagerException;
-import org.apache.james.mailboxmanager.MessageResult;
-import org.apache.james.mailboxmanager.MessageResult.FetchGroup;
-import org.apache.james.mailboxmanager.impl.FetchGroupImpl;
-import org.apache.james.mailboxmanager.impl.MessageFlags;
+import org.apache.james.imap.mailbox.MailboxException;
+import org.apache.james.imap.mailbox.MessageResult;
+import org.apache.james.imap.mailbox.MessageResult.FetchGroup;
+import org.apache.james.imap.mailbox.util.FetchGroupImpl;
+import org.apache.james.imap.mailbox.util.MessageFlags;
 
 public class JPAResultIterator implements Iterator {
 
@@ -81,7 +81,7 @@ public class JPAResultIterator implements Iterator {
         try {
 
             result = MessageRowUtils.loadMessageResult(message, this.fetchGroup);
-        } catch (MailboxManagerException e) {
+        } catch (MailboxException e) {
             result = new UnloadedMessageResult(message, e);
         }
         return result;
@@ -103,7 +103,7 @@ public class JPAResultIterator implements Iterator {
         private static final FetchGroup FETCH_GROUP = new FetchGroupImpl(
                 FetchGroup.INTERNAL_DATE | FetchGroup.SIZE);
 
-        private final MailboxManagerException exception;
+        private final MailboxException exception;
 
         private final Date internalDate;
 
@@ -112,7 +112,7 @@ public class JPAResultIterator implements Iterator {
         private final long uid;
 
         public UnloadedMessageResult(final Message message,
-                final MailboxManagerException exception) {
+                final MailboxException exception) {
             super();
             internalDate = message.getInternalDate();
             size = message.getSize();
@@ -120,11 +120,11 @@ public class JPAResultIterator implements Iterator {
             this.exception = exception;
         }
 
-        public Flags getFlags() throws MailboxManagerException {
+        public Flags getFlags() throws MailboxException {
             throw exception;
         }
 
-        public Content getFullContent() throws MailboxManagerException {
+        public Content getFullContent() throws MailboxException {
             throw exception;
         }
 
@@ -140,11 +140,11 @@ public class JPAResultIterator implements Iterator {
             return null;
         }
 
-        public Content getBody() throws MailboxManagerException {
+        public Content getBody() throws MailboxException {
             throw exception;
         }
 
-        public MimeMessage getMimeMessage() throws MailboxManagerException {
+        public MimeMessage getMimeMessage() throws MailboxException {
             throw exception;
         }
 
@@ -164,7 +164,7 @@ public class JPAResultIterator implements Iterator {
             return 0;
         }
 
-        public Iterator headers() throws MailboxManagerException {
+        public Iterator headers() throws MailboxException {
             throw exception;
         }
 
@@ -176,36 +176,36 @@ public class JPAResultIterator implements Iterator {
         }
 
         public Content getMessageBody(MimePath path)
-                throws MailboxManagerException {
+                throws MailboxException {
             throw exception;
         }
 
         public Content getFullContent(MimePath path)
-                throws MailboxManagerException {
+                throws MailboxException {
             throw exception;
         }
 
         public Iterator iterateHeaders(MimePath path)
-                throws MailboxManagerException {
+                throws MailboxException {
             throw exception;
         }
 
         public Iterator iterateMimeHeaders(MimePath path)
-                throws MailboxManagerException {
+                throws MailboxException {
             throw exception;
         }
 
-        public Content getBody(MimePath path) throws MailboxManagerException {
+        public Content getBody(MimePath path) throws MailboxException {
             throw exception;
         }
 
         public Content getMimeBody(MimePath path)
-                throws MailboxManagerException {
+                throws MailboxException {
             throw exception;
         }
 
         public MimeDescriptor getMimeDescriptor()
-                throws MailboxManagerException {
+                throws MailboxException {
             throw exception;
         }
 

@@ -25,9 +25,9 @@ import java.util.List;
 import org.apache.james.api.imap.message.response.ImapResponseMessage;
 import org.apache.james.api.imap.process.ImapSession;
 import org.apache.james.api.imap.process.ImapProcessor.Responder;
+import org.apache.james.imap.mailbox.Mailbox;
+import org.apache.james.imap.mailbox.MailboxSession;
 import org.apache.james.imap.message.response.base.AbstractImapResponse;
-import org.apache.james.mailboxmanager.MailboxSession;
-import org.apache.james.mailboxmanager.mailbox.Mailbox;
 
 public class ImapSessionUtils {
 
