@@ -17,9 +17,8 @@
  * under the License.                                           *
  ****************************************************************/
 
-package org.apache.james.imap.jpa;
+package org.apache.james.imap.mailbox;
 
-import org.apache.james.imap.mailbox.MailboxException;
 
 /**
  * Indicates that the requested search is not supported by this implementation.

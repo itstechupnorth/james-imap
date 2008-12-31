@@ -38,6 +38,7 @@ import org.apache.james.imap.jpa.om.Header;
 import org.apache.james.imap.jpa.om.Message;
 import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.SearchQuery;
+import org.apache.james.imap.mailbox.UnsupportedSearchException;
 import org.apache.james.imap.mailbox.SearchQuery.NumericRange;
 import org.apache.james.mime4j.MimeException;
 import org.apache.james.mime4j.field.datetime.DateTime;
