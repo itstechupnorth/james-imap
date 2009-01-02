@@ -27,7 +27,6 @@ import org.apache.james.api.imap.process.ImapSession;
 import org.apache.james.api.imap.process.ImapProcessor.Responder;
 import org.apache.james.imap.mailbox.Mailbox;
 import org.apache.james.imap.mailbox.MailboxSession;
-import org.apache.james.imap.message.response.base.AbstractImapResponse;
 
 public class ImapSessionUtils {
 
@@ -38,12 +37,6 @@ public class ImapSessionUtils {
     public static final String SELECTED_MAILBOX_ATTRIBUTE_SESSION_KEY = "org.apache.james.api.imap.SELECTED_MAILBOX_ATTRIBUTE_SESSION_KEY";
 
     public static final String MAILBOX_SESSION_ATTRIBUTE_SESSION_KEY = "org.apache.james.api.imap.MAILBOX_SESSION_ATTRIBUTE_SESSION_KEY";
-
-    public static void addUnsolicitedResponses(AbstractImapResponse response,
-            ImapSession session, boolean useUids) {
-        List unsolicitedResponses = session.unsolicitedResponses(useUids);
-        response.addUnsolicitedResponses(unsolicitedResponses);
-    }
 
     public static void addUnsolicitedResponses(ImapSession session,
             boolean useUids, final Responder responder) {

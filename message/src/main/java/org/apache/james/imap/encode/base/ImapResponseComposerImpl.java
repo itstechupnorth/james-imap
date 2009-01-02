@@ -61,15 +61,6 @@ public class ImapResponseComposerImpl extends AbstractLogEnabled implements
         this.writer = writer;
     }
 
-    /**
-     * @throws IOException
-     * @see org.apache.james.imap.encode.ImapResponseComposer#commandComplete(org.apache.james.api.imap.ImapCommand,
-     *      java.lang.String)
-     */
-    public void commandComplete(final ImapCommand command, final String tag)
-            throws IOException {
-        commandComplete(command, null, tag);
-    }
 
     /**
      * @throws IOException
@@ -636,6 +627,16 @@ public class ImapResponseComposerImpl extends AbstractLogEnabled implements
         } else {
             writer.quoteUpperCaseAscii(message);
         }
+        return this;
+    }
+
+    public ImapResponseComposer capabilities(List<String> capabilities) throws IOException {
+        untagged();
+        message(CAPABILITY_COMMAND_NAME);
+        for(String capability:capabilities) {
+            message(capability);
+        }
+        end();
         return this;
     }
 }

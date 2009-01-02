@@ -28,7 +28,7 @@ import org.apache.james.imap.encode.imap4rev1.FetchResponseEncoder;
 import org.apache.james.imap.encode.imap4rev1.FlagsResponseEncoder;
 import org.apache.james.imap.encode.imap4rev1.RecentResponseEncoder;
 import org.apache.james.imap.encode.imap4rev1.StatusResponseEncoder;
-import org.apache.james.imap.encode.imap4rev1.legacy.CapabilityResponseEncoder;
+import org.apache.james.imap.encode.imap4rev1.server.CapabilityResponseEncoder;
 import org.apache.james.imap.encode.imap4rev1.server.LSubResponseEncoder;
 import org.apache.james.imap.encode.imap4rev1.server.ListResponseEncoder;
 import org.apache.james.imap.encode.imap4rev1.server.STATUSResponseEncoder;

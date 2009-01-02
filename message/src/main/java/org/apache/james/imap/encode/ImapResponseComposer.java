@@ -31,36 +31,6 @@ import org.apache.james.imap.message.response.imap4rev1.Literal;
 public interface ImapResponseComposer {
 
     /**
-     * Writes a standard tagged OK response on completion of a command. Response
-     * is writen as:
-     * 
-     * <pre>
-     *        a01 OK COMMAND_NAME completed.
-     * </pre>
-     * 
-     * @param command
-     *            The ImapCommand which was completed.
-     */
-    public abstract void commandComplete(final ImapCommand command,
-            final String tag) throws IOException;
-
-    /**
-     * Writes a standard tagged OK response on completion of a command, with a
-     * response code (eg READ-WRITE) Response is writen as:
-     * 
-     * <pre>
-     *        a01 OK [responseCode] COMMAND_NAME completed.
-     * </pre>
-     * 
-     * @param command
-     *            The ImapCommand which was completed.
-     * @param responseCode
-     *            A string response code to send to the client.
-     */
-    public abstract void commandComplete(final ImapCommand command,
-            final String responseCode, final String tag) throws IOException;
-
-    /**
      * Writes a standard NO response on command failure, together with a
      * descriptive message. Response is writen as:
      * 
@@ -386,4 +356,13 @@ public interface ImapResponseComposer {
             String[] quotes) throws IOException;
 
     public void skipNextSpace() throws IOException;
+
+    /**
+     * Composes a <code>CAPABILITY</code> response.
+     * See <code>7.2.1</code> of 
+     * <a href='http://james.apache.org/server/rfclist/imap4/rfc2060.txt' rel='tag'>RFC2060</a>.
+     * @param capabilities not null
+     * @throws IOException 
+     */
+    public ImapResponseComposer capabilities(List<String> capabilities) throws IOException;
 }

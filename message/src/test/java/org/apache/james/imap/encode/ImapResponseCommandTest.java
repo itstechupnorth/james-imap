@@ -56,39 +56,6 @@ public class ImapResponseCommandTest extends MockObjectTestCase {
         super.tearDown();
     }
 
-    public void testCommandCompleteImapCommand() throws Exception {
-        response.commandComplete(command, TAG);
-        assertEquals(5, writer.operations.size());
-        assertEquals(new MockImapResponseWriter.TagOperation(TAG),
-                writer.operations.get(0));
-        assertEquals(new MockImapResponseWriter.TextMessageOperation(
-                ImapConstants.OK), writer.operations.get(1));
-        assertEquals(new MockImapResponseWriter.CommandNameOperation(NAME),
-                writer.operations.get(2));
-        assertEquals(new MockImapResponseWriter.TextMessageOperation(
-                "completed."), writer.operations.get(3));
-        assertEquals(new MockImapResponseWriter.EndOperation(),
-                writer.operations.get(4));
-    }
-
-    public void testCommandCompleteImapCommandString() throws Exception {
-        final String code = "responseCode";
-        response.commandComplete(command, code, TAG);
-        assertEquals(6, writer.operations.size());
-        assertEquals(new MockImapResponseWriter.TagOperation(TAG),
-                writer.operations.get(0));
-        assertEquals(new MockImapResponseWriter.TextMessageOperation(
-                ImapConstants.OK), writer.operations.get(1));
-        assertEquals(new MockImapResponseWriter.ResponseCodeOperation(code),
-                writer.operations.get(2));
-        assertEquals(new MockImapResponseWriter.CommandNameOperation(NAME),
-                writer.operations.get(3));
-        assertEquals(new MockImapResponseWriter.TextMessageOperation(
-                "completed."), writer.operations.get(4));
-        assertEquals(new MockImapResponseWriter.EndOperation(),
-                writer.operations.get(5));
-    }
-
     public void testCommandFailedImapCommandString() throws Exception {
         final String reason = "A reason";
         response.commandFailed(command, reason, TAG);
@@ -126,20 +93,5 @@ public class ImapResponseCommandTest extends MockObjectTestCase {
                 writer.operations.get(5));
         assertEquals(new MockImapResponseWriter.EndOperation(),
                 writer.operations.get(6));
-    }
-
-    public void testCommandResponse() throws Exception {
-        String message = "A message";
-        response.commandResponse(command, message);
-        assertEquals(4, writer.operations.size());
-        assertEquals(new MockImapResponseWriter.UntaggedOperation(),
-                writer.operations.get(0));
-        assertEquals(new MockImapResponseWriter.CommandNameOperation(command
-                .getName()), writer.operations.get(1));
-        assertEquals(new MockImapResponseWriter.TextMessageOperation(message),
-                writer.operations.get(2));
-        assertEquals(new MockImapResponseWriter.EndOperation(),
-                writer.operations.get(3));
-
     }
 }

@@ -19,6 +19,8 @@
 
 package org.apache.james.imap.processor.imap4rev1;
 
+import java.util.List;
+
 import org.apache.james.api.imap.ImapCommand;
 import org.apache.james.api.imap.ImapMessage;
 import org.apache.james.api.imap.message.request.ImapRequest;
@@ -27,17 +29,17 @@ import org.apache.james.api.imap.message.response.imap4rev1.StatusResponseFactor
 import org.apache.james.api.imap.process.ImapProcessor;
 import org.apache.james.api.imap.process.ImapSession;
 import org.apache.james.imap.message.request.imap4rev1.CapabilityRequest;
-import org.apache.james.imap.message.response.imap4rev1.legacy.CapabilityResponse;
+import org.apache.james.imap.message.response.imap4rev1.server.CapabilityResponse;
 import org.apache.james.imap.processor.base.AbstractImapRequestProcessor;
-import org.apache.james.imap.processor.base.ImapSessionUtils;
 
 public class CapabilityProcessor extends AbstractImapRequestProcessor {
 
-    // TODO: capability text should be injected
+    private final List<String> capabilities;
 
     public CapabilityProcessor(final ImapProcessor next,
-            final StatusResponseFactory factory) {
+            final StatusResponseFactory factory, final List<String> capabilities) {
         super(next, factory);
+        this.capabilities = capabilities;
     }
 
     protected boolean isAcceptable(ImapMessage message) {
@@ -50,13 +52,13 @@ public class CapabilityProcessor extends AbstractImapRequestProcessor {
         final ImapResponseMessage result = doProcess(request, session, tag,
                 command);
         responder.respond(result);
+        unsolicitedResponses(session, responder, false);
+        okComplete(command, tag, responder);
     }
 
     private ImapResponseMessage doProcess(CapabilityRequest request,
             ImapSession session, String tag, ImapCommand command) {
-        // TODO: accurately report the capabilities of the server
-        final CapabilityResponse result = new CapabilityResponse(command, tag);
-        ImapSessionUtils.addUnsolicitedResponses(result, session, false);
+        final CapabilityResponse result = new CapabilityResponse(capabilities);
         return result;
     }
 }

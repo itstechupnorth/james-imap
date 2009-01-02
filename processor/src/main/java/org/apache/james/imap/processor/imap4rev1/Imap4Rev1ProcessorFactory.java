@@ -19,6 +19,10 @@
 
 package org.apache.james.imap.processor.imap4rev1;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.apache.james.api.imap.ImapConstants.*;
 import org.apache.james.api.imap.message.response.imap4rev1.StatusResponseFactory;
 import org.apache.james.api.imap.process.ImapProcessor;
 import org.apache.james.imap.mailbox.MailboxManagerProvider;
@@ -33,11 +37,14 @@ public class Imap4Rev1ProcessorFactory {
             final ImapProcessor chainEndProcessor,
             final MailboxManagerProvider mailboxManagerProvider,
             final StatusResponseFactory statusResponseFactory) {
-
+        
         final LogoutProcessor logoutProcessor = new LogoutProcessor(
                 chainEndProcessor, statusResponseFactory);
+        final List<String> capabilities = new ArrayList<String>();
+        capabilities.add(VERSION);
+        capabilities.add(SUPPORTS_LITERAL_PLUS);
         final CapabilityProcessor capabilityProcessor = new CapabilityProcessor(
-                logoutProcessor, statusResponseFactory);
+                logoutProcessor, statusResponseFactory, capabilities);
         final CheckProcessor checkProcessor = new CheckProcessor(
                 capabilityProcessor, statusResponseFactory);
         final LoginProcessor loginProcessor = new LoginProcessor(

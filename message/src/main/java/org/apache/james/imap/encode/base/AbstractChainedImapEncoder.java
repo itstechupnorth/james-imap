@@ -20,8 +20,6 @@
 package org.apache.james.imap.encode.base;
 
 import java.io.IOException;
-import java.util.Collection;
-import java.util.Iterator;
 
 import org.apache.commons.logging.Log;
 import org.apache.james.api.imap.AbstractLogEnabled;
@@ -50,14 +48,6 @@ abstract public class AbstractChainedImapEncoder extends AbstractLogEnabled
         if (isAcceptable) {
             doEncode(message, composer);
         } else {
-            chainEncode(message, composer);
-        }
-    }
-
-    protected void chainEncodeAll(final Collection messages,
-            final ImapResponseComposer composer) throws IOException {
-        for (Iterator iter = messages.iterator(); iter.hasNext();) {
-            ImapMessage message = (ImapMessage) iter.next();
             chainEncode(message, composer);
         }
     }

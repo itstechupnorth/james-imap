@@ -16,21 +16,20 @@
  * specific language governing permissions and limitations      *
  * under the License.                                           *
  ****************************************************************/
-package org.apache.james.imap.encode.imap4rev1.legacy;
+package org.apache.james.imap.encode.imap4rev1.server;
 
 import java.io.IOException;
-import java.util.List;
 
-import org.apache.james.api.imap.ImapCommand;
-import org.apache.james.api.imap.ImapConstants;
 import org.apache.james.api.imap.ImapMessage;
 import org.apache.james.imap.encode.ImapEncoder;
 import org.apache.james.imap.encode.ImapResponseComposer;
 import org.apache.james.imap.encode.base.AbstractChainedImapEncoder;
-import org.apache.james.imap.message.response.imap4rev1.legacy.CapabilityResponse;
+import org.apache.james.imap.message.response.imap4rev1.server.CapabilityResponse;
 
 /**
- * @deprecated use specification model
+ * Encodes <code>CAPABILITY</code> response.
+ * See <code>7.2.1</code> of 
+ * <a href='http://james.apache.org/server/rfclist/imap4/rfc2060.txt' rel='tag'>RFC2060</a>.
  */
 public class CapabilityResponseEncoder extends AbstractChainedImapEncoder {
 
@@ -40,18 +39,11 @@ public class CapabilityResponseEncoder extends AbstractChainedImapEncoder {
 
     protected void doEncode(ImapMessage acceptableMessage,
             ImapResponseComposer composer) throws IOException {
-        CapabilityResponse response = (CapabilityResponse) acceptableMessage;
-        // TODO: inject capability text
-        composer.untaggedResponse(ImapConstants.CAPABILITY_RESPONSE);
-        List unsolicitedResponses = response.getUnsolicatedResponses();
-        chainEncodeAll(unsolicitedResponses, composer);
-        String tag = response.getTag();
-        ImapCommand command = response.getCommand();
-        composer.commandComplete(command, tag);
+        final CapabilityResponse response = (CapabilityResponse) acceptableMessage;
+        composer.capabilities(response.getCapabilities());
     }
 
     protected boolean isAcceptable(ImapMessage message) {
         return (message instanceof CapabilityResponse);
     }
-
 }

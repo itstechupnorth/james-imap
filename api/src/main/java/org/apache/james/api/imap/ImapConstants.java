@@ -97,7 +97,7 @@ public interface ImapConstants {
 
     String VERSION = "IMAP4rev1";
 
-    String CAPABILITIES = "LITERAL+";
+    String SUPPORTS_LITERAL_PLUS = "LITERAL+";
 
     String USER_NAMESPACE = "#mail";
 
@@ -202,9 +202,6 @@ public interface ImapConstants {
     public static final String AUTHENTICATE_COMMAND_NAME = "AUTHENTICATE";
 
     public static final String APPEND_COMMAND_NAME = "APPEND";
-
-    public static final String CAPABILITY_RESPONSE = CAPABILITY_COMMAND_NAME
-            + SP + VERSION + SP + CAPABILITIES;
 
     public static final String LIST_RESPONSE_NAME = "LIST";
 
