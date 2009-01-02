@@ -99,19 +99,19 @@ public class SelectedMailboxSessionImpl extends AbstractLogEnabled implements
         final boolean sizeChanged = isSizeChanged();
         // New message response
         if (sizeChanged) {
-            addExistsResponses(results, mailbox);
+            addExistsResponses(results);
         }
         // Expunged messages
         if (!omitExpunged) {
-            addExpungedResponses(results, mailbox);
+            addExpungedResponses(results);
         }
         if (sizeChanged || (recentUidRemoved && !omitExpunged)) {
-            addRecentResponses(results, mailbox);
+            addRecentResponses(results);
             recentUidRemoved = false;
         }
 
         // Message updates
-        addFlagsResponses(results, useUid, mailbox);
+        addFlagsResponses(results, useUid);
 
         events.reset();
         return results;
@@ -131,7 +131,7 @@ public class SelectedMailboxSessionImpl extends AbstractLogEnabled implements
         return events.isDeletedByOtherSession();
     }
 
-    private void addExpungedResponses(List responses, final Mailbox mailbox) {
+    private void addExpungedResponses(List responses) {
         for (Iterator it = events.expungedUids(); it.hasNext();) {
             final Long uid = (Long) it.next();
             final long uidValue = uid.longValue();
@@ -148,14 +148,13 @@ public class SelectedMailboxSessionImpl extends AbstractLogEnabled implements
         }
     }
 
-    private void addFlagsResponses(final List responses, boolean useUid,
-            final Mailbox mailbox) {
+    private void addFlagsResponses(final List responses, boolean useUid) {
         try {
             for (final Iterator it = events.flagUpdateUids(); it.hasNext();) {
                 Long uid = (Long) it.next();
                 MessageRange messageSet = MessageRangeImpl.oneUid(uid
                         .longValue());
-                addFlagsResponses(responses, useUid, mailbox, messageSet);
+                addFlagsResponses(responses, useUid, messageSet);
             }
         } catch (MessagingException e) {
             final String message = "Failed to retrieve flags data";
@@ -163,11 +162,9 @@ public class SelectedMailboxSessionImpl extends AbstractLogEnabled implements
         }
     }
 
-    private void addFlagsResponses(final List responses, boolean useUid,
-            final Mailbox mailbox, MessageRange messageSet)
+    private void addFlagsResponses(final List responses, boolean useUid, MessageRange messageSet)
             throws MailboxException {
-        final Iterator it = mailbox.getMessages(messageSet,
-                FetchGroupImpl.FLAGS, mailboxSession);
+        final Iterator it = mailbox.getMessages(messageSet, FetchGroupImpl.FLAGS, mailboxSession);
         while (it.hasNext()) {
             MessageResult mr = (MessageResult) it.next();
             final long uid = mr.getUid();
@@ -190,7 +187,7 @@ public class SelectedMailboxSessionImpl extends AbstractLogEnabled implements
         }
     }
 
-    private void addRecentResponses(final List responses, final Mailbox mailbox) {
+    private void addRecentResponses(final List responses) {
         final int recentCount = recentCount();
         // TODO: use factory
         RecentResponse response = new RecentResponse(recentCount);
@@ -206,7 +203,7 @@ public class SelectedMailboxSessionImpl extends AbstractLogEnabled implements
         responses.add(response);
     }
 
-    private void addExistsResponses(final List responses, final Mailbox mailbox) {
+    private void addExistsResponses(final List responses) {
         try {
             final int messageCount = mailbox.getMessageCount(mailboxSession);
             // TODO: use factory
