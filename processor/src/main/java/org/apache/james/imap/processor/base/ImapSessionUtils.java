@@ -19,12 +19,7 @@
 
 package org.apache.james.imap.processor.base;
 
-import java.util.Iterator;
-import java.util.List;
-
-import org.apache.james.api.imap.message.response.ImapResponseMessage;
 import org.apache.james.api.imap.process.ImapSession;
-import org.apache.james.api.imap.process.ImapProcessor.Responder;
 import org.apache.james.imap.mailbox.Mailbox;
 import org.apache.james.imap.mailbox.MailboxSession;
 
@@ -37,15 +32,6 @@ public class ImapSessionUtils {
     public static final String SELECTED_MAILBOX_ATTRIBUTE_SESSION_KEY = "org.apache.james.api.imap.SELECTED_MAILBOX_ATTRIBUTE_SESSION_KEY";
 
     public static final String MAILBOX_SESSION_ATTRIBUTE_SESSION_KEY = "org.apache.james.api.imap.MAILBOX_SESSION_ATTRIBUTE_SESSION_KEY";
-
-    public static void addUnsolicitedResponses(ImapSession session,
-            boolean useUids, final Responder responder) {
-        final List unsolicitedResponses = session.unsolicitedResponses(useUids);
-        for (Iterator it = unsolicitedResponses.iterator(); it.hasNext();) {
-            ImapResponseMessage message = (ImapResponseMessage) it.next();
-            responder.respond(message);
-        }
-    }
 
     public static Mailbox getMailbox(final ImapSession session) {
         Mailbox result = (Mailbox) session

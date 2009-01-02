@@ -125,6 +125,8 @@ public class SearchProcessorTest extends MockObjectTestCase {
         Mock selectedMailbox = mock(SelectedImapMailbox.class);
         selectedMailbox.expects(once()).method("uid").with(eq(1729)).will(
                 returnValue(1729L));
+        selectedMailbox.expects(once()).method("unsolicitedResponses").with(eq(true),
+                eq(false)).will(returnValue(new ArrayList()));
         session.expects(atLeastOnce()).method("getSelected").will(
                 returnValue(selectedMailbox.proxy()));
         selectedMailbox.expects(once()).method("getRecent").will(
@@ -139,6 +141,8 @@ public class SearchProcessorTest extends MockObjectTestCase {
         Mock selectedMailbox = mock(SelectedImapMailbox.class);
         selectedMailbox.expects(once()).method("uid").with(eq(1)).will(
                 returnValue(42L));
+        selectedMailbox.expects(once()).method("unsolicitedResponses").with(eq(true),
+                eq(false)).will(returnValue(new ArrayList()));
         session.expects(atLeastOnce()).method("getSelected").will(
                 returnValue(selectedMailbox.proxy()));
         selectedMailbox.expects(once()).method("getRecent").will(
@@ -157,6 +161,8 @@ public class SearchProcessorTest extends MockObjectTestCase {
                 returnValue(1729L));
         selectedMailbox.expects(once()).method("getRecent").will(
                 returnValue(EMPTY));
+        selectedMailbox.expects(once()).method("unsolicitedResponses").with(eq(true),
+                eq(false)).will(returnValue(new ArrayList()));
         session.expects(atLeastOnce()).method("getSelected").will(
                 returnValue(selectedMailbox.proxy()));
         check(SearchKey.buildSequenceSet(ids), SearchQuery.uid(ranges));
@@ -171,107 +177,109 @@ public class SearchProcessorTest extends MockObjectTestCase {
                 returnValue(42L));
         selectedMailbox.expects(once()).method("getRecent").will(
                 returnValue(EMPTY));
+        selectedMailbox.expects(once()).method("unsolicitedResponses").with(eq(true),
+                eq(false)).will(returnValue(new ArrayList()));
         session.expects(atLeastOnce()).method("getSelected").will(
                 returnValue(selectedMailbox.proxy()));
         check(SearchKey.buildSequenceSet(ids), SearchQuery.uid(ranges));
     }
 
     public void testALL() throws Exception {
-        session.expects(once()).method("getSelected").will(returnValue(null));
+        session.expects(atLeastOnce()).method("getSelected").will(returnValue(null));
         check(SearchKey.buildAll(), SearchQuery.all());
     }
 
     public void testANSWERED() throws Exception {
-        session.expects(once()).method("getSelected").will(returnValue(null));
+        session.expects(atLeastOnce()).method("getSelected").will(returnValue(null));
         check(SearchKey.buildAnswered(), SearchQuery.flagIsSet(Flag.ANSWERED));
     }
 
     public void testBCC() throws Exception {
-        session.expects(once()).method("getSelected").will(returnValue(null));
+        session.expects(atLeastOnce()).method("getSelected").will(returnValue(null));
         check(SearchKey.buildBcc(ADDRESS), SearchQuery.headerContains(
                 ImapConstants.RFC822_BCC, ADDRESS));
     }
 
     public void testBEFORE() throws Exception {
-        session.expects(once()).method("getSelected").will(returnValue(null));
+        session.expects(atLeastOnce()).method("getSelected").will(returnValue(null));
         check(SearchKey.buildBefore(DAY_MONTH_YEAR), SearchQuery
                 .internalDateBefore(DAY, MONTH, YEAR));
     }
 
     public void testBODY() throws Exception {
-        session.expects(once()).method("getSelected").will(returnValue(null));
+        session.expects(atLeastOnce()).method("getSelected").will(returnValue(null));
         check(SearchKey.buildBody(SUBJECT), SearchQuery.bodyContains(SUBJECT));
     }
 
     public void testCC() throws Exception {
-        session.expects(once()).method("getSelected").will(returnValue(null));
+        session.expects(atLeastOnce()).method("getSelected").will(returnValue(null));
         check(SearchKey.buildCc(ADDRESS), SearchQuery.headerContains(
                 ImapConstants.RFC822_CC, ADDRESS));
     }
 
     public void testDELETED() throws Exception {
-        session.expects(once()).method("getSelected").will(returnValue(null));
+        session.expects(atLeastOnce()).method("getSelected").will(returnValue(null));
         check(SearchKey.buildDeleted(), SearchQuery.flagIsSet(Flag.DELETED));
     }
 
     public void testDRAFT() throws Exception {
-        session.expects(once()).method("getSelected").will(returnValue(null));
+        session.expects(atLeastOnce()).method("getSelected").will(returnValue(null));
         check(SearchKey.buildDraft(), SearchQuery.flagIsSet(Flag.DRAFT));
     }
 
     public void testFLAGGED() throws Exception {
-        session.expects(once()).method("getSelected").will(returnValue(null));
+        session.expects(atLeastOnce()).method("getSelected").will(returnValue(null));
         check(SearchKey.buildFlagged(), SearchQuery.flagIsSet(Flag.FLAGGED));
     }
 
     public void testFROM() throws Exception {
-        session.expects(once()).method("getSelected").will(returnValue(null));
+        session.expects(atLeastOnce()).method("getSelected").will(returnValue(null));
         check(SearchKey.buildFrom(ADDRESS), SearchQuery.headerContains(
                 ImapConstants.RFC822_FROM, ADDRESS));
     }
 
     public void testHEADER() throws Exception {
-        session.expects(once()).method("getSelected").will(returnValue(null));
+        session.expects(atLeastOnce()).method("getSelected").will(returnValue(null));
         check(SearchKey.buildHeader(ImapConstants.RFC822_IN_REPLY_TO, ADDRESS),
                 SearchQuery.headerContains(ImapConstants.RFC822_IN_REPLY_TO,
                         ADDRESS));
     }
 
     public void testKEYWORD() throws Exception {
-        session.expects(once()).method("getSelected").will(returnValue(null));
+        session.expects(atLeastOnce()).method("getSelected").will(returnValue(null));
         check(SearchKey.buildKeyword(KEYWORD), SearchQuery.flagIsSet(KEYWORD));
     }
 
     public void testLARGER() throws Exception {
-        session.expects(once()).method("getSelected").will(returnValue(null));
+        session.expects(atLeastOnce()).method("getSelected").will(returnValue(null));
         check(SearchKey.buildLarger(SIZE), SearchQuery.sizeGreaterThan(SIZE));
     }
 
     public void testNEW() throws Exception {
-        session.expects(once()).method("getSelected").will(returnValue(null));
+        session.expects(atLeastOnce()).method("getSelected").will(returnValue(null));
         check(SearchKey.buildNew(), SearchQuery.and(SearchQuery
                 .flagIsSet(Flag.RECENT), SearchQuery.flagIsUnSet(Flag.SEEN)));
     }
 
     public void testNOT() throws Exception {
-        session.expects(once()).method("getSelected").will(returnValue(null));
+        session.expects(atLeastOnce()).method("getSelected").will(returnValue(null));
         check(SearchKey.buildNot(SearchKey.buildOn(DAY_MONTH_YEAR)),
                 SearchQuery.not(SearchQuery.internalDateOn(DAY, MONTH, YEAR)));
     }
 
     public void testOLD() throws Exception {
-        session.expects(once()).method("getSelected").will(returnValue(null));
+        session.expects(atLeastOnce()).method("getSelected").will(returnValue(null));
         check(SearchKey.buildOld(), SearchQuery.flagIsUnSet(Flag.RECENT));
     }
 
     public void testON() throws Exception {
-        session.expects(once()).method("getSelected").will(returnValue(null));
+        session.expects(atLeastOnce()).method("getSelected").will(returnValue(null));
         check(SearchKey.buildOn(DAY_MONTH_YEAR), SearchQuery.internalDateOn(
                 DAY, MONTH, YEAR));
     }
 
     public void testAND() throws Exception {
-        session.expects(once()).method("getSelected").will(returnValue(null));
+        session.expects(atLeastOnce()).method("getSelected").will(returnValue(null));
         List keys = new ArrayList();
         keys.add(SearchKey.buildOn(DAY_MONTH_YEAR));
         keys.add(SearchKey.buildOld());
@@ -284,102 +292,102 @@ public class SearchProcessorTest extends MockObjectTestCase {
     }
 
     public void testOR() throws Exception {
-        session.expects(once()).method("getSelected").will(returnValue(null));
+        session.expects(atLeastOnce()).method("getSelected").will(returnValue(null));
         check(SearchKey.buildOr(SearchKey.buildOn(DAY_MONTH_YEAR), SearchKey
                 .buildOld()), SearchQuery.or(SearchQuery.internalDateOn(DAY,
                 MONTH, YEAR), SearchQuery.flagIsUnSet(Flag.RECENT)));
     }
 
     public void testRECENT() throws Exception {
-        session.expects(once()).method("getSelected").will(returnValue(null));
+        session.expects(atLeastOnce()).method("getSelected").will(returnValue(null));
         check(SearchKey.buildRecent(), SearchQuery.flagIsSet(Flag.RECENT));
     }
 
     public void testSEEN() throws Exception {
-        session.expects(once()).method("getSelected").will(returnValue(null));
+        session.expects(atLeastOnce()).method("getSelected").will(returnValue(null));
         check(SearchKey.buildSeen(), SearchQuery.flagIsSet(Flag.SEEN));
     }
 
     public void testSENTBEFORE() throws Exception {
-        session.expects(once()).method("getSelected").will(returnValue(null));
+        session.expects(atLeastOnce()).method("getSelected").will(returnValue(null));
         check(SearchKey.buildSentBefore(DAY_MONTH_YEAR), SearchQuery
                 .headerDateBefore(ImapConstants.RFC822_DATE, DAY, MONTH, YEAR));
     }
 
     public void testSENTON() throws Exception {
-        session.expects(once()).method("getSelected").will(returnValue(null));
+        session.expects(atLeastOnce()).method("getSelected").will(returnValue(null));
         check(SearchKey.buildSentOn(DAY_MONTH_YEAR), SearchQuery.headerDateOn(
                 ImapConstants.RFC822_DATE, DAY, MONTH, YEAR));
     }
 
     public void testSENTSINCE() throws Exception {
-        session.expects(once()).method("getSelected").will(returnValue(null));
+        session.expects(atLeastOnce()).method("getSelected").will(returnValue(null));
         check(SearchKey.buildSentSince(DAY_MONTH_YEAR), SearchQuery
                 .headerDateAfter(ImapConstants.RFC822_DATE, DAY, MONTH, YEAR));
     }
 
     public void testSINCE() throws Exception {
-        session.expects(once()).method("getSelected").will(returnValue(null));
+        session.expects(atLeastOnce()).method("getSelected").will(returnValue(null));
         check(SearchKey.buildSince(DAY_MONTH_YEAR), SearchQuery
                 .internalDateAfter(DAY, MONTH, YEAR));
     }
 
     public void testSMALLER() throws Exception {
-        session.expects(once()).method("getSelected").will(returnValue(null));
+        session.expects(atLeastOnce()).method("getSelected").will(returnValue(null));
         check(SearchKey.buildSmaller(SIZE), SearchQuery.sizeLessThan(SIZE));
     }
 
     public void testSUBJECT() throws Exception {
-        session.expects(once()).method("getSelected").will(returnValue(null));
+        session.expects(atLeastOnce()).method("getSelected").will(returnValue(null));
         check(SearchKey.buildSubject(SUBJECT), SearchQuery.headerContains(
                 ImapConstants.RFC822_SUBJECT, SUBJECT));
     }
 
     public void testTEXT() throws Exception {
-        session.expects(once()).method("getSelected").will(returnValue(null));
+        session.expects(atLeastOnce()).method("getSelected").will(returnValue(null));
         check(SearchKey.buildText(SUBJECT), SearchQuery.mailContains(SUBJECT));
     }
 
     public void testTO() throws Exception {
-        session.expects(once()).method("getSelected").will(returnValue(null));
+        session.expects(atLeastOnce()).method("getSelected").will(returnValue(null));
         check(SearchKey.buildTo(ADDRESS), SearchQuery.headerContains(
                 ImapConstants.RFC822_TO, ADDRESS));
     }
 
     public void testUID() throws Exception {
-        session.expects(once()).method("getSelected").will(returnValue(null));
+        session.expects(atLeastOnce()).method("getSelected").will(returnValue(null));
         check(SearchKey.buildUidSet(IDS), SearchQuery.uid(RANGES));
     }
 
     public void testUNANSWERED() throws Exception {
-        session.expects(once()).method("getSelected").will(returnValue(null));
+        session.expects(atLeastOnce()).method("getSelected").will(returnValue(null));
         check(SearchKey.buildUnanswered(), SearchQuery
                 .flagIsUnSet(Flag.ANSWERED));
     }
 
     public void testUNDELETED() throws Exception {
-        session.expects(once()).method("getSelected").will(returnValue(null));
+        session.expects(atLeastOnce()).method("getSelected").will(returnValue(null));
         check(SearchKey.buildUndeleted(), SearchQuery.flagIsUnSet(Flag.DELETED));
     }
 
     public void testUNDRAFT() throws Exception {
-        session.expects(once()).method("getSelected").will(returnValue(null));
+        session.expects(atLeastOnce()).method("getSelected").will(returnValue(null));
         check(SearchKey.buildUndraft(), SearchQuery.flagIsUnSet(Flag.DRAFT));
     }
 
     public void testUNFLAGGED() throws Exception {
-        session.expects(once()).method("getSelected").will(returnValue(null));
+        session.expects(atLeastOnce()).method("getSelected").will(returnValue(null));
         check(SearchKey.buildUnflagged(), SearchQuery.flagIsUnSet(Flag.FLAGGED));
     }
 
     public void testUNKEYWORD() throws Exception {
-        session.expects(once()).method("getSelected").will(returnValue(null));
+        session.expects(atLeastOnce()).method("getSelected").will(returnValue(null));
         check(SearchKey.buildUnkeyword(KEYWORD), SearchQuery
                 .flagIsUnSet(KEYWORD));
     }
 
     public void testUNSEEN() throws Exception {
-        session.expects(once()).method("getSelected").will(returnValue(null));
+        session.expects(atLeastOnce()).method("getSelected").will(returnValue(null));
         check(SearchKey.buildUnseen(), SearchQuery.flagIsUnSet(Flag.SEEN));
     }
 
@@ -399,8 +407,6 @@ public class SearchProcessorTest extends MockObjectTestCase {
         session.expects(once()).method("getAttribute").with(
                 eq(ImapSessionUtils.SELECTED_MAILBOX_ATTRIBUTE_SESSION_KEY))
                 .will(returnValue((Mailbox) mailbox.proxy()));
-        session.expects(once()).method("unsolicitedResponses").with(eq(true),
-                eq(false)).will(returnValue(new ArrayList()));
         mailbox.expects(once()).method("search").with(eq(query),
                 eq(FetchGroupImpl.MINIMAL), eq(mailboxSession)).will(
                 returnValue(new ArrayList().iterator()));

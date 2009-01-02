@@ -19,8 +19,6 @@
 
 package org.apache.james.api.imap.process;
 
-import java.util.List;
-
 import org.apache.james.api.imap.ImapSessionState;
 
 /**
@@ -31,15 +29,6 @@ import org.apache.james.api.imap.ImapSessionState;
  * @version $Revision: 109034 $
  */
 public interface ImapSession {
-    /**
-     * Sends any unsolicited responses to the client, such as EXISTS and FLAGS
-     * responses when the selected mailbox is modified by another user.
-     * 
-     * @return <code>List</code> of {@link ImapResponseMessage}'s
-     */
-    List unsolicitedResponses(boolean useUid);
-
-    List unsolicitedResponses(boolean omitExpunged, boolean useUid);
 
     /**
      * Logs out the session. Marks the connection for closure;

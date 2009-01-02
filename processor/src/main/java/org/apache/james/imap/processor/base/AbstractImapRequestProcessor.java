@@ -18,6 +18,7 @@
  ****************************************************************/
 package org.apache.james.imap.processor.base;
 
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -34,11 +35,12 @@ import org.apache.james.api.imap.message.response.imap4rev1.StatusResponse;
 import org.apache.james.api.imap.message.response.imap4rev1.StatusResponseFactory;
 import org.apache.james.api.imap.process.ImapProcessor;
 import org.apache.james.api.imap.process.ImapSession;
+import org.apache.james.api.imap.process.SelectedImapMailbox;
 import org.apache.james.imap.mailbox.MailboxExistsException;
 import org.apache.james.imap.mailbox.MailboxNotFoundException;
 
 abstract public class AbstractImapRequestProcessor extends
-        AbstractChainedImapProcessor implements ImapConstants {
+AbstractChainedImapProcessor implements ImapConstants {
 
     private final StatusResponseFactory factory;
 
@@ -97,15 +99,35 @@ abstract public class AbstractImapRequestProcessor extends
     protected void unsolicitedResponses(final ImapSession session,
             final ImapProcessor.Responder responder, boolean omitExpunged,
             boolean useUids) {
-        final List responses = session.unsolicitedResponses(omitExpunged,
-                useUids);
+        final List responses = unsolicitedResponses(session, omitExpunged, useUids);
         respond(responder, responses);
     }
 
     protected void unsolicitedResponses(final ImapSession session,
             final ImapProcessor.Responder responder, boolean useUids) {
-        final List responses = session.unsolicitedResponses(useUids);
+        final List responses = unsolicitedResponses(session, useUids);
         respond(responder, responses);
+    }
+
+    protected List unsolicitedResponses(final ImapSession session, boolean useUid) {
+        return unsolicitedResponses(session, false, useUid);
+    }
+
+    /**
+     * Sends any unsolicited responses to the client, such as EXISTS and FLAGS
+     * responses when the selected mailbox is modified by another user.
+     * 
+     * @return <code>List</code> of {@link ImapResponseMessage}'s
+     */
+    protected List unsolicitedResponses(final ImapSession session, boolean omitExpunged, boolean useUid) {
+        final List results;
+        final SelectedImapMailbox selected = session.getSelected();
+        if (selected == null) {
+            results = Collections.EMPTY_LIST;
+        } else {
+            results = selected.unsolicitedResponses(omitExpunged, useUid);
+        }
+        return results;
     }
 
     private void respond(final ImapProcessor.Responder responder,

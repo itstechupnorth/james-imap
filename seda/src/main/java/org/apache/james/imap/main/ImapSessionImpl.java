@@ -19,17 +19,14 @@
 
 package org.apache.james.imap.main;
 
-import java.util.Collections;
-import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.james.api.imap.AbstractLogEnabled;
 import org.apache.james.api.imap.ImapConstants;
 import org.apache.james.api.imap.ImapSessionState;
 import org.apache.james.api.imap.process.ImapSession;
 import org.apache.james.api.imap.process.SelectedImapMailbox;
-
-import EDU.oswego.cs.dl.util.concurrent.ConcurrentHashMap;
 
 /**
  * Implements a session.
@@ -40,25 +37,10 @@ public final class ImapSessionImpl extends AbstractLogEnabled implements
 
     private SelectedImapMailbox selectedMailbox = null;
 
-    private final Map attributesByKey;
+    private final Map<String, Object> attributesByKey;
 
     public ImapSessionImpl() {
-        this.attributesByKey = new ConcurrentHashMap();
-    }
-
-    public List unsolicitedResponses(boolean useUid) {
-        return unsolicitedResponses(false, useUid);
-    }
-
-    public List unsolicitedResponses(boolean omitExpunged, boolean useUid) {
-        final List results;
-        final SelectedImapMailbox selected = getSelected();
-        if (selected == null) {
-            results = Collections.EMPTY_LIST;
-        } else {
-            results = selected.unsolicitedResponses(omitExpunged, useUid);
-        }
-        return results;
+        this.attributesByKey = new ConcurrentHashMap<String, Object>();
     }
 
     public void logout() {
