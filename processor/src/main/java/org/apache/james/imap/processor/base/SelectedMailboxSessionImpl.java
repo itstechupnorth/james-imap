@@ -90,17 +90,12 @@ public class SelectedMailboxSessionImpl extends AbstractLogEnabled implements
         return events.isSizeChanged();
     }
 
-    public Mailbox getMailbox() {
-        return mailbox;
-    }
-
     /**
      * @see org.apache.james.api.imap.process.SelectedImapMailbox#unsolicitedResponses(boolean,
      *      boolean)
      */
     public List unsolicitedResponses(boolean omitExpunged, boolean useUid) {
         final List results = new ArrayList();
-        final Mailbox mailbox = getMailbox();
         final boolean sizeChanged = isSizeChanged();
         // New message response
         if (sizeChanged) {
