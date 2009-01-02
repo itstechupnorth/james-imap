@@ -26,7 +26,6 @@ import java.util.List;
 
 import javax.mail.Flags;
 
-import org.apache.commons.logging.Log;
 import org.apache.james.api.imap.AbstractLogEnabled;
 import org.apache.james.api.imap.ImapCommand;
 import org.apache.james.api.imap.ImapConstants;
@@ -76,99 +75,7 @@ public class ImapResponseComposerImpl extends AbstractLogEnabled implements
         message("completed.");
         end();
     }
-
-    /**
-     * @throws IOException
-     * @see org.apache.james.imap.encode.ImapResponseComposer#commandFailed(org.apache.james.api.imap.ImapCommand,
-     *      java.lang.String, java.lang.String)
-     */
-    public void commandFailed(final ImapCommand command, final String reason,
-            final String tag) throws IOException {
-        commandFailed(command, null, reason, tag);
-    }
-
-    /**
-     * @throws IOException
-     * @see org.apache.james.imap.encode.ImapResponseComposer#commandFailed(org.apache.james.api.imap.ImapCommand,
-     *      java.lang.String, java.lang.String, java.lang.String)
-     */
-    public void commandFailed(ImapCommand command, String responseCode,
-            String reason, final String tag) throws IOException {
-        tag(tag);
-        message(NO);
-        responseCode(responseCode);
-        commandName(command);
-        message(FAILED);
-        message(reason);
-        end();
-        final Log logger = getLog();
-        if (logger != null && logger.isInfoEnabled()) {
-            logger.info("COMMAND FAILED [" + responseCode + "] - " + reason);
-        }
-    }
-
-    /**
-     * @throws IOException
-     * @see org.apache.james.imap.encode.ImapResponseComposer#commandError(java.lang.String,
-     *      java.lang.String)
-     */
-    public void commandError(final String message, final String tag)
-            throws IOException {
-        tag(tag);
-        message(BAD);
-        message(message);
-        end();
-        final Log logger = getLog();
-        if (logger != null && logger.isInfoEnabled()) {
-            logger.info("ERROR - " + message);
-        }
-    }
-
-    /**
-     * @throws IOException
-     * @see org.apache.james.imap.encode.ImapResponseComposer#badResponse(java.lang.String)
-     */
-    public void badResponse(String message) throws IOException {
-        untagged();
-        message(BAD);
-        message(message);
-        end();
-        final Log logger = getLog();
-        if (logger != null && logger.isInfoEnabled()) {
-            logger.info("BAD - " + message);
-        }
-    }
-
-    /**
-     * @throws IOException
-     * @see org.apache.james.imap.encode.ImapResponseComposer#badResponse(java.lang.String,
-     *      java.lang.String)
-     */
-    public void badResponse(String message, String tag) throws IOException {
-        tag(tag);
-        message(BAD);
-        message(message);
-        end();
-        final Log logger = getLog();
-        if (logger != null && logger.isInfoEnabled()) {
-            logger.info("BAD - " + message);
-        }
-    }
-
-    /**
-     * @throws IOException
-     * @see org.apache.james.imap.encode.ImapResponseComposer#okResponse(java.lang.String,
-     *      java.lang.String)
-     */
-    public void okResponse(String responseCode, String message)
-            throws IOException {
-        untagged();
-        message(OK);
-        responseCode(responseCode);
-        message(message);
-        end();
-    }
-
+    
     /**
      * @throws IOException
      * @see org.apache.james.imap.encode.ImapResponseComposer#untaggedNoResponse(java.lang.String,

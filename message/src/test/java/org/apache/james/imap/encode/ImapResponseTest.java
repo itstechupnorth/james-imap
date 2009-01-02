@@ -45,51 +45,6 @@ public class ImapResponseTest extends MockObjectTestCase {
         super.tearDown();
     }
 
-    public void testCommandError() throws Exception {
-        String message = "A message";
-        response.commandError(message, TAG);
-        assertEquals(4, writer.operations.size());
-        assertEquals(new MockImapResponseWriter.TagOperation(TAG),
-                writer.operations.get(0));
-        assertEquals(new MockImapResponseWriter.TextMessageOperation(
-                ImapConstants.BAD), writer.operations.get(1));
-        assertEquals(new MockImapResponseWriter.TextMessageOperation(message),
-                writer.operations.get(2));
-        assertEquals(new MockImapResponseWriter.EndOperation(),
-                writer.operations.get(3));
-    }
-
-    public void testBadResponse() throws Exception {
-        String message = "A message";
-        response.badResponse(message);
-        assertEquals(4, writer.operations.size());
-        assertEquals(new MockImapResponseWriter.UntaggedOperation(),
-                writer.operations.get(0));
-        assertEquals(new MockImapResponseWriter.TextMessageOperation(
-                ImapConstants.BAD), writer.operations.get(1));
-        assertEquals(new MockImapResponseWriter.TextMessageOperation(message),
-                writer.operations.get(2));
-        assertEquals(new MockImapResponseWriter.EndOperation(),
-                writer.operations.get(3));
-    }
-
-    public void testOkResponse() throws Exception {
-        String message = "A message";
-        String code = "A code";
-        response.okResponse(code, message);
-        assertEquals(5, writer.operations.size());
-        assertEquals(new MockImapResponseWriter.UntaggedOperation(),
-                writer.operations.get(0));
-        assertEquals(new MockImapResponseWriter.TextMessageOperation(
-                ImapConstants.OK), writer.operations.get(1));
-        assertEquals(new MockImapResponseWriter.ResponseCodeOperation(code),
-                writer.operations.get(2));
-        assertEquals(new MockImapResponseWriter.TextMessageOperation(message),
-                writer.operations.get(3));
-        assertEquals(new MockImapResponseWriter.EndOperation(),
-                writer.operations.get(4));
-    }
-
     public void testFlagsResponse() throws Exception {
         Flags flags = new Flags();
         response.flagsResponse(flags);
