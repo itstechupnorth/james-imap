@@ -64,7 +64,7 @@ public class SelectedMailboxSessionImpl extends AbstractLogEnabled implements
     private final String name;
 
     public SelectedMailboxSessionImpl(Mailbox mailbox, List uids,
-            MailboxSession mailboxSession) throws MailboxException {
+            MailboxSession mailboxSession, final String name) throws MailboxException {
         this.mailbox = mailbox;
         this.mailboxSession = mailboxSession;
         recentUids = new TreeSet();
@@ -76,7 +76,7 @@ public class SelectedMailboxSessionImpl extends AbstractLogEnabled implements
         mailbox.addListener(events);
         converter = new UidToMsnConverter(uids);
         mailbox.addListener(converter);
-        name = mailbox.getName();
+        this.name = name;
     }
 
     /**

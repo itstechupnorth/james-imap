@@ -186,7 +186,7 @@ abstract public class AbstractMailboxSelectionProcessor extends
         if (currentMailbox == null
                 || !currentMailbox.getName().equals(mailboxName)) {
             sessionMailbox = createNewSelectedMailbox(mailbox, mailboxSession,
-                    session);
+                    session, mailboxName);
         } else {
             sessionMailbox = currentMailbox;
         }
@@ -194,7 +194,7 @@ abstract public class AbstractMailboxSelectionProcessor extends
     }
 
     private SelectedImapMailbox createNewSelectedMailbox(final Mailbox mailbox,
-            final MailboxSession mailboxSession, ImapSession session)
+            final MailboxSession mailboxSession, ImapSession session, String name)
             throws MailboxException {
         final SelectedImapMailbox sessionMailbox;
         final Iterator it = mailbox.getMessages(MessageRangeImpl.all(),
@@ -205,7 +205,7 @@ abstract public class AbstractMailboxSelectionProcessor extends
             uids.add(new Long(result.getUid()));
         }
         sessionMailbox = new SelectedMailboxSessionImpl(mailbox, uids,
-                mailboxSession);
+                mailboxSession, name);
         session.selected(sessionMailbox);
         session.setAttribute(
                 ImapSessionUtils.SELECTED_MAILBOX_ATTRIBUTE_SESSION_KEY,

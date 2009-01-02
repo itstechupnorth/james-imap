@@ -32,16 +32,7 @@ public interface Mailbox {
 
     public static final long ANONYMOUS_SESSION = 0;
 
-    /**
-     * Example #mail.paul.lists.apache.james-dev (3rd level folder of user paul)
-     * 
-     * @return Full folder name with namespace
-     * @throws MailboxException
-     */
-    String getName() throws MailboxException;
-
-    int getMessageCount(MailboxSession mailboxSession)
-            throws MailboxException;
+    int getMessageCount(MailboxSession mailboxSession) throws MailboxException;
 
     boolean isWriteable();
 

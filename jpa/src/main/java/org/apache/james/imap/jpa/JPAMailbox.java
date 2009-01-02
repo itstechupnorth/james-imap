@@ -74,10 +74,6 @@ public class JPAMailbox extends AbstractLogEnabled implements org.apache.james.i
         this.entityManagerFactory = entityManagerfactory;
     }
 
-    public String getName() throws MailboxException {
-        return getMailboxRow().getName();
-    }
-
     public int getMessageCount(MailboxSession mailboxSession)
     throws MailboxException {
         try {

@@ -76,7 +76,7 @@ public class AppendProcessor extends AbstractMailboxAwareProcessor {
             final Mailbox mailbox = mailboxManager.getMailbox(fullMailboxName,
                     false);
             appendToMailbox(mimeMessage, datetime, session, tag, command,
-                    mailbox, responder);
+                    mailbox, responder, fullMailboxName);
 
         } catch (MailboxException mme) {
             // Mailbox API does not provide facilities for diagnosing the
@@ -98,15 +98,15 @@ public class AppendProcessor extends AbstractMailboxAwareProcessor {
 
     }
 
-    private void appendToMailbox(MimeMessage message, Date datetime,
-            ImapSession session, String tag, ImapCommand command,
-            Mailbox mailbox, Responder responder) {
+    private void appendToMailbox(final MimeMessage message, final Date datetime,
+            final ImapSession session, final String tag, final ImapCommand command,
+            final Mailbox mailbox, Responder responder, final String fullMailboxName) {
         try {
             final MailboxSession mailboxSession = ImapSessionUtils
                     .getMailboxSession(session);
             final SelectedImapMailbox selectedMailbox = session.getSelected();
             final boolean isSelectedMailbox = selectedMailbox != null
-                    && mailbox.getName().equals(selectedMailbox.getName());
+                    && fullMailboxName.equals(selectedMailbox.getName());
             if (!isSelectedMailbox) {
                 message.setFlag(Flag.RECENT, true);
             }
