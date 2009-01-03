@@ -218,7 +218,7 @@ abstract public class AbstractMailboxAwareProcessor extends AbstractChainedImapP
     private Mailbox getMailbox(final ImapSession session, final SelectedImapMailbox selected) throws MailboxException {
         final String fullMailboxName = buildFullName(session, selected.getName());
         final MailboxManager mailboxManager = getMailboxManager(session);
-        final Mailbox mailbox = mailboxManager.getMailbox(fullMailboxName, false);
+        final Mailbox mailbox = mailboxManager.getMailbox(fullMailboxName);
         return mailbox;
     }
 

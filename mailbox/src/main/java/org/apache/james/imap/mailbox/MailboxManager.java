@@ -77,16 +77,13 @@ public interface MailboxManager {
      * 
      * @param mailboxName
      *            the name of the mailbox, not null
-     * @param autocreate
-     *            create this mailbox if it doesn't exist
      * @return <code>ImapMailboxSession</code>, not null
      * @throws MailboxException
      *             when the mailbox cannot be opened
      * @throws MailboxNotFoundException
      *             when the given mailbox does not exist
      */
-    Mailbox getMailbox(String mailboxName, boolean autocreate)
-            throws MailboxException;
+    Mailbox getMailbox(String mailboxName) throws MailboxException;
 
     /**
      * Creates a new mailbox. Any intermediary mailboxes missing from the
@@ -144,7 +141,7 @@ public interface MailboxManager {
     ListResult[] list(MailboxExpression expression)
             throws MailboxException;
 
-    boolean existsMailbox(String mailboxName) throws MailboxException;
+    boolean mailboxExists(String mailboxName) throws MailboxException;
 
     /**
      * Creates a new session.

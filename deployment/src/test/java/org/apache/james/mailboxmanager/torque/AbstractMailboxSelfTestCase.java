@@ -54,7 +54,7 @@ public abstract class AbstractMailboxSelfTestCase extends TestCase {
     public void setUp() throws Exception {
         super.setUp();
         mailboxManager.createMailbox(INBOX);
-        mailbox = mailboxManager.getMailbox(INBOX, false);
+        mailbox = mailboxManager.getMailbox(INBOX);
         mailboxSession = mailboxManager.createSession();
         collector = new MailboxListenerCollector();
         mailbox.addListener(collector);

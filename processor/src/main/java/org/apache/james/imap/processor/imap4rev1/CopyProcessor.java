@@ -62,7 +62,7 @@ public class CopyProcessor extends AbstractMailboxAwareProcessor {
             final String fullMailboxName = buildFullName(session, mailboxName);
             final MailboxManager mailboxManager = getMailboxManager(session);
             final boolean mailboxExists = mailboxManager
-                    .existsMailbox(fullMailboxName);
+                    .mailboxExists(fullMailboxName);
             if (!mailboxExists) {
                 no(command, tag, responder,
                         HumanReadableTextKey.FAILURE_NO_SUCH_MAILBOX,

@@ -27,6 +27,7 @@ import org.apache.james.api.imap.message.response.imap4rev1.StatusResponseFactor
 import org.apache.james.api.imap.process.ImapProcessor;
 import org.apache.james.api.imap.process.ImapSession;
 import org.apache.james.imap.mailbox.MailboxException;
+import org.apache.james.imap.mailbox.MailboxExistsException;
 import org.apache.james.imap.mailbox.MailboxManager;
 import org.apache.james.imap.mailbox.MailboxManagerProvider;
 import org.apache.james.imap.mailbox.MailboxSession;
@@ -68,7 +69,17 @@ public class LoginProcessor extends AbstractMailboxAwareProcessor {
                         ImapSessionUtils.MAILBOX_SESSION_ATTRIBUTE_SESSION_KEY,
                         mailboxSession);
                 ImapSessionUtils.setUserName(session, userid);
-                mailboxManager.getMailbox(buildFullName(session, MailboxManager.INBOX), true);
+                final String inboxName = buildFullName(session, MailboxManager.INBOX);
+                if (mailboxManager.mailboxExists(inboxName)) {
+                    getLog().debug("INBOX exists. No need to create it.");
+                } else {
+                    try {
+                        getLog().debug("INBOX does not exist. Creating it.");
+                        mailboxManager.createMailbox(inboxName);
+                    } catch (MailboxExistsException e) {
+                        getLog().debug("Mailbox created by concurrent call. Safe to ignore this exception.");
+                    }
+                }
                 okComplete(command, tag, responder);
             } else {
                 final Integer currentNumberOfFailures = (Integer) session

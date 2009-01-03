@@ -71,17 +71,13 @@ public class TorqueMailboxManager implements MailboxManager {
         this.userManager = userManager;
     }
 
-    public Mailbox getMailbox(String mailboxName, boolean autoCreate)
+    public Mailbox getMailbox(String mailboxName)
             throws MailboxException {
-        return doGetMailbox(mailboxName, autoCreate);
+        return doGetMailbox(mailboxName);
     }
 
-    private TorqueMailbox doGetMailbox(String mailboxName, boolean autoCreate)
+    private TorqueMailbox doGetMailbox(String mailboxName)
             throws MailboxException {
-        if (autoCreate && !existsMailbox(mailboxName)) {
-            getLog().info("autocreated mailbox  " + mailboxName);
-            createMailbox(mailboxName);
-        }
         try {
             synchronized (mailboxes) {
                 MailboxRow mailboxRow = MailboxRowPeer
@@ -132,13 +128,13 @@ public class TorqueMailboxManager implements MailboxManager {
                     if (index > 0 && count++ > 1) {
                         final String mailbox = namespaceName
                                 .substring(0, index);
-                        if (!existsMailbox(mailbox)) {
+                        if (!mailboxExists(mailbox)) {
                             doCreate(mailbox);
                         }
                     }
                     index = namespaceName.indexOf(HIERARCHY_DELIMITER, ++index);
                 }
-                if (existsMailbox(namespaceName)) {
+                if (mailboxExists(namespaceName)) {
                     throw new MailboxExistsException(namespaceName); 
                 } else {
                     doCreate(namespaceName);
@@ -186,7 +182,7 @@ public class TorqueMailboxManager implements MailboxManager {
         getLog().debug("renameMailbox " + from + " to " + to);
         try {
             synchronized (mailboxes) {
-                if (existsMailbox(to)) {
+                if (mailboxExists(to)) {
                     throw new MailboxExistsException(to);
                 }
                 // TODO put this into a serilizable transaction
@@ -227,8 +223,8 @@ public class TorqueMailboxManager implements MailboxManager {
 
     public void copyMessages(MessageRange set, String from, String to,
             MailboxSession session) throws MailboxException {
-        TorqueMailbox toMailbox = doGetMailbox(to, false);
-        TorqueMailbox fromMailbox = doGetMailbox(from, false);
+        TorqueMailbox toMailbox = doGetMailbox(to);
+        TorqueMailbox fromMailbox = doGetMailbox(from);
         fromMailbox.copyTo(set, toMailbox, session);
     }
 
@@ -278,7 +274,7 @@ public class TorqueMailboxManager implements MailboxManager {
         // TODO implement subscriptions
     }
 
-    public boolean existsMailbox(String mailboxName)
+    public boolean mailboxExists(String mailboxName)
             throws MailboxException {
         Criteria c = new Criteria();
         c.add(MailboxRowPeer.NAME, mailboxName);
