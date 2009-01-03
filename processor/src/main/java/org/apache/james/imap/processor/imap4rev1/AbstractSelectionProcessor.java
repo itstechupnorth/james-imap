@@ -48,7 +48,7 @@ import org.apache.james.imap.message.response.imap4rev1.ExistsResponse;
 import org.apache.james.imap.message.response.imap4rev1.FlagsResponse;
 import org.apache.james.imap.message.response.imap4rev1.RecentResponse;
 import org.apache.james.imap.processor.base.ImapSessionUtils;
-import org.apache.james.imap.processor.base.SelectedMailboxSessionImpl;
+import org.apache.james.imap.processor.base.SelectedMailboxImpl;
 
 abstract class AbstractSelectionProcessor extends AbstractMailboxProcessor {
 
@@ -197,12 +197,12 @@ abstract class AbstractSelectionProcessor extends AbstractMailboxProcessor {
         final SelectedMailbox sessionMailbox;
         final Iterator it = mailbox.getMessages(MessageRangeImpl.all(),
                 FetchGroupImpl.MINIMAL, mailboxSession);
-        final List uids = new ArrayList();
+        final List<Long> uids = new ArrayList<Long>();
         while (it.hasNext()) {
             final MessageResult result = (MessageResult) it.next();
             uids.add(new Long(result.getUid()));
         }
-        sessionMailbox = new SelectedMailboxSessionImpl(mailbox, uids,
+        sessionMailbox = new SelectedMailboxImpl(mailbox, uids,
                 mailboxSession, name);
         session.selected(sessionMailbox);
         session.setAttribute(

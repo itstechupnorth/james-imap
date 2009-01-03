@@ -34,7 +34,7 @@ import org.apache.james.imap.mailbox.util.MailboxEventAnalyser;
 import org.apache.james.imap.mailbox.util.UidToMsnConverter;
 
 // TODO: deal with deleted or renamed mailboxes
-public class SelectedMailboxSessionImpl extends AbstractLogEnabled implements
+public class SelectedMailboxImpl extends AbstractLogEnabled implements
         SelectedMailbox {
 
     private final Mailbox mailbox;
@@ -49,8 +49,8 @@ public class SelectedMailboxSessionImpl extends AbstractLogEnabled implements
 
     private final String name;
 
-    public SelectedMailboxSessionImpl(Mailbox mailbox, List uids,
-            MailboxSession mailboxSession, final String name) throws MailboxException {
+    public SelectedMailboxImpl(final Mailbox mailbox, final List<Long> uids,
+            final MailboxSession mailboxSession, final String name) throws MailboxException {
         this.mailbox = mailbox;
         recentUids = new TreeSet<Long>();
         recentUidRemoved = false;

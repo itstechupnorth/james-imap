@@ -22,37 +22,35 @@ package org.apache.james.imap.mailbox.util;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 import java.util.SortedMap;
 import java.util.TreeMap;
-import java.util.TreeSet;
 
 import org.apache.james.imap.mailbox.MailboxListener;
 
 public class UidToMsnConverter implements MailboxListener {
-    protected SortedMap msnToUid;
+    private final SortedMap<Integer, Long> msnToUid;
 
-    protected SortedMap uidToMsn;
+    private final SortedMap<Long, Integer> uidToMsn;
 
-    protected long highestUid = 0;
+    private long highestUid = 0;
 
-    protected int highestMsn = 0;
+    private int highestMsn = 0;
 
-    public UidToMsnConverter(final Collection uids) {
-        msnToUid = new TreeMap();
-        uidToMsn = new TreeMap();
+    public UidToMsnConverter(final Collection<Long> uids) {
+        msnToUid = new TreeMap<Integer, Long>();
+        uidToMsn = new TreeMap<Long, Integer>();
         if (uids != null) {
             int msn = 1;
-            List uidsInOrder = new ArrayList(uids);
+            final List<Long> uidsInOrder = new ArrayList<Long>(uids);
             Collections.sort(uidsInOrder);
-            for (final Iterator it = uidsInOrder.iterator(); it.hasNext(); msn++) {
-                final Long uid = (Long) it.next();
+            for (final Long uid:uidsInOrder) {
                 highestUid = uid.longValue();
                 highestMsn = msn;
                 final Integer msnInteger = new Integer(msn);
                 msnToUid.put(msnInteger, uid);
                 uidToMsn.put(uid, msnInteger);
+                msn++;
             }
         }
     }
@@ -61,7 +59,7 @@ public class UidToMsnConverter implements MailboxListener {
         if (msn == -1) {
             return -1;
         }
-        Long uid = (Long) msnToUid.get(new Integer(msn));
+        Long uid = msnToUid.get(new Integer(msn));
         if (uid != null) {
             return uid.longValue();
         } else {
@@ -83,7 +81,7 @@ public class UidToMsnConverter implements MailboxListener {
 
     }
 
-    protected synchronized void add(int msn, long uid) {
+    private synchronized void add(int msn, long uid) {
         if (uid > highestUid) {
             highestUid = uid;
         }
@@ -93,59 +91,23 @@ public class UidToMsnConverter implements MailboxListener {
         uidToMsn.put(uidLong, msnInteger);
     }
 
-    public synchronized void expunge(long uid) {
-        int msn = getMsn(uid);
+    public synchronized void expunge(final long uid) {
+        final int msn = getMsn(uid);
         remove(msn, uid);
-        List renumberMsns = new ArrayList(msnToUid
+        final List<Integer> renumberMsns = new ArrayList<Integer>(msnToUid
                 .tailMap(new Integer(msn + 1)).keySet());
-        for (Iterator iter = renumberMsns.iterator(); iter.hasNext();) {
-            int aMsn = ((Integer) iter.next()).intValue();
+        for (final Integer msnInteger: renumberMsns) {
+            int aMsn = msnInteger.intValue();
             long aUid = getUid(aMsn);
             remove(aMsn, aUid);
             add(aMsn - 1, aUid);
         }
         highestMsn--;
-        assertValidity();
     }
 
-    protected void remove(int msn, long uid) {
+    private void remove(int msn, long uid) {
         uidToMsn.remove(new Long(uid));
         msnToUid.remove(new Integer(msn));
-    }
-
-    synchronized void assertValidity() {
-        Integer[] msns = (Integer[]) msnToUid.keySet().toArray(new Integer[0]);
-        for (int i = 0; i < msns.length; i++) {
-            if (msns[i].intValue() != (i + 1)) {
-                throw new AssertionError("Msn at position " + (i + 1) + " was "
-                        + msns[i].intValue());
-            }
-        }
-        if (msns.length > 0) {
-            if (msns[msns.length - 1].intValue() != highestMsn) {
-                throw new AssertionError("highestMsn " + highestMsn
-                        + " msns[msns.length-1] " + msns[msns.length - 1]);
-            }
-        } else {
-            if (highestMsn != 0) {
-                throw new AssertionError(
-                        "highestMsn in empty map has to be 0 but is"
-                                + highestMsn);
-            }
-        }
-        if (!msnToUid.keySet().equals(new TreeSet(uidToMsn.values()))) {
-            System.out.println(msnToUid.keySet());
-            System.out.println(uidToMsn.values());
-            throw new AssertionError(
-                    "msnToUid.keySet() does not equal uidToMsn.values()");
-        }
-        if (!uidToMsn.keySet().equals(new TreeSet(msnToUid.values()))) {
-            System.out.println(uidToMsn.keySet());
-            System.out.println(msnToUid.values());
-            throw new AssertionError(
-                    "uidToMsn.keySet() does not equal msnToUid.values()");
-        }
-
     }
 
     public synchronized void add(long uid) {
@@ -153,10 +115,6 @@ public class UidToMsnConverter implements MailboxListener {
             highestMsn++;
             add(highestMsn, uid);
         }
-    }
-
-    int size() {
-        return uidToMsn.size();
     }
 
     /**
