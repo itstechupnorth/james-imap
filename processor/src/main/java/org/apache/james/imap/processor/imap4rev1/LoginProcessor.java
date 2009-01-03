@@ -29,6 +29,7 @@ import org.apache.james.api.imap.process.ImapSession;
 import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.MailboxManager;
 import org.apache.james.imap.mailbox.MailboxManagerProvider;
+import org.apache.james.imap.mailbox.MailboxSession;
 import org.apache.james.imap.message.request.imap4rev1.LoginRequest;
 import org.apache.james.imap.processor.base.AbstractMailboxAwareProcessor;
 import org.apache.james.imap.processor.base.ImapSessionUtils;
@@ -62,8 +63,12 @@ public class LoginProcessor extends AbstractMailboxAwareProcessor {
             final MailboxManager mailboxManager = getMailboxManager(session);
             if (mailboxManager.isAuthentic(userid, passwd)) {
                 session.authenticated();
+                final MailboxSession mailboxSession = mailboxManager.createSession();
+                session.setAttribute(
+                        ImapSessionUtils.MAILBOX_SESSION_ATTRIBUTE_SESSION_KEY,
+                        mailboxSession);
                 ImapSessionUtils.setUserName(session, userid);
-                getMailboxManager(session).getMailbox(buildFullName(session, MailboxManager.INBOX), true);
+                mailboxManager.getMailbox(buildFullName(session, MailboxManager.INBOX), true);
                 okComplete(command, tag, responder);
             } else {
                 final Integer currentNumberOfFailures = (Integer) session

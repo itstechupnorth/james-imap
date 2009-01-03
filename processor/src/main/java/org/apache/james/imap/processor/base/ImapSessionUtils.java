@@ -38,13 +38,6 @@ public class ImapSessionUtils {
         return result;
     }
 
-    public static void setMailboxSession(final ImapSession session,
-            final MailboxSession mailboxSession) {
-        session.setAttribute(
-                ImapSessionUtils.MAILBOX_SESSION_ATTRIBUTE_SESSION_KEY,
-                mailboxSession);
-    }
-
     public static String getUserName(final ImapSession session) {
         final String result = (String) session
                 .getAttribute(MAILBOX_USER_ATTRIBUTE_SESSION_KEY);

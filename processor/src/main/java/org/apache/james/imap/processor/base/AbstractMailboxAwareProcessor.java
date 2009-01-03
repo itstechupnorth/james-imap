@@ -334,10 +334,6 @@ abstract public class AbstractMailboxAwareProcessor extends AbstractChainedImapP
                 session.setAttribute(
                         ImapSessionUtils.MAILBOX_MANAGER_ATTRIBUTE_SESSION_KEY,
                         result);
-                if (ImapSessionUtils.getMailboxSession(session) == null) {
-                    final MailboxSession mailboxSession = (MailboxSession) result.createSession();
-                    ImapSessionUtils.setMailboxSession(session, mailboxSession);
-                }
             }
         }
         return result;
