@@ -324,8 +324,6 @@ abstract public class AbstractMailboxAwareProcessor extends AbstractChainedImapP
             //
             final String user = ImapSessionUtils.getUserName(session);
             if (user != null) {
-                result.getMailbox(buildFullName(MailboxManager.INBOX, user),
-                        true);
                 // TODO: reconsider decision not to sunchronise
                 // TODO: mailbox creation is ATM an expensive operation
                 // TODO: so caching is required
@@ -337,8 +335,7 @@ abstract public class AbstractMailboxAwareProcessor extends AbstractChainedImapP
                         ImapSessionUtils.MAILBOX_MANAGER_ATTRIBUTE_SESSION_KEY,
                         result);
                 if (ImapSessionUtils.getMailboxSession(session) == null) {
-                    final MailboxSession mailboxSession = (MailboxSession) result
-                            .createSession();
+                    final MailboxSession mailboxSession = (MailboxSession) result.createSession();
                     ImapSessionUtils.setMailboxSession(session, mailboxSession);
                 }
             }

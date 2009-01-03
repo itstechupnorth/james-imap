@@ -63,6 +63,7 @@ public class LoginProcessor extends AbstractMailboxAwareProcessor {
             if (mailboxManager.isAuthentic(userid, passwd)) {
                 session.authenticated();
                 ImapSessionUtils.setUserName(session, userid);
+                getMailboxManager(session).getMailbox(buildFullName(session, MailboxManager.INBOX), true);
                 okComplete(command, tag, responder);
             } else {
                 final Integer currentNumberOfFailures = (Integer) session
