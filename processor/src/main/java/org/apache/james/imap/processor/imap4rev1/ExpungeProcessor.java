@@ -36,15 +36,15 @@ import org.apache.james.imap.mailbox.MessageResult;
 import org.apache.james.imap.mailbox.util.FetchGroupImpl;
 import org.apache.james.imap.mailbox.util.MessageRangeImpl;
 import org.apache.james.imap.message.request.imap4rev1.ExpungeRequest;
-import org.apache.james.imap.processor.base.AbstractImapRequestProcessor;
+import org.apache.james.imap.processor.base.AbstractMailboxAwareProcessor;
 import org.apache.james.imap.processor.base.ImapSessionUtils;
 
-public class ExpungeProcessor extends AbstractImapRequestProcessor {
+public class ExpungeProcessor extends AbstractMailboxAwareProcessor {
 
     public ExpungeProcessor(final ImapProcessor next,
             final MailboxManagerProvider mailboxManagerProvider,
             final StatusResponseFactory factory) {
-        super(next, factory);
+        super(next, mailboxManagerProvider, factory);
     }
 
     protected boolean isAcceptable(ImapMessage message) {

@@ -20,6 +20,7 @@
 package org.apache.james.imap.processor.imap4rev1;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import javax.mail.Flags.Flag;
@@ -37,6 +38,8 @@ import org.apache.james.api.imap.process.ImapSession;
 import org.apache.james.api.imap.process.SelectedImapMailbox;
 import org.apache.james.api.imap.process.ImapProcessor.Responder;
 import org.apache.james.imap.mailbox.Mailbox;
+import org.apache.james.imap.mailbox.MailboxManager;
+import org.apache.james.imap.mailbox.MailboxManagerProvider;
 import org.apache.james.imap.mailbox.MailboxSession;
 import org.apache.james.imap.mailbox.SearchQuery;
 import org.apache.james.imap.mailbox.util.FetchGroupImpl;
@@ -94,6 +97,12 @@ public class SearchProcessorTest extends MockObjectTestCase {
 
     Mock mailbox;
 
+    Mock mailboxManagerProvider;
+    
+    Mock mailboxManager;
+    
+    Mock mailboxSession;
+    
     ImapCommand imapCommand;
 
     ImapProcessor.Responder responderImpl;
@@ -109,7 +118,12 @@ public class SearchProcessorTest extends MockObjectTestCase {
         statusResponse = mock(StatusResponse.class);
         responderImpl = (ImapProcessor.Responder) responder.proxy();
         mailbox = mock(Mailbox.class);
-        processor = new SearchProcessor((ImapProcessor) next.proxy(),
+        mailboxManagerProvider = mock(MailboxManagerProvider.class);
+        mailboxManager = mock(MailboxManager.class);
+        mailboxSession = mock(MailboxSession.class);
+        
+        processor = new SearchProcessor((ImapProcessor) next.proxy(), 
+                (MailboxManagerProvider) mailboxManagerProvider.proxy(),
                 (StatusResponseFactory) serverResponseFactory.proxy());
         expectOk();
     }
@@ -125,13 +139,31 @@ public class SearchProcessorTest extends MockObjectTestCase {
         Mock selectedMailbox = mock(SelectedImapMailbox.class);
         selectedMailbox.expects(once()).method("uid").with(eq(1729)).will(
                 returnValue(1729L));
-        selectedMailbox.expects(once()).method("unsolicitedResponses").with(eq(true),
-                eq(false)).will(returnValue(new ArrayList()));
+        
+        allowUnsolicitedResponses(selectedMailbox);
+        
         session.expects(atLeastOnce()).method("getSelected").will(
                 returnValue(selectedMailbox.proxy()));
         selectedMailbox.expects(once()).method("getRecent").will(
                 returnValue(EMPTY));
         check(SearchKey.buildSequenceSet(ids), SearchQuery.uid(ranges));
+    }
+
+    private void allowUnsolicitedResponses(Mock selectedMailbox) {
+        selectedMailbox.expects(atLeastOnce()).method("isSizeChanged").will(returnValue(false));
+        selectedMailbox.expects(atMostOnce()).method("getName").will(returnValue("name"));
+        selectedMailbox.expects(atMostOnce()).method("isRecentUidRemoved").will(returnValue(false));
+        selectedMailbox.expects(atMostOnce()).method("flagUpdateUids").will(returnValue(Collections.EMPTY_LIST));
+        selectedMailbox.expects(atMostOnce()).method("resetEvents");
+        
+        session.expects(atMostOnce()).method("getAttribute").with(eq(ImapSessionUtils.SELECTED_MAILBOX_ATTRIBUTE_SESSION_KEY)).will(returnValue(mailbox));
+        session.expects(atMostOnce()).method("getAttribute").with(eq(ImapSessionUtils.MAILBOX_USER_ATTRIBUTE_SESSION_KEY)).will(returnValue("user"));
+        session.expects(atMostOnce()).method("getAttribute").with(eq(ImapSessionUtils.MAILBOX_MANAGER_ATTRIBUTE_SESSION_KEY)).will(returnValue(mailboxManager.proxy()));
+        session.expects(atMostOnce()).method("getAttribute").with(eq(ImapSessionUtils.MAILBOX_SESSION_ATTRIBUTE_SESSION_KEY)).will(returnValue(mailboxSession.proxy()));
+        
+        mailboxManagerProvider.expects(atMostOnce()).method("getMailboxManager").will(returnValue(mailboxManager.proxy()));
+        mailboxManager.expects(atMostOnce()).method("resolve").with(eq("user"), eq("name")).will(returnValue("user"));
+        mailboxManager.expects(atMostOnce()).method("getMailbox").with(eq("user"), eq(false)).will(returnValue(mailbox.proxy()));
     }
 
     public void testSequenceSetUpperUnlimited() throws Exception {
@@ -141,8 +173,7 @@ public class SearchProcessorTest extends MockObjectTestCase {
         Mock selectedMailbox = mock(SelectedImapMailbox.class);
         selectedMailbox.expects(once()).method("uid").with(eq(1)).will(
                 returnValue(42L));
-        selectedMailbox.expects(once()).method("unsolicitedResponses").with(eq(true),
-                eq(false)).will(returnValue(new ArrayList()));
+        allowUnsolicitedResponses(selectedMailbox);
         session.expects(atLeastOnce()).method("getSelected").will(
                 returnValue(selectedMailbox.proxy()));
         selectedMailbox.expects(once()).method("getRecent").will(
@@ -161,8 +192,7 @@ public class SearchProcessorTest extends MockObjectTestCase {
                 returnValue(1729L));
         selectedMailbox.expects(once()).method("getRecent").will(
                 returnValue(EMPTY));
-        selectedMailbox.expects(once()).method("unsolicitedResponses").with(eq(true),
-                eq(false)).will(returnValue(new ArrayList()));
+        allowUnsolicitedResponses(selectedMailbox);
         session.expects(atLeastOnce()).method("getSelected").will(
                 returnValue(selectedMailbox.proxy()));
         check(SearchKey.buildSequenceSet(ids), SearchQuery.uid(ranges));
@@ -177,8 +207,7 @@ public class SearchProcessorTest extends MockObjectTestCase {
                 returnValue(42L));
         selectedMailbox.expects(once()).method("getRecent").will(
                 returnValue(EMPTY));
-        selectedMailbox.expects(once()).method("unsolicitedResponses").with(eq(true),
-                eq(false)).will(returnValue(new ArrayList()));
+        allowUnsolicitedResponses(selectedMailbox);
         session.expects(atLeastOnce()).method("getSelected").will(
                 returnValue(selectedMailbox.proxy()));
         check(SearchKey.buildSequenceSet(ids), SearchQuery.uid(ranges));

@@ -69,7 +69,7 @@ public class MailboxEventAnalyserTest extends MockObjectTestCase {
                 90, new Flags(), 11);
         analyser.event(update);
         assertNotNull(analyser.flagUpdateUids());
-        assertFalse(analyser.flagUpdateUids().hasNext());
+        assertFalse(analyser.flagUpdateUids().iterator().hasNext());
     }
 
     public void testShouldSetUidWhenSystemFlagChange() throws Exception {
@@ -78,7 +78,7 @@ public class MailboxEventAnalyserTest extends MockObjectTestCase {
                 uid, new Flags(), 11);
         update.flags.add(Flags.Flag.ANSWERED);
         analyser.event(update);
-        final Iterator iterator = analyser.flagUpdateUids();
+        final Iterator iterator = analyser.flagUpdateUids().iterator();
         assertNotNull(iterator);
         assertTrue(iterator.hasNext());
         assertEquals(new Long(uid), iterator.next());
@@ -93,7 +93,7 @@ public class MailboxEventAnalyserTest extends MockObjectTestCase {
         analyser.event(update);
         analyser.reset();
         assertNotNull(analyser.flagUpdateUids());
-        assertFalse(analyser.flagUpdateUids().hasNext());
+        assertFalse(analyser.flagUpdateUids().iterator().hasNext());
     }
 
     public void testShouldNotSetUidWhenSystemFlagChangeDifferentSessionInSilentMode()
@@ -104,7 +104,7 @@ public class MailboxEventAnalyserTest extends MockObjectTestCase {
         update.flags.add(Flags.Flag.ANSWERED);
         analyser.setSilentFlagChanges(true);
         analyser.event(update);
-        final Iterator iterator = analyser.flagUpdateUids();
+        final Iterator iterator = analyser.flagUpdateUids().iterator();
         assertNotNull(iterator);
         assertTrue(iterator.hasNext());
         assertEquals(new Long(uid), iterator.next());
@@ -118,7 +118,7 @@ public class MailboxEventAnalyserTest extends MockObjectTestCase {
         update.flags.add(Flags.Flag.ANSWERED);
         analyser.setSilentFlagChanges(true);
         analyser.event(update);
-        final Iterator iterator = analyser.flagUpdateUids();
+        final Iterator iterator = analyser.flagUpdateUids().iterator();
         assertNotNull(iterator);
         assertFalse(iterator.hasNext());
     }
@@ -128,7 +128,7 @@ public class MailboxEventAnalyserTest extends MockObjectTestCase {
                 886, new Flags(), BASE_SESSION_ID);
         update.flags.add(Flags.Flag.RECENT);
         analyser.event(update);
-        final Iterator iterator = analyser.flagUpdateUids();
+        final Iterator iterator = analyser.flagUpdateUids().iterator();
         assertNotNull(iterator);
         assertFalse(iterator.hasNext());
     }

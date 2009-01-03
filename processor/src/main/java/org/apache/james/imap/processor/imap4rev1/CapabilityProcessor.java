@@ -28,17 +28,18 @@ import org.apache.james.api.imap.message.response.ImapResponseMessage;
 import org.apache.james.api.imap.message.response.imap4rev1.StatusResponseFactory;
 import org.apache.james.api.imap.process.ImapProcessor;
 import org.apache.james.api.imap.process.ImapSession;
+import org.apache.james.imap.mailbox.MailboxManagerProvider;
 import org.apache.james.imap.message.request.imap4rev1.CapabilityRequest;
 import org.apache.james.imap.message.response.imap4rev1.server.CapabilityResponse;
-import org.apache.james.imap.processor.base.AbstractImapRequestProcessor;
+import org.apache.james.imap.processor.base.AbstractMailboxAwareProcessor;
 
-public class CapabilityProcessor extends AbstractImapRequestProcessor {
+public class CapabilityProcessor extends AbstractMailboxAwareProcessor {
 
     private final List<String> capabilities;
 
-    public CapabilityProcessor(final ImapProcessor next,
+    public CapabilityProcessor(final ImapProcessor next, final MailboxManagerProvider mailboxManagerProvider,
             final StatusResponseFactory factory, final List<String> capabilities) {
-        super(next, factory);
+        super(next, mailboxManagerProvider, factory);
         this.capabilities = capabilities;
     }
 

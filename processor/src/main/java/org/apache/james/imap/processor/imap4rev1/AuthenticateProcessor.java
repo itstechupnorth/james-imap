@@ -26,14 +26,15 @@ import org.apache.james.api.imap.message.request.ImapRequest;
 import org.apache.james.api.imap.message.response.imap4rev1.StatusResponseFactory;
 import org.apache.james.api.imap.process.ImapProcessor;
 import org.apache.james.api.imap.process.ImapSession;
+import org.apache.james.imap.mailbox.MailboxManagerProvider;
 import org.apache.james.imap.message.request.imap4rev1.AuthenticateRequest;
-import org.apache.james.imap.processor.base.AbstractImapRequestProcessor;
+import org.apache.james.imap.processor.base.AbstractMailboxAwareProcessor;
 
-public class AuthenticateProcessor extends AbstractImapRequestProcessor {
+public class AuthenticateProcessor extends AbstractMailboxAwareProcessor {
 
-    public AuthenticateProcessor(final ImapProcessor next,
+    public AuthenticateProcessor(final ImapProcessor next, final MailboxManagerProvider mailboxManagerProvider,
             final StatusResponseFactory factory) {
-        super(next, factory);
+        super(next, mailboxManagerProvider, factory);
     }
 
     protected boolean isAcceptable(ImapMessage message) {

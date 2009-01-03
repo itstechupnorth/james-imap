@@ -19,14 +19,12 @@
 
 package org.apache.james.api.imap.process;
 
-import java.util.List;
+import java.util.Collection;
+
 
 public interface SelectedImapMailbox {
 
     public abstract void deselect();
-
-    public abstract List unsolicitedResponses(boolean omitExpunged,
-            boolean useUid);
 
     public int msn(long uid);
 
@@ -51,4 +49,18 @@ public interface SelectedImapMailbox {
      *         otherwise
      */
     public boolean isDeletedByOtherSession();
+
+    public boolean isSizeChanged();
+
+    public boolean isRecentUidRemoved();
+
+    public void resetRecentUidRemoved();
+
+    public void resetEvents();
+
+    public Collection<Long> expungedUids();
+
+    public void expunged(Collection<Long> expungedUids);
+
+    public Collection<Long> flagUpdateUids();
 }

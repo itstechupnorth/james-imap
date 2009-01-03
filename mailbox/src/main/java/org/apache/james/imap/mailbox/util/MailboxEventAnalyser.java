@@ -19,6 +19,8 @@
 
 package org.apache.james.imap.mailbox.util;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.TreeSet;
@@ -37,17 +39,17 @@ public class MailboxEventAnalyser implements MailboxListener {
 
     private final long sessionId;
 
-    private final Set flagUpdateUids;
+    private final Set<Long> flagUpdateUids;
 
     private final Flags.Flag uninterestingFlag;
 
-    private final Set expungedUids;
+    private final Set<Long> expungedUids;
 
     public MailboxEventAnalyser(final long sessionId) {
         super();
         this.sessionId = sessionId;
-        flagUpdateUids = new TreeSet();
-        expungedUids = new TreeSet();
+        flagUpdateUids = new TreeSet<Long>();
+        expungedUids = new TreeSet<Long>();
         uninterestingFlag = Flags.Flag.RECENT;
     }
 
@@ -139,12 +141,12 @@ public class MailboxEventAnalyser implements MailboxListener {
         return isDeletedByOtherSession;
     }
 
-    public Iterator flagUpdateUids() {
-        return flagUpdateUids.iterator();
+    public Collection<Long> flagUpdateUids() {
+        return Collections.unmodifiableSet(flagUpdateUids);
     }
 
-    public Iterator expungedUids() {
-        return expungedUids.iterator();
+    public Collection<Long> expungedUids() {
+        return Collections.unmodifiableSet(expungedUids);
     }
 
     public boolean hasExpungedUids() {

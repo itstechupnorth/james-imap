@@ -33,6 +33,7 @@ import org.apache.james.api.imap.process.ImapSession;
 import org.apache.james.api.imap.process.SelectedImapMailbox;
 import org.apache.james.imap.mailbox.Mailbox;
 import org.apache.james.imap.mailbox.MailboxException;
+import org.apache.james.imap.mailbox.MailboxManagerProvider;
 import org.apache.james.imap.mailbox.MailboxSession;
 import org.apache.james.imap.mailbox.MessageRange;
 import org.apache.james.imap.mailbox.MessageResult;
@@ -41,16 +42,16 @@ import org.apache.james.imap.mailbox.util.FetchGroupImpl;
 import org.apache.james.imap.mailbox.util.MessageRangeImpl;
 import org.apache.james.imap.message.request.imap4rev1.StoreRequest;
 import org.apache.james.imap.message.response.imap4rev1.FetchResponse;
-import org.apache.james.imap.processor.base.AbstractImapRequestProcessor;
+import org.apache.james.imap.processor.base.AbstractMailboxAwareProcessor;
 import org.apache.james.imap.processor.base.ImapSessionUtils;
 
-public class StoreProcessor extends AbstractImapRequestProcessor {
+public class StoreProcessor extends AbstractMailboxAwareProcessor {
 
     private static final FetchGroup STORE_FETCH_GROUP = FetchGroupImpl.FLAGS;
 
-    public StoreProcessor(final ImapProcessor next,
+    public StoreProcessor(final ImapProcessor next, final MailboxManagerProvider mailboxManagerProvider,
             final StatusResponseFactory factory) {
-        super(next, factory);
+        super(next, mailboxManagerProvider, factory);
     }
 
     protected boolean isAcceptable(ImapMessage message) {

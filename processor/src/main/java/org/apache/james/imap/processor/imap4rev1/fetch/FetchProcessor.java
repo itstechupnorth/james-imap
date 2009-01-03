@@ -35,6 +35,7 @@ import org.apache.james.api.imap.message.response.imap4rev1.StatusResponseFactor
 import org.apache.james.api.imap.process.ImapProcessor;
 import org.apache.james.api.imap.process.ImapSession;
 import org.apache.james.imap.mailbox.Mailbox;
+import org.apache.james.imap.mailbox.MailboxManagerProvider;
 import org.apache.james.imap.mailbox.MailboxSession;
 import org.apache.james.imap.mailbox.MessageRange;
 import org.apache.james.imap.mailbox.MessageResult;
@@ -45,15 +46,15 @@ import org.apache.james.imap.mailbox.util.FetchGroupImpl;
 import org.apache.james.imap.mailbox.util.MessageRangeImpl;
 import org.apache.james.imap.message.request.imap4rev1.FetchRequest;
 import org.apache.james.imap.message.response.imap4rev1.FetchResponse;
-import org.apache.james.imap.processor.base.AbstractImapRequestProcessor;
+import org.apache.james.imap.processor.base.AbstractMailboxAwareProcessor;
 import org.apache.james.imap.processor.base.ImapSessionUtils;
 import org.apache.james.mime4j.field.address.parser.ParseException;
 
-public class FetchProcessor extends AbstractImapRequestProcessor {
+public class FetchProcessor extends AbstractMailboxAwareProcessor {
 
-    public FetchProcessor(final ImapProcessor next,
+    public FetchProcessor(final ImapProcessor next, final MailboxManagerProvider mailboxManagerProvider,
             final StatusResponseFactory factory) {
-        super(next, factory);
+        super(next, mailboxManagerProvider, factory);
     }
 
     protected boolean isAcceptable(ImapMessage message) {
