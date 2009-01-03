@@ -30,12 +30,12 @@ import org.apache.james.api.imap.message.response.imap4rev1.StatusResponseFactor
 import org.apache.james.api.imap.process.ImapProcessor;
 import org.apache.james.api.imap.process.ImapSession;
 
-public class UnknownRequestImapProcessor extends AbstractLogEnabled implements
+public class UnknownRequestProcessor extends AbstractLogEnabled implements
         ImapProcessor {
 
     private final StatusResponseFactory factory;
 
-    public UnknownRequestImapProcessor(StatusResponseFactory factory) {
+    public UnknownRequestProcessor(StatusResponseFactory factory) {
         super();
         this.factory = factory;
     }

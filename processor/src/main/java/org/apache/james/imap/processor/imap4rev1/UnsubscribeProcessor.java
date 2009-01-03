@@ -31,10 +31,10 @@ import org.apache.james.imap.mailbox.MailboxManager;
 import org.apache.james.imap.mailbox.MailboxManagerProvider;
 import org.apache.james.imap.mailbox.SubscriptionException;
 import org.apache.james.imap.message.request.imap4rev1.UnsubscribeRequest;
-import org.apache.james.imap.processor.base.AbstractMailboxAwareProcessor;
+import org.apache.james.imap.processor.base.AbstractMailboxProcessor;
 import org.apache.james.imap.processor.base.ImapSessionUtils;
 
-public class UnsubscribeProcessor extends AbstractMailboxAwareProcessor {
+public class UnsubscribeProcessor extends AbstractMailboxProcessor {
 
     public UnsubscribeProcessor(final ImapProcessor next,
             final MailboxManagerProvider mailboxManagerProvider,

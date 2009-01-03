@@ -47,12 +47,11 @@ import org.apache.james.imap.message.request.imap4rev1.AbstractMailboxSelectionR
 import org.apache.james.imap.message.response.imap4rev1.ExistsResponse;
 import org.apache.james.imap.message.response.imap4rev1.FlagsResponse;
 import org.apache.james.imap.message.response.imap4rev1.RecentResponse;
-import org.apache.james.imap.processor.base.AbstractMailboxAwareProcessor;
+import org.apache.james.imap.processor.base.AbstractMailboxProcessor;
 import org.apache.james.imap.processor.base.ImapSessionUtils;
 import org.apache.james.imap.processor.base.SelectedMailboxSessionImpl;
 
-abstract public class AbstractMailboxSelectionProcessor extends
-        AbstractMailboxAwareProcessor {
+abstract class AbstractSelectionProcessor extends AbstractMailboxProcessor {
 
     private final FlagsResponse standardFlags;
 
@@ -60,7 +59,7 @@ abstract public class AbstractMailboxSelectionProcessor extends
 
     private final boolean openReadOnly;
 
-    public AbstractMailboxSelectionProcessor(final ImapProcessor next,
+    public AbstractSelectionProcessor(final ImapProcessor next,
             final MailboxManagerProvider mailboxManagerProvider,
             final StatusResponseFactory statusResponseFactory,
             final boolean openReadOnly) {

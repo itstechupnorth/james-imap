@@ -27,9 +27,9 @@ import org.apache.james.api.imap.process.ImapProcessor;
 import org.apache.james.api.imap.process.ImapSession;
 import org.apache.james.imap.mailbox.MailboxManagerProvider;
 import org.apache.james.imap.message.request.imap4rev1.NoopRequest;
-import org.apache.james.imap.processor.base.AbstractMailboxAwareProcessor;
+import org.apache.james.imap.processor.base.AbstractMailboxProcessor;
 
-public class NoopProcessor extends AbstractMailboxAwareProcessor {
+public class NoopProcessor extends AbstractMailboxProcessor {
 
     public NoopProcessor(final ImapProcessor next, final MailboxManagerProvider mailboxManagerProvider,
             final StatusResponseFactory factory) {

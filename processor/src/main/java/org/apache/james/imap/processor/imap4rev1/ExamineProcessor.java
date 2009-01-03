@@ -25,7 +25,7 @@ import org.apache.james.api.imap.process.ImapProcessor;
 import org.apache.james.imap.mailbox.MailboxManagerProvider;
 import org.apache.james.imap.message.request.imap4rev1.ExamineRequest;
 
-public class ExamineProcessor extends AbstractMailboxSelectionProcessor {
+public class ExamineProcessor extends AbstractSelectionProcessor {
 
     public ExamineProcessor(final ImapProcessor next,
             final MailboxManagerProvider mailboxManagerProvider,

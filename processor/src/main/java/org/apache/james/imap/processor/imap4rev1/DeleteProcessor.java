@@ -30,10 +30,10 @@ import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.MailboxManager;
 import org.apache.james.imap.mailbox.MailboxManagerProvider;
 import org.apache.james.imap.message.request.imap4rev1.DeleteRequest;
-import org.apache.james.imap.processor.base.AbstractMailboxAwareProcessor;
+import org.apache.james.imap.processor.base.AbstractMailboxProcessor;
 import org.apache.james.imap.processor.base.ImapSessionUtils;
 
-public class DeleteProcessor extends AbstractMailboxAwareProcessor {
+public class DeleteProcessor extends AbstractMailboxProcessor {
 
     public DeleteProcessor(final ImapProcessor next,
             final MailboxManagerProvider mailboxManagerProvider,

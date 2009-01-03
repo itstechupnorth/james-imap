@@ -46,11 +46,11 @@ import org.apache.james.imap.mailbox.util.FetchGroupImpl;
 import org.apache.james.imap.mailbox.util.MessageRangeImpl;
 import org.apache.james.imap.message.request.imap4rev1.FetchRequest;
 import org.apache.james.imap.message.response.imap4rev1.FetchResponse;
-import org.apache.james.imap.processor.base.AbstractMailboxAwareProcessor;
+import org.apache.james.imap.processor.base.AbstractMailboxProcessor;
 import org.apache.james.imap.processor.base.ImapSessionUtils;
 import org.apache.james.mime4j.field.address.parser.ParseException;
 
-public class FetchProcessor extends AbstractMailboxAwareProcessor {
+public class FetchProcessor extends AbstractMailboxProcessor {
 
     public FetchProcessor(final ImapProcessor next, final MailboxManagerProvider mailboxManagerProvider,
             final StatusResponseFactory factory) {

@@ -32,13 +32,13 @@ import org.apache.james.imap.mailbox.MailboxManager;
 import org.apache.james.imap.mailbox.MailboxManagerProvider;
 import org.apache.james.imap.mailbox.MailboxSession;
 import org.apache.james.imap.message.request.imap4rev1.LoginRequest;
-import org.apache.james.imap.processor.base.AbstractMailboxAwareProcessor;
+import org.apache.james.imap.processor.base.AbstractMailboxProcessor;
 import org.apache.james.imap.processor.base.ImapSessionUtils;
 
 /**
  * Processes a <code>LOGIN</code> command.
  */
-public class LoginProcessor extends AbstractMailboxAwareProcessor {
+public class LoginProcessor extends AbstractMailboxProcessor {
 
     private static final String ATTRIBUTE_NUMBER_OF_FAILURES = "org.apache.james.imap.processor.imap4rev1.LoginProcessor.NUMBER_OF_FAILURES";
 

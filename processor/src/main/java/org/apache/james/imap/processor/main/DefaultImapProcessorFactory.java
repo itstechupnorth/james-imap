@@ -25,7 +25,7 @@ import org.apache.james.api.imap.process.ImapProcessorFactory;
 import org.apache.james.imap.mailbox.MailboxManagerProvider;
 import org.apache.james.imap.message.response.imap4rev1.status.UnpooledStatusResponseFactory;
 import org.apache.james.imap.processor.base.ImapResponseMessageProcessor;
-import org.apache.james.imap.processor.base.UnknownRequestImapProcessor;
+import org.apache.james.imap.processor.base.UnknownRequestProcessor;
 import org.apache.james.imap.processor.imap4rev1.Imap4Rev1ProcessorFactory;
 
 /**
@@ -36,7 +36,7 @@ public class DefaultImapProcessorFactory implements ImapProcessorFactory {
     public static final ImapProcessor createDefaultProcessor(
             final MailboxManagerProvider mailboxManagerProvider) {
         final StatusResponseFactory statusResponseFactory = new UnpooledStatusResponseFactory();
-        final UnknownRequestImapProcessor unknownRequestImapProcessor = new UnknownRequestImapProcessor(
+        final UnknownRequestProcessor unknownRequestImapProcessor = new UnknownRequestProcessor(
                 statusResponseFactory);
         final ImapProcessor imap4rev1Chain = Imap4Rev1ProcessorFactory
                 .createDefaultChain(unknownRequestImapProcessor,

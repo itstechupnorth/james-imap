@@ -25,7 +25,7 @@ import org.apache.james.api.imap.ImapMessage;
 import org.apache.james.api.imap.process.ImapProcessor;
 import org.apache.james.api.imap.process.ImapSession;
 
-abstract public class AbstractChainedImapProcessor extends AbstractLogEnabled
+abstract public class AbstractChainedProcessor extends AbstractLogEnabled
         implements ImapProcessor {
 
     private final ImapProcessor next;
@@ -36,7 +36,7 @@ abstract public class AbstractChainedImapProcessor extends AbstractLogEnabled
      * @param next
      *            next <code>ImapProcessor</code> in the chain, not null
      */
-    public AbstractChainedImapProcessor(final ImapProcessor next) {
+    public AbstractChainedProcessor(final ImapProcessor next) {
         this.next = next;
     }
 

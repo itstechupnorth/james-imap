@@ -31,9 +31,9 @@ import org.apache.james.api.imap.process.ImapSession;
 import org.apache.james.imap.mailbox.MailboxManagerProvider;
 import org.apache.james.imap.message.request.imap4rev1.CapabilityRequest;
 import org.apache.james.imap.message.response.imap4rev1.server.CapabilityResponse;
-import org.apache.james.imap.processor.base.AbstractMailboxAwareProcessor;
+import org.apache.james.imap.processor.base.AbstractMailboxProcessor;
 
-public class CapabilityProcessor extends AbstractMailboxAwareProcessor {
+public class CapabilityProcessor extends AbstractMailboxProcessor {
 
     private final List<String> capabilities;
 

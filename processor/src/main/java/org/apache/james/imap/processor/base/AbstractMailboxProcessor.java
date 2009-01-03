@@ -54,13 +54,13 @@ import org.apache.james.imap.message.response.imap4rev1.FetchResponse;
 import org.apache.james.imap.message.response.imap4rev1.RecentResponse;
 import org.apache.james.imap.message.response.imap4rev1.status.UntaggedNoResponse;
 
-abstract public class AbstractMailboxAwareProcessor extends AbstractChainedImapProcessor {
+abstract public class AbstractMailboxProcessor extends AbstractChainedProcessor {
 
     private final MailboxManagerProvider mailboxManagerProvider;
 
     private final StatusResponseFactory factory;
 
-    public AbstractMailboxAwareProcessor(final ImapProcessor next,
+    public AbstractMailboxProcessor(final ImapProcessor next,
             final MailboxManagerProvider mailboxManagerProvider,
             final StatusResponseFactory factory) {
         super(next);

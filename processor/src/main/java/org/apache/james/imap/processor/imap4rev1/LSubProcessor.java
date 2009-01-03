@@ -38,10 +38,10 @@ import org.apache.james.imap.mailbox.MailboxManagerProvider;
 import org.apache.james.imap.mailbox.SubscriptionException;
 import org.apache.james.imap.message.request.imap4rev1.LsubRequest;
 import org.apache.james.imap.message.response.imap4rev1.server.LSubResponse;
-import org.apache.james.imap.processor.base.AbstractMailboxAwareProcessor;
+import org.apache.james.imap.processor.base.AbstractMailboxProcessor;
 import org.apache.james.imap.processor.base.ImapSessionUtils;
 
-public class LSubProcessor extends AbstractMailboxAwareProcessor {
+public class LSubProcessor extends AbstractMailboxProcessor {
 
     public LSubProcessor(final ImapProcessor next,
             final MailboxManagerProvider mailboxManagerProvider,
