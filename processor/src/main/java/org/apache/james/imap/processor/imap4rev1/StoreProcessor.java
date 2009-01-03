@@ -31,7 +31,7 @@ import org.apache.james.api.imap.message.request.ImapRequest;
 import org.apache.james.api.imap.message.response.imap4rev1.StatusResponseFactory;
 import org.apache.james.api.imap.process.ImapProcessor;
 import org.apache.james.api.imap.process.ImapSession;
-import org.apache.james.api.imap.process.SelectedImapMailbox;
+import org.apache.james.api.imap.process.SelectedMailbox;
 import org.apache.james.imap.mailbox.Mailbox;
 import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.MailboxManagerProvider;
@@ -87,7 +87,7 @@ public class StoreProcessor extends AbstractMailboxAwareProcessor {
             for (int i = 0; i < idSet.length; i++) {
                 final long lowVal;
                 final long highVal;
-                final SelectedImapMailbox selected = session.getSelected();
+                final SelectedMailbox selected = session.getSelected();
                 if (useUids) {
                     lowVal = idSet[i].getLowVal();
                     highVal = idSet[i].getHighVal();

@@ -30,7 +30,7 @@ import org.apache.james.api.imap.ImapSessionState;
 import org.apache.james.api.imap.message.response.ImapResponseMessage;
 import org.apache.james.api.imap.process.ImapProcessor;
 import org.apache.james.api.imap.process.ImapSession;
-import org.apache.james.api.imap.process.SelectedImapMailbox;
+import org.apache.james.api.imap.process.SelectedMailbox;
 import org.apache.james.api.imap.process.ImapProcessor.Responder;
 import org.apache.james.imap.decode.ImapDecoder;
 import org.apache.james.imap.decode.ImapRequestLineReader;
@@ -147,7 +147,7 @@ public final class ImapRequestHandler extends AbstractLogEnabled {
 
     private boolean isSelectedMailboxDeleted(ImapSession session) {
         final boolean selectedMailboxIsDeleted;
-        final SelectedImapMailbox mailbox = session.getSelected();
+        final SelectedMailbox mailbox = session.getSelected();
         if (mailbox != null) {
             selectedMailboxIsDeleted = mailbox.isDeletedByOtherSession();
         } else {

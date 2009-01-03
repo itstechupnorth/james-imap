@@ -33,7 +33,7 @@ import org.apache.james.api.imap.message.response.imap4rev1.StatusResponseFactor
 import org.apache.james.api.imap.message.response.imap4rev1.StatusResponse.ResponseCode;
 import org.apache.james.api.imap.process.ImapProcessor;
 import org.apache.james.api.imap.process.ImapSession;
-import org.apache.james.api.imap.process.SelectedImapMailbox;
+import org.apache.james.api.imap.process.SelectedMailbox;
 import org.apache.james.imap.mailbox.Mailbox;
 import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.MailboxManager;
@@ -98,7 +98,7 @@ abstract public class AbstractMailboxSelectionProcessor extends
         Mailbox mailbox = getSelectedMailbox(session);
         final MailboxSession mailboxSession = ImapSessionUtils
                 .getMailboxSession(session);
-        final SelectedImapMailbox selected = session.getSelected();
+        final SelectedMailbox selected = session.getSelected();
 
         // TODO: compact this into a single API call for meta-data about the
         // repository
@@ -139,7 +139,7 @@ abstract public class AbstractMailboxSelectionProcessor extends
 
     private void unseen(Responder responder, Mailbox mailbox,
             final MailboxSession mailboxSession,
-            final SelectedImapMailbox selected) throws MailboxException {
+            final SelectedMailbox selected) throws MailboxException {
         final MessageResult firstUnseen = mailbox.getFirstUnseen(
                 FetchGroupImpl.MINIMAL, mailboxSession);
         if (firstUnseen != null) {
@@ -161,7 +161,7 @@ abstract public class AbstractMailboxSelectionProcessor extends
         responder.respond(untaggedOk);
     }
 
-    private void recent(Responder responder, final SelectedImapMailbox selected) {
+    private void recent(Responder responder, final SelectedMailbox selected) {
         final int recentCount = selected.recentCount();
         final RecentResponse recentResponse = new RecentResponse(recentCount);
         responder.respond(recentResponse);
@@ -181,8 +181,8 @@ abstract public class AbstractMailboxSelectionProcessor extends
         final MailboxSession mailboxSession = ImapSessionUtils
                 .getMailboxSession(session);
 
-        final SelectedImapMailbox sessionMailbox;
-        final SelectedImapMailbox currentMailbox = session.getSelected();
+        final SelectedMailbox sessionMailbox;
+        final SelectedMailbox currentMailbox = session.getSelected();
         if (currentMailbox == null
                 || !currentMailbox.getName().equals(mailboxName)) {
             sessionMailbox = createNewSelectedMailbox(mailbox, mailboxSession,
@@ -193,10 +193,10 @@ abstract public class AbstractMailboxSelectionProcessor extends
         addRecent(mailbox, mailboxSession, sessionMailbox);
     }
 
-    private SelectedImapMailbox createNewSelectedMailbox(final Mailbox mailbox,
+    private SelectedMailbox createNewSelectedMailbox(final Mailbox mailbox,
             final MailboxSession mailboxSession, ImapSession session, String name)
             throws MailboxException {
-        final SelectedImapMailbox sessionMailbox;
+        final SelectedMailbox sessionMailbox;
         final Iterator it = mailbox.getMessages(MessageRangeImpl.all(),
                 FetchGroupImpl.MINIMAL, mailboxSession);
         final List uids = new ArrayList();
@@ -215,7 +215,7 @@ abstract public class AbstractMailboxSelectionProcessor extends
 
     private void addRecent(final Mailbox mailbox,
             final MailboxSession mailboxSession,
-            SelectedImapMailbox sessionMailbox) throws MailboxException {
+            SelectedMailbox sessionMailbox) throws MailboxException {
         final long[] recentUids = mailbox.recent(!openReadOnly, mailboxSession);
         for (int i = 0; i < recentUids.length; i++) {
             long uid = recentUids[i];

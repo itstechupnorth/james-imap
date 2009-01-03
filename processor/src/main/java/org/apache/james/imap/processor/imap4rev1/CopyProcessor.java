@@ -28,7 +28,7 @@ import org.apache.james.api.imap.message.response.imap4rev1.StatusResponseFactor
 import org.apache.james.api.imap.message.response.imap4rev1.StatusResponse.ResponseCode;
 import org.apache.james.api.imap.process.ImapProcessor;
 import org.apache.james.api.imap.process.ImapSession;
-import org.apache.james.api.imap.process.SelectedImapMailbox;
+import org.apache.james.api.imap.process.SelectedMailbox;
 import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.MailboxManager;
 import org.apache.james.imap.mailbox.MailboxManagerProvider;
@@ -57,7 +57,7 @@ public class CopyProcessor extends AbstractMailboxAwareProcessor {
         final String mailboxName = request.getMailboxName();
         final IdRange[] idSet = request.getIdSet();
         final boolean useUids = request.isUseUids();
-        final SelectedImapMailbox currentMailbox = session.getSelected();
+        final SelectedMailbox currentMailbox = session.getSelected();
         try {
             final String fullMailboxName = buildFullName(session, mailboxName);
             final MailboxManager mailboxManager = getMailboxManager();

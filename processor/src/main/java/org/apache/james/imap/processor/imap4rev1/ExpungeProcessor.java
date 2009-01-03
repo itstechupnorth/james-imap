@@ -28,7 +28,7 @@ import org.apache.james.api.imap.message.request.ImapRequest;
 import org.apache.james.api.imap.message.response.imap4rev1.StatusResponseFactory;
 import org.apache.james.api.imap.process.ImapProcessor;
 import org.apache.james.api.imap.process.ImapSession;
-import org.apache.james.api.imap.process.SelectedImapMailbox;
+import org.apache.james.api.imap.process.SelectedMailbox;
 import org.apache.james.imap.mailbox.Mailbox;
 import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.MailboxManagerProvider;
@@ -62,7 +62,7 @@ public class ExpungeProcessor extends AbstractMailboxAwareProcessor {
                 final Iterator it = mailbox.expunge(MessageRangeImpl.all(),
                         FetchGroupImpl.MINIMAL, ImapSessionUtils
                                 .getMailboxSession(session));
-                final SelectedImapMailbox mailboxSession = session
+                final SelectedMailbox mailboxSession = session
                         .getSelected();
                 if (mailboxSession != null) {
                     while (it.hasNext()) {

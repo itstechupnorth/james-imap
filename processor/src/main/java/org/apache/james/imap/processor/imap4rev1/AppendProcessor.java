@@ -34,7 +34,7 @@ import org.apache.james.api.imap.message.response.imap4rev1.StatusResponse;
 import org.apache.james.api.imap.message.response.imap4rev1.StatusResponseFactory;
 import org.apache.james.api.imap.process.ImapProcessor;
 import org.apache.james.api.imap.process.ImapSession;
-import org.apache.james.api.imap.process.SelectedImapMailbox;
+import org.apache.james.api.imap.process.SelectedMailbox;
 import org.apache.james.imap.mailbox.Mailbox;
 import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.MailboxManager;
@@ -103,7 +103,7 @@ public class AppendProcessor extends AbstractMailboxAwareProcessor {
         try {
             final MailboxSession mailboxSession = ImapSessionUtils
                     .getMailboxSession(session);
-            final SelectedImapMailbox selectedMailbox = session.getSelected();
+            final SelectedMailbox selectedMailbox = session.getSelected();
             final boolean isSelectedMailbox = selectedMailbox != null
                     && fullMailboxName.equals(selectedMailbox.getName());
             if (!isSelectedMailbox) {

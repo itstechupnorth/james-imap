@@ -26,7 +26,7 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import org.apache.james.api.imap.AbstractLogEnabled;
-import org.apache.james.api.imap.process.SelectedImapMailbox;
+import org.apache.james.api.imap.process.SelectedMailbox;
 import org.apache.james.imap.mailbox.Mailbox;
 import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.MailboxSession;
@@ -35,7 +35,7 @@ import org.apache.james.imap.mailbox.util.UidToMsnConverter;
 
 // TODO: deal with deleted or renamed mailboxes
 public class SelectedMailboxSessionImpl extends AbstractLogEnabled implements
-        SelectedImapMailbox {
+        SelectedMailbox {
 
     private final Mailbox mailbox;
 
@@ -65,7 +65,7 @@ public class SelectedMailboxSessionImpl extends AbstractLogEnabled implements
     }
 
     /**
-     * @see org.apache.james.api.imap.process.SelectedImapMailbox#deselect()
+     * @see org.apache.james.api.imap.process.SelectedMailbox#deselect()
      */
     public void deselect() {
         mailbox.removeListener(events);

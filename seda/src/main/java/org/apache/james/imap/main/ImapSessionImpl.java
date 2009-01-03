@@ -26,7 +26,7 @@ import org.apache.james.api.imap.AbstractLogEnabled;
 import org.apache.james.api.imap.ImapConstants;
 import org.apache.james.api.imap.ImapSessionState;
 import org.apache.james.api.imap.process.ImapSession;
-import org.apache.james.api.imap.process.SelectedImapMailbox;
+import org.apache.james.api.imap.process.SelectedMailbox;
 
 /**
  * Implements a session.
@@ -35,7 +35,7 @@ public final class ImapSessionImpl extends AbstractLogEnabled implements
         ImapSession, ImapConstants {
     private ImapSessionState state = ImapSessionState.NON_AUTHENTICATED;
 
-    private SelectedImapMailbox selectedMailbox = null;
+    private SelectedMailbox selectedMailbox = null;
 
     private final Map<String, Object> attributesByKey;
 
@@ -57,14 +57,14 @@ public final class ImapSessionImpl extends AbstractLogEnabled implements
         closeMailbox();
     }
 
-    public void selected(SelectedImapMailbox mailbox) {
+    public void selected(SelectedMailbox mailbox) {
         setupLogger(mailbox);
         this.state = ImapSessionState.SELECTED;
         closeMailbox();
         this.selectedMailbox = mailbox;
     }
 
-    public SelectedImapMailbox getSelected() {
+    public SelectedMailbox getSelected() {
         return this.selectedMailbox;
     }
 

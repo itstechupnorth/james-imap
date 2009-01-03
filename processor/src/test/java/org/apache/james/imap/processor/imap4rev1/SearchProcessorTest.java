@@ -35,7 +35,7 @@ import org.apache.james.api.imap.message.response.imap4rev1.StatusResponse;
 import org.apache.james.api.imap.message.response.imap4rev1.StatusResponseFactory;
 import org.apache.james.api.imap.process.ImapProcessor;
 import org.apache.james.api.imap.process.ImapSession;
-import org.apache.james.api.imap.process.SelectedImapMailbox;
+import org.apache.james.api.imap.process.SelectedMailbox;
 import org.apache.james.api.imap.process.ImapProcessor.Responder;
 import org.apache.james.imap.mailbox.Mailbox;
 import org.apache.james.imap.mailbox.MailboxManager;
@@ -137,7 +137,7 @@ public class SearchProcessorTest extends MockObjectTestCase {
         final IdRange[] ids = { new IdRange(Long.MAX_VALUE, 1729) };
         final SearchQuery.NumericRange[] ranges = { new SearchQuery.NumericRange(
                 Long.MAX_VALUE, 1729L) };
-        Mock selectedMailbox = mock(SelectedImapMailbox.class);
+        Mock selectedMailbox = mock(SelectedMailbox.class);
         selectedMailbox.expects(once()).method("uid").with(eq(1729)).will(
                 returnValue(1729L));
         
@@ -170,7 +170,7 @@ public class SearchProcessorTest extends MockObjectTestCase {
         final IdRange[] ids = { new IdRange(1, Long.MAX_VALUE) };
         final SearchQuery.NumericRange[] ranges = { new SearchQuery.NumericRange(
                 42, Long.MAX_VALUE) };
-        Mock selectedMailbox = mock(SelectedImapMailbox.class);
+        Mock selectedMailbox = mock(SelectedMailbox.class);
         selectedMailbox.expects(once()).method("uid").with(eq(1)).will(
                 returnValue(42L));
         allowUnsolicitedResponses(selectedMailbox);
@@ -185,7 +185,7 @@ public class SearchProcessorTest extends MockObjectTestCase {
         final IdRange[] ids = { new IdRange(1, 5) };
         final SearchQuery.NumericRange[] ranges = { new SearchQuery.NumericRange(
                 42, 1729) };
-        Mock selectedMailbox = mock(SelectedImapMailbox.class);
+        Mock selectedMailbox = mock(SelectedMailbox.class);
         selectedMailbox.expects(once()).method("uid").with(eq(1)).will(
                 returnValue(42L));
         selectedMailbox.expects(once()).method("uid").with(eq(5)).will(
@@ -202,7 +202,7 @@ public class SearchProcessorTest extends MockObjectTestCase {
         final IdRange[] ids = { new IdRange(1) };
         final SearchQuery.NumericRange[] ranges = { new SearchQuery.NumericRange(
                 42) };
-        Mock selectedMailbox = mock(SelectedImapMailbox.class);
+        Mock selectedMailbox = mock(SelectedMailbox.class);
         selectedMailbox.expects(exactly(2)).method("uid").with(eq(1)).will(
                 returnValue(42L));
         selectedMailbox.expects(once()).method("getRecent").will(

@@ -35,7 +35,7 @@ import org.apache.commons.logging.Log;
 import org.apache.james.api.imap.message.BodyFetchElement;
 import org.apache.james.api.imap.message.FetchData;
 import org.apache.james.api.imap.process.ImapSession;
-import org.apache.james.api.imap.process.SelectedImapMailbox;
+import org.apache.james.api.imap.process.SelectedMailbox;
 import org.apache.james.imap.mailbox.Headers;
 import org.apache.james.imap.mailbox.Mailbox;
 import org.apache.james.imap.mailbox.MailboxException;
@@ -106,7 +106,7 @@ final class FetchResponseBuilder {
     public FetchResponse build(FetchData fetch, MessageResult result, Mailbox mailbox, 
             ImapSession session, boolean useUids) throws MessagingException,
             ParseException {
-        final SelectedImapMailbox selected = session.getSelected();
+        final SelectedMailbox selected = session.getSelected();
         final long resultUid = result.getUid();
         final int resultMsn = selected.msn(resultUid);
         setMsn(resultMsn);

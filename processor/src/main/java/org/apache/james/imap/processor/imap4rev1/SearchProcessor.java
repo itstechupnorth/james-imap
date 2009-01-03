@@ -37,7 +37,7 @@ import org.apache.james.api.imap.message.request.SearchKey;
 import org.apache.james.api.imap.message.response.imap4rev1.StatusResponseFactory;
 import org.apache.james.api.imap.process.ImapProcessor;
 import org.apache.james.api.imap.process.ImapSession;
-import org.apache.james.api.imap.process.SelectedImapMailbox;
+import org.apache.james.api.imap.process.SelectedMailbox;
 import org.apache.james.imap.mailbox.Mailbox;
 import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.MailboxManagerProvider;
@@ -121,7 +121,7 @@ public class SearchProcessor extends AbstractMailboxAwareProcessor {
 
     private SearchQuery toQuery(final SearchKey key, final ImapSession session) {
         final SearchQuery result = new SearchQuery();
-        final SelectedImapMailbox selected = session.getSelected();
+        final SelectedMailbox selected = session.getSelected();
         if (selected != null) {
             result.addRecentMessageUids(selected.getRecent());
         }
@@ -239,7 +239,7 @@ public class SearchProcessor extends AbstractMailboxAwareProcessor {
             final long lowUid;
             final long highUid;
             if (msn) {
-                final SelectedImapMailbox selected = session.getSelected();
+                final SelectedMailbox selected = session.getSelected();
                 if (highVal == Long.MAX_VALUE) {
                     highUid = Long.MAX_VALUE;
                 } else {

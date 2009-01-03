@@ -57,7 +57,7 @@ public interface ImapSession {
      *            If <code>true</code>, the selection is set to be read only.
      * @throws MailboxManagerException
      */
-    void selected(SelectedImapMailbox mailbox);
+    void selected(SelectedMailbox mailbox);
 
     /**
      * Moves the session out of {@link ImapSessionState#SELECTED} state and back
@@ -72,7 +72,7 @@ public interface ImapSession {
      * 
      * @return the currently selected mailbox.
      */
-    SelectedImapMailbox getSelected();
+    SelectedMailbox getSelected();
 
     /**
      * Gets an attribute of this session by name. Implementations should ensure

@@ -36,7 +36,7 @@ import org.apache.james.api.imap.message.response.imap4rev1.StatusResponse;
 import org.apache.james.api.imap.message.response.imap4rev1.StatusResponseFactory;
 import org.apache.james.api.imap.process.ImapProcessor;
 import org.apache.james.api.imap.process.ImapSession;
-import org.apache.james.api.imap.process.SelectedImapMailbox;
+import org.apache.james.api.imap.process.SelectedMailbox;
 import org.apache.james.imap.mailbox.Mailbox;
 import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.MailboxExistsException;
@@ -125,7 +125,7 @@ abstract public class AbstractMailboxAwareProcessor extends AbstractChainedImapP
      */
     protected void unsolicitedResponses(final ImapSession session, final ImapProcessor.Responder responder, 
             boolean omitExpunged, boolean useUid) {
-        final SelectedImapMailbox selected = session.getSelected();
+        final SelectedMailbox selected = session.getSelected();
         if (selected == null) {
             getLog().debug("No mailbox selected");
         } else {
@@ -134,11 +134,11 @@ abstract public class AbstractMailboxAwareProcessor extends AbstractChainedImapP
     }
 
     /**
-     * @see org.apache.james.api.imap.process.SelectedImapMailbox#unsolicitedResponses(boolean,
+     * @see org.apache.james.api.imap.process.SelectedMailbox#unsolicitedResponses(boolean,
      *      boolean)
      */
     public void unsolicitedResponses(final ImapSession session, final ImapProcessor.Responder responder, 
-            final SelectedImapMailbox selected, boolean omitExpunged, boolean useUid) {
+            final SelectedMailbox selected, boolean omitExpunged, boolean useUid) {
         final boolean sizeChanged = selected.isSizeChanged();
         // New message response
             if (sizeChanged) {
@@ -159,7 +159,7 @@ abstract public class AbstractMailboxAwareProcessor extends AbstractChainedImapP
             selected.resetEvents();
     }
 
-    private void addExpungedResponses(final SelectedImapMailbox selected, final ImapProcessor.Responder responder) {
+    private void addExpungedResponses(final SelectedMailbox selected, final ImapProcessor.Responder responder) {
         final Collection<Long> expungedUids = selected.expungedUids();
         for (final Long uid: expungedUids) {
             final long uidValue = uid.longValue();
@@ -171,7 +171,7 @@ abstract public class AbstractMailboxAwareProcessor extends AbstractChainedImapP
         selected.expunged(expungedUids);
     }
 
-    private void addFlagsResponses(final ImapSession session, final SelectedImapMailbox selected, 
+    private void addFlagsResponses(final ImapSession session, final SelectedMailbox selected, 
             final ImapProcessor.Responder responder, boolean useUid) {
         try {
             final Collection<Long> flagUpdateUids = selected.flagUpdateUids();
@@ -189,7 +189,7 @@ abstract public class AbstractMailboxAwareProcessor extends AbstractChainedImapP
         }
     }
 
-    private void addFlagsResponses(final ImapSession session, final SelectedImapMailbox selected, 
+    private void addFlagsResponses(final ImapSession session, final SelectedMailbox selected, 
             final ImapProcessor.Responder responder, boolean useUid, MessageRange messageSet, Mailbox mailbox, MailboxSession mailboxSession)
     throws MailboxException {
         final Iterator it = mailbox.getMessages(messageSet, FetchGroupImpl.FLAGS, mailboxSession);
@@ -215,21 +215,21 @@ abstract public class AbstractMailboxAwareProcessor extends AbstractChainedImapP
         }
     }
 
-    private Mailbox getMailbox(final ImapSession session, final SelectedImapMailbox selected) throws MailboxException {
+    private Mailbox getMailbox(final ImapSession session, final SelectedMailbox selected) throws MailboxException {
         final String fullMailboxName = buildFullName(session, selected.getName());
         final MailboxManager mailboxManager = getMailboxManager();
         final Mailbox mailbox = mailboxManager.getMailbox(fullMailboxName);
         return mailbox;
     }
 
-    private void addRecentResponses(final SelectedImapMailbox selected, final ImapProcessor.Responder responder) {
+    private void addRecentResponses(final SelectedMailbox selected, final ImapProcessor.Responder responder) {
         final int recentCount = selected.recentCount();
 //      TODO: use factory
         RecentResponse response = new RecentResponse(recentCount);
         responder.respond(response);
     }
 
-    private void addExistsResponses(final ImapSession session, final SelectedImapMailbox selected, 
+    private void addExistsResponses(final ImapSession session, final SelectedMailbox selected, 
             final ImapProcessor.Responder responder) {
         try {
             final Mailbox mailbox = getMailbox(session, selected);

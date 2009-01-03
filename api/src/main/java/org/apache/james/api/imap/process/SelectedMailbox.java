@@ -22,7 +22,7 @@ package org.apache.james.api.imap.process;
 import java.util.Collection;
 
 
-public interface SelectedImapMailbox {
+public interface SelectedMailbox {
 
     public abstract void deselect();
 
