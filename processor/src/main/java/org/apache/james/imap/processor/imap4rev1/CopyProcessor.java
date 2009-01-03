@@ -36,7 +36,6 @@ import org.apache.james.imap.mailbox.MailboxSession;
 import org.apache.james.imap.mailbox.MessageRange;
 import org.apache.james.imap.mailbox.util.MessageRangeImpl;
 import org.apache.james.imap.message.request.imap4rev1.CopyRequest;
-import org.apache.james.imap.processor.base.AbstractMailboxProcessor;
 import org.apache.james.imap.processor.base.ImapSessionUtils;
 
 public class CopyProcessor extends AbstractMailboxProcessor {

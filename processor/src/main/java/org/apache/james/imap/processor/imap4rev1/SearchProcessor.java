@@ -48,7 +48,6 @@ import org.apache.james.imap.mailbox.SearchQuery.Criterion;
 import org.apache.james.imap.mailbox.util.FetchGroupImpl;
 import org.apache.james.imap.message.request.imap4rev1.SearchRequest;
 import org.apache.james.imap.message.response.imap4rev1.server.SearchResponse;
-import org.apache.james.imap.processor.base.AbstractMailboxProcessor;
 import org.apache.james.imap.processor.base.ImapSessionUtils;
 
 public class SearchProcessor extends AbstractMailboxProcessor {

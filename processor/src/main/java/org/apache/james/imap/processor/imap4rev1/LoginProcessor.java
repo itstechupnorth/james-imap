@@ -32,7 +32,6 @@ import org.apache.james.imap.mailbox.MailboxManager;
 import org.apache.james.imap.mailbox.MailboxManagerProvider;
 import org.apache.james.imap.mailbox.MailboxSession;
 import org.apache.james.imap.message.request.imap4rev1.LoginRequest;
-import org.apache.james.imap.processor.base.AbstractMailboxProcessor;
 import org.apache.james.imap.processor.base.ImapSessionUtils;
 
 /**

@@ -32,7 +32,6 @@ import org.apache.james.imap.mailbox.MailboxManager;
 import org.apache.james.imap.mailbox.MailboxManagerProvider;
 import org.apache.james.imap.mailbox.MailboxNotFoundException;
 import org.apache.james.imap.message.request.imap4rev1.RenameRequest;
-import org.apache.james.imap.processor.base.AbstractMailboxProcessor;
 
 public class RenameProcessor extends AbstractMailboxProcessor {
 

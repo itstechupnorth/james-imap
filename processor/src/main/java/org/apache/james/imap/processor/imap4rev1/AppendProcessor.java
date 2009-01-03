@@ -43,7 +43,6 @@ import org.apache.james.imap.mailbox.MailboxSession;
 import org.apache.james.imap.mailbox.MessageResult;
 import org.apache.james.imap.mailbox.util.FetchGroupImpl;
 import org.apache.james.imap.message.request.imap4rev1.AppendRequest;
-import org.apache.james.imap.processor.base.AbstractMailboxProcessor;
 import org.apache.james.imap.processor.base.ImapSessionUtils;
 
 public class AppendProcessor extends AbstractMailboxProcessor {

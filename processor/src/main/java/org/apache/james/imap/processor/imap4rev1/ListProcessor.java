@@ -35,7 +35,6 @@ import org.apache.james.imap.mailbox.MailboxManagerProvider;
 import org.apache.james.imap.mailbox.util.ListResultImpl;
 import org.apache.james.imap.message.request.imap4rev1.ListRequest;
 import org.apache.james.imap.message.response.imap4rev1.server.ListResponse;
-import org.apache.james.imap.processor.base.AbstractMailboxProcessor;
 import org.apache.james.imap.processor.base.ImapSessionUtils;
 
 public class ListProcessor extends AbstractMailboxProcessor {

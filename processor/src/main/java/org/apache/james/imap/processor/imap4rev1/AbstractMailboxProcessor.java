@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations      *
  * under the License.                                           *
  ****************************************************************/
-package org.apache.james.imap.processor.base;
+package org.apache.james.imap.processor.imap4rev1;
 
 import static org.apache.james.api.imap.ImapConstants.NAMESPACE_PREFIX;
 
@@ -53,6 +53,8 @@ import org.apache.james.imap.message.response.imap4rev1.ExpungeResponse;
 import org.apache.james.imap.message.response.imap4rev1.FetchResponse;
 import org.apache.james.imap.message.response.imap4rev1.RecentResponse;
 import org.apache.james.imap.message.response.imap4rev1.status.UntaggedNoResponse;
+import org.apache.james.imap.processor.base.AbstractChainedProcessor;
+import org.apache.james.imap.processor.base.ImapSessionUtils;
 
 abstract public class AbstractMailboxProcessor extends AbstractChainedProcessor {
 

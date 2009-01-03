@@ -19,7 +19,6 @@
 
 package org.apache.james.imap.processor.imap4rev1;
 
-import java.util.ArrayList;
 import java.util.Iterator;
 
 import javax.mail.Flags;
@@ -43,7 +42,6 @@ import org.apache.james.imap.mailbox.util.FetchGroupImpl;
 import org.apache.james.imap.mailbox.util.MessageRangeImpl;
 import org.apache.james.imap.message.request.imap4rev1.StoreRequest;
 import org.apache.james.imap.message.response.imap4rev1.FetchResponse;
-import org.apache.james.imap.processor.base.AbstractMailboxProcessor;
 import org.apache.james.imap.processor.base.ImapSessionUtils;
 
 public class StoreProcessor extends AbstractMailboxProcessor {

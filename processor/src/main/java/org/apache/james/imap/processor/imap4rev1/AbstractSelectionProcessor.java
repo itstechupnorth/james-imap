@@ -47,7 +47,6 @@ import org.apache.james.imap.message.request.imap4rev1.AbstractMailboxSelectionR
 import org.apache.james.imap.message.response.imap4rev1.ExistsResponse;
 import org.apache.james.imap.message.response.imap4rev1.FlagsResponse;
 import org.apache.james.imap.message.response.imap4rev1.RecentResponse;
-import org.apache.james.imap.processor.base.AbstractMailboxProcessor;
 import org.apache.james.imap.processor.base.ImapSessionUtils;
 import org.apache.james.imap.processor.base.SelectedMailboxSessionImpl;
 
