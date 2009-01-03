@@ -19,6 +19,7 @@
 
 package org.apache.james.imap.processor.base;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
@@ -105,14 +106,9 @@ public class SelectedMailboxSessionImpl extends AbstractLogEnabled implements
         return result;
     }
 
-    public long[] getRecent() {
+    public Collection<Long> getRecent() {
         checkExpungedRecents();
-        final long[] results = new long[recentUids.size()];
-        int count = 0;
-        for (final Long uid: recentUids) {
-            results[count++] = uid.longValue();
-        }
-        return results;
+        return new ArrayList<Long>(recentUids);
     }
 
     public int recentCount() {

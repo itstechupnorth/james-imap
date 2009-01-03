@@ -104,7 +104,7 @@ public class SearchProcessor extends AbstractMailboxAwareProcessor {
         final Iterator it = mailbox.search(query, fetchGroup, ImapSessionUtils
                 .getMailboxSession(session));
 
-        final Collection results = new TreeSet();
+        final Collection<Long> results = new TreeSet<Long>();
         while (it.hasNext()) {
             final MessageResult result = (MessageResult) it.next();
             final Long number;
@@ -123,11 +123,7 @@ public class SearchProcessor extends AbstractMailboxAwareProcessor {
         final SearchQuery result = new SearchQuery();
         final SelectedImapMailbox selected = session.getSelected();
         if (selected != null) {
-            final long[] recent = selected.getRecent();
-            for (int i = 0; i < recent.length; i++) {
-                long uid = recent[i];
-                result.getRecentMessageUids().add(new Long(uid));
-            }
+            result.addRecentMessageUids(selected.getRecent());
         }
         final SearchQuery.Criterion criterion = toCriterion(key, session);
         result.andCriteria(criterion);
@@ -265,27 +261,26 @@ public class SearchProcessor extends AbstractMailboxAwareProcessor {
         return SearchQuery.uid(ranges);
     }
 
-    private Criterion or(List keys, final ImapSession session) {
-        final SearchKey keyOne = (SearchKey) keys.get(0);
-        final SearchKey keyTwo = (SearchKey) keys.get(1);
+    private Criterion or(List<SearchKey> keys, final ImapSession session) {
+        final SearchKey keyOne = keys.get(0);
+        final SearchKey keyTwo = keys.get(1);
         final Criterion criterionOne = toCriterion(keyOne, session);
         final Criterion criterionTwo = toCriterion(keyTwo, session);
         final Criterion result = SearchQuery.or(criterionOne, criterionTwo);
         return result;
     }
 
-    private Criterion not(List keys, final ImapSession session) {
-        final SearchKey key = (SearchKey) keys.get(0);
+    private Criterion not(List<SearchKey> keys, final ImapSession session) {
+        final SearchKey key = keys.get(0);
         final Criterion criterion = toCriterion(key, session);
         final Criterion result = SearchQuery.not(criterion);
         return result;
     }
 
-    private Criterion and(List keys, final ImapSession session) {
+    private Criterion and(List<SearchKey> keys, final ImapSession session) {
         final int size = keys.size();
-        final List criteria = new ArrayList(size);
-        for (Iterator iter = keys.iterator(); iter.hasNext();) {
-            final SearchKey key = (SearchKey) iter.next();
+        final List<Criterion> criteria = new ArrayList<Criterion>(size);
+        for (final SearchKey key:keys) {
             final Criterion criterion = toCriterion(key, session);
             criteria.add(criterion);
         }

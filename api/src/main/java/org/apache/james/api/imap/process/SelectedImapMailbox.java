@@ -34,7 +34,7 @@ public interface SelectedImapMailbox {
 
     public boolean removeRecent(long uid);
 
-    public long[] getRecent();
+    public Collection<Long> getRecent();
 
     public int recentCount();
 

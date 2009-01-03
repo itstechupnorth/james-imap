@@ -136,11 +136,10 @@ class MessageSearches {
             final SearchQuery.ContainsOperator operator = criterion
                     .getOperator();
             final String value = operator.getValue();
-            final int type = criterion.getType();
-            switch (type) {
-                case SearchQuery.TextCriterion.BODY:
+            switch (criterion.getType()) {
+                case BODY:
                     return bodyContains(value, message);
-                case SearchQuery.TextCriterion.FULL_MESSAGE:
+                case FULL:
                     return messageContains(value, message);
                 default:
                     throw new UnsupportedSearchException();
@@ -177,14 +176,13 @@ class MessageSearches {
 
     private boolean matches(SearchQuery.ConjunctionCriterion criterion,
             Message message, final Collection recentMessageUids) throws MailboxException {
-        final int type = criterion.getType();
         final List criteria = criterion.getCriteria();
-        switch (type) {
-            case SearchQuery.ConjunctionCriterion.NOR:
+        switch (criterion.getType()) {
+            case NOR:
                 return nor(criteria, message, recentMessageUids);
-            case SearchQuery.ConjunctionCriterion.OR:
+            case OR:
                 return or(criteria, message, recentMessageUids);
-            case SearchQuery.ConjunctionCriterion.AND:
+            case AND:
                 return and(criteria, message, recentMessageUids);
             default:
                 return false;
@@ -338,13 +336,13 @@ class MessageSearches {
         } else {
             try {
                 final int isoFieldValue = toISODate(value);
-                final int type = operator.getType();
+                final SearchQuery.DateComparator type = operator.getType();
                 switch (type) {
-                    case SearchQuery.DateOperator.AFTER:
+                    case AFTER:
                         return iso < isoFieldValue;
-                    case SearchQuery.DateOperator.BEFORE:
+                    case BEFORE:
                         return iso > isoFieldValue;
-                    case SearchQuery.DateOperator.ON:
+                    case ON:
                         return iso == isoFieldValue;
                     default:
                         throw new UnsupportedSearchException();
@@ -381,13 +379,12 @@ class MessageSearches {
         final SearchQuery.NumericOperator operator = criterion.getOperator();
         final int size = message.getSize();
         final long value = operator.getValue();
-        final int type = operator.getType();
-        switch (type) {
-            case SearchQuery.NumericOperator.LESS_THAN:
+        switch (operator.getType()) {
+            case LESS_THAN:
                 return size < value;
-            case SearchQuery.NumericOperator.GREATER_THAN:
+            case GREATER_THAN:
                 return size > value;
-            case SearchQuery.NumericOperator.EQUALS:
+            case EQUALS:
                 return size == value;
             default:
                 throw new UnsupportedSearchException();
@@ -408,13 +405,13 @@ class MessageSearches {
         final int month = operator.getMonth();
         final int year = operator.getYear();
         final Date internalDate = message.getInternalDate();
-        final int type = operator.getType();
+        final SearchQuery.DateComparator type = operator.getType();
         switch (type) {
-            case SearchQuery.DateOperator.ON:
+            case ON:
                 return on(day, month, year, internalDate);
-            case SearchQuery.DateOperator.BEFORE:
+            case BEFORE:
                 return before(day, month, year, internalDate);
-            case SearchQuery.DateOperator.AFTER:
+            case AFTER:
                 return after(day, month, year, internalDate);
             default:
                 throw new UnsupportedSearchException();

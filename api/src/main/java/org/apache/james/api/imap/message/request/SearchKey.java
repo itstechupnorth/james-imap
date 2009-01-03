@@ -299,14 +299,14 @@ public final class SearchKey {
 
     // NOT
     public static SearchKey buildNot(SearchKey key) {
-        final List keys = new ArrayList();
+        final List<SearchKey> keys = new ArrayList<SearchKey>();
         keys.add(key);
         return new SearchKey(TYPE_NOT, null, keys, 0, null, null, null);
     }
 
     // OR
     public static SearchKey buildOr(SearchKey keyOne, SearchKey keyTwo) {
-        final List keys = new ArrayList();
+        final List<SearchKey> keys = new ArrayList<SearchKey>();
         keys.add(keyOne);
         keys.add(keyTwo);
         return new SearchKey(TYPE_OR, null, keys, 0, null, null, null);
@@ -319,7 +319,7 @@ public final class SearchKey {
      *            <code>List</code> of {@link SearchKey}'s composing this key
      * @return <code>SearchKey</code>, not null
      */
-    public static SearchKey buildAnd(final List keys) {
+    public static SearchKey buildAnd(final List<SearchKey> keys) {
         return new SearchKey(TYPE_AND, null, keys, 0, null, null, null);
     }
 
@@ -327,7 +327,7 @@ public final class SearchKey {
 
     private final DayMonthYear date;
 
-    private final List keys;
+    private final List<SearchKey> keys;
 
     private final long size;
 
@@ -337,7 +337,7 @@ public final class SearchKey {
 
     private IdRange[] sequence;
 
-    private SearchKey(final int type, final DayMonthYear date, final List keys,
+    private SearchKey(final int type, final DayMonthYear date, final List<SearchKey> keys,
             final long number, final String name, final String value,
             IdRange[] sequence) {
         super();
@@ -397,7 +397,7 @@ public final class SearchKey {
      *         {@link #TYPE_OR}, {@link #TYPE_AND} or {@link #TYPE_NOT}
      *         otherwise null
      */
-    public final List getKeys() {
+    public final List<SearchKey> getKeys() {
         return keys;
     }
 

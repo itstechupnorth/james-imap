@@ -42,6 +42,7 @@ import org.apache.james.imap.mailbox.MailboxManager;
 import org.apache.james.imap.mailbox.MailboxManagerProvider;
 import org.apache.james.imap.mailbox.MailboxSession;
 import org.apache.james.imap.mailbox.SearchQuery;
+import org.apache.james.imap.mailbox.SearchQuery.Criterion;
 import org.apache.james.imap.mailbox.util.FetchGroupImpl;
 import org.apache.james.imap.message.request.imap4rev1.SearchRequest;
 import org.apache.james.imap.message.response.imap4rev1.server.SearchResponse;
@@ -145,7 +146,7 @@ public class SearchProcessorTest extends MockObjectTestCase {
         session.expects(atLeastOnce()).method("getSelected").will(
                 returnValue(selectedMailbox.proxy()));
         selectedMailbox.expects(once()).method("getRecent").will(
-                returnValue(EMPTY));
+                returnValue(new ArrayList<Long>()));
         check(SearchKey.buildSequenceSet(ids), SearchQuery.uid(ranges));
     }
 
@@ -177,7 +178,7 @@ public class SearchProcessorTest extends MockObjectTestCase {
         session.expects(atLeastOnce()).method("getSelected").will(
                 returnValue(selectedMailbox.proxy()));
         selectedMailbox.expects(once()).method("getRecent").will(
-                returnValue(EMPTY));
+                returnValue(new ArrayList<Long>()));
         check(SearchKey.buildSequenceSet(ids), SearchQuery.uid(ranges));
     }
 
@@ -191,7 +192,7 @@ public class SearchProcessorTest extends MockObjectTestCase {
         selectedMailbox.expects(once()).method("uid").with(eq(5)).will(
                 returnValue(1729L));
         selectedMailbox.expects(once()).method("getRecent").will(
-                returnValue(EMPTY));
+                returnValue(new ArrayList<Long>()));
         allowUnsolicitedResponses(selectedMailbox);
         session.expects(atLeastOnce()).method("getSelected").will(
                 returnValue(selectedMailbox.proxy()));
@@ -206,7 +207,7 @@ public class SearchProcessorTest extends MockObjectTestCase {
         selectedMailbox.expects(exactly(2)).method("uid").with(eq(1)).will(
                 returnValue(42L));
         selectedMailbox.expects(once()).method("getRecent").will(
-                returnValue(EMPTY));
+                returnValue(new ArrayList<Long>()));
         allowUnsolicitedResponses(selectedMailbox);
         session.expects(atLeastOnce()).method("getSelected").will(
                 returnValue(selectedMailbox.proxy()));
@@ -309,11 +310,11 @@ public class SearchProcessorTest extends MockObjectTestCase {
 
     public void testAND() throws Exception {
         session.expects(atLeastOnce()).method("getSelected").will(returnValue(null));
-        List keys = new ArrayList();
+        List<SearchKey> keys = new ArrayList<SearchKey>();
         keys.add(SearchKey.buildOn(DAY_MONTH_YEAR));
         keys.add(SearchKey.buildOld());
         keys.add(SearchKey.buildLarger(SIZE));
-        List criteria = new ArrayList();
+        List<Criterion> criteria = new ArrayList<Criterion>();
         criteria.add(SearchQuery.internalDateOn(DAY, MONTH, YEAR));
         criteria.add(SearchQuery.flagIsUnSet(Flag.RECENT));
         criteria.add(SearchQuery.sizeGreaterThan(SIZE));

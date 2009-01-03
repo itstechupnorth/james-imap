@@ -21,6 +21,7 @@ package org.apache.james.imap.mailbox;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -50,8 +51,7 @@ public class SearchQuery {
      * @return <code>Criterion</code>, not null
      */
     public static final Criterion sizeLessThan(long value) {
-        return new SizeCriterion(new NumericOperator(value,
-                NumericOperator.LESS_THAN));
+        return new SizeCriterion(new NumericOperator(value, NumericComparator.LESS_THAN));
     }
 
     /**
@@ -63,8 +63,7 @@ public class SearchQuery {
      * @return <code>Criterion</code>, not null
      */
     public static final Criterion sizeGreaterThan(long value) {
-        return new SizeCriterion(new NumericOperator(value,
-                NumericOperator.GREATER_THAN));
+        return new SizeCriterion(new NumericOperator(value, NumericComparator.GREATER_THAN));
     }
 
     /**
@@ -76,8 +75,7 @@ public class SearchQuery {
      * @return <code>Criterion</code>, not null
      */
     public static final Criterion sizeEquals(long value) {
-        return new SizeCriterion(new NumericOperator(value,
-                NumericOperator.EQUALS));
+        return new SizeCriterion(new NumericOperator(value, NumericComparator.EQUALS));
     }
 
     /**
@@ -93,7 +91,7 @@ public class SearchQuery {
      * @return <code>Criterion</code>, not null
      */
     public static final Criterion internalDateAfter(int day, int month, int year) {
-        return new InternalDateCriterion(new DateOperator(DateOperator.AFTER,
+        return new InternalDateCriterion(new DateOperator(DateComparator.AFTER,
                 day, month, year));
     }
 
@@ -109,7 +107,7 @@ public class SearchQuery {
      * @return <code>Criterion</code>, not null
      */
     public static final Criterion internalDateOn(int day, int month, int year) {
-        return new InternalDateCriterion(new DateOperator(DateOperator.ON, day,
+        return new InternalDateCriterion(new DateOperator(DateComparator.ON, day,
                 month, year));
     }
 
@@ -127,7 +125,7 @@ public class SearchQuery {
      */
     public static final Criterion internalDateBefore(int day, int month,
             int year) {
-        return new InternalDateCriterion(new DateOperator(DateOperator.BEFORE,
+        return new InternalDateCriterion(new DateOperator(DateComparator.BEFORE,
                 day, month, year));
     }
 
@@ -149,7 +147,7 @@ public class SearchQuery {
     public static final Criterion headerDateAfter(String headerName, int day,
             int month, int year) {
         return new HeaderCriterion(headerName, new DateOperator(
-                DateOperator.AFTER, day, month, year));
+                DateComparator.AFTER, day, month, year));
     }
 
     /**
@@ -170,7 +168,7 @@ public class SearchQuery {
     public static final Criterion headerDateOn(String headerName, int day,
             int month, int year) {
         return new HeaderCriterion(headerName, new DateOperator(
-                DateOperator.ON, day, month, year));
+                DateComparator.ON, day, month, year));
     }
 
     /**
@@ -191,7 +189,7 @@ public class SearchQuery {
     public static final Criterion headerDateBefore(String headerName, int day,
             int month, int year) {
         return new HeaderCriterion(headerName, new DateOperator(
-                DateOperator.BEFORE, day, month, year));
+                DateComparator.BEFORE, day, month, year));
     }
 
     /**
@@ -234,7 +232,7 @@ public class SearchQuery {
      * @return <code>Criterion</code>, not null
      */
     public static final Criterion mailContains(String value) {
-        return new TextCriterion(value, TextCriterion.FULL_MESSAGE);
+        return new TextCriterion(value, Scope.FULL);
     }
 
     /**
@@ -247,7 +245,7 @@ public class SearchQuery {
      * @return <code>Criterion</code>, not null
      */
     public static final Criterion bodyContains(String value) {
-        return new TextCriterion(value, TextCriterion.BODY);
+        return new TextCriterion(value, Scope.BODY);
     }
 
     /**
@@ -271,10 +269,10 @@ public class SearchQuery {
      * @return <code>Criterion</code>, not null
      */
     public static final Criterion or(Criterion one, Criterion two) {
-        final List criteria = new ArrayList();
+        final List<Criterion> criteria = new ArrayList<Criterion>();
         criteria.add(one);
         criteria.add(two);
-        return new ConjunctionCriterion(ConjunctionCriterion.OR, criteria);
+        return new ConjunctionCriterion(Conjunction.OR, criteria);
     }
 
     /**
@@ -287,10 +285,10 @@ public class SearchQuery {
      * @return <code>Criterion</code>, not null
      */
     public static final Criterion and(Criterion one, Criterion two) {
-        final List criteria = new ArrayList();
+        final List<Criterion> criteria = new ArrayList<Criterion>();
         criteria.add(one);
         criteria.add(two);
-        return new ConjunctionCriterion(ConjunctionCriterion.AND, criteria);
+        return new ConjunctionCriterion(Conjunction.AND, criteria);
     }
 
     /**
@@ -300,8 +298,8 @@ public class SearchQuery {
      *            <code>List</code> of {@link Criterion}
      * @return <code>Criterion</code>, not null
      */
-    public static final Criterion and(List criteria) {
-        return new ConjunctionCriterion(ConjunctionCriterion.AND, criteria);
+    public static final Criterion and(List<Criterion> criteria) {
+        return new ConjunctionCriterion(Conjunction.AND, criteria);
     }
 
     /**
@@ -312,9 +310,9 @@ public class SearchQuery {
      * @return <code>Criterion</code>, not null
      */
     public static final Criterion not(Criterion criterion) {
-        final List criteria = new ArrayList();
+        final List<Criterion> criteria = new ArrayList<Criterion>();
         criteria.add(criterion);
-        return new ConjunctionCriterion(ConjunctionCriterion.NOR, criteria);
+        return new ConjunctionCriterion(Conjunction.NOR, criteria);
     }
 
     /**
@@ -414,7 +412,7 @@ public class SearchQuery {
         return AllCriterion.all();
     }
 
-    private final Set recentMessageUids = new HashSet();
+    private final Set<Long> recentMessageUids = new HashSet<Long>();
 
     private final List<Criterion> criterias = new ArrayList<Criterion>();
 
@@ -433,8 +431,16 @@ public class SearchQuery {
      * 
      * @return mutable <code>Set</code> of <code>Long</code> UIDS
      */
-    public Set getRecentMessageUids() {
+    public Set<Long> getRecentMessageUids() {
         return recentMessageUids;
+    }
+    
+    /**
+     * Adds all the uids to the collection of recents.
+     * @param uids not null
+     */
+    public void addRecentMessageUids(final Collection<Long> uids) {
+        recentMessageUids.addAll(uids);
     }
 
     @Override
@@ -521,7 +527,7 @@ public class SearchQuery {
         /**
          * @see java.lang.Object#hashCode()
          */
-        // @Override
+        @Override
         public int hashCode() {
             final int PRIME = 31;
             int result = 1;
@@ -533,7 +539,7 @@ public class SearchQuery {
         /**
          * @see java.lang.Object#equals(java.lang.Object)
          */
-        // @Override
+        @Override
         public boolean equals(Object obj) {
             if (this == obj)
                 return true;
@@ -568,25 +574,20 @@ public class SearchQuery {
     public static abstract class Criterion {
     }
 
+    public enum Conjunction {
+        AND, OR, NOR
+    }
+    
     /**
      * Conjuction applying to the contained criteria. {@link #getType} indicates
      * how the conjoined criteria should be related.
      */
     public static final class ConjunctionCriterion extends Criterion {
-        /** Logical <code>AND</code> */
-        public static final int AND = 1;
+        private final Conjunction type;
 
-        /** Logical <code>OR</code> */
-        public static final int OR = 2;
+        private final List<Criterion> criteria;
 
-        /** Logical <code>NOT</code> */
-        public static final int NOR = 3;
-
-        private final int type;
-
-        private final List criteria;
-
-        public ConjunctionCriterion(final int type, final List criteria) {
+        public ConjunctionCriterion(final Conjunction type, final List<Criterion> criteria) {
             super();
             this.type = type;
             this.criteria = criteria;
@@ -597,36 +598,35 @@ public class SearchQuery {
          * 
          * @return <code>List</code> of {@link Criterion}
          */
-        public final List getCriteria() {
+        public final List<Criterion> getCriteria() {
             return criteria;
         }
 
         /**
          * Gets the type of conjunction.
          * 
-         * @return the type, either {@link #AND}, {@link #OR} or {@link NOR}
+         * @return not null
          */
-        public final int getType() {
+        public final Conjunction getType() {
             return type;
         }
 
         /**
          * @see java.lang.Object#hashCode()
          */
-        // @Override
+        @Override
         public int hashCode() {
             final int PRIME = 31;
             int result = 1;
             result = PRIME * result
                     + ((criteria == null) ? 0 : criteria.hashCode());
-            result = PRIME * result + type;
             return result;
         }
 
         /**
          * @see java.lang.Object#equals(java.lang.Object)
          */
-        // @Override
+        @Override
         public boolean equals(Object obj) {
             if (this == obj)
                 return true;
@@ -678,7 +678,7 @@ public class SearchQuery {
         /**
          * @see java.lang.Object#equals(java.lang.Object)
          */
-        // @Override
+        @Override
         public boolean equals(Object obj) {
             return obj instanceof AllCriterion;
         }
@@ -686,7 +686,7 @@ public class SearchQuery {
         /**
          * @see java.lang.Object#hashCode()
          */
-        // @Override
+        @Override
         public int hashCode() {
             return 1729;
         }
@@ -696,25 +696,24 @@ public class SearchQuery {
         }
     }
 
+    public enum Scope {
+        /** Only message body content */        
+        BODY,
+
+        /** Full message content including headers */
+        FULL
+    }
+    
     /**
      * Message text.
      */
     public static final class TextCriterion extends Criterion {
-        /**
-         * Only the message body content.
-         */
-        public static final int BODY = 1;
 
-        /**
-         * The full message content including headers.
-         */
-        public static final int FULL_MESSAGE = 2;
-
-        private final int type;
+        private final Scope type;
 
         private final ContainsOperator operator;
 
-        private TextCriterion(final String value, final int type) {
+        private TextCriterion(final String value, final Scope type) {
             super();
             this.operator = new ContainsOperator(value);
             this.type = type;
@@ -723,9 +722,9 @@ public class SearchQuery {
         /**
          * Gets the type of text to be searched.
          * 
-         * @return the type, either {@link #BODY} or {@link #FULL_MESSAGE}
+         * @return not null
          */
-        public final int getType() {
+        public final Scope getType() {
             return type;
         }
 
@@ -741,20 +740,19 @@ public class SearchQuery {
         /**
          * @see java.lang.Object#hashCode()
          */
-        // @Override
+        @Override
         public int hashCode() {
             final int PRIME = 31;
             int result = 1;
             result = PRIME * result
                     + ((operator == null) ? 0 : operator.hashCode());
-            result = PRIME * result + type;
             return result;
         }
 
         /**
          * @see java.lang.Object#equals(java.lang.Object)
          */
-        // @Override
+        @Override
         public boolean equals(Object obj) {
             if (this == obj)
                 return true;
@@ -828,7 +826,7 @@ public class SearchQuery {
         /**
          * @see java.lang.Object#hashCode()
          */
-        // @Override
+        @Override
         public int hashCode() {
             final int PRIME = 31;
             int result = 1;
@@ -842,7 +840,7 @@ public class SearchQuery {
         /**
          * @see java.lang.Object#equals(java.lang.Object)
          */
-        // @Override
+        @Override
         public boolean equals(Object obj) {
             if (this == obj)
                 return true;
@@ -907,7 +905,7 @@ public class SearchQuery {
         /**
          * @see java.lang.Object#hashCode()
          */
-        // @Override
+        @Override
         public int hashCode() {
             final int PRIME = 31;
             int result = 1;
@@ -919,7 +917,7 @@ public class SearchQuery {
         /**
          * @see java.lang.Object#equals(java.lang.Object)
          */
-        // @Override
+        @Override
         public boolean equals(Object obj) {
             if (this == obj)
                 return true;
@@ -977,7 +975,7 @@ public class SearchQuery {
         /**
          * @see java.lang.Object#hashCode()
          */
-        // @Override
+        @Override
         public int hashCode() {
             final int PRIME = 31;
             int result = 1;
@@ -989,7 +987,7 @@ public class SearchQuery {
         /**
          * @see java.lang.Object#equals(java.lang.Object)
          */
-        // @Override
+        @Override
         public boolean equals(Object obj) {
             if (this == obj)
                 return true;
@@ -1060,7 +1058,7 @@ public class SearchQuery {
         /**
          * @see java.lang.Object#hashCode()
          */
-        // @Override
+        @Override
         public int hashCode() {
             final int PRIME = 31;
             int result = 1;
@@ -1073,7 +1071,7 @@ public class SearchQuery {
         /**
          * @see java.lang.Object#equals(java.lang.Object)
          */
-        // @Override
+        @Override
         public boolean equals(Object obj) {
             if (this == obj)
                 return true;
@@ -1149,7 +1147,7 @@ public class SearchQuery {
         /**
          * @see java.lang.Object#hashCode()
          */
-        // @Override
+        @Override
         public int hashCode() {
             final int PRIME = 31;
             int result = 1;
@@ -1162,7 +1160,7 @@ public class SearchQuery {
         /**
          * @see java.lang.Object#equals(java.lang.Object)
          */
-        // @Override
+        @Override
         public boolean equals(Object obj) {
             if (this == obj)
                 return true;
@@ -1227,7 +1225,7 @@ public class SearchQuery {
         /**
          * @see java.lang.Object#hashCode()
          */
-        // @Override
+        @Override
         public int hashCode() {
             final int PRIME = 31;
             int result = 1;
@@ -1239,7 +1237,7 @@ public class SearchQuery {
         /**
          * @see java.lang.Object#equals(java.lang.Object)
          */
-        // @Override
+        @Override
         public boolean equals(Object obj) {
             if (this == obj)
                 return true;
@@ -1310,7 +1308,7 @@ public class SearchQuery {
         /**
          * @see java.lang.Object#hashCode()
          */
-        // @Override
+        @Override
         public int hashCode() {
             final int PRIME = 31;
             int result = 1;
@@ -1321,7 +1319,7 @@ public class SearchQuery {
         /**
          * @see java.lang.Object#equals(java.lang.Object)
          */
-        // @Override
+        @Override
         public boolean equals(Object obj) {
             if (this == obj)
                 return true;
@@ -1369,7 +1367,7 @@ public class SearchQuery {
         /**
          * @see java.lang.Object#equals(java.lang.Object)
          */
-        // @Override
+        @Override
         public boolean equals(Object obj) {
             return obj instanceof ExistsOperator;
         }
@@ -1377,7 +1375,7 @@ public class SearchQuery {
         /**
          * @see java.lang.Object#hashCode()
          */
-        // @Override
+        @Override
         public int hashCode() {
             return 42;
         }
@@ -1385,7 +1383,7 @@ public class SearchQuery {
         /**
          * @see java.lang.Object#toString()
          */
-        // @Override
+        @Override
         public String toString() {
             return "ExistsCriterion";
         }
@@ -1429,7 +1427,7 @@ public class SearchQuery {
         /**
          * @see java.lang.Object#hashCode()
          */
-        // @Override
+        @Override
         public int hashCode() {
             final int PRIME = 31;
             int result = 1;
@@ -1440,7 +1438,7 @@ public class SearchQuery {
         /**
          * @see java.lang.Object#equals(java.lang.Object)
          */
-        // @Override
+        @Override
         public boolean equals(Object obj) {
             if (this == obj)
                 return true;
@@ -1473,6 +1471,10 @@ public class SearchQuery {
 
     }
 
+    public enum NumericComparator {
+        EQUALS, LESS_THAN, GREATER_THAN
+    }
+    
     /**
      * Searches numberic values.
      */
@@ -1485,9 +1487,9 @@ public class SearchQuery {
 
         private final long value;
 
-        private final int type;
+        private final NumericComparator type;
 
-        private NumericOperator(final long value, final int type) {
+        private NumericOperator(final long value, final NumericComparator type) {
             super();
             this.value = value;
             this.type = type;
@@ -1496,10 +1498,9 @@ public class SearchQuery {
         /**
          * Gets the operation type
          * 
-         * @return the type either {@link #EQUALS}, {@link #LESS_THAN} or
-         *         {@link #GREATER_THAN}
+         * @return not null
          */
-        public final int getType() {
+        public final NumericComparator getType() {
             return type;
         }
 
@@ -1515,11 +1516,10 @@ public class SearchQuery {
         /**
          * @see java.lang.Object#hashCode()
          */
-        // @Override
+        @Override
         public int hashCode() {
             final int PRIME = 31;
             int result = 1;
-            result = PRIME * result + type;
             result = PRIME * result + (int) (value ^ (value >>> 32));
             return result;
         }
@@ -1527,7 +1527,7 @@ public class SearchQuery {
         /**
          * @see java.lang.Object#equals(java.lang.Object)
          */
-        // @Override
+        @Override
         public boolean equals(Object obj) {
             if (this == obj)
                 return true;
@@ -1562,6 +1562,10 @@ public class SearchQuery {
         }
     }
 
+    public enum DateComparator {
+        BEFORE, AFTER, ON
+    }
+    
     /**
      * Operates on a date.
      */
@@ -1572,7 +1576,7 @@ public class SearchQuery {
 
         public static final int ON = 3;
 
-        private final int type;
+        private final DateComparator type;
 
         private final int day;
 
@@ -1580,7 +1584,7 @@ public class SearchQuery {
 
         private final int year;
 
-        public DateOperator(final int type, final int day, final int month,
+        public DateOperator(final DateComparator type, final int day, final int month,
                 final int year) {
             super();
             this.type = type;
@@ -1613,7 +1617,7 @@ public class SearchQuery {
          * @return the type, either {@link #BEFORE}, {@link #AFTER} or
          *         {@link ON}
          */
-        public final int getType() {
+        public final DateComparator getType() {
             return type;
         }
 
@@ -1629,13 +1633,12 @@ public class SearchQuery {
         /**
          * @see java.lang.Object#hashCode()
          */
-        // @Override
+        @Override
         public int hashCode() {
             final int PRIME = 31;
             int result = 1;
             result = PRIME * result + day;
             result = PRIME * result + month;
-            result = PRIME * result + type;
             result = PRIME * result + year;
             return result;
         }
@@ -1643,7 +1646,7 @@ public class SearchQuery {
         /**
          * @see java.lang.Object#equals(java.lang.Object)
          */
-        // @Override
+        @Override
         public boolean equals(Object obj) {
             if (this == obj)
                 return true;
@@ -1709,7 +1712,7 @@ public class SearchQuery {
         /**
          * @see java.lang.Object#hashCode()
          */
-        // @Override
+        @Override
         public int hashCode() {
             return range.length;
         }
@@ -1717,7 +1720,7 @@ public class SearchQuery {
         /**
          * @see java.lang.Object#equals(java.lang.Object)
          */
-        // @Override
+        @Override
         public boolean equals(Object obj) {
             if (this == obj)
                 return true;
