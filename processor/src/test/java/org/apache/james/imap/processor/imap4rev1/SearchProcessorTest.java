@@ -159,7 +159,6 @@ public class SearchProcessorTest extends MockObjectTestCase {
         
         session.expects(atMostOnce()).method("getAttribute").with(eq(ImapSessionUtils.SELECTED_MAILBOX_ATTRIBUTE_SESSION_KEY)).will(returnValue(mailbox));
         session.expects(atMostOnce()).method("getAttribute").with(eq(ImapSessionUtils.MAILBOX_USER_ATTRIBUTE_SESSION_KEY)).will(returnValue("user"));
-        session.expects(atMostOnce()).method("getAttribute").with(eq(ImapSessionUtils.MAILBOX_MANAGER_ATTRIBUTE_SESSION_KEY)).will(returnValue(mailboxManager.proxy()));
         session.expects(atMostOnce()).method("getAttribute").with(eq(ImapSessionUtils.MAILBOX_SESSION_ATTRIBUTE_SESSION_KEY)).will(returnValue(mailboxSession.proxy()));
         
         mailboxManagerProvider.expects(atMostOnce()).method("getMailboxManager").will(returnValue(mailboxManager.proxy()));

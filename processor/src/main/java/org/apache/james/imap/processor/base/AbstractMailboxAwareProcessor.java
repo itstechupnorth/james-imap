@@ -309,33 +309,8 @@ abstract public class AbstractMailboxAwareProcessor extends AbstractChainedImapP
 
     public MailboxManager getMailboxManager(final ImapSession session)
             throws MailboxException {
-        // TODO: removed badly implemented and ineffective check that mailbox
-        // user matches current user
-        // TODO: add check into user login methods
-        // TODO: shouldn't need to cache mailbox manager
         // TODO: consolidate API by deleting provider and supply manager direct
-        MailboxManager result = (MailboxManager) session
-                .getAttribute(ImapSessionUtils.MAILBOX_MANAGER_ATTRIBUTE_SESSION_KEY);
-        if (result == null) {
-            result = mailboxManagerProvider.getMailboxManager();
-            //
-            // Mailbox manager is the primary point of contact
-            // But not need to create mailbox until user is logged in
-            //
-            final String user = ImapSessionUtils.getUserName(session);
-            if (user != null) {
-                // TODO: reconsider decision not to sunchronise
-                // TODO: mailbox creation is ATM an expensive operation
-                // TODO: so caching is required
-                // TODO: caching in the session seems like the wrong design
-                // decision, though
-                // TODO: the mailbox provider should perform any caching that is
-                // required
-                session.setAttribute(
-                        ImapSessionUtils.MAILBOX_MANAGER_ATTRIBUTE_SESSION_KEY,
-                        result);
-            }
-        }
+        final MailboxManager result = mailboxManagerProvider.getMailboxManager();
         return result;
     }
 

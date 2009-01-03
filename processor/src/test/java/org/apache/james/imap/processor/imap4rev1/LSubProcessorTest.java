@@ -82,14 +82,14 @@ public class LSubProcessorTest extends MockObjectTestCase {
 
     Mock statusResponse;
 
-    Collection subscriptions;
+    Collection<String> subscriptions;
 
     ImapCommand imapCommand;
 
     private ImapProcessor.Responder responderImpl;
 
     protected void setUp() throws Exception {
-        subscriptions = new ArrayList();
+        subscriptions = new ArrayList<String>();
         serverResponseFactory = mock(StatusResponseFactory.class);
         session = mock(ImapSession.class);
         command = mock(ImapCommand.class);
@@ -104,6 +104,7 @@ public class LSubProcessorTest extends MockObjectTestCase {
         processor = new LSubProcessor((ImapProcessor) next.proxy(),
                 (MailboxManagerProvider) provider.proxy(),
                 (StatusResponseFactory) serverResponseFactory.proxy());
+        provider.expects(atMostOnce()).method("getMailboxManager").will(returnValue(manager.proxy()));
     }
 
     protected void tearDown() throws Exception {
@@ -231,9 +232,6 @@ public class LSubProcessorTest extends MockObjectTestCase {
     }
 
     private void expectSubscriptions() {
-        session.expects(once()).method("getAttribute").with(
-                eq(ImapSessionUtils.MAILBOX_MANAGER_ATTRIBUTE_SESSION_KEY))
-                .will(returnValue(manager.proxy()));
         session.expects(once()).method("getAttribute").with(
                 eq(ImapSessionUtils.MAILBOX_USER_ATTRIBUTE_SESSION_KEY)).will(
                 returnValue(USER));
