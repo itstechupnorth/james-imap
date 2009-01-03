@@ -20,7 +20,6 @@
 package org.apache.james.imap.processor.base;
 
 import org.apache.james.api.imap.process.ImapSession;
-import org.apache.james.imap.mailbox.Mailbox;
 import org.apache.james.imap.mailbox.MailboxSession;
 
 public class ImapSessionUtils {
@@ -32,12 +31,6 @@ public class ImapSessionUtils {
     public static final String SELECTED_MAILBOX_ATTRIBUTE_SESSION_KEY = "org.apache.james.api.imap.SELECTED_MAILBOX_ATTRIBUTE_SESSION_KEY";
 
     public static final String MAILBOX_SESSION_ATTRIBUTE_SESSION_KEY = "org.apache.james.api.imap.MAILBOX_SESSION_ATTRIBUTE_SESSION_KEY";
-
-    public static Mailbox getMailbox(final ImapSession session) {
-        Mailbox result = (Mailbox) session
-                .getAttribute(SELECTED_MAILBOX_ATTRIBUTE_SESSION_KEY);
-        return result;
-    }
 
     public static MailboxSession getMailboxSession(final ImapSession session) {
         final MailboxSession result = (MailboxSession) session

@@ -53,7 +53,7 @@ public class ExpungeProcessor extends AbstractMailboxAwareProcessor {
 
     protected void doProcess(ImapRequest message, ImapSession session,
             String tag, ImapCommand command, Responder responder) {
-        Mailbox mailbox = ImapSessionUtils.getMailbox(session);
+        Mailbox mailbox = getSelectedMailbox(session);
         if (!mailbox.isWriteable()) {
             no(command, tag, responder,
                     HumanReadableTextKey.MAILBOX_IS_READ_ONLY);

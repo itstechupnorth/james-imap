@@ -103,10 +103,9 @@ final class FetchResponseBuilder {
         return result;
     }
 
-    public FetchResponse build(FetchData fetch, MessageResult result,
+    public FetchResponse build(FetchData fetch, MessageResult result, Mailbox mailbox, 
             ImapSession session, boolean useUids) throws MessagingException,
             ParseException {
-        Mailbox mailbox = ImapSessionUtils.getMailbox(session);
         final SelectedImapMailbox selected = session.getSelected();
         final long resultUid = result.getUid();
         final int resultMsn = selected.msn(resultUid);

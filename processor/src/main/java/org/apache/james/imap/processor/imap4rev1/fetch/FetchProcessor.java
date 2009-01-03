@@ -69,7 +69,7 @@ public class FetchProcessor extends AbstractMailboxAwareProcessor {
         final FetchData fetch = request.getFetch();
         try {
             FetchGroup resultToFetch = getFetchGroup(fetch);
-            Mailbox mailbox = ImapSessionUtils.getMailbox(session);
+            Mailbox mailbox = getSelectedMailbox(session);
             for (int i = 0; i < idSet.length; i++) {
                 final FetchResponseBuilder builder = new FetchResponseBuilder(
                         getLog(), new EnvelopeBuilder(getLog()));
@@ -92,7 +92,7 @@ public class FetchProcessor extends AbstractMailboxAwareProcessor {
                         resultToFetch, mailboxSession);
                 while (it.hasNext()) {
                     final MessageResult result = (MessageResult) it.next();
-                    final FetchResponse response = builder.build(fetch, result,
+                    final FetchResponse response = builder.build(fetch, result, mailbox, 
                             session, useUids);
                     responder.respond(response);
                 }

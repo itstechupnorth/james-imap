@@ -346,4 +346,10 @@ abstract public class AbstractMailboxAwareProcessor extends AbstractChainedImapP
         return result;
     }
 
+    public Mailbox getSelectedMailbox(final ImapSession session) {
+        Mailbox result = (Mailbox) session
+                .getAttribute(ImapSessionUtils.SELECTED_MAILBOX_ATTRIBUTE_SESSION_KEY);
+        return result;
+    }
+
 }

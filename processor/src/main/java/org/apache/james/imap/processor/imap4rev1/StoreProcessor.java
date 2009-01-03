@@ -19,6 +19,7 @@
 
 package org.apache.james.imap.processor.imap4rev1;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 
 import javax.mail.Flags;
@@ -68,7 +69,7 @@ public class StoreProcessor extends AbstractMailboxAwareProcessor {
         final boolean isSignedPlus = request.isSignedPlus();
         final boolean isSignedMinus = request.isSignedMinus();
 
-        Mailbox mailbox = ImapSessionUtils.getMailbox(session);
+        Mailbox mailbox = getSelectedMailbox(session);
 
         final boolean replace;
         final boolean value;
