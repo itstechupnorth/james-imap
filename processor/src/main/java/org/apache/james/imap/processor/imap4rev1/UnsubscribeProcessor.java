@@ -52,7 +52,7 @@ public class UnsubscribeProcessor extends AbstractMailboxAwareProcessor {
         final String mailboxName = request.getMailboxName();
         final String userName = ImapSessionUtils.getUserName(session);
         try {
-            final MailboxManager mailboxManager = getMailboxManager(session);
+            final MailboxManager mailboxManager = getMailboxManager();
             mailboxManager.unsubscribe(userName, mailboxName);
 
             unsolicitedResponses(session, responder, false);

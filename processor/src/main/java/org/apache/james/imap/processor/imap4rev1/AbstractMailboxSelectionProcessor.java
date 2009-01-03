@@ -176,7 +176,7 @@ abstract public class AbstractMailboxSelectionProcessor extends
 
     private void selectMailbox(String mailboxName, ImapSession session)
             throws MailboxException {
-        final MailboxManager mailboxManager = getMailboxManager(session);
+        final MailboxManager mailboxManager = getMailboxManager();
         final Mailbox mailbox = mailboxManager.getMailbox(mailboxName);
         final MailboxSession mailboxSession = ImapSessionUtils
                 .getMailboxSession(session);

@@ -52,7 +52,7 @@ public class SubscribeProcessor extends AbstractMailboxAwareProcessor {
         final String mailboxName = request.getMailboxName();
         final String userName = ImapSessionUtils.getUserName(session);
         try {
-            final MailboxManager manager = getMailboxManager(session);
+            final MailboxManager manager = getMailboxManager();
             manager.subscribe(userName, mailboxName);
 
             unsolicitedResponses(session, responder, false);

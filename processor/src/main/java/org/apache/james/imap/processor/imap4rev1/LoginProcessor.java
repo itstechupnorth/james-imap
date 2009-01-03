@@ -61,7 +61,7 @@ public class LoginProcessor extends AbstractMailboxAwareProcessor {
             final LoginRequest request = (LoginRequest) message;
             final String userid = request.getUserid();
             final String passwd = request.getPassword();
-            final MailboxManager mailboxManager = getMailboxManager(session);
+            final MailboxManager mailboxManager = getMailboxManager();
             if (mailboxManager.isAuthentic(userid, passwd)) {
                 session.authenticated();
                 final MailboxSession mailboxSession = mailboxManager.createSession();

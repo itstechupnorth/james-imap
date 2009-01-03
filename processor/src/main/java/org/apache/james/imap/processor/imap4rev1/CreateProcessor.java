@@ -50,7 +50,7 @@ public class CreateProcessor extends AbstractMailboxAwareProcessor {
         try {
 
             final String fullMailboxName = buildFullName(session, mailboxName);
-            final MailboxManager mailboxManager = getMailboxManager(session);
+            final MailboxManager mailboxManager = getMailboxManager();
             mailboxManager.createMailbox(fullMailboxName);
             unsolicitedResponses(session, responder, false);
             okComplete(command, tag, responder);

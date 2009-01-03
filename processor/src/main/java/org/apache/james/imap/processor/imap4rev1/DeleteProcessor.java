@@ -55,7 +55,7 @@ public class DeleteProcessor extends AbstractMailboxAwareProcessor {
             if (selected != null && selected.getName().equals(fullMailboxName)) {
                 session.deselect();
             }
-            final MailboxManager mailboxManager = getMailboxManager(session);
+            final MailboxManager mailboxManager = getMailboxManager();
             mailboxManager.deleteMailbox(fullMailboxName, ImapSessionUtils
                     .getMailboxSession(session));
             unsolicitedResponses(session, responder, false);

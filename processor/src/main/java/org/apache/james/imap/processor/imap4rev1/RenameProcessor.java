@@ -55,7 +55,7 @@ public class RenameProcessor extends AbstractMailboxAwareProcessor {
 
             final String fullExistingName = buildFullName(session, existingName);
             final String fullNewName = buildFullName(session, newName);
-            final MailboxManager mailboxManager = getMailboxManager(session);
+            final MailboxManager mailboxManager = getMailboxManager();
             mailboxManager.renameMailbox(fullExistingName, fullNewName);
             okComplete(command, tag, responder);
             unsolicitedResponses(session, responder, false);

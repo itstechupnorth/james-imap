@@ -217,7 +217,7 @@ abstract public class AbstractMailboxAwareProcessor extends AbstractChainedImapP
 
     private Mailbox getMailbox(final ImapSession session, final SelectedImapMailbox selected) throws MailboxException {
         final String fullMailboxName = buildFullName(session, selected.getName());
-        final MailboxManager mailboxManager = getMailboxManager(session);
+        final MailboxManager mailboxManager = getMailboxManager();
         final Mailbox mailbox = mailboxManager.getMailbox(fullMailboxName);
         return mailbox;
     }
@@ -295,20 +295,14 @@ abstract public class AbstractMailboxAwareProcessor extends AbstractChainedImapP
     public String buildFullName(final ImapSession session, String mailboxName)
             throws MailboxException {
         final String user = ImapSessionUtils.getUserName(session);
-        return buildFullName(mailboxName, user);
-    }
-
-    private String buildFullName(String mailboxName, String user)
-            throws MailboxException {
         if (!mailboxName.startsWith(NAMESPACE_PREFIX)) {
             mailboxName = mailboxManagerProvider.getMailboxManager().resolve(
                     user, mailboxName);
         }
         return mailboxName;
     }
-
-    public MailboxManager getMailboxManager(final ImapSession session)
-            throws MailboxException {
+    
+    public MailboxManager getMailboxManager() throws MailboxException {
         // TODO: consolidate API by deleting provider and supply manager direct
         final MailboxManager result = mailboxManagerProvider.getMailboxManager();
         return result;

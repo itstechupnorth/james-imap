@@ -188,7 +188,7 @@ public class ListProcessor extends AbstractMailboxAwareProcessor {
 
     protected final ListResult[] doList(ImapSession session, String base,
             String pattern) throws MailboxException {
-        final MailboxManager mailboxManager = getMailboxManager(session);
+        final MailboxManager mailboxManager = getMailboxManager();
         final ListResult[] result = mailboxManager.list(new MailboxExpression(
                 base, pattern, '*', '%'));
         return result;

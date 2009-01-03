@@ -91,7 +91,7 @@ public class LSubProcessor extends AbstractMailboxAwareProcessor {
             final String referenceName, final String mailboxPattern)
             throws SubscriptionException, MailboxException {
         final String userName = ImapSessionUtils.getUserName(session);
-        final MailboxManager manager = getMailboxManager(session);
+        final MailboxManager manager = getMailboxManager();
         final Collection mailboxes = manager.subscriptions(userName);
         final MailboxExpression expression = new MailboxExpression(
                 referenceName, mailboxPattern, '*', '%');
