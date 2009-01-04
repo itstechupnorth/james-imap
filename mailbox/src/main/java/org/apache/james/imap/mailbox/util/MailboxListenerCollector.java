@@ -28,11 +28,11 @@ import org.apache.james.imap.mailbox.MailboxListener;
 
 public class MailboxListenerCollector implements MailboxListener {
 
-    protected List addedList = new ArrayList();
+    protected List<Long> addedList = new ArrayList<Long>();
 
-    protected List expungedList = new ArrayList();
+    protected List<Long> expungedList = new ArrayList<Long>();
 
-    protected List flaggedList = new ArrayList();
+    protected List<MessageFlags> flaggedList = new ArrayList<MessageFlags>();
 
     public void added(final long uid) {
         addedList.add(new Long(uid));
@@ -46,26 +46,26 @@ public class MailboxListenerCollector implements MailboxListener {
         flaggedList.add(new MessageFlags(uid, flags));
     }
 
-    public synchronized List getAddedList(boolean reset) {
-        List list = addedList;
+    public synchronized List<Long> getAddedList(boolean reset) {
+        final List<Long> list = addedList;
         if (reset) {
-            addedList = new ArrayList();
+            addedList = new ArrayList<Long>();
         }
         return list;
     }
 
-    public synchronized List getExpungedList(boolean reset) {
-        List list = expungedList;
+    public synchronized List<Long> getExpungedList(boolean reset) {
+        final List<Long> list = expungedList;
         if (reset) {
-            expungedList = new ArrayList();
+            expungedList = new ArrayList<Long>();
         }
         return list;
     }
 
-    public synchronized List getFlaggedList(boolean reset) {
-        List list = flaggedList;
+    public synchronized List<MessageFlags> getFlaggedList(boolean reset) {
+        final List<MessageFlags> list = flaggedList;
         if (reset) {
-            flaggedList = new ArrayList();
+            flaggedList = new ArrayList<MessageFlags>();
         }
         return list;
     }
@@ -88,7 +88,7 @@ public class MailboxListenerCollector implements MailboxListener {
             } else if (event instanceof Expunged) {
                 expunged(uid);
             } else if (event instanceof FlagsUpdated) {
-                FlagsUpdated flagsUpdated = (FlagsUpdated) messageEvent;
+                final FlagsUpdated flagsUpdated = (FlagsUpdated) messageEvent;
                 final Flags newFlags = flagsUpdated.getNewFlags();
                 flagsUpdated(uid, newFlags);
             }

@@ -55,7 +55,7 @@ public class FetchGroupImpl implements MessageResult.FetchGroup {
 
     private int content = MessageResult.FetchGroup.MINIMAL;
 
-    private Set partContentDescriptors;
+    private Set<PartContentDescriptor> partContentDescriptors;
 
     public FetchGroupImpl() {
         super();
@@ -66,7 +66,7 @@ public class FetchGroupImpl implements MessageResult.FetchGroup {
         this.content = content;
     }
 
-    public FetchGroupImpl(int content, Set partContentDescriptors) {
+    public FetchGroupImpl(int content, Set<PartContentDescriptor> partContentDescriptors) {
         super();
         this.content = content;
         this.partContentDescriptors = partContentDescriptors;
@@ -90,7 +90,7 @@ public class FetchGroupImpl implements MessageResult.FetchGroup {
      * @return <code>Set</code> of {@link FetchGroup.PartContentDescriptor},
      *         possibly null
      */
-    public Set getPartContentDescriptors() {
+    public Set<PartContentDescriptor> getPartContentDescriptors() {
         return partContentDescriptors;
     }
 
@@ -104,7 +104,7 @@ public class FetchGroupImpl implements MessageResult.FetchGroup {
      */
     public void addPartContent(MimePath path, int content) {
         if (partContentDescriptors == null) {
-            partContentDescriptors = new HashSet();
+            partContentDescriptors = new HashSet<PartContentDescriptor>();
         }
         PartContentDescriptorImpl currentDescriptor = null;
         for (Iterator it = partContentDescriptors.iterator(); it.hasNext();) {
