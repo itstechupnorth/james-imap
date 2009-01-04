@@ -77,7 +77,7 @@ public class JPAMailbox extends AbstractLogEnabled implements org.apache.james.i
     public int getMessageCount(MailboxSession mailboxSession)
     throws MailboxException {
         try {
-            final MessageMapper messageMapper = new MessageMapper(entityManagerFactory.createEntityManager());
+            final MessageMapper messageMapper = createMessageMapper();
             return (int) messageMapper.countMessagesInMailbox(mailboxId);
         } catch (PersistenceException e) {
             throw new MailboxException(e);
@@ -106,7 +106,7 @@ public class JPAMailbox extends AbstractLogEnabled implements org.apache.james.i
                 final List<Header> headers = headers(mailboxId, uid, mimeMessage);
                 final Message message = new Message(mailboxId, uid, internalDate, size, flags, body, headers);
                 try {
-                    final MessageMapper mapper = new MessageMapper(entityManagerFactory.createEntityManager());
+                    final MessageMapper mapper = createMessageMapper();
                     mapper.begin();
                     mapper.save(message);
                     mapper.commit();
@@ -125,6 +125,11 @@ public class JPAMailbox extends AbstractLogEnabled implements org.apache.james.i
             // mailboxRow==null
             throw new MailboxException("Mailbox has been deleted");
         }
+    }
+
+    private MessageMapper createMessageMapper() {
+        final MessageMapper mapper = new MessageMapper(entityManagerFactory.createEntityManager());
+        return mapper;
     }
 
     private byte[] body(MimeMessage message) throws IOException, MessagingException {
@@ -171,7 +176,7 @@ public class JPAMailbox extends AbstractLogEnabled implements org.apache.james.i
             MailboxSession mailboxSession) throws MailboxException {
         UidRange range = uidRangeForMessageSet(set);
         try {
-            final MessageMapper messageMapper = new MessageMapper(entityManagerFactory.createEntityManager());
+            final MessageMapper messageMapper = createMessageMapper();
             final List<Message> rows = new ArrayList<Message>(messageMapper.findInMailbox(set, mailboxId));
             return getMessages(fetchGroup, range, rows);
         } catch (PersistenceException e) {
@@ -220,7 +225,7 @@ public class JPAMailbox extends AbstractLogEnabled implements org.apache.james.i
 
     public long[] recent(boolean reset, MailboxSession mailboxSession) throws MailboxException {
         try {
-            final MessageMapper mapper = new MessageMapper(entityManagerFactory.createEntityManager());
+            final MessageMapper mapper = createMessageMapper();
             mapper.begin();
             final List<Message> messages = mapper.findRecentMessagesInMailbox(mailboxId);
             final long[] results = new long[messages.size()];
@@ -243,7 +248,7 @@ public class JPAMailbox extends AbstractLogEnabled implements org.apache.james.i
     public MessageResult getFirstUnseen(FetchGroup fetchGroup,
             MailboxSession mailboxSession) throws MailboxException {
         try {
-            final MessageMapper messageMapper = new MessageMapper(entityManagerFactory.createEntityManager());
+            final MessageMapper messageMapper = createMessageMapper();
             final List<Message> messageRows = messageMapper.findUnseenMessagesInMailboxOrderByUid(mailboxId);
             final Iterator<Message> it = messageRows.iterator();
             final MessageResult result;
@@ -265,7 +270,7 @@ public class JPAMailbox extends AbstractLogEnabled implements org.apache.james.i
 
     public int getUnseenCount(MailboxSession mailboxSession) throws MailboxException {
         try {
-            final MessageMapper messageMapper = new MessageMapper(entityManagerFactory.createEntityManager());
+            final MessageMapper messageMapper = createMessageMapper();
             final int count = (int) messageMapper.countUnseenMessagesInMailbox(mailboxId);
             return count;
         } catch (PersistenceException e) {
@@ -281,8 +286,7 @@ public class JPAMailbox extends AbstractLogEnabled implements org.apache.james.i
     private Iterator doExpunge(final MessageRange set, FetchGroup fetchGroup)
     throws MailboxException {
         try {
-            // TODO put this into a serializable transaction
-            final MessageMapper mapper = new MessageMapper(entityManagerFactory.createEntityManager());
+            final MessageMapper mapper = createMessageMapper();
             mapper.begin();
             final List<Message> messages = mapper.findMarkedForDeletionInMailbox(set, mailboxId);
             final long[] uids = uids(messages);
@@ -324,8 +328,7 @@ public class JPAMailbox extends AbstractLogEnabled implements org.apache.james.i
             final MessageRange set, FetchGroup fetchGroup,
             MailboxSession mailboxSession) throws MailboxException {
         try {
-            // TODO put this into a serializeable transaction
-            final MessageMapper mapper = new MessageMapper(entityManagerFactory.createEntityManager());
+            final MessageMapper mapper = createMessageMapper();
             mapper.begin();
             final List<Message> messages = mapper.findInMailbox(set, mailboxId);
             UidRange uidRange = uidRangeForMessageSet(set);
@@ -400,7 +403,7 @@ public class JPAMailbox extends AbstractLogEnabled implements org.apache.james.i
     public Iterator search(SearchQuery query, FetchGroup fetchGroup,
             MailboxSession mailboxSession) throws MailboxException {
         try {
-            final MessageMapper messageMapper = new MessageMapper(entityManagerFactory.createEntityManager());
+            final MessageMapper messageMapper = createMessageMapper();
             final List<Message> messages = messageMapper.searchMailbox(mailboxId, query);
             final List<Message> filteredMessages = new ArrayList<Message>(messages.size());
             for (Message message:messages) {
@@ -435,7 +438,7 @@ public class JPAMailbox extends AbstractLogEnabled implements org.apache.james.i
 
     public void copyTo(MessageRange set, JPAMailbox toMailbox, MailboxSession session) throws MailboxException {
         try {
-            final MessageMapper mapper = new MessageMapper(entityManagerFactory.createEntityManager());
+            final MessageMapper mapper = createMessageMapper();
             mapper.begin();
 
             List<Message> rows = mapper.findInMailbox(set, mailboxId);
