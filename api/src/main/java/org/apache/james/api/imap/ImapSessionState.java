@@ -20,27 +20,40 @@
 package org.apache.james.api.imap;
 
 /**
- * Enumerated type representing an IMAP session state.
+ * Enumerates 
+ * <a href='http://james.apache.org/server/rfclist/imap4/rfc2060.txt' rel='tag'>RFC2060</a>
+ * session states.
  */
-public class ImapSessionState {
-    public static final ImapSessionState NON_AUTHENTICATED = new ImapSessionState(
-            "NON_AUTHENTICATED");
-
-    public static final ImapSessionState AUTHENTICATED = new ImapSessionState(
-            "AUTHENTICATED");
-
-    public static final ImapSessionState SELECTED = new ImapSessionState(
-            "SELECTED");
-
-    public static final ImapSessionState LOGOUT = new ImapSessionState("LOGOUT");
-
-    private final String myName; // for debug only
+public enum ImapSessionState {
+    /** 
+     * <a href='http://james.apache.org/server/rfclist/imap4/rfc2060.txt' rel='tag'>RFC2060</a>
+     * <code>3.1 Non-Authenticated State</code>
+     */
+    NON_AUTHENTICATED("Non Authenticated State"),
+    /** 
+     * <a href='http://james.apache.org/server/rfclist/imap4/rfc2060.txt' rel='tag'>RFC2060</a>
+     * <code>3.2 Authenticated State</code>
+     */
+    AUTHENTICATED("Authenticated State"),
+    /** 
+     * <a href='http://james.apache.org/server/rfclist/imap4/rfc2060.txt' rel='tag'>RFC2060</a>
+     * <code>3.3 Selected State</code>
+     */
+    SELECTED("Selected State"),
+    /** 
+     * <a href='http://james.apache.org/server/rfclist/imap4/rfc2060.txt' rel='tag'>RFC2060</a>
+     * <code>3.4 Logout State</code>
+     */
+    LOGOUT("Logged Out State");
+    
+    /** To aid debugging */
+    private final String name;
 
     private ImapSessionState(String name) {
-        myName = name;
+        this.name = name;
     }
 
     public String toString() {
-        return myName;
+        return name;
     }
 }

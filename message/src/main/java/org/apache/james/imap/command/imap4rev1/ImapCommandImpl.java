@@ -68,14 +68,18 @@ class ImapCommandImpl extends AbstractLogEnabled implements ImapCommand {
 
     public boolean validForState(ImapSessionState state) {
         final boolean result;
-        if (state == ImapSessionState.AUTHENTICATED) {
-            result = validInAuthenticated;
-        } else if (state == ImapSessionState.NON_AUTHENTICATED) {
-            result = validInNonAuthenticated;
-        } else if (state == ImapSessionState.SELECTED) {
-            result = validInSelected;
-        } else {
-            result = false;
+        switch (state) {
+            case AUTHENTICATED:
+                result = validInAuthenticated;
+                break;
+            case NON_AUTHENTICATED:
+                result = validInNonAuthenticated;
+                break;
+            case SELECTED:
+                result = validInSelected;
+                break;
+            default:
+                result = false;
         }
         return result;
     }
