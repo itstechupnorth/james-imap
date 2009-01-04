@@ -22,11 +22,9 @@ package org.apache.james.imap.functional.torque;
 import org.apache.james.imap.functional.suite.ConcurrentSessions;
 import org.apache.james.mailboxmanager.torque.TorqueHostSystemFactory;
 
-public class ConcurrentSessionsTest extends
-        ConcurrentSessions {
+public class ConcurrentSessionsTest extends ConcurrentSessions {
 
     public ConcurrentSessionsTest() throws Exception {
         super(TorqueHostSystemFactory.createStandardImap());
-    }
-
+    }    
 }

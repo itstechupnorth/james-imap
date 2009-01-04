@@ -196,11 +196,7 @@ public class TorqueMailboxManager implements MailboxManager {
                 mr.setName(to);
                 mr.save();
 
-                TorqueMailbox torqueMailbox = (TorqueMailbox) mailboxes.remove(from);
-                if (torqueMailbox != null) {
-                    torqueMailbox.reportRenamed(mr);
-                    mailboxes.put(to, torqueMailbox);
-                }
+                changeMailboxName(from, to, mr);
 
                 // rename submailbox
                 Criteria c = new Criteria();
@@ -211,10 +207,10 @@ public class TorqueMailboxManager implements MailboxManager {
                 for (Iterator iter = l.iterator(); iter.hasNext();) {
                     MailboxRow sub = (MailboxRow) iter.next();
                     String subOrigName = sub.getName();
-                    String subNewName = to
-                            + subOrigName.substring(from.length());
-                    sub.setName(to + sub.getName().substring(from.length()));
+                    String subNewName = to + subOrigName.substring(from.length());
+                    sub.setName(subNewName);
                     sub.save();
+                    changeMailboxName(subOrigName, subNewName, sub);
                     getLog().info(
                             "renameMailbox sub-mailbox " + subOrigName + " to "
                                     + subNewName);
@@ -222,6 +218,14 @@ public class TorqueMailboxManager implements MailboxManager {
             }
         } catch (TorqueException e) {
             throw new MailboxException(e);
+        }
+    }
+
+    private void changeMailboxName(String from, String to, final MailboxRow mr) {
+        TorqueMailbox torqueMailbox = (TorqueMailbox) mailboxes.remove(from);
+        if (torqueMailbox != null) {
+            torqueMailbox.reportRenamed(mr);
+            mailboxes.put(to, torqueMailbox);
         }
     }
 

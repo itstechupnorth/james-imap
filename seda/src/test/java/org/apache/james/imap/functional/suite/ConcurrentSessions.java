@@ -29,6 +29,10 @@ public class ConcurrentSessions extends FrameworkForAuthenticatedState {
     public ConcurrentSessions(HostSystem system) {
         super(system);
     }
+    
+    public void testConcurrentRenameSelectedSubUS() throws Exception {
+        scriptTest("ConcurrentRenameSelectedSub", Locale.US);
+    }
 
     public void testConcurrentExistsResponseUS() throws Exception {
         scriptTest("ConcurrentExistsResponse", Locale.US);
@@ -46,6 +50,10 @@ public class ConcurrentSessions extends FrameworkForAuthenticatedState {
         scriptTest("ConcurrentRenameSelected", Locale.US);
     }
 
+    public void testConcurrentRenameSelectedSubKOREA() throws Exception {
+        scriptTest("ConcurrentRenameSelectedSub", Locale.KOREA);
+    }
+    
     public void testConcurrentExistsResponseKOREA() throws Exception {
         scriptTest("ConcurrentExistsResponse", Locale.KOREA);
     }
@@ -62,6 +70,10 @@ public class ConcurrentSessions extends FrameworkForAuthenticatedState {
         scriptTest("ConcurrentRenameSelected", Locale.KOREA);
     }
 
+    public void testConcurrentRenameSelectedSubITALY() throws Exception {
+        scriptTest("ConcurrentRenameSelectedSub", Locale.ITALY);
+    }
+    
     public void testConcurrentExistsResponseITALY() throws Exception {
         scriptTest("ConcurrentExistsResponse", Locale.ITALY);
     }

@@ -27,4 +27,5 @@ public class ConcurrentSessionsTest extends
     public ConcurrentSessionsTest() throws Exception {
         super(JPAHostSystem.build());
     }
+
 }

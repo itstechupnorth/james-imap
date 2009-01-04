@@ -31,6 +31,7 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceException;
 
+import org.apache.commons.logging.Log;
 import org.apache.james.api.imap.AbstractLogEnabled;
 import org.apache.james.imap.jpa.mail.MailboxMapper;
 import org.apache.james.imap.jpa.mail.map.openjpa.OpenJPAMailboxMapper;
@@ -178,7 +179,8 @@ public class JPAMailboxManager extends AbstractLogEnabled implements MailboxMana
 
     public void renameMailbox(String from, String to)
             throws MailboxException {
-        getLog().debug("renameMailbox " + from + " to " + to);
+        final Log log = getLog();
+        if (log.isDebugEnabled()) log.debug("renameMailbox " + from + " to " + to);
         try {
             synchronized (mailboxes) {
                 if (mailboxExists(to)) {
@@ -196,22 +198,19 @@ public class JPAMailboxManager extends AbstractLogEnabled implements MailboxMana
                 mailbox.setName(to);
                 mapper.save(mailbox);
 
-                final JPAMailbox jpaMailbox = mailboxes.remove(from);
-                if (jpaMailbox != null) {
-                    jpaMailbox.reportRenamed(to);
-                    mailboxes.put(to, jpaMailbox);
-                }
+                changeMailboxName(from, to);
 
                 // rename submailbox
                 final List<Mailbox> subMailboxes = mapper.findMailboxWithNameLike(from + HIERARCHY_DELIMITER + "%");
                 for (Mailbox sub:subMailboxes) {
-                    String subOrigName = sub.getName();
-                    String subNewName = to
-                            + subOrigName.substring(from.length());
-                    sub.setName(to + sub.getName().substring(from.length()));
+                    final String subOriginalName = sub.getName();
+                    final String subNewName = to + subOriginalName.substring(from.length());
+                    sub.setName(subNewName);
                     mapper.save(sub);
-                    getLog().info(
-                            "renameMailbox sub-mailbox " + subOrigName + " to "
+                    
+                    changeMailboxName(subOriginalName, subNewName);
+                    
+                    if (log.isDebugEnabled()) log.debug("Rename mailbox sub-mailbox " + subOriginalName + " to "
                                     + subNewName);
                 }
                 mapper.commit();
@@ -223,7 +222,18 @@ public class JPAMailboxManager extends AbstractLogEnabled implements MailboxMana
         }
     }
 
-
+    /**
+     * Changes the name of the mailbox instance in the cache.
+     * @param from not null
+     * @param to not null
+     */
+    private void changeMailboxName(String from, String to) {
+        final JPAMailbox jpaMailbox = mailboxes.remove(from);
+        if (jpaMailbox != null) {
+            jpaMailbox.reportRenamed(to);
+            mailboxes.put(to, jpaMailbox);
+        }
+    }
 
     public void copyMessages(MessageRange set, String from, String to,
             MailboxSession session) throws MailboxException {
