@@ -27,8 +27,8 @@ import java.util.TreeSet;
 
 import org.apache.james.api.imap.AbstractLogEnabled;
 import org.apache.james.api.imap.process.SelectedMailbox;
-import org.apache.james.imap.mailbox.Mailbox;
 import org.apache.james.imap.mailbox.MailboxException;
+import org.apache.james.imap.mailbox.MailboxManager;
 import org.apache.james.imap.mailbox.MailboxSession;
 import org.apache.james.imap.mailbox.util.MailboxEventAnalyser;
 import org.apache.james.imap.mailbox.util.UidToMsnConverter;
@@ -44,7 +44,7 @@ public class SelectedMailboxImpl extends AbstractLogEnabled implements
 
     private boolean recentUidRemoved;
 
-    public SelectedMailboxImpl(final Mailbox mailbox, final List<Long> uids,
+    public SelectedMailboxImpl(final MailboxManager mailboxManager, final List<Long> uids,
             final MailboxSession mailboxSession, final String name) throws MailboxException {
         recentUids = new TreeSet<Long>();
         recentUidRemoved = false;
@@ -52,9 +52,9 @@ public class SelectedMailboxImpl extends AbstractLogEnabled implements
         events = new MailboxEventAnalyser(sessionId, name);
         // Ignore events from our session
         events.setSilentFlagChanges(true);
-        mailbox.addListener(events);
+        mailboxManager.addListener(name, events);
         converter = new UidToMsnConverter(uids);
-        mailbox.addListener(converter);
+        mailboxManager.addListener(name, converter);
     }
 
     /**

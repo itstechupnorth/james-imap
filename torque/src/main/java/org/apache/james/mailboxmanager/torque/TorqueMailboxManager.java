@@ -36,6 +36,7 @@ import org.apache.james.imap.mailbox.Mailbox;
 import org.apache.james.imap.mailbox.MailboxExistsException;
 import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.MailboxExpression;
+import org.apache.james.imap.mailbox.MailboxListener;
 import org.apache.james.imap.mailbox.MailboxManager;
 import org.apache.james.imap.mailbox.MailboxNotFoundException;
 import org.apache.james.imap.mailbox.MailboxSession;
@@ -355,6 +356,11 @@ public class TorqueMailboxManager implements MailboxManager {
     public void unsubscribe(String user, String mailbox)
             throws SubscriptionException {
         userManager.unsubscribe(user, mailbox);
+    }
+
+    public void addListener(String mailboxName, MailboxListener listener) throws MailboxException {
+        final TorqueMailbox mailbox = doGetMailbox(mailboxName);
+        mailbox.addListener(listener);
     }
 
 }

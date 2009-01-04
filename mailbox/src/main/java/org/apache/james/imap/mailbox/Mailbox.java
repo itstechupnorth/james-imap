@@ -178,16 +178,4 @@ public interface Mailbox {
     Iterator getMessages(MessageRange set, FetchGroup fetchGroup,
             MailboxSession mailboxSession) throws MailboxException;
 
-    /**
-     * <p>Implementations of Mailbox may interpret the fact that someone is
-     * listening and do some caching and even postpone persistence until
-     * everyone has removed itself.
-     * </p><p>
-     * Listeners should return true from {@link MailboxListener#isClosed()}
-     * when they are ready to be removed.
-     * </p>
-     * @param listener not null
-     * @throws MailboxException
-     */
-    void addListener(MailboxListener listener) throws MailboxException;
 }

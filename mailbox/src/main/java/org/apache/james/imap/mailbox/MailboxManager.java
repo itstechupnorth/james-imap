@@ -191,4 +191,18 @@ public interface MailboxManager {
      * @return a <code>Collection<String></code> of mailbox names
      */
     public Collection<String> subscriptions(String user) throws SubscriptionException;
+    
+    /**
+     * <p>Implementations of Mailbox may interpret the fact that someone is
+     * listening and do some caching and even postpone persistence until
+     * everyone has removed itself.
+     * </p><p>
+     * Listeners should return true from {@link MailboxListener#isClosed()}
+     * when they are ready to be removed.
+     * </p>
+     * @param mailboxName not null
+     * @param listener not null
+     * @throws MailboxException
+     */
+    void addListener(String mailboxName, MailboxListener listener) throws MailboxException;
 }
