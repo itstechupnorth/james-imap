@@ -17,16 +17,16 @@
  * under the License.                                           *
  ****************************************************************/
 
-package org.apache.james.mailboxmanager.util;
+package org.apache.james.imap.mailbox.util;
 
 import java.util.Iterator;
 
 import javax.mail.Flags;
 
 import org.apache.james.imap.mailbox.MailboxListener;
+import org.apache.james.imap.mailbox.FakeMailboxListenerAdded;
+import org.apache.james.imap.mailbox.FakeMailboxListenerFlagsUpdate;
 import org.apache.james.imap.mailbox.util.MailboxEventAnalyser;
-import org.apache.james.mailboxmanager.MockMailboxListenerAdded;
-import org.apache.james.mailboxmanager.MockMailboxListenerFlagsUpdate;
 import org.jmock.Mock;
 import org.jmock.MockObjectTestCase;
 
@@ -54,18 +54,18 @@ public class MailboxEventAnalyserTest extends MockObjectTestCase {
     }
 
     public void testShouldBeNoSizeChangeOnAdded() throws Exception {
-        analyser.event(new MockMailboxListenerAdded(78, 11));
+        analyser.event(new FakeMailboxListenerAdded(78, 11));
         assertTrue(analyser.isSizeChanged());
     }
 
     public void testShouldNoSizeChangeAfterReset() throws Exception {
-        analyser.event(new MockMailboxListenerAdded(99, 11));
+        analyser.event(new FakeMailboxListenerAdded(99, 11));
         analyser.reset();
         assertFalse(analyser.isSizeChanged());
     }
 
     public void testShouldNotSetUidWhenNoSystemFlagChange() throws Exception {
-        final MockMailboxListenerFlagsUpdate update = new MockMailboxListenerFlagsUpdate(
+        final FakeMailboxListenerFlagsUpdate update = new FakeMailboxListenerFlagsUpdate(
                 90, new Flags(), 11);
         analyser.event(update);
         assertNotNull(analyser.flagUpdateUids());
@@ -74,7 +74,7 @@ public class MailboxEventAnalyserTest extends MockObjectTestCase {
 
     public void testShouldSetUidWhenSystemFlagChange() throws Exception {
         final long uid = 900L;
-        final MockMailboxListenerFlagsUpdate update = new MockMailboxListenerFlagsUpdate(
+        final FakeMailboxListenerFlagsUpdate update = new FakeMailboxListenerFlagsUpdate(
                 uid, new Flags(), 11);
         update.flags.add(Flags.Flag.ANSWERED);
         analyser.event(update);
@@ -87,7 +87,7 @@ public class MailboxEventAnalyserTest extends MockObjectTestCase {
 
     public void testShouldClearFlagUidsUponReset() throws Exception {
         final long uid = 900L;
-        final MockMailboxListenerFlagsUpdate update = new MockMailboxListenerFlagsUpdate(
+        final FakeMailboxListenerFlagsUpdate update = new FakeMailboxListenerFlagsUpdate(
                 uid, new Flags(), 11);
         update.flags.add(Flags.Flag.ANSWERED);
         analyser.event(update);
@@ -99,7 +99,7 @@ public class MailboxEventAnalyserTest extends MockObjectTestCase {
     public void testShouldNotSetUidWhenSystemFlagChangeDifferentSessionInSilentMode()
             throws Exception {
         final long uid = 900L;
-        final MockMailboxListenerFlagsUpdate update = new MockMailboxListenerFlagsUpdate(
+        final FakeMailboxListenerFlagsUpdate update = new FakeMailboxListenerFlagsUpdate(
                 uid, new Flags(), 11);
         update.flags.add(Flags.Flag.ANSWERED);
         analyser.setSilentFlagChanges(true);
@@ -113,7 +113,7 @@ public class MailboxEventAnalyserTest extends MockObjectTestCase {
 
     public void testShouldNotSetUidWhenSystemFlagChangeSameSessionInSilentMode()
             throws Exception {
-        final MockMailboxListenerFlagsUpdate update = new MockMailboxListenerFlagsUpdate(
+        final FakeMailboxListenerFlagsUpdate update = new FakeMailboxListenerFlagsUpdate(
                 345, new Flags(), BASE_SESSION_ID);
         update.flags.add(Flags.Flag.ANSWERED);
         analyser.setSilentFlagChanges(true);
@@ -124,7 +124,7 @@ public class MailboxEventAnalyserTest extends MockObjectTestCase {
     }
 
     public void testShouldNotSetUidWhenOnlyRecentFlagUpdated() throws Exception {
-        final MockMailboxListenerFlagsUpdate update = new MockMailboxListenerFlagsUpdate(
+        final FakeMailboxListenerFlagsUpdate update = new FakeMailboxListenerFlagsUpdate(
                 886, new Flags(), BASE_SESSION_ID);
         update.flags.add(Flags.Flag.RECENT);
         analyser.event(update);

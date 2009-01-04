@@ -17,47 +17,25 @@
  * under the License.                                           *
  ****************************************************************/
 
-package org.apache.james.mailboxmanager;
+package org.apache.james.imap.mailbox.util;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
-import javax.mail.Flags;
+import org.apache.james.imap.mailbox.MailboxListener;
 
-import org.apache.james.imap.mailbox.MailboxListener.FlagsUpdated;
+public class EventCollector implements MailboxListener {
 
-public class MockMailboxListenerFlagsUpdate extends FlagsUpdated {
+    public final List events = new ArrayList();
 
-    public List flags = new ArrayList();
-
-    public long subjectUid;
-
-    public long sessionId;
-
-    public Flags newFlags;
-
-    public MockMailboxListenerFlagsUpdate(long subjectUid, Flags newFlags,
-            long sessionId) {
-        super();
-        this.subjectUid = subjectUid;
-        this.sessionId = sessionId;
-        this.newFlags = newFlags;
+    public void event(Event event) {
+        events.add(event);
     }
 
-    public long getSubjectUid() {
-        return subjectUid;
+    public void mailboxDeleted() {
     }
 
-    public long getSessionId() {
-        return sessionId;
+    public void mailboxRenamed(String origName, String newName) {
     }
 
-    public Iterator flagsIterator() {
-        return flags.iterator();
-    }
-
-    public Flags getNewFlags() {
-        return newFlags;
-    }
 }

@@ -17,7 +17,7 @@
  * under the License.                                           *
  ****************************************************************/
 
-package org.apache.james.mailboxmanager.impl;
+package org.apache.james.imap.mailbox.util;
 
 import java.util.Iterator;
 

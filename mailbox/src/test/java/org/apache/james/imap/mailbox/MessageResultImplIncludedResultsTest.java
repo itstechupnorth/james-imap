@@ -17,7 +17,7 @@
  * under the License.                                           *
  ****************************************************************/
 
-package org.apache.james.mailboxmanager;
+package org.apache.james.imap.mailbox;
 
 import java.util.ArrayList;
 import java.util.Date;

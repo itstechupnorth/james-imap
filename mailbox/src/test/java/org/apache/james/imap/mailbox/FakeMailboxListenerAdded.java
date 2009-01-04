@@ -17,25 +17,28 @@
  * under the License.                                           *
  ****************************************************************/
 
-package org.apache.james.mailboxmanager.impl;
-
-import java.util.ArrayList;
-import java.util.List;
+package org.apache.james.imap.mailbox;
 
 import org.apache.james.imap.mailbox.MailboxListener;
 
-public class EventCollector implements MailboxListener {
+public class FakeMailboxListenerAdded extends MailboxListener.Added {
 
-    public final List events = new ArrayList();
+    public long subjectUid;
 
-    public void event(Event event) {
-        events.add(event);
+    public long sessionId;
+
+    public FakeMailboxListenerAdded(long subjectUid, long sessionId) {
+        super();
+        this.subjectUid = subjectUid;
+        this.sessionId = sessionId;
     }
 
-    public void mailboxDeleted() {
+    public long getSubjectUid() {
+        return subjectUid;
     }
 
-    public void mailboxRenamed(String origName, String newName) {
+    public long getSessionId() {
+        return sessionId;
     }
 
 }
