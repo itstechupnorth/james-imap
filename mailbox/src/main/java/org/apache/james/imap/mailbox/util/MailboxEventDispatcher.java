@@ -22,17 +22,16 @@ package org.apache.james.imap.mailbox.util;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.Set;
+import java.util.concurrent.CopyOnWriteArraySet;
 
 import javax.mail.Flags;
 import javax.mail.Flags.Flag;
 
 import org.apache.james.imap.mailbox.MailboxListener;
 
-import EDU.oswego.cs.dl.util.concurrent.CopyOnWriteArraySet;
-
 public class MailboxEventDispatcher implements MailboxListener {
 
-    private final Set listeners = new CopyOnWriteArraySet();
+    private final Set<MailboxListener> listeners = new CopyOnWriteArraySet<MailboxListener>();
 
     public void addMailboxListener(MailboxListener mailboxListener) {
         listeners.add(mailboxListener);
@@ -77,6 +76,10 @@ public class MailboxEventDispatcher implements MailboxListener {
 
     public int size() {
         return listeners.size();
+    }
+    
+    public void mailboxRenamed(String to, long sessionId) {
+        event(new MailboxRenamedEventImpl(to, sessionId));
     }
 
     private final static class AddedImpl extends MailboxListener.Added {
@@ -246,6 +249,24 @@ public class MailboxEventDispatcher implements MailboxListener {
         public long getSessionId() {
             return sessionId;
         }
+    }
 
+    private static final class MailboxRenamedEventImpl implements MailboxListener.MailboxRenamed {
+        private final String newName;
+        private final long sessionId;
+
+        public MailboxRenamedEventImpl(final String newName, final long sessionId) {
+            super();
+            this.newName = newName;
+            this.sessionId = sessionId;
+        }
+
+        public String getNewName() {
+            return newName;
+        }
+
+        public long getSessionId() {
+            return sessionId;
+        }
     }
 }

@@ -205,9 +205,6 @@ abstract class AbstractSelectionProcessor extends AbstractMailboxProcessor {
         sessionMailbox = new SelectedMailboxImpl(mailbox, uids,
                 mailboxSession, name);
         session.selected(sessionMailbox);
-        session.setAttribute(
-                ImapSessionUtils.SELECTED_MAILBOX_ATTRIBUTE_SESSION_KEY,
-                mailbox);
         return sessionMailbox;
     }
 

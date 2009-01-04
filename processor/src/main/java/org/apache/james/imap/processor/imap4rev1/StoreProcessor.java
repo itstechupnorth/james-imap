@@ -67,8 +67,6 @@ public class StoreProcessor extends AbstractMailboxProcessor {
         final boolean isSignedPlus = request.isSignedPlus();
         final boolean isSignedMinus = request.isSignedMinus();
 
-        Mailbox mailbox = getSelectedMailbox(session);
-
         final boolean replace;
         final boolean value;
         if (isSignedMinus) {
@@ -82,6 +80,7 @@ public class StoreProcessor extends AbstractMailboxProcessor {
             value = true;
         }
         try {
+            final Mailbox mailbox = getSelectedMailbox(session);
             for (int i = 0; i < idSet.length; i++) {
                 final long lowVal;
                 final long highVal;

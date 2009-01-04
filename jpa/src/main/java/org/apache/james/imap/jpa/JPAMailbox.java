@@ -481,4 +481,8 @@ public class JPAMailbox extends AbstractLogEnabled implements org.apache.james.i
     public void deleted(MailboxSession session) {
         tracker.mailboxDeleted(session.getSessionId());
     }
+
+    public void reportRenamed(String to) {
+        tracker.reportRenamed(to);
+    }
 }

@@ -196,7 +196,11 @@ public class JPAMailboxManager extends AbstractLogEnabled implements MailboxMana
                 mailbox.setName(to);
                 mapper.save(mailbox);
 
-                mailboxes.remove(from);
+                final JPAMailbox jpaMailbox = mailboxes.remove(from);
+                if (jpaMailbox != null) {
+                    jpaMailbox.reportRenamed(to);
+                    mailboxes.put(to, jpaMailbox);
+                }
 
                 // rename submailbox
                 final List<Mailbox> subMailboxes = mapper.findMailboxWithNameLike(from + HIERARCHY_DELIMITER + "%");

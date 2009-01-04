@@ -196,7 +196,11 @@ public class TorqueMailboxManager implements MailboxManager {
                 mr.setName(to);
                 mr.save();
 
-                mailboxes.remove(from);
+                TorqueMailbox torqueMailbox = (TorqueMailbox) mailboxes.remove(from);
+                if (torqueMailbox != null) {
+                    torqueMailbox.reportRenamed(mr);
+                    mailboxes.put(to, torqueMailbox);
+                }
 
                 // rename submailbox
                 Criteria c = new Criteria();

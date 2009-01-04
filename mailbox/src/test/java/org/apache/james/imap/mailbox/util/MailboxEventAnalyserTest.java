@@ -38,7 +38,7 @@ public class MailboxEventAnalyserTest extends MockObjectTestCase {
 
     protected void setUp() throws Exception {
         super.setUp();
-        analyser = new MailboxEventAnalyser(BASE_SESSION_ID);
+        analyser = new MailboxEventAnalyser(BASE_SESSION_ID, "Mailbox Name");
     }
 
     protected void tearDown() throws Exception {

@@ -52,17 +52,17 @@ public class ExpungeProcessor extends AbstractMailboxProcessor {
 
     protected void doProcess(ImapRequest message, ImapSession session,
             String tag, ImapCommand command, Responder responder) {
-        Mailbox mailbox = getSelectedMailbox(session);
-        if (!mailbox.isWriteable()) {
-            no(command, tag, responder,
-                    HumanReadableTextKey.MAILBOX_IS_READ_ONLY);
-        } else {
-            try {
+        try {
+            final Mailbox mailbox = getSelectedMailbox(session);
+            if (!mailbox.isWriteable()) {
+                no(command, tag, responder,
+                        HumanReadableTextKey.MAILBOX_IS_READ_ONLY);
+            } else {
                 final Iterator it = mailbox.expunge(MessageRangeImpl.all(),
                         FetchGroupImpl.MINIMAL, ImapSessionUtils
-                                .getMailboxSession(session));
+                        .getMailboxSession(session));
                 final SelectedMailbox mailboxSession = session
-                        .getSelected();
+                .getSelected();
                 if (mailboxSession != null) {
                     while (it.hasNext()) {
                         final MessageResult result = (MessageResult) it.next();
@@ -72,9 +72,9 @@ public class ExpungeProcessor extends AbstractMailboxProcessor {
                 }
                 unsolicitedResponses(session, responder, false);
                 okComplete(command, tag, responder);
-            } catch (MailboxException e) {
-                no(command, tag, responder, e);
             }
+        } catch (MailboxException e) {
+            no(command, tag, responder, e);
         }
     }
 }

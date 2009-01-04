@@ -48,6 +48,18 @@ public interface MailboxListener {
      */
     public interface MailboxDeletionEvent extends Event {
     }
+    
+    
+    /**
+     * Indicates that a mailbox has been renamed.
+     */
+    public interface MailboxRenamed extends Event {
+        /**
+         * Gets the new name for this mailbox.
+         * @return name, not null
+         */
+        public String getNewName();
+    }
 
     /**
      * A mailbox event related to a message.
@@ -82,4 +94,5 @@ public interface MailboxListener {
 
     public abstract class Added implements MessageEvent {
     }
+
 }

@@ -216,37 +216,37 @@ S: A18 NO SELECT failed. No such mailbox\.
 C: A19 SELECT anothermailbox
 S: \* FLAGS \(\\Answered \\Deleted \\Draft \\Flagged \\Seen\)
 S: \* 5 EXISTS
-S: \* 0 RECENT
+S: \* 5 RECENT
 S: \* OK \[UIDVALIDITY \d+\]
 S: \* OK \[UNSEEN 1\](.)*
 S: \* OK \[PERMANENTFLAGS \(\\Answered \\Deleted \\Draft \\Flagged \\Seen\)\]
 S: A19 OK \[READ-WRITE\] SELECT completed\.
 C: A20 FETCH 1:* (FLAGS UID BODY.PEEK[HEADER.FIELDS (DATE FROM TO ORIGINATOR X-LIST)])
-S: \* 1 FETCH \(FLAGS \(\\Answered \\Flagged\) UID 1 BODY\[HEADER\.FIELDS \(DATE FROM TO ORIGINATOR X-LIST\)\] \{130\}
+S: \* 1 FETCH \(FLAGS \(\\Answered \\Flagged \\Recent\) UID 1 BODY\[HEADER\.FIELDS \(DATE FROM TO ORIGINATOR X-LIST\)\] \{130\}
 S: From: Timothy Tayler <timothy@example\.org>
 S: To: Samual Smith <samual@example\.org>
 S: Date: Thu, 14 Feb 2008 12:00:00 \+0000 \(GMT\)
 S: 
 S: \)
-S: \* 2 FETCH \(FLAGS \(\\Answered \\Flagged\) UID 2 BODY\[HEADER\.FIELDS \(DATE FROM TO ORIGINATOR X-LIST\)\] \{116\}
+S: \* 2 FETCH \(FLAGS \(\\Answered \\Flagged \\Recent\) UID 2 BODY\[HEADER\.FIELDS \(DATE FROM TO ORIGINATOR X-LIST\)\] \{116\}
 S: From: John Smith <john@example\.org>
 S: To: Timothy Taylor <tim@example\.org>
 S: Date: Sat, 23 Feb 2008 07:48:03 -0600
 S: 
 S: \)
-S: \* 3 FETCH \(FLAGS \(\\Answered\) UID 3 BODY\[HEADER\.FIELDS \(DATE FROM TO ORIGINATOR X-LIST\)\] \{116\}
+S: \* 3 FETCH \(FLAGS \(\\Answered \\Recent\) UID 3 BODY\[HEADER\.FIELDS \(DATE FROM TO ORIGINATOR X-LIST\)\] \{116\}
 S: From: John Smith <john@example\.org>
 S: To: Timothy Taylor <tim@example\.org>
 S: Date: Sat, 23 Feb 2008 07:48:03 -0600
 S: 
 S: \)
-S: \* 4 FETCH \(FLAGS \(\) UID 4 BODY\[HEADER\.FIELDS \(DATE FROM TO ORIGINATOR X-LIST\)\] \{130\}
+S: \* 4 FETCH \(FLAGS \(\\Recent\) UID 4 BODY\[HEADER\.FIELDS \(DATE FROM TO ORIGINATOR X-LIST\)\] \{130\}
 S: From: Timothy Tayler <timothy@example\.org>
 S: To: Samual Smith <samual@example\.org>
 S: Date: Thu, 14 Feb 2008 12:00:00 \+0000 \(GMT\)
 S: 
 S: \)
-S: \* 5 FETCH \(FLAGS \(\) UID 5 BODY\[HEADER\.FIELDS \(DATE FROM TO ORIGINATOR X-LIST\)\] \{167\}
+S: \* 5 FETCH \(FLAGS \(\\Recent\) UID 5 BODY\[HEADER\.FIELDS \(DATE FROM TO ORIGINATOR X-LIST\)\] \{167\}
 S: From: "Brian G\. Hutton" <brian@example\.org>
 S: To: Timothy Taylor <tim@example\.org>, faith@example\.org, Huh\? <sam@example\.org>
 S: Date: Sat, 23 Feb 2008 07:48:03 -0600

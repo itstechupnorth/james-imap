@@ -26,8 +26,6 @@ public class ImapSessionUtils {
 
     public static final String MAILBOX_USER_ATTRIBUTE_SESSION_KEY = "org.apache.james.api.imap.MAILBOX_USER_ATTRIBUTE_SESSION_KEY";
 
-    public static final String SELECTED_MAILBOX_ATTRIBUTE_SESSION_KEY = "org.apache.james.api.imap.SELECTED_MAILBOX_ATTRIBUTE_SESSION_KEY";
-
     public static final String MAILBOX_SESSION_ATTRIBUTE_SESSION_KEY = "org.apache.james.api.imap.MAILBOX_SESSION_ATTRIBUTE_SESSION_KEY";
 
     public static MailboxSession getMailboxSession(final ImapSession session) {

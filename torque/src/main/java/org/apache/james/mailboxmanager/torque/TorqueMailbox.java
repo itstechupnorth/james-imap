@@ -829,4 +829,9 @@ public class TorqueMailbox extends AbstractLogEnabled implements Mailbox {
     public void deleted(MailboxSession session) {
         tracker.mailboxDeleted(session.getSessionId());
     }
+
+    public void reportRenamed(MailboxRow mailboxRow) {
+        tracker.reportRenamed(mailboxRow.getName());
+        this.mailboxRow = mailboxRow;
+    }
 }

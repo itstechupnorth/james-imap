@@ -47,24 +47,25 @@ public class CloseProcessor extends AbstractMailboxProcessor {
 
     protected void doProcess(ImapRequest message, ImapSession session,
             String tag, ImapCommand command, Responder responder) {
-        Mailbox mailbox = getSelectedMailbox(session);
-        if (mailbox.isWriteable()) {
-            try {
-                final MailboxSession mailboxSession = ImapSessionUtils
-                        .getMailboxSession(session);
-                mailbox.expunge(MessageRangeImpl.all(), FetchGroupImpl.MINIMAL,
-                        mailboxSession);
-                session.deselect();
-                // TODO: the following comment was present in the code before
-                // refactoring
-                // TODO: doesn't seem to match the implementation
-                // TODO: check that implementation is correct
-                // Don't send unsolicited responses on close.
-                unsolicitedResponses(session, responder, false);
-                okComplete(command, tag, responder);
-            } catch (MailboxException e) {
-                no(command, tag, responder, e);
+        try {
+            Mailbox mailbox = getSelectedMailbox(session);
+            if (mailbox.isWriteable()) {
+                
+                    final MailboxSession mailboxSession = ImapSessionUtils
+                            .getMailboxSession(session);
+                    mailbox.expunge(MessageRangeImpl.all(), FetchGroupImpl.MINIMAL,
+                            mailboxSession);
+                    session.deselect();
+                    // TODO: the following comment was present in the code before
+                    // refactoring
+                    // TODO: doesn't seem to match the implementation
+                    // TODO: check that implementation is correct
+                    // Don't send unsolicited responses on close.
+                    unsolicitedResponses(session, responder, false);
+                    okComplete(command, tag, responder);
             }
+        } catch (MailboxException e) {
+            no(command, tag, responder, e);
         }
     }
 }

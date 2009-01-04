@@ -33,7 +33,6 @@ import org.apache.james.imap.mailbox.MailboxSession;
 import org.apache.james.imap.mailbox.util.MailboxEventAnalyser;
 import org.apache.james.imap.mailbox.util.UidToMsnConverter;
 
-// TODO: deal with deleted or renamed mailboxes
 public class SelectedMailboxImpl extends AbstractLogEnabled implements
         SelectedMailbox {
 
@@ -47,21 +46,18 @@ public class SelectedMailboxImpl extends AbstractLogEnabled implements
 
     private boolean recentUidRemoved;
 
-    private final String name;
-
     public SelectedMailboxImpl(final Mailbox mailbox, final List<Long> uids,
             final MailboxSession mailboxSession, final String name) throws MailboxException {
         this.mailbox = mailbox;
         recentUids = new TreeSet<Long>();
         recentUidRemoved = false;
         final long sessionId = mailboxSession.getSessionId();
-        events = new MailboxEventAnalyser(sessionId);
+        events = new MailboxEventAnalyser(sessionId, name);
         // Ignore events from our session
         events.setSilentFlagChanges(true);
         mailbox.addListener(events);
         converter = new UidToMsnConverter(uids);
         mailbox.addListener(converter);
-        this.name = name;
     }
 
     /**
@@ -117,7 +113,7 @@ public class SelectedMailboxImpl extends AbstractLogEnabled implements
     }
 
     public String getName() {
-        return name;
+        return events.getMailboxName();
     }
 
     private void checkExpungedRecents() {

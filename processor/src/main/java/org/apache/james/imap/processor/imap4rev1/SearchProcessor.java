@@ -67,7 +67,7 @@ public class SearchProcessor extends AbstractMailboxProcessor {
             final SearchRequest request = (SearchRequest) message;
             final SearchKey searchKey = request.getSearchKey();
             final boolean useUids = request.isUseUids();
-            Mailbox mailbox = getSelectedMailbox(session);
+            final Mailbox mailbox = getSelectedMailbox(session);
             final FetchGroup fetchGroup = FetchGroupImpl.MINIMAL;
 
             final SearchQuery query = toQuery(searchKey, session);

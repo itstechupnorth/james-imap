@@ -31,26 +31,31 @@ import org.apache.james.imap.mailbox.MailboxListener;
 
 public class MailboxEventAnalyser implements MailboxListener {
 
-    private boolean isDeletedByOtherSession = false;
-
-    private boolean sizeChanged = false;
-
-    private boolean silentFlagChanges = false;
-
     private final long sessionId;
-
     private final Set<Long> flagUpdateUids;
-
     private final Flags.Flag uninterestingFlag;
-
     private final Set<Long> expungedUids;
+    
+    private boolean isDeletedByOtherSession = false;
+    private boolean sizeChanged = false;
+    private boolean silentFlagChanges = false;
+    private String mailboxName;
 
-    public MailboxEventAnalyser(final long sessionId) {
+    public MailboxEventAnalyser(final long sessionId, final String mailboxName) {
         super();
         this.sessionId = sessionId;
         flagUpdateUids = new TreeSet<Long>();
         expungedUids = new TreeSet<Long>();
         uninterestingFlag = Flags.Flag.RECENT;
+        this.mailboxName = mailboxName;
+    }
+    
+    public String getMailboxName() {
+        return mailboxName;
+    }
+
+    public void setMailboxName(String mailboxName) {
+        this.mailboxName = mailboxName;
     }
 
     public void event(Event event) {
@@ -75,6 +80,9 @@ public class MailboxEventAnalyser implements MailboxListener {
             if (eventSessionId != sessionId) {
                 isDeletedByOtherSession = true;
             }
+        } else if (event instanceof MailboxRenamed) {
+            final MailboxRenamed mailboxRenamed = (MailboxRenamed) event;
+            setMailboxName(mailboxRenamed.getNewName());
         }
     }
 

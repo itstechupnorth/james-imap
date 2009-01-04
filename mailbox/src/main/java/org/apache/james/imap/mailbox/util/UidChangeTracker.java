@@ -41,7 +41,7 @@ public class UidChangeTracker implements Constants {
 
     private final MailboxEventDispatcher eventDispatcher;
 
-    private final TreeMap cache;
+    private final TreeMap<Long, Flags> cache;
 
     private long lastUidAtStart;
 
@@ -53,7 +53,7 @@ public class UidChangeTracker implements Constants {
         this.lastUidAtStart = lastUid;
         this.lastUid = lastUid;
         eventDispatcher = new MailboxEventDispatcher();
-        cache = new TreeMap();
+        cache = new TreeMap<Long, Flags>();
     }
 
     public synchronized void expunged(final long[] uidsExpunged) {
@@ -134,7 +134,7 @@ public class UidChangeTracker implements Constants {
 
     public synchronized void found(UidRange range,
             final MessageFlags[] messageFlags) {
-        Set expectedSet = getSubSet(range);
+        Set<Long> expectedSet = getSubSet(range);
         final int length = messageFlags.length;
         for (int i = 0; i < length; i++) {
             final MessageFlags message = messageFlags[i];
@@ -189,17 +189,17 @@ public class UidChangeTracker implements Constants {
         }
     }
 
-    private SortedSet getSubSet(UidRange range) {
+    private SortedSet<Long> getSubSet(UidRange range) {
         final Long rangeStartLong = new Long(range.getFromUid());
         if (range.getToUid() > 0) {
             final long nextUidAfterRange = range.getToUid() + 1;
             final Long nextUidAfterRangeLong = new Long(nextUidAfterRange);
-            final SortedMap subMap = cache.subMap(rangeStartLong,
+            final SortedMap<Long, Flags> subMap = cache.subMap(rangeStartLong,
                     nextUidAfterRangeLong);
-            final Set keySet = subMap.keySet();
-            return new TreeSet(keySet);
+            final Set<Long> keySet = subMap.keySet();
+            return new TreeSet<Long>(keySet);
         } else {
-            return new TreeSet(cache.tailMap(rangeStartLong).keySet());
+            return new TreeSet<Long>(cache.tailMap(rangeStartLong).keySet());
         }
 
     }
@@ -208,7 +208,7 @@ public class UidChangeTracker implements Constants {
             throws MessagingException {
         if (messageResult != null) {
             long uid = messageResult.getUid();
-            Collection results = new ArrayList();
+            Collection<MessageResult> results = new ArrayList<MessageResult>();
             results.add(messageResult);
             found(new UidRange(uid, uid), results);
         }
@@ -238,6 +238,10 @@ public class UidChangeTracker implements Constants {
 
     public synchronized void mailboxDeleted(long sessionId) {
         eventDispatcher.mailboxDeleted(sessionId);
+    }
+
+    public void reportRenamed(String to) {
+        eventDispatcher.mailboxRenamed(to, Mailbox.ANONYMOUS_SESSION);
     }
 
 }

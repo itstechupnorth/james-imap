@@ -310,9 +310,16 @@ abstract public class AbstractMailboxProcessor extends AbstractChainedProcessor 
         return result;
     }
 
-    public Mailbox getSelectedMailbox(final ImapSession session) {
-        Mailbox result = (Mailbox) session
-                .getAttribute(ImapSessionUtils.SELECTED_MAILBOX_ATTRIBUTE_SESSION_KEY);
+    public Mailbox getSelectedMailbox(final ImapSession session) throws MailboxException {
+        Mailbox result;
+        final SelectedMailbox selectedMailbox = session.getSelected();
+        if (selectedMailbox == null) {
+            result = null;
+        } else {
+            final String mailboxName = selectedMailbox.getName();
+            final MailboxManager mailboxManager = getMailboxManager();
+            result = mailboxManager.getMailbox(mailboxName);
+        }
         return result;
     }
 

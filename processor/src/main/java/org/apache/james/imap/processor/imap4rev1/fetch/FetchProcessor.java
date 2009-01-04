@@ -69,7 +69,7 @@ public class FetchProcessor extends AbstractMailboxProcessor {
         final FetchData fetch = request.getFetch();
         try {
             FetchGroup resultToFetch = getFetchGroup(fetch);
-            Mailbox mailbox = getSelectedMailbox(session);
+            final Mailbox mailbox = getSelectedMailbox(session);
             for (int i = 0; i < idSet.length; i++) {
                 final FetchResponseBuilder builder = new FetchResponseBuilder(
                         new EnvelopeBuilder(getLog()));
