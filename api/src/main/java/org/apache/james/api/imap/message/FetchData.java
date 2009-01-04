@@ -39,9 +39,9 @@ public class FetchData {
 
     private boolean setSeen = false;
 
-    private Set bodyElements = new HashSet();
+    private Set<BodyFetchElement> bodyElements = new HashSet<BodyFetchElement>();
 
-    public Collection getBodyElements() {
+    public Collection<BodyFetchElement> getBodyElements() {
         return bodyElements;
     }
 

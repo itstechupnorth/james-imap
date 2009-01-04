@@ -125,7 +125,7 @@ final class EnvelopeBuilder {
             } else {
                 final AddressList addressList = AddressList.parse(value);
                 final int size = addressList.size();
-                final List addresses = new ArrayList(size);
+                final List<FetchResponse.Envelope.Address> addresses = new ArrayList<FetchResponse.Envelope.Address>(size);
                 for (int i = 0; i < size; i++) {
                     final Address address = addressList.get(i);
                     if (address instanceof Group) {
@@ -172,7 +172,7 @@ final class EnvelopeBuilder {
         return result;
     }
 
-    private void addAddresses(final Group group, final List addresses) {
+    private void addAddresses(final Group group, final List<FetchResponse.Envelope.Address> addresses) {
         final String groupName = group.getName();
         final FetchResponse.Envelope.Address start = startGroup(groupName);
         addresses.add(start);

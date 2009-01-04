@@ -21,7 +21,6 @@ package org.apache.james.imap.processor.imap4rev1;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 
 import org.apache.james.api.imap.ImapCommand;
 import org.apache.james.api.imap.ImapConstants;
@@ -91,12 +90,11 @@ public class LSubProcessor extends AbstractMailboxProcessor {
             throws SubscriptionException, MailboxException {
         final String userName = ImapSessionUtils.getUserName(session);
         final MailboxManager manager = getMailboxManager();
-        final Collection mailboxes = manager.subscriptions(userName);
+        final Collection<String> mailboxes = manager.subscriptions(userName);
         final MailboxExpression expression = new MailboxExpression(
                 referenceName, mailboxPattern, '*', '%');
-        final Collection mailboxResponses = new ArrayList();
-        for (final Iterator it = mailboxes.iterator(); it.hasNext();) {
-            final String mailboxName = (String) it.next();
+        final Collection<String> mailboxResponses = new ArrayList<String>();
+        for (final String mailboxName: mailboxes) {
             respond(responder, expression, mailboxName, true, mailboxes,
                     mailboxResponses);
         }
@@ -104,8 +102,8 @@ public class LSubProcessor extends AbstractMailboxProcessor {
 
     private void respond(Responder responder,
             final MailboxExpression expression, final String mailboxName,
-            final boolean originalSubscription, final Collection mailboxes,
-            final Collection mailboxResponses) {
+            final boolean originalSubscription, final Collection<String> mailboxes,
+            final Collection<String> mailboxResponses) {
         if (expression.isExpressionMatch(mailboxName,
                 ImapConstants.HIERARCHY_DELIMITER_CHAR)) {
             if (!mailboxResponses.contains(mailboxName)) {

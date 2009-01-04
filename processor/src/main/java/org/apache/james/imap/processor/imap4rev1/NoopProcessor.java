@@ -41,10 +41,7 @@ public class NoopProcessor extends AbstractMailboxProcessor {
 
     protected void doProcess(ImapRequest message, ImapSession session,
             String tag, ImapCommand command, Responder responder) {
-        final NoopRequest request = (NoopRequest) message;
-        // TODO: untagged responses?
-        // TODO: NOOP is used to check for new mail: need to return untagged
-        // responses
+        // So, unsolicated responses are returned to check for new mail
         unsolicitedResponses(session, responder, false);
         okComplete(command, tag, responder);
     }

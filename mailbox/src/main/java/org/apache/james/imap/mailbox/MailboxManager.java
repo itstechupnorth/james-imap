@@ -190,5 +190,5 @@ public interface MailboxManager {
      *            the user name, not null
      * @return a <code>Collection<String></code> of mailbox names
      */
-    public Collection subscriptions(String user) throws SubscriptionException;
+    public Collection<String> subscriptions(String user) throws SubscriptionException;
 }

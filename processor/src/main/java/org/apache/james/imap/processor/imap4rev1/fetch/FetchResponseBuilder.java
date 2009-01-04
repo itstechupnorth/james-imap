@@ -31,7 +31,6 @@ import java.util.List;
 import javax.mail.Flags;
 import javax.mail.MessagingException;
 
-import org.apache.commons.logging.Log;
 import org.apache.james.api.imap.message.BodyFetchElement;
 import org.apache.james.api.imap.message.FetchData;
 import org.apache.james.api.imap.process.ImapSession;
@@ -49,7 +48,6 @@ import org.apache.james.imap.processor.base.ImapSessionUtils;
 import org.apache.james.mime4j.field.address.parser.ParseException;
 
 final class FetchResponseBuilder {
-    private final Log logger;
 
     private final EnvelopeBuilder envelopeBuilder;
 
@@ -63,7 +61,7 @@ final class FetchResponseBuilder {
 
     private Integer size;
 
-    private List elements;
+    private List<FetchResponse.BodyElement> elements;
 
     private FetchResponse.Envelope envelope;
 
@@ -71,10 +69,8 @@ final class FetchResponseBuilder {
 
     private FetchResponse.Structure bodystructure;
 
-    public FetchResponseBuilder(final Log logger,
-            final EnvelopeBuilder envelopeBuilder) {
+    public FetchResponseBuilder(final EnvelopeBuilder envelopeBuilder) {
         super();
-        this.logger = logger;
         this.envelopeBuilder = envelopeBuilder;
     }
 
@@ -173,7 +169,7 @@ final class FetchResponseBuilder {
 
         // BODY part responses.
         Collection elements = fetch.getBodyElements();
-        this.elements = new ArrayList();
+        this.elements = new ArrayList<FetchResponse.BodyElement>();
         for (Iterator iterator = elements.iterator(); iterator.hasNext();) {
             BodyFetchElement fetchElement = (BodyFetchElement) iterator.next();
             final FetchResponse.BodyElement element = bodyFetch(result,

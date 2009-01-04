@@ -336,7 +336,7 @@ public class JPAMailboxManager extends AbstractLogEnabled implements MailboxMana
         subscriber.subscribe(user, mailbox);
     }
 
-    public Collection subscriptions(String user) throws SubscriptionException {
+    public Collection<String> subscriptions(String user) throws SubscriptionException {
         return subscriber.subscriptions(user);
     }
 

@@ -86,10 +86,10 @@ final class MimeDescriptorStructure implements FetchResponse.Structure {
         }
     }
 
-    private static List createParts(final boolean allowExtensions,
+    private static List<MimeDescriptorStructure> createParts(final boolean allowExtensions,
             final MimeDescriptor descriptor, final EnvelopeBuilder builder)
             throws MessagingException, ParseException {
-        final List results = new ArrayList();
+        final List<MimeDescriptorStructure> results = new ArrayList<MimeDescriptorStructure>();
         for (Iterator it = descriptor.parts(); it.hasNext();) {
             final MimeDescriptor partDescriptor = (MimeDescriptor) it.next();
             results.add(new MimeDescriptorStructure(allowExtensions,
@@ -100,7 +100,7 @@ final class MimeDescriptorStructure implements FetchResponse.Structure {
 
     private static String[] createParameters(MimeDescriptor descriptor)
             throws MailboxException {
-        final List results = new ArrayList();
+        final List<String> results = new ArrayList<String>();
         // TODO: consider revising this design
         for (Iterator it = descriptor.contentTypeParameters(); it.hasNext();) {
             final MessageResult.Header header = (MessageResult.Header) it
