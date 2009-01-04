@@ -40,6 +40,7 @@ public class MailboxEventAnalyser implements MailboxListener {
     private boolean sizeChanged = false;
     private boolean silentFlagChanges = false;
     private String mailboxName;
+    private boolean closed = false;
 
     public MailboxEventAnalyser(final long sessionId, final String mailboxName) {
         super();
@@ -159,5 +160,13 @@ public class MailboxEventAnalyser implements MailboxListener {
 
     public boolean hasExpungedUids() {
         return !expungedUids.isEmpty();
+    }
+
+    public void close() {
+        closed = true;
+    }
+    
+    public boolean isClosed() {
+        return closed;
     }
 }

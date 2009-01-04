@@ -179,15 +179,15 @@ public interface Mailbox {
             MailboxSession mailboxSession) throws MailboxException;
 
     /**
-     * Implementations of Mailbox may interpret the fact that someone is
+     * <p>Implementations of Mailbox may interpret the fact that someone is
      * listening and do some caching and even postpone persistence until
      * everyone has removed itself.
-     * 
-     * @param listener
+     * </p><p>
+     * Listeners should return true from {@link MailboxListener#isClosed()}
+     * when they are ready to be removed.
+     * </p>
+     * @param listener not null
      * @throws MailboxException
      */
     void addListener(MailboxListener listener) throws MailboxException;
-
-    void removeListener(MailboxListener listener);
-
 }

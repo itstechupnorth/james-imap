@@ -25,11 +25,26 @@ import javax.mail.Flags;
 
 /**
  * Listens to <code>Mailbox</code> events.
+ * Note that listeners may be removed asynchronously.
+ * When {@link #isClosed()} returns true,
+ * the listener may be removed from the mailbox by
+ * the dispatcher.
  */
-
 public interface MailboxListener {
 
+    /**
+     * Informs this listener about the given event.
+     * @param event not null
+     */
     void event(final Event event);
+    
+    /**
+     * Is this listener closed?
+     * Closed listeners may be unsubscribed.
+     * @return true when closed,
+     * false when open
+     */
+    boolean isClosed();
 
     /**
      * A mailbox event.

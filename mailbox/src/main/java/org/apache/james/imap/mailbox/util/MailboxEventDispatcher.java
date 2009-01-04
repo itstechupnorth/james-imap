@@ -19,6 +19,8 @@
 
 package org.apache.james.imap.mailbox.util;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.Set;
@@ -33,15 +35,25 @@ public class MailboxEventDispatcher implements MailboxListener {
 
     private final Set<MailboxListener> listeners = new CopyOnWriteArraySet<MailboxListener>();
 
+    private void pruneClosed() {
+        final Collection<MailboxListener> closedListeners = new ArrayList<MailboxListener>();
+        for (MailboxListener listener:listeners) {
+            if (listener.isClosed()) {
+                closedListeners.add(listener);
+            }
+        }
+        if (!closedListeners.isEmpty()) {
+            listeners.removeAll(closedListeners);
+        }
+    }
+    
     public void addMailboxListener(MailboxListener mailboxListener) {
+        pruneClosed();
         listeners.add(mailboxListener);
     }
 
-    public void removeMailboxListener(MailboxListener mailboxListener) {
-        listeners.remove(mailboxListener);
-    }
-
     public void added(long uid, long sessionId) {
+        pruneClosed();
         final AddedImpl added = new AddedImpl(sessionId, uid);
         for (Iterator iter = listeners.iterator(); iter.hasNext();) {
             MailboxListener mailboxListener = (MailboxListener) iter.next();
@@ -268,5 +280,9 @@ public class MailboxEventDispatcher implements MailboxListener {
         public long getSessionId() {
             return sessionId;
         }
+    }
+
+    public boolean isClosed() {
+        return false;
     }
 }

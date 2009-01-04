@@ -364,10 +364,6 @@ public class JPAMailbox extends AbstractLogEnabled implements org.apache.james.i
         tracker.addMailboxListener(listener);
     }
 
-    public void removeListener(MailboxListener mailboxListener) {
-        tracker.removeMailboxListener(mailboxListener);
-    }
-
     public long getUidValidity(MailboxSession mailboxSession) throws MailboxException {
         final long result = getMailboxRow().getUidValidity();
         return result;

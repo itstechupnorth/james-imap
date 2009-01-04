@@ -231,11 +231,7 @@ public class UidChangeTracker implements Constants {
     public synchronized void addMailboxListener(MailboxListener listener) {
         eventDispatcher.addMailboxListener(listener);
     }
-
-    public synchronized void removeMailboxListener(MailboxListener listener) {
-        eventDispatcher.removeMailboxListener(listener);
-    }
-
+    
     public synchronized void mailboxDeleted(long sessionId) {
         eventDispatcher.mailboxDeleted(sessionId);
     }

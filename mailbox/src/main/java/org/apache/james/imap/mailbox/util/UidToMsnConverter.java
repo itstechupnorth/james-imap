@@ -37,6 +37,8 @@ public class UidToMsnConverter implements MailboxListener {
 
     private int highestMsn = 0;
 
+    private boolean closed = false;
+
     public UidToMsnConverter(final Collection<Long> uids) {
         msnToUid = new TreeMap<Integer, Long>();
         uidToMsn = new TreeMap<Long, Integer>();
@@ -128,5 +130,13 @@ public class UidToMsnConverter implements MailboxListener {
                 add(uid);
             }
         }
+    }
+
+    public void close() {
+        closed = true;
+    }
+    
+    public boolean isClosed() {
+        return closed;
     }
 }

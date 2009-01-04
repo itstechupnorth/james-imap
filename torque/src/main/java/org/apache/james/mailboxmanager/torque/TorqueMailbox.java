@@ -582,13 +582,6 @@ public class TorqueMailbox extends AbstractLogEnabled implements Mailbox {
         tracker.addMailboxListener(listener);
     }
 
-    public void removeListener(MailboxListener mailboxListener) {
-        if (!open) {
-            throw new RuntimeException("mailbox not open");
-        }
-        tracker.removeMailboxListener(mailboxListener);
-    }
-
     public long getUidValidity(MailboxSession mailboxSession)
             throws MailboxException {
         try {

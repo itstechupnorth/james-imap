@@ -26,7 +26,7 @@ import org.apache.james.imap.mailbox.MailboxListener;
 
 public class EventCollector implements MailboxListener {
 
-    public final List events = new ArrayList();
+    public final List<Event> events = new ArrayList<Event>();
 
     public void event(Event event) {
         events.add(event);
@@ -36,6 +36,10 @@ public class EventCollector implements MailboxListener {
     }
 
     public void mailboxRenamed(String origName, String newName) {
+    }
+
+    public boolean isClosed() {
+        return false;
     }
 
 }

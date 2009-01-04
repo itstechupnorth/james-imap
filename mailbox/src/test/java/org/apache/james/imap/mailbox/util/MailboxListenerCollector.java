@@ -95,4 +95,8 @@ public class MailboxListenerCollector implements MailboxListener {
         }
     }
 
+    public boolean isClosed() {
+        return false;
+    }
+
 }

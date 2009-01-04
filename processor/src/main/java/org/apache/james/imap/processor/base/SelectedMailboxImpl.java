@@ -36,8 +36,6 @@ import org.apache.james.imap.mailbox.util.UidToMsnConverter;
 public class SelectedMailboxImpl extends AbstractLogEnabled implements
         SelectedMailbox {
 
-    private final Mailbox mailbox;
-
     private final MailboxEventAnalyser events;
 
     private final UidToMsnConverter converter;
@@ -48,7 +46,6 @@ public class SelectedMailboxImpl extends AbstractLogEnabled implements
 
     public SelectedMailboxImpl(final Mailbox mailbox, final List<Long> uids,
             final MailboxSession mailboxSession, final String name) throws MailboxException {
-        this.mailbox = mailbox;
         recentUids = new TreeSet<Long>();
         recentUidRemoved = false;
         final long sessionId = mailboxSession.getSessionId();
@@ -64,7 +61,8 @@ public class SelectedMailboxImpl extends AbstractLogEnabled implements
      * @see org.apache.james.api.imap.process.SelectedMailbox#deselect()
      */
     public void deselect() {
-        mailbox.removeListener(events);
+        converter.close();
+        events.close();
     }
 
     public boolean isSizeChanged() {
