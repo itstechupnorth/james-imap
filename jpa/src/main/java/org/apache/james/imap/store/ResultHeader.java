@@ -20,7 +20,7 @@
 /**
  * 
  */
-package org.apache.james.imap.jpa;
+package org.apache.james.imap.store;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;

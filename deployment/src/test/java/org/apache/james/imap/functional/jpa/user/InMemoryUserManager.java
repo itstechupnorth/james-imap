@@ -23,9 +23,9 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.james.imap.jpa.Authenticator;
-import org.apache.james.imap.jpa.Subscriber;
 import org.apache.james.imap.mailbox.SubscriptionException;
+import org.apache.james.imap.store.Authenticator;
+import org.apache.james.imap.store.Subscriber;
 
 /**
  * Stores users in memory.

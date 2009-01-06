@@ -17,7 +17,9 @@
  * under the License.                                           *
  ****************************************************************/
 
-package org.apache.james.imap.jpa;
+package org.apache.james.imap.store;
+
+import org.apache.james.imap.store.MessageUtils;
 
 import junit.framework.TestCase;
 

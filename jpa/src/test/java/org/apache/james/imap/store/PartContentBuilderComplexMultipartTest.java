@@ -17,7 +17,7 @@
  * under the License.                                           *
  ****************************************************************/
 
-package org.apache.james.imap.jpa;
+package org.apache.james.imap.store;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -26,7 +26,9 @@ import java.util.List;
 
 import junit.framework.TestCase;
 
-import org.apache.james.imap.jpa.PartContentBuilder.PartNotFoundException;
+import org.apache.james.imap.store.PartContentBuilder;
+import org.apache.james.imap.store.ResultHeader;
+import org.apache.james.imap.store.PartContentBuilder.PartNotFoundException;
 
 public class PartContentBuilderComplexMultipartTest extends TestCase {
 

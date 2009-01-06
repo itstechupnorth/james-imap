@@ -29,10 +29,10 @@ import org.apache.james.imap.encode.main.DefaultImapEncoderFactory;
 import org.apache.james.imap.functional.ImapHostSystem;
 import org.apache.james.imap.functional.SimpleMailboxManagerProvider;
 import org.apache.james.imap.functional.jpa.user.InMemoryUserManager;
-import org.apache.james.imap.jpa.StoreMailboxManager;
-import org.apache.james.imap.jpa.StoreSubscriptionManager;
 import org.apache.james.imap.main.DefaultImapDecoderFactory;
 import org.apache.james.imap.processor.main.DefaultImapProcessorFactory;
+import org.apache.james.imap.store.StoreMailboxManager;
+import org.apache.james.imap.store.StoreSubscriptionManager;
 import org.apache.james.test.functional.HostSystem;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
 

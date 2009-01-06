@@ -17,7 +17,7 @@
  * under the License.                                           *
  ****************************************************************/
 
-package org.apache.james.imap.jpa;
+package org.apache.james.imap.store;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -30,6 +30,7 @@ import junit.framework.TestCase;
 import org.apache.james.api.imap.ImapConstants;
 import org.apache.james.imap.jpa.mail.model.JPAMessage;
 import org.apache.james.imap.mailbox.SearchQuery;
+import org.apache.james.imap.store.MessageSearches;
 
 public class SearchUtilsTest extends TestCase {
 

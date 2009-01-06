@@ -17,7 +17,7 @@
  * under the License.                                           *
  ****************************************************************/
 
-package org.apache.james.imap.jpa;
+package org.apache.james.imap.store;
 
 import java.io.FilterOutputStream;
 import java.io.IOException;

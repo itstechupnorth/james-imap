@@ -17,40 +17,48 @@
  * under the License.                                           *
  ****************************************************************/
 
-package org.apache.james.imap.jpa;
+package org.apache.james.imap.store;
 
-import java.util.Collection;
-
-import org.apache.james.imap.mailbox.SubscriptionException;
+import org.apache.james.imap.mailbox.MailboxSession;
 
 /**
- * Subscribes users.
+ * Describes a mailbox session.
  */
-public interface Subscriber {
-    
-    /**
-     * Subscribes the named user to the given mailbox.
-     * @param user not null
-     * @param mailbox not null
-     * @throws SubscriptionException when subscription fails
-     */
-    public void subscribe(String user, String mailbox)
-            throws SubscriptionException;
+public class SimpleMailboxSession implements MailboxSession {
+
+    private final long sessionId;
+
+    private boolean open;
+
+    public SimpleMailboxSession(final long sessionId) {
+        super();
+        this.sessionId = sessionId;
+    }
+
+    public void close() {
+        open = false;
+    }
+
+    public long getSessionId() {
+        return sessionId;
+    }
+
+    public boolean isOpen() {
+        return open;
+    }
 
     /**
-     * Finds all subscriptions for the given user.
-     * @param user not null
-     * @return not null
-     * @throws SubscriptionException when subscriptions cannot be read
+     * Renders suitably for logging.
+     * 
+     * @return a <code>String</code> representation of this object.
      */
-    public Collection<String> subscriptions(String user) throws SubscriptionException;
+    public String toString() {
+        final String TAB = " ";
 
-    /**
-     * Unsubscribes the given user from the given mailbox.
-     * @param user not null
-     * @param mailbox not null
-     * @throws SubscriptionException when subscriptions cannot be read
-     */
-    public void unsubscribe(String user, String mailbox)
-            throws SubscriptionException;
+        String retValue = "TorqueMailboxSession ( " + "sessionId = "
+                + this.sessionId + TAB + "open = " + this.open + TAB + " )";
+
+        return retValue;
+    }
+
 }

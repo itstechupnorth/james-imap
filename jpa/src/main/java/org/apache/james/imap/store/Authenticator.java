@@ -17,48 +17,19 @@
  * under the License.                                           *
  ****************************************************************/
 
-package org.apache.james.imap.jpa;
-
-import org.apache.james.imap.mailbox.MailboxSession;
+package org.apache.james.imap.store;
 
 /**
- * Describes a mailbox session.
+ * Authenticates user credentials.
  */
-public class SimpleMailboxSession implements MailboxSession {
-
-    private final long sessionId;
-
-    private boolean open;
-
-    public SimpleMailboxSession(final long sessionId) {
-        super();
-        this.sessionId = sessionId;
-    }
-
-    public void close() {
-        open = false;
-    }
-
-    public long getSessionId() {
-        return sessionId;
-    }
-
-    public boolean isOpen() {
-        return open;
-    }
+public interface Authenticator {
 
     /**
-     * Renders suitably for logging.
-     * 
-     * @return a <code>String</code> representation of this object.
+     * Is the given user authentic?
+     * @param userid not null
+     * @param passwd not null
+     * @return true when the user is authentic,
+     * false otherwise
      */
-    public String toString() {
-        final String TAB = " ";
-
-        String retValue = "TorqueMailboxSession ( " + "sessionId = "
-                + this.sessionId + TAB + "open = " + this.open + TAB + " )";
-
-        return retValue;
-    }
-
+    public boolean isAuthentic(String userid, CharSequence passwd);
 }

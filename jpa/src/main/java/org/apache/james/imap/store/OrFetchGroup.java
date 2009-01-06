@@ -17,19 +17,37 @@
  * under the License.                                           *
  ****************************************************************/
 
-package org.apache.james.imap.jpa;
+package org.apache.james.imap.store;
+
+import java.util.Set;
+
+import org.apache.james.imap.mailbox.MessageResult.FetchGroup;
 
 /**
- * Authenticates user credentials.
+ * Wraps a fetch group and ORs content.
  */
-public interface Authenticator {
+public final class OrFetchGroup implements FetchGroup {
 
-    /**
-     * Is the given user authentic?
-     * @param userid not null
-     * @param passwd not null
-     * @return true when the user is authentic,
-     * false otherwise
-     */
-    public boolean isAuthentic(String userid, CharSequence passwd);
+    private final FetchGroup delegate;
+
+    private final int or;
+
+    public OrFetchGroup(final FetchGroup delegate, final int or) {
+        super();
+        this.delegate = delegate;
+        this.or = or;
+    }
+
+    public int content() {
+        return or | delegate.content();
+    }
+
+    public String toString() {
+        return "Fetch " + or + " OR " + delegate;
+    }
+
+    public Set getPartContentDescriptors() {
+        return delegate.getPartContentDescriptors();
+    }
+
 }

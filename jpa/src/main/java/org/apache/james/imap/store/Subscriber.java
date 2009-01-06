@@ -17,37 +17,40 @@
  * under the License.                                           *
  ****************************************************************/
 
-package org.apache.james.imap.jpa;
+package org.apache.james.imap.store;
 
-import java.util.Set;
+import java.util.Collection;
 
-import org.apache.james.imap.mailbox.MessageResult.FetchGroup;
+import org.apache.james.imap.mailbox.SubscriptionException;
 
 /**
- * Wraps a fetch group and ORs content.
+ * Subscribes users.
  */
-public final class OrFetchGroup implements FetchGroup {
+public interface Subscriber {
+    
+    /**
+     * Subscribes the named user to the given mailbox.
+     * @param user not null
+     * @param mailbox not null
+     * @throws SubscriptionException when subscription fails
+     */
+    public void subscribe(String user, String mailbox)
+            throws SubscriptionException;
 
-    private final FetchGroup delegate;
+    /**
+     * Finds all subscriptions for the given user.
+     * @param user not null
+     * @return not null
+     * @throws SubscriptionException when subscriptions cannot be read
+     */
+    public Collection<String> subscriptions(String user) throws SubscriptionException;
 
-    private final int or;
-
-    public OrFetchGroup(final FetchGroup delegate, final int or) {
-        super();
-        this.delegate = delegate;
-        this.or = or;
-    }
-
-    public int content() {
-        return or | delegate.content();
-    }
-
-    public String toString() {
-        return "Fetch " + or + " OR " + delegate;
-    }
-
-    public Set getPartContentDescriptors() {
-        return delegate.getPartContentDescriptors();
-    }
-
+    /**
+     * Unsubscribes the given user from the given mailbox.
+     * @param user not null
+     * @param mailbox not null
+     * @throws SubscriptionException when subscriptions cannot be read
+     */
+    public void unsubscribe(String user, String mailbox)
+            throws SubscriptionException;
 }

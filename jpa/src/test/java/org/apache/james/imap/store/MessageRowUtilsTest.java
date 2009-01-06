@@ -17,11 +17,12 @@
  * under the License.                                           *
  ****************************************************************/
 
-package org.apache.james.imap.jpa;
+package org.apache.james.imap.store;
 
 import junit.framework.TestCase;
 
 import org.apache.james.imap.jpa.mail.model.JPAMessage;
+import org.apache.james.imap.store.MessageRowUtils;
 
 public class MessageRowUtilsTest extends TestCase {    
     
