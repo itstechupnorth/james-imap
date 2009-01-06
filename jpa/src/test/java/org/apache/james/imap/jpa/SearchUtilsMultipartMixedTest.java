@@ -26,7 +26,7 @@ import java.util.Collection;
 import junit.framework.TestCase;
 
 import org.apache.james.api.imap.ImapConstants;
-import org.apache.james.imap.jpa.mail.model.Message;
+import org.apache.james.imap.jpa.mail.model.JPAMessage;
 import org.apache.james.imap.mailbox.SearchQuery;
 
 public class SearchUtilsMultipartMixedTest extends TestCase {
@@ -103,7 +103,7 @@ public class SearchUtilsMultipartMixedTest extends TestCase {
             + "  Than both your poets can in praise devise.\r\n"
             + "\r\n--2.50290787509--\r\n" + "\r\n--1729--\r\n";
 
-    Message row;
+    JPAMessage row;
 
     MessageSearches searches;
 

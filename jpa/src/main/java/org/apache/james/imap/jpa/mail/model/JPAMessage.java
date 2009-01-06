@@ -35,8 +35,8 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 
-@Entity
-@IdClass(Message.MessageId.class)
+@Entity(name="Message")
+@IdClass(JPAMessage.MessageId.class)
 @NamedQueries({
     @NamedQuery(name="findRecentMessagesInMailbox",
             query="SELECT message FROM Message message WHERE message.mailboxId = :idParam AND message.recent = TRUE"),
@@ -63,7 +63,7 @@ import javax.persistence.OneToMany;
     @NamedQuery(name="countMessagesInMailbox",
             query="SELECT COUNT(message) FROM Message message WHERE message.mailboxId = :idParam")                     
 })
-public class Message {
+public class JPAMessage {
 
     private static final String TOSTRING_SEPARATOR = " ";
 
@@ -136,15 +136,15 @@ public class Message {
     /** The value for the body field. Lazy loaded */
     @Basic(optional=false, fetch=FetchType.LAZY) private byte[] body;
     /** Headers for this message */
-    @OneToMany(cascade = CascadeType.ALL, fetch=FetchType.LAZY) private List<Header> headers;
+    @OneToMany(cascade = CascadeType.ALL, fetch=FetchType.LAZY) private List<JPAHeader> headers;
 
     /**
      * For enhancement only.
      */
     @Deprecated
-    public Message() {}
+    public JPAMessage() {}
 
-    public Message(long mailboxId, long uid, Date internalDate, int size, Flags flags, byte[] body, final List<Header> headers) {
+    public JPAMessage(long mailboxId, long uid, Date internalDate, int size, Flags flags, byte[] body, final List<JPAHeader> headers) {
         super();
         this.mailboxId = mailboxId;
         this.uid = uid;
@@ -152,7 +152,7 @@ public class Message {
         this.size = size;
         this.body = body;
         setFlags(flags);
-        this.headers = new ArrayList<Header>(headers);
+        this.headers = new ArrayList<JPAHeader>(headers);
     }
 
     /**
@@ -162,7 +162,7 @@ public class Message {
      * @param uid new UID
      * @param original message to be copied, not null
      */
-    public Message(long mailboxId, long uid, Message original) {
+    public JPAMessage(long mailboxId, long uid, JPAMessage original) {
         super();
         this.mailboxId = mailboxId;
         this.uid = uid;
@@ -175,13 +175,13 @@ public class Message {
         this.recent = original.isRecent();
         this.seen = original.isSeen();
         this.body = original.getBody();
-        final List<Header> originalHeaders = original.getHeaders();
+        final List<JPAHeader> originalHeaders = original.getHeaders();
         if (originalHeaders == null) {
-            this.headers = new ArrayList<Header>();
+            this.headers = new ArrayList<JPAHeader>();
         } else {
-            this.headers = new ArrayList<Header>(originalHeaders.size());
-            for (Header header:originalHeaders) {
-                this.headers.add(new Header(header));
+            this.headers = new ArrayList<JPAHeader>(originalHeaders.size());
+            for (JPAHeader header:originalHeaders) {
+                this.headers.add(new JPAHeader(header));
             }
         }
     }
@@ -234,7 +234,7 @@ public class Message {
      * Gets a read-only list of headers.
      * @return unmodifiable list of headers, not null
      */
-    public List<Header> getHeaders() {
+    public List<JPAHeader> getHeaders() {
         return Collections.unmodifiableList(headers);
     }
     
@@ -301,7 +301,7 @@ public class Message {
             return false;
         if (getClass() != obj.getClass())
             return false;
-        final Message other = (Message) obj;
+        final JPAMessage other = (JPAMessage) obj;
         if (mailboxId != other.mailboxId)
             return false;
         if (uid != other.uid)

@@ -21,7 +21,7 @@ package org.apache.james.imap.jpa;
 
 import junit.framework.TestCase;
 
-import org.apache.james.imap.jpa.mail.model.Message;
+import org.apache.james.imap.jpa.mail.model.JPAMessage;
 
 public class MessageRowUtilsTest extends TestCase {    
     
@@ -35,12 +35,12 @@ public class MessageRowUtilsTest extends TestCase {
 
     public void testShouldReturnPositiveWhenFirstGreaterThanSecond()
             throws Exception {
-        Message one = buildMessage(100);
-        Message two = buildMessage(99);
+        JPAMessage one = buildMessage(100);
+        JPAMessage two = buildMessage(99);
         assertTrue(MessageRowUtils.getUidComparator().compare(one, two) > 0);
     }
 
-    private Message buildMessage(int uid) {
+    private JPAMessage buildMessage(int uid) {
         MessageBuilder builder = new MessageBuilder();
         builder.uid = uid;
         return builder.build();
@@ -48,14 +48,14 @@ public class MessageRowUtilsTest extends TestCase {
 
     public void testShouldReturnNegativeWhenFirstLessThanSecond()
             throws Exception {
-        Message one = buildMessage(98);
-        Message two = buildMessage(99);
+        JPAMessage one = buildMessage(98);
+        JPAMessage two = buildMessage(99);
         assertTrue(MessageRowUtils.getUidComparator().compare(one, two) < 0);
     }
 
     public void testShouldReturnZeroWhenFirstEqualsSecond() throws Exception {
-        Message one = buildMessage(90);
-        Message two = buildMessage(90);
+        JPAMessage one = buildMessage(90);
+        JPAMessage two = buildMessage(90);
         assertEquals(0, MessageRowUtils.getUidComparator().compare(one, two));
     }
 }

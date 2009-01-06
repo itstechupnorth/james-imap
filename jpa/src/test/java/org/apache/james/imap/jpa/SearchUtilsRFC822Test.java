@@ -26,7 +26,7 @@ import java.util.Collection;
 import junit.framework.TestCase;
 
 import org.apache.james.api.imap.ImapConstants;
-import org.apache.james.imap.jpa.mail.model.Message;
+import org.apache.james.imap.jpa.mail.model.JPAMessage;
 import org.apache.james.imap.mailbox.SearchQuery;
 
 public class SearchUtilsRFC822Test extends TestCase {
@@ -43,7 +43,7 @@ public class SearchUtilsRFC822Test extends TestCase {
             + "It has " + RHUBARD + ".\r\n" + "It has " + CUSTARD + ".\r\n"
             + "It needs naught else.\r\n";
 
-    Message row;
+    JPAMessage row;
 
     MessageSearches searches;
 

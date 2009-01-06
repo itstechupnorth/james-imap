@@ -23,7 +23,7 @@ import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 
-import org.apache.james.imap.jpa.user.model.Subscription;
+import org.apache.james.imap.jpa.user.model.JPASubscription;
 import org.apache.james.imap.store.user.SubscriptionMapper;
 
 /**
@@ -54,9 +54,9 @@ public class JPASubscriptionMapper implements SubscriptionMapper {
     /* (non-Javadoc)
      * @see org.apache.james.imap.jpa.user.SubscriptionManager#findFindMailboxSubscriptionForUser(java.lang.String, java.lang.String)
      */
-    public Subscription findFindMailboxSubscriptionForUser(final String user, final String mailbox) {
+    public JPASubscription findFindMailboxSubscriptionForUser(final String user, final String mailbox) {
         try {
-            return (Subscription) entityManager.createNamedQuery("findFindMailboxSubscriptionForUser")
+            return (JPASubscription) entityManager.createNamedQuery("findFindMailboxSubscriptionForUser")
                 .setParameter("userParam", user).setParameter("mailboxParam", mailbox).getSingleResult();
         } catch (NoResultException e) {
             return null;
@@ -66,7 +66,7 @@ public class JPASubscriptionMapper implements SubscriptionMapper {
     /* (non-Javadoc)
      * @see org.apache.james.imap.jpa.user.SubscriptionManager#save(org.apache.james.imap.jpa.user.model.Subscription)
      */
-    public void save(Subscription subscription) {
+    public void save(JPASubscription subscription) {
         entityManager.persist(subscription);
     }
 
@@ -74,14 +74,14 @@ public class JPASubscriptionMapper implements SubscriptionMapper {
      * @see org.apache.james.imap.jpa.user.SubscriptionManager#findSubscriptionsForUser(java.lang.String)
      */
     @SuppressWarnings("unchecked")
-    public List<Subscription> findSubscriptionsForUser(String user) {
-        return (List<Subscription>) entityManager.createNamedQuery("findSubscriptionsForUser").setParameter("userParam", user).getResultList();
+    public List<JPASubscription> findSubscriptionsForUser(String user) {
+        return (List<JPASubscription>) entityManager.createNamedQuery("findSubscriptionsForUser").setParameter("userParam", user).getResultList();
     }
 
     /* (non-Javadoc)
      * @see org.apache.james.imap.jpa.user.SubscriptionManager#delete(org.apache.james.imap.jpa.user.model.Subscription)
      */
-    public void delete(Subscription subscription) {
+    public void delete(JPASubscription subscription) {
         entityManager.remove(subscription);
     }
 }

@@ -29,26 +29,26 @@ import java.util.NoSuchElementException;
 import javax.mail.Flags;
 import javax.mail.internet.MimeMessage;
 
-import org.apache.james.imap.jpa.mail.model.Message;
+import org.apache.james.imap.jpa.mail.model.JPAMessage;
 import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.MessageResult;
 import org.apache.james.imap.mailbox.MessageResult.FetchGroup;
 import org.apache.james.imap.mailbox.util.FetchGroupImpl;
 import org.apache.james.imap.mailbox.util.MessageFlags;
 
-public class JPAResultIterator implements Iterator {
+public class ResultIterator implements Iterator {
 
-    private final List<Message> messages;
+    private final List<JPAMessage> messages;
 
     private final FetchGroup fetchGroup;
 
     @SuppressWarnings("unchecked")
-    public JPAResultIterator(final List<Message> messages, final FetchGroup fetchGroup) {
+    public ResultIterator(final List<JPAMessage> messages, final FetchGroup fetchGroup) {
         super();
         if (messages == null) {
             this.messages = Collections.EMPTY_LIST;
         } else {
-            this.messages = new ArrayList<Message>(messages);
+            this.messages = new ArrayList<JPAMessage>(messages);
         }
         this.fetchGroup = fetchGroup;
     }
@@ -75,7 +75,7 @@ public class JPAResultIterator implements Iterator {
         if (messages.isEmpty()) {
             throw new NoSuchElementException("No such element.");
         }
-        final Message message = messages.get(0);
+        final JPAMessage message = messages.get(0);
         messages.remove(message);
         MessageResult result;
         try {
@@ -111,7 +111,7 @@ public class JPAResultIterator implements Iterator {
 
         private final long uid;
 
-        public UnloadedMessageResult(final Message message,
+        public UnloadedMessageResult(final JPAMessage message,
                 final MailboxException exception) {
             super();
             internalDate = message.getInternalDate();

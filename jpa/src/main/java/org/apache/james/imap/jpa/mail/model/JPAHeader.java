@@ -24,8 +24,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 
-@Entity
-public class Header implements Comparable<Header> {
+@Entity(name="Header")
+public class JPAHeader implements Comparable<JPAHeader> {
     
     private static final String TOSTRING_SEP = " ";
 
@@ -45,7 +45,7 @@ public class Header implements Comparable<Header> {
      * For JPA use only.
      */
     @Deprecated
-    public Header() {}
+    public JPAHeader() {}
     
     /**
      * Copies the content of an existing header.
@@ -53,11 +53,11 @@ public class Header implements Comparable<Header> {
      * @param uid UI
      * @param header
      */
-    public Header(Header header) {
+    public JPAHeader(JPAHeader header) {
         this(header.getLineNumber(), header.field, header.getValue());
     }
     
-    public Header(int lineNumber, String field, String value) {
+    public JPAHeader(int lineNumber, String field, String value) {
         super();
         this.lineNumber = lineNumber;
         this.field = field;
@@ -92,7 +92,7 @@ public class Header implements Comparable<Header> {
             return false;
         if (getClass() != obj.getClass())
             return false;
-        final Header other = (Header) obj;
+        final JPAHeader other = (JPAHeader) obj;
         if (id != other.id)
             return false;
         return true;
@@ -112,7 +112,7 @@ public class Header implements Comparable<Header> {
     /**
      * Natural sort is mailbox, (message) UID then line number
      */
-    public int compareTo(final Header header) {
+    public int compareTo(final JPAHeader header) {
         final int result = lineNumber - header.lineNumber;
         return result;
     }

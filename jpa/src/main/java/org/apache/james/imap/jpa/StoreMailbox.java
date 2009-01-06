@@ -39,9 +39,9 @@ import org.apache.james.api.imap.AbstractLogEnabled;
 import org.apache.james.imap.jpa.mail.JPAMailboxMapper;
 import org.apache.james.imap.jpa.mail.JPAMessageMapper;
 import org.apache.james.imap.jpa.mail.map.openjpa.OpenJPAMailboxMapper;
-import org.apache.james.imap.jpa.mail.model.Header;
-import org.apache.james.imap.jpa.mail.model.Mailbox;
-import org.apache.james.imap.jpa.mail.model.Message;
+import org.apache.james.imap.jpa.mail.model.JPAHeader;
+import org.apache.james.imap.jpa.mail.model.JPAMailbox;
+import org.apache.james.imap.jpa.mail.model.JPAMessage;
 import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.MailboxListener;
 import org.apache.james.imap.mailbox.MailboxNotFoundException;
@@ -56,7 +56,7 @@ import org.apache.james.imap.mailbox.util.UidRange;
 import org.apache.james.imap.store.mail.MailboxMapper;
 import org.apache.james.imap.store.mail.MessageMapper;
 
-public class JPAMailbox extends AbstractLogEnabled implements org.apache.james.imap.mailbox.Mailbox {
+public class StoreMailbox extends AbstractLogEnabled implements org.apache.james.imap.mailbox.Mailbox {
 
     private static final int INITIAL_SIZE_HEADERS = 32;
 
@@ -68,7 +68,7 @@ public class JPAMailbox extends AbstractLogEnabled implements org.apache.james.i
 
     private final EntityManagerFactory entityManagerFactory;
 
-    JPAMailbox(final Mailbox mailbox, final Log log, final EntityManagerFactory entityManagerfactory) {
+    StoreMailbox(final JPAMailbox mailbox, final Log log, final EntityManagerFactory entityManagerfactory) {
         this.searches = new MessageSearches();
         setLog(log);
         this.mailboxId = mailbox.getMailboxId();
@@ -84,7 +84,7 @@ public class JPAMailbox extends AbstractLogEnabled implements org.apache.james.i
     public MessageResult appendMessage(MimeMessage mimeMessage, Date internalDate,
             FetchGroup fetchGroup, MailboxSession mailboxSession)
     throws MailboxException {
-        final Mailbox mailbox = reserveNextUid();
+        final JPAMailbox mailbox = reserveNextUid();
 
         if (mailbox == null) {
             throw new MailboxNotFoundException("Mailbox has been deleted");
@@ -102,8 +102,8 @@ public class JPAMailbox extends AbstractLogEnabled implements org.apache.james.i
                 final int size = size(mimeMessage);
                 final byte[] body = body(mimeMessage);
                 final Flags flags = mimeMessage.getFlags();
-                final List<Header> headers = headers(mailboxId, uid, mimeMessage);
-                final Message message = new Message(mailboxId, uid, internalDate, size, flags, body, headers);
+                final List<JPAHeader> headers = headers(mailboxId, uid, mimeMessage);
+                final JPAMessage message = new JPAMessage(mailboxId, uid, internalDate, size, flags, body, headers);
                 final MessageMapper mapper = createMessageMapper();
 
                 mapper.begin();
@@ -133,14 +133,14 @@ public class JPAMailbox extends AbstractLogEnabled implements org.apache.james.i
         return bytes;
     }
 
-    private List<Header> headers(long mailboxId, long uid, MimeMessage message) throws MessagingException {
-        final List<Header> results = new ArrayList<Header>(INITIAL_SIZE_HEADERS);
+    private List<JPAHeader> headers(long mailboxId, long uid, MimeMessage message) throws MessagingException {
+        final List<JPAHeader> results = new ArrayList<JPAHeader>(INITIAL_SIZE_HEADERS);
         int lineNumber = 0;
         for (Enumeration lines = message.getAllHeaderLines(); lines.hasMoreElements();) {
             String line = (String) lines.nextElement();
             int colon = line.indexOf(": ");
             if (colon > 0) {
-                final Header header = new Header(++lineNumber, line.substring(0, colon), line.substring(colon + 2));
+                final JPAHeader header = new JPAHeader(++lineNumber, line.substring(0, colon), line.substring(colon + 2));
                 results.add(header);
             }
         }
@@ -155,9 +155,9 @@ public class JPAMailbox extends AbstractLogEnabled implements org.apache.james.i
         return size;
     }
 
-    private Mailbox reserveNextUid() throws  MailboxException {
+    private JPAMailbox reserveNextUid() throws  MailboxException {
         final MailboxMapper mapper = createMailboxMapper();
-        final Mailbox mailbox = mapper.consumeNextUid(mailboxId);
+        final JPAMailbox mailbox = mapper.consumeNextUid(mailboxId);
         return mailbox;
     }
 
@@ -165,19 +165,19 @@ public class JPAMailbox extends AbstractLogEnabled implements org.apache.james.i
             MailboxSession mailboxSession) throws MailboxException {
         UidRange range = uidRangeForMessageSet(set);
         final MessageMapper messageMapper = createMessageMapper();
-        final List<Message> rows = new ArrayList<Message>(messageMapper.findInMailbox(set, mailboxId));
+        final List<JPAMessage> rows = new ArrayList<JPAMessage>(messageMapper.findInMailbox(set, mailboxId));
         return getMessages(fetchGroup, range, rows);
     }
 
-    private JPAResultIterator getMessages(FetchGroup result, UidRange range, List<Message> messages) {
-        final JPAResultIterator results = getResults(result, messages);
+    private ResultIterator getMessages(FetchGroup result, UidRange range, List<JPAMessage> messages) {
+        final ResultIterator results = getResults(result, messages);
         getUidChangeTracker().found(range, results.getMessageFlags());
         return results;
     }
 
-    private JPAResultIterator getResults(FetchGroup result, List<Message> messages) {
+    private ResultIterator getResults(FetchGroup result, List<JPAMessage> messages) {
         Collections.sort(messages, MessageRowUtils.getUidComparator());
-        final JPAResultIterator results = new JPAResultIterator(messages,result);
+        final ResultIterator results = new ResultIterator(messages,result);
         return results;
     }
 
@@ -193,7 +193,7 @@ public class JPAMailbox extends AbstractLogEnabled implements org.apache.james.i
         }
     }
 
-    public MessageResult fillMessageResult(Message message, FetchGroup result) throws MessagingException,
+    public MessageResult fillMessageResult(JPAMessage message, FetchGroup result) throws MessagingException,
     MailboxException {
         return MessageRowUtils.loadMessageResult(message, result);
     }
@@ -211,11 +211,11 @@ public class JPAMailbox extends AbstractLogEnabled implements org.apache.james.i
     public long[] recent(boolean reset, MailboxSession mailboxSession) throws MailboxException {
         final MessageMapper mapper = createMessageMapper();
         mapper.begin();
-        final List<Message> messages = mapper.findRecentMessagesInMailbox(mailboxId);
+        final List<JPAMessage> messages = mapper.findRecentMessagesInMailbox(mailboxId);
         final long[] results = new long[messages.size()];
 
         int count = 0;
-        for (Message message:messages) {
+        for (JPAMessage message:messages) {
             results[count++] = message.getUid();
             if (reset) {
                 message.unsetRecent();
@@ -230,8 +230,8 @@ public class JPAMailbox extends AbstractLogEnabled implements org.apache.james.i
             MailboxSession mailboxSession) throws MailboxException {
         try {
             final MessageMapper messageMapper = createMessageMapper();
-            final List<Message> messageRows = messageMapper.findUnseenMessagesInMailboxOrderByUid(mailboxId);
-            final Iterator<Message> it = messageRows.iterator();
+            final List<JPAMessage> messageRows = messageMapper.findUnseenMessagesInMailboxOrderByUid(mailboxId);
+            final Iterator<JPAMessage> it = messageRows.iterator();
             final MessageResult result;
             if (it.hasNext()) {
                 result = fillMessageResult(it.next(), fetchGroup);
@@ -262,14 +262,14 @@ public class JPAMailbox extends AbstractLogEnabled implements org.apache.james.i
     throws MailboxException {
         final MessageMapper mapper = createMessageMapper();
         mapper.begin();
-        final List<Message> messages = mapper.findMarkedForDeletionInMailbox(set, mailboxId);
+        final List<JPAMessage> messages = mapper.findMarkedForDeletionInMailbox(set, mailboxId);
         final long[] uids = uids(messages);
         final OrFetchGroup orFetchGroup = new OrFetchGroup(fetchGroup, FetchGroup.FLAGS);
-        final JPAResultIterator resultIterator = new JPAResultIterator(messages, orFetchGroup);
+        final ResultIterator resultIterator = new ResultIterator(messages, orFetchGroup);
         // ensure all results are loaded before deletion
         final List<MessageResult> messageResults = resultIterator.toList();
 
-        for (Message message:messages) {
+        for (JPAMessage message:messages) {
             mapper.delete(message);
         }
         mapper.commit();
@@ -278,11 +278,11 @@ public class JPAMailbox extends AbstractLogEnabled implements org.apache.james.i
     }
 
 
-    private long[] uids(List<Message> messages) {
+    private long[] uids(List<JPAMessage> messages) {
         final int size = messages.size();
         long[] results = new long[size];
         for (int i = 0; i < size; i++) {
-            final Message message = messages.get(i);
+            final JPAMessage message = messages.get(i);
             results[i] = message.getUid();
         }
         return results;
@@ -300,11 +300,11 @@ public class JPAMailbox extends AbstractLogEnabled implements org.apache.james.i
             MailboxSession mailboxSession) throws MailboxException {
         final MessageMapper mapper = createMessageMapper();
         mapper.begin();
-        final List<Message> messages = mapper.findInMailbox(set, mailboxId);
+        final List<JPAMessage> messages = mapper.findInMailbox(set, mailboxId);
         UidRange uidRange = uidRangeForMessageSet(set);
         getUidChangeTracker().found(uidRange,
                 MessageRowUtils.toMessageFlags(messages));
-        for (final Message message:messages) {
+        for (final JPAMessage message:messages) {
             if (replace) {
                 message.setFlags(flags);
             } else {
@@ -320,7 +320,7 @@ public class JPAMailbox extends AbstractLogEnabled implements org.apache.james.i
         }
         final OrFetchGroup orFetchGroup = new OrFetchGroup(fetchGroup,
                 FetchGroup.FLAGS);
-        final JPAResultIterator resultIterator = new JPAResultIterator(
+        final ResultIterator resultIterator = new ResultIterator(
                 messages, orFetchGroup);
         final org.apache.james.imap.mailbox.util.MessageFlags[] messageFlags = resultIterator
         .getMessageFlags();
@@ -340,7 +340,7 @@ public class JPAMailbox extends AbstractLogEnabled implements org.apache.james.i
     }
 
     public long getUidNext(MailboxSession mailboxSession) throws MailboxException {
-        Mailbox mailbox = getMailboxRow();
+        JPAMailbox mailbox = getMailboxRow();
         if (mailbox == null) {
             throw new MailboxNotFoundException("Mailbox has been deleted");
         } else {
@@ -353,7 +353,7 @@ public class JPAMailbox extends AbstractLogEnabled implements org.apache.james.i
         return tracker;
     }
 
-    private Mailbox getMailboxRow() throws MailboxException {
+    private JPAMailbox getMailboxRow() throws MailboxException {
         final MailboxMapper mapper = createMailboxMapper();
         return mapper.findMailboxById(mailboxId);
     }
@@ -366,9 +366,9 @@ public class JPAMailbox extends AbstractLogEnabled implements org.apache.james.i
     public Iterator search(SearchQuery query, FetchGroup fetchGroup,
             MailboxSession mailboxSession) throws MailboxException {
         final MessageMapper messageMapper = createMessageMapper();
-        final List<Message> messages = messageMapper.searchMailbox(mailboxId, query);
-        final List<Message> filteredMessages = new ArrayList<Message>(messages.size());
-        for (Message message:messages) {
+        final List<JPAMessage> messages = messageMapper.searchMailbox(mailboxId, query);
+        final List<JPAMessage> filteredMessages = new ArrayList<JPAMessage>(messages.size());
+        for (JPAMessage message:messages) {
             try {
                 if (searches.isMatch(query, message)) {
                     filteredMessages.add(message);
@@ -395,15 +395,15 @@ public class JPAMailbox extends AbstractLogEnabled implements org.apache.james.i
         searches.setLog(log);
     }
 
-    public void copyTo(MessageRange set, JPAMailbox toMailbox, MailboxSession session) throws MailboxException {
+    public void copyTo(MessageRange set, StoreMailbox toMailbox, MailboxSession session) throws MailboxException {
         try {
             final MessageMapper mapper = createMessageMapper();
             mapper.begin();
 
-            List<Message> rows = mapper.findInMailbox(set, mailboxId);
-            for (Message originalMessage:rows) {
+            List<JPAMessage> rows = mapper.findInMailbox(set, mailboxId);
+            for (JPAMessage originalMessage:rows) {
 
-                final Mailbox mailbox = toMailbox.reserveNextUid();
+                final JPAMailbox mailbox = toMailbox.reserveNextUid();
                 if (mailbox != null) {
                     // To be thread safe, we first get our own copy and the
                     // exclusive
@@ -415,7 +415,7 @@ public class JPAMailbox extends AbstractLogEnabled implements org.apache.james.i
                     // mail 4 is big and comes over a slow connection.
                     long uid = mailbox.getLastUid();
 
-                    Message newRow = new Message(toMailbox.mailboxId, uid, originalMessage);
+                    JPAMessage newRow = new JPAMessage(toMailbox.mailboxId, uid, originalMessage);
 
 
                     mapper.save(newRow);

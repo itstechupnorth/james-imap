@@ -29,8 +29,8 @@ import org.apache.james.imap.encode.main.DefaultImapEncoderFactory;
 import org.apache.james.imap.functional.ImapHostSystem;
 import org.apache.james.imap.functional.SimpleMailboxManagerProvider;
 import org.apache.james.imap.functional.jpa.user.InMemoryUserManager;
-import org.apache.james.imap.jpa.JPAMailboxManager;
-import org.apache.james.imap.jpa.JPASubscriptionManager;
+import org.apache.james.imap.jpa.StoreMailboxManager;
+import org.apache.james.imap.jpa.StoreSubscriptionManager;
 import org.apache.james.imap.main.DefaultImapDecoderFactory;
 import org.apache.james.imap.processor.main.DefaultImapProcessorFactory;
 import org.apache.james.test.functional.HostSystem;
@@ -45,7 +45,7 @@ public class JPAHostSystem extends ImapHostSystem {
         return host;
     }
     
-    private final JPAMailboxManager mailboxManager;
+    private final StoreMailboxManager mailboxManager;
     private final InMemoryUserManager userManager; 
 
     public JPAHostSystem() throws Exception {
@@ -55,13 +55,13 @@ public class JPAHostSystem extends ImapHostSystem {
         properties.put("openjpa.Log", "JDBC=WARN, SQL=WARN, Runtime=WARN");
         properties.put("openjpa.ConnectionFactoryProperties", "PrettyPrint=true, PrettyPrintLineLength=72");
         properties.put("openjpa.jdbc.SynchronizeMappings", "buildSchema(ForeignKeys=true)");
-        properties.put("openjpa.MetaDataFactory", "jpa(Types=org.apache.james.imap.jpa.mail.model.Header;" +
-                "org.apache.james.imap.jpa.mail.model.Mailbox;org.apache.james.imap.jpa.mail.model.Message;" +
-                "org.apache.james.imap.jpa.user.model.Subscription)");
+        properties.put("openjpa.MetaDataFactory", "jpa(Types=org.apache.james.imap.jpa.mail.model.JPAHeader;" +
+                "org.apache.james.imap.jpa.mail.model.JPAMailbox;org.apache.james.imap.jpa.mail.model.JPAMessage;" +
+                "org.apache.james.imap.jpa.user.model.JPASubscription)");
         
         userManager = new InMemoryUserManager();
         final EntityManagerFactory entityManagerFactory = OpenJPAPersistence.getEntityManagerFactory(properties);
-        mailboxManager = new JPAMailboxManager(userManager, new JPASubscriptionManager(entityManagerFactory), entityManagerFactory);
+        mailboxManager = new StoreMailboxManager(userManager, new StoreSubscriptionManager(entityManagerFactory), entityManagerFactory);
         
         SimpleMailboxManagerProvider provider = new SimpleMailboxManagerProvider();
         final DefaultImapProcessorFactory defaultImapProcessorFactory = new DefaultImapProcessorFactory();

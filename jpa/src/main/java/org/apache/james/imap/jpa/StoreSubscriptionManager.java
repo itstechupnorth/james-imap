@@ -26,19 +26,19 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceException;
 
 import org.apache.james.imap.jpa.user.JPASubscriptionMapper;
-import org.apache.james.imap.jpa.user.model.Subscription;
+import org.apache.james.imap.jpa.user.model.JPASubscription;
 import org.apache.james.imap.mailbox.SubscriptionException;
 import org.apache.james.imap.store.user.SubscriptionMapper;
 
 /**
  * Manages subscriptions.
  */
-public class JPASubscriptionManager implements Subscriber {
+public class StoreSubscriptionManager implements Subscriber {
 
     private static final int INITIAL_SIZE = 32;
     private final EntityManagerFactory factory;
     
-    public JPASubscriptionManager(final EntityManagerFactory factory) {
+    public StoreSubscriptionManager(final EntityManagerFactory factory) {
         super();
         this.factory = factory;
     }
@@ -48,9 +48,9 @@ public class JPASubscriptionManager implements Subscriber {
             final SubscriptionMapper mapper = createMapper();
             mapper.begin();
             
-            final Subscription subscription = mapper.findFindMailboxSubscriptionForUser(user, mailbox);
+            final JPASubscription subscription = mapper.findFindMailboxSubscriptionForUser(user, mailbox);
             if (subscription == null) {
-                final Subscription newSubscription = new Subscription(user, mailbox);
+                final JPASubscription newSubscription = new JPASubscription(user, mailbox);
                 mapper.save(newSubscription);
                 mapper.commit();
             }
@@ -67,9 +67,9 @@ public class JPASubscriptionManager implements Subscriber {
     public Collection<String> subscriptions(final String user) throws SubscriptionException {
         try {
             final SubscriptionMapper mapper = createMapper();
-            final List<Subscription> subscriptions = mapper.findSubscriptionsForUser(user);
+            final List<JPASubscription> subscriptions = mapper.findSubscriptionsForUser(user);
             final Collection<String> results = new HashSet<String>(INITIAL_SIZE);
-            for (Subscription subscription:subscriptions) {
+            for (JPASubscription subscription:subscriptions) {
                 results.add(subscription.getMailbox());
             }
             return results;
@@ -83,7 +83,7 @@ public class JPASubscriptionManager implements Subscriber {
             final SubscriptionMapper mapper = createMapper();
             mapper.begin();
             
-            final Subscription subscription = mapper.findFindMailboxSubscriptionForUser(user, mailbox);
+            final JPASubscription subscription = mapper.findFindMailboxSubscriptionForUser(user, mailbox);
             if (subscription != null) {
                 mapper.delete(subscription);
                 mapper.commit();

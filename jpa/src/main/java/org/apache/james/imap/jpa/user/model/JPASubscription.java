@@ -30,7 +30,7 @@ import javax.persistence.UniqueConstraint;
 /**
  * A subscription to a mailbox by a user.
  */
-@Entity
+@Entity(name="Subscription")
 @Table(uniqueConstraints=@UniqueConstraint(columnNames={"USER", "MAILBOX"}))
 @NamedQueries({
     @NamedQuery(name="findFindMailboxSubscriptionForUser",
@@ -38,7 +38,7 @@ import javax.persistence.UniqueConstraint;
     @NamedQuery(name="findSubscriptionsForUser",
         query="SELECT subscription FROM Subscription subscription WHERE subscription.user = :userParam")                  
 })
-public class Subscription {
+public class JPASubscription {
 
     private static final String TO_STRING_SEPARATOR = "  ";
     /** Primary key */
@@ -53,14 +53,14 @@ public class Subscription {
      * Used by JPA
      */
     @Deprecated
-    public Subscription() {}
+    public JPASubscription() {}
     
     /**
      * Constructs a user subscription.
      * @param user not null
      * @param mailbox not null
      */
-    public Subscription(String user, String mailbox) {
+    public JPASubscription(String user, String mailbox) {
         super();
         this.user = user;
         this.mailbox = mailbox;
@@ -102,7 +102,7 @@ public class Subscription {
             return false;
         if (getClass() != obj.getClass())
             return false;
-        final Subscription other = (Subscription) obj;
+        final JPASubscription other = (JPASubscription) obj;
         if (id != other.id)
             return false;
         return true;

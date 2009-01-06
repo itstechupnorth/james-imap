@@ -24,13 +24,13 @@ import org.apache.james.imap.mailbox.MailboxSession;
 /**
  * Describes a mailbox session.
  */
-public class JPAMailboxSession implements MailboxSession {
+public class SimpleMailboxSession implements MailboxSession {
 
     private final long sessionId;
 
     private boolean open;
 
-    public JPAMailboxSession(final long sessionId) {
+    public SimpleMailboxSession(final long sessionId) {
         super();
         this.sessionId = sessionId;
     }

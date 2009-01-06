@@ -20,7 +20,7 @@ package org.apache.james.imap.store.mail;
 
 import java.util.List;
 
-import org.apache.james.imap.jpa.mail.model.Mailbox;
+import org.apache.james.imap.jpa.mail.model.JPAMailbox;
 import org.apache.james.imap.mailbox.MailboxNotFoundException;
 import org.apache.james.imap.mailbox.StorageException;
 
@@ -29,15 +29,15 @@ public interface MailboxMapper {
     
     public abstract void commit() throws StorageException;
     
-    public abstract void save(Mailbox mailbox) throws StorageException;
+    public abstract void save(JPAMailbox mailbox) throws StorageException;
 
-    public abstract Mailbox findMailboxByName(String name)
+    public abstract JPAMailbox findMailboxByName(String name)
             throws StorageException, MailboxNotFoundException;
 
-    public abstract void delete(Mailbox mailbox) throws StorageException;
+    public abstract void delete(JPAMailbox mailbox) throws StorageException;
 
     @SuppressWarnings("unchecked")
-    public abstract List<Mailbox> findMailboxWithNameLike(String name)
+    public abstract List<JPAMailbox> findMailboxWithNameLike(String name)
             throws StorageException;
 
     public abstract void deleteAll() throws StorageException;
@@ -45,10 +45,10 @@ public interface MailboxMapper {
     public abstract long countMailboxesWithName(String name)
             throws StorageException;
 
-    public abstract Mailbox findMailboxById(long mailboxId)
+    public abstract JPAMailbox findMailboxById(long mailboxId)
             throws StorageException, MailboxNotFoundException;
 
-    public abstract Mailbox consumeNextUid(long mailboxId)
+    public abstract JPAMailbox consumeNextUid(long mailboxId)
             throws StorageException, MailboxNotFoundException;
 
 }

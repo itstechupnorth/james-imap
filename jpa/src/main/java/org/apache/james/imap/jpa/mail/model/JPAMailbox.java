@@ -25,7 +25,7 @@ import javax.persistence.Id;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 
-@Entity
+@Entity(name="Mailbox")
 @NamedQueries({
     @NamedQuery(name="findMailboxById",
         query="SELECT mailbox FROM Mailbox mailbox WHERE mailbox.mailboxId = :idParam"),
@@ -38,7 +38,7 @@ import javax.persistence.NamedQuery;
     @NamedQuery(name="findMailboxWithNameLike",
                 query="SELECT mailbox FROM Mailbox mailbox WHERE mailbox.name LIKE :nameParam")            
 })
-public class Mailbox {
+public class JPAMailbox {
     
     private static final String TAB = " ";
 
@@ -67,11 +67,11 @@ public class Mailbox {
      * JPA only
      */
     @Deprecated
-    public Mailbox() {
+    public JPAMailbox() {
         super();
     }
     
-    public Mailbox(String name, int uidValidity) {
+    public JPAMailbox(String name, int uidValidity) {
         this();
         this.name= name;
         this.uidValidity = uidValidity;
@@ -139,7 +139,7 @@ public class Mailbox {
             return false;
         if (getClass() != obj.getClass())
             return false;
-        final Mailbox other = (Mailbox) obj;
+        final JPAMailbox other = (JPAMailbox) obj;
         if (mailboxId != other.mailboxId)
             return false;
         return true;
