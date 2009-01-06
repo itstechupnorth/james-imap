@@ -25,7 +25,7 @@ import java.util.List;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceException;
 
-import org.apache.james.imap.jpa.user.SubscriptionMapper;
+import org.apache.james.imap.jpa.user.JPASubscriptionMapper;
 import org.apache.james.imap.jpa.user.model.Subscription;
 import org.apache.james.imap.mailbox.SubscriptionException;
 
@@ -44,7 +44,7 @@ public class SubscriptionManager implements Subscriber {
 
     public void subscribe(final String user, final String mailbox) throws SubscriptionException {
         try {
-            final SubscriptionMapper mapper = new SubscriptionMapper(factory.createEntityManager());
+            final JPASubscriptionMapper mapper = new JPASubscriptionMapper(factory.createEntityManager());
             mapper.begin();
             
             final Subscription subscription = mapper.findFindMailboxSubscriptionForUser(user, mailbox);
@@ -60,7 +60,7 @@ public class SubscriptionManager implements Subscriber {
 
     public Collection<String> subscriptions(final String user) throws SubscriptionException {
         try {
-            final SubscriptionMapper mapper = new SubscriptionMapper(factory.createEntityManager());
+            final JPASubscriptionMapper mapper = new JPASubscriptionMapper(factory.createEntityManager());
             final List<Subscription> subscriptions = mapper.findSubscriptionsForUser(user);
             final Collection<String> results = new HashSet<String>(INITIAL_SIZE);
             for (Subscription subscription:subscriptions) {
@@ -74,7 +74,7 @@ public class SubscriptionManager implements Subscriber {
 
     public void unsubscribe(final String user, final String mailbox) throws SubscriptionException {
         try {
-            final SubscriptionMapper mapper = new SubscriptionMapper(factory.createEntityManager());
+            final JPASubscriptionMapper mapper = new JPASubscriptionMapper(factory.createEntityManager());
             mapper.begin();
             
             final Subscription subscription = mapper.findFindMailboxSubscriptionForUser(user, mailbox);

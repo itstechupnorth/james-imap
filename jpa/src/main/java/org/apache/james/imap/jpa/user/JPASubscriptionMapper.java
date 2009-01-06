@@ -28,10 +28,10 @@ import org.apache.james.imap.jpa.user.model.Subscription;
 /**
  * Maps data access logic to JPA operations.
  */
-public class SubscriptionMapper {
+public class JPASubscriptionMapper {
     private final EntityManager entityManager;
     
-    public SubscriptionMapper(final EntityManager entityManager) {
+    public JPASubscriptionMapper(final EntityManager entityManager) {
         super();
         this.entityManager = entityManager;
     }

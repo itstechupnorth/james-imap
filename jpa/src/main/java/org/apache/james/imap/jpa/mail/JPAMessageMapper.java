@@ -30,9 +30,9 @@ import org.apache.james.imap.mailbox.StorageException;
 import org.apache.james.imap.mailbox.SearchQuery.Criterion;
 import org.apache.james.imap.mailbox.SearchQuery.NumericRange;
 
-public class MessageMapper extends Mapper {
+public class JPAMessageMapper extends Mapper {
 
-    public MessageMapper(EntityManager entityManager) {
+    public JPAMessageMapper(EntityManager entityManager) {
         super(entityManager);
     }
 

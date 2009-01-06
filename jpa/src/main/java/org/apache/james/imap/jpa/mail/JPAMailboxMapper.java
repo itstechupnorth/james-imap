@@ -32,9 +32,9 @@ import org.apache.james.imap.mailbox.StorageException;
 /**
  * Data access management for mailbox.
  */
-public abstract class MailboxMapper extends Mapper {
+public abstract class JPAMailboxMapper extends Mapper {
 
-    public MailboxMapper(EntityManager entityManager) {
+    public JPAMailboxMapper(EntityManager entityManager) {
         super(entityManager);
     }
 

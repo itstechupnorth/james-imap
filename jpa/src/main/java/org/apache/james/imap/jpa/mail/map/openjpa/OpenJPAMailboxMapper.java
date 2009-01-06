@@ -21,7 +21,7 @@ package org.apache.james.imap.jpa.mail.map.openjpa;
 
 import javax.persistence.EntityManager;
 
-import org.apache.james.imap.jpa.mail.MailboxMapper;
+import org.apache.james.imap.jpa.mail.JPAMailboxMapper;
 import org.apache.james.imap.jpa.mail.model.Mailbox;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
@@ -29,7 +29,7 @@ import org.apache.openjpa.persistence.OpenJPAPersistence;
 /**
  * Data access management for mailbox.
  */
-public class OpenJPAMailboxMapper extends MailboxMapper {
+public class OpenJPAMailboxMapper extends JPAMailboxMapper {
     
     public OpenJPAMailboxMapper(EntityManager entityManager) {
         super(entityManager);

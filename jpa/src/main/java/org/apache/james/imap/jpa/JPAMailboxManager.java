@@ -31,7 +31,7 @@ import javax.persistence.EntityManagerFactory;
 
 import org.apache.commons.logging.Log;
 import org.apache.james.api.imap.AbstractLogEnabled;
-import org.apache.james.imap.jpa.mail.MailboxMapper;
+import org.apache.james.imap.jpa.mail.JPAMailboxMapper;
 import org.apache.james.imap.jpa.mail.map.openjpa.OpenJPAMailboxMapper;
 import org.apache.james.imap.jpa.mail.model.Mailbox;
 import org.apache.james.imap.mailbox.ListResult;
@@ -72,7 +72,7 @@ public class JPAMailboxManager extends AbstractLogEnabled implements MailboxMana
 
     private JPAMailbox doGetMailbox(String mailboxName) throws MailboxException {
         synchronized (mailboxes) {
-            final MailboxMapper mapper = createMailboxMapper();
+            final JPAMailboxMapper mapper = createMailboxMapper();
             Mailbox mailboxRow = mapper.findMailboxByName(mailboxName);
 
             if (mailboxRow == null) {
@@ -132,7 +132,7 @@ public class JPAMailboxManager extends AbstractLogEnabled implements MailboxMana
 
     private void doCreate(String namespaceName) throws MailboxException {
         Mailbox mailbox = new Mailbox(namespaceName, Math.abs(random.nextInt()));
-        final MailboxMapper mapper = createMailboxMapper();
+        final JPAMailboxMapper mapper = createMailboxMapper();
         mapper.begin();
         mapper.save(mailbox);
         mapper.commit();
@@ -143,7 +143,7 @@ public class JPAMailboxManager extends AbstractLogEnabled implements MailboxMana
         getLog().info("deleteMailbox " + mailboxName);
         synchronized (mailboxes) {
             // TODO put this into a serilizable transaction
-            final MailboxMapper mapper = createMailboxMapper();
+            final JPAMailboxMapper mapper = createMailboxMapper();
             mapper.begin();
             Mailbox mr = mapper.findMailboxByName(mailboxName);
             if (mr == null) {
@@ -167,7 +167,7 @@ public class JPAMailboxManager extends AbstractLogEnabled implements MailboxMana
                 throw new MailboxExistsException(to);
             }
 
-            final MailboxMapper mapper = createMailboxMapper();                
+            final JPAMailboxMapper mapper = createMailboxMapper();                
             mapper.begin();
             // TODO put this into a serilizable transaction
             final Mailbox mailbox = mapper.findMailboxByName(from);
@@ -233,7 +233,7 @@ public class JPAMailboxManager extends AbstractLogEnabled implements MailboxMana
                 HIERARCHY_DELIMITER).replace(freeWildcard, SQL_WILDCARD_CHAR)
                 .replace(localWildcard, SQL_WILDCARD_CHAR);
 
-        final MailboxMapper mapper = createMailboxMapper();
+        final JPAMailboxMapper mapper = createMailboxMapper();
         final List<Mailbox> mailboxes = mapper.findMailboxWithNameLike(search);
         final List<ListResult> listResults = new ArrayList<ListResult>(mailboxes.size());
         for (Mailbox mailbox: mailboxes) {
@@ -255,7 +255,7 @@ public class JPAMailboxManager extends AbstractLogEnabled implements MailboxMana
 
     public boolean mailboxExists(String mailboxName) throws MailboxException {
         synchronized (mailboxes) {
-            final MailboxMapper mapper = createMailboxMapper();
+            final JPAMailboxMapper mapper = createMailboxMapper();
             final long count = mapper.countMailboxesWithName(mailboxName);
             if (count == 0) {
                 mailboxes.remove(mailboxName);
@@ -271,15 +271,15 @@ public class JPAMailboxManager extends AbstractLogEnabled implements MailboxMana
     }
 
     public void deleteEverything() throws MailboxException {
-        final MailboxMapper mapper = createMailboxMapper();
+        final JPAMailboxMapper mapper = createMailboxMapper();
         mapper.begin();
         mapper.deleteAll();
         mapper.commit();
         mailboxes.clear();
     }
 
-    private MailboxMapper createMailboxMapper() {
-        final MailboxMapper mapper = new OpenJPAMailboxMapper(entityManagerFactory.createEntityManager());
+    private JPAMailboxMapper createMailboxMapper() {
+        final JPAMailboxMapper mapper = new OpenJPAMailboxMapper(entityManagerFactory.createEntityManager());
         return mapper;
     }
 
