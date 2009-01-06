@@ -28,23 +28,24 @@ import javax.persistence.PersistenceException;
 import org.apache.james.imap.jpa.user.JPASubscriptionMapper;
 import org.apache.james.imap.jpa.user.model.Subscription;
 import org.apache.james.imap.mailbox.SubscriptionException;
+import org.apache.james.imap.store.user.SubscriptionMapper;
 
 /**
  * Manages subscriptions.
  */
-public class SubscriptionManager implements Subscriber {
+public class JPASubscriptionManager implements Subscriber {
 
     private static final int INITIAL_SIZE = 32;
     private final EntityManagerFactory factory;
     
-    public SubscriptionManager(final EntityManagerFactory factory) {
+    public JPASubscriptionManager(final EntityManagerFactory factory) {
         super();
         this.factory = factory;
     }
 
     public void subscribe(final String user, final String mailbox) throws SubscriptionException {
         try {
-            final JPASubscriptionMapper mapper = new JPASubscriptionMapper(factory.createEntityManager());
+            final SubscriptionMapper mapper = createMapper();
             mapper.begin();
             
             final Subscription subscription = mapper.findFindMailboxSubscriptionForUser(user, mailbox);
@@ -58,9 +59,14 @@ public class SubscriptionManager implements Subscriber {
         }
     }
 
+    private SubscriptionMapper createMapper() {
+        final JPASubscriptionMapper mapper = new JPASubscriptionMapper(factory.createEntityManager());
+        return mapper;
+    }
+
     public Collection<String> subscriptions(final String user) throws SubscriptionException {
         try {
-            final JPASubscriptionMapper mapper = new JPASubscriptionMapper(factory.createEntityManager());
+            final SubscriptionMapper mapper = createMapper();
             final List<Subscription> subscriptions = mapper.findSubscriptionsForUser(user);
             final Collection<String> results = new HashSet<String>(INITIAL_SIZE);
             for (Subscription subscription:subscriptions) {
@@ -74,7 +80,7 @@ public class SubscriptionManager implements Subscriber {
 
     public void unsubscribe(final String user, final String mailbox) throws SubscriptionException {
         try {
-            final JPASubscriptionMapper mapper = new JPASubscriptionMapper(factory.createEntityManager());
+            final SubscriptionMapper mapper = createMapper();
             mapper.begin();
             
             final Subscription subscription = mapper.findFindMailboxSubscriptionForUser(user, mailbox);

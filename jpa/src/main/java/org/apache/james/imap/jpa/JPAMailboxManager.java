@@ -45,6 +45,7 @@ import org.apache.james.imap.mailbox.MailboxSession;
 import org.apache.james.imap.mailbox.MessageRange;
 import org.apache.james.imap.mailbox.SubscriptionException;
 import org.apache.james.imap.mailbox.util.ListResultImpl;
+import org.apache.james.imap.store.mail.MailboxMapper;
 
 public class JPAMailboxManager extends AbstractLogEnabled implements MailboxManager {
 
@@ -72,7 +73,7 @@ public class JPAMailboxManager extends AbstractLogEnabled implements MailboxMana
 
     private JPAMailbox doGetMailbox(String mailboxName) throws MailboxException {
         synchronized (mailboxes) {
-            final JPAMailboxMapper mapper = createMailboxMapper();
+            final MailboxMapper mapper = createMailboxMapper();
             Mailbox mailboxRow = mapper.findMailboxByName(mailboxName);
 
             if (mailboxRow == null) {
@@ -132,7 +133,7 @@ public class JPAMailboxManager extends AbstractLogEnabled implements MailboxMana
 
     private void doCreate(String namespaceName) throws MailboxException {
         Mailbox mailbox = new Mailbox(namespaceName, Math.abs(random.nextInt()));
-        final JPAMailboxMapper mapper = createMailboxMapper();
+        final MailboxMapper mapper = createMailboxMapper();
         mapper.begin();
         mapper.save(mailbox);
         mapper.commit();
@@ -143,7 +144,7 @@ public class JPAMailboxManager extends AbstractLogEnabled implements MailboxMana
         getLog().info("deleteMailbox " + mailboxName);
         synchronized (mailboxes) {
             // TODO put this into a serilizable transaction
-            final JPAMailboxMapper mapper = createMailboxMapper();
+            final MailboxMapper mapper = createMailboxMapper();
             mapper.begin();
             Mailbox mr = mapper.findMailboxByName(mailboxName);
             if (mr == null) {
@@ -167,7 +168,7 @@ public class JPAMailboxManager extends AbstractLogEnabled implements MailboxMana
                 throw new MailboxExistsException(to);
             }
 
-            final JPAMailboxMapper mapper = createMailboxMapper();                
+            final MailboxMapper mapper = createMailboxMapper();                
             mapper.begin();
             // TODO put this into a serilizable transaction
             final Mailbox mailbox = mapper.findMailboxByName(from);
@@ -233,7 +234,7 @@ public class JPAMailboxManager extends AbstractLogEnabled implements MailboxMana
                 HIERARCHY_DELIMITER).replace(freeWildcard, SQL_WILDCARD_CHAR)
                 .replace(localWildcard, SQL_WILDCARD_CHAR);
 
-        final JPAMailboxMapper mapper = createMailboxMapper();
+        final MailboxMapper mapper = createMailboxMapper();
         final List<Mailbox> mailboxes = mapper.findMailboxWithNameLike(search);
         final List<ListResult> listResults = new ArrayList<ListResult>(mailboxes.size());
         for (Mailbox mailbox: mailboxes) {
@@ -255,7 +256,7 @@ public class JPAMailboxManager extends AbstractLogEnabled implements MailboxMana
 
     public boolean mailboxExists(String mailboxName) throws MailboxException {
         synchronized (mailboxes) {
-            final JPAMailboxMapper mapper = createMailboxMapper();
+            final MailboxMapper mapper = createMailboxMapper();
             final long count = mapper.countMailboxesWithName(mailboxName);
             if (count == 0) {
                 mailboxes.remove(mailboxName);
@@ -271,14 +272,14 @@ public class JPAMailboxManager extends AbstractLogEnabled implements MailboxMana
     }
 
     public void deleteEverything() throws MailboxException {
-        final JPAMailboxMapper mapper = createMailboxMapper();
+        final MailboxMapper mapper = createMailboxMapper();
         mapper.begin();
         mapper.deleteAll();
         mapper.commit();
         mailboxes.clear();
     }
 
-    private JPAMailboxMapper createMailboxMapper() {
+    private MailboxMapper createMailboxMapper() {
         final JPAMailboxMapper mapper = new OpenJPAMailboxMapper(entityManagerFactory.createEntityManager());
         return mapper;
     }

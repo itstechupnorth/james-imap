@@ -29,13 +29,17 @@ import org.apache.james.imap.mailbox.SearchQuery;
 import org.apache.james.imap.mailbox.StorageException;
 import org.apache.james.imap.mailbox.SearchQuery.Criterion;
 import org.apache.james.imap.mailbox.SearchQuery.NumericRange;
+import org.apache.james.imap.store.mail.MessageMapper;
 
-public class JPAMessageMapper extends Mapper {
+public class JPAMessageMapper extends Mapper implements MessageMapper {
 
     public JPAMessageMapper(EntityManager entityManager) {
         super(entityManager);
     }
 
+    /* (non-Javadoc)
+     * @see org.apache.james.imap.jpa.mail.MessageMapper#findInMailbox(org.apache.james.imap.mailbox.MessageRange, long)
+     */
     public List<Message> findInMailbox(MessageRange set, long mailboxId) throws StorageException {
         try {
             final List<Message> results;
@@ -90,6 +94,9 @@ public class JPAMessageMapper extends Mapper {
         return entityManager.createNamedQuery("findMessagesInMailbox").setParameter("idParam", mailboxId).getResultList();
     }
 
+    /**
+     * @see org.apache.james.imap.jpa.mail.MessageMapper#findMarkedForDeletionInMailbox(org.apache.james.imap.mailbox.MessageRange, long)
+     */
     public List<Message> findMarkedForDeletionInMailbox(final MessageRange set, final long mailboxId) throws StorageException {
         try {
             final List<Message> results;
@@ -144,6 +151,9 @@ public class JPAMessageMapper extends Mapper {
         .setParameter("toParam", to).getResultList();
     }
 
+    /**
+     * @see org.apache.james.imap.jpa.mail.MessageMapper#countMessagesInMailbox(long)
+     */
     public long countMessagesInMailbox(long mailboxId) throws StorageException {
         try {
             return (Long) entityManager.createNamedQuery("countMessagesInMailbox").setParameter("idParam", mailboxId).getSingleResult();
@@ -152,6 +162,9 @@ public class JPAMessageMapper extends Mapper {
         }
     }
 
+    /**
+     * @see org.apache.james.imap.jpa.mail.MessageMapper#countUnseenMessagesInMailbox(long)
+     */
     public long countUnseenMessagesInMailbox(long mailboxId) throws StorageException {
         try {
             return (Long) entityManager.createNamedQuery("countUnseenMessagesInMailbox").setParameter("idParam", mailboxId).getSingleResult();
@@ -160,6 +173,9 @@ public class JPAMessageMapper extends Mapper {
         }
     }
 
+    /**
+     * @see org.apache.james.imap.jpa.mail.MessageMapper#searchMailbox(long, org.apache.james.imap.mailbox.SearchQuery)
+     */
     @SuppressWarnings("unchecked")
     public List<Message> searchMailbox(long mailboxId, SearchQuery query) throws StorageException {
         try {
@@ -197,6 +213,9 @@ public class JPAMessageMapper extends Mapper {
         return jql;
     }
 
+    /**
+     * @see org.apache.james.imap.jpa.mail.MessageMapper#delete(org.apache.james.imap.jpa.mail.model.Message)
+     */
     public void delete(Message message) throws StorageException {
         try {
             entityManager.remove(message);
@@ -205,6 +224,9 @@ public class JPAMessageMapper extends Mapper {
         }
     }
 
+    /**
+     * @see org.apache.james.imap.jpa.mail.MessageMapper#findUnseenMessagesInMailboxOrderByUid(long)
+     */
     @SuppressWarnings("unchecked")
     public List<Message> findUnseenMessagesInMailboxOrderByUid(final long mailboxId)  throws StorageException {
         try {
@@ -214,6 +236,9 @@ public class JPAMessageMapper extends Mapper {
         }
     }
 
+    /**
+     * @see org.apache.james.imap.jpa.mail.MessageMapper#findRecentMessagesInMailbox(long)
+     */
     @SuppressWarnings("unchecked")
     public List<Message> findRecentMessagesInMailbox(final long mailboxId) throws StorageException {
         try {
@@ -223,6 +248,9 @@ public class JPAMessageMapper extends Mapper {
         }
     }
 
+    /**
+     * @see org.apache.james.imap.jpa.mail.MessageMapper#save(org.apache.james.imap.jpa.mail.model.Message)
+     */
     public void save(Message message) throws StorageException {
         try {
             entityManager.persist(message);
