@@ -34,12 +34,12 @@ import javax.mail.Flags;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.james.imap.jpa.mail.model.JPAHeader;
-import org.apache.james.imap.jpa.mail.model.JPAMessage;
 import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.SearchQuery;
 import org.apache.james.imap.mailbox.UnsupportedSearchException;
 import org.apache.james.imap.mailbox.SearchQuery.NumericRange;
+import org.apache.james.imap.store.mail.model.Header;
+import org.apache.james.imap.store.mail.model.Message;
 import org.apache.james.mime4j.MimeException;
 import org.apache.james.mime4j.field.datetime.DateTime;
 import org.apache.james.mime4j.field.datetime.parser.DateTimeParser;
@@ -76,7 +76,7 @@ class MessageSearches {
      * @return true if the row matches the given criteria, false otherwise
      * @throws MailboxException 
      */
-    public boolean isMatch(final SearchQuery query, final JPAMessage message)
+    public boolean isMatch(final SearchQuery query, final Message message)
             throws MailboxException {
         final List criteria = query.getCriterias();
         final Collection recentMessageUids = query.getRecentMessageUids();
@@ -104,7 +104,7 @@ class MessageSearches {
      * @return true if the row matches the given criterion, false otherwise
      * @throws MailboxException 
      */
-    public boolean isMatch(SearchQuery.Criterion criterion, JPAMessage message,
+    public boolean isMatch(SearchQuery.Criterion criterion, Message message,
             final Collection recentMessageUids) throws MailboxException {
         final boolean result;
         if (criterion instanceof SearchQuery.InternalDateCriterion) {
@@ -131,7 +131,7 @@ class MessageSearches {
         return result;
     }
 
-    private boolean matches(SearchQuery.TextCriterion criterion, JPAMessage message) throws MailboxException  {
+    private boolean matches(SearchQuery.TextCriterion criterion, Message message) throws MailboxException  {
         try {
             final SearchQuery.ContainsOperator operator = criterion
                     .getOperator();
@@ -149,7 +149,7 @@ class MessageSearches {
         }
     }
 
-    private boolean bodyContains(String value, JPAMessage message)
+    private boolean bodyContains(String value, Message message)
             throws IOException, MimeException {
         final InputStream input = MessageRowUtils.toInput(message);
         final boolean result = isInMessage(value, input, false);
@@ -167,7 +167,7 @@ class MessageSearches {
         return result;
     }
 
-    private boolean messageContains(String value, JPAMessage message)
+    private boolean messageContains(String value, Message message)
             throws IOException, MimeException {
         final InputStream input = MessageRowUtils.toInput(message);
         final boolean result = isInMessage(value, input, true);
@@ -175,7 +175,7 @@ class MessageSearches {
     }
 
     private boolean matches(SearchQuery.ConjunctionCriterion criterion,
-            JPAMessage message, final Collection recentMessageUids) throws MailboxException {
+            Message message, final Collection recentMessageUids) throws MailboxException {
         final List criteria = criterion.getCriteria();
         switch (criterion.getType()) {
             case NOR:
@@ -189,7 +189,7 @@ class MessageSearches {
         }
     }
 
-    private boolean and(final List criteria, final JPAMessage message, 
+    private boolean and(final List criteria, final Message message, 
             final Collection recentMessageUids) throws MailboxException {
         boolean result = true;
         for (Iterator it = criteria.iterator(); it.hasNext();) {
@@ -204,7 +204,7 @@ class MessageSearches {
         return result;
     }
 
-    private boolean or(final List criteria, final JPAMessage message,
+    private boolean or(final List criteria, final Message message,
             final Collection recentMessageUids) throws MailboxException {
         boolean result = false;
         for (Iterator it = criteria.iterator(); it.hasNext();) {
@@ -219,7 +219,7 @@ class MessageSearches {
         return result;
     }
 
-    private boolean nor(final List criteria, final JPAMessage message,
+    private boolean nor(final List criteria, final Message message,
             final Collection recentMessageUids) throws MailboxException {
         boolean result = true;
         for (Iterator it = criteria.iterator(); it.hasNext();) {
@@ -235,7 +235,7 @@ class MessageSearches {
     }
 
     private boolean matches(SearchQuery.FlagCriterion criterion,
-            JPAMessage message, final Collection recentMessageUids) {
+            Message message, final Collection recentMessageUids) {
         final SearchQuery.BooleanOperator operator = criterion.getOperator();
         final boolean isSet = operator.isSet();
         final Flags.Flag flag = criterion.getFlag();
@@ -259,7 +259,7 @@ class MessageSearches {
         return result;
     }
 
-    private boolean matches(SearchQuery.UidCriterion criterion, JPAMessage message) {
+    private boolean matches(SearchQuery.UidCriterion criterion, Message message) {
         final SearchQuery.InOperator operator = criterion.getOperator();
         final NumericRange[] ranges = operator.getRange();
         final long uid = message.getUid();
@@ -275,7 +275,7 @@ class MessageSearches {
         return result;
     }
 
-    private boolean matches(SearchQuery.HeaderCriterion criterion, JPAMessage message) throws UnsupportedSearchException {
+    private boolean matches(SearchQuery.HeaderCriterion criterion, Message message) throws UnsupportedSearchException {
         final SearchQuery.HeaderOperator operator = criterion.getOperator();
         final String headerName = criterion.getHeaderName();
         final boolean result;
@@ -291,10 +291,10 @@ class MessageSearches {
         return result;
     }
 
-    private boolean exists(String headerName, JPAMessage message) {
+    private boolean exists(String headerName, Message message) {
         boolean result = false;
-        final List<JPAHeader> headers = message.getHeaders();
-        for (JPAHeader header:headers) {
+        final List<Header> headers = message.getHeaders();
+        for (Header header:headers) {
             final String name = header.getField();
             if (headerName.equalsIgnoreCase(name)) {
                 result = true;
@@ -305,11 +305,11 @@ class MessageSearches {
     }
 
     private boolean matches(final SearchQuery.ContainsOperator operator,
-            final String headerName, final JPAMessage message) {
+            final String headerName, final Message message) {
         final String text = operator.getValue().toUpperCase();
         boolean result = false;
-        final List<JPAHeader> headers = message.getHeaders();
-        for (JPAHeader header:headers) {
+        final List<Header> headers = message.getHeaders();
+        for (Header header:headers) {
             final String name = header.getField();
             if (headerName.equalsIgnoreCase(name)) {
                 final String value = header.getValue();
@@ -325,7 +325,7 @@ class MessageSearches {
     }
 
     private boolean matches(final SearchQuery.DateOperator operator,
-            final String headerName, final JPAMessage message) throws UnsupportedSearchException {
+            final String headerName, final Message message) throws UnsupportedSearchException {
         final int day = operator.getDay();
         final int month = operator.getMonth();
         final int year = operator.getYear();
@@ -353,10 +353,10 @@ class MessageSearches {
         }
     }
 
-    private String headerValue(final String headerName, final JPAMessage message) {
-        final List<JPAHeader> headers = message.getHeaders();
+    private String headerValue(final String headerName, final Message message) {
+        final List<Header> headers = message.getHeaders();
         String value = null;
-        for (JPAHeader header:headers) {
+        for (Header header:headers) {
             final String name = header.getField();
             if (headerName.equalsIgnoreCase(name)) {
                 value = header.getValue();
@@ -374,7 +374,7 @@ class MessageSearches {
         return isoFieldValue;
     }
 
-    private boolean matches(SearchQuery.SizeCriterion criterion, JPAMessage message)
+    private boolean matches(SearchQuery.SizeCriterion criterion, Message message)
             throws UnsupportedSearchException {
         final SearchQuery.NumericOperator operator = criterion.getOperator();
         final int size = message.getSize();
@@ -392,14 +392,14 @@ class MessageSearches {
     }
 
     private boolean matches(SearchQuery.InternalDateCriterion criterion,
-            JPAMessage message) throws UnsupportedSearchException {
+            Message message) throws UnsupportedSearchException {
         final SearchQuery.DateOperator operator = criterion.getOperator();
         final boolean result = matchesInternalDate(operator, message);
         return result;
     }
 
     private boolean matchesInternalDate(
-            final SearchQuery.DateOperator operator, final JPAMessage message)
+            final SearchQuery.DateOperator operator, final Message message)
             throws UnsupportedSearchException {
         final int day = operator.getDay();
         final int month = operator.getMonth();

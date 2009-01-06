@@ -16,39 +16,56 @@
  * specific language governing permissions and limitations      *
  * under the License.                                           *
  ****************************************************************/
-package org.apache.james.imap.store.mail;
+package org.apache.james.imap.store.mail.model;
 
+import java.util.Date;
 import java.util.List;
 
-import org.apache.james.imap.mailbox.MailboxNotFoundException;
-import org.apache.james.imap.mailbox.StorageException;
-import org.apache.james.imap.store.mail.model.Mailbox;
+import javax.mail.Flags;
 
-public interface MailboxMapper {
-    public abstract void begin() throws StorageException;
-    
-    public abstract void commit() throws StorageException;
-    
-    public abstract void save(Mailbox mailbox) throws StorageException;
+public interface Message {
 
-    public abstract Mailbox findMailboxByName(String name)
-            throws StorageException, MailboxNotFoundException;
+    public abstract Date getInternalDate();
 
-    public abstract void delete(Mailbox mailbox) throws StorageException;
+    public abstract long getMailboxId();
 
-    @SuppressWarnings("unchecked")
-    public abstract List<Mailbox> findMailboxWithNameLike(String name)
-            throws StorageException;
+    public abstract int getSize();
 
-    public abstract void deleteAll() throws StorageException;
+    public abstract long getUid();
 
-    public abstract long countMailboxesWithName(String name)
-            throws StorageException;
+    public abstract byte[] getBody();
 
-    public abstract Mailbox findMailboxById(long mailboxId)
-            throws StorageException, MailboxNotFoundException;
+    public abstract boolean isAnswered();
 
-    public abstract Mailbox consumeNextUid(long mailboxId)
-            throws StorageException, MailboxNotFoundException;
+    public abstract boolean isDeleted();
+
+    public abstract boolean isDraft();
+
+    public abstract boolean isFlagged();
+
+    public abstract boolean isRecent();
+
+    public abstract boolean isSeen();
+
+    /**
+     * Gets a read-only list of headers.
+     * @return unmodifiable list of headers, not null
+     */
+    public abstract List<Header> getHeaders();
+
+    /**
+     * Sets {@link #isRecent()} to false.
+     * A message can only be recent once.
+     */
+    public abstract void unsetRecent();
+
+    public abstract void setFlags(Flags flags);
+
+    /**
+     * Creates a new flags instance populated
+     * with the current flag data.
+     * @return new instance, not null
+     */
+    public abstract Flags createFlags();
 
 }

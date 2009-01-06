@@ -29,6 +29,7 @@ import org.apache.james.imap.jpa.mail.model.JPAMailbox;
 import org.apache.james.imap.mailbox.MailboxNotFoundException;
 import org.apache.james.imap.mailbox.StorageException;
 import org.apache.james.imap.store.mail.MailboxMapper;
+import org.apache.james.imap.store.mail.model.Mailbox;
 
 /**
  * Data access management for mailbox.
@@ -42,7 +43,7 @@ public abstract class JPAMailboxMapper extends Mapper implements MailboxMapper {
     /**
      * @see org.apache.james.imap.jpa.mail.MailboxMapper#save(org.apache.james.imap.jpa.mail.model.JPAMailbox)
      */
-    public void save(JPAMailbox mailbox) throws StorageException {
+    public void save(Mailbox mailbox) throws StorageException {
         try {
             entityManager.persist(mailbox);
         } catch (PersistenceException e) {
@@ -53,7 +54,7 @@ public abstract class JPAMailboxMapper extends Mapper implements MailboxMapper {
     /**
      * @see org.apache.james.imap.jpa.mail.MailboxMapper#findMailboxByName(java.lang.String)
      */
-    public JPAMailbox findMailboxByName(String name) throws StorageException, MailboxNotFoundException {
+    public Mailbox findMailboxByName(String name) throws StorageException, MailboxNotFoundException {
         try {
             return (JPAMailbox) entityManager.createNamedQuery("findMailboxByName").setParameter("nameParam", name).getSingleResult();
         } catch (NoResultException e) {
@@ -67,7 +68,7 @@ public abstract class JPAMailboxMapper extends Mapper implements MailboxMapper {
     /**
      * @see org.apache.james.imap.jpa.mail.MailboxMapper#delete(org.apache.james.imap.jpa.mail.model.JPAMailbox)
      */
-    public void delete(JPAMailbox mailbox) throws StorageException {
+    public void delete(Mailbox mailbox) throws StorageException {
         try {  
             entityManager.remove(mailbox);
         } catch (PersistenceException e) {
@@ -79,7 +80,7 @@ public abstract class JPAMailboxMapper extends Mapper implements MailboxMapper {
      * @see org.apache.james.imap.jpa.mail.MailboxMapper#findMailboxWithNameLike(java.lang.String)
      */
     @SuppressWarnings("unchecked")
-    public List<JPAMailbox> findMailboxWithNameLike(String name) throws StorageException {
+    public List<Mailbox> findMailboxWithNameLike(String name) throws StorageException {
         try {
             return entityManager.createNamedQuery("findMailboxWithNameLike").setParameter("nameParam", name).getResultList();
         } catch (PersistenceException e) {
@@ -112,7 +113,7 @@ public abstract class JPAMailboxMapper extends Mapper implements MailboxMapper {
     /**
      * @see org.apache.james.imap.jpa.mail.MailboxMapper#findMailboxById(long)
      */
-    public JPAMailbox findMailboxById(long mailboxId) throws StorageException, MailboxNotFoundException  {
+    public Mailbox findMailboxById(long mailboxId) throws StorageException, MailboxNotFoundException  {
         try {
             return (JPAMailbox) entityManager.createNamedQuery("findMailboxById").setParameter("idParam", mailboxId).getSingleResult();
         } catch (NoResultException e) {
@@ -125,7 +126,7 @@ public abstract class JPAMailboxMapper extends Mapper implements MailboxMapper {
     /**
      * @see org.apache.james.imap.jpa.mail.MailboxMapper#consumeNextUid(long)
      */
-    public JPAMailbox consumeNextUid(long mailboxId) throws StorageException, MailboxNotFoundException {
+    public Mailbox consumeNextUid(long mailboxId) throws StorageException, MailboxNotFoundException {
         try {
             return doConsumeNextUid(mailboxId);
         } catch (NoResultException e) {

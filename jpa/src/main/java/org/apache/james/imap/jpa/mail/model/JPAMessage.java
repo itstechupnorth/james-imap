@@ -20,7 +20,6 @@ package org.apache.james.imap.jpa.mail.model;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -34,6 +33,9 @@ import javax.persistence.IdClass;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
+
+import org.apache.james.imap.store.mail.model.Header;
+import org.apache.james.imap.store.mail.model.Message;
 
 @Entity(name="Message")
 @IdClass(JPAMessage.MessageId.class)
@@ -63,7 +65,7 @@ import javax.persistence.OneToMany;
     @NamedQuery(name="countMessagesInMailbox",
             query="SELECT COUNT(message) FROM Message message WHERE message.mailboxId = :idParam")                     
 })
-public class JPAMessage {
+public class JPAMessage implements Message {
 
     private static final String TOSTRING_SEPARATOR = " ";
 
@@ -175,7 +177,7 @@ public class JPAMessage {
         this.recent = original.isRecent();
         this.seen = original.isSeen();
         this.body = original.getBody();
-        final List<JPAHeader> originalHeaders = original.getHeaders();
+        final List<JPAHeader> originalHeaders = original.headers;
         if (originalHeaders == null) {
             this.headers = new ArrayList<JPAHeader>();
         } else {
@@ -186,66 +188,100 @@ public class JPAMessage {
         }
     }
 
+    /**
+     * @see org.apache.james.imap.jpa.mail.model.Message#getInternalDate()
+     */
     public Date getInternalDate() {
         return internalDate;
     }
 
+    /**
+     * @see org.apache.james.imap.jpa.mail.model.Message#getMailboxId()
+     */
     public long getMailboxId() {
         return mailboxId;
     }
 
+    /**
+     * @see org.apache.james.imap.jpa.mail.model.Message#getSize()
+     */
     public int getSize() {
         return size;
     }
 
+    /**
+     * @see org.apache.james.imap.jpa.mail.model.Message#getUid()
+     */
     public long getUid() {
         return uid;
     }
 
+    /**
+     * @see org.apache.james.imap.jpa.mail.model.Message#getBody()
+     */
     public byte[] getBody() {
         return body;
     }
 
+    /**
+     * @see org.apache.james.imap.jpa.mail.model.Message#isAnswered()
+     */
     public boolean isAnswered() {
         return answered;
     }
 
+    /**
+     * @see org.apache.james.imap.jpa.mail.model.Message#isDeleted()
+     */
     public boolean isDeleted() {
         return deleted;
     }
 
+    /**
+     * @see org.apache.james.imap.jpa.mail.model.Message#isDraft()
+     */
     public boolean isDraft() {
         return draft;
     }
 
+    /**
+     * @see org.apache.james.imap.jpa.mail.model.Message#isFlagged()
+     */
     public boolean isFlagged() {
         return flagged;
     }
 
+    /**
+     * @see org.apache.james.imap.jpa.mail.model.Message#isRecent()
+     */
     public boolean isRecent() {
         return recent;
     }
 
+    /**
+     * @see org.apache.james.imap.jpa.mail.model.Message#isSeen()
+     */
     public boolean isSeen() {
         return seen;
     }
 
     /**
-     * Gets a read-only list of headers.
-     * @return unmodifiable list of headers, not null
+     * @see org.apache.james.imap.jpa.mail.model.Message#getHeaders()
      */
-    public List<JPAHeader> getHeaders() {
-        return Collections.unmodifiableList(headers);
+    public List<Header> getHeaders() {
+        return new ArrayList<Header>(headers);
     }
     
     /**
-     * Sets {@link #isRecent()} to false.
-     * A message can only be recent once.
+     * @see org.apache.james.imap.jpa.mail.model.Message#unsetRecent()
      */
     public void unsetRecent() {
         recent = false;
     }
     
+    /**
+     * @see org.apache.james.imap.jpa.mail.model.Message#setFlags(javax.mail.Flags)
+     */
     public void setFlags(Flags flags) {
         answered = flags.contains(Flags.Flag.ANSWERED);
         deleted = flags.contains(Flags.Flag.DELETED);
@@ -256,9 +292,7 @@ public class JPAMessage {
     }
 
     /**
-     * Creates a new flags instance populated
-     * with the current flag data.
-     * @return new instance, not null
+     * @see org.apache.james.imap.jpa.mail.model.Message#createFlags()
      */
     public Flags createFlags() {
         final Flags flags = new Flags();

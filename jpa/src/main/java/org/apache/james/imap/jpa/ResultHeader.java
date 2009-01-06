@@ -28,10 +28,10 @@ import java.nio.channels.WritableByteChannel;
 
 import javax.mail.MessagingException;
 
-import org.apache.james.imap.jpa.mail.model.JPAHeader;
 import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.MessageResult;
 import org.apache.james.imap.mailbox.MessageResult.Content;
+import org.apache.james.imap.store.mail.model.Header;
 
 final class ResultHeader implements MessageResult.Header, MessageResult.Content {
     private final String name;
@@ -40,7 +40,7 @@ final class ResultHeader implements MessageResult.Header, MessageResult.Content 
 
     private final long size;
 
-    public ResultHeader(final JPAHeader header) {
+    public ResultHeader(final Header header) {
         this(header.getField(), header.getValue());
     }
 

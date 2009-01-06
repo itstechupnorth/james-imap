@@ -46,6 +46,7 @@ import org.apache.james.imap.mailbox.MessageRange;
 import org.apache.james.imap.mailbox.SubscriptionException;
 import org.apache.james.imap.mailbox.util.ListResultImpl;
 import org.apache.james.imap.store.mail.MailboxMapper;
+import org.apache.james.imap.store.mail.model.Mailbox;
 
 public class StoreMailboxManager extends AbstractLogEnabled implements MailboxManager {
 
@@ -74,7 +75,7 @@ public class StoreMailboxManager extends AbstractLogEnabled implements MailboxMa
     private StoreMailbox doGetMailbox(String mailboxName) throws MailboxException {
         synchronized (mailboxes) {
             final MailboxMapper mapper = createMailboxMapper();
-            JPAMailbox mailboxRow = mapper.findMailboxByName(mailboxName);
+            Mailbox mailboxRow = mapper.findMailboxByName(mailboxName);
 
             if (mailboxRow == null) {
                 getLog().info("Mailbox '" + mailboxName + "' not found.");
@@ -146,15 +147,15 @@ public class StoreMailboxManager extends AbstractLogEnabled implements MailboxMa
             // TODO put this into a serilizable transaction
             final MailboxMapper mapper = createMailboxMapper();
             mapper.begin();
-            JPAMailbox mr = mapper.findMailboxByName(mailboxName);
-            if (mr == null) {
+            Mailbox mailbox = mapper.findMailboxByName(mailboxName);
+            if (mailbox == null) {
                 throw new MailboxNotFoundException("Mailbox not found");
             }
-            mapper.delete(mr);
+            mapper.delete(mailbox);
             mapper.commit();
-            final StoreMailbox mailbox = mailboxes.remove(mailboxName);
-            if (mailbox != null) {
-                mailbox.deleted(session);
+            final StoreMailbox storeMailbox = mailboxes.remove(mailboxName);
+            if (storeMailbox != null) {
+                storeMailbox.deleted(session);
             }
         }
     }
@@ -171,7 +172,7 @@ public class StoreMailboxManager extends AbstractLogEnabled implements MailboxMa
             final MailboxMapper mapper = createMailboxMapper();                
             mapper.begin();
             // TODO put this into a serilizable transaction
-            final JPAMailbox mailbox = mapper.findMailboxByName(from);
+            final Mailbox mailbox = mapper.findMailboxByName(from);
 
             if (mailbox == null) {
                 throw new MailboxNotFoundException(from);
@@ -182,8 +183,8 @@ public class StoreMailboxManager extends AbstractLogEnabled implements MailboxMa
             changeMailboxName(from, to);
 
             // rename submailbox
-            final List<JPAMailbox> subMailboxes = mapper.findMailboxWithNameLike(from + HIERARCHY_DELIMITER + "%");
-            for (JPAMailbox sub:subMailboxes) {
+            final List<Mailbox> subMailboxes = mapper.findMailboxWithNameLike(from + HIERARCHY_DELIMITER + "%");
+            for (Mailbox sub:subMailboxes) {
                 final String subOriginalName = sub.getName();
                 final String subNewName = to + subOriginalName.substring(from.length());
                 sub.setName(subNewName);
@@ -235,9 +236,9 @@ public class StoreMailboxManager extends AbstractLogEnabled implements MailboxMa
                 .replace(localWildcard, SQL_WILDCARD_CHAR);
 
         final MailboxMapper mapper = createMailboxMapper();
-        final List<JPAMailbox> mailboxes = mapper.findMailboxWithNameLike(search);
+        final List<Mailbox> mailboxes = mapper.findMailboxWithNameLike(search);
         final List<ListResult> listResults = new ArrayList<ListResult>(mailboxes.size());
-        for (JPAMailbox mailbox: mailboxes) {
+        for (Mailbox mailbox: mailboxes) {
             final String name = mailbox.getName();
             if (name.startsWith(base)) {
                 final String match = name.substring(baseLength);

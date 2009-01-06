@@ -24,8 +24,10 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 
+import org.apache.james.imap.store.mail.model.Header;
+
 @Entity(name="Header")
-public class JPAHeader implements Comparable<JPAHeader> {
+public class JPAHeader implements Comparable<Header>, Header {
     
     private static final String TOSTRING_SEP = " ";
 
@@ -64,14 +66,23 @@ public class JPAHeader implements Comparable<JPAHeader> {
         this.value = value;
     }
 
+    /**
+     * @see org.apache.james.imap.jpa.mail.model.Header#getField()
+     */
     public String getField() {
         return field;
     }
 
+    /**
+     * @see org.apache.james.imap.jpa.mail.model.Header#getLineNumber()
+     */
     public int getLineNumber() {
         return lineNumber;
     }
 
+    /**
+     * @see org.apache.james.imap.jpa.mail.model.Header#getValue()
+     */
     public String getValue() {
         return value;
     }
@@ -112,8 +123,8 @@ public class JPAHeader implements Comparable<JPAHeader> {
     /**
      * Natural sort is mailbox, (message) UID then line number
      */
-    public int compareTo(final JPAHeader header) {
-        final int result = lineNumber - header.lineNumber;
+    public int compareTo(final Header header) {
+        final int result = lineNumber - header.getLineNumber();
         return result;
     }
 }

@@ -20,13 +20,14 @@ package org.apache.james.imap.store.user;
 
 import java.util.List;
 
-import org.apache.james.imap.jpa.user.model.JPASubscription;
+import org.apache.james.imap.mailbox.SubscriptionException;
+import org.apache.james.imap.store.user.model.Subscription;
 
 public interface SubscriptionMapper {
 
-    public abstract void begin();
+    public abstract void begin() throws SubscriptionException;
 
-    public abstract void commit();
+    public abstract void commit() throws SubscriptionException;
 
     /**
      * Finds any subscriptions for a given user to the given mailbox.
@@ -35,14 +36,14 @@ public interface SubscriptionMapper {
      * @return <code>Subscription</code>, 
      * or null when the user is not subscribed to the given mailbox
      */
-    public abstract JPASubscription findFindMailboxSubscriptionForUser(
-            final String user, final String mailbox);
+    public abstract Subscription findFindMailboxSubscriptionForUser(
+            final String user, final String mailbox) throws SubscriptionException;
 
     /**
      * Saves the given subscription.
      * @param subscription not null
      */
-    public abstract void save(JPASubscription subscription);
+    public abstract void save(Subscription subscription) throws SubscriptionException;
 
     /**
      * Finds subscriptions for the given user.
@@ -50,12 +51,11 @@ public interface SubscriptionMapper {
      * @return not null
      */
     @SuppressWarnings("unchecked")
-    public abstract List<JPASubscription> findSubscriptionsForUser(String user);
+    public abstract List<Subscription> findSubscriptionsForUser(String user) throws SubscriptionException;
 
     /**
      * Deletes the given subscription.
      * @param subscription not null
      */
-    public abstract void delete(JPASubscription subscription);
-
+    public abstract void delete(Subscription subscription) throws SubscriptionException;
 }

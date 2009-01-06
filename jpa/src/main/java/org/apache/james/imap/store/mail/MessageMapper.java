@@ -20,10 +20,10 @@ package org.apache.james.imap.store.mail;
 
 import java.util.List;
 
-import org.apache.james.imap.jpa.mail.model.JPAMessage;
 import org.apache.james.imap.mailbox.MessageRange;
 import org.apache.james.imap.mailbox.SearchQuery;
 import org.apache.james.imap.mailbox.StorageException;
+import org.apache.james.imap.store.mail.model.Message;
 
 public interface MessageMapper {
 
@@ -31,10 +31,10 @@ public interface MessageMapper {
     
     public abstract void commit() throws StorageException;
     
-    public abstract List<JPAMessage> findInMailbox(MessageRange set, long mailboxId)
+    public abstract List<Message> findInMailbox(MessageRange set, long mailboxId)
             throws StorageException;
 
-    public abstract List<JPAMessage> findMarkedForDeletionInMailbox(
+    public abstract List<Message> findMarkedForDeletionInMailbox(
             final MessageRange set, final long mailboxId)
             throws StorageException;
 
@@ -45,19 +45,19 @@ public interface MessageMapper {
             throws StorageException;
 
     @SuppressWarnings("unchecked")
-    public abstract List<JPAMessage> searchMailbox(long mailboxId,
+    public abstract List<Message> searchMailbox(long mailboxId,
             SearchQuery query) throws StorageException;
 
-    public abstract void delete(JPAMessage message) throws StorageException;
+    public abstract void delete(Message message) throws StorageException;
 
     @SuppressWarnings("unchecked")
-    public abstract List<JPAMessage> findUnseenMessagesInMailboxOrderByUid(
+    public abstract List<Message> findUnseenMessagesInMailboxOrderByUid(
             final long mailboxId) throws StorageException;
 
     @SuppressWarnings("unchecked")
-    public abstract List<JPAMessage> findRecentMessagesInMailbox(
+    public abstract List<Message> findRecentMessagesInMailbox(
             final long mailboxId) throws StorageException;
 
-    public abstract void save(JPAMessage message) throws StorageException;
+    public abstract void save(Message message) throws StorageException;
 
 }

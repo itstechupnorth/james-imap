@@ -23,12 +23,12 @@ import java.util.HashSet;
 import java.util.List;
 
 import javax.persistence.EntityManagerFactory;
-import javax.persistence.PersistenceException;
 
 import org.apache.james.imap.jpa.user.JPASubscriptionMapper;
 import org.apache.james.imap.jpa.user.model.JPASubscription;
 import org.apache.james.imap.mailbox.SubscriptionException;
 import org.apache.james.imap.store.user.SubscriptionMapper;
+import org.apache.james.imap.store.user.model.Subscription;
 
 /**
  * Manages subscriptions.
@@ -37,26 +37,27 @@ public class StoreSubscriptionManager implements Subscriber {
 
     private static final int INITIAL_SIZE = 32;
     private final EntityManagerFactory factory;
-    
+
     public StoreSubscriptionManager(final EntityManagerFactory factory) {
         super();
         this.factory = factory;
     }
 
     public void subscribe(final String user, final String mailbox) throws SubscriptionException {
-        try {
-            final SubscriptionMapper mapper = createMapper();
-            mapper.begin();
-            
-            final JPASubscription subscription = mapper.findFindMailboxSubscriptionForUser(user, mailbox);
-            if (subscription == null) {
-                final JPASubscription newSubscription = new JPASubscription(user, mailbox);
-                mapper.save(newSubscription);
-                mapper.commit();
-            }
-        } catch (PersistenceException e) {
-            throw new SubscriptionException(e);
+        final SubscriptionMapper mapper = createMapper();
+        mapper.begin();
+
+        final Subscription subscription = mapper.findFindMailboxSubscriptionForUser(user, mailbox);
+        if (subscription == null) {
+            final Subscription newSubscription = createSubscription(user, mailbox);
+            mapper.save(newSubscription);
+            mapper.commit();
         }
+    }
+
+    private Subscription createSubscription(final String user, final String mailbox) {
+        final Subscription newSubscription = new JPASubscription(user, mailbox);
+        return newSubscription;
     }
 
     private SubscriptionMapper createMapper() {
@@ -65,32 +66,23 @@ public class StoreSubscriptionManager implements Subscriber {
     }
 
     public Collection<String> subscriptions(final String user) throws SubscriptionException {
-        try {
-            final SubscriptionMapper mapper = createMapper();
-            final List<JPASubscription> subscriptions = mapper.findSubscriptionsForUser(user);
-            final Collection<String> results = new HashSet<String>(INITIAL_SIZE);
-            for (JPASubscription subscription:subscriptions) {
-                results.add(subscription.getMailbox());
-            }
-            return results;
-        }  catch (PersistenceException e) {
-            throw new SubscriptionException(e);
+        final SubscriptionMapper mapper = createMapper();
+        final List<Subscription> subscriptions = mapper.findSubscriptionsForUser(user);
+        final Collection<String> results = new HashSet<String>(INITIAL_SIZE);
+        for (Subscription subscription:subscriptions) {
+            results.add(subscription.getMailbox());
         }
+        return results;
     }
 
     public void unsubscribe(final String user, final String mailbox) throws SubscriptionException {
-        try {
-            final SubscriptionMapper mapper = createMapper();
-            mapper.begin();
-            
-            final JPASubscription subscription = mapper.findFindMailboxSubscriptionForUser(user, mailbox);
-            if (subscription != null) {
-                mapper.delete(subscription);
-                mapper.commit();
-            }
-        } catch (PersistenceException e) {
-            throw new SubscriptionException(e);
+        final SubscriptionMapper mapper = createMapper();
+        mapper.begin();
+
+        final Subscription subscription = mapper.findFindMailboxSubscriptionForUser(user, mailbox);
+        if (subscription != null) {
+            mapper.delete(subscription);
+            mapper.commit();
         }
     }
-
 }

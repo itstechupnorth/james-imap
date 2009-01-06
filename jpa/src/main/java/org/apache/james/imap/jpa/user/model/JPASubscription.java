@@ -27,6 +27,8 @@ import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
+import org.apache.james.imap.store.user.model.Subscription;
+
 /**
  * A subscription to a mailbox by a user.
  */
@@ -38,7 +40,7 @@ import javax.persistence.UniqueConstraint;
     @NamedQuery(name="findSubscriptionsForUser",
         query="SELECT subscription FROM Subscription subscription WHERE subscription.user = :userParam")                  
 })
-public class JPASubscription {
+public class JPASubscription implements Subscription {
 
     private static final String TO_STRING_SEPARATOR = "  ";
     /** Primary key */
@@ -67,20 +69,14 @@ public class JPASubscription {
     }
 
     /**
-     * Gets the name of the mailbox to which 
-     * the user is subscribed.
-     * Note that subscriptions must be maintained
-     * beyond the lifetime of a particular instance
-     * of a mailbox.
-     * @return not null
+     * @see org.apache.james.imap.jpa.user.model.Subscription#getMailbox()
      */
     public String getMailbox() {
         return mailbox;
     }
     
     /**
-     * Gets the name of the subscribed user.
-     * @return not null
+     * @see org.apache.james.imap.jpa.user.model.Subscription#getUser()
      */
     public String getUser() {
         return user;
