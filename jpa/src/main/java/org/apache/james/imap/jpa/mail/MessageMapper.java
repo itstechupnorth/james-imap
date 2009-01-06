@@ -21,131 +21,153 @@ package org.apache.james.imap.jpa.mail;
 import java.util.List;
 
 import javax.persistence.EntityManager;
+import javax.persistence.PersistenceException;
 
 import org.apache.james.imap.jpa.mail.model.Message;
 import org.apache.james.imap.mailbox.MessageRange;
 import org.apache.james.imap.mailbox.SearchQuery;
+import org.apache.james.imap.mailbox.StorageException;
 import org.apache.james.imap.mailbox.SearchQuery.Criterion;
 import org.apache.james.imap.mailbox.SearchQuery.NumericRange;
 
 public class MessageMapper extends Mapper {
-    
+
     public MessageMapper(EntityManager entityManager) {
         super(entityManager);
     }
 
-    public List<Message> findInMailbox(MessageRange set, long mailboxId) {
-        final List<Message> results;
-        switch (set.getType()) {
-            case MessageRange.TYPE_UID:
-                final long from = set.getUidFrom();
-                final long to = set.getUidTo();
-                if (from == to) {
-                    results = findMessagesInMailboxWithUID(mailboxId, from);
-                } else if (to > 0) {
-                    results = findMessagesInMailboxBetweenUIDs(mailboxId, from, to);
-                } else {
-                    results = findMessagesInMailboxAfterUID(mailboxId, from);
-                }
-                break;
-            default:
-                //TODO: Log?
-            case MessageRange.TYPE_ALL:
-                results = findMessagesInMailbox(mailboxId);
-                break;
+    public List<Message> findInMailbox(MessageRange set, long mailboxId) throws StorageException {
+        try {
+            final List<Message> results;
+            switch (set.getType()) {
+                case MessageRange.TYPE_UID:
+                    final long from = set.getUidFrom();
+                    final long to = set.getUidTo();
+                    if (from == to) {
+                        results = findMessagesInMailboxWithUID(mailboxId, from);
+                    } else if (to > 0) {
+                        results = findMessagesInMailboxBetweenUIDs(mailboxId, from, to);
+                    } else {
+                        results = findMessagesInMailboxAfterUID(mailboxId, from);
+                    }
+                    break;
+                default:
+                    //TODO: Log?
+                case MessageRange.TYPE_ALL:
+                    results = findMessagesInMailbox(mailboxId);
+                    break;
+            }
+            return results;
+        } catch (PersistenceException e) {
+            throw new StorageException(e);
         }
-        return results;
     }
 
     @SuppressWarnings("unchecked")
     private List<Message> findMessagesInMailboxAfterUID(long mailboxId, long uid) {
         return entityManager.createNamedQuery("findMessagesInMailboxAfterUID")
-            .setParameter("idParam", mailboxId)
-            .setParameter("uidParam", uid).getResultList();
+        .setParameter("idParam", mailboxId)
+        .setParameter("uidParam", uid).getResultList();
     }
-    
+
     @SuppressWarnings("unchecked")
     private List<Message> findMessagesInMailboxWithUID(long mailboxId, long uid) {
         return entityManager.createNamedQuery("findMessagesInMailboxWithUID")
-            .setParameter("idParam", mailboxId)
-            .setParameter("uidParam", uid).getResultList();
+        .setParameter("idParam", mailboxId)
+        .setParameter("uidParam", uid).getResultList();
     }
-    
+
     @SuppressWarnings("unchecked")
     private List<Message> findMessagesInMailboxBetweenUIDs(long mailboxId, long from, long to) {
         return entityManager.createNamedQuery("findMessagesInMailboxBetweenUIDs")
-            .setParameter("idParam", mailboxId)
-            .setParameter("fromParam", from)
-            .setParameter("toParam", to).getResultList();
+        .setParameter("idParam", mailboxId)
+        .setParameter("fromParam", from)
+        .setParameter("toParam", to).getResultList();
     }
-    
+
     @SuppressWarnings("unchecked")
     private List<Message> findMessagesInMailbox(long mailboxId) {
         return entityManager.createNamedQuery("findMessagesInMailbox").setParameter("idParam", mailboxId).getResultList();
     }
 
-    public List<Message> findMarkedForDeletionInMailbox(final MessageRange set, final long mailboxId) {
-        final List<Message> results;
-        switch (set.getType()) {
-            case MessageRange.TYPE_UID:
-                final long from = set.getUidFrom();
-                final long to = set.getUidTo();
-                if (from == to) {
-                    results = findDeletedMessagesInMailboxWithUID(mailboxId, from);
-                } else if (to > 0) {
-                    results = findDeletedMessagesInMailboxBetweenUIDs(mailboxId, from, to);
-                } else {
-                    results = findDeletedMessagesInMailboxAfterUID(mailboxId, from);
-                }
-                break;
-            default:
-                //TODO: Log?
-            case MessageRange.TYPE_ALL:
-                results = findDeletedMessagesInMailbox(mailboxId);
-                break;
+    public List<Message> findMarkedForDeletionInMailbox(final MessageRange set, final long mailboxId) throws StorageException {
+        try {
+            final List<Message> results;
+            switch (set.getType()) {
+                case MessageRange.TYPE_UID:
+                    final long from = set.getUidFrom();
+                    final long to = set.getUidTo();
+                    if (from == to) {
+                        results = findDeletedMessagesInMailboxWithUID(mailboxId, from);
+                    } else if (to > 0) {
+                        results = findDeletedMessagesInMailboxBetweenUIDs(mailboxId, from, to);
+                    } else {
+                        results = findDeletedMessagesInMailboxAfterUID(mailboxId, from);
+                    }
+                    break;
+                default:
+                    //TODO: Log?
+                case MessageRange.TYPE_ALL:
+                    results = findDeletedMessagesInMailbox(mailboxId);
+                    break;
+            }
+            return results;
+        } catch (PersistenceException e) {
+            throw new StorageException(e);
         }
-        return results;
     }
-    
+
     @SuppressWarnings("unchecked")
     private List<Message> findDeletedMessagesInMailbox(long mailboxId) {
         return entityManager.createNamedQuery("findDeletedMessagesInMailbox").setParameter("idParam", mailboxId).getResultList();
     }
-    
+
     @SuppressWarnings("unchecked")
     private List<Message> findDeletedMessagesInMailboxAfterUID(long mailboxId, long uid) {
         return entityManager.createNamedQuery("findDeletedMessagesInMailboxBetweenUIDs")
-            .setParameter("idParam", mailboxId)
-            .setParameter("uidParam", uid).getResultList();
+        .setParameter("idParam", mailboxId)
+        .setParameter("uidParam", uid).getResultList();
     }
-    
+
     @SuppressWarnings("unchecked")
     private List<Message> findDeletedMessagesInMailboxWithUID(long mailboxId, long uid) {
         return entityManager.createNamedQuery("findDeletedMessagesInMailboxBetweenUIDs")
-            .setParameter("idParam", mailboxId)
-            .setParameter("uidParam", uid).getResultList();
+        .setParameter("idParam", mailboxId)
+        .setParameter("uidParam", uid).getResultList();
     }
-    
+
     @SuppressWarnings("unchecked")
     private List<Message> findDeletedMessagesInMailboxBetweenUIDs(long mailboxId, long from, long to) {
         return entityManager.createNamedQuery("findDeletedMessagesInMailboxBetweenUIDs")
-            .setParameter("idParam", mailboxId)
-            .setParameter("fromParam", from)
-            .setParameter("toParam", to).getResultList();
+        .setParameter("idParam", mailboxId)
+        .setParameter("fromParam", from)
+        .setParameter("toParam", to).getResultList();
     }
 
-    public long countMessagesInMailbox(long mailboxId) {
-        return (Long) entityManager.createNamedQuery("countMessagesInMailbox").setParameter("idParam", mailboxId).getSingleResult();
+    public long countMessagesInMailbox(long mailboxId) throws StorageException {
+        try {
+            return (Long) entityManager.createNamedQuery("countMessagesInMailbox").setParameter("idParam", mailboxId).getSingleResult();
+        } catch (PersistenceException e) {
+            throw new StorageException(e);
+        }
     }
-    
-    public long countUnseenMessagesInMailbox(long mailboxId){
-        return (Long) entityManager.createNamedQuery("countUnseenMessagesInMailbox").setParameter("idParam", mailboxId).getSingleResult();
+
+    public long countUnseenMessagesInMailbox(long mailboxId) throws StorageException {
+        try {
+            return (Long) entityManager.createNamedQuery("countUnseenMessagesInMailbox").setParameter("idParam", mailboxId).getSingleResult();
+        } catch (PersistenceException e) {
+            throw new StorageException(e);
+        }
     }
 
     @SuppressWarnings("unchecked")
-    public List<Message> searchMailbox(long mailboxId, SearchQuery query) {
-        final String jql = formulateJQL(mailboxId, query);
-        return entityManager.createQuery(jql).getResultList();
+    public List<Message> searchMailbox(long mailboxId, SearchQuery query) throws StorageException {
+        try {
+            final String jql = formulateJQL(mailboxId, query);
+            return entityManager.createQuery(jql).getResultList();
+        } catch (PersistenceException e) {
+            throw new StorageException(e);
+        }
     }
 
     private String formulateJQL(long mailboxId, SearchQuery query) {
@@ -160,7 +182,7 @@ public class MessageMapper extends Mapper {
                 for (int i = 0; i < ranges.length; i++) {
                     final long low = ranges[i].getLowValue();
                     final long high = ranges[i].getHighValue();
-                    
+
                     if (low == Long.MAX_VALUE) {
                         queryBuilder.append(" AND message.uid<=").append(high);
                     } else if (low == high) {
@@ -174,22 +196,38 @@ public class MessageMapper extends Mapper {
         final String jql = queryBuilder.toString();
         return jql;
     }
-    
-    public void delete(Message message)  {
-        entityManager.remove(message);
-    }
-    
-    @SuppressWarnings("unchecked")
-    public List<Message> findUnseenMessagesInMailboxOrderByUid(final long mailboxId)  {
-        return entityManager.createNamedQuery("findUnseenMessagesInMailboxOrderByUid").setParameter("idParam", mailboxId).getResultList();
-    }
-    
-    @SuppressWarnings("unchecked")
-    public List<Message> findRecentMessagesInMailbox(final long mailboxId) {
-        return entityManager.createNamedQuery("findRecentMessagesInMailbox").setParameter("idParam", mailboxId).getResultList();
+
+    public void delete(Message message) throws StorageException {
+        try {
+            entityManager.remove(message);
+        } catch (PersistenceException e) {
+            throw new StorageException(e);
+        }
     }
 
-    public void save(Message message) {
-        entityManager.persist(message);
+    @SuppressWarnings("unchecked")
+    public List<Message> findUnseenMessagesInMailboxOrderByUid(final long mailboxId)  throws StorageException {
+        try {
+            return entityManager.createNamedQuery("findUnseenMessagesInMailboxOrderByUid").setParameter("idParam", mailboxId).getResultList();
+        } catch (PersistenceException e) {
+            throw new StorageException(e);
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    public List<Message> findRecentMessagesInMailbox(final long mailboxId) throws StorageException {
+        try {
+            return entityManager.createNamedQuery("findRecentMessagesInMailbox").setParameter("idParam", mailboxId).getResultList();
+        } catch (PersistenceException e) {
+            throw new StorageException(e);
+        }
+    }
+
+    public void save(Message message) throws StorageException {
+        try {
+            entityManager.persist(message);
+        } catch (PersistenceException e) {
+            throw new StorageException(e);
+        }
     }
 }

@@ -16,38 +16,21 @@
  * specific language governing permissions and limitations      *
  * under the License.                                           *
  ****************************************************************/
-
-package org.apache.james.imap.jpa.mail.map.openjpa;
-
-import javax.persistence.EntityManager;
-
-import org.apache.james.imap.jpa.mail.MailboxMapper;
-import org.apache.james.imap.jpa.mail.model.Mailbox;
-import org.apache.openjpa.persistence.OpenJPAEntityManager;
-import org.apache.openjpa.persistence.OpenJPAPersistence;
+package org.apache.james.imap.mailbox;
 
 /**
- * Data access management for mailbox.
+ * Indicates a general problem in the underlying storage layer.
+ * Used to wrap undiagnosed storage exceptions.
  */
-public class OpenJPAMailboxMapper extends MailboxMapper {
-    
-    public OpenJPAMailboxMapper(EntityManager entityManager) {
-        super(entityManager);
+public class StorageException extends MailboxException {
+
+    private static final long serialVersionUID = -2645843238080782034L;
+
+    public StorageException(Exception cause) {
+        super(cause);
     }
 
-    public Mailbox doConsumeNextUid(long mailboxId) {
-        OpenJPAEntityManager oem = OpenJPAPersistence.cast(entityManager);
-        final boolean originalLocking = oem.getOptimistic();
-        oem.setOptimistic(false);
-        oem.getTransaction().begin();
-        try {
-            Mailbox mailbox = (Mailbox) entityManager.createNamedQuery("findMailboxById").setParameter("idParam", mailboxId).getSingleResult();
-            mailbox.consumeUid();
-            oem.persist(mailbox);
-            oem.getTransaction().commit();
-            return mailbox;
-        } finally {
-            oem.setOptimistic(originalLocking);
-        }
+    public StorageException(Throwable cause) {
+        super(cause);
     }
 }

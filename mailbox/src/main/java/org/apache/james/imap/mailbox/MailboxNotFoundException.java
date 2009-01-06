@@ -39,6 +39,14 @@ public class MailboxNotFoundException extends MailboxException {
 
     private final String mailboxName;
 
+    private final long id;
+    
+    public MailboxNotFoundException(long id) {
+        super(message(Long.toString(id)));
+        this.id = id;
+        mailboxName = null;
+    }
+    
     /**
      * 
      * @param mailboxName
@@ -47,14 +55,23 @@ public class MailboxNotFoundException extends MailboxException {
     public MailboxNotFoundException(String mailboxName) {
         super(message(mailboxName));
         this.mailboxName = mailboxName;
+        this.id = 0;
     }
 
     /**
      * Gets the name of the mailbox which cannot be found.
      * 
-     * @return name
+     * @return name or null when only mailbox ID is known
      */
     public final String getMailboxName() {
         return mailboxName;
+    }
+
+    /**
+     * Gets the storage id of the mailbox.
+     * @return storage id, or zero when this is not known
+     */
+    public long getId() {
+        return id;
     }
 }

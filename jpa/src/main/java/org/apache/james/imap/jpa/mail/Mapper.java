@@ -19,6 +19,9 @@
 package org.apache.james.imap.jpa.mail;
 
 import javax.persistence.EntityManager;
+import javax.persistence.PersistenceException;
+
+import org.apache.james.imap.mailbox.StorageException;
 
 abstract class Mapper {
 
@@ -29,11 +32,19 @@ abstract class Mapper {
         this.entityManager = entityManager;
     }
     
-    public void begin() {
-        entityManager.getTransaction().begin();
+    public void begin() throws StorageException {
+        try {
+            entityManager.getTransaction().begin();
+        } catch (PersistenceException e) {
+            throw new StorageException(e);
+        }
     }
     
-    public void commit() {
-        entityManager.getTransaction().commit();
+    public void commit() throws StorageException {
+        try {
+            entityManager.getTransaction().commit();
+        } catch (PersistenceException e) {
+            throw new StorageException(e);
+        }
     }
 }

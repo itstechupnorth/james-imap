@@ -22,47 +22,94 @@ package org.apache.james.imap.jpa.mail;
 import java.util.List;
 
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
+import javax.persistence.PersistenceException;
 
 import org.apache.james.imap.jpa.mail.model.Mailbox;
+import org.apache.james.imap.mailbox.MailboxNotFoundException;
+import org.apache.james.imap.mailbox.StorageException;
 
 /**
  * Data access management for mailbox.
  */
 public abstract class MailboxMapper extends Mapper {
-    
+
     public MailboxMapper(EntityManager entityManager) {
         super(entityManager);
     }
 
-    public void save(Mailbox mailbox) {
-        entityManager.persist(mailbox);
+    public void save(Mailbox mailbox) throws StorageException {
+        try {
+            entityManager.persist(mailbox);
+        } catch (PersistenceException e) {
+            throw new StorageException(e);
+        } 
     }
 
-    public Mailbox findMailboxByName(String name) {
-        return (Mailbox) entityManager.createNamedQuery("findMailboxByName").setParameter("nameParam", name).getSingleResult();
+    public Mailbox findMailboxByName(String name) throws StorageException, MailboxNotFoundException {
+        try {
+            return (Mailbox) entityManager.createNamedQuery("findMailboxByName").setParameter("nameParam", name).getSingleResult();
+        } catch (NoResultException e) {
+            throw new MailboxNotFoundException(name);
+            
+        } catch (PersistenceException e) {
+            throw new StorageException(e);
+        } 
     }
 
-    public void delete(Mailbox mailbox) {
-        entityManager.remove(mailbox);
+    public void delete(Mailbox mailbox) throws StorageException {
+        try {  
+            entityManager.remove(mailbox);
+        } catch (PersistenceException e) {
+            throw new StorageException(e);
+        } 
     }
 
     @SuppressWarnings("unchecked")
-    public List<Mailbox> findMailboxWithNameLike(String name) {
-        return entityManager.createNamedQuery("findMailboxWithNameLike").setParameter("nameParam", name).getResultList();
+    public List<Mailbox> findMailboxWithNameLike(String name) throws StorageException {
+        try {
+            return entityManager.createNamedQuery("findMailboxWithNameLike").setParameter("nameParam", name).getResultList();
+        } catch (PersistenceException e) {
+            throw new StorageException(e);
+        } 
     }
 
-    public void deleteAll() {
-        entityManager.createNamedQuery("deleteAll").executeUpdate();
+    public void deleteAll() throws StorageException {
+        try {
+            entityManager.createNamedQuery("deleteAll").executeUpdate();
+        } catch (PersistenceException e) {
+            throw new StorageException(e);
+        } 
     }
 
-    public long countMailboxesWithName(String name) {
-        return (Long) entityManager.createNamedQuery("countMailboxesWithName").setParameter("nameParam", name).getSingleResult();
+    public long countMailboxesWithName(String name) throws StorageException {
+        try {
+            return (Long) entityManager.createNamedQuery("countMailboxesWithName").setParameter("nameParam", name).getSingleResult();
+        } catch (PersistenceException e) {
+            throw new StorageException(e);
+        } 
     }
 
-    public Mailbox findMailboxById(long mailboxId) {
-        return (Mailbox) entityManager.createNamedQuery("findMailboxById").setParameter("idParam", mailboxId).getSingleResult();
+    public Mailbox findMailboxById(long mailboxId) throws StorageException, MailboxNotFoundException  {
+        try {
+            return (Mailbox) entityManager.createNamedQuery("findMailboxById").setParameter("idParam", mailboxId).getSingleResult();
+        } catch (NoResultException e) {
+            throw new MailboxNotFoundException(mailboxId);   
+        } catch (PersistenceException e) {
+            throw new StorageException(e);
+        } 
+    }
+
+    public Mailbox consumeNextUid(long mailboxId) throws StorageException, MailboxNotFoundException {
+        try {
+            return doConsumeNextUid(mailboxId);
+        } catch (NoResultException e) {
+            throw new MailboxNotFoundException(mailboxId);
+        } catch (PersistenceException e) {
+            throw new StorageException(e);
+        } 
     }
 
     /** Locking is required and is implementation specific */
-    public abstract Mailbox consumeNextUid(long mailboxId);
+    protected abstract Mailbox doConsumeNextUid(long mailboxId) throws PersistenceException;
 }
