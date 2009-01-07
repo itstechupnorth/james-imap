@@ -40,15 +40,15 @@
       <groupId>org.apache.james</groupId>
       <artifactId>apache-james-imap-mailbox</artifactId>
     </dependency>
-
+    
     <dependency>
       <groupId>org.apache.james</groupId>
-      <artifactId>apache-mime4j</artifactId>
+      <artifactId>apache-james-imap-store</artifactId>
     </dependency>
     
     <dependency>
-      <groupId>org.apache.db.torque</groupId>
-      <artifactId>runtime</artifactId>
+      <groupId>org.apache.james</groupId>
+      <artifactId>apache-mime4j</artifactId>
     </dependency>
 
     <dependency>
@@ -59,14 +59,7 @@
       <groupId>commons-lang</groupId>
       <artifactId>commons-lang</artifactId>
     </dependency>
-    <dependency>
-      <groupId>village</groupId>
-      <artifactId>village</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>concurrent</groupId>
-      <artifactId>concurrent</artifactId>
-    </dependency>
+
     <dependency>
       <groupId>commons-collections</groupId>
       <artifactId>commons-collections</artifactId>

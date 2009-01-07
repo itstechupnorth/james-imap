@@ -16,47 +16,44 @@
  * specific language governing permissions and limitations      *
  * under the License.                                           *
  ****************************************************************/
-
 package org.apache.james.imap.store;
 
-import junit.framework.TestCase;
+import org.apache.james.imap.store.mail.model.Header;
 
-import org.apache.james.imap.jpa.mail.model.JPAMessage;
-import org.apache.james.imap.store.MessageRowUtils;
+public class SimpleHeader implements Header {
 
-public class MessageRowUtilsTest extends TestCase {    
+    public String field;
+    public int lineNumber;
+    public String value;
     
-    protected void setUp() throws Exception {
-        super.setUp();
+    public SimpleHeader() {}
+    
+    public SimpleHeader(SimpleHeader header) {
+        this.field = header.field;
+        this.lineNumber = header.lineNumber;
+        this.value = header.value;
+    }
+    
+    public SimpleHeader(String field, int lineNumber, String value) {
+        super();
+        this.field = field;
+        this.lineNumber = lineNumber;
+        this.value = value;
     }
 
-    protected void tearDown() throws Exception {
-        super.tearDown();
+    public String getField() {
+        return field;
     }
 
-    public void testShouldReturnPositiveWhenFirstGreaterThanSecond()
-            throws Exception {
-        JPAMessage one = buildMessage(100);
-        JPAMessage two = buildMessage(99);
-        assertTrue(MessageRowUtils.getUidComparator().compare(one, two) > 0);
+    public int getLineNumber() {
+        return lineNumber;
     }
 
-    private JPAMessage buildMessage(int uid) {
-        MessageBuilder builder = new MessageBuilder();
-        builder.uid = uid;
-        return builder.build();
+    public String getValue() {
+        return value;
     }
 
-    public void testShouldReturnNegativeWhenFirstLessThanSecond()
-            throws Exception {
-        JPAMessage one = buildMessage(98);
-        JPAMessage two = buildMessage(99);
-        assertTrue(MessageRowUtils.getUidComparator().compare(one, two) < 0);
-    }
-
-    public void testShouldReturnZeroWhenFirstEqualsSecond() throws Exception {
-        JPAMessage one = buildMessage(90);
-        JPAMessage two = buildMessage(90);
-        assertEquals(0, MessageRowUtils.getUidComparator().compare(one, two));
+    public int compareTo(Header o) {
+        return getLineNumber() - o.getLineNumber();
     }
 }

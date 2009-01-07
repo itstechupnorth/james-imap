@@ -37,6 +37,7 @@ Master build file for JAMES IMAP.
  <property name='module.processor' location='processor'/>
  <property name='module.seda' location='seda'/>
  <property name='module.torque' location='torque'/>
+ <property name='module.store' location='store'/>
  <property name='module.jpa' location='jpa'/>
  <property name='module.deployment' location='deployment'/> 
 
@@ -58,6 +59,7 @@ Master build file for JAMES IMAP.
                  <file name='${module.message}'/>
                  <file name='${module.decode}'/>
                  <file name='${module.mailbox}'/>
+                 <file name='${module.store}'/>
                  <file name='${module.processor}'/>
                  <file name='${module.seda}'/>
                  <file name='${module.torque}'/>

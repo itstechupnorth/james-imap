@@ -228,11 +228,28 @@ JAMES requires Ant 1.7 or higher. Please install a more modern version of Ant.
                 </fileset>
             </path>
             <path 
-                id='classpath.dependencies.libraries'
-                description="Convenient way to import all libraries, APIs and Utils"> 
+                id='depend.on.mailbox'
+                description="Class path for mailbox dependency"> 
                 <path refid='classpath.dependencies.api'/>
                 <fileset dir="${lib.dir}/${path.lib.james}">
                     <include name="${jars-prefix}mailbox-${version}.jar" />
+                </fileset>
+            </path>
+            <path 
+                id='depend.on.store'
+                description="Class path for mailbox dependency"> 
+                <path refid='classpath.dependencies.api'/>
+            	<path refid='depend.on.mailbox'/>
+                <fileset dir="${lib.dir}/${path.lib.james}">
+                    <include name="${jars-prefix}store-${version}.jar" />
+                </fileset>
+            </path> 
+            <path 
+                id='classpath.dependencies.libraries'
+                description="Convenient way to import all libraries, APIs and Utils"> 
+                <path refid='classpath.dependencies.api'/>
+            	<path refid='depend.on.mailbox'/>
+                <fileset dir="${lib.dir}/${path.lib.james}">
                     <include name="${jars-prefix}message-${version}.jar" />
                     <include name="${jars-prefix}decode-${version}.jar" />
                 	<include name="${jars-prefix}protocol-tester-${version}.jar" />
@@ -241,7 +258,8 @@ JAMES requires Ant 1.7 or higher. Please install a more modern version of Ant.
             <path 
                 id='classpath.dependencies.functions'
                 description="Convenient way to import all functions, libraries, APIs and Utils">  
-                <path refid='classpath.dependencies.libraries'/>   
+                <path refid='classpath.dependencies.libraries'/>
+            	<path refid='depend.on.store'/> 
                 <fileset dir="${lib.dir}/${path.lib.james}">
                     <include name="${jars-prefix}processor-${version}.jar" />
                 	<include name="${jars-prefix}seda-${version}.jar" />

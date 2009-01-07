@@ -27,12 +27,12 @@
            depends='check-environment, master-module-template.set-classpath'>
            <path id='classpath.main'>
                <path refid='classpath.base'/>
-               <path refid='classpath.dependencies.libraries'/>   
+               <path refid='depend.on.mailbox'/>   
            </path>
            <path id='classpath.test'>
                <path refid='classpath.main'/>   
                <path refid='classpath.base.test'/> 
-               <path refid='classpath.test.dependencies.libraries'/> 
+               <path refid='depend.on.mailbox'/> 
            </path>   
            <path id='classpath.test.runtime'>
                <path refid='classpath.test'/>

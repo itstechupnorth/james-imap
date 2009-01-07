@@ -24,8 +24,8 @@ import java.util.List;
 
 import javax.mail.Flags;
 
-import org.apache.james.imap.jpa.mail.model.JPAHeader;
-import org.apache.james.imap.jpa.mail.model.JPAMessage;
+import org.apache.james.imap.store.mail.model.Header;
+import org.apache.james.imap.store.mail.model.Message;
 
 public class MessageBuilder {
     
@@ -35,16 +35,16 @@ public class MessageBuilder {
     public int size = 8867;
     public Flags flags = new Flags();
     public byte[] body = {};
-    public final List<JPAHeader> headers = new ArrayList<JPAHeader>();
+    public final List<SimpleHeader> headers = new ArrayList<SimpleHeader>();
     public int lineNumber = 0;
     
-    public JPAMessage build() {
-        JPAMessage result = new JPAMessage(mailboxId, uid, internalDate, size, flags, body, headers);
+    public Message build() {
+        Message result = new SimpleMessage(mailboxId, uid, internalDate, size, flags, body, headers);
         return result;
     }
     
-    public JPAHeader header(String field, String value) {
-        JPAHeader header = new JPAHeader(++lineNumber, field, value);
+    public Header header(String field, String value) {
+        SimpleHeader header = new SimpleHeader(field, ++lineNumber, value);
         headers.add(header);
         return header;
     }
