@@ -27,13 +27,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
-import javax.persistence.EntityManagerFactory;
-
 import org.apache.commons.logging.Log;
 import org.apache.james.api.imap.AbstractLogEnabled;
-import org.apache.james.imap.jpa.mail.JPAMailboxMapper;
-import org.apache.james.imap.jpa.mail.map.openjpa.OpenJPAMailboxMapper;
-import org.apache.james.imap.jpa.mail.model.JPAMailbox;
 import org.apache.james.imap.mailbox.ListResult;
 import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.MailboxExistsException;
@@ -48,25 +43,29 @@ import org.apache.james.imap.mailbox.util.ListResultImpl;
 import org.apache.james.imap.store.mail.MailboxMapper;
 import org.apache.james.imap.store.mail.model.Mailbox;
 
-public class StoreMailboxManager extends AbstractLogEnabled implements MailboxManager {
+public abstract class StoreMailboxManager extends AbstractLogEnabled implements MailboxManager {
 
     private static final char SQL_WILDCARD_CHAR = '%';
 
-    private final static Random random = new Random();
+    protected final static Random random = new Random();
 
     private final Map<String, StoreMailbox> mailboxes;
 
     private final Authenticator authenticator;    
-    private final Subscriber subscriber;
-    private final EntityManagerFactory entityManagerFactory;
+    private final Subscriber subscriber;    
 
-    public StoreMailboxManager(final Authenticator authenticator, final Subscriber subscriber, final EntityManagerFactory entityManagerFactory) {
+    public StoreMailboxManager(final Authenticator authenticator, final Subscriber subscriber) {
         mailboxes = new HashMap<String, StoreMailbox>();
         this.authenticator = authenticator;
         this.subscriber = subscriber;
-        this.entityManagerFactory = entityManagerFactory;
     }
 
+    protected abstract StoreMailbox createMailbox(Mailbox mailboxRow);
+    
+    protected abstract MailboxMapper createMailboxMapper();
+    
+    protected abstract void doCreate(String namespaceName) throws MailboxException;
+    
     public org.apache.james.imap.mailbox.Mailbox getMailbox(String mailboxName)
     throws MailboxException {
         return doGetMailbox(mailboxName);
@@ -86,7 +85,7 @@ public class StoreMailboxManager extends AbstractLogEnabled implements MailboxMa
 
                 StoreMailbox result = (StoreMailbox) mailboxes.get(mailboxName);
                 if (result == null) {
-                    result = new StoreMailbox(mailboxRow, getLog(), entityManagerFactory);
+                    result = createMailbox(mailboxRow);
                     mailboxes.put(mailboxName, result);
                 }
                 return result;
@@ -130,14 +129,6 @@ public class StoreMailboxManager extends AbstractLogEnabled implements MailboxMa
                 }
             }
         }
-    }
-
-    private void doCreate(String namespaceName) throws MailboxException {
-        JPAMailbox mailbox = new JPAMailbox(namespaceName, Math.abs(random.nextInt()));
-        final MailboxMapper mapper = createMailboxMapper();
-        mapper.begin();
-        mapper.save(mailbox);
-        mapper.commit();
     }
 
     public void deleteMailbox(String mailboxName, MailboxSession session)
@@ -278,11 +269,6 @@ public class StoreMailboxManager extends AbstractLogEnabled implements MailboxMa
         mapper.deleteAll();
         mapper.commit();
         mailboxes.clear();
-    }
-
-    private MailboxMapper createMailboxMapper() {
-        final JPAMailboxMapper mapper = new OpenJPAMailboxMapper(entityManagerFactory.createEntityManager());
-        return mapper;
     }
 
     public MailboxSession createSession() {

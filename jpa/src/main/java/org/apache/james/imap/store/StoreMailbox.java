@@ -32,15 +32,9 @@ import java.util.List;
 import javax.mail.Flags;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
-import javax.persistence.EntityManagerFactory;
 
 import org.apache.commons.logging.Log;
 import org.apache.james.api.imap.AbstractLogEnabled;
-import org.apache.james.imap.jpa.mail.JPAMailboxMapper;
-import org.apache.james.imap.jpa.mail.JPAMessageMapper;
-import org.apache.james.imap.jpa.mail.map.openjpa.OpenJPAMailboxMapper;
-import org.apache.james.imap.jpa.mail.model.JPAHeader;
-import org.apache.james.imap.jpa.mail.model.JPAMessage;
 import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.MailboxListener;
 import org.apache.james.imap.mailbox.MailboxNotFoundException;
@@ -54,27 +48,37 @@ import org.apache.james.imap.mailbox.util.UidChangeTracker;
 import org.apache.james.imap.mailbox.util.UidRange;
 import org.apache.james.imap.store.mail.MailboxMapper;
 import org.apache.james.imap.store.mail.MessageMapper;
+import org.apache.james.imap.store.mail.model.Header;
 import org.apache.james.imap.store.mail.model.Mailbox;
 import org.apache.james.imap.store.mail.model.Message;
 
-public class StoreMailbox extends AbstractLogEnabled implements org.apache.james.imap.mailbox.Mailbox {
+public abstract class StoreMailbox extends AbstractLogEnabled implements org.apache.james.imap.mailbox.Mailbox {
 
     private static final int INITIAL_SIZE_HEADERS = 32;
 
-    private long mailboxId;
+    protected final long mailboxId;
 
     private final UidChangeTracker tracker;
 
     private final MessageSearches searches;
 
-    private final EntityManagerFactory entityManagerFactory;
-
-    StoreMailbox(final Mailbox mailbox, final Log log, final EntityManagerFactory entityManagerfactory) {
+    public StoreMailbox(final Mailbox mailbox, final Log log) {
         this.searches = new MessageSearches();
         setLog(log);
         this.mailboxId = mailbox.getMailboxId();
         this.tracker = new UidChangeTracker(mailbox.getLastUid());
-        this.entityManagerFactory = entityManagerfactory;
+    }
+
+    protected abstract Message copyMessage(StoreMailbox toMailbox, Message originalMessage, long uid);
+    
+    protected abstract MessageMapper createMessageMapper();
+    
+    protected abstract Mailbox getMailboxRow() throws MailboxException;
+
+    protected abstract MailboxMapper createMailboxMapper();
+    
+    public long getMailboxId() {
+        return mailboxId;
     }
 
     public int getMessageCount(MailboxSession mailboxSession) throws MailboxException {
@@ -103,8 +107,8 @@ public class StoreMailbox extends AbstractLogEnabled implements org.apache.james
                 final int size = size(mimeMessage);
                 final byte[] body = body(mimeMessage);
                 final Flags flags = mimeMessage.getFlags();
-                final List<JPAHeader> headers = headers(mailboxId, uid, mimeMessage);
-                final JPAMessage message = new JPAMessage(mailboxId, uid, internalDate, size, flags, body, headers);
+                final List<Header> headers = headers(mailboxId, uid, mimeMessage);
+                final Message message = createMessage(internalDate, uid, size, body, flags, headers);
                 final MessageMapper mapper = createMessageMapper();
 
                 mapper.begin();
@@ -123,10 +127,8 @@ public class StoreMailbox extends AbstractLogEnabled implements org.apache.james
         }
     }
 
-    private MessageMapper createMessageMapper() {
-        final MessageMapper mapper = new JPAMessageMapper(entityManagerFactory.createEntityManager());
-        return mapper;
-    }
+    protected abstract Message createMessage(Date internalDate, final long uid, final int size, final byte[] body, 
+            final Flags flags, final List<Header> headers);
 
     private byte[] body(MimeMessage message) throws IOException, MessagingException {
         InputStream is = message.getInputStream();
@@ -134,19 +136,21 @@ public class StoreMailbox extends AbstractLogEnabled implements org.apache.james
         return bytes;
     }
 
-    private List<JPAHeader> headers(long mailboxId, long uid, MimeMessage message) throws MessagingException {
-        final List<JPAHeader> results = new ArrayList<JPAHeader>(INITIAL_SIZE_HEADERS);
+    private List<Header> headers(long mailboxId, long uid, MimeMessage message) throws MessagingException {
+        final List<Header> results = new ArrayList<Header>(INITIAL_SIZE_HEADERS);
         int lineNumber = 0;
         for (Enumeration lines = message.getAllHeaderLines(); lines.hasMoreElements();) {
             String line = (String) lines.nextElement();
             int colon = line.indexOf(": ");
             if (colon > 0) {
-                final JPAHeader header = new JPAHeader(++lineNumber, line.substring(0, colon), line.substring(colon + 2));
+                final Header header = createHeader(++lineNumber, line.substring(0, colon), line.substring(colon + 2));
                 results.add(header);
             }
         }
         return results;
     }
+    
+    protected abstract Header createHeader(int lineNumber, String name, String value);
 
     private int size(MimeMessage message) throws IOException, MessagingException {
         // TODO very ugly size mesurement
@@ -354,16 +358,6 @@ public class StoreMailbox extends AbstractLogEnabled implements org.apache.james
         return tracker;
     }
 
-    private Mailbox getMailboxRow() throws MailboxException {
-        final MailboxMapper mapper = createMailboxMapper();
-        return mapper.findMailboxById(mailboxId);
-    }
-
-    private MailboxMapper createMailboxMapper() {
-        final JPAMailboxMapper mapper = new OpenJPAMailboxMapper(entityManagerFactory.createEntityManager());
-        return mapper;
-    }
-
     public Iterator search(SearchQuery query, FetchGroup fetchGroup,
             MailboxSession mailboxSession) throws MailboxException {
         final MessageMapper messageMapper = createMessageMapper();
@@ -416,7 +410,7 @@ public class StoreMailbox extends AbstractLogEnabled implements org.apache.james
                     // mail 4 is big and comes over a slow connection.
                     long uid = mailbox.getLastUid();
 
-                    Message newRow = new JPAMessage(toMailbox.mailboxId, uid, (JPAMessage) originalMessage);
+                    Message newRow = copyMessage(toMailbox, originalMessage, uid);
 
 
                     mapper.save(newRow);
@@ -434,7 +428,7 @@ public class StoreMailbox extends AbstractLogEnabled implements org.apache.james
             throw new MailboxException(e);
         }
     }
-
+    
     public void deleted(MailboxSession session) {
         tracker.mailboxDeleted(session.getSessionId());
     }

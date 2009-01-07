@@ -22,10 +22,6 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 
-import javax.persistence.EntityManagerFactory;
-
-import org.apache.james.imap.jpa.user.JPASubscriptionMapper;
-import org.apache.james.imap.jpa.user.model.JPASubscription;
 import org.apache.james.imap.mailbox.SubscriptionException;
 import org.apache.james.imap.store.user.SubscriptionMapper;
 import org.apache.james.imap.store.user.model.Subscription;
@@ -33,16 +29,16 @@ import org.apache.james.imap.store.user.model.Subscription;
 /**
  * Manages subscriptions.
  */
-public class StoreSubscriptionManager implements Subscriber {
+public abstract class StoreSubscriptionManager implements Subscriber {
 
     private static final int INITIAL_SIZE = 32;
-    private final EntityManagerFactory factory;
-
-    public StoreSubscriptionManager(final EntityManagerFactory factory) {
+    
+    public StoreSubscriptionManager() {
         super();
-        this.factory = factory;
     }
 
+    protected abstract SubscriptionMapper createMapper();
+    
     public void subscribe(final String user, final String mailbox) throws SubscriptionException {
         final SubscriptionMapper mapper = createMapper();
         mapper.begin();
@@ -55,15 +51,7 @@ public class StoreSubscriptionManager implements Subscriber {
         }
     }
 
-    private Subscription createSubscription(final String user, final String mailbox) {
-        final Subscription newSubscription = new JPASubscription(user, mailbox);
-        return newSubscription;
-    }
-
-    private SubscriptionMapper createMapper() {
-        final JPASubscriptionMapper mapper = new JPASubscriptionMapper(factory.createEntityManager());
-        return mapper;
-    }
+    protected abstract Subscription createSubscription(final String user, final String mailbox);
 
     public Collection<String> subscriptions(final String user) throws SubscriptionException {
         final SubscriptionMapper mapper = createMapper();
