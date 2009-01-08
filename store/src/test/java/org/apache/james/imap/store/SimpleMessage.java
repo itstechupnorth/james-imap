@@ -19,40 +19,19 @@
 package org.apache.james.imap.store;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-
-import javax.mail.Flags;
 
 import org.apache.james.imap.store.mail.model.Header;
 import org.apache.james.imap.store.mail.model.Message;
 
 public class SimpleMessage implements Message {
     
-    private static final String TOSTRING_SEPARATOR = " ";
-    
-    public long mailboxId;
-    public long uid;
-    public Date internalDate;
-    public int size = 0;
-    public boolean recent = false;
-    public boolean answered = false;
-    public boolean deleted = false;
-    public boolean draft = false;
-    public boolean flagged = false;
-    public boolean seen = false;
     public byte[] body;
     public List<SimpleHeader> headers;
 
-    public SimpleMessage(long mailboxId, long uid, Date internalDate, int size, 
-            Flags flags, byte[] body, final List<SimpleHeader> headers) {
+    public SimpleMessage(byte[] body, final List<SimpleHeader> headers) {
         super();
-        this.mailboxId = mailboxId;
-        this.uid = uid;
-        this.internalDate = internalDate;
-        this.size = size;
         this.body = body;
-        setFlags(flags);
         this.headers = new ArrayList<SimpleHeader>(headers);
     }
 
@@ -63,18 +42,8 @@ public class SimpleMessage implements Message {
      * @param uid new UID
      * @param original message to be copied, not null
      */
-    public SimpleMessage(long mailboxId, long uid, SimpleMessage original) {
+    public SimpleMessage(SimpleMessage original) {
         super();
-        this.mailboxId = mailboxId;
-        this.uid = uid;
-        this.internalDate = original.getInternalDate();
-        this.size = original.getSize();
-        this.answered = original.isAnswered();
-        this.deleted = original.isDeleted();
-        this.draft = original.isDraft();
-        this.flagged = original.isFlagged();
-        this.recent = original.isRecent();
-        this.seen = original.isSeen();
         this.body = original.getBody();
         final List<SimpleHeader> originalHeaders = original.headers;
         if (originalHeaders == null) {
@@ -88,80 +57,10 @@ public class SimpleMessage implements Message {
     }
 
     /**
-     * @see org.apache.james.imap.jpa.mail.model.Message#getInternalDate()
-     */
-    public Date getInternalDate() {
-        return internalDate;
-    }
-
-    /**
-     * @see org.apache.james.imap.jpa.mail.model.Message#getMailboxId()
-     */
-    public long getMailboxId() {
-        return mailboxId;
-    }
-
-    /**
-     * @see org.apache.james.imap.jpa.mail.model.Message#getSize()
-     */
-    public int getSize() {
-        return size;
-    }
-
-    /**
-     * @see org.apache.james.imap.jpa.mail.model.Message#getUid()
-     */
-    public long getUid() {
-        return uid;
-    }
-
-    /**
      * @see org.apache.james.imap.jpa.mail.model.Message#getBody()
      */
     public byte[] getBody() {
         return body;
-    }
-
-    /**
-     * @see org.apache.james.imap.jpa.mail.model.Message#isAnswered()
-     */
-    public boolean isAnswered() {
-        return answered;
-    }
-
-    /**
-     * @see org.apache.james.imap.jpa.mail.model.Message#isDeleted()
-     */
-    public boolean isDeleted() {
-        return deleted;
-    }
-
-    /**
-     * @see org.apache.james.imap.jpa.mail.model.Message#isDraft()
-     */
-    public boolean isDraft() {
-        return draft;
-    }
-
-    /**
-     * @see org.apache.james.imap.jpa.mail.model.Message#isFlagged()
-     */
-    public boolean isFlagged() {
-        return flagged;
-    }
-
-    /**
-     * @see org.apache.james.imap.jpa.mail.model.Message#isRecent()
-     */
-    public boolean isRecent() {
-        return recent;
-    }
-
-    /**
-     * @see org.apache.james.imap.jpa.mail.model.Message#isSeen()
-     */
-    public boolean isSeen() {
-        return seen;
     }
 
     /**
@@ -170,95 +69,4 @@ public class SimpleMessage implements Message {
     public List<Header> getHeaders() {
         return new ArrayList<Header>(headers);
     }
-    
-    /**
-     * @see org.apache.james.imap.jpa.mail.model.Message#unsetRecent()
-     */
-    public void unsetRecent() {
-        recent = false;
-    }
-    
-    /**
-     * @see org.apache.james.imap.jpa.mail.model.Message#setFlags(javax.mail.Flags)
-     */
-    public void setFlags(Flags flags) {
-        answered = flags.contains(Flags.Flag.ANSWERED);
-        deleted = flags.contains(Flags.Flag.DELETED);
-        draft = flags.contains(Flags.Flag.DRAFT);
-        flagged = flags.contains(Flags.Flag.FLAGGED);
-        recent = flags.contains(Flags.Flag.RECENT);
-        seen = flags.contains(Flags.Flag.SEEN);
-    }
-
-    /**
-     * @see org.apache.james.imap.jpa.mail.model.Message#createFlags()
-     */
-    public Flags createFlags() {
-        final Flags flags = new Flags();
-
-        if (isAnswered()) {
-            flags.add(Flags.Flag.ANSWERED);
-        }
-        if (isDeleted()) {
-            flags.add(Flags.Flag.DELETED);
-        }
-        if (isDraft()) {
-            flags.add(Flags.Flag.DRAFT);
-        }
-        if (isFlagged()) {
-            flags.add(Flags.Flag.FLAGGED);
-        }
-        if (isRecent()) {
-            flags.add(Flags.Flag.RECENT);
-        }
-        if (isSeen()) {
-            flags.add(Flags.Flag.SEEN);
-        }
-        return flags;
-    }
-
-    @Override
-    public int hashCode() {
-        final int PRIME = 31;
-        int result = 1;
-        result = PRIME * result + (int) (mailboxId ^ (mailboxId >>> 32));
-        result = PRIME * result + (int) (uid ^ (uid >>> 32));
-        return result;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
-        final Message other = (Message) obj;
-        if (mailboxId != other.getMailboxId())
-            return false;
-        if (uid != other.getUid())
-            return false;
-        return true;
-    }
-
-    public String toString()
-    {
-        final String retValue = 
-            "mailbox("
-            + "mailboxId = " + this.mailboxId + TOSTRING_SEPARATOR
-            + "uid = " + this.uid + TOSTRING_SEPARATOR
-            + "internalDate = " + this.internalDate + TOSTRING_SEPARATOR
-            + "size = " + this.size + TOSTRING_SEPARATOR
-            + "answered = " + this.answered + TOSTRING_SEPARATOR
-            + "deleted = " + this.deleted + TOSTRING_SEPARATOR
-            + "draft = " + this.draft + TOSTRING_SEPARATOR
-            + "flagged = " + this.flagged + TOSTRING_SEPARATOR
-            + "recent = " + this.recent + TOSTRING_SEPARATOR
-            + "seen = " + this.seen + TOSTRING_SEPARATOR
-            + " )";
-
-        return retValue;
-    }
-
 }

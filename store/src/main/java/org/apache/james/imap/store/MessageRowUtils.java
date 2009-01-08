@@ -40,7 +40,7 @@ import org.apache.james.imap.mailbox.MessageResult.MimePath;
 import org.apache.james.imap.mailbox.util.MessageFlags;
 import org.apache.james.imap.mailbox.util.MessageResultImpl;
 import org.apache.james.imap.store.mail.model.Header;
-import org.apache.james.imap.store.mail.model.Message;
+import org.apache.james.imap.store.mail.model.MailboxMembership;
 import org.apache.james.mime4j.MimeException;
 
 public class MessageRowUtils {
@@ -57,10 +57,10 @@ public class MessageRowUtils {
      * @param messages not null
      * @return <code>MessageFlags</code>, not null
      */
-    public static MessageFlags[] toMessageFlags(final Collection<Message> messages) {
+    public static MessageFlags[] toMessageFlags(final Collection<MailboxMembership> messages) {
         final MessageFlags[] results = new MessageFlags[messages.size()];
         int i = 0;
-        for (Message message: messages) {
+        for (MailboxMembership message: messages) {
             final Flags flags = message.createFlags();
             final long uid = message.getUid();
             results[i++] = new MessageFlags(uid, flags);
@@ -68,7 +68,7 @@ public class MessageRowUtils {
         return results;
     }
 
-    public static List<ResultHeader> createHeaders(Message message) {
+    public static List<ResultHeader> createHeaders(MailboxMembership message) {
         final List<Header> headers = getSortedHeaders(message);
 
         final List<ResultHeader> results = new ArrayList<ResultHeader>(headers.size());
@@ -79,28 +79,28 @@ public class MessageRowUtils {
         return results;
     }
 
-    private static List<Header> getSortedHeaders(Message message) {
-        final List<Header> headers = new ArrayList<Header>(message.getHeaders());
+    private static List<Header> getSortedHeaders(MailboxMembership membership) {
+        final List<Header> headers = new ArrayList<Header>(membership.getMessage().getHeaders());
         Collections.sort(headers);
         return headers;
     }
 
-    public static Content createBodyContent(Message message) {
-        final byte[] bytes = message.getBody();
+    public static Content createBodyContent(MailboxMembership membership) {
+        final byte[] bytes = membership.getMessage().getBody();
         final ByteContent result = new ByteContent(bytes);
         return result;
     }
 
-    public static Content createFullContent(final Message message, List headers) {
+    public static Content createFullContent(final MailboxMembership membership, List headers) {
         if (headers == null) {
-            headers = createHeaders(message);
+            headers = createHeaders(membership);
         }
-        final byte[] bytes = message.getBody();
+        final byte[] bytes = membership.getMessage().getBody();
         final FullContent results = new FullContent(bytes, headers);
         return results;
     }
 
-    public static MessageResult loadMessageResult(final Message message, final FetchGroup fetchGroup) 
+    public static MessageResult loadMessageResult(final MailboxMembership message, final FetchGroup fetchGroup) 
                 throws MailboxException {
 
         MessageResultImpl messageResult = new MessageResultImpl();
@@ -148,33 +148,33 @@ public class MessageRowUtils {
         return messageResult;
     }
 
-    private static void addMimeDescriptor(Message message, MessageResultImpl messageResult) throws IOException {
+    private static void addMimeDescriptor(MailboxMembership message, MessageResultImpl messageResult) throws IOException {
             MessageResult.MimeDescriptor descriptor = MimeDescriptorImpl
                     .build(toInput(message));
             messageResult.setMimeDescriptor(descriptor);
     }
 
-    private static void addFullContent(final Message messageRow, MessageResultImpl messageResult) 
+    private static void addFullContent(final MailboxMembership messageRow, MessageResultImpl messageResult) 
             throws MailboxException {
         final List headers = messageResult.getHeaders();
         final Content content = createFullContent(messageRow, headers);
         messageResult.setFullContent(content);
     }
 
-    private static void addBody(final Message message,
+    private static void addBody(final MailboxMembership message,
             MessageResultImpl messageResult) {
         final Content content = createBodyContent(message);
         messageResult.setBody(content);
     }
 
-    private static void addHeaders(final Message message,
+    private static void addHeaders(final MailboxMembership message,
             MessageResultImpl messageResult) {
         final List<ResultHeader> headers = createHeaders(message);
         messageResult.setHeaders(headers);
     }
 
     private static void addPartContent(final FetchGroup fetchGroup,
-            Message message, MessageResultImpl messageResult)
+            MailboxMembership message, MessageResultImpl messageResult)
             throws MailboxException, IOException,
             MimeException {
         Collection partContent = fetchGroup.getPartContentDescriptors();
@@ -188,7 +188,7 @@ public class MessageRowUtils {
     }
 
     private static void addPartContent(
-            FetchGroup.PartContentDescriptor descriptor, Message message,
+            FetchGroup.PartContentDescriptor descriptor, MailboxMembership message,
             MessageResultImpl messageResult) throws 
             MailboxException, IOException, MimeException {
         final MimePath mimePath = descriptor.path();
@@ -210,7 +210,7 @@ public class MessageRowUtils {
         }
     }
 
-    private static PartContentBuilder build(int[] path, final Message message)
+    private static PartContentBuilder build(int[] path, final MailboxMembership message)
             throws IOException, MimeException {
         final InputStream stream = toInput(message);
         PartContentBuilder result = new PartContentBuilder();
@@ -228,8 +228,8 @@ public class MessageRowUtils {
         return result;
     }
 
-    public static InputStream toInput(final Message message) {
-        final List<Header> headers = getSortedHeaders(message);
+    public static InputStream toInput(final MailboxMembership membership) {
+        final List<Header> headers = getSortedHeaders(membership);
         final StringBuffer headersToString = new StringBuffer(headers.size() * 50);
         for (Header header: headers) {
             headersToString.append(header.getField());
@@ -239,7 +239,7 @@ public class MessageRowUtils {
         }
         headersToString.append("\r\n");
 
-        byte[] bodyContent = message.getBody();
+        byte[] bodyContent = membership.getMessage().getBody();
         final MessageInputStream stream = new MessageInputStream(headersToString, bodyContent);
         return stream;
     }
@@ -282,7 +282,7 @@ public class MessageRowUtils {
         return result;
     }
 
-    private static void addHeaders(Message message,
+    private static void addHeaders(MailboxMembership message,
             MessageResultImpl messageResult, MimePath mimePath)
             throws IOException, MimeException {
         final int[] path = path(mimePath);
@@ -295,7 +295,7 @@ public class MessageRowUtils {
         }
     }
 
-    private static void addMimeHeaders(Message message,
+    private static void addMimeHeaders(MailboxMembership message,
             MessageResultImpl messageResult, MimePath mimePath)
             throws IOException, MimeException {
         final int[] path = path(mimePath);
@@ -308,7 +308,7 @@ public class MessageRowUtils {
         }
     }
 
-    private static void addBodyContent(Message message,
+    private static void addBodyContent(MailboxMembership message,
             MessageResultImpl messageResult, MimePath mimePath) throws IOException, MimeException {
         final int[] path = path(mimePath);
         if (path == null) {
@@ -320,7 +320,7 @@ public class MessageRowUtils {
         }
     }
 
-    private static void addMimeBodyContent(Message message,
+    private static void addMimeBodyContent(MailboxMembership message,
             MessageResultImpl messageResult, MimePath mimePath)
             throws IOException, MimeException {
         final int[] path = path(mimePath);
@@ -329,7 +329,7 @@ public class MessageRowUtils {
         messageResult.setMimeBodyContent(mimePath, content);
     }
 
-    private static void addFullContent(Message message,
+    private static void addFullContent(MailboxMembership message,
             MessageResultImpl messageResult, MimePath mimePath)
             throws MailboxException, IOException,
             MimeException {
@@ -349,14 +349,14 @@ public class MessageRowUtils {
      * 
      * @return {@link Comparator}, not null
      */
-    public static Comparator<Message> getUidComparator() {
+    public static Comparator<MailboxMembership> getUidComparator() {
         return UidComparator.INSTANCE;
     }
 
-    private static final class UidComparator implements Comparator<Message> {
+    private static final class UidComparator implements Comparator<MailboxMembership> {
         private static final UidComparator INSTANCE = new UidComparator();
 
-        public int compare(Message one, Message two) {
+        public int compare(MailboxMembership one, MailboxMembership two) {
             final int result = (int) (one.getUid() - two.getUid());
             return result;
         }

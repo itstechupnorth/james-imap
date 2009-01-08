@@ -29,7 +29,7 @@ import org.apache.james.imap.mailbox.StorageException;
 import org.apache.james.imap.mailbox.SearchQuery.Criterion;
 import org.apache.james.imap.mailbox.SearchQuery.NumericRange;
 import org.apache.james.imap.store.mail.MessageMapper;
-import org.apache.james.imap.store.mail.model.Message;
+import org.apache.james.imap.store.mail.model.MailboxMembership;
 
 public class JPAMessageMapper extends Mapper implements MessageMapper {
 
@@ -40,9 +40,9 @@ public class JPAMessageMapper extends Mapper implements MessageMapper {
     /**
      * @see org.apache.james.imap.jpa.mail.MessageMapper#findInMailbox(org.apache.james.imap.mailbox.MessageRange, long)
      */
-    public List<Message> findInMailbox(MessageRange set, long mailboxId) throws StorageException {
+    public List<MailboxMembership> findInMailbox(MessageRange set, long mailboxId) throws StorageException {
         try {
-            final List<Message> results;
+            final List<MailboxMembership> results;
             switch (set.getType()) {
                 case MessageRange.TYPE_UID:
                     final long from = set.getUidFrom();
@@ -68,21 +68,21 @@ public class JPAMessageMapper extends Mapper implements MessageMapper {
     }
 
     @SuppressWarnings("unchecked")
-    private List<Message> findMessagesInMailboxAfterUID(long mailboxId, long uid) {
+    private List<MailboxMembership> findMessagesInMailboxAfterUID(long mailboxId, long uid) {
         return entityManager.createNamedQuery("findMessagesInMailboxAfterUID")
         .setParameter("idParam", mailboxId)
         .setParameter("uidParam", uid).getResultList();
     }
 
     @SuppressWarnings("unchecked")
-    private List<Message> findMessagesInMailboxWithUID(long mailboxId, long uid) {
+    private List<MailboxMembership> findMessagesInMailboxWithUID(long mailboxId, long uid) {
         return entityManager.createNamedQuery("findMessagesInMailboxWithUID")
         .setParameter("idParam", mailboxId)
         .setParameter("uidParam", uid).getResultList();
     }
 
     @SuppressWarnings("unchecked")
-    private List<Message> findMessagesInMailboxBetweenUIDs(long mailboxId, long from, long to) {
+    private List<MailboxMembership> findMessagesInMailboxBetweenUIDs(long mailboxId, long from, long to) {
         return entityManager.createNamedQuery("findMessagesInMailboxBetweenUIDs")
         .setParameter("idParam", mailboxId)
         .setParameter("fromParam", from)
@@ -90,16 +90,16 @@ public class JPAMessageMapper extends Mapper implements MessageMapper {
     }
 
     @SuppressWarnings("unchecked")
-    private List<Message> findMessagesInMailbox(long mailboxId) {
+    private List<MailboxMembership> findMessagesInMailbox(long mailboxId) {
         return entityManager.createNamedQuery("findMessagesInMailbox").setParameter("idParam", mailboxId).getResultList();
     }
 
     /**
      * @see org.apache.james.imap.jpa.mail.MessageMapper#findMarkedForDeletionInMailbox(org.apache.james.imap.mailbox.MessageRange, long)
      */
-    public List<Message> findMarkedForDeletionInMailbox(final MessageRange set, final long mailboxId) throws StorageException {
+    public List<MailboxMembership> findMarkedForDeletionInMailbox(final MessageRange set, final long mailboxId) throws StorageException {
         try {
-            final List<Message> results;
+            final List<MailboxMembership> results;
             switch (set.getType()) {
                 case MessageRange.TYPE_UID:
                     final long from = set.getUidFrom();
@@ -125,26 +125,26 @@ public class JPAMessageMapper extends Mapper implements MessageMapper {
     }
 
     @SuppressWarnings("unchecked")
-    private List<Message> findDeletedMessagesInMailbox(long mailboxId) {
+    private List<MailboxMembership> findDeletedMessagesInMailbox(long mailboxId) {
         return entityManager.createNamedQuery("findDeletedMessagesInMailbox").setParameter("idParam", mailboxId).getResultList();
     }
 
     @SuppressWarnings("unchecked")
-    private List<Message> findDeletedMessagesInMailboxAfterUID(long mailboxId, long uid) {
+    private List<MailboxMembership> findDeletedMessagesInMailboxAfterUID(long mailboxId, long uid) {
         return entityManager.createNamedQuery("findDeletedMessagesInMailboxBetweenUIDs")
         .setParameter("idParam", mailboxId)
         .setParameter("uidParam", uid).getResultList();
     }
 
     @SuppressWarnings("unchecked")
-    private List<Message> findDeletedMessagesInMailboxWithUID(long mailboxId, long uid) {
+    private List<MailboxMembership> findDeletedMessagesInMailboxWithUID(long mailboxId, long uid) {
         return entityManager.createNamedQuery("findDeletedMessagesInMailboxBetweenUIDs")
         .setParameter("idParam", mailboxId)
         .setParameter("uidParam", uid).getResultList();
     }
 
     @SuppressWarnings("unchecked")
-    private List<Message> findDeletedMessagesInMailboxBetweenUIDs(long mailboxId, long from, long to) {
+    private List<MailboxMembership> findDeletedMessagesInMailboxBetweenUIDs(long mailboxId, long from, long to) {
         return entityManager.createNamedQuery("findDeletedMessagesInMailboxBetweenUIDs")
         .setParameter("idParam", mailboxId)
         .setParameter("fromParam", from)
@@ -177,7 +177,7 @@ public class JPAMessageMapper extends Mapper implements MessageMapper {
      * @see org.apache.james.imap.jpa.mail.MessageMapper#searchMailbox(long, org.apache.james.imap.mailbox.SearchQuery)
      */
     @SuppressWarnings("unchecked")
-    public List<Message> searchMailbox(long mailboxId, SearchQuery query) throws StorageException {
+    public List<MailboxMembership> searchMailbox(long mailboxId, SearchQuery query) throws StorageException {
         try {
             final String jql = formulateJQL(mailboxId, query);
             return entityManager.createQuery(jql).getResultList();
@@ -188,7 +188,7 @@ public class JPAMessageMapper extends Mapper implements MessageMapper {
 
     private String formulateJQL(long mailboxId, SearchQuery query) {
         final StringBuilder queryBuilder = new StringBuilder(50);
-        queryBuilder.append("SELECT message FROM Message message WHERE message.mailboxId = ").append(mailboxId);
+        queryBuilder.append("SELECT membership FROM Membership membership WHERE membership.mailboxId = ").append(mailboxId);
         final List<Criterion> criteria = query.getCriterias();
         if (criteria.size() == 1) {
             final Criterion firstCriterion = criteria.get(0);
@@ -200,11 +200,11 @@ public class JPAMessageMapper extends Mapper implements MessageMapper {
                     final long high = ranges[i].getHighValue();
 
                     if (low == Long.MAX_VALUE) {
-                        queryBuilder.append(" AND message.uid<=").append(high);
+                        queryBuilder.append(" AND membership.uid<=").append(high);
                     } else if (low == high) {
-                        queryBuilder.append(" AND message.uid=").append(low);
+                        queryBuilder.append(" AND membership.uid=").append(low);
                     } else {
-                        queryBuilder.append(" AND message.uid BETWEEN ").append(low).append(" AND ").append(high);
+                        queryBuilder.append(" AND membership.uid BETWEEN ").append(low).append(" AND ").append(high);
                     }
                 }
             }
@@ -216,7 +216,7 @@ public class JPAMessageMapper extends Mapper implements MessageMapper {
     /**
      * @see org.apache.james.imap.jpa.mail.MessageMapper#delete(org.apache.james.imap.jpa.mail.model.JPAMessage)
      */
-    public void delete(Message message) throws StorageException {
+    public void delete(MailboxMembership message) throws StorageException {
         try {
             entityManager.remove(message);
         } catch (PersistenceException e) {
@@ -228,7 +228,7 @@ public class JPAMessageMapper extends Mapper implements MessageMapper {
      * @see org.apache.james.imap.jpa.mail.MessageMapper#findUnseenMessagesInMailboxOrderByUid(long)
      */
     @SuppressWarnings("unchecked")
-    public List<Message> findUnseenMessagesInMailboxOrderByUid(final long mailboxId)  throws StorageException {
+    public List<MailboxMembership> findUnseenMessagesInMailboxOrderByUid(final long mailboxId)  throws StorageException {
         try {
             return entityManager.createNamedQuery("findUnseenMessagesInMailboxOrderByUid").setParameter("idParam", mailboxId).getResultList();
         } catch (PersistenceException e) {
@@ -240,7 +240,7 @@ public class JPAMessageMapper extends Mapper implements MessageMapper {
      * @see org.apache.james.imap.jpa.mail.MessageMapper#findRecentMessagesInMailbox(long)
      */
     @SuppressWarnings("unchecked")
-    public List<Message> findRecentMessagesInMailbox(final long mailboxId) throws StorageException {
+    public List<MailboxMembership> findRecentMessagesInMailbox(final long mailboxId) throws StorageException {
         try {
             return entityManager.createNamedQuery("findRecentMessagesInMailbox").setParameter("idParam", mailboxId).getResultList();
         } catch (PersistenceException e) {
@@ -251,7 +251,7 @@ public class JPAMessageMapper extends Mapper implements MessageMapper {
     /**
      * @see org.apache.james.imap.jpa.mail.MessageMapper#save(org.apache.james.imap.jpa.mail.model.JPAMessage)
      */
-    public void save(Message message) throws StorageException {
+    public void save(MailboxMembership message) throws StorageException {
         try {
             entityManager.persist(message);
         } catch (PersistenceException e) {

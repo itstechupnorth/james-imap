@@ -57,7 +57,9 @@ public class JPAHostSystem extends ImapHostSystem {
         properties.put("openjpa.ConnectionFactoryProperties", "PrettyPrint=true, PrettyPrintLineLength=72");
         properties.put("openjpa.jdbc.SynchronizeMappings", "buildSchema(ForeignKeys=true)");
         properties.put("openjpa.MetaDataFactory", "jpa(Types=org.apache.james.imap.jpa.mail.model.JPAHeader;" +
-                "org.apache.james.imap.jpa.mail.model.JPAMailbox;org.apache.james.imap.jpa.mail.model.JPAMessage;" +
+                "org.apache.james.imap.jpa.mail.model.JPAMailbox;" +
+                "org.apache.james.imap.jpa.mail.model.JPAMailboxMembership;" +
+                "org.apache.james.imap.jpa.mail.model.JPAMessage;" +
                 "org.apache.james.imap.jpa.user.model.JPASubscription)");
         
         userManager = new InMemoryUserManager();

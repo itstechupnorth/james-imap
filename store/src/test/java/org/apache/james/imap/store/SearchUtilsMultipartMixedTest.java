@@ -27,8 +27,7 @@ import junit.framework.TestCase;
 
 import org.apache.james.api.imap.ImapConstants;
 import org.apache.james.imap.mailbox.SearchQuery;
-import org.apache.james.imap.store.MessageSearches;
-import org.apache.james.imap.store.mail.model.Message;
+import org.apache.james.imap.store.mail.model.MailboxMembership;
 
 public class SearchUtilsMultipartMixedTest extends TestCase {
 
@@ -104,7 +103,7 @@ public class SearchUtilsMultipartMixedTest extends TestCase {
             + "  Than both your poets can in praise devise.\r\n"
             + "\r\n--2.50290787509--\r\n" + "\r\n--1729--\r\n";
 
-    Message row;
+    MailboxMembership row;
 
     MessageSearches searches;
 

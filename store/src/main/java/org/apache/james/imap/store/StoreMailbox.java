@@ -50,7 +50,7 @@ import org.apache.james.imap.store.mail.MailboxMapper;
 import org.apache.james.imap.store.mail.MessageMapper;
 import org.apache.james.imap.store.mail.model.Header;
 import org.apache.james.imap.store.mail.model.Mailbox;
-import org.apache.james.imap.store.mail.model.Message;
+import org.apache.james.imap.store.mail.model.MailboxMembership;
 
 public abstract class StoreMailbox extends AbstractLogEnabled implements org.apache.james.imap.mailbox.Mailbox {
 
@@ -69,7 +69,7 @@ public abstract class StoreMailbox extends AbstractLogEnabled implements org.apa
         this.tracker = new UidChangeTracker(mailbox.getLastUid());
     }
 
-    protected abstract Message copyMessage(StoreMailbox toMailbox, Message originalMessage, long uid);
+    protected abstract MailboxMembership copyMessage(StoreMailbox toMailbox, MailboxMembership originalMessage, long uid);
     
     protected abstract MessageMapper createMessageMapper();
     
@@ -108,7 +108,7 @@ public abstract class StoreMailbox extends AbstractLogEnabled implements org.apa
                 final byte[] body = body(mimeMessage);
                 final Flags flags = mimeMessage.getFlags();
                 final List<Header> headers = headers(mailboxId, uid, mimeMessage);
-                final Message message = createMessage(internalDate, uid, size, body, flags, headers);
+                final MailboxMembership message = createMessage(internalDate, uid, size, body, flags, headers);
                 final MessageMapper mapper = createMessageMapper();
 
                 mapper.begin();
@@ -127,7 +127,7 @@ public abstract class StoreMailbox extends AbstractLogEnabled implements org.apa
         }
     }
 
-    protected abstract Message createMessage(Date internalDate, final long uid, final int size, final byte[] body, 
+    protected abstract MailboxMembership createMessage(Date internalDate, final long uid, final int size, final byte[] body, 
             final Flags flags, final List<Header> headers);
 
     private byte[] body(MimeMessage message) throws IOException, MessagingException {
@@ -170,17 +170,17 @@ public abstract class StoreMailbox extends AbstractLogEnabled implements org.apa
             MailboxSession mailboxSession) throws MailboxException {
         UidRange range = uidRangeForMessageSet(set);
         final MessageMapper messageMapper = createMessageMapper();
-        final List<Message> rows = new ArrayList<Message>(messageMapper.findInMailbox(set, mailboxId));
+        final List<MailboxMembership> rows = new ArrayList<MailboxMembership>(messageMapper.findInMailbox(set, mailboxId));
         return getMessages(fetchGroup, range, rows);
     }
 
-    private ResultIterator getMessages(FetchGroup result, UidRange range, List<Message> messages) {
+    private ResultIterator getMessages(FetchGroup result, UidRange range, List<MailboxMembership> messages) {
         final ResultIterator results = getResults(result, messages);
         getUidChangeTracker().found(range, results.getMessageFlags());
         return results;
     }
 
-    private ResultIterator getResults(FetchGroup result, List<Message> messages) {
+    private ResultIterator getResults(FetchGroup result, List<MailboxMembership> messages) {
         Collections.sort(messages, MessageRowUtils.getUidComparator());
         final ResultIterator results = new ResultIterator(messages,result);
         return results;
@@ -198,7 +198,7 @@ public abstract class StoreMailbox extends AbstractLogEnabled implements org.apa
         }
     }
 
-    public MessageResult fillMessageResult(Message message, FetchGroup result) throws MessagingException,
+    public MessageResult fillMessageResult(MailboxMembership message, FetchGroup result) throws MessagingException,
     MailboxException {
         return MessageRowUtils.loadMessageResult(message, result);
     }
@@ -216,14 +216,14 @@ public abstract class StoreMailbox extends AbstractLogEnabled implements org.apa
     public long[] recent(boolean reset, MailboxSession mailboxSession) throws MailboxException {
         final MessageMapper mapper = createMessageMapper();
         mapper.begin();
-        final List<Message> messages = mapper.findRecentMessagesInMailbox(mailboxId);
-        final long[] results = new long[messages.size()];
+        final List<MailboxMembership> members = mapper.findRecentMessagesInMailbox(mailboxId);
+        final long[] results = new long[members.size()];
 
         int count = 0;
-        for (Message message:messages) {
-            results[count++] = message.getUid();
+        for (MailboxMembership member:members) {
+            results[count++] = member.getUid();
             if (reset) {
-                message.unsetRecent();
+                member.unsetRecent();
             }
         }
 
@@ -235,8 +235,8 @@ public abstract class StoreMailbox extends AbstractLogEnabled implements org.apa
             MailboxSession mailboxSession) throws MailboxException {
         try {
             final MessageMapper messageMapper = createMessageMapper();
-            final List<Message> messageRows = messageMapper.findUnseenMessagesInMailboxOrderByUid(mailboxId);
-            final Iterator<Message> it = messageRows.iterator();
+            final List<MailboxMembership> messageRows = messageMapper.findUnseenMessagesInMailboxOrderByUid(mailboxId);
+            final Iterator<MailboxMembership> it = messageRows.iterator();
             final MessageResult result;
             if (it.hasNext()) {
                 result = fillMessageResult(it.next(), fetchGroup);
@@ -267,14 +267,14 @@ public abstract class StoreMailbox extends AbstractLogEnabled implements org.apa
     throws MailboxException {
         final MessageMapper mapper = createMessageMapper();
         mapper.begin();
-        final List<Message> messages = mapper.findMarkedForDeletionInMailbox(set, mailboxId);
-        final long[] uids = uids(messages);
+        final List<MailboxMembership> members = mapper.findMarkedForDeletionInMailbox(set, mailboxId);
+        final long[] uids = uids(members);
         final OrFetchGroup orFetchGroup = new OrFetchGroup(fetchGroup, FetchGroup.FLAGS);
-        final ResultIterator resultIterator = new ResultIterator(messages, orFetchGroup);
+        final ResultIterator resultIterator = new ResultIterator(members, orFetchGroup);
         // ensure all results are loaded before deletion
         final List<MessageResult> messageResults = resultIterator.toList();
 
-        for (Message message:messages) {
+        for (MailboxMembership message:members) {
             mapper.delete(message);
         }
         mapper.commit();
@@ -283,12 +283,12 @@ public abstract class StoreMailbox extends AbstractLogEnabled implements org.apa
     }
 
 
-    private long[] uids(List<Message> messages) {
-        final int size = messages.size();
+    private long[] uids(List<MailboxMembership> members) {
+        final int size = members.size();
         long[] results = new long[size];
         for (int i = 0; i < size; i++) {
-            final Message message = messages.get(i);
-            results[i] = message.getUid();
+            final MailboxMembership member = members.get(i);
+            results[i] = member.getUid();
         }
         return results;
     }
@@ -305,28 +305,28 @@ public abstract class StoreMailbox extends AbstractLogEnabled implements org.apa
             MailboxSession mailboxSession) throws MailboxException {
         final MessageMapper mapper = createMessageMapper();
         mapper.begin();
-        final List<Message> messages = mapper.findInMailbox(set, mailboxId);
+        final List<MailboxMembership> members = mapper.findInMailbox(set, mailboxId);
         UidRange uidRange = uidRangeForMessageSet(set);
         getUidChangeTracker().found(uidRange,
-                MessageRowUtils.toMessageFlags(messages));
-        for (final Message message:messages) {
+                MessageRowUtils.toMessageFlags(members));
+        for (final MailboxMembership member:members) {
             if (replace) {
-                message.setFlags(flags);
+                member.setFlags(flags);
             } else {
-                Flags current = message.createFlags();
+                Flags current = member.createFlags();
                 if (value) {
                     current.add(flags);
                 } else {
                     current.remove(flags);
                 }
-                message.setFlags(current);
+                member.setFlags(current);
             }
-            mapper.save(message);
+            mapper.save(member);
         }
         final OrFetchGroup orFetchGroup = new OrFetchGroup(fetchGroup,
                 FetchGroup.FLAGS);
         final ResultIterator resultIterator = new ResultIterator(
-                messages, orFetchGroup);
+                members, orFetchGroup);
         final org.apache.james.imap.mailbox.util.MessageFlags[] messageFlags = resultIterator
         .getMessageFlags();
         mapper.commit();
@@ -361,12 +361,12 @@ public abstract class StoreMailbox extends AbstractLogEnabled implements org.apa
     public Iterator search(SearchQuery query, FetchGroup fetchGroup,
             MailboxSession mailboxSession) throws MailboxException {
         final MessageMapper messageMapper = createMessageMapper();
-        final List<Message> messages = messageMapper.searchMailbox(mailboxId, query);
-        final List<Message> filteredMessages = new ArrayList<Message>(messages.size());
-        for (Message message:messages) {
+        final List<MailboxMembership> members = messageMapper.searchMailbox(mailboxId, query);
+        final List<MailboxMembership> filteredMessages = new ArrayList<MailboxMembership>(members.size());
+        for (MailboxMembership member:members) {
             try {
-                if (searches.isMatch(query, message)) {
-                    filteredMessages.add(message);
+                if (searches.isMatch(query, member)) {
+                    filteredMessages.add(member);
                 }
             } catch (MailboxException e) {
                 getLog()
@@ -374,7 +374,7 @@ public abstract class StoreMailbox extends AbstractLogEnabled implements org.apa
                         "Cannot test message against search criteria. Will continue to test other messages.",
                         e);
                 if (getLog().isDebugEnabled())
-                    getLog().debug("UID: " + message.getUid());
+                    getLog().debug("UID: " + member.getUid());
             }
         }
 
@@ -395,8 +395,8 @@ public abstract class StoreMailbox extends AbstractLogEnabled implements org.apa
             final MessageMapper mapper = createMessageMapper();
             mapper.begin();
 
-            List<Message> rows = mapper.findInMailbox(set, mailboxId);
-            for (Message originalMessage:rows) {
+            List<MailboxMembership> rows = mapper.findInMailbox(set, mailboxId);
+            for (MailboxMembership originalMessage:rows) {
 
                 final Mailbox mailbox = toMailbox.reserveNextUid();
                 if (mailbox != null) {
@@ -410,7 +410,7 @@ public abstract class StoreMailbox extends AbstractLogEnabled implements org.apa
                     // mail 4 is big and comes over a slow connection.
                     long uid = mailbox.getLastUid();
 
-                    Message newRow = copyMessage(toMailbox, originalMessage, uid);
+                    MailboxMembership newRow = copyMessage(toMailbox, originalMessage, uid);
 
 
                     mapper.save(newRow);

@@ -30,14 +30,14 @@ import org.apache.james.imap.jpa.mail.JPAMailboxMapper;
 import org.apache.james.imap.jpa.mail.JPAMessageMapper;
 import org.apache.james.imap.jpa.mail.map.openjpa.OpenJPAMailboxMapper;
 import org.apache.james.imap.jpa.mail.model.JPAHeader;
-import org.apache.james.imap.jpa.mail.model.JPAMessage;
+import org.apache.james.imap.jpa.mail.model.JPAMailboxMembership;
 import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.store.StoreMailbox;
 import org.apache.james.imap.store.mail.MailboxMapper;
 import org.apache.james.imap.store.mail.MessageMapper;
 import org.apache.james.imap.store.mail.model.Header;
 import org.apache.james.imap.store.mail.model.Mailbox;
-import org.apache.james.imap.store.mail.model.Message;
+import org.apache.james.imap.store.mail.model.MailboxMembership;
 
 public class JPAMailbox extends StoreMailbox {
 
@@ -67,18 +67,18 @@ public class JPAMailbox extends StoreMailbox {
     }
     
     @Override
-    protected Message createMessage(Date internalDate, final long uid, final int size, final byte[] body, final Flags flags, final List<Header> headers) {
+    protected MailboxMembership createMessage(Date internalDate, final long uid, final int size, final byte[] body, final Flags flags, final List<Header> headers) {
         final List<JPAHeader> jpaHeaders = new ArrayList<JPAHeader>(headers.size());
         for (Header header: headers) {
             jpaHeaders.add((JPAHeader) header);
         }
-        final Message message = new JPAMessage(mailboxId, uid, internalDate, size, flags, body, jpaHeaders);
+        final MailboxMembership message = new JPAMailboxMembership(mailboxId, uid, internalDate, size, flags, body, jpaHeaders);
         return message;
     }
     
     @Override
-    protected Message copyMessage(StoreMailbox toMailbox, Message originalMessage, long uid) {
-        Message newRow = new JPAMessage(toMailbox.getMailboxId(), uid, (JPAMessage) originalMessage);
+    protected MailboxMembership copyMessage(StoreMailbox toMailbox, MailboxMembership originalMessage, long uid) {
+        MailboxMembership newRow = new JPAMailboxMembership(toMailbox.getMailboxId(), uid, (JPAMailboxMembership) originalMessage);
         return newRow;
     }
     

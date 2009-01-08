@@ -34,21 +34,21 @@ import org.apache.james.imap.mailbox.MessageResult;
 import org.apache.james.imap.mailbox.MessageResult.FetchGroup;
 import org.apache.james.imap.mailbox.util.FetchGroupImpl;
 import org.apache.james.imap.mailbox.util.MessageFlags;
-import org.apache.james.imap.store.mail.model.Message;
+import org.apache.james.imap.store.mail.model.MailboxMembership;
 
 public class ResultIterator implements Iterator {
 
-    private final List<Message> messages;
+    private final List<MailboxMembership> messages;
 
     private final FetchGroup fetchGroup;
 
     @SuppressWarnings("unchecked")
-    public ResultIterator(final List<Message> messages, final FetchGroup fetchGroup) {
+    public ResultIterator(final List<MailboxMembership> messages, final FetchGroup fetchGroup) {
         super();
         if (messages == null) {
             this.messages = Collections.EMPTY_LIST;
         } else {
-            this.messages = new ArrayList<Message>(messages);
+            this.messages = new ArrayList<MailboxMembership>(messages);
         }
         this.fetchGroup = fetchGroup;
     }
@@ -75,7 +75,7 @@ public class ResultIterator implements Iterator {
         if (messages.isEmpty()) {
             throw new NoSuchElementException("No such element.");
         }
-        final Message message = messages.get(0);
+        final MailboxMembership message = messages.get(0);
         messages.remove(message);
         MessageResult result;
         try {
@@ -111,7 +111,7 @@ public class ResultIterator implements Iterator {
 
         private final long uid;
 
-        public UnloadedMessageResult(final Message message,
+        public UnloadedMessageResult(final MailboxMembership message,
                 final MailboxException exception) {
             super();
             internalDate = message.getInternalDate();

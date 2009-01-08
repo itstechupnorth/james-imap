@@ -18,15 +18,49 @@
  ****************************************************************/
 package org.apache.james.imap.store.mail.model;
 
-import java.util.List;
+import java.util.Date;
 
-public interface Message {
+import javax.mail.Flags;
 
-    public abstract byte[] getBody();
+/**
+ * Links mailbox to member messages.
+ */
+public interface MailboxMembership {
+
+    public abstract Date getInternalDate();
+
+    public abstract long getMailboxId();
+
+    public abstract int getSize();
+
+    public abstract long getUid();
+    
+    public abstract Message getMessage();
+
+    public abstract boolean isAnswered();
+
+    public abstract boolean isDeleted();
+
+    public abstract boolean isDraft();
+
+    public abstract boolean isFlagged();
+
+    public abstract boolean isRecent();
+
+    public abstract boolean isSeen();
 
     /**
-     * Gets a read-only list of headers.
-     * @return unmodifiable list of headers, not null
+     * Sets {@link #isRecent()} to false.
+     * A message can only be recent once.
      */
-    public abstract List<Header> getHeaders();
+    public abstract void unsetRecent();
+
+    public abstract void setFlags(Flags flags);
+
+    /**
+     * Creates a new flags instance populated
+     * with the current flag data.
+     * @return new instance, not null
+     */
+    public abstract Flags createFlags();
 }

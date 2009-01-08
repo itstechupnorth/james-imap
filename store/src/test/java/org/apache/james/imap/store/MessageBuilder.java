@@ -25,7 +25,7 @@ import java.util.List;
 import javax.mail.Flags;
 
 import org.apache.james.imap.store.mail.model.Header;
-import org.apache.james.imap.store.mail.model.Message;
+import org.apache.james.imap.store.mail.model.MailboxMembership;
 
 public class MessageBuilder {
     
@@ -38,8 +38,8 @@ public class MessageBuilder {
     public final List<SimpleHeader> headers = new ArrayList<SimpleHeader>();
     public int lineNumber = 0;
     
-    public Message build() {
-        Message result = new SimpleMessage(mailboxId, uid, internalDate, size, flags, body, headers);
+    public MailboxMembership build() {
+        MailboxMembership result = new SimpleMailboxMembership(mailboxId, uid, internalDate, size, flags, body, headers);
         return result;
     }
     
