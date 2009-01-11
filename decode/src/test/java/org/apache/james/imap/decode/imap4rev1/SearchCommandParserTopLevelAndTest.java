@@ -35,8 +35,8 @@ import org.apache.james.api.imap.message.request.SearchKey;
 import org.apache.james.imap.decode.ImapRequestLineReader;
 import org.apache.james.imap.decode.ProtocolException;
 import org.apache.james.imap.decode.imap4rev1.SearchCommandParser;
-import org.jmock.Mock;
-import org.jmock.MockObjectTestCase;
+import org.jmock.Expectations;
+import org.jmock.integration.junit3.MockObjectTestCase;
 
 public class SearchCommandParserTopLevelAndTest extends MockObjectTestCase {
 
@@ -128,13 +128,9 @@ public class SearchCommandParserTopLevelAndTest extends MockObjectTestCase {
 
     SearchCommandParser parser;
 
-    Mock mockCommandFactory;
+    Imap4Rev1CommandFactory mockCommandFactory;
 
-    Mock mockMessageFactory;
-
-    Mock mockCommand;
-
-    Mock mockMessage;
+    Imap4Rev1MessageFactory mockMessageFactory;
 
     ImapCommand command;
 
@@ -144,15 +140,14 @@ public class SearchCommandParserTopLevelAndTest extends MockObjectTestCase {
         super.setUp();
         parser = new SearchCommandParser();
         mockCommandFactory = mock(Imap4Rev1CommandFactory.class);
-        mockCommandFactory.expects(once()).method("getSearch");
+        checking(new Expectations() {{
+            oneOf (mockCommandFactory).getSearch();
+        }});
         mockMessageFactory = mock(Imap4Rev1MessageFactory.class);
-        mockCommand = mock(ImapCommand.class);
-        command = (ImapCommand) mockCommand.proxy();
-        mockMessage = mock(ImapMessage.class);
-        message = (ImapMessage) mockMessage.proxy();
-        parser.init((Imap4Rev1CommandFactory) mockCommandFactory.proxy());
-        parser.setMessageFactory((Imap4Rev1MessageFactory) mockMessageFactory
-                .proxy());
+        command = mock(ImapCommand.class);
+        message = mock(ImapMessage.class);
+        parser.init(mockCommandFactory);
+        parser.setMessageFactory(mockMessageFactory);
     }
 
     protected void tearDown() throws Exception {
@@ -176,10 +171,10 @@ public class SearchCommandParserTopLevelAndTest extends MockObjectTestCase {
     }
 
     private void permute(int mutations, Input[] inputs) throws Exception {
-        permute(mutations, new ArrayList(), new StringBuffer(), inputs);
+        permute(mutations, new ArrayList<SearchKey>(), new StringBuffer(), inputs);
     }
 
-    private void permute(int mutations, List keys, StringBuffer buffer,
+    private void permute(int mutations, List<SearchKey> keys, StringBuffer buffer,
             Input[] inputs) throws Exception {
         if (mutations == 0) {
             check(keys, buffer);
@@ -191,14 +186,14 @@ public class SearchCommandParserTopLevelAndTest extends MockObjectTestCase {
                     nextBuffer.append(' ');
                 }
                 nextBuffer.append(inputs[i].input);
-                List nextKeys = new ArrayList(keys);
+                List<SearchKey> nextKeys = new ArrayList<SearchKey>(keys);
                 nextKeys.add(inputs[i].key);
                 permute(mutations, nextKeys, nextBuffer, inputs);
             }
         }
     }
 
-    private void check(List keys, StringBuffer buffer)
+    private void check(List<SearchKey> keys, StringBuffer buffer)
             throws UnsupportedEncodingException, ProtocolException {
         buffer.append("\r\n");
         String input = buffer.toString();

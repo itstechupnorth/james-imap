@@ -28,7 +28,7 @@ import org.apache.james.imap.mailbox.MessageResult;
 import org.apache.james.imap.mailbox.MessageResult.FetchGroup;
 import org.apache.james.imap.mailbox.util.MessageResultImpl;
 import org.apache.james.imap.mailbox.util.MessageResultUtils;
-import org.jmock.MockObjectTestCase;
+import org.jmock.integration.junit3.MockObjectTestCase;
 
 public class MessageResultImplIncludedResultsTest extends MockObjectTestCase {
 
@@ -39,8 +39,7 @@ public class MessageResultImplIncludedResultsTest extends MockObjectTestCase {
     protected void setUp() throws Exception {
         super.setUp();
         result = new MessageResultImpl();
-        content = (MessageResult.Content) mock(MessageResult.Content.class)
-                .proxy();
+        content = mock(MessageResult.Content.class);
     }
 
     protected void tearDown() throws Exception {

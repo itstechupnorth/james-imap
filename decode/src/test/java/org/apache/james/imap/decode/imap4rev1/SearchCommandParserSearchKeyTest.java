@@ -32,8 +32,8 @@ import org.apache.james.api.imap.message.request.SearchKey;
 import org.apache.james.imap.decode.ImapRequestLineReader;
 import org.apache.james.imap.decode.ProtocolException;
 import org.apache.james.imap.decode.imap4rev1.SearchCommandParser;
-import org.jmock.Mock;
-import org.jmock.MockObjectTestCase;
+import org.jmock.Expectations;
+import org.jmock.integration.junit3.MockObjectTestCase;
 
 public class SearchCommandParserSearchKeyTest extends MockObjectTestCase {
 
@@ -41,14 +41,10 @@ public class SearchCommandParserSearchKeyTest extends MockObjectTestCase {
 
     SearchCommandParser parser;
 
-    Mock mockCommandFactory;
+    Imap4Rev1CommandFactory mockCommandFactory;
 
-    Mock mockMessageFactory;
-
-    Mock mockCommand;
-
-    Mock mockMessage;
-
+    Imap4Rev1MessageFactory mockMessageFactory;
+    
     ImapCommand command;
 
     ImapMessage message;
@@ -57,15 +53,14 @@ public class SearchCommandParserSearchKeyTest extends MockObjectTestCase {
         super.setUp();
         parser = new SearchCommandParser();
         mockCommandFactory = mock(Imap4Rev1CommandFactory.class);
-        mockCommandFactory.expects(once()).method("getSearch");
+        checking(new Expectations() {{
+            oneOf (mockCommandFactory).getSearch();
+        }});
         mockMessageFactory = mock(Imap4Rev1MessageFactory.class);
-        mockCommand = mock(ImapCommand.class);
-        command = (ImapCommand) mockCommand.proxy();
-        mockMessage = mock(ImapMessage.class);
-        message = (ImapMessage) mockMessage.proxy();
-        parser.init((Imap4Rev1CommandFactory) mockCommandFactory.proxy());
-        parser.setMessageFactory((Imap4Rev1MessageFactory) mockMessageFactory
-                .proxy());
+        command = mock(ImapCommand.class);
+        message = mock(ImapMessage.class);
+        parser.init(mockCommandFactory);
+        parser.setMessageFactory(mockMessageFactory);
     }
 
     protected void tearDown() throws Exception {

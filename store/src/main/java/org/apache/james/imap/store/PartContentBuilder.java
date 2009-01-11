@@ -190,12 +190,13 @@ public class PartContentBuilder {
         return content;
     }
 
+    @SuppressWarnings("unchecked")
     public List getMimeHeaders() throws IOException {
-        final List results;
+        final List<ResultHeader> results;
         if (empty) {
             results = Collections.EMPTY_LIST;
         } else {
-            results = new ArrayList();
+            results = new ArrayList<ResultHeader>();
             for (int state = parser.getState(); state != MimeTokenStream.T_END_HEADER; state = parser
                     .next()) {
                 switch (state) {
@@ -214,12 +215,13 @@ public class PartContentBuilder {
         return results;
     }
 
+    @SuppressWarnings("unchecked")
     public List getMessageHeaders() throws IOException {
-        final List results;
+        final List<ResultHeader> results;
         if (empty) {
             results = Collections.EMPTY_LIST;
         } else {
-            results = new ArrayList();
+            results = new ArrayList<ResultHeader>();
             try {
                 advancedToMessage();
 

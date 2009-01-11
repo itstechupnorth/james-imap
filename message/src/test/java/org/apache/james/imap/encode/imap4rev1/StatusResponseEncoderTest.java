@@ -21,16 +21,14 @@ package org.apache.james.imap.encode.imap4rev1;
 
 import org.apache.james.api.imap.ImapCommand;
 import org.apache.james.api.imap.ImapConstants;
-import org.apache.james.api.imap.ImapMessage;
 import org.apache.james.api.imap.display.HumanReadableTextKey;
 import org.apache.james.api.imap.message.response.imap4rev1.StatusResponse;
 import org.apache.james.imap.encode.ImapEncoder;
 import org.apache.james.imap.encode.ImapResponseComposer;
 import org.apache.james.imap.encode.base.ImapResponseComposerImpl;
-import org.apache.james.imap.encode.imap4rev1.StatusResponseEncoder;
 import org.apache.james.imap.encode.imap4rev1.legacy.MockImapResponseWriter;
-import org.jmock.Mock;
-import org.jmock.MockObjectTestCase;
+import org.jmock.Expectations;
+import org.jmock.integration.junit3.MockObjectTestCase;
 
 public class StatusResponseEncoderTest extends MockObjectTestCase {
 
@@ -45,13 +43,13 @@ public class StatusResponseEncoderTest extends MockObjectTestCase {
 
     ImapResponseComposer response;
 
-    Mock mockNextEncoder;
+    ImapEncoder mockNextEncoder;
 
-    Mock mockStatusResponse;
+    StatusResponse mockStatusResponse;
 
     StatusResponseEncoder encoder;
 
-    Mock mockCommand;
+    ImapCommand mockCommand;
 
     protected void setUp() throws Exception {
         super.setUp();
@@ -59,8 +57,7 @@ public class StatusResponseEncoderTest extends MockObjectTestCase {
         response = new ImapResponseComposerImpl(writer);
         mockNextEncoder = mock(ImapEncoder.class);
         mockStatusResponse = mock(StatusResponse.class);
-        encoder = new StatusResponseEncoder((ImapEncoder) mockNextEncoder
-                .proxy());
+        encoder = new StatusResponseEncoder(mockNextEncoder);
         mockCommand = mock(ImapCommand.class);
     }
 
@@ -292,29 +289,23 @@ public class StatusResponseEncoderTest extends MockObjectTestCase {
     }
 
     private void compose() throws Exception {
-        encoder.doEncode((ImapMessage) mockStatusResponse.proxy(), response);
+        encoder.doEncode(mockStatusResponse, response);
     }
 
-    private void configure(StatusResponse.Type type,
-            StatusResponse.ResponseCode code, HumanReadableTextKey key,
-            String tag) {
-        mockStatusResponse.expects(once()).method("getServerResponseType")
-                .will(returnValue(type));
-        mockStatusResponse.expects(once()).method("getTag").will(
-                returnValue(tag));
-        mockStatusResponse.expects(once()).method("getTextKey").will(
-                returnValue(key));
-        mockStatusResponse.expects(once()).method("getResponseCode").will(
-                returnValue(code));
-
-        if (tag == null) {
-            mockStatusResponse.expects(once()).method("getCommand").will(
-                    returnValue(null));
-        } else {
-            mockCommand.expects(once()).method("getName").will(
-                    returnValue(COMMAND));
-            mockStatusResponse.expects(once()).method("getCommand").will(
-                    returnValue(mockCommand.proxy()));
-        }
+    private void configure(final StatusResponse.Type type,
+            final StatusResponse.ResponseCode code, final HumanReadableTextKey key,
+            final String tag) {
+        checking(new Expectations() {{
+            oneOf(mockStatusResponse).getServerResponseType();will(returnValue(type));
+            oneOf(mockStatusResponse).getTag();will(returnValue(tag));
+            oneOf(mockStatusResponse).getTextKey();will(returnValue(key));
+            oneOf(mockStatusResponse).getResponseCode();will(returnValue(code));
+            if (tag == null) {
+                oneOf(mockStatusResponse).getCommand();will(returnValue(null));
+            } else {
+                oneOf(mockCommand).getName();will(returnValue(COMMAND));
+                oneOf(mockStatusResponse).getCommand();will(returnValue(mockCommand));
+            }
+        }});
     }
 }

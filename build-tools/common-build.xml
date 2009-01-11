@@ -215,6 +215,9 @@ JAMES requires Ant 1.7 or higher. Please install a more modern version of Ant.
                 <fileset dir="${lib.dir}">    
                     <include name="${junit.jar}"/>
                     <include name="${jmock.jar}"/>
+                	<include name="${jmock-junit.jar}"/>
+                	<include name="${hamcrest-library.jar}"/>
+                	<include name="${hamcrest-core.jar}"/>
                     <include name="${commons-beanutils.jar}"/> 
                     <include name="${derby.jar}"/>    
                 </fileset>   

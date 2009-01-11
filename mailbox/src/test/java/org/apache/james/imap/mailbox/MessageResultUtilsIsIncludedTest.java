@@ -23,8 +23,8 @@ import org.apache.james.imap.mailbox.MessageResult;
 import org.apache.james.imap.mailbox.MessageResult.FetchGroup;
 import org.apache.james.imap.mailbox.util.FetchGroupImpl;
 import org.apache.james.imap.mailbox.util.MessageResultUtils;
-import org.jmock.Mock;
-import org.jmock.MockObjectTestCase;
+import org.jmock.Expectations;
+import org.jmock.integration.junit3.MockObjectTestCase;
 
 public class MessageResultUtilsIsIncludedTest extends MockObjectTestCase {
 
@@ -108,12 +108,13 @@ public class MessageResultUtilsIsIncludedTest extends MockObjectTestCase {
         return mock(included, true);
     }
 
-    private MessageResult mock(FetchGroup included, boolean willBeCalled) {
-        Mock result = mock(MessageResult.class);
+    private MessageResult mock(final FetchGroup included, boolean willBeCalled) {
+        final MessageResult result = mock(MessageResult.class, included.toString());
         if (willBeCalled) {
-            result.expects(once()).method("getIncludedResults").will(
-                    returnValue(included));
+            checking(new Expectations() {{
+                oneOf (result).getIncludedResults();will(returnValue(included));
+            }});
         }
-        return (MessageResult) result.proxy();
+        return result;
     }
 }

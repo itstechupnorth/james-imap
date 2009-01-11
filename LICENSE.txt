@@ -196,7 +196,10 @@
    Bnd, Bundle Tool http://www.aqute.biz/Code/Bnd, The Apache License, Version 2.0     
 
    JMock, http://www.jmock.org BSD License
-     (see stage/jmock/jars/jmock-1.1.0.LICENSE)
+     (see stage/jmock/jars/jmock-2.5.1.LICENSE)
+
+   Hamcrest http://code.google.com/p/hamcrest/ BSD License
+     (see stage/org.hamcrest/jars/hamcrest-core-1.1.LICENSE)
 
    Village 2.0, The Working-Dogs.com License, Version 1.1
 /*

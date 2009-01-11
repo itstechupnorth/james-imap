@@ -27,8 +27,9 @@ import org.apache.james.imap.encode.ImapEncoder;
 import org.apache.james.imap.encode.ImapResponseComposer;
 import org.apache.james.imap.encode.imap4rev1.FetchResponseEncoder;
 import org.apache.james.imap.message.response.imap4rev1.FetchResponse;
-import org.jmock.Mock;
-import org.jmock.MockObjectTestCase;
+import org.jmock.Expectations;
+import org.jmock.Sequence;
+import org.jmock.integration.junit3.MockObjectTestCase;
 
 public class FetchResponseEncoderTest extends MockObjectTestCase {
 
@@ -36,21 +37,18 @@ public class FetchResponseEncoderTest extends MockObjectTestCase {
 
     ImapResponseComposer composer;
 
-    Mock mockComposer;
 
-    Mock mockNextEncoder;
+    ImapEncoder mockNextEncoder;
 
     FetchResponseEncoder encoder;
 
-    Mock mockCommand;
+    ImapCommand mockCommand;
 
     protected void setUp() throws Exception {
         super.setUp();
-        mockComposer = mock(ImapResponseComposer.class);
-        composer = (ImapResponseComposer) mockComposer.proxy();
+        composer = mock(ImapResponseComposer.class);
         mockNextEncoder = mock(ImapEncoder.class);
-        encoder = new FetchResponseEncoder((ImapEncoder) mockNextEncoder
-                .proxy());
+        encoder = new FetchResponseEncoder(mockNextEncoder);
         mockCommand = mock(ImapCommand.class);
         flags = new Flags(Flags.Flag.DELETED);
     }
@@ -60,8 +58,7 @@ public class FetchResponseEncoderTest extends MockObjectTestCase {
     }
 
     public void testShouldNotAcceptUnknownResponse() throws Exception {
-        assertFalse(encoder.isAcceptable((ImapMessage) mock(ImapMessage.class)
-                .proxy()));
+        assertFalse(encoder.isAcceptable(mock(ImapMessage.class)));
     }
 
     public void testShouldAcceptFetchResponse() throws Exception {
@@ -72,30 +69,39 @@ public class FetchResponseEncoderTest extends MockObjectTestCase {
     public void testShouldEncodeFlagsResponse() throws Exception {
         FetchResponse message = new FetchResponse(100, flags, null, null, null,
                 null, null, null, null);
-        mockComposer.expects(once()).method("openFetchResponse").with(eq(100L));
-        mockComposer.expects(once()).method("flags").with(eq(flags));
-        mockComposer.expects(once()).method("closeFetchResponse");
+        checking(new Expectations() {{
+            final Sequence sequence = sequence("composition");
+            oneOf(composer).openFetchResponse(with(equal(100L))); inSequence(sequence);
+            oneOf(composer).flags(with(equal(flags))); inSequence(sequence);
+            oneOf(composer).closeFetchResponse(); inSequence(sequence);
+        }});
         encoder.doEncode(message, composer);
     }
 
     public void testShouldEncodeUidResponse() throws Exception {
         FetchResponse message = new FetchResponse(100, null, new Long(72),
                 null, null, null, null, null, null);
-        mockComposer.expects(once()).method("openFetchResponse").with(eq(100L));
-        mockComposer.expects(once()).method("message").with(eq("UID"));
-        mockComposer.expects(once()).method("message").with(eq(72L));
-        mockComposer.expects(once()).method("closeFetchResponse");
+        checking(new Expectations() {{
+            final Sequence sequence = sequence("composition");
+            oneOf(composer).openFetchResponse(with(equal(100L))); inSequence(sequence);
+            oneOf(composer).message(with(equal("UID"))); inSequence(sequence);
+            oneOf(composer).message(with(equal(72L))); inSequence(sequence);
+            oneOf(composer).closeFetchResponse(); inSequence(sequence);
+        }});
         encoder.doEncode(message, composer);
     }
 
     public void testShouldEncodeAllResponse() throws Exception {
         FetchResponse message = new FetchResponse(100, flags, new Long(72),
                 null, null, null, null, null, null);
-        mockComposer.expects(once()).method("openFetchResponse").with(eq(100L));
-        mockComposer.expects(once()).method("flags").with(eq(flags));
-        mockComposer.expects(once()).method("message").with(eq("UID"));
-        mockComposer.expects(once()).method("message").with(eq(72L));
-        mockComposer.expects(once()).method("closeFetchResponse");
+        checking(new Expectations() {{
+            final Sequence sequence = sequence("composition");
+            oneOf(composer).openFetchResponse(with(equal(100L))); inSequence(sequence);
+            oneOf(composer).flags(with(equal(flags))); inSequence(sequence);
+            oneOf(composer).message(with(equal("UID"))); inSequence(sequence);
+            oneOf(composer).message(with(equal(72L))); inSequence(sequence);
+            oneOf(composer).closeFetchResponse(); inSequence(sequence);
+        }});
         encoder.doEncode(message, composer);
     }
 }

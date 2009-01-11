@@ -47,7 +47,7 @@ public class MimeDescriptorImpl implements MessageResult.MimeDescriptor {
     private static MimeDescriptorImpl createDescriptor(
             final MimeTokenStream parser) throws IOException, MimeException {
         int next = parser.next();
-        final Collection headers = new ArrayList();
+        final Collection<ResultHeader> headers = new ArrayList<ResultHeader>();
         while (next != MimeTokenStream.T_BODY
                 && next != MimeTokenStream.T_END_OF_STREAM
                 && next != MimeTokenStream.T_START_MULTIPART) {
@@ -134,7 +134,7 @@ public class MimeDescriptorImpl implements MessageResult.MimeDescriptor {
         final String subType = descriptor.getSubType();
         final String type = descriptor.getMediaType();
         final String transferEncoding = descriptor.getTransferEncoding();
-        final Collection contentTypeParameters = new ArrayList();
+        final Collection<ResultHeader> contentTypeParameters = new ArrayList<ResultHeader>();
         final Map valuesByName = descriptor.getContentTypeParameters();
         for (final Iterator it = valuesByName.keySet().iterator(); it.hasNext();) {
             final String name = (String) it.next();
@@ -163,7 +163,7 @@ public class MimeDescriptorImpl implements MessageResult.MimeDescriptor {
         final String disposition = descriptor.getContentDispositionType();
         final Map dispositionParams = descriptor
                 .getContentDispositionParameters();
-        final Collection parts = new ArrayList();
+        final Collection<MimeDescriptor> parts = new ArrayList<MimeDescriptor>();
         final String location = descriptor.getContentLocation();
         final String md5 = descriptor.getContentMD5Raw();
         final MimeDescriptorImpl mimeDescriptorImpl = new MimeDescriptorImpl(
@@ -200,7 +200,7 @@ public class MimeDescriptorImpl implements MessageResult.MimeDescriptor {
 
     private final MessageResult.MimeDescriptor embeddedMessage;
 
-    private final Collection parts;
+    private final Collection<MimeDescriptor> parts;
 
     private final String location;
 
@@ -212,7 +212,7 @@ public class MimeDescriptorImpl implements MessageResult.MimeDescriptor {
             final String transferEncoding, final Collection headers,
             final Collection contentTypeParameters, final List languages,
             String disposition, Map dispositionParams,
-            final MimeDescriptor embeddedMessage, final Collection parts,
+            final MimeDescriptor embeddedMessage, final Collection<MimeDescriptor> parts,
             final String location, final String md5) {
         super();
         this.type = type;

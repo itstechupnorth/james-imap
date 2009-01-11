@@ -22,26 +22,23 @@ package org.apache.james.imap.encode.imap4rev1.server;
 import org.apache.james.api.imap.ImapMessage;
 import org.apache.james.imap.encode.ImapEncoder;
 import org.apache.james.imap.encode.ImapResponseComposer;
-import org.apache.james.imap.encode.imap4rev1.server.STATUSResponseEncoder;
 import org.apache.james.imap.message.response.imap4rev1.server.STATUSResponse;
-import org.jmock.Mock;
-import org.jmock.MockObjectTestCase;
-import org.jmock.core.Constraint;
+import org.jmock.Expectations;
+import org.jmock.integration.junit3.MockObjectTestCase;
 
 public class STATUSResponseEncoderTest extends MockObjectTestCase {
 
     STATUSResponseEncoder encoder;
 
-    Mock mockNextEncoder;
+    ImapEncoder mockNextEncoder;
 
-    Mock composer;
+    ImapResponseComposer composer;
 
     protected void setUp() throws Exception {
         super.setUp();
         mockNextEncoder = mock(ImapEncoder.class);
         composer = mock(ImapResponseComposer.class);
-        encoder = new STATUSResponseEncoder((ImapEncoder) mockNextEncoder
-                .proxy());
+        encoder = new STATUSResponseEncoder(mockNextEncoder);
     }
 
     protected void tearDown() throws Exception {
@@ -51,24 +48,29 @@ public class STATUSResponseEncoderTest extends MockObjectTestCase {
     public void testIsAcceptable() throws Exception {
         assertTrue(encoder.isAcceptable(new STATUSResponse(null, null, null,
                 null, null, "mailbox")));
-        assertFalse(encoder.isAcceptable((ImapMessage) mock(ImapMessage.class)
-                .proxy()));
+        assertFalse(encoder.isAcceptable(mock(ImapMessage.class)));
         assertFalse(encoder.isAcceptable(null));
     }
 
     public void testDoEncode() throws Exception {
-        Long messages = new Long(2);
-        Long recent = new Long(3);
-        Long uidNext = new Long(5);
-        Long uidValidity = new Long(7);
-        Long unseen = new Long(11);
-        String mailbox = "A mailbox named desire";
-        Constraint[] args = { same(messages), same(recent), same(uidNext),
-                same(uidValidity), same(unseen), same(mailbox) };
+        final Long messages = new Long(2);
+        final Long recent = new Long(3);
+        final Long uidNext = new Long(5);
+        final Long uidValidity = new Long(7);
+        final Long unseen = new Long(11);
+        final String mailbox = "A mailbox named desire";
+        checking(new Expectations() {{
+            oneOf(composer).statusResponse(
+                    with(same(messages)), 
+                    with(same(recent)), 
+                    with(same(uidNext)),
+                    with(same(uidValidity)), 
+                    with(same(unseen)), 
+                    with(same(mailbox))
+                    );
+        }});
 
-        composer.expects(once()).method("statusResponse").with(args);
         encoder.encode(new STATUSResponse(messages, recent, uidNext,
-                uidValidity, unseen, mailbox), (ImapResponseComposer) composer
-                .proxy());
+                uidValidity, unseen, mailbox), composer);
     }
 }

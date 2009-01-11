@@ -38,8 +38,8 @@ import org.apache.james.api.imap.message.response.imap4rev1.StatusResponseFactor
 import org.apache.james.imap.decode.ImapRequestLineReader;
 import org.apache.james.imap.decode.ProtocolException;
 import org.apache.james.imap.decode.imap4rev1.SearchCommandParser;
-import org.jmock.Mock;
-import org.jmock.MockObjectTestCase;
+import org.jmock.Expectations;
+import org.jmock.integration.junit3.MockObjectTestCase;
 
 public class SearchCommandParserQuotedCharsetTest extends MockObjectTestCase {
 
@@ -128,15 +128,11 @@ public class SearchCommandParserQuotedCharsetTest extends MockObjectTestCase {
 
     SearchCommandParser parser;
 
-    Mock mockStatusResponseFactory;
+    StatusResponseFactory mockStatusResponseFactory;
 
-    Mock mockCommandFactory;
+    Imap4Rev1CommandFactory mockCommandFactory;
 
-    Mock mockMessageFactory;
-
-    Mock mockCommand;
-
-    Mock mockMessage;
+    Imap4Rev1MessageFactory mockMessageFactory;
 
     ImapCommand command;
 
@@ -146,19 +142,16 @@ public class SearchCommandParserQuotedCharsetTest extends MockObjectTestCase {
         super.setUp();
         parser = new SearchCommandParser();
         mockCommandFactory = mock(Imap4Rev1CommandFactory.class);
-        mockCommandFactory.expects(once()).method("getSearch");
+        checking(new Expectations() {{
+            oneOf (mockCommandFactory).getSearch();
+        }});
         mockMessageFactory = mock(Imap4Rev1MessageFactory.class);
-        mockCommand = mock(ImapCommand.class);
-        command = (ImapCommand) mockCommand.proxy();
-        mockMessage = mock(ImapMessage.class);
+        command = mock(ImapCommand.class);
+        message = mock(ImapMessage.class);
         mockStatusResponseFactory = mock(StatusResponseFactory.class);
-        message = (ImapMessage) mockMessage.proxy();
-        parser.init((Imap4Rev1CommandFactory) mockCommandFactory.proxy());
-        parser.setMessageFactory((Imap4Rev1MessageFactory) mockMessageFactory
-                .proxy());
-        parser
-                .setStatusResponseFactory((StatusResponseFactory) mockStatusResponseFactory
-                        .proxy());
+        parser.init(mockCommandFactory);
+        parser.setMessageFactory(mockMessageFactory);
+        parser.setStatusResponseFactory(mockStatusResponseFactory);
         parser.setLog(new MockLogger());
     }
 
@@ -189,16 +182,20 @@ public class SearchCommandParserQuotedCharsetTest extends MockObjectTestCase {
     }
 
     public void testBadCharset() throws Exception {
-        Collection charsetNames = new HashSet();
+        final Collection<String> charsetNames = new HashSet<String>();
         for (final Iterator it = Charset.availableCharsets().values()
                 .iterator(); it.hasNext();) {
             final Charset charset = (Charset) it.next();
-            final Set aliases = charset.aliases();
+            final Set<String> aliases = charset.aliases();
             charsetNames.addAll(aliases);
         }
-        mockStatusResponseFactory.expects(once()).method("taggedNo").with(
-                eq(TAG), same(command), eq(HumanReadableTextKey.BAD_CHARSET),
-                eq(StatusResponse.ResponseCode.badCharset(charsetNames)));
+        checking(new Expectations() {{
+            oneOf (mockStatusResponseFactory).taggedNo(
+                    with(equal(TAG)), 
+                    with(same(command)), 
+                    with(equal(HumanReadableTextKey.BAD_CHARSET)),
+                    with(equal(StatusResponse.ResponseCode.badCharset(charsetNames))));
+        }});
         ImapRequestLineReader reader = new ImapRequestLineReader(
                 new ByteArrayInputStream("CHARSET BOGUS ".getBytes("US-ASCII")),
                 new ByteArrayOutputStream());

@@ -35,9 +35,8 @@ import org.apache.james.imap.mailbox.MailboxManagerProvider;
 import org.apache.james.imap.message.request.imap4rev1.LsubRequest;
 import org.apache.james.imap.message.response.imap4rev1.server.LSubResponse;
 import org.apache.james.imap.processor.base.ImapSessionUtils;
-import org.apache.james.imap.processor.imap4rev1.LSubProcessor;
-import org.jmock.Mock;
-import org.jmock.MockObjectTestCase;
+import org.jmock.Expectations;
+import org.jmock.integration.junit3.MockObjectTestCase;
 
 public class LSubProcessorTest extends MockObjectTestCase {
 
@@ -64,27 +63,25 @@ public class LSubProcessorTest extends MockObjectTestCase {
 
     LSubProcessor processor;
 
-    Mock next;
+    ImapProcessor next;
 
-    Mock provider;
+    MailboxManagerProvider provider;
 
-    Mock manager;
+    MailboxManager manager;
 
-    Mock responder;
+    ImapProcessor.Responder responder;
 
-    Mock result;
+    ListResult result;
 
-    Mock session;
+    ImapSession session;
 
-    Mock command;
+    StatusResponseFactory serverResponseFactory;
 
-    Mock serverResponseFactory;
-
-    Mock statusResponse;
+    StatusResponse statusResponse;
 
     Collection<String> subscriptions;
 
-    ImapCommand imapCommand;
+    ImapCommand command;
 
     private ImapProcessor.Responder responderImpl;
 
@@ -93,18 +90,17 @@ public class LSubProcessorTest extends MockObjectTestCase {
         serverResponseFactory = mock(StatusResponseFactory.class);
         session = mock(ImapSession.class);
         command = mock(ImapCommand.class);
-        imapCommand = (ImapCommand) command.proxy();
         next = mock(ImapProcessor.class);
         responder = mock(ImapProcessor.Responder.class);
         result = mock(ListResult.class);
         provider = mock(MailboxManagerProvider.class);
         statusResponse = mock(StatusResponse.class);
-        responderImpl = (ImapProcessor.Responder) responder.proxy();
+        responderImpl = responder;
         manager = mock(MailboxManager.class);
-        processor = new LSubProcessor((ImapProcessor) next.proxy(),
-                (MailboxManagerProvider) provider.proxy(),
-                (StatusResponseFactory) serverResponseFactory.proxy());
-        provider.expects(atMostOnce()).method("getMailboxManager").will(returnValue(manager.proxy()));
+        processor = new LSubProcessor(next, provider, serverResponseFactory);
+        checking(new Expectations() {{
+            atMost(1).of(provider).getMailboxManager(); will(returnValue(manager));
+        }});
     }
 
     protected void tearDown() throws Exception {
@@ -115,17 +111,16 @@ public class LSubProcessorTest extends MockObjectTestCase {
         subscriptions.add(MAILBOX_A);
         subscriptions.add(MAILBOX_B);
         subscriptions.add(MAILBOX_C);
-
-        responder.expects(once()).method("respond")
-                .with(
-                        eq(new LSubResponse("",
-                                ImapConstants.HIERARCHY_DELIMITER, true)));
+        checking(new Expectations() {{
+            oneOf(responder).respond(with(
+                    equal(new LSubResponse("",
+                            ImapConstants.HIERARCHY_DELIMITER, true))));
+        }});
 
         expectOk();
 
-        LsubRequest request = new LsubRequest(imapCommand, "", "", TAG);
-        processor.doProcess(request, (ImapSession) session.proxy(), TAG,
-                imapCommand, responderImpl);
+        LsubRequest request = new LsubRequest(command, "", "", TAG);
+        processor.doProcess(request, session, TAG, command, responderImpl);
 
     }
 
@@ -137,21 +132,21 @@ public class LSubProcessorTest extends MockObjectTestCase {
         subscriptions.add(CHILD_ONE);
         subscriptions.add(CHILD_TWO);
 
-        responder.expects(once()).method("respond").with(
-                eq(new LSubResponse(CHILD_ONE,
-                        ImapConstants.HIERARCHY_DELIMITER, false)));
-
-        responder.expects(once()).method("respond").with(
-                eq(new LSubResponse(CHILD_TWO,
-                        ImapConstants.HIERARCHY_DELIMITER, false)));
+        checking(new Expectations() {{
+            oneOf(responder).respond(with(
+                    equal(new LSubResponse(CHILD_ONE,
+                            ImapConstants.HIERARCHY_DELIMITER, false))));
+            oneOf(responder).respond(with(
+                    equal(new LSubResponse(CHILD_TWO,
+                                    ImapConstants.HIERARCHY_DELIMITER, false))));
+        }});
 
         expectSubscriptions();
         expectOk();
 
-        LsubRequest request = new LsubRequest(imapCommand, "", PARENT
+        LsubRequest request = new LsubRequest(command, "", PARENT
                 + ImapConstants.HIERARCHY_DELIMITER + "%", TAG);
-        processor.doProcess(request, (ImapSession) session.proxy(), TAG,
-                imapCommand, responderImpl);
+        processor.doProcess(request, session, TAG, command, responderImpl);
 
     }
 
@@ -163,17 +158,17 @@ public class LSubProcessorTest extends MockObjectTestCase {
         subscriptions.add(CHILD_ONE);
         subscriptions.add(CHILD_TWO);
 
-        responder.expects(once()).method("respond").with(
-                eq(new LSubResponse(PARENT, ImapConstants.HIERARCHY_DELIMITER,
-                        true)));
+        checking(new Expectations() {{
+            oneOf(responder).respond(with(
+                    equal(new LSubResponse(PARENT, ImapConstants.HIERARCHY_DELIMITER, true))));
+        }});
 
         expectSubscriptions();
         expectOk();
 
-        LsubRequest request = new LsubRequest(imapCommand, "", ROOT
+        LsubRequest request = new LsubRequest(command, "", ROOT
                 + ImapConstants.HIERARCHY_DELIMITER + "%", TAG);
-        processor.doProcess(request, (ImapSession) session.proxy(), TAG,
-                imapCommand, responderImpl);
+        processor.doProcess(request, session, TAG, command, responderImpl);
 
     }
 
@@ -186,57 +181,60 @@ public class LSubProcessorTest extends MockObjectTestCase {
         subscriptions.add(CHILD_ONE);
         subscriptions.add(CHILD_TWO);
 
-        responder.expects(once()).method("respond").with(
-                eq(new LSubResponse(PARENT, ImapConstants.HIERARCHY_DELIMITER,
-                        false)));
+        checking(new Expectations() {{
+            oneOf(responder).respond(with(
+                    equal(new LSubResponse(PARENT, ImapConstants.HIERARCHY_DELIMITER,
+                            false))));
+        }});
 
         expectSubscriptions();
         expectOk();
 
-        LsubRequest request = new LsubRequest(imapCommand, "", ROOT
+        LsubRequest request = new LsubRequest(command, "", ROOT
                 + ImapConstants.HIERARCHY_DELIMITER + "%", TAG);
-        processor.doProcess(request, (ImapSession) session.proxy(), TAG,
-                imapCommand, responderImpl);
+        processor.doProcess(request, session, TAG, command, responderImpl);
 
     }
 
     public void testSelectAll() throws Exception {
+        checking(new Expectations() {{
+            oneOf(responder).respond(with(equal(
+                    new LSubResponse(MAILBOX_A, ImapConstants.HIERARCHY_DELIMITER, false))));
+            oneOf(responder).respond(with(equal(
+                    new LSubResponse(MAILBOX_B,
+                            ImapConstants.HIERARCHY_DELIMITER, false))));
+            oneOf(responder).respond(with(equal(
+                    new LSubResponse(MAILBOX_C,
+                            ImapConstants.HIERARCHY_DELIMITER, false))));
+        }});
         subscriptions.add(MAILBOX_A);
-        responder.expects(once()).method("respond").with(
-                eq(new LSubResponse(MAILBOX_A,
-                        ImapConstants.HIERARCHY_DELIMITER, false)));
         subscriptions.add(MAILBOX_B);
-        responder.expects(once()).method("respond").with(
-                eq(new LSubResponse(MAILBOX_B,
-                        ImapConstants.HIERARCHY_DELIMITER, false)));
         subscriptions.add(MAILBOX_C);
-        responder.expects(once()).method("respond").with(
-                eq(new LSubResponse(MAILBOX_C,
-                        ImapConstants.HIERARCHY_DELIMITER, false)));
 
         expectSubscriptions();
         expectOk();
 
-        LsubRequest request = new LsubRequest(imapCommand, "", "*", TAG);
-        processor.doProcess(request, (ImapSession) session.proxy(), TAG,
-                imapCommand, responderImpl);
+        LsubRequest request = new LsubRequest(command, "", "*", TAG);
+        processor.doProcess(request, session, TAG, command, responderImpl);
 
     }
 
     private void expectOk() {
-        StatusResponse response = (StatusResponse) statusResponse.proxy();
-        serverResponseFactory.expects(once()).method("taggedOk").with(eq(TAG),
-                same(imapCommand), eq(HumanReadableTextKey.COMPLETED)).will(
-                returnValue(response));
-        responder.expects(once()).method("respond").with(same(response));
+        checking(new Expectations() {{
+            oneOf(serverResponseFactory).taggedOk(
+                    with(equal(TAG)),
+                    with(same(command)),
+                    with(equal(HumanReadableTextKey.COMPLETED)));will(returnValue(statusResponse));
+            oneOf(responder).respond(with(same(statusResponse)));          
+        }});
     }
 
-    private void expectSubscriptions() {
-        session.expects(once()).method("getAttribute").with(
-                eq(ImapSessionUtils.MAILBOX_USER_ATTRIBUTE_SESSION_KEY)).will(
-                returnValue(USER));
-
-        manager.expects(once()).method("subscriptions").with(eq(USER)).will(
-                returnValue(subscriptions));
+    private void expectSubscriptions() throws Exception {
+        checking(new Expectations() {{
+            oneOf(session).getAttribute(
+                    with(equal(ImapSessionUtils.MAILBOX_USER_ATTRIBUTE_SESSION_KEY)));
+                    will(returnValue(USER));
+            oneOf(manager).subscriptions(with(same(USER)));will(returnValue(subscriptions));     
+        }});
     }
 }

@@ -27,11 +27,10 @@ import java.util.List;
 import javax.mail.Flags;
 
 import org.apache.james.api.imap.ImapCommand;
-import org.jmock.Mock;
-import org.jmock.MockObjectTestCase;
+import org.jmock.Expectations;
+import org.jmock.integration.junit3.MockObjectTestCase;
 
-public abstract class AbstractTestImapResponseComposer extends
-        MockObjectTestCase {
+public abstract class AbstractTestImapResponseComposer extends MockObjectTestCase {
 
     private static final long[] ONE_TWO_THREE = { 1, 2, 3 };
 
@@ -39,7 +38,7 @@ public abstract class AbstractTestImapResponseComposer extends
 
     private static final long[] EMPTY = {};
 
-    Mock mockCommand;
+    ImapCommand mockCommand;
 
     protected void setUp() throws Exception {
         super.setUp();
@@ -108,7 +107,7 @@ public abstract class AbstractTestImapResponseComposer extends
     }
 
     public void testAttributes() throws Exception {
-        List attributes = new ArrayList();
+        List<String> attributes = new ArrayList<String>();
         attributes.add("\\one");
         attributes.add("\\two");
         attributes.add("\\three");
@@ -166,7 +165,7 @@ public abstract class AbstractTestImapResponseComposer extends
     }
 
     public void testShouldEncodeListParameterStatus() throws Exception {
-        Collection parameters = new ArrayList();
+        Collection<String> parameters = new ArrayList<String>();
         parameters.add("ONE");
         parameters.add("TWO");
         parameters.add("THREE");
@@ -259,8 +258,10 @@ public abstract class AbstractTestImapResponseComposer extends
         clear();
     }
 
-    private ImapCommand command(String name) {
-        mockCommand.expects(once()).method("getName").will(returnValue(name));
-        return (ImapCommand) mockCommand.proxy();
+    private ImapCommand command(final String name) {
+        checking(new Expectations() {{
+            oneOf (mockCommand).getName();will(returnValue(name));
+        }});
+        return mockCommand;
     }
 }

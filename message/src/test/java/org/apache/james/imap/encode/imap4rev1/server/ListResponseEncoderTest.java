@@ -22,10 +22,9 @@ package org.apache.james.imap.encode.imap4rev1.server;
 import org.apache.james.api.imap.ImapMessage;
 import org.apache.james.imap.encode.ImapEncoder;
 import org.apache.james.imap.encode.ImapResponseComposer;
-import org.apache.james.imap.encode.imap4rev1.server.SearchResponseEncoder;
 import org.apache.james.imap.message.response.imap4rev1.server.SearchResponse;
-import org.jmock.Mock;
-import org.jmock.MockObjectTestCase;
+import org.jmock.Expectations;
+import org.jmock.integration.junit3.MockObjectTestCase;
 
 public class ListResponseEncoderTest extends MockObjectTestCase {
 
@@ -35,17 +34,16 @@ public class ListResponseEncoderTest extends MockObjectTestCase {
 
     SearchResponseEncoder encoder;
 
-    Mock mockNextEncoder;
+    ImapEncoder mockNextEncoder;
 
-    Mock composer;
+    ImapResponseComposer composer;
 
     protected void setUp() throws Exception {
         super.setUp();
         mockNextEncoder = mock(ImapEncoder.class);
         composer = mock(ImapResponseComposer.class);
         response = new SearchResponse(IDS);
-        encoder = new SearchResponseEncoder((ImapEncoder) mockNextEncoder
-                .proxy());
+        encoder = new SearchResponseEncoder(mockNextEncoder);
     }
 
     protected void tearDown() throws Exception {
@@ -54,13 +52,14 @@ public class ListResponseEncoderTest extends MockObjectTestCase {
 
     public void testIsAcceptable() {
         assertTrue(encoder.isAcceptable(response));
-        assertFalse(encoder.isAcceptable((ImapMessage) mock(ImapMessage.class)
-                .proxy()));
+        assertFalse(encoder.isAcceptable(mock(ImapMessage.class)));
         assertFalse(encoder.isAcceptable(null));
     }
 
     public void testEncode() throws Exception {
-        composer.expects(once()).method("searchResponse").with(same(IDS));
-        encoder.encode(response, (ImapResponseComposer) composer.proxy());
+        checking(new Expectations() {{
+            oneOf(composer).searchResponse(with(same(IDS)));
+        }});
+        encoder.encode(response, composer);
     }
 }

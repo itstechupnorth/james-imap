@@ -21,7 +21,7 @@ package org.apache.james.api.imap.message.response.imap4rev1;
 
 import org.apache.james.api.imap.ImapCommand;
 import org.apache.james.api.imap.display.HumanReadableTextKey;
-import org.jmock.MockObjectTestCase;
+import org.jmock.integration.junit3.MockObjectTestCase;
 
 abstract public class AbstractTestForStatusResponseFactory extends
         MockObjectTestCase {
@@ -43,7 +43,7 @@ abstract public class AbstractTestForStatusResponseFactory extends
     protected void setUp() throws Exception {
         super.setUp();
         factory = createInstance();
-        command = (ImapCommand) mock(ImapCommand.class).proxy();
+        command = mock(ImapCommand.class);
     }
 
     protected void tearDown() throws Exception {

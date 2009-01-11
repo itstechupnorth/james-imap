@@ -29,7 +29,7 @@ import org.apache.james.imap.mailbox.MailboxListener.FlagsUpdated;
 
 public class FakeMailboxListenerFlagsUpdate extends FlagsUpdated {
 
-    public List flags = new ArrayList();
+    public List<Flags.Flag> flags = new ArrayList<Flags.Flag>();
 
     public long subjectUid;
 

@@ -26,27 +26,26 @@ import org.apache.james.api.imap.process.ImapSession;
 import org.apache.james.imap.mailbox.ListResult;
 import org.apache.james.imap.mailbox.MailboxManagerProvider;
 import org.apache.james.imap.message.response.imap4rev1.server.ListResponse;
-import org.apache.james.imap.processor.imap4rev1.ListProcessor;
-import org.jmock.Mock;
-import org.jmock.MockObjectTestCase;
+import org.jmock.Expectations;
+import org.jmock.integration.junit3.MockObjectTestCase;
 
 public class ListProcessorTest extends MockObjectTestCase {
 
     ListProcessor processor;
 
-    Mock next;
+    ImapProcessor next;
 
-    Mock provider;
+    MailboxManagerProvider provider;
 
-    Mock responder;
+    ImapProcessor.Responder responder;
 
-    Mock result;
+    ListResult result;
 
-    Mock session;
+    ImapSession session;
 
-    Mock command;
+    ImapCommand command;
 
-    Mock serverResponseFactory;
+    StatusResponseFactory serverResponseFactory;
 
     protected void setUp() throws Exception {
         serverResponseFactory = mock(StatusResponseFactory.class);
@@ -56,9 +55,7 @@ public class ListProcessorTest extends MockObjectTestCase {
         responder = mock(ImapProcessor.Responder.class);
         result = mock(ListResult.class);
         provider = mock(MailboxManagerProvider.class);
-        processor = createProcessor((ImapProcessor) next.proxy(),
-                (MailboxManagerProvider) provider.proxy(),
-                (StatusResponseFactory) serverResponseFactory.proxy());
+        processor = createProcessor(next, provider, serverResponseFactory);
     }
 
     protected void tearDown() throws Exception {
@@ -78,47 +75,45 @@ public class ListProcessorTest extends MockObjectTestCase {
     }
 
     void setUpResult(final boolean isNoinferiors, final int selectability,
-            String hierarchyDelimiter, String name) {
-        result.expects(once()).method("isNoInferiors").will(
-                returnValue(isNoinferiors));
-        result.expects(once()).method("getSelectability").will(
-                returnValue(selectability));
-        result.expects(once()).method("getHierarchyDelimiter").will(
-                returnValue(hierarchyDelimiter));
-        result.expects(once()).method("getName").will(returnValue(name));
+            final String hierarchyDelimiter, final String name) {
+        checking(new Expectations() {{
+            oneOf(result).isNoInferiors();will(returnValue(isNoinferiors));
+            oneOf(result).getSelectability();will(returnValue(selectability));
+            oneOf(result).getHierarchyDelimiter();will(returnValue(hierarchyDelimiter));
+            oneOf(result).getName();will(returnValue(name));
+        }});
     }
 
     public void testNoInferiors() throws Exception {
         setUpResult(true, ListResult.SELECTABILITY_FLAG_NONE, ".", "#INBOX");
-        responder.expects(once()).method("respond").with(
-                eq(createResponse(true, false, false, false, ".", "#INBOX")));
-        processor.processResult((ImapProcessor.Responder) responder.proxy(),
-                false, 0, (ListResult) result.proxy());
+        checking(new Expectations() {{
+            oneOf(responder).respond(with(equal(createResponse(true, false, false, false, ".", "#INBOX"))));
+        }});
+        processor.processResult(responder, false, 0, result);
     }
 
     public void testNoSelect() throws Exception {
-        setUpResult(false, ListResult.SELECTABILITY_FLAG_NOSELECT, ".",
-                "#INBOX");
-        responder.expects(once()).method("respond").with(
-                eq(createResponse(false, true, false, false, ".", "#INBOX")));
-        processor.processResult((ImapProcessor.Responder) responder.proxy(),
-                false, 0, (ListResult) result.proxy());
+        setUpResult(false, ListResult.SELECTABILITY_FLAG_NOSELECT, ".", "#INBOX");
+        checking(new Expectations() {{
+            oneOf(responder).respond(with(equal(createResponse(false, true, false, false, ".", "#INBOX"))));
+        }});
+        processor.processResult(responder, false, 0, result);
     }
 
     public void testUnMarked() throws Exception {
         setUpResult(false, ListResult.SELECTABILITY_FLAG_UNMARKED, ".",
                 "#INBOX");
-        responder.expects(once()).method("respond").with(
-                eq(createResponse(false, false, false, true, ".", "#INBOX")));
-        processor.processResult((ImapProcessor.Responder) responder.proxy(),
-                false, 0, (ListResult) result.proxy());
+        checking(new Expectations() {{
+            oneOf(responder).respond(with(equal(createResponse(false, false, false, true, ".", "#INBOX"))));
+        }});
+        processor.processResult(responder, false, 0, result);
     }
 
     public void testMarked() throws Exception {
         setUpResult(false, ListResult.SELECTABILITY_FLAG_MARKED, ".", "#INBOX");
-        responder.expects(once()).method("respond").with(
-                eq(createResponse(false, false, true, false, ".", "#INBOX")));
-        processor.processResult((ImapProcessor.Responder) responder.proxy(),
-                false, 0, (ListResult) result.proxy());
+        checking(new Expectations() {{
+            oneOf(responder).respond(with(equal(createResponse(false, false, true, false, ".", "#INBOX"))));
+        }});
+        processor.processResult(responder, false, 0, result);
     }
 }

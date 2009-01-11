@@ -32,22 +32,16 @@ import org.apache.james.api.imap.message.IdRange;
 import org.apache.james.imap.decode.ImapRequestLineReader;
 import org.apache.james.imap.decode.ProtocolException;
 import org.apache.james.imap.decode.imap4rev1.FetchCommandParser;
-import org.jmock.Mock;
-import org.jmock.MockObjectTestCase;
-import org.jmock.core.Constraint;
+import org.jmock.Expectations;
+import org.jmock.integration.junit3.MockObjectTestCase;
 
 public class FetchCommandParserPartialFetchTest extends MockObjectTestCase {
 
     FetchCommandParser parser;
 
-    Mock mockCommandFactory;
+    Imap4Rev1CommandFactory mockCommandFactory;
 
-    Mock mockMessageFactory;
-
-    Mock mockCommand;
-
-    Mock mockMessage;
-
+    Imap4Rev1MessageFactory mockMessageFactory;
     ImapCommand command;
 
     ImapMessage message;
@@ -56,15 +50,14 @@ public class FetchCommandParserPartialFetchTest extends MockObjectTestCase {
         super.setUp();
         parser = new FetchCommandParser();
         mockCommandFactory = mock(Imap4Rev1CommandFactory.class);
-        mockCommandFactory.expects(once()).method("getFetch");
+        checking(new Expectations() {{
+            oneOf (mockCommandFactory).getFetch();
+        }});
         mockMessageFactory = mock(Imap4Rev1MessageFactory.class);
-        mockCommand = mock(ImapCommand.class);
-        command = (ImapCommand) mockCommand.proxy();
-        mockMessage = mock(ImapMessage.class);
-        message = (ImapMessage) mockMessage.proxy();
-        parser.init((Imap4Rev1CommandFactory) mockCommandFactory.proxy());
-        parser.setMessageFactory((Imap4Rev1MessageFactory) mockMessageFactory
-                .proxy());
+        command = mock(ImapCommand.class);
+        message = mock(ImapMessage.class);
+        parser.init(mockCommandFactory);
+        parser.setMessageFactory(mockMessageFactory);
     }
 
     protected void tearDown() throws Exception {
@@ -100,14 +93,14 @@ public class FetchCommandParserPartialFetchTest extends MockObjectTestCase {
     }
 
     private void check(String input, final IdRange[] idSet,
-            final boolean useUids, FetchData data, String tag) throws Exception {
+            final boolean useUids, final FetchData data, final String tag) throws Exception {
         ImapRequestLineReader reader = new ImapRequestLineReader(
                 new ByteArrayInputStream(input.getBytes("US-ASCII")),
                 new ByteArrayOutputStream());
-        Constraint[] constraints = { eq(command), eq(useUids), eq(idSet),
-                eq(data), same(tag) };
-        mockMessageFactory.expects(once()).method("createFetchMessage").with(
-                constraints).will(returnValue(message));
+        checking(new Expectations() {{
+            oneOf (mockMessageFactory).createFetchMessage( with(equal(command)), with(equal(useUids)), 
+                    with(equal(idSet)),with(equal(data)), with(same(tag)));will(returnValue(message));
+        }});
         parser.decode(command, reader, tag, useUids);
     }
 }
