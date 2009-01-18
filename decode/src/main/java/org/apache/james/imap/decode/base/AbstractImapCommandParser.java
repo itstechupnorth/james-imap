@@ -324,43 +324,48 @@ public abstract class AbstractImapCommandParser extends AbstractLogEnabled
         if (charset == null) {
             return consumeLiteral(request, US_ASCII);
         } else {
-            // The 1st character must be '{'
-            consumeChar(request, '{');
-
-            StringBuffer digits = new StringBuffer();
-            char next = request.nextChar();
-            while (next != '}' && next != '+') {
-                digits.append(next);
-                request.consume();
-                next = request.nextChar();
-            }
-
-            // If the number is *not* suffixed with a '+', we *are* using a
-            // synchronized literal,
-            // and we need to send command continuation request before reading
-            // data.
-            boolean synchronizedLiteral = true;
-            // '+' indicates a non-synchronized literal (no command continuation
-            // request)
-            if (next == '+') {
-                synchronizedLiteral = false;
-                consumeChar(request, '+');
-            }
-
-            // Consume the '}' and the newline
-            consumeChar(request, '}');
-            consumeCRLF(request);
-
-            if (synchronizedLiteral) {
-                request.commandContinuationRequest();
-            }
-
-            final int size = Integer.parseInt(digits.toString());
-            final byte[] bytes = new byte[size];
-            request.read(bytes);
+            final byte[] bytes = consumeLiteral(request);
             final ByteBuffer buffer = ByteBuffer.wrap(bytes);
             return decode(charset, buffer);
         }
+    }
+
+    protected byte[] consumeLiteral(final ImapRequestLineReader request) throws ProtocolException {
+        // The 1st character must be '{'
+        consumeChar(request, '{');
+
+        StringBuffer digits = new StringBuffer();
+        char next = request.nextChar();
+        while (next != '}' && next != '+') {
+            digits.append(next);
+            request.consume();
+            next = request.nextChar();
+        }
+
+        // If the number is *not* suffixed with a '+', we *are* using a
+        // synchronized literal,
+        // and we need to send command continuation request before reading
+        // data.
+        boolean synchronizedLiteral = true;
+        // '+' indicates a non-synchronized literal (no command continuation
+        // request)
+        if (next == '+') {
+            synchronizedLiteral = false;
+            consumeChar(request, '+');
+        }
+
+        // Consume the '}' and the newline
+        consumeChar(request, '}');
+        consumeCRLF(request);
+
+        if (synchronizedLiteral) {
+            request.commandContinuationRequest();
+        }
+
+        final int size = Integer.parseInt(digits.toString());
+        final byte[] bytes = new byte[size];
+        request.read(bytes);
+        return bytes;
     }
 
     private String decode(final Charset charset, final ByteBuffer buffer)

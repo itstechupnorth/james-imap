@@ -21,7 +21,6 @@ package org.apache.james.imap.message.request.imap4rev1;
 import java.util.Date;
 
 import javax.mail.Flags;
-import javax.mail.internet.MimeMessage;
 
 import org.apache.james.api.imap.ImapCommand;
 import org.apache.james.api.imap.ImapMessage;
@@ -49,7 +48,7 @@ public class BaseImap4Rev1MessageFactory implements Imap4Rev1MessageFactory {
 
     public ImapMessage createAppendMessage(ImapCommand command,
             String mailboxName, Flags flags, Date datetime,
-            MimeMessage message, String tag) {
+            byte[] message, String tag) {
         return new AppendRequest(command, mailboxName, flags, datetime,
                 message, tag);
     }

@@ -19,6 +19,7 @@
 
 package org.apache.james.mailboxmanager.torque;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -115,8 +116,8 @@ public class TorqueMailbox extends AbstractLogEnabled implements Mailbox {
         }
     }
 
-    public MessageResult appendMessage(MimeMessage message, Date internalDate,
-            FetchGroup fetchGroup, MailboxSession mailboxSession)
+    public MessageResult appendMessage(byte[] message, Date internalDate,
+            FetchGroup fetchGroup, MailboxSession mailboxSession, boolean isRecent)
             throws MailboxException {
 
         try {
@@ -141,14 +142,17 @@ public class TorqueMailbox extends AbstractLogEnabled implements Mailbox {
                     messageRow.setMailboxId(getMailboxRow().getMailboxId());
                     messageRow.setUid(uid);
                     messageRow.setInternalDate(internalDate);
-
-                    final int size = size(message);
+                    final MimeMessage mimeMessage = new MimeMessage(null, new ByteArrayInputStream(message));
+                    if (isRecent) {
+                        mimeMessage.setFlag(Flags.Flag.RECENT, true);
+                    }
+                    final int size = size(mimeMessage);
                     messageRow.setSize(size);
-                    populateFlags(message, messageRow);
+                    populateFlags(mimeMessage, messageRow);
 
-                    addHeaders(message, messageRow);
+                    addHeaders(mimeMessage, messageRow);
 
-                    MessageBody mb = populateBody(message);
+                    MessageBody mb = populateBody(mimeMessage);
                     messageRow.addMessageBody(mb);
 
                     save(messageRow);

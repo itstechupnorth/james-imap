@@ -19,6 +19,7 @@
 
 package org.apache.james.imap.store;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -86,8 +87,8 @@ public abstract class StoreMailbox extends AbstractLogEnabled implements org.apa
         return (int) messageMapper.countMessagesInMailbox(mailboxId);
     }
 
-    public MessageResult appendMessage(MimeMessage mimeMessage, Date internalDate,
-            FetchGroup fetchGroup, MailboxSession mailboxSession)
+    public MessageResult appendMessage(byte[] messageBytes, Date internalDate,
+            FetchGroup fetchGroup, MailboxSession mailboxSession, boolean isRecent)
     throws MailboxException {
         final Mailbox mailbox = reserveNextUid();
 
@@ -103,6 +104,10 @@ public abstract class StoreMailbox extends AbstractLogEnabled implements org.apa
                 // is
                 // inserted long before 4, when
                 // mail 4 is big and comes over a slow connection.
+                final MimeMessage mimeMessage = new MimeMessage(null, new ByteArrayInputStream(messageBytes));
+                if (isRecent) {
+                    mimeMessage.setFlag(Flags.Flag.RECENT, true);
+                }
                 final long uid = mailbox.getLastUid();
                 final int size = size(mimeMessage);
                 final byte[] body = body(mimeMessage);

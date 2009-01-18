@@ -21,7 +21,6 @@ package org.apache.james.api.imap.imap4rev1;
 import java.util.Date;
 
 import javax.mail.Flags;
-import javax.mail.internet.MimeMessage;
 
 import org.apache.james.api.imap.ImapCommand;
 import org.apache.james.api.imap.ImapMessage;
@@ -56,7 +55,7 @@ public interface Imap4Rev1MessageFactory {
 
     public ImapMessage createAppendMessage(ImapCommand command,
             String mailboxName, Flags flags, Date datetime,
-            MimeMessage message, String tag);
+            byte[] message, String tag);
 
     public ImapMessage createAuthenticateMessage(final ImapCommand command,
             final String authType, final String tag);

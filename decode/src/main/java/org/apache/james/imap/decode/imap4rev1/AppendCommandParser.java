@@ -18,11 +18,9 @@
  ****************************************************************/
 package org.apache.james.imap.decode.imap4rev1;
 
-import java.io.ByteArrayInputStream;
 import java.util.Date;
 
 import javax.mail.Flags;
-import javax.mail.internet.MimeMessage;
 
 import org.apache.james.api.imap.ImapCommand;
 import org.apache.james.api.imap.ImapMessage;
@@ -76,32 +74,6 @@ class AppendCommandParser extends AbstractImapCommandParser implements
         }
     }
 
-    /**
-     * Reads a MimeMessage encoded as a string literal from the request. TODO
-     * shouldn't need to read as a string and write out bytes use
-     * FixedLengthInputStream instead. Hopefully it can then be dynamic.
-     * 
-     * @param request
-     *            The Imap APPEND request
-     * @return A MimeMessage read off the request.
-     */
-    public MimeMessage mimeMessage(ImapRequestLineReader request)
-            throws ProtocolException {
-        request.nextWordChar();
-        String mailString = consumeLiteral(request, null);
-        MimeMessage mm = null;
-
-        try {
-            byte[] messageBytes = mailString.getBytes("US-ASCII");
-            mm = new MimeMessage(null, new ByteArrayInputStream(messageBytes));
-        } catch (Exception e) {
-            throw new ProtocolException("UnexpectedException: "
-                    + e.getMessage(), e);
-
-        }
-        return mm;
-    }
-
     protected ImapMessage decode(ImapCommand command,
             ImapRequestLineReader request, String tag) throws ProtocolException {
         String mailboxName = mailbox(request);
@@ -113,7 +85,8 @@ class AppendCommandParser extends AbstractImapCommandParser implements
         if (datetime == null) {
             datetime = new Date();
         }
-        MimeMessage message = mimeMessage(request);
+        request.nextWordChar();
+        final byte[] message = consumeLiteral(request);
         endLine(request);
         final Imap4Rev1MessageFactory factory = getMessageFactory();
         final ImapMessage result = factory.createAppendMessage(command,

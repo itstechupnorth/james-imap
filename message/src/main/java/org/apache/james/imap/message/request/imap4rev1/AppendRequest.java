@@ -21,7 +21,6 @@ package org.apache.james.imap.message.request.imap4rev1;
 import java.util.Date;
 
 import javax.mail.Flags;
-import javax.mail.internet.MimeMessage;
 
 import org.apache.james.api.imap.ImapCommand;
 
@@ -32,10 +31,10 @@ public class AppendRequest extends AbstractImapRequest {
 
     private final Date datetime;
 
-    private final MimeMessage message;
+    private final byte[] message;
 
     public AppendRequest(ImapCommand command, String mailboxName, Flags flags,
-            Date datetime, MimeMessage message, String tag) {
+            Date datetime, byte[] message, String tag) {
         super(tag, command);
         this.mailboxName = mailboxName;
         this.flags = flags;
@@ -55,7 +54,7 @@ public class AppendRequest extends AbstractImapRequest {
         return mailboxName;
     }
 
-    public MimeMessage getMessage() {
+    public byte[] getMessage() {
         return message;
     }
 }

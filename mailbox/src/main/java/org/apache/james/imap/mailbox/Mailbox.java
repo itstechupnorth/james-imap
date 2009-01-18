@@ -23,7 +23,6 @@ import java.util.Date;
 import java.util.Iterator;
 
 import javax.mail.Flags;
-import javax.mail.internet.MimeMessage;
 
 import org.apache.james.imap.mailbox.MessageResult.FetchGroup;
 
@@ -147,6 +146,7 @@ public interface Mailbox {
      *            minimal fetch group only
      * @param mailboxSession
      *            TODO
+     * @param isRecent TODO
      * @return MessageResult with the fields defined by <b>result</b>
      *         <ul>
      *         <li> IMAP, Javamail Folder: nothing required </li>
@@ -156,8 +156,8 @@ public interface Mailbox {
      * @throws MailboxException
      *             if anything went wrong
      */
-    MessageResult appendMessage(MimeMessage message, Date internalDate,
-            FetchGroup fetchGroup, MailboxSession mailboxSession)
+    MessageResult appendMessage(byte[] message, Date internalDate,
+            FetchGroup fetchGroup, MailboxSession mailboxSession, boolean isRecent)
             throws MailboxException;
 
     /**
