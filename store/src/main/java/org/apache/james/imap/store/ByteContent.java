@@ -43,10 +43,6 @@ final class ByteContent implements MessageResult.Content {
         return size;
     }
 
-    public void writeTo(StringBuffer buffer) {
-        ContentUtils.normalisedWriteTo(contents, buffer);
-    }
-
     public void writeTo(WritableByteChannel channel) throws IOException {
         ByteBuffer buffer = ByteBuffer.wrap(contents);
         while (channel.write(buffer) > 0) {

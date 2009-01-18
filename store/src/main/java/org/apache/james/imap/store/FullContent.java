@@ -58,21 +58,6 @@ final class FullContent implements MessageResult.Content {
         return result;
     }
 
-    public void writeTo(StringBuffer buffer) {
-        for (final Iterator it = headers.iterator(); it.hasNext();) {
-            final MessageResult.Header header = (MessageResult.Header) it
-                    .next();
-            if (header != null) {
-                header.writeTo(buffer);
-            }
-            buffer.append('\r');
-            buffer.append('\n');
-        }
-        buffer.append('\r');
-        buffer.append('\n');
-        ContentUtils.normalisedWriteTo(contents, buffer);
-    }
-
     public long size() {
         return size;
     }

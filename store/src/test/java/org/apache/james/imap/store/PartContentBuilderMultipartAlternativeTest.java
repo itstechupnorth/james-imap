@@ -102,7 +102,7 @@ public class PartContentBuilderMultipartAlternativeTest extends TestCase {
                 .encode(mail).array());
         builder.parse(in);
         builder.to(position);
-        StringBuffer buffer = new StringBuffer();
+        StringBuilderChannel buffer = new StringBuilderChannel();
         builder.getFullContent().writeTo(buffer);
         return buffer.toString();
     }
@@ -112,7 +112,7 @@ public class PartContentBuilderMultipartAlternativeTest extends TestCase {
                 .encode(mail).array());
         builder.parse(in);
         builder.to(position);
-        StringBuffer buffer = new StringBuffer();
+        StringBuilderChannel buffer = new StringBuilderChannel();
         builder.getMimeBodyContent().writeTo(buffer);
         return buffer.toString();
     }

@@ -181,14 +181,14 @@ public class PartContentBuilderComplexMultipartTest extends TestCase {
 
     private String fullContent(int[] position) throws Exception {
         to(position);
-        StringBuffer buffer = new StringBuffer();
+        StringBuilderChannel buffer = new StringBuilderChannel();
         builder.getFullContent().writeTo(buffer);
         return buffer.toString();
     }
 
     private String bodyContent(int[] position) throws Exception {
         to(position);
-        StringBuffer buffer = new StringBuffer();
+        StringBuilderChannel buffer = new StringBuilderChannel();
         builder.getMimeBodyContent().writeTo(buffer);
         return buffer.toString();
     }

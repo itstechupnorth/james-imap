@@ -307,14 +307,6 @@ public interface MessageResult extends Comparable, Headers {
      * out. This interface allows direct writing whilst exposing total size.
      */
     public interface Content {
-        /**
-         * Writes content into the given buffer.
-         * 
-         * @param buffer
-         *            <code>StringBuffer</code>, not null
-         * @throws MessagingException
-         */
-        public void writeTo(StringBuffer buffer);
 
         /**
          * Writes content to the given channel.

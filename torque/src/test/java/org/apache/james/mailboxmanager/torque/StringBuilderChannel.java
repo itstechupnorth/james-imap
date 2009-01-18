@@ -16,37 +16,36 @@
  * specific language governing permissions and limitations      *
  * under the License.                                           *
  ****************************************************************/
-
-/**
- * 
- */
 package org.apache.james.mailboxmanager.torque;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.WritableByteChannel;
+import java.nio.charset.Charset;
 
-import org.apache.james.imap.mailbox.MessageResult;
+public class StringBuilderChannel implements WritableByteChannel {
 
-final class ByteContent implements MessageResult.Content {
-
-    private final byte[] contents;
-
-    private final long size;
-
-    public ByteContent(final byte[] contents) {
-        this.contents = contents;
-        size = contents.length + MessageUtils.countUnnormalLines(contents);
+    private static final Charset ASCII = Charset.forName("US-ASCII");
+    
+    public final StringBuilder builder = new StringBuilder(1024);
+    
+    public boolean isClosed = false;
+    
+    public int write(ByteBuffer src) throws IOException {
+        final int result = src.limit() - src.position();
+        builder.append(ASCII.decode(src));
+        return result;
     }
 
-    public long size() {
-        return size;
+    public void close() throws IOException {
+        isClosed = true;
     }
 
-    public void writeTo(WritableByteChannel channel) throws IOException {
-        ByteBuffer buffer = ByteBuffer.wrap(contents);
-        while (channel.write(buffer) > 0) {
-            // write more
-        }
+    public boolean isOpen() {
+        return !isClosed;
+    }
+    
+    public String toString() {
+        return builder.toString();
     }
 }

@@ -66,18 +66,6 @@ final class Header implements MessageResult.Header, MessageResult.Content {
         return size;
     }
 
-    public void writeTo(StringBuffer buffer) {
-        // TODO: sort out encoding
-        for (int i = 0; i < name.length(); i++) {
-            buffer.append((char) (byte) name.charAt(i));
-        }
-        buffer.append(':');
-        buffer.append(' ');
-        for (int i = 0; i < value.length(); i++) {
-            buffer.append((char) (byte) value.charAt(i));
-        }
-    }
-
     public void writeTo(WritableByteChannel channel) throws IOException {
         writeAll(channel, MessageRowUtils.US_ASCII.encode(name));
         ByteBuffer buffer = ByteBuffer
