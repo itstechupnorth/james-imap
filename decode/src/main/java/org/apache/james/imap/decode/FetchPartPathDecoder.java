@@ -54,7 +54,7 @@ public class FetchPartPathDecoder {
 
     private int used;
 
-    private List names;
+    private List<String> names;
 
     public FetchPartPathDecoder() {
     }
@@ -356,7 +356,7 @@ public class FetchPartPathDecoder {
 
     private void readHeaderNames(final int at,
             final CharSequence sectionSpecification) throws ProtocolException {
-        names = new ArrayList();
+        names = new ArrayList<String>();
         final int firstWordStart = skipSpaces(at, sectionSpecification);
         readHeaderNames(firstWordStart, firstWordStart, sectionSpecification);
     }

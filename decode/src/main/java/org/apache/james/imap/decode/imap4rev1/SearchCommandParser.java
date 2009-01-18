@@ -45,7 +45,7 @@ import org.apache.james.imap.decode.ProtocolException;
 class SearchCommandParser extends AbstractUidCommandParser implements
         InitialisableCommandFactory {
     /** Lazy loaded */
-    private Collection charsetNames;
+    private Collection<String> charsetNames;
 
     public SearchCommandParser() {
     }
@@ -130,12 +130,12 @@ class SearchCommandParser extends AbstractUidCommandParser implements
     private SearchKey paren(ImapRequestLineReader request, Charset charset)
             throws ProtocolException {
         request.consume();
-        List keys = new ArrayList();
+        List<SearchKey> keys = new ArrayList<SearchKey>();
         addUntilParen(request, keys, charset);
         return SearchKey.buildAnd(keys);
     }
 
-    private void addUntilParen(ImapRequestLineReader request, List keys,
+    private void addUntilParen(ImapRequestLineReader request, List<SearchKey> keys,
             Charset charset) throws ProtocolException {
         final char next = request.nextWordChar();
         if (next == ')') {
@@ -908,7 +908,7 @@ class SearchCommandParser extends AbstractUidCommandParser implements
         final SearchKey firstKey = searchKey(request, null, true);
         final SearchKey result;
         if (request.nextChar() == ' ') {
-            List keys = new ArrayList();
+            List<SearchKey> keys = new ArrayList<SearchKey>();
             keys.add(firstKey);
             while (request.nextChar() == ' ') {
                 request.nextWordChar();
@@ -936,11 +936,11 @@ class SearchCommandParser extends AbstractUidCommandParser implements
 
     private synchronized void loadCharsetNames() {
         if (charsetNames == null) {
-            charsetNames = new HashSet();
+            charsetNames = new HashSet<String>();
             for (final Iterator it = Charset.availableCharsets().values()
                     .iterator(); it.hasNext();) {
                 final Charset charset = (Charset) it.next();
-                final Set aliases = charset.aliases();
+                final Set<String> aliases = charset.aliases();
                 charsetNames.addAll(aliases);
             }
         }

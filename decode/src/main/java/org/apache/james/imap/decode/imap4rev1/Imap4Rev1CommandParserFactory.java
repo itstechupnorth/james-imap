@@ -42,7 +42,7 @@ import org.apache.james.imap.decode.MessagingImapCommandParser;
  */
 public class Imap4Rev1CommandParserFactory extends AbstractLogEnabled implements
         ImapCommandParserFactory {
-    private Map _imapCommands;
+    private Map<String, Class> _imapCommands;
 
     private final Imap4Rev1MessageFactory messageFactory;
 
@@ -57,7 +57,7 @@ public class Imap4Rev1CommandParserFactory extends AbstractLogEnabled implements
         this.messageFactory = messageFactory;
         this.commandFactory = commandFactory;
         this.statusResponseFactory = statusResponseFactory;
-        _imapCommands = new HashMap();
+        _imapCommands = new HashMap<String, Class>();
 
         // Commands valid in any state
         // CAPABILITY, NOOP, and LOGOUT

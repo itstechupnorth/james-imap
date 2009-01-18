@@ -130,8 +130,7 @@ public abstract class AbstractImapCommandParser extends AbstractLogEnabled
      * 
      * @param request
      *            <code>ImapRequestLineReader</code>, not null
-     * @param tag
-     *            TODO
+     * @param tag command tag, not null
      * @param command
      *            <code>ImapCommand</code> to be parsed, not null
      * @return <code>ImapCommandMessage</code>, not null
@@ -389,8 +388,8 @@ public abstract class AbstractImapCommandParser extends AbstractLogEnabled
     }
 
     /**
-     * Consumes a CRLF from the request. TODO we're being liberal, the spec
-     * insists on \r\n for new lines.
+     * Consumes a CRLF from the request. 
+     * TODO: This is too liberal, the spec insists on \r\n for new lines.
      * 
      * @param request
      * @throws ProtocolException
@@ -440,16 +439,6 @@ public abstract class AbstractImapCommandParser extends AbstractLogEnabled
             consumeChar(request, '"');
             return result;
         }
-    }
-
-    /**
-     * Reads a base64 argument from the request.
-     */
-    public byte[] base64(ImapRequestLineReader request)
-            throws ProtocolException {
-        // TODO: throw unsupported exception?
-        // TODO: log
-        return null;
     }
 
     /**
@@ -547,10 +536,6 @@ public abstract class AbstractImapCommandParser extends AbstractLogEnabled
         return (chr >= 0x01 && chr <= 0x7f);
     }
 
-    private boolean isCHAR8(char chr) {
-        return (chr >= 0x01 && chr <= 0xff);
-    }
-
     protected static boolean isListWildcard(char chr) {
         return (chr == '*' || chr == '%');
     }
@@ -585,7 +570,7 @@ public abstract class AbstractImapCommandParser extends AbstractLogEnabled
             return new IdRange[] { parseRange(nextWord) };
         }
 
-        ArrayList rangeList = new ArrayList();
+        ArrayList<IdRange> rangeList = new ArrayList<IdRange>();
         int pos = 0;
         while (commaPos != -1) {
             String range = nextWord.substring(pos, commaPos);
