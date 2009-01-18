@@ -27,7 +27,7 @@ import java.io.InputStream;
  * Utility methods for messages.
  * 
  */
-public class MessageUtils {
+public class ContentUtils {
 
     private static final int BYTE_STREAM_CAPACITY = 8182;
 

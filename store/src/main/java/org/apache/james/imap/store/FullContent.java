@@ -45,7 +45,7 @@ final class FullContent implements MessageResult.Content {
 
     private long caculateSize() {
         long result = contents.length
-                + MessageUtils.countUnnormalLines(contents);
+                + ContentUtils.countUnnormalLines(contents);
         result += 2;
         for (final Iterator it = headers.iterator(); it.hasNext();) {
             final MessageResult.Header header = (MessageResult.Header) it
@@ -70,7 +70,7 @@ final class FullContent implements MessageResult.Content {
         }
         buffer.append('\r');
         buffer.append('\n');
-        MessageUtils.normalisedWriteTo(contents, buffer);
+        ContentUtils.normalisedWriteTo(contents, buffer);
     }
 
     public long size() {
@@ -78,7 +78,7 @@ final class FullContent implements MessageResult.Content {
     }
 
     public void writeTo(WritableByteChannel channel) throws IOException {
-        ByteBuffer newLine = ByteBuffer.wrap(MessageRowUtils.BYTES_NEW_LINE);
+        ByteBuffer newLine = ByteBuffer.wrap(ResultUtils.BYTES_NEW_LINE);
         for (final Iterator it = headers.iterator(); it.hasNext();) {
             final MessageResult.Header header = (MessageResult.Header) it
                     .next();

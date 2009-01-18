@@ -150,7 +150,7 @@ public class PartContentBuilder {
                     }
                 }
                 if (valid) {
-                    content = MessageUtils.toByteArray(parser.getInputStream());
+                    content = ContentUtils.toByteArray(parser.getInputStream());
                 } else {
                     content = EMPTY;
                 }
@@ -182,7 +182,7 @@ public class PartContentBuilder {
                 }
             }
             if (valid) {
-                content = MessageUtils.toByteArray(parser.getInputStream());
+                content = ContentUtils.toByteArray(parser.getInputStream());
             } else {
                 content = EMPTY;
             }

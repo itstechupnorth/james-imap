@@ -37,7 +37,7 @@ public class MessageRowUtilsTest extends TestCase {
             throws Exception {
         MailboxMembership one = buildMessage(100);
         MailboxMembership two = buildMessage(99);
-        assertTrue(MessageRowUtils.getUidComparator().compare(one, two) > 0);
+        assertTrue(ResultUtils.getUidComparator().compare(one, two) > 0);
     }
 
     private MailboxMembership buildMessage(int uid) {
@@ -50,12 +50,12 @@ public class MessageRowUtilsTest extends TestCase {
             throws Exception {
         MailboxMembership one = buildMessage(98);
         MailboxMembership two = buildMessage(99);
-        assertTrue(MessageRowUtils.getUidComparator().compare(one, two) < 0);
+        assertTrue(ResultUtils.getUidComparator().compare(one, two) < 0);
     }
 
     public void testShouldReturnZeroWhenFirstEqualsSecond() throws Exception {
         MailboxMembership one = buildMessage(90);
         MailboxMembership two = buildMessage(90);
-        assertEquals(0, MessageRowUtils.getUidComparator().compare(one, two));
+        assertEquals(0, ResultUtils.getUidComparator().compare(one, two));
     }
 }

@@ -136,7 +136,7 @@ public abstract class StoreMailbox extends AbstractLogEnabled implements org.apa
 
     private byte[] body(MimeMessage message) throws IOException, MessagingException {
         InputStream is = message.getInputStream();
-        final byte[] bytes = MessageUtils.toByteArray(is);
+        final byte[] bytes = ContentUtils.toByteArray(is);
         return bytes;
     }
 
@@ -177,7 +177,7 @@ public abstract class StoreMailbox extends AbstractLogEnabled implements org.apa
     }
 
     private ResultIterator getResults(FetchGroup result, List<MailboxMembership> messages) {
-        Collections.sort(messages, MessageRowUtils.getUidComparator());
+        Collections.sort(messages, ResultUtils.getUidComparator());
         final ResultIterator results = new ResultIterator(messages,result);
         return results;
     }
@@ -196,7 +196,7 @@ public abstract class StoreMailbox extends AbstractLogEnabled implements org.apa
 
     public MessageResult fillMessageResult(MailboxMembership message, FetchGroup result) throws MessagingException,
     MailboxException {
-        return MessageRowUtils.loadMessageResult(message, result);
+        return ResultUtils.loadMessageResult(message, result);
     }
 
     public synchronized Flags getPermanentFlags() {
@@ -304,7 +304,7 @@ public abstract class StoreMailbox extends AbstractLogEnabled implements org.apa
         final List<MailboxMembership> members = mapper.findInMailbox(set, mailboxId);
         UidRange uidRange = uidRangeForMessageSet(set);
         getUidChangeTracker().found(uidRange,
-                MessageRowUtils.toMessageFlags(members));
+                ResultUtils.toMessageFlags(members));
         for (final MailboxMembership member:members) {
             if (replace) {
                 member.setFlags(flags);

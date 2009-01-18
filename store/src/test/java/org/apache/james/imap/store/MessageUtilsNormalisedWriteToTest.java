@@ -19,7 +19,7 @@
 
 package org.apache.james.imap.store;
 
-import org.apache.james.imap.store.MessageUtils;
+import org.apache.james.imap.store.ContentUtils;
 
 import junit.framework.TestCase;
 
@@ -37,52 +37,52 @@ public class MessageUtilsNormalisedWriteToTest extends TestCase {
     }
 
     public void testEmpty() throws Exception {
-        MessageUtils.normalisedWriteTo("".getBytes(), buffer);
+        ContentUtils.normalisedWriteTo("".getBytes(), buffer);
         assertEquals("Check processing of empty array", "", buffer.toString());
     }
 
     public void testNormal() throws Exception {
-        MessageUtils.normalisedWriteTo("One\r\nTwo\r\nThree\r\n".getBytes(),
+        ContentUtils.normalisedWriteTo("One\r\nTwo\r\nThree\r\n".getBytes(),
                 buffer);
         assertEquals("Check processing of normal data",
                 "One\r\nTwo\r\nThree\r\n", buffer.toString());
     }
 
     public void testMissing() throws Exception {
-        MessageUtils
+        ContentUtils
                 .normalisedWriteTo("One\rTwo\nThree\r\n".getBytes(), buffer);
         assertEquals("Check processing simple data containing unnormal lines",
                 "One\r\nTwo\r\nThree\r\n", buffer.toString());
     }
 
     public void testCRAtEnd() throws Exception {
-        MessageUtils.normalisedWriteTo("One\r\nTwo\r\nThree\r".getBytes(),
+        ContentUtils.normalisedWriteTo("One\r\nTwo\r\nThree\r".getBytes(),
                 buffer);
         assertEquals("CR at end", "One\r\nTwo\r\nThree\r\n", buffer.toString());
     }
 
     public void testLFAtEnd() throws Exception {
-        MessageUtils.normalisedWriteTo("One\r\nTwo\r\nThree\n".getBytes(),
+        ContentUtils.normalisedWriteTo("One\r\nTwo\r\nThree\n".getBytes(),
                 buffer);
         assertEquals("LF at end", "One\r\nTwo\r\nThree\r\n", buffer.toString());
     }
 
     public void testCRAtStart() throws Exception {
-        MessageUtils.normalisedWriteTo("\rOne\r\nTwo\r\nThree\r".getBytes(),
+        ContentUtils.normalisedWriteTo("\rOne\r\nTwo\r\nThree\r".getBytes(),
                 buffer);
         assertEquals("CR at start", "\r\nOne\r\nTwo\r\nThree\r\n", buffer
                 .toString());
     }
 
     public void testLFAtStart() throws Exception {
-        MessageUtils.normalisedWriteTo("\nOne\r\nTwo\r\nThree".getBytes(),
+        ContentUtils.normalisedWriteTo("\nOne\r\nTwo\r\nThree".getBytes(),
                 buffer);
         assertEquals("CR at start", "\r\nOne\r\nTwo\r\nThree", buffer
                 .toString());
     }
 
     public void testSwitchOrder() throws Exception {
-        MessageUtils.normalisedWriteTo(
+        ContentUtils.normalisedWriteTo(
                 "\n\rOne\n\rTwo\n\rThree\n\r".getBytes(), buffer);
         assertEquals("Check processing simple data containing unnormal lines",
                 "\r\n\r\nOne\r\n\r\nTwo\r\n\r\nThree\r\n\r\n", buffer

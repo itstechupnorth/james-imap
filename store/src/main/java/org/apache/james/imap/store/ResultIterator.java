@@ -54,7 +54,7 @@ public class ResultIterator implements Iterator {
     }
 
     public MessageFlags[] getMessageFlags() {
-        final MessageFlags[] results = MessageRowUtils.toMessageFlags(messages);
+        final MessageFlags[] results = ResultUtils.toMessageFlags(messages);
         return results;
     }
 
@@ -80,7 +80,7 @@ public class ResultIterator implements Iterator {
         MessageResult result;
         try {
 
-            result = MessageRowUtils.loadMessageResult(message, this.fetchGroup);
+            result = ResultUtils.loadMessageResult(message, this.fetchGroup);
         } catch (MailboxException e) {
             result = new UnloadedMessageResult(message, e);
         }

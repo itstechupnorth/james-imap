@@ -43,7 +43,7 @@ import org.apache.james.imap.store.mail.model.Header;
 import org.apache.james.imap.store.mail.model.MailboxMembership;
 import org.apache.james.mime4j.MimeException;
 
-public class MessageRowUtils {
+public class ResultUtils {
 
     public static final byte[] BYTES_NEW_LINE = { 0x0D, 0x0A };
 

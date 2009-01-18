@@ -151,7 +151,7 @@ class MessageSearches {
 
     private boolean bodyContains(String value, MailboxMembership message)
             throws IOException, MimeException {
-        final InputStream input = MessageRowUtils.toInput(message);
+        final InputStream input = ResultUtils.toInput(message);
         final boolean result = isInMessage(value, input, false);
         return result;
     }
@@ -169,7 +169,7 @@ class MessageSearches {
 
     private boolean messageContains(String value, MailboxMembership message)
             throws IOException, MimeException {
-        final InputStream input = MessageRowUtils.toInput(message);
+        final InputStream input = ResultUtils.toInput(message);
         final boolean result = isInMessage(value, input, true);
         return result;
     }

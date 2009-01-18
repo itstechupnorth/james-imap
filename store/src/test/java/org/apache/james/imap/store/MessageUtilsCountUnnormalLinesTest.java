@@ -19,7 +19,7 @@
 
 package org.apache.james.imap.store;
 
-import org.apache.james.imap.store.MessageUtils;
+import org.apache.james.imap.store.ContentUtils;
 
 import junit.framework.TestCase;
 
@@ -32,35 +32,35 @@ public class MessageUtilsCountUnnormalLinesTest extends TestCase {
     }
 
     public void testEmpty() throws Exception {
-        assertEquals("Check processing of empty array", 0, MessageUtils
+        assertEquals("Check processing of empty array", 0, ContentUtils
                 .countUnnormalLines("".getBytes()));
     }
 
     public void testNormal() throws Exception {
-        assertEquals("Check processing of normal data", 0, MessageUtils
+        assertEquals("Check processing of normal data", 0, ContentUtils
                 .countUnnormalLines("One\r\nTwo\r\nThree\r\n".getBytes()));
     }
 
     public void testMissing() throws Exception {
         assertEquals("Check processing simple data containing unnormal lines",
-                2, MessageUtils.countUnnormalLines("One\rTwo\nThree\r\n"
+                2, ContentUtils.countUnnormalLines("One\rTwo\nThree\r\n"
                         .getBytes()));
     }
 
     public void testBoundaries() throws Exception {
-        assertEquals("CR at end", 1, MessageUtils
+        assertEquals("CR at end", 1, ContentUtils
                 .countUnnormalLines("One\r\nTwo\r\nThree\r".getBytes()));
-        assertEquals("LF at end", 1, MessageUtils
+        assertEquals("LF at end", 1, ContentUtils
                 .countUnnormalLines("One\r\nTwo\r\nThree\n".getBytes()));
-        assertEquals("CR at start", 1, MessageUtils
+        assertEquals("CR at start", 1, ContentUtils
                 .countUnnormalLines("\rOne\r\nTwo\r\nThree".getBytes()));
-        assertEquals("LF at start", 1, MessageUtils
+        assertEquals("LF at start", 1, ContentUtils
                 .countUnnormalLines("\nOne\r\nTwo\r\nThree".getBytes()));
     }
 
     public void testSwitchOrder() throws Exception {
         assertEquals("Check processing simple data containing unnormal lines",
-                8, MessageUtils
+                8, ContentUtils
                         .countUnnormalLines("\n\rOne\n\rTwo\n\rThree\n\r"
                                 .getBytes()));
     }

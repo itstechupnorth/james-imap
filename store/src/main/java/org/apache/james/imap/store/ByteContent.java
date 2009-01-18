@@ -36,7 +36,7 @@ final class ByteContent implements MessageResult.Content {
 
     public ByteContent(final byte[] contents) {
         this.contents = contents;
-        size = contents.length + MessageUtils.countUnnormalLines(contents);
+        size = contents.length + ContentUtils.countUnnormalLines(contents);
     }
 
     public long size() {
@@ -44,7 +44,7 @@ final class ByteContent implements MessageResult.Content {
     }
 
     public void writeTo(StringBuffer buffer) {
-        MessageUtils.normalisedWriteTo(contents, buffer);
+        ContentUtils.normalisedWriteTo(contents, buffer);
     }
 
     public void writeTo(WritableByteChannel channel) throws IOException {

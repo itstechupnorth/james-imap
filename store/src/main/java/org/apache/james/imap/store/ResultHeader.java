@@ -79,11 +79,11 @@ final class ResultHeader implements MessageResult.Header, MessageResult.Content 
     }
 
     public void writeTo(WritableByteChannel channel) throws IOException {
-        writeAll(channel, MessageRowUtils.US_ASCII.encode(name));
+        writeAll(channel, ResultUtils.US_ASCII.encode(name));
         ByteBuffer buffer = ByteBuffer
-                .wrap(MessageRowUtils.BYTES_HEADER_FIELD_VALUE_SEP);
+                .wrap(ResultUtils.BYTES_HEADER_FIELD_VALUE_SEP);
         writeAll(channel, buffer);
-        writeAll(channel, MessageRowUtils.US_ASCII.encode(value));
+        writeAll(channel, ResultUtils.US_ASCII.encode(value));
     }
 
     private void writeAll(WritableByteChannel channel, ByteBuffer buffer)
