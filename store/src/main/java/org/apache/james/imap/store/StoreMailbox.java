@@ -20,7 +20,6 @@
 package org.apache.james.imap.store;
 
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -109,7 +108,7 @@ public abstract class StoreMailbox extends AbstractLogEnabled implements org.apa
                     mimeMessage.setFlag(Flags.Flag.RECENT, true);
                 }
                 final long uid = mailbox.getLastUid();
-                final int size = size(mimeMessage);
+                final int size = messageBytes.length;
                 final byte[] body = body(mimeMessage);
                 final Flags flags = mimeMessage.getFlags();
                 final List<Header> headers = headers(mailboxId, uid, mimeMessage);
@@ -156,14 +155,6 @@ public abstract class StoreMailbox extends AbstractLogEnabled implements org.apa
     }
     
     protected abstract Header createHeader(int lineNumber, String name, String value);
-
-    private int size(MimeMessage message) throws IOException, MessagingException {
-        // TODO very ugly size mesurement
-        ByteArrayOutputStream sizeBos = new ByteArrayOutputStream();
-        message.writeTo(new CRLFOutputStream(sizeBos));
-        final int size = sizeBos.size();
-        return size;
-    }
 
     private Mailbox reserveNextUid() throws  MailboxException {
         final MailboxMapper mapper = createMailboxMapper();
