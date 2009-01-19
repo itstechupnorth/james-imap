@@ -104,13 +104,15 @@ public abstract class StoreMailbox extends AbstractLogEnabled implements org.apa
                 // inserted long before 4, when
                 // mail 4 is big and comes over a slow connection.
                 final MimeMessage mimeMessage = new MimeMessage(null, new ByteArrayInputStream(messageBytes));
-                if (isRecent) {
-                    mimeMessage.setFlag(Flags.Flag.RECENT, true);
-                }
+
                 final long uid = mailbox.getLastUid();
                 final int size = messageBytes.length;
                 final byte[] body = body(mimeMessage);
-                final Flags flags = mimeMessage.getFlags();
+                
+                final Flags flags = new Flags();
+                if (isRecent) {
+                    flags.add(Flags.Flag.RECENT);
+                }
                 final List<Header> headers = headers(mailboxId, uid, mimeMessage);
                 final MailboxMembership message = createMessage(internalDate, uid, size, body, flags, headers);
                 final MessageMapper mapper = createMessageMapper();
