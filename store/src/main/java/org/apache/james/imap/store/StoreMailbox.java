@@ -20,18 +20,17 @@
 package org.apache.james.imap.store;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
-import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
 
 import javax.mail.Flags;
 import javax.mail.MessagingException;
-import javax.mail.internet.MimeMessage;
 
 import org.apache.commons.logging.Log;
 import org.apache.james.api.imap.AbstractLogEnabled;
@@ -51,6 +50,7 @@ import org.apache.james.imap.store.mail.MessageMapper;
 import org.apache.james.imap.store.mail.model.Header;
 import org.apache.james.imap.store.mail.model.Mailbox;
 import org.apache.james.imap.store.mail.model.MailboxMembership;
+import org.apache.james.mime4j.parser.MimeTokenStream;
 
 public abstract class StoreMailbox extends AbstractLogEnabled implements org.apache.james.imap.mailbox.Mailbox {
 
@@ -103,17 +103,47 @@ public abstract class StoreMailbox extends AbstractLogEnabled implements org.apa
                 // is
                 // inserted long before 4, when
                 // mail 4 is big and comes over a slow connection.
-                final MimeMessage mimeMessage = new MimeMessage(null, new ByteArrayInputStream(messageBytes));
 
                 final long uid = mailbox.getLastUid();
                 final int size = messageBytes.length;
-                final byte[] body = body(mimeMessage);
+                final MimeTokenStream parser = new MimeTokenStream();
+                parser.setRecursionMode(MimeTokenStream.M_NO_RECURSE);
+                parser.parse(new ByteArrayInputStream(messageBytes));
+                final List<Header> headers = new ArrayList<Header>(INITIAL_SIZE_HEADERS);
+                
+                int lineNumber = 0;
+                int next = parser.next();
+                while (next != MimeTokenStream.T_BODY
+                        && next != MimeTokenStream.T_END_OF_STREAM
+                        && next != MimeTokenStream.T_START_MULTIPART) {
+                    if (next == MimeTokenStream.T_FIELD) {
+                        String fieldValue = parser.getFieldValue();
+                        if (fieldValue.endsWith("\r\f")) {
+                            fieldValue = fieldValue.substring(0,fieldValue.length() - 2);
+                        }
+                        if (fieldValue.startsWith(" ")) {
+                            fieldValue = fieldValue.substring(1);
+                        }
+                        final Header header 
+                            = createHeader(++lineNumber, parser.getFieldName(), 
+                                fieldValue);
+                        headers.add(header);
+                    }
+                    next = parser.next();
+                }
+                final InputStream bodyStream = parser.getInputStream();
+                final ByteArrayOutputStream out = ContentUtils.out(bodyStream);
+                next = parser.next();
+                if (next == MimeTokenStream.T_EPILOGUE)  {
+                    final InputStream epilogueStream = parser.getInputStream();
+                    ContentUtils.out(epilogueStream, out);
+                }   
+                final byte[] body = out.toByteArray();
                 
                 final Flags flags = new Flags();
                 if (isRecent) {
                     flags.add(Flags.Flag.RECENT);
                 }
-                final List<Header> headers = headers(mailboxId, uid, mimeMessage);
                 final MailboxMembership message = createMessage(internalDate, uid, size, body, flags, headers);
                 final MessageMapper mapper = createMessageMapper();
 
@@ -135,26 +165,6 @@ public abstract class StoreMailbox extends AbstractLogEnabled implements org.apa
 
     protected abstract MailboxMembership createMessage(Date internalDate, final long uid, final int size, final byte[] body, 
             final Flags flags, final List<Header> headers);
-
-    private byte[] body(MimeMessage message) throws IOException, MessagingException {
-        InputStream is = message.getInputStream();
-        final byte[] bytes = ContentUtils.toByteArray(is);
-        return bytes;
-    }
-
-    private List<Header> headers(long mailboxId, long uid, MimeMessage message) throws MessagingException {
-        final List<Header> results = new ArrayList<Header>(INITIAL_SIZE_HEADERS);
-        int lineNumber = 0;
-        for (Enumeration lines = message.getAllHeaderLines(); lines.hasMoreElements();) {
-            String line = (String) lines.nextElement();
-            int colon = line.indexOf(": ");
-            if (colon > 0) {
-                final Header header = createHeader(++lineNumber, line.substring(0, colon), line.substring(colon + 2));
-                results.add(header);
-            }
-        }
-        return results;
-    }
     
     protected abstract Header createHeader(int lineNumber, String name, String value);
 

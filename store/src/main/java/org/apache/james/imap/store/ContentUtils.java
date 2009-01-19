@@ -110,15 +110,24 @@ public class ContentUtils {
     }
 
     public static byte[] toByteArray(InputStream is) throws IOException {
+        ByteArrayOutputStream baos = out(is);
+
+        final byte[] bytes = baos.toByteArray();
+        return bytes;
+    }
+
+    public static ByteArrayOutputStream out(InputStream is) throws IOException {
         ByteArrayOutputStream baos = new ByteArrayOutputStream(
                 BYTE_STREAM_CAPACITY);
+        out(is, baos);
+        return baos;
+    }
+
+    public static void out(InputStream is, ByteArrayOutputStream baos) throws IOException {
         byte[] buf = new byte[BYTE_BUFFER_SIZE];
         int read;
         while ((read = is.read(buf)) > 0) {
             baos.write(buf, 0, read);
         }
-
-        final byte[] bytes = baos.toByteArray();
-        return bytes;
     }
 }
