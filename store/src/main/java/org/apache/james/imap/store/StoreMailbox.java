@@ -86,8 +86,8 @@ public abstract class StoreMailbox extends AbstractLogEnabled implements org.apa
         return (int) messageMapper.countMessagesInMailbox(mailboxId);
     }
 
-    public MessageResult appendMessage(byte[] messageBytes, Date internalDate,
-            FetchGroup fetchGroup, MailboxSession mailboxSession, boolean isRecent)
+    public long appendMessage(byte[] messageBytes, Date internalDate,
+            MailboxSession mailboxSession, boolean isRecent)
     throws MailboxException {
         final Mailbox mailbox = reserveNextUid();
 
@@ -151,10 +151,10 @@ public abstract class StoreMailbox extends AbstractLogEnabled implements org.apa
                 mapper.save(message);
                 mapper.commit();
 
-                final MessageResult messageResult = fillMessageResult(message, fetchGroup);
+                final MessageResult messageResult = fillMessageResult(message, FetchGroupImpl.MINIMAL);
+                
                 getUidChangeTracker().found(messageResult);
-
-                return messageResult;
+                return messageResult.getUid();
             } catch (IOException e) {
                 throw new MailboxException(e);
             } catch (MessagingException e) {

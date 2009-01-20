@@ -36,8 +36,6 @@ import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.MailboxManager;
 import org.apache.james.imap.mailbox.MailboxManagerProvider;
 import org.apache.james.imap.mailbox.MailboxSession;
-import org.apache.james.imap.mailbox.MessageResult;
-import org.apache.james.imap.mailbox.util.FetchGroupImpl;
 import org.apache.james.imap.message.request.imap4rev1.AppendRequest;
 import org.apache.james.imap.processor.base.ImapSessionUtils;
 
@@ -101,9 +99,8 @@ public class AppendProcessor extends AbstractMailboxProcessor {
             final SelectedMailbox selectedMailbox = session.getSelected();
             final boolean isSelectedMailbox = selectedMailbox != null
                     && fullMailboxName.equals(selectedMailbox.getName());
-            final MessageResult result = mailbox.appendMessage(message,
-                    datetime, FetchGroupImpl.MINIMAL, mailboxSession, !isSelectedMailbox);
-            final long uid = result.getUid();
+            final long uid  = mailbox.appendMessage(message, datetime, mailboxSession, 
+                    !isSelectedMailbox);
             if (isSelectedMailbox) {
                 selectedMailbox.addRecent(uid);
             }

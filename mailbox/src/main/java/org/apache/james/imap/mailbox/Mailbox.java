@@ -132,33 +132,16 @@ public interface Mailbox {
             MailboxSession mailboxSession) throws MailboxException;
 
     /**
-     * @param internalDate
-     *            <p>
-     *            IMAP defines this as the time when the message has arrived to
-     *            this server (by smtp). Clients are also allowed to set the
-     *            internalDate on apppend.
-     *            </p>
-     *            <p>
-     *            Is this Mail.getLastUpdates() for James delivery? Should we
-     *            use MimeMessage.getReceivedDate()?
-     * @param fetchGroup
-     *            which fields to be returned in MessageResult or null for
-     *            minimal fetch group only
-     * @param mailboxSession
-     *            TODO
-     * @param isRecent TODO
-     * @return MessageResult with the fields defined by <b>result</b>
-     *         <ul>
-     *         <li> IMAP, Javamail Folder: nothing required </li>
-     *         <li> UIDPlusFolder: requires to return appended Message or uid</li>
-     *         <li> UIDPLUS: requires to return appended uid</li>
-     *         </ul>
-     * @throws MailboxException
-     *             if anything went wrong
+     * Appends a message to this mailbox.
+     * @param internalDate the time of addition to be set, not null
+     * @param mailboxSession not null
+     * @param isRecent true when the message should be marked recent,
+     * false otherwise
+     * @return uid for the newly added message
+     * @throws MailboxException when message cannot be appended
      */
-    MessageResult appendMessage(byte[] message, Date internalDate,
-            FetchGroup fetchGroup, MailboxSession mailboxSession, boolean isRecent)
-            throws MailboxException;
+    long appendMessage(byte[] message, Date internalDate, MailboxSession mailboxSession, 
+            boolean isRecent) throws MailboxException;
 
     /**
      * TODO: consolidate search and getMessages into a single method

@@ -116,8 +116,8 @@ public class TorqueMailbox extends AbstractLogEnabled implements Mailbox {
         }
     }
 
-    public MessageResult appendMessage(byte[] message, Date internalDate,
-            FetchGroup fetchGroup, MailboxSession mailboxSession, boolean isRecent)
+    public long appendMessage(byte[] message, Date internalDate,
+            MailboxSession mailboxSession, boolean isRecent)
             throws MailboxException {
 
         try {
@@ -157,9 +157,9 @@ public class TorqueMailbox extends AbstractLogEnabled implements Mailbox {
 
                     save(messageRow);
                     MessageResult messageResult = fillMessageResult(messageRow,
-                            fetchGroup);
+                            FetchGroupImpl.MINIMAL);
                     getUidChangeTracker().found(messageResult);
-                    return messageResult;
+                    return messageResult.getUid();
                 } catch (Exception e) {
                     throw new MailboxException(e);
                 }
