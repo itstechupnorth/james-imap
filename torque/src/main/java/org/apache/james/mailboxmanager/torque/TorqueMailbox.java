@@ -24,13 +24,14 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 import javax.mail.Flags;
 import javax.mail.MessagingException;
@@ -40,8 +41,8 @@ import org.apache.commons.collections.IteratorUtils;
 import org.apache.commons.logging.Log;
 import org.apache.james.api.imap.AbstractLogEnabled;
 import org.apache.james.imap.mailbox.Mailbox;
-import org.apache.james.imap.mailbox.MailboxListener;
 import org.apache.james.imap.mailbox.MailboxException;
+import org.apache.james.imap.mailbox.MailboxListener;
 import org.apache.james.imap.mailbox.MailboxSession;
 import org.apache.james.imap.mailbox.MessageRange;
 import org.apache.james.imap.mailbox.MessageResult;
@@ -656,8 +657,7 @@ public class TorqueMailbox extends AbstractLogEnabled implements Mailbox {
         this.mailboxRow = mailboxRow;
     }
 
-    public Iterator search(SearchQuery query, FetchGroup fetchGroup,
-            MailboxSession mailboxSession) throws MailboxException {
+    public Iterator<Long> search(SearchQuery query, MailboxSession mailboxSession) throws MailboxException {
         try {
             lock.readLock().acquire();
             try {
@@ -666,12 +666,12 @@ public class TorqueMailbox extends AbstractLogEnabled implements Mailbox {
                 final Criteria criterion = preSelect(query);
                 final List rows = MessageRowPeer
                         .doSelectJoinMessageFlags(criterion);
-                final List filteredMessages = new ArrayList();
+                final Set<Long> uids = new TreeSet<Long>();
                 for (Iterator it = rows.iterator(); it.hasNext();) {
                     final MessageRow row = (MessageRow) it.next();
                     try {
                         if (searches.isMatch(query, row)) {
-                            filteredMessages.add(row);
+                            uids.add(row.getUid());
                         }
                     } catch (TorqueException e) {
                         getLog()
@@ -683,7 +683,7 @@ public class TorqueMailbox extends AbstractLogEnabled implements Mailbox {
                     }
                 }
 
-                return getResults(fetchGroup, filteredMessages);
+                return uids.iterator();
             } catch (TorqueException e) {
                 throw new MailboxException(e);
             } finally {

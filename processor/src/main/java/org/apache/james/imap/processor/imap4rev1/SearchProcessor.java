@@ -41,11 +41,8 @@ import org.apache.james.api.imap.process.SelectedMailbox;
 import org.apache.james.imap.mailbox.Mailbox;
 import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.MailboxManagerProvider;
-import org.apache.james.imap.mailbox.MessageResult;
 import org.apache.james.imap.mailbox.SearchQuery;
-import org.apache.james.imap.mailbox.MessageResult.FetchGroup;
 import org.apache.james.imap.mailbox.SearchQuery.Criterion;
-import org.apache.james.imap.mailbox.util.FetchGroupImpl;
 import org.apache.james.imap.message.request.imap4rev1.SearchRequest;
 import org.apache.james.imap.message.response.imap4rev1.server.SearchResponse;
 import org.apache.james.imap.processor.base.ImapSessionUtils;
@@ -68,12 +65,10 @@ public class SearchProcessor extends AbstractMailboxProcessor {
             final SearchKey searchKey = request.getSearchKey();
             final boolean useUids = request.isUseUids();
             final Mailbox mailbox = getSelectedMailbox(session);
-            final FetchGroup fetchGroup = FetchGroupImpl.MINIMAL;
 
             final SearchQuery query = toQuery(searchKey, session);
 
-            final Collection results = findIds(useUids, session, mailbox,
-                    fetchGroup, query);
+            final Collection results = findIds(useUids, session, mailbox, query);
             final long[] ids = toArray(results);
 
             final SearchResponse response = new SearchResponse(ids);
@@ -97,20 +92,20 @@ public class SearchProcessor extends AbstractMailboxProcessor {
     }
 
     private Collection findIds(final boolean useUids,
-            final ImapSession session, Mailbox mailbox,
-            final FetchGroup fetchGroup, final SearchQuery query)
+            final ImapSession session, Mailbox mailbox, final SearchQuery query)
             throws MailboxException {
-        final Iterator it = mailbox.search(query, fetchGroup, ImapSessionUtils
+        final Iterator<Long> it = mailbox.search(query, ImapSessionUtils
                 .getMailboxSession(session));
 
         final Collection<Long> results = new TreeSet<Long>();
+  
         while (it.hasNext()) {
-            final MessageResult result = (MessageResult) it.next();
+            final long uid = it.next();
             final Long number;
             if (useUids) {
-                number = new Long(result.getUid());
+                number = new Long(uid);
             } else {
-                final int msn = session.getSelected().msn(result.getUid());
+                final int msn = session.getSelected().msn(uid);
                 number = new Long(msn);
             }
             results.add(number);

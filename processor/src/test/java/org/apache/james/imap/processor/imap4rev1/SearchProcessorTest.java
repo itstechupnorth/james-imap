@@ -42,7 +42,6 @@ import org.apache.james.imap.mailbox.MailboxManagerProvider;
 import org.apache.james.imap.mailbox.MailboxSession;
 import org.apache.james.imap.mailbox.SearchQuery;
 import org.apache.james.imap.mailbox.SearchQuery.Criterion;
-import org.apache.james.imap.mailbox.util.FetchGroupImpl;
 import org.apache.james.imap.message.request.imap4rev1.SearchRequest;
 import org.apache.james.imap.message.response.imap4rev1.server.SearchResponse;
 import org.apache.james.imap.processor.base.ImapSessionUtils;
@@ -419,9 +418,8 @@ public class SearchProcessorTest extends MockObjectTestCase {
                     with(equal(ImapSessionUtils.MAILBOX_SESSION_ATTRIBUTE_SESSION_KEY))); will(returnValue((MailboxSession) mailboxSession));
             oneOf(mailbox).search(
                     with(equal(query)),
-                    with(equal(FetchGroupImpl.MINIMAL)), 
                     with(equal(mailboxSession)));will(
-                            returnValue(new ArrayList().iterator()));
+                            returnValue(new ArrayList<Long>().iterator()));
             oneOf(responder).respond(with(equal(new SearchResponse(EMPTY))));
             
         }});

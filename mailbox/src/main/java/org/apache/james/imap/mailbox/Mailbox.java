@@ -36,23 +36,15 @@ public interface Mailbox {
     boolean isWriteable();
 
     /**
-     * @param fetchGroup
-     *            which fields to be returned in MessageResult
-     * @param mailboxSession
-     *            TODO
-     * @return MessageResult with the fields defined by <b>result</b>
-     *         <ul>
-     *         <li> IMAP: msn or (msn and uid)</li>
-     *         <li> Javamail Folder: Message[]</li>
-     *         </ul>
-     * @throws MailboxException
-     *             if anything went wrong
+     * Searches for messages matching the given query.
+     * @param mailboxSession not null
+     * @return uid iterator
      * @throws UnsupportedCriteriaException
      *             when any of the search parameters are not supported by this
      *             mailbox
+     * @throws MailboxException when search fails for other reasons
      */
-    Iterator search(SearchQuery searchQuery, FetchGroup fetchGroup,
-            MailboxSession mailboxSession) throws MailboxException;
+    Iterator<Long> search(SearchQuery searchQuery, MailboxSession mailboxSession) throws MailboxException;
 
     long getUidValidity(MailboxSession mailboxSession)
             throws MailboxException;

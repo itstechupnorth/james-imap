@@ -28,6 +28,8 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 import javax.mail.Flags;
 import javax.mail.MessagingException;
@@ -366,15 +368,14 @@ public abstract class StoreMailbox extends AbstractLogEnabled implements org.apa
         return tracker;
     }
 
-    public Iterator search(SearchQuery query, FetchGroup fetchGroup,
-            MailboxSession mailboxSession) throws MailboxException {
+    public Iterator<Long> search(SearchQuery query, MailboxSession mailboxSession) throws MailboxException {
         final MessageMapper messageMapper = createMessageMapper();
         final List<MailboxMembership> members = messageMapper.searchMailbox(mailboxId, query);
-        final List<MailboxMembership> filteredMessages = new ArrayList<MailboxMembership>(members.size());
+        final Set<Long> uids = new TreeSet<Long>();
         for (MailboxMembership member:members) {
             try {
                 if (searches.isMatch(query, member)) {
-                    filteredMessages.add(member);
+                    uids.add(member.getUid());
                 }
             } catch (MailboxException e) {
                 getLog()
@@ -386,7 +387,7 @@ public abstract class StoreMailbox extends AbstractLogEnabled implements org.apa
             }
         }
 
-        return getResults(fetchGroup, filteredMessages);
+        return uids.iterator();
     }
 
     public boolean isWriteable() {
