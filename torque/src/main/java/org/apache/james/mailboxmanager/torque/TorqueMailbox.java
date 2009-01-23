@@ -600,9 +600,8 @@ public class TorqueMailbox extends AbstractLogEnabled implements Mailbox {
                             .retrieveByPK(mailboxRow.getPrimaryKey());
                     if (myMailboxRow != null) {
                         mailboxRow = myMailboxRow;
-                        getUidChangeTracker().foundLastUid(
-                                mailboxRow.getLastUid());
-                        return getUidChangeTracker().getLastUid() + 1;
+                        final long lastUid = mailboxRow.getLastUid();
+                        return lastUid + 1;
                     } else {
                         throw new MailboxException(
                                 "Mailbox has been deleted");

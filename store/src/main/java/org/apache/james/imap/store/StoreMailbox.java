@@ -350,8 +350,8 @@ public abstract class StoreMailbox extends AbstractLogEnabled implements org.apa
         if (mailbox == null) {
             throw new MailboxNotFoundException("Mailbox has been deleted");
         } else {
-            getUidChangeTracker().foundLastUid(mailbox.getLastUid());
-            return getUidChangeTracker().getLastUid() + 1;
+            final long lastUid = mailbox.getLastUid();
+            return lastUid + 1;
         }
     }
 
