@@ -52,12 +52,7 @@ public class ResultIterator implements Iterator {
         }
         this.fetchGroup = fetchGroup;
     }
-
-    public MessageFlags[] getMessageFlags() {
-        final MessageFlags[] results = ResultUtils.toMessageFlags(messages);
-        return results;
-    }
-
+    
     /**
      * Iterates over the contained rows.
      * 

@@ -27,9 +27,13 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.SortedMap;
+import java.util.TreeMap;
 import java.util.TreeSet;
 
 import javax.mail.Flags;
@@ -56,6 +60,8 @@ import org.apache.james.imap.store.mail.model.MailboxMembership;
 import org.apache.james.mime4j.parser.MimeTokenStream;
 
 public abstract class StoreMailbox extends AbstractLogEnabled implements org.apache.james.imap.mailbox.Mailbox {
+
+    private static final int INITIAL_SIZE_FLAGS = 32;
 
     private static final int INITIAL_SIZE_HEADERS = 32;
 
@@ -186,8 +192,12 @@ public abstract class StoreMailbox extends AbstractLogEnabled implements org.apa
     }
 
     private ResultIterator getMessages(FetchGroup result, UidRange range, List<MailboxMembership> messages) {
+        final Map<Long, Flags> flagsByIndex = new HashMap<Long, Flags>();
+        for (MailboxMembership member:messages) {
+            flagsByIndex.put(member.getUid(), member.createFlags());
+        }
         final ResultIterator results = getResults(result, messages);
-        getUidChangeTracker().found(range, results.getMessageFlags());
+        getUidChangeTracker().found(range, flagsByIndex);
         return results;
     }
 
@@ -293,23 +303,20 @@ public abstract class StoreMailbox extends AbstractLogEnabled implements org.apa
         return uids.iterator();
     }
 
-    public Iterator setFlags(Flags flags, boolean value, boolean replace,
-            MessageRange set, FetchGroup fetchGroup,
-            MailboxSession mailboxSession) throws MailboxException {
-        return doSetFlags(flags, value, replace, set, fetchGroup,
-                mailboxSession);
+    public Map<Long, Flags> setFlags(Flags flags, boolean value, boolean replace,
+            MessageRange set, MailboxSession mailboxSession) throws MailboxException {
+        return doSetFlags(flags, value, replace, set, mailboxSession);
     }
 
-    private Iterator doSetFlags(Flags flags, boolean value, boolean replace,
-            final MessageRange set, FetchGroup fetchGroup,
-            MailboxSession mailboxSession) throws MailboxException {
+    private Map<Long, Flags> doSetFlags(Flags flags, boolean value, boolean replace,
+            final MessageRange set, MailboxSession mailboxSession) throws MailboxException {
         final MessageMapper mapper = createMessageMapper();
+        final SortedMap<Long, Flags> newFlagsByUid = new TreeMap<Long, Flags>();
+        final Map<Long, Flags> originalFlagsByUid = new HashMap<Long, Flags>(INITIAL_SIZE_FLAGS);
         mapper.begin();
         final List<MailboxMembership> members = mapper.findInMailbox(set, mailboxId);
-        UidRange uidRange = uidRangeForMessageSet(set);
-        getUidChangeTracker().found(uidRange,
-                ResultUtils.toMessageFlags(members));
         for (final MailboxMembership member:members) {
+            originalFlagsByUid.put(member.getUid(), member.createFlags());
             if (replace) {
                 member.setFlags(flags);
             } else {
@@ -321,18 +328,12 @@ public abstract class StoreMailbox extends AbstractLogEnabled implements org.apa
                 }
                 member.setFlags(current);
             }
+            newFlagsByUid.put(member.getUid(), member.createFlags());
             mapper.save(member);
         }
-        final OrFetchGroup orFetchGroup = new OrFetchGroup(fetchGroup,
-                FetchGroup.FLAGS);
-        final ResultIterator resultIterator = new ResultIterator(
-                members, orFetchGroup);
-        final org.apache.james.imap.mailbox.util.MessageFlags[] messageFlags = resultIterator
-        .getMessageFlags();
         mapper.commit();
-        tracker.flagsUpdated(messageFlags, mailboxSession.getSessionId());
-        tracker.found(uidRange, messageFlags);
-        return resultIterator;
+        tracker.flagsUpdated(newFlagsByUid, originalFlagsByUid, mailboxSession.getSessionId());
+        return newFlagsByUid;
     }
 
     public void addListener(MailboxListener listener) throws MailboxException {

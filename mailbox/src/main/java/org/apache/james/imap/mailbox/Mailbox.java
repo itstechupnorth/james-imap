@@ -21,6 +21,7 @@ package org.apache.james.imap.mailbox;
 
 import java.util.Date;
 import java.util.Iterator;
+import java.util.Map;
 
 import javax.mail.Flags;
 
@@ -51,25 +52,21 @@ public interface Mailbox {
 
     /**
      * 
-     * @param mailboxSession
-     *            TODO
+     * @param mailboxSession not null
      * @return the uid that will be assigned to the next appended message
      * @throws MailboxException
      */
 
-    long getUidNext(MailboxSession mailboxSession)
-            throws MailboxException;
+    long getUidNext(MailboxSession mailboxSession) throws MailboxException;
 
     /**
      * @return Flags that can be stored
      */
     Flags getPermanentFlags();
 
-    long[] recent(boolean reset, MailboxSession mailboxSession)
-            throws MailboxException;
+    long[] recent(boolean reset, MailboxSession mailboxSession) throws MailboxException;
 
-    int getUnseenCount(MailboxSession mailboxSession)
-            throws MailboxException;
+    int getUnseenCount(MailboxSession mailboxSession) throws MailboxException;
 
     /**
      * Gets the UID of the first unseen message.
@@ -91,9 +88,8 @@ public interface Mailbox {
     Iterator<Long> expunge(MessageRange set, MailboxSession mailboxSession) throws MailboxException;
 
     /**
-     * this is much more straight forward for IMAP instead of setting Flags of
-     * an array of lazy-loading MimeMessages. <br />
-     * required by IMAP
+     * Sets flags on messages within the given range.
+     * The new flags are returned for each message altered.
      * 
      * @param flags
      *            Flags to be set
@@ -103,17 +99,13 @@ public interface Mailbox {
      *            replace all Flags with this flags, value has to be true
      * @param set
      *            the range of messages
-     * @param fetchGroup
-     *            fetch group for results
-     * @param mailboxSession
-     *            TODO
+     * @param mailboxSession not null
      * @return {@link MessageResult} <code>Iterator</code> containing messages
      *         whose flags have been updated, not null
      * @throws MailboxException
      */
-    Iterator setFlags(Flags flags, boolean value, boolean replace,
-            MessageRange set, FetchGroup fetchGroup,
-            MailboxSession mailboxSession) throws MailboxException;
+    Map<Long, Flags> setFlags(Flags flags, boolean value, boolean replace,
+            MessageRange set, MailboxSession mailboxSession) throws MailboxException;
 
     /**
      * Appends a message to this mailbox.

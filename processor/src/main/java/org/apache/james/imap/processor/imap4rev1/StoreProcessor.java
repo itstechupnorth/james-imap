@@ -19,7 +19,7 @@
 
 package org.apache.james.imap.processor.imap4rev1;
 
-import java.util.Iterator;
+import java.util.Map;
 
 import javax.mail.Flags;
 
@@ -36,18 +36,13 @@ import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.MailboxManagerProvider;
 import org.apache.james.imap.mailbox.MailboxSession;
 import org.apache.james.imap.mailbox.MessageRange;
-import org.apache.james.imap.mailbox.MessageResult;
-import org.apache.james.imap.mailbox.MessageResult.FetchGroup;
-import org.apache.james.imap.mailbox.util.FetchGroupImpl;
 import org.apache.james.imap.mailbox.util.MessageRangeImpl;
 import org.apache.james.imap.message.request.imap4rev1.StoreRequest;
 import org.apache.james.imap.message.response.imap4rev1.FetchResponse;
 import org.apache.james.imap.processor.base.ImapSessionUtils;
 
 public class StoreProcessor extends AbstractMailboxProcessor {
-
-    private static final FetchGroup STORE_FETCH_GROUP = FetchGroupImpl.FLAGS;
-
+    
     public StoreProcessor(final ImapProcessor next, final MailboxManagerProvider mailboxManagerProvider,
             final StatusResponseFactory factory) {
         super(next, mailboxManagerProvider, factory);
@@ -96,14 +91,13 @@ public class StoreProcessor extends AbstractMailboxProcessor {
                         lowVal, highVal);
                 final MailboxSession mailboxSession = ImapSessionUtils
                         .getMailboxSession(session);
-                final Iterator it = mailbox.setFlags(flags, value, replace,
-                        messageSet, STORE_FETCH_GROUP, mailboxSession);
+                final Map<Long, Flags> flagsByUid = mailbox.setFlags(flags, value, replace,
+                        messageSet, mailboxSession);
                 if (!silent) {
-                    while (it.hasNext()) {
-                        final MessageResult result = (MessageResult) it.next();
-                        final long uid = result.getUid();
+                    for (Map.Entry<Long, Flags> entry: flagsByUid.entrySet()) {
+                        final long uid = entry.getKey();
                         final int msn = selected.msn(uid);
-                        final Flags resultFlags = result.getFlags();
+                        final Flags resultFlags = entry.getValue();
                         final Long resultUid;
                         if (useUids) {
                             resultUid = new Long(uid);

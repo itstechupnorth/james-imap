@@ -67,7 +67,7 @@ public class MessageRowUtils {
         int i = 0;
         for (final Iterator it = messageRows.iterator(); it.hasNext();) {
             MessageRow row = (MessageRow) it.next();
-            final Flags flags = row.getMessageFlags().getFlagsObject();
+            final Flags flags = row.getMessageFlags().createFlags();
             final long uid = row.getUid();
             results[i++] = new MessageFlags(uid, flags);
         }
@@ -134,7 +134,7 @@ public class MessageRowUtils {
                 org.apache.james.mailboxmanager.torque.om.MessageFlags messageFlags = messageRow
                         .getMessageFlags();
                 if (messageFlags != null) {
-                    messageResult.setFlags(messageFlags.getFlagsObject());
+                    messageResult.setFlags(messageFlags.createFlags());
                 }
                 content -= FetchGroup.FLAGS;
             }

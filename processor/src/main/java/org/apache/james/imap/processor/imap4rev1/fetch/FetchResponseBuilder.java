@@ -40,7 +40,6 @@ import org.apache.james.imap.mailbox.Mailbox;
 import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.MailboxSession;
 import org.apache.james.imap.mailbox.MessageResult;
-import org.apache.james.imap.mailbox.util.FetchGroupImpl;
 import org.apache.james.imap.mailbox.util.MessageRangeImpl;
 import org.apache.james.imap.mailbox.util.MessageResultUtils;
 import org.apache.james.imap.message.response.imap4rev1.FetchResponse;
@@ -117,8 +116,7 @@ final class FetchResponseBuilder {
         final Flags resultFlags = result.getFlags();
         if (fetch.isSetSeen() && !resultFlags.contains(Flags.Flag.SEEN)) {
             mailbox.setFlags(new Flags(Flags.Flag.SEEN), true, false,
-                    MessageRangeImpl.oneUid(resultUid), FetchGroupImpl.MINIMAL,
-                    mailboxSession);
+                    MessageRangeImpl.oneUid(resultUid), mailboxSession);
             resultFlags.add(Flags.Flag.SEEN);
             ensureFlagsResponse = true;
         }

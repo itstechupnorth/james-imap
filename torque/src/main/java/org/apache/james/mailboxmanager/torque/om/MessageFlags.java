@@ -45,7 +45,7 @@ public class MessageFlags extends
         setSeen(flags.contains(Flags.Flag.SEEN));
     }
 
-    public Flags getFlagsObject() {
+    public Flags createFlags() {
         Flags flags = new Flags();
 
         if (getAnswered()) {
