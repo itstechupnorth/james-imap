@@ -81,28 +81,14 @@ public interface Mailbox {
     Long getFirstUnseen(MailboxSession mailboxSession) throws MailboxException;
 
     /**
-     * 
-     * @param set
-     *            <ul>
-     *            <li> IMAP, Javamail: not required, always expunge all</li>
-     *            <li> UIDPLUS: requires the possibility of defining a uid range</li>
-     *            </ul>
-     * @param fetchGroup
-     *            which fields to be returned in MessageResult
-     * @param mailboxSession
-     *            TODO
-     * 
-     * @return {@link MessageResult} <code>Iterator</code> with the fields
-     *         defined by <b>result</b><br />
-     *         <ul>
-     *         <li> IMAP, UIDPLUS: nothing required </li>
-     *         <li> Javamail Folder: requires the expunged Message[]</li>
-     *         </ul>
+     * Expunges messages in the given range from this mailbox.
+     * @param set not null
+     * @param mailboxSession not null
+     * @return 
      * @throws MailboxException
      *             if anything went wrong
      */
-    Iterator expunge(MessageRange set, FetchGroup fetchGroup,
-            MailboxSession mailboxSession) throws MailboxException;
+    Iterator<Long> expunge(MessageRange set, MailboxSession mailboxSession) throws MailboxException;
 
     /**
      * this is much more straight forward for IMAP instead of setting Flags of

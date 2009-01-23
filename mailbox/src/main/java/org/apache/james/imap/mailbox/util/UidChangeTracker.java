@@ -56,11 +56,9 @@ public class UidChangeTracker implements Constants {
         cache = new TreeMap<Long, Flags>();
     }
 
-    public synchronized void expunged(final long[] uidsExpunged) {
-        final int length = uidsExpunged.length;
-        for (int i = 0; i < length; i++) {
-            final long uid = uidsExpunged[i];
-            cache.remove(new Long(uid));
+    public synchronized void expunged(final Collection<Long> uidsExpunged) {
+        for (Long uid:uidsExpunged) {
+            cache.remove(uid);
             eventDispatcher.expunged(uid, 0);
         }
     }

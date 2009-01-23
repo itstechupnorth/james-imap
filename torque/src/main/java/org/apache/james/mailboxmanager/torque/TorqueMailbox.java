@@ -37,7 +37,6 @@ import javax.mail.Flags;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 
-import org.apache.commons.collections.IteratorUtils;
 import org.apache.commons.logging.Log;
 import org.apache.james.api.imap.AbstractLogEnabled;
 import org.apache.james.imap.mailbox.Mailbox;
@@ -459,12 +458,11 @@ public class TorqueMailbox extends AbstractLogEnabled implements Mailbox {
         }
     }
 
-    public Iterator expunge(MessageRange set, FetchGroup fetchGroup,
-            MailboxSession mailboxSession) throws MailboxException {
+    public Iterator<Long> expunge(MessageRange set, MailboxSession mailboxSession) throws MailboxException {
         try {
             lock.writeLock().acquire();
             try {
-                return doExpunge(set, fetchGroup);
+                return doExpunge(set);
             } finally {
                 lock.writeLock().release();
             }
@@ -474,7 +472,7 @@ public class TorqueMailbox extends AbstractLogEnabled implements Mailbox {
         }
     }
 
-    private Iterator doExpunge(final MessageRange set, FetchGroup fetchGroup)
+    private Iterator<Long> doExpunge(final MessageRange set)
             throws MailboxException {
         checkAccess();
         try {
@@ -486,16 +484,11 @@ public class TorqueMailbox extends AbstractLogEnabled implements Mailbox {
             c.add(MessageFlagsPeer.DELETED, true);
 
             final List messageRows = getMailboxRow().getMessageRows(c);
-            final long[] uids = uids(messageRows);
-            final OrFetchGroup orFetchGroup = new OrFetchGroup(fetchGroup,
-                    FetchGroup.FLAGS);
-            final TorqueResultIterator resultIterator = new TorqueResultIterator(
-                    messageRows, orFetchGroup);
-            // ensure all results are loaded before deletion
-            Collection messageResults = IteratorUtils.toList(resultIterator);
+            final Collection<Long> uids = new TreeSet<Long>();
 
             for (Iterator iter = messageRows.iterator(); iter.hasNext();) {
                 MessageRow messageRow = (MessageRow) iter.next();
+                uids.add(messageRow.getUid());
                 Criteria todelc = new Criteria();
                 todelc
                         .add(MessageRowPeer.MAILBOX_ID, messageRow
@@ -504,20 +497,10 @@ public class TorqueMailbox extends AbstractLogEnabled implements Mailbox {
                 MessageRowPeer.doDelete(todelc);
             }
             getUidChangeTracker().expunged(uids);
-            return messageResults.iterator();
+            return uids.iterator();
         } catch (Exception e) {
             throw new MailboxException(e);
         }
-    }
-
-    private long[] uids(List messageRows) {
-        final int size = messageRows.size();
-        long[] results = new long[size];
-        for (int i = 0; i < size; i++) {
-            final MessageRow messageRow = (MessageRow) messageRows.get(i);
-            results[i] = (messageRow).getUid();
-        }
-        return results;
     }
 
     public Iterator setFlags(Flags flags, boolean value, boolean replace,

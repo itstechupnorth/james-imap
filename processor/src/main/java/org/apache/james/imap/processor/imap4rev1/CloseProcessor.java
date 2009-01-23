@@ -29,7 +29,6 @@ import org.apache.james.imap.mailbox.Mailbox;
 import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.MailboxManagerProvider;
 import org.apache.james.imap.mailbox.MailboxSession;
-import org.apache.james.imap.mailbox.util.FetchGroupImpl;
 import org.apache.james.imap.mailbox.util.MessageRangeImpl;
 import org.apache.james.imap.message.request.imap4rev1.CloseRequest;
 import org.apache.james.imap.processor.base.ImapSessionUtils;
@@ -53,8 +52,7 @@ public class CloseProcessor extends AbstractMailboxProcessor {
                 
                     final MailboxSession mailboxSession = ImapSessionUtils
                             .getMailboxSession(session);
-                    mailbox.expunge(MessageRangeImpl.all(), FetchGroupImpl.MINIMAL,
-                            mailboxSession);
+                    mailbox.expunge(MessageRangeImpl.all(), mailboxSession);
                     session.deselect();
                     // TODO: the following comment was present in the code before
                     // refactoring

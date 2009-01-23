@@ -32,8 +32,6 @@ import org.apache.james.api.imap.process.SelectedMailbox;
 import org.apache.james.imap.mailbox.Mailbox;
 import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.MailboxManagerProvider;
-import org.apache.james.imap.mailbox.MessageResult;
-import org.apache.james.imap.mailbox.util.FetchGroupImpl;
 import org.apache.james.imap.mailbox.util.MessageRangeImpl;
 import org.apache.james.imap.message.request.imap4rev1.ExpungeRequest;
 import org.apache.james.imap.processor.base.ImapSessionUtils;
@@ -58,15 +56,14 @@ public class ExpungeProcessor extends AbstractMailboxProcessor {
                 no(command, tag, responder,
                         HumanReadableTextKey.MAILBOX_IS_READ_ONLY);
             } else {
-                final Iterator it = mailbox.expunge(MessageRangeImpl.all(),
-                        FetchGroupImpl.MINIMAL, ImapSessionUtils
+                final Iterator<Long> it = mailbox.expunge(MessageRangeImpl.all(),
+                        ImapSessionUtils
                         .getMailboxSession(session));
                 final SelectedMailbox mailboxSession = session
                 .getSelected();
                 if (mailboxSession != null) {
                     while (it.hasNext()) {
-                        final MessageResult result = (MessageResult) it.next();
-                        final long uid = result.getUid();
+                        final long uid = it.next();
                         mailboxSession.removeRecent(uid);
                     }
                 }

@@ -24,6 +24,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
@@ -273,39 +274,23 @@ public abstract class StoreMailbox extends AbstractLogEnabled implements org.apa
         return count;
     }
 
-    public Iterator expunge(MessageRange set, FetchGroup fetchGroup,
-            MailboxSession mailboxSession) throws MailboxException {
-        return doExpunge(set, fetchGroup);
+    public Iterator<Long> expunge(MessageRange set, MailboxSession mailboxSession) throws MailboxException {
+        return doExpunge(set);
     }
 
-    private Iterator doExpunge(final MessageRange set, FetchGroup fetchGroup)
+    private Iterator<Long> doExpunge(final MessageRange set)
     throws MailboxException {
         final MessageMapper mapper = createMessageMapper();
         mapper.begin();
         final List<MailboxMembership> members = mapper.findMarkedForDeletionInMailbox(set, mailboxId);
-        final long[] uids = uids(members);
-        final OrFetchGroup orFetchGroup = new OrFetchGroup(fetchGroup, FetchGroup.FLAGS);
-        final ResultIterator resultIterator = new ResultIterator(members, orFetchGroup);
-        // ensure all results are loaded before deletion
-        final List<MessageResult> messageResults = resultIterator.toList();
-
+        final Collection<Long> uids = new TreeSet<Long>();
         for (MailboxMembership message:members) {
+            uids.add(message.getUid());
             mapper.delete(message);
         }
         mapper.commit();
         getUidChangeTracker().expunged(uids);
-        return messageResults.iterator();
-    }
-
-
-    private long[] uids(List<MailboxMembership> members) {
-        final int size = members.size();
-        long[] results = new long[size];
-        for (int i = 0; i < size; i++) {
-            final MailboxMembership member = members.get(i);
-            results[i] = member.getUid();
-        }
-        return results;
+        return uids.iterator();
     }
 
     public Iterator setFlags(Flags flags, boolean value, boolean replace,
