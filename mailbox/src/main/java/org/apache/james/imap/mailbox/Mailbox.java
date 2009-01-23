@@ -100,8 +100,7 @@ public interface Mailbox {
      * @param set
      *            the range of messages
      * @param mailboxSession not null
-     * @return {@link MessageResult} <code>Iterator</code> containing messages
-     *         whose flags have been updated, not null
+     * @return new flags indexed by UID
      * @throws MailboxException
      */
     Map<Long, Flags> setFlags(Flags flags, boolean value, boolean replace,
@@ -120,21 +119,11 @@ public interface Mailbox {
             boolean isRecent) throws MailboxException;
 
     /**
-     * TODO: consolidate search and getMessages into a single method
-     * 
+     * Gets messages in the given range.
      * @param set
-     * @param mailboxSession
-     *            TODO
-     * @return MessageResult with the fields defined by <b>result</b>
-     *         <ul>
-     *         <li> IMAP: a set of msn, uid, Flags, header lines, content, mime
-     *         parts...</li>
-     *         <li> Javamail Folder: Message[]</li>
-     *         </ul>
+     * @param mailboxSession not null
+     * @return MessageResult with the fields defined by FetchGroup
      * @throws MailboxException
      */
-
-    Iterator getMessages(MessageRange set, FetchGroup fetchGroup,
-            MailboxSession mailboxSession) throws MailboxException;
-
+    Iterator<MessageResult> getMessages(MessageRange set, FetchGroup fetchGroup, MailboxSession mailboxSession) throws MailboxException;
 }

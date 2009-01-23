@@ -193,7 +193,7 @@ abstract class AbstractSelectionProcessor extends AbstractMailboxProcessor {
             final MailboxSession mailboxSession, ImapSession session, String name)
             throws MailboxException {
         final SelectedMailbox sessionMailbox;
-        final Iterator it = mailbox.getMessages(MessageRangeImpl.all(),
+        final Iterator<MessageResult> it = mailbox.getMessages(MessageRangeImpl.all(),
                 FetchGroupImpl.MINIMAL, mailboxSession);
         final List<Long> uids = new ArrayList<Long>();
         while (it.hasNext()) {

@@ -88,8 +88,7 @@ public class FetchProcessor extends AbstractMailboxProcessor {
                         highVal);
                 final MailboxSession mailboxSession = ImapSessionUtils
                         .getMailboxSession(session);
-                final Iterator it = mailbox.getMessages(messageSet,
-                        resultToFetch, mailboxSession);
+                final Iterator<MessageResult> it = mailbox.getMessages(messageSet, resultToFetch, mailboxSession);
                 while (it.hasNext()) {
                     final MessageResult result = (MessageResult) it.next();
                     final FetchResponse response = builder.build(fetch, result, mailbox, 
