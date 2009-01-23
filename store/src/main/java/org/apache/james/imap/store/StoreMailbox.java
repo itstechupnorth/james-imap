@@ -241,20 +241,25 @@ public abstract class StoreMailbox extends AbstractLogEnabled implements org.apa
         return results;
     }
 
-    public MessageResult getFirstUnseen(FetchGroup fetchGroup,
-            MailboxSession mailboxSession) throws MailboxException {
+    public Long getFirstUnseen(MailboxSession mailboxSession) throws MailboxException {
         try {
             final MessageMapper messageMapper = createMessageMapper();
             final List<MailboxMembership> messageRows = messageMapper.findUnseenMessagesInMailboxOrderByUid(mailboxId);
             final Iterator<MailboxMembership> it = messageRows.iterator();
-            final MessageResult result;
+            final MessageResult message;
             if (it.hasNext()) {
-                result = fillMessageResult(it.next(), fetchGroup);
-                if (result != null) {
-                    getUidChangeTracker().found(result);
+                message = fillMessageResult(it.next(), FetchGroupImpl.MINIMAL);
+                if (message != null) {
+                    getUidChangeTracker().found(message);
                 }
             } else {
+                message = null;
+            }
+            final Long result;
+            if (message == null) {
                 result = null;
+            } else {
+                result = message.getUid();
             }
             return result;
         } catch (MessagingException e) {

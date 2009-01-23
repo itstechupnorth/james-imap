@@ -138,10 +138,9 @@ abstract class AbstractSelectionProcessor extends AbstractMailboxProcessor {
     private void unseen(Responder responder, Mailbox mailbox,
             final MailboxSession mailboxSession,
             final SelectedMailbox selected) throws MailboxException {
-        final MessageResult firstUnseen = mailbox.getFirstUnseen(
-                FetchGroupImpl.MINIMAL, mailboxSession);
+        final Long firstUnseen = mailbox.getFirstUnseen(mailboxSession);
         if (firstUnseen != null) {
-            final long unseenUid = firstUnseen.getUid();
+            final long unseenUid = firstUnseen;
             int msn = selected.msn(unseenUid);
             final StatusResponse untaggedOk = statusResponseFactory.untaggedOk(
                     HumanReadableTextKey.UNSEEN, ResponseCode.unseen(msn));

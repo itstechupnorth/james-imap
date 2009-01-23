@@ -393,8 +393,7 @@ public class TorqueMailbox extends AbstractLogEnabled implements Mailbox {
         return criterion;
     }
 
-    public MessageResult getFirstUnseen(FetchGroup fetchGroup,
-            MailboxSession mailboxSession) throws MailboxException {
+    public Long getFirstUnseen(MailboxSession mailboxSession) throws MailboxException {
         try {
             lock.readLock().acquire();
             try {
@@ -415,12 +414,12 @@ public class TorqueMailbox extends AbstractLogEnabled implements Mailbox {
                     List messageRows = getMailboxRow().getMessageRows(c);
                     if (messageRows.size() > 0) {
                         MessageResult messageResult = fillMessageResult(
-                                (MessageRow) messageRows.get(0), fetchGroup);
+                                (MessageRow) messageRows.get(0), FetchGroupImpl.MINIMAL);
                         if (messageResult != null) {
                             getUidChangeTracker().found(messageResult);
                         }
 
-                        return messageResult;
+                        return messageResult.getUid();
                     } else {
                         return null;
                     }

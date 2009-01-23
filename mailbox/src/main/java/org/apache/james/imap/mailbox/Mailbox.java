@@ -71,8 +71,14 @@ public interface Mailbox {
     int getUnseenCount(MailboxSession mailboxSession)
             throws MailboxException;
 
-    MessageResult getFirstUnseen(FetchGroup fetchGroup,
-            MailboxSession mailboxSession) throws MailboxException;
+    /**
+     * Gets the UID of the first unseen message.
+     * @param mailboxSession not null
+     * @return uid of the first unseen message,
+     * or null when there are no unseen messages
+     * @throws MailboxException 
+     */
+    Long getFirstUnseen(MailboxSession mailboxSession) throws MailboxException;
 
     /**
      * 
