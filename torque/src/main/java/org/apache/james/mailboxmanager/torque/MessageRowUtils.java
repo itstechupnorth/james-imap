@@ -89,12 +89,12 @@ public class MessageRowUtils {
 
     private static List getSortedHeaders(MessageRow messageRow)
             throws TorqueException {
-        final List headers = messageRow.getMessageHeaders();
-        Collections.sort(headers, new Comparator() {
+        final List<MessageHeader> headers = messageRow.getMessageHeaders();
+        Collections.sort(headers, new Comparator<MessageHeader>() {
 
-            public int compare(Object one, Object two) {
-                return ((MessageHeader) one).getLineNumber()
-                        - ((MessageHeader) two).getLineNumber();
+            public int compare(MessageHeader one, MessageHeader two) {
+                return  one.getLineNumber()
+                        - two.getLineNumber();
             }
 
         });
@@ -209,11 +209,9 @@ public class MessageRowUtils {
             MessageRow row, MessageResultImpl messageResult)
             throws TorqueException, MailboxException, IOException,
             MimeException {
-        Collection partContent = fetchGroup.getPartContentDescriptors();
+        Collection<FetchGroup.PartContentDescriptor> partContent = fetchGroup.getPartContentDescriptors();
         if (partContent != null) {
-            for (Iterator it = partContent.iterator(); it.hasNext();) {
-                FetchGroup.PartContentDescriptor descriptor = (FetchGroup.PartContentDescriptor) it
-                        .next();
+            for (FetchGroup.PartContentDescriptor descriptor:partContent) {
                 addPartContent(descriptor, row, messageResult);
             }
         }

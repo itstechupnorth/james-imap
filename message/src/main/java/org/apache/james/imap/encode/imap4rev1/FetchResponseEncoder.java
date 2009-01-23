@@ -42,8 +42,6 @@ import org.apache.james.imap.message.response.imap4rev1.FetchResponse.Structure;
 
 public class FetchResponseEncoder extends AbstractChainedImapEncoder {
 
-    private static final String[] EMPTY_STRING_ARRAY = {};
-
     public FetchResponseEncoder(final ImapEncoder next) {
         super(next);
     }
@@ -151,7 +149,7 @@ public class FetchResponseEncoder extends AbstractChainedImapEncoder {
             final ImapResponseComposer composer, final Structure structure)
             throws IOException {
         final String md5 = structure.getMD5();
-        final String[] languages = languages(structure);
+        final List<String> languages = structure.getLanguages();
         final String location = structure.getLocation();
         composer.nillableQuote(md5);
         bodyFldDsp(structure, composer).nillableQuotes(languages)
@@ -203,7 +201,7 @@ public class FetchResponseEncoder extends AbstractChainedImapEncoder {
     private void encodeBodyFields(final ImapResponseComposer composer,
             final Structure structure, final String mediaType,
             final String subType) throws IOException {
-        final String[] bodyParams = structure.getParameters();
+        final List<String> bodyParams = structure.getParameters();
         final String id = structure.getId();
         final String description = structure.getDescription();
         final String encoding = structure.getEncoding();
@@ -219,30 +217,19 @@ public class FetchResponseEncoder extends AbstractChainedImapEncoder {
             final boolean includeExtensions) throws IOException {
         composer.openParen();
 
-        for (Iterator it = structure.parts(); it.hasNext();) {
-            final Structure part = (Structure) it.next();
+        for (Iterator<Structure> it = structure.parts(); it.hasNext();) {
+            final Structure part = it.next();
             encodeStructure(composer, part, includeExtensions, true);
         }
 
         composer.quoteUpperCaseAscii(subType);
         if (includeExtensions) {
-            final String[] languages = languages(structure);
+            final List<String> languages = structure.getLanguages();
             composer.nillableQuotes(structure.getParameters());
             bodyFldDsp(structure, composer).nillableQuotes(languages)
                     .nillableQuote(structure.getLocation());
         }
         composer.closeParen();
-    }
-
-    private String[] languages(Structure structure) {
-        final List languageList = structure.getLanguages();
-        final String[] languages;
-        if (languageList == null) {
-            languages = null;
-        } else {
-            languages = (String[]) languageList.toArray(EMPTY_STRING_ARRAY);
-        }
-        return languages;
     }
 
     private void encodeRfc822Message(ImapResponseComposer composer,

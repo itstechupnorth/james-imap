@@ -191,7 +191,7 @@ public class MimeDescriptorImpl implements MessageResult.MimeDescriptor {
 
     private final List languages;
 
-    private final Collection headers;
+    private final Collection<MessageResult.Header> headers;
 
     private final Collection contentTypeParameters;
 
@@ -270,7 +270,7 @@ public class MimeDescriptorImpl implements MessageResult.MimeDescriptor {
         return transferEncoding;
     }
 
-    public Iterator headers() {
+    public Iterator<MessageResult.Header> headers() {
         return headers.iterator();
     }
 

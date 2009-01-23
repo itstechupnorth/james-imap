@@ -170,12 +170,11 @@ public class MessageResultUtils {
      * @throws MessagingException
      */
     public static MessageResult.Header getMatching(final String name,
-            final Iterator iterator) throws MessagingException {
+            final Iterator<MessageResult.Header> iterator) throws MessagingException {
         MessageResult.Header result = null;
         if (name != null) {
             while (iterator.hasNext()) {
-                MessageResult.Header header = (MessageResult.Header) iterator
-                        .next();
+                MessageResult.Header header = iterator.next();
                 final String headerName = header.getName();
                 if (name.equalsIgnoreCase(headerName)) {
                     result = header;

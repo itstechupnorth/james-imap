@@ -31,6 +31,7 @@ import javax.mail.internet.MimeMessage;
 
 import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.MessageResult;
+import org.apache.james.imap.mailbox.MessageResult.Header;
 
 /**
  * Bean based implementation. {@link #getIncludedResults()} is updated when
@@ -174,7 +175,7 @@ public class MessageResultImpl implements MessageResult {
         }
     }
 
-    public Iterator headers() {
+    public Iterator<Header> headers() {
         return headers.iterator();
     }
 
@@ -260,7 +261,7 @@ public class MessageResultImpl implements MessageResult {
         return result;
     }
 
-    public Iterator iterateHeaders(MimePath path)
+    public Iterator<Header> iterateHeaders(MimePath path)
             throws MailboxException {
         final Iterator result;
         final PartContent partContent = getPartContent(path);
@@ -272,7 +273,7 @@ public class MessageResultImpl implements MessageResult {
         return result;
     }
 
-    public Iterator iterateMimeHeaders(MimePath path)
+    public Iterator<Header> iterateMimeHeaders(MimePath path)
             throws MailboxException {
         final Iterator result;
         final PartContent partContent = getPartContent(path);

@@ -177,7 +177,7 @@ public final class FetchResponse implements ImapResponseMessage {
          * 
          * @return parameters, or null
          */
-        public String[] getParameters();
+        public List<String> getParameters();
 
         /**
          * Gets <code>Content-ID</code>.
@@ -247,7 +247,7 @@ public final class FetchResponse implements ImapResponseMessage {
          *         <code>String</code>'s possibly null or null when
          *         <code>BODY</code> FETCH
          */
-        public List getLanguages();
+        public List<String> getLanguages();
 
         /**
          * Gets <code>Content-Location</code>.
@@ -263,7 +263,7 @@ public final class FetchResponse implements ImapResponseMessage {
          * @return <code>Structure</code> <code>Iterator</code> when
          *         composite type, null otherwise
          */
-        public Iterator parts();
+        public Iterator<Structure> parts();
 
         /**
          * Gets the envelope of an embedded mail.

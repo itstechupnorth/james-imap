@@ -29,7 +29,6 @@ import java.util.Map;
 
 import javax.mail.MessagingException;
 
-import org.apache.james.api.imap.ImapConstants;
 import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.MessageResult;
 import org.apache.james.imap.mailbox.MessageResult.MimeDescriptor;
@@ -42,7 +41,7 @@ final class MimeDescriptorStructure implements FetchResponse.Structure {
 
     private final MessageResult.MimeDescriptor descriptor;
 
-    private final String[] parameters;
+    private final List<String> parameters;
 
     private final List parts;
 
@@ -98,7 +97,7 @@ final class MimeDescriptorStructure implements FetchResponse.Structure {
         return results;
     }
 
-    private static String[] createParameters(MimeDescriptor descriptor)
+    private static List<String> createParameters(MimeDescriptor descriptor)
             throws MailboxException {
         final List<String> results = new ArrayList<String>();
         // TODO: consider revising this design
@@ -111,7 +110,7 @@ final class MimeDescriptorStructure implements FetchResponse.Structure {
             results.add(value);
         }
 
-        return (String[]) results.toArray(ImapConstants.EMPTY_STRING_ARRAY);
+        return results;
     }
 
     public String getDescription() {
@@ -138,7 +137,7 @@ final class MimeDescriptorStructure implements FetchResponse.Structure {
         return descriptor.getBodyOctets();
     }
 
-    public String[] getParameters() {
+    public List<String> getParameters() {
         return parameters;
     }
 
@@ -146,7 +145,7 @@ final class MimeDescriptorStructure implements FetchResponse.Structure {
         return descriptor.getMimeSubType();
     }
 
-    public Iterator parts() {
+    public Iterator<Structure> parts() {
         return parts.iterator();
     }
 
@@ -162,7 +161,7 @@ final class MimeDescriptorStructure implements FetchResponse.Structure {
         return md5;
     }
 
-    public List getLanguages() {
+    public List<String> getLanguages() {
         return languages;
     }
 

@@ -261,7 +261,7 @@ public interface ImapResponseComposer {
      * @return self, not null
      * @throws IOException
      */
-    public ImapResponseComposer nillableQuotes(String[] quotes)
+    public ImapResponseComposer nillableQuotes(List<String> quotes)
             throws IOException;
 
     /**
@@ -279,7 +279,7 @@ public interface ImapResponseComposer {
      * @throws IOException
      */
     public ImapResponseComposer nillableComposition(String masterQuote,
-            String[] quotes) throws IOException;
+            List<String> quotes) throws IOException;
 
     public void skipNextSpace() throws IOException;
 

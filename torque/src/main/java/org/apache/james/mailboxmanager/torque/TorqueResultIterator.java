@@ -33,6 +33,7 @@ import org.apache.commons.collections.buffer.BoundedFifoBuffer;
 import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.MessageResult;
 import org.apache.james.imap.mailbox.MessageResult.FetchGroup;
+import org.apache.james.imap.mailbox.MessageResult.Header;
 import org.apache.james.imap.mailbox.util.FetchGroupImpl;
 import org.apache.james.imap.mailbox.util.MessageFlags;
 import org.apache.james.mailboxmanager.torque.om.MessageRow;
@@ -162,7 +163,7 @@ public class TorqueResultIterator implements Iterator {
             return 0;
         }
 
-        public Iterator headers() throws MailboxException {
+        public Iterator<Header> headers() throws MailboxException {
             throw exception;
         }
 
@@ -183,12 +184,12 @@ public class TorqueResultIterator implements Iterator {
             throw exception;
         }
 
-        public Iterator iterateHeaders(MimePath path)
+        public Iterator<Header> iterateHeaders(MimePath path)
                 throws MailboxException {
             throw exception;
         }
 
-        public Iterator iterateMimeHeaders(MimePath path)
+        public Iterator<Header> iterateMimeHeaders(MimePath path)
                 throws MailboxException {
             throw exception;
         }

@@ -19,9 +19,11 @@
 
 package org.apache.james.imap.mailbox;
 
+
 import java.util.Iterator;
 
 import org.apache.james.imap.mailbox.MessageResult.FetchGroup;
+import org.apache.james.imap.mailbox.MessageResult.Header;
 
 /**
  * TODO: remove when MessageResult is sorted out
@@ -33,5 +35,5 @@ public interface Headers {
      * @return <code>Header</code> <code>Iterator</code>, or null if
      *         {@link FetchGroup#HEADERS} was not fetched
      */
-    Iterator headers() throws MailboxException;
+    Iterator<Header> headers() throws MailboxException;
 }

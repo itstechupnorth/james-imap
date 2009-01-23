@@ -27,7 +27,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Iterator;
 import java.util.List;
 
 import javax.mail.Flags;
@@ -177,11 +176,9 @@ public class ResultUtils {
             MailboxMembership message, MessageResultImpl messageResult)
             throws MailboxException, IOException,
             MimeException {
-        Collection partContent = fetchGroup.getPartContentDescriptors();
+        Collection<FetchGroup.PartContentDescriptor> partContent = fetchGroup.getPartContentDescriptors();
         if (partContent != null) {
-            for (Iterator it = partContent.iterator(); it.hasNext();) {
-                FetchGroup.PartContentDescriptor descriptor = (FetchGroup.PartContentDescriptor) it
-                        .next();
+            for (FetchGroup.PartContentDescriptor descriptor: partContent) {
                 addPartContent(descriptor, message, messageResult);
             }
         }

@@ -119,7 +119,7 @@ public interface MessageResult extends Comparable, Headers {
          * @return <code>Set</code> of {@link PartContentDescriptor}, or null
          *         if there is no part content to be fetched
          */
-        public Set getPartContentDescriptors();
+        public Set<PartContentDescriptor> getPartContentDescriptors();
 
         /**
          * Describes the contents to be fetched for a mail part. All
@@ -198,7 +198,7 @@ public interface MessageResult extends Comparable, Headers {
      * @return <code>Header</code> <code>Iterator</code>, or null if
      *         {@link FetchGroup#HEADERS} was not fetched
      */
-    Iterator headers() throws MailboxException;
+    Iterator<Header> headers() throws MailboxException;
 
     /**
      * Iterates the message headers for the given part in a multipart message.
@@ -210,7 +210,7 @@ public interface MessageResult extends Comparable, Headers {
      *         when the mime part cannot be found
      * @throws MailboxException
      */
-    Iterator iterateHeaders(MimePath path) throws MailboxException;
+    Iterator<Header> iterateHeaders(MimePath path) throws MailboxException;
 
     /**
      * Iterates the MIME headers for the given part in a multipart message.
@@ -222,7 +222,7 @@ public interface MessageResult extends Comparable, Headers {
      *         when the mime part cannot be found
      * @throws MailboxException
      */
-    Iterator iterateMimeHeaders(MimePath path) throws MailboxException;
+    Iterator<Header> iterateMimeHeaders(MimePath path) throws MailboxException;
 
     /**
      * A header.
@@ -454,7 +454,7 @@ public interface MessageResult extends Comparable, Headers {
          * 
          * @return <code>Header</code> <code>Iterator</code>, not null
          */
-        public Iterator headers();
+        public Iterator<Header> headers();
 
         /**
          * Gets MIME body parameters parsed from <code>Content-Type</code>.

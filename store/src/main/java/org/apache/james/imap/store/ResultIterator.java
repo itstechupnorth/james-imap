@@ -32,6 +32,7 @@ import javax.mail.internet.MimeMessage;
 import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.MessageResult;
 import org.apache.james.imap.mailbox.MessageResult.FetchGroup;
+import org.apache.james.imap.mailbox.MessageResult.Header;
 import org.apache.james.imap.mailbox.util.FetchGroupImpl;
 import org.apache.james.imap.mailbox.util.MessageFlags;
 import org.apache.james.imap.store.mail.model.MailboxMembership;
@@ -159,7 +160,7 @@ public class ResultIterator implements Iterator {
             return 0;
         }
 
-        public Iterator headers() throws MailboxException {
+        public Iterator<Header> headers() throws MailboxException {
             throw exception;
         }
 
@@ -180,12 +181,12 @@ public class ResultIterator implements Iterator {
             throw exception;
         }
 
-        public Iterator iterateHeaders(MimePath path)
+        public Iterator<Header> iterateHeaders(MimePath path)
                 throws MailboxException {
             throw exception;
         }
 
-        public Iterator iterateMimeHeaders(MimePath path)
+        public Iterator<Header> iterateMimeHeaders(MimePath path)
                 throws MailboxException {
             throw exception;
         }

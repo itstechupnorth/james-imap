@@ -490,7 +490,7 @@ public class ImapResponseComposerImpl extends AbstractLogEnabled implements
     }
 
     public ImapResponseComposer nillableComposition(String masterQuote,
-            String[] quotes) throws IOException {
+            List<String> quotes) throws IOException {
         if (masterQuote == null) {
             nil();
         } else {
@@ -502,14 +502,13 @@ public class ImapResponseComposerImpl extends AbstractLogEnabled implements
         return this;
     }
 
-    public ImapResponseComposer nillableQuotes(String[] quotes)
+    public ImapResponseComposer nillableQuotes(List<String> quotes)
             throws IOException {
-        if (quotes == null || quotes.length == 0) {
+        if (quotes == null || quotes.size() == 0) {
             nil();
         } else {
             openParen();
-            for (int i = 0; i < quotes.length; i++) {
-                final String string = quotes[i];
+            for (final String string:quotes) {
                 nillableQuote(string);
             }
             closeParen();

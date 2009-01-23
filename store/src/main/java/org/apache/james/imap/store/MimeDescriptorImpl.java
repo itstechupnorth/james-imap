@@ -190,7 +190,7 @@ public class MimeDescriptorImpl implements MessageResult.MimeDescriptor {
 
     private final List languages;
 
-    private final Collection headers;
+    private final Collection<MessageResult.Header> headers;
 
     private final Collection contentTypeParameters;
 
@@ -209,7 +209,7 @@ public class MimeDescriptorImpl implements MessageResult.MimeDescriptor {
     public MimeDescriptorImpl(final long bodyOctets,
             final String contentDescription, final String contentId,
             final long lines, final String subType, final String type,
-            final String transferEncoding, final Collection headers,
+            final String transferEncoding, final Collection<MessageResult.Header> headers,
             final Collection contentTypeParameters, final List languages,
             String disposition, Map dispositionParams,
             final MimeDescriptor embeddedMessage, final Collection<MimeDescriptor> parts,
@@ -269,7 +269,7 @@ public class MimeDescriptorImpl implements MessageResult.MimeDescriptor {
         return transferEncoding;
     }
 
-    public Iterator headers() {
+    public Iterator<MessageResult.Header> headers() {
         return headers.iterator();
     }
 

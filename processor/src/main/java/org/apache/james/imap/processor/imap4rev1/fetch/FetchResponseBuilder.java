@@ -331,10 +331,10 @@ final class FetchResponseBuilder {
         return result;
     }
 
-    private Iterator getHeaders(final MessageResult messageResult,
+    private Iterator<MessageResult.Header> getHeaders(final MessageResult messageResult,
             final int[] path, final boolean isBase)
             throws MailboxException {
-        final Iterator headers;
+        final Iterator<MessageResult.Header> headers;
         if (isBase) {
             headers = messageResult.headers();
         } else {
@@ -344,10 +344,10 @@ final class FetchResponseBuilder {
         return headers;
     }
 
-    private Iterator getMimeHeaders(final MessageResult messageResult,
+    private Iterator<MessageResult.Header> getMimeHeaders(final MessageResult messageResult,
             final int[] path, final boolean isBase) throws MessagingException {
         MessageResult.MimePath mimePath = new MimePathImpl(path);
-        final Iterator headers = messageResult.iterateMimeHeaders(mimePath);
+        final Iterator<MessageResult.Header> headers = messageResult.iterateMimeHeaders(mimePath);
         return headers;
     }
 
