@@ -110,14 +110,8 @@ public class ResultUtils {
                 messageResult.setFlags(message.createFlags());
                 content -= FetchGroup.FLAGS;
             }
-            if ((content & FetchGroup.SIZE) > 0) {
-                messageResult.setSize(message.getSize());
-                content -= FetchGroup.SIZE;
-            }
-            if ((content & FetchGroup.INTERNAL_DATE) > 0) {
-                messageResult.setInternalDate(message.getInternalDate());
-                content -= FetchGroup.INTERNAL_DATE;
-            }
+            messageResult.setSize(message.getSize());
+            messageResult.setInternalDate(message.getInternalDate());
             if ((content & FetchGroup.HEADERS) > 0) {
                 addHeaders(message, messageResult);
                 content -= FetchGroup.HEADERS;

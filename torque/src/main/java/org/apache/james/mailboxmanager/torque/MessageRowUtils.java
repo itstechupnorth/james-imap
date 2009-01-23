@@ -138,14 +138,8 @@ public class MessageRowUtils {
                 }
                 content -= FetchGroup.FLAGS;
             }
-            if ((content & FetchGroup.SIZE) > 0) {
-                messageResult.setSize(messageRow.getSize());
-                content -= FetchGroup.SIZE;
-            }
-            if ((content & FetchGroup.INTERNAL_DATE) > 0) {
-                messageResult.setInternalDate(messageRow.getInternalDate());
-                content -= FetchGroup.INTERNAL_DATE;
-            }
+            messageResult.setSize(messageRow.getSize());
+            messageResult.setInternalDate(messageRow.getInternalDate());
             if ((content & FetchGroup.HEADERS) > 0) {
                 addHeaders(messageRow, messageResult);
                 content -= FetchGroup.HEADERS;

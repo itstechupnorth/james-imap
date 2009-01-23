@@ -79,10 +79,6 @@ public interface MessageResult extends Comparable, Headers {
          */
         public static final int MIME_DESCRIPTOR = 0x01;
 
-        public static final int SIZE = 0x20;
-
-        public static final int INTERNAL_DATE = 0x40;
-
         public static final int FLAGS = 0x80;
 
         public static final int HEADERS = 0x100;
@@ -102,8 +98,6 @@ public interface MessageResult extends Comparable, Headers {
          * @see #MINIMAL
          * @see #MIME_MESSAGE
          * @see #KEY
-         * @see #SIZE
-         * @see #INTERNAL_DATE
          * @see #FLAGS
          * @see #HEADERS
          * @see #FULL_CONTENT
@@ -134,8 +128,6 @@ public interface MessageResult extends Comparable, Headers {
              * @see #MINIMAL
              * @see #MIME_MESSAGE
              * @see #KEY
-             * @see #SIZE
-             * @see #INTERNAL_DATE
              * @see #FLAGS
              * @see #HEADERS
              * @see #FULL_CONTENT

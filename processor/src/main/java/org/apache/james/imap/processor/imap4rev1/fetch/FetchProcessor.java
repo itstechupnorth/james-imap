@@ -113,12 +113,7 @@ public class FetchProcessor extends AbstractMailboxProcessor {
         if (fetch.isFlags() || fetch.isSetSeen()) {
             result.or(FetchGroup.FLAGS);
         }
-        if (fetch.isInternalDate()) {
-            result.or(FetchGroup.INTERNAL_DATE);
-        }
-        if (fetch.isSize()) {
-            result.or(FetchGroup.SIZE);
-        }
+        
         if (fetch.isEnvelope()) {
             result.or(FetchGroup.HEADERS);
         }

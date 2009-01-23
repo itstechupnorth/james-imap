@@ -58,25 +58,6 @@ public class MessageResultImplIncludedResultsTest extends MockObjectTestCase {
         assertEquals(FetchGroup.FLAGS, result.getIncludedResults().content());
     }
 
-    public void testShouldIncludedResultsWhenSizeSet() throws Exception {
-        result.setSize(100);
-        assertEquals(FetchGroup.SIZE, result.getIncludedResults().content());
-        MessageResultImpl result = new MessageResultImpl(this.result);
-        assertEquals(FetchGroup.SIZE, result.getIncludedResults().content());
-    }
-
-    public void testShouldIncludedResultsWhenInternalDateSet() throws Exception {
-        result.setInternalDate(null);
-        assertEquals(FetchGroup.MINIMAL, result.getIncludedResults().content());
-        Date date = new Date();
-        result.setInternalDate(date);
-        assertEquals(FetchGroup.INTERNAL_DATE, result.getIncludedResults()
-                .content());
-        result = new MessageResultImpl(this.result);
-        assertEquals(FetchGroup.INTERNAL_DATE, result.getIncludedResults()
-                .content());
-    }
-
     public void testShouldIncludedResultsWhenHeadersSet() throws Exception {
         result.setHeaders(null);
         assertEquals(FetchGroup.MINIMAL, result.getIncludedResults().content());
@@ -138,24 +119,19 @@ public class MessageResultImplIncludedResultsTest extends MockObjectTestCase {
         assertTrue(MessageResultUtils.isHeadersIncluded(result));
         result.setInternalDate(new Date());
         assertEquals(FetchGroup.FLAGS | FetchGroup.BODY_CONTENT
-                | FetchGroup.FULL_CONTENT | FetchGroup.HEADERS
-                | FetchGroup.INTERNAL_DATE, result.getIncludedResults()
+                | FetchGroup.FULL_CONTENT | FetchGroup.HEADERS, result.getIncludedResults()
                 .content());
         assertTrue(MessageResultUtils.isFlagsIncluded(result));
         assertTrue(MessageResultUtils.isBodyContentIncluded(result));
         assertTrue(MessageResultUtils.isFullContentIncluded(result));
         assertTrue(MessageResultUtils.isHeadersIncluded(result));
-        assertTrue(MessageResultUtils.isInternalDateIncluded(result));
         result.setSize(100);
         assertEquals(FetchGroup.FLAGS | FetchGroup.BODY_CONTENT
-                | FetchGroup.FULL_CONTENT | FetchGroup.HEADERS
-                | FetchGroup.INTERNAL_DATE | FetchGroup.SIZE, result
+                | FetchGroup.FULL_CONTENT | FetchGroup.HEADERS, result
                 .getIncludedResults().content());
         assertTrue(MessageResultUtils.isFlagsIncluded(result));
         assertTrue(MessageResultUtils.isBodyContentIncluded(result));
         assertTrue(MessageResultUtils.isFullContentIncluded(result));
         assertTrue(MessageResultUtils.isHeadersIncluded(result));
-        assertTrue(MessageResultUtils.isInternalDateIncluded(result));
-        assertTrue(MessageResultUtils.isSizeIncluded(result));
     }
 }

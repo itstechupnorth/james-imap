@@ -35,12 +35,6 @@ public class FetchGroupImpl implements MessageResult.FetchGroup {
     public static final MessageResult.FetchGroup MINIMAL = new FetchGroupImpl(
             MessageResult.FetchGroup.MINIMAL);
 
-    public static final MessageResult.FetchGroup SIZE = new FetchGroupImpl(
-            MessageResult.FetchGroup.SIZE);
-
-    public static final MessageResult.FetchGroup INTERNAL_DATE = new FetchGroupImpl(
-            MessageResult.FetchGroup.INTERNAL_DATE);
-
     public static final MessageResult.FetchGroup FLAGS = new FetchGroupImpl(
             MessageResult.FetchGroup.FLAGS);
 

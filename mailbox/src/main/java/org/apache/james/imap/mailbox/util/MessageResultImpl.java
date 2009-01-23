@@ -79,12 +79,8 @@ public class MessageResultImpl implements MessageResult {
         if (MessageResultUtils.isFlagsIncluded(result)) {
             setFlags(result.getFlags());
         }
-        if (MessageResultUtils.isSizeIncluded(result)) {
-            setSize(result.getSize());
-        }
-        if (MessageResultUtils.isInternalDateIncluded(result)) {
-            setInternalDate(result.getInternalDate());
-        }
+        setSize(result.getSize());
+        setInternalDate(result.getInternalDate());
         if (MessageResultUtils.isHeadersIncluded(result)) {
             setHeaders(toList(result.headers()));
         }
@@ -165,14 +161,10 @@ public class MessageResultImpl implements MessageResult {
 
     public void setSize(int size) {
         this.size = size;
-        includedResults |= FetchGroup.SIZE;
     }
 
     public void setInternalDate(Date internalDate) {
         this.internalDate = internalDate;
-        if (internalDate != null) {
-            includedResults |= FetchGroup.INTERNAL_DATE;
-        }
     }
 
     public Iterator<Header> headers() {

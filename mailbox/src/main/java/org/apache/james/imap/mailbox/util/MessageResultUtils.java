@@ -301,31 +301,4 @@ public class MessageResultUtils {
     public static boolean isHeadersIncluded(final MessageResult message) {
         return isIncluded(message, FetchGroup.HEADERS);
     }
-
-    /**
-     * Is {@link FetchGroup#INTERNAL_DATE} included in these results?
-     * 
-     * @param message
-     *            <code>MessageResult</code>, possibly null
-     * @return true if <code>MessageResult</code> includes INTERNAL_DATE,
-     *         false if <code>MessageResult</code> is null or does not contain
-     *         INTERNAL_DATE
-     * @see #isIncluded(MessageResult, int)
-     */
-    public static boolean isInternalDateIncluded(final MessageResult message) {
-        return isIncluded(message, FetchGroup.INTERNAL_DATE);
-    }
-
-    /**
-     * Is {@link FetchGroup#SIZE} included in these results?
-     * 
-     * @param message
-     *            <code>MessageResult</code>, possibly null
-     * @return true if <code>MessageResult</code> includes SIZE, false if
-     *         <code>MessageResult</code> is null or does not contain SIZE
-     * @see #isIncluded(MessageResult, int)
-     */
-    public static boolean isSizeIncluded(final MessageResult message) {
-        return isIncluded(message, FetchGroup.SIZE);
-    }
 }

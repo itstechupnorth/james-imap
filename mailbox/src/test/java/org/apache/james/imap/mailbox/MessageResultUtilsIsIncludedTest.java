@@ -83,25 +83,11 @@ public class MessageResultUtilsIsIncludedTest extends MockObjectTestCase {
                 FetchGroup.FLAGS | FetchGroup.HEADERS)), FetchGroup.HEADERS));
     }
 
-    public void testINTERNAL_DATEIncluded() throws Exception {
-        assertFalse(MessageResultUtils.isIncluded(mock(FetchGroupImpl.MINIMAL),
-                FetchGroup.INTERNAL_DATE));
-        assertFalse(MessageResultUtils.isIncluded(
-                mock(FetchGroupImpl.BODY_CONTENT), FetchGroup.INTERNAL_DATE));
-        assertTrue(MessageResultUtils.isIncluded(
-                mock(FetchGroupImpl.INTERNAL_DATE), FetchGroup.INTERNAL_DATE));
-        assertTrue(MessageResultUtils.isIncluded(mock(new FetchGroupImpl(
-                FetchGroup.FLAGS | FetchGroup.INTERNAL_DATE)),
-                FetchGroup.INTERNAL_DATE));
-    }
-
     public void testShouldNOTHINGAlwaysBeIncluded() throws Exception {
         assertTrue(MessageResultUtils.isIncluded(mock(FetchGroupImpl.MINIMAL,
                 false), FetchGroup.MINIMAL));
         assertTrue(MessageResultUtils.isIncluded(mock(
                 FetchGroupImpl.BODY_CONTENT, false), FetchGroup.MINIMAL));
-        assertTrue(MessageResultUtils.isIncluded(mock(
-                FetchGroupImpl.INTERNAL_DATE, false), FetchGroup.MINIMAL));
     }
 
     private MessageResult mock(FetchGroup included) {

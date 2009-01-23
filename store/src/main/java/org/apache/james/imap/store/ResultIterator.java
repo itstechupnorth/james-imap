@@ -96,8 +96,7 @@ public class ResultIterator implements Iterator {
     }
     
     private static final class UnloadedMessageResult implements MessageResult {
-        private static final FetchGroup FETCH_GROUP = new FetchGroupImpl(
-                FetchGroup.INTERNAL_DATE | FetchGroup.SIZE);
+        private static final FetchGroup FETCH_GROUP = FetchGroupImpl.MINIMAL;
 
         private final MailboxException exception;
 
