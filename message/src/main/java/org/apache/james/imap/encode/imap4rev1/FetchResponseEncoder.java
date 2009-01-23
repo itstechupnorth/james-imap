@@ -164,24 +164,24 @@ public class FetchResponseEncoder extends AbstractChainedImapEncoder {
         } else {
             composer.openParen();
             composer.quote(disposition);
-            final Map params = structure.getDispositionParams();
+            final Map<String, String> params = structure.getDispositionParams();
             bodyFldParam(params, composer);
             composer.closeParen();
         }
         return composer;
     }
 
-    private void bodyFldParam(final Map params,
+    private void bodyFldParam(final Map<String,String> params,
             final ImapResponseComposer composer) throws IOException {
         if (params == null || params.isEmpty()) {
             composer.nil();
         } else {
             composer.openParen();
-            final Set keySet = params.keySet();
-            final Collection names = new TreeSet(keySet);
-            for (Iterator iter = names.iterator(); iter.hasNext();) {
-                final String name = (String) iter.next();
-                final String value = (String) params.get(name);
+            final Set<String> keySet = params.keySet();
+            final Collection<String> names = new TreeSet<String>(keySet);
+            for (Iterator<String> iter = names.iterator(); iter.hasNext();) {
+                final String name = iter.next();
+                final String value = params.get(name);
                 if (value == null) {
                     final Log logger = getLog();
                     logger.warn("Disposition parameter name has no value.");

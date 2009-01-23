@@ -230,7 +230,7 @@ public final class FetchResponse implements ImapResponseMessage {
          *         name <code>String</code> or null if <code>BODY</code>
          *         FETCH or not present
          */
-        public Map getDispositionParams();
+        public Map<String, String> getDispositionParams();
 
         /**
          * Gets header field-value from <code>Content-Disposition</code>.

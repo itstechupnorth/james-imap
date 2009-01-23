@@ -193,7 +193,7 @@ public class MimeDescriptorImpl implements MessageResult.MimeDescriptor {
 
     private final Collection<MessageResult.Header> headers;
 
-    private final Collection contentTypeParameters;
+    private final Collection<MessageResult.Header> contentTypeParameters;
 
     private final String disposition;
 
@@ -234,7 +234,7 @@ public class MimeDescriptorImpl implements MessageResult.MimeDescriptor {
         this.md5 = md5;
     }
 
-    public Iterator contentTypeParameters() {
+    public Iterator<MessageResult.Header> contentTypeParameters() {
         return contentTypeParameters.iterator();
     }
 
@@ -274,7 +274,7 @@ public class MimeDescriptorImpl implements MessageResult.MimeDescriptor {
         return headers.iterator();
     }
 
-    public Iterator parts() {
+    public Iterator<MimeDescriptor> parts() {
         return parts.iterator();
     }
 
@@ -282,7 +282,7 @@ public class MimeDescriptorImpl implements MessageResult.MimeDescriptor {
         parts.add(descriptor);
     }
 
-    public List getLanguages() {
+    public List<String> getLanguages() {
         return languages;
     }
 
@@ -290,7 +290,7 @@ public class MimeDescriptorImpl implements MessageResult.MimeDescriptor {
         return disposition;
     }
 
-    public Map getDispositionParams() {
+    public Map<String,String> getDispositionParams() {
         return dispositionParams;
     }
 

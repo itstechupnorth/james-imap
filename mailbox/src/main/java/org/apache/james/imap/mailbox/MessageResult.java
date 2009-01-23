@@ -400,7 +400,7 @@ public interface MessageResult extends Comparable, Headers {
          * 
          * @return <code>List</code> of <code>String</code> names
          */
-        public List getLanguages();
+        public List<String> getLanguages();
 
         /**
          * Gets MIME <code>Content-Disposition</code>.
@@ -415,7 +415,7 @@ public interface MessageResult extends Comparable, Headers {
          * 
          * @return <code>Content-Disposition</code> values indexed by names
          */
-        public Map getDispositionParams();
+        public Map<String,String> getDispositionParams();
 
         /**
          * Gets the number of lines of text in a part of type <code>TEXT</code>
@@ -439,7 +439,7 @@ public interface MessageResult extends Comparable, Headers {
          * @return <code>MimeDescriptor</code> <code>Iterator</code> when a
          *         composite top level MIME media type, null otherwise
          */
-        public Iterator parts();
+        public Iterator<MimeDescriptor> parts();
 
         /**
          * Gets embedded message.
@@ -461,6 +461,6 @@ public interface MessageResult extends Comparable, Headers {
          * 
          * @return <code>Header</code> <code>Iterator</code>, not null
          */
-        public Iterator contentTypeParameters();
+        public Iterator<Header> contentTypeParameters();
     }
 }

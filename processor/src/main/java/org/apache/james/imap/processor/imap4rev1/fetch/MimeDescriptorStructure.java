@@ -43,17 +43,17 @@ final class MimeDescriptorStructure implements FetchResponse.Structure {
 
     private final List<String> parameters;
 
-    private final List parts;
+    private final List<Structure> parts;
 
     private final String disposition;
 
-    private final Map dispositionParams;
+    private final Map<String, String> dispositionParams;
 
     private final String location;
 
     private final String md5;
 
-    private final List languages;
+    private final List<String> languages;
 
     private final Structure embeddedMessageStructure;
 
@@ -85,12 +85,12 @@ final class MimeDescriptorStructure implements FetchResponse.Structure {
         }
     }
 
-    private static List<MimeDescriptorStructure> createParts(final boolean allowExtensions,
+    private static List<Structure> createParts(final boolean allowExtensions,
             final MimeDescriptor descriptor, final EnvelopeBuilder builder)
             throws MessagingException, ParseException {
-        final List<MimeDescriptorStructure> results = new ArrayList<MimeDescriptorStructure>();
-        for (Iterator it = descriptor.parts(); it.hasNext();) {
-            final MimeDescriptor partDescriptor = (MimeDescriptor) it.next();
+        final List<Structure> results = new ArrayList<Structure>();
+        for (Iterator<MimeDescriptor> it = descriptor.parts(); it.hasNext();) {
+            final MimeDescriptor partDescriptor = it.next();
             results.add(new MimeDescriptorStructure(allowExtensions,
                     partDescriptor, builder));
         }
@@ -169,7 +169,7 @@ final class MimeDescriptorStructure implements FetchResponse.Structure {
         return embeddedMessageStructure;
     }
 
-    public Map getDispositionParams() {
+    public Map<String, String> getDispositionParams() {
         return dispositionParams;
     }
 
