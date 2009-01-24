@@ -19,7 +19,6 @@
 
 package org.apache.james.imap.mailbox.util;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -71,34 +70,7 @@ public class MessageResultImpl implements MessageResult {
         setUid(uid);
         setFlags(flags);
     }
-
-    public MessageResultImpl(MessageResult result)
-            throws MailboxException {
-        setUid(result.getUid());
-        setFlags(result.getFlags());
-        setSize(result.getSize());
-        setInternalDate(result.getInternalDate());
-        if (MessageResultUtils.isHeadersIncluded(result)) {
-            setHeaders(toList(result.headers()));
-        }
-        if (MessageResultUtils.isFullContentIncluded(result)) {
-            setFullContent(result.getFullContent());
-        }
-        if (MessageResultUtils.isBodyContentIncluded(result)) {
-            setBody(result.getBody());
-        }
-    }
-
-    private List toList(Iterator iterator) {
-        final List results = new ArrayList();
-        if (iterator != null) {
-            while (iterator.hasNext()) {
-                results.add(iterator.next());
-            }
-        }
-        return results;
-    }
-
+    
     public MessageResult.FetchGroup getIncludedResults() {
         final FetchGroupImpl fetchGroup = new FetchGroupImpl(includedResults);
         return fetchGroup;

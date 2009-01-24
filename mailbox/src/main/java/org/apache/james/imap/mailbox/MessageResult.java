@@ -140,14 +140,6 @@ public interface MessageResult extends Comparable, Headers {
         }
     }
 
-    /**
-     * Gets the results set.
-     * 
-     * @return bitwise indication of result set
-     * @see MessageResultUtils#isIncluded(MessageResult, int)
-     */
-    FetchGroup getIncludedResults();
-
     MimeDescriptor getMimeDescriptor() throws MailboxException;
 
     long getUid();

@@ -28,7 +28,6 @@ import javax.mail.MessagingException;
 
 import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.MessageResult;
-import org.apache.james.imap.mailbox.MessageResult.FetchGroup;
 
 public class MessageResultUtils {
 
@@ -221,71 +220,5 @@ public class MessageResultUtils {
             }
         }
         return results;
-    }
-
-    /**
-     * Is the given datum included in these results?
-     * 
-     * @param message
-     *            <code>MessageResult</code>, possibly null
-     * @param datum
-     *            {@link MessageResult} datum constant
-     * @return true if <code>MessageResult</code> includes the given datum,
-     *         false if <code>MessageResult</code> is null or does not contain
-     *         this datum
-     */
-    public static boolean isIncluded(final MessageResult message,
-            final int datum) {
-        final boolean result;
-        if (message == null) {
-            result = false;
-        } else if (datum == FetchGroup.MINIMAL) {
-            result = true;
-        } else {
-            final int includes = message.getIncludedResults().content();
-            result = (includes & datum) == datum;
-        }
-        return result;
-    }
-
-    /**
-     * Is {@link FetchGroup#BODY_CONTENT} included in these results?
-     * 
-     * @param message
-     *            <code>MessageResult</code>, possibly null
-     * @return true if <code>MessageResult</code> includes BODY_CONTENT, false
-     *         if <code>MessageResult</code> is null or does not contain
-     *         BODY_CONTENT
-     * @see #isIncluded(MessageResult, int)
-     */
-    public static boolean isBodyContentIncluded(final MessageResult message) {
-        return isIncluded(message, FetchGroup.BODY_CONTENT);
-    }
-
-    /**
-     * Is {@link FetchGroup#FULL_CONTENT} included in these results?
-     * 
-     * @param message
-     *            <code>MessageResult</code>, possibly null
-     * @return true if <code>MessageResult</code> includes FULL_CONTENT, false
-     *         if <code>MessageResult</code> is null or does not contain
-     *         FULL_CONTENT
-     * @see #isIncluded(MessageResult, int)
-     */
-    public static boolean isFullContentIncluded(final MessageResult message) {
-        return isIncluded(message, FetchGroup.FULL_CONTENT);
-    }
-
-    /**
-     * Is {@link FetchGroup#HEADERS} included in these results?
-     * 
-     * @param message
-     *            <code>MessageResult</code>, possibly null
-     * @return true if <code>MessageResult</code> includes HEADERS, false if
-     *         <code>MessageResult</code> is null or does not contain HEADERS
-     * @see #isIncluded(MessageResult, int)
-     */
-    public static boolean isHeadersIncluded(final MessageResult message) {
-        return isIncluded(message, FetchGroup.HEADERS);
     }
 }
