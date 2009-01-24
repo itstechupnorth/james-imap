@@ -22,9 +22,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.james.imap.store.mail.model.Header;
-import org.apache.james.imap.store.mail.model.Message;
+import org.apache.james.imap.store.mail.model.Document;
 
-public class SimpleMessage implements Message {
+public class SimpleMessage implements Document {
     
     public byte[] body;
     public List<SimpleHeader> headers;
@@ -57,14 +57,14 @@ public class SimpleMessage implements Message {
     }
 
     /**
-     * @see org.apache.james.imap.jpa.mail.model.Message#getBody()
+     * @see org.apache.james.imap.jpa.mail.model.Document#getBody()
      */
     public byte[] getBody() {
         return body;
     }
 
     /**
-     * @see org.apache.james.imap.jpa.mail.model.Message#getHeaders()
+     * @see org.apache.james.imap.jpa.mail.model.Document#getHeaders()
      */
     public List<Header> getHeaders() {
         return new ArrayList<Header>(headers);

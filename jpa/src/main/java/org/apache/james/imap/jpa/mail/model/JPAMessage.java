@@ -30,10 +30,10 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 
 import org.apache.james.imap.store.mail.model.Header;
-import org.apache.james.imap.store.mail.model.Message;
+import org.apache.james.imap.store.mail.model.Document;
 
 @Entity(name="Message")
-public class JPAMessage implements Message {
+public class JPAMessage implements Document {
     /** Primary key */
     @Id@GeneratedValue private long id;
 
@@ -55,14 +55,14 @@ public class JPAMessage implements Message {
     }
 
     /**
-     * @see org.apache.james.imap.jpa.mail.model.Message#getHeaders()
+     * @see org.apache.james.imap.jpa.mail.model.Document#getHeaders()
      */
     public List<Header> getHeaders() {
         return new ArrayList<Header>(headers);
     }
     
     /**
-     * @see org.apache.james.imap.jpa.mail.model.Message#getBody()
+     * @see org.apache.james.imap.jpa.mail.model.Document#getBody()
      */    
     public byte[] getBody() {
         return body;

@@ -52,7 +52,7 @@ public class ResultUtils {
     static final Charset US_ASCII = Charset.forName("US-ASCII");
 
     /**
-     * Converts {@link Message} to {@link MessageFlags}.
+     * Converts {@link Document} to {@link MessageFlags}.
      * 
      * @param messages not null
      * @return <code>MessageFlags</code>, not null
@@ -80,13 +80,13 @@ public class ResultUtils {
     }
 
     private static List<Header> getSortedHeaders(MailboxMembership membership) {
-        final List<Header> headers = new ArrayList<Header>(membership.getMessage().getHeaders());
+        final List<Header> headers = new ArrayList<Header>(membership.getDocument().getHeaders());
         Collections.sort(headers);
         return headers;
     }
 
     public static Content createBodyContent(MailboxMembership membership) {
-        final byte[] bytes = membership.getMessage().getBody();
+        final byte[] bytes = membership.getDocument().getBody();
         final ByteContent result = new ByteContent(bytes);
         return result;
     }
@@ -95,7 +95,7 @@ public class ResultUtils {
         if (headers == null) {
             headers = createHeaders(membership);
         }
-        final byte[] bytes = membership.getMessage().getBody();
+        final byte[] bytes = membership.getDocument().getBody();
         final FullContent results = new FullContent(bytes, headers);
         return results;
     }
@@ -229,7 +229,7 @@ public class ResultUtils {
         }
         headersToString.append("\r\n");
 
-        byte[] bodyContent = membership.getMessage().getBody();
+        byte[] bodyContent = membership.getDocument().getBody();
         final MessageInputStream stream = new MessageInputStream(headersToString, bodyContent);
         return stream;
     }
@@ -334,7 +334,7 @@ public class ResultUtils {
     }
 
     /**
-     * Gets a comparator that evaluates {@link Message}'s on the basis of
+     * Gets a comparator that evaluates {@link Document}'s on the basis of
      * their UIDs.
      * 
      * @return {@link Comparator}, not null

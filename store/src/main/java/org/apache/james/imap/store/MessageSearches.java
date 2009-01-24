@@ -293,7 +293,7 @@ class MessageSearches {
 
     private boolean exists(String headerName, MailboxMembership message) {
         boolean result = false;
-        final List<Header> headers = message.getMessage().getHeaders();
+        final List<Header> headers = message.getDocument().getHeaders();
         for (Header header:headers) {
             final String name = header.getField();
             if (headerName.equalsIgnoreCase(name)) {
@@ -308,7 +308,7 @@ class MessageSearches {
             final String headerName, final MailboxMembership message) {
         final String text = operator.getValue().toUpperCase();
         boolean result = false;
-        final List<Header> headers = message.getMessage().getHeaders();
+        final List<Header> headers = message.getDocument().getHeaders();
         for (Header header:headers) {
             final String name = header.getField();
             if (headerName.equalsIgnoreCase(name)) {
@@ -354,7 +354,7 @@ class MessageSearches {
     }
 
     private String headerValue(final String headerName, final MailboxMembership message) {
-        final List<Header> headers = message.getMessage().getHeaders();
+        final List<Header> headers = message.getDocument().getHeaders();
         String value = null;
         for (Header header:headers) {
             final String name = header.getField();

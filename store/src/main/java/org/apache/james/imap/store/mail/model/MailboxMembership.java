@@ -35,7 +35,7 @@ public interface MailboxMembership {
 
     public abstract long getUid();
     
-    public abstract Message getMessage();
+    public abstract Document getDocument();
 
     public abstract boolean isAnswered();
 

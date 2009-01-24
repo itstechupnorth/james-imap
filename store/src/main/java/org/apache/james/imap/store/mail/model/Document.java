@@ -20,7 +20,7 @@ package org.apache.james.imap.store.mail.model;
 
 import java.util.List;
 
-public interface Message {
+public interface Document {
 
     public abstract byte[] getBody();
 
