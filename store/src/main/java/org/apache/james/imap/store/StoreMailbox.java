@@ -141,11 +141,11 @@ public abstract class StoreMailbox extends AbstractLogEnabled implements org.apa
                     next = parser.next();
                 }
                 final InputStream bodyStream = parser.getInputStream();
-                final ByteArrayOutputStream out = ContentUtils.out(bodyStream);
+                final ByteArrayOutputStream out = StreamUtils.out(bodyStream);
                 next = parser.next();
                 if (next == MimeTokenStream.T_EPILOGUE)  {
                     final InputStream epilogueStream = parser.getInputStream();
-                    ContentUtils.out(epilogueStream, out);
+                    StreamUtils.out(epilogueStream, out);
                 }   
                 final byte[] body = out.toByteArray();
                 

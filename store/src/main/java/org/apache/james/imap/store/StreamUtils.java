@@ -17,36 +17,41 @@
  * under the License.                                           *
  ****************************************************************/
 
-/**
- * 
- */
 package org.apache.james.imap.store;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.nio.channels.WritableByteChannel;
+import java.io.InputStream;
 
-import org.apache.james.imap.mailbox.Content;
+/**
+ * Utility methods for messages.
+ * 
+ */
+public class StreamUtils {
 
-final class ByteContent implements Content {
+    private static final int BYTE_STREAM_CAPACITY = 8182;
 
-    private final byte[] contents;
+    private static final int BYTE_BUFFER_SIZE = 4096;
 
-    private final long size;
+    public static byte[] toByteArray(InputStream is) throws IOException {
+        ByteArrayOutputStream baos = out(is);
 
-    public ByteContent(final byte[] contents) {
-        this.contents = contents;
-        size = contents.length;
+        final byte[] bytes = baos.toByteArray();
+        return bytes;
     }
 
-    public long size() {
-        return size;
+    public static ByteArrayOutputStream out(InputStream is) throws IOException {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream(
+                BYTE_STREAM_CAPACITY);
+        out(is, baos);
+        return baos;
     }
 
-    public void writeTo(WritableByteChannel channel) throws IOException {
-        ByteBuffer buffer = ByteBuffer.wrap(contents);
-        while (channel.write(buffer) > 0) {
-            // write more
+    public static void out(InputStream is, ByteArrayOutputStream baos) throws IOException {
+        byte[] buf = new byte[BYTE_BUFFER_SIZE];
+        int read;
+        while ((read = is.read(buf)) > 0) {
+            baos.write(buf, 0, read);
         }
     }
 }

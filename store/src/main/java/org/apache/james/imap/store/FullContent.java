@@ -45,8 +45,7 @@ final class FullContent implements Content {
     }
 
     private long caculateSize() {
-        long result = contents.length
-                + ContentUtils.countUnnormalLines(contents);
+        long result = contents.length;
         result += 2;
         for (final Iterator it = headers.iterator(); it.hasNext();) {
             final MessageResult.Header header = (MessageResult.Header) it
