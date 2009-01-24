@@ -31,7 +31,7 @@ import javax.mail.MessagingException;
 
 import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.MessageResult;
-import org.apache.james.imap.mailbox.MessageResult.MimeDescriptor;
+import org.apache.james.imap.mailbox.MimeDescriptor;
 import org.apache.james.imap.message.response.imap4rev1.FetchResponse;
 import org.apache.james.imap.message.response.imap4rev1.FetchResponse.Envelope;
 import org.apache.james.imap.message.response.imap4rev1.FetchResponse.Structure;
@@ -39,7 +39,7 @@ import org.apache.james.mime4j.field.address.parser.ParseException;
 
 final class MimeDescriptorStructure implements FetchResponse.Structure {
 
-    private final MessageResult.MimeDescriptor descriptor;
+    private final MimeDescriptor descriptor;
 
     private final List<String> parameters;
 

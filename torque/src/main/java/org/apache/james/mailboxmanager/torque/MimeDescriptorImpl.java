@@ -28,13 +28,13 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.james.imap.mailbox.MessageResult;
-import org.apache.james.imap.mailbox.MessageResult.MimeDescriptor;
+import org.apache.james.imap.mailbox.MimeDescriptor;
 import org.apache.james.mime4j.descriptor.MaximalBodyDescriptor;
 import org.apache.james.mime4j.MimeException;
 import org.apache.james.mime4j.parser.MimeTokenStream;
 import org.apache.james.mime4j.parser.RecursionMode;
 
-public class MimeDescriptorImpl implements MessageResult.MimeDescriptor {
+public class MimeDescriptorImpl implements MimeDescriptor {
 
     public static MimeDescriptorImpl build(final InputStream stream)
             throws IOException {
@@ -199,7 +199,7 @@ public class MimeDescriptorImpl implements MessageResult.MimeDescriptor {
 
     private final Map dispositionParams;
 
-    private final MessageResult.MimeDescriptor embeddedMessage;
+    private final MimeDescriptor embeddedMessage;
 
     private final Collection parts;
 
@@ -238,7 +238,7 @@ public class MimeDescriptorImpl implements MessageResult.MimeDescriptor {
         return contentTypeParameters.iterator();
     }
 
-    public MessageResult.MimeDescriptor embeddedMessage() {
+    public MimeDescriptor embeddedMessage() {
         return embeddedMessage;
     }
 

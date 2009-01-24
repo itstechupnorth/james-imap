@@ -26,9 +26,9 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.WritableByteChannel;
 
-import org.apache.james.imap.mailbox.MessageResult;
+import org.apache.james.imap.mailbox.Content;
 
-final class ByteContent implements MessageResult.Content {
+final class ByteContent implements Content {
 
     private final byte[] contents;
 

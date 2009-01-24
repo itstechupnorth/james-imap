@@ -28,12 +28,12 @@ import java.nio.channels.WritableByteChannel;
 
 import javax.mail.MessagingException;
 
+import org.apache.james.imap.mailbox.Content;
 import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.MessageResult;
-import org.apache.james.imap.mailbox.MessageResult.Content;
 import org.apache.james.mailboxmanager.torque.om.MessageHeader;
 
-final class Header implements MessageResult.Header, MessageResult.Content {
+final class Header implements MessageResult.Header, Content {
     private final String name;
 
     private final String value;

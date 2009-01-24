@@ -35,11 +35,13 @@ import org.apache.james.api.imap.message.BodyFetchElement;
 import org.apache.james.api.imap.message.FetchData;
 import org.apache.james.api.imap.process.ImapSession;
 import org.apache.james.api.imap.process.SelectedMailbox;
+import org.apache.james.imap.mailbox.Content;
 import org.apache.james.imap.mailbox.Headers;
 import org.apache.james.imap.mailbox.Mailbox;
 import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.MailboxSession;
 import org.apache.james.imap.mailbox.MessageResult;
+import org.apache.james.imap.mailbox.MimeDescriptor;
 import org.apache.james.imap.mailbox.util.MessageRangeImpl;
 import org.apache.james.imap.mailbox.util.MessageResultUtils;
 import org.apache.james.imap.message.response.imap4rev1.FetchResponse;
@@ -145,7 +147,7 @@ final class FetchResponseBuilder {
 
         // Only create when needed
         if (fetch.isBody() || fetch.isBodyStructure()) {
-            final MessageResult.MimeDescriptor descriptor = result
+            final MimeDescriptor descriptor = result
                     .getMimeDescriptor();
 
             // BODY response
@@ -179,9 +181,9 @@ final class FetchResponseBuilder {
         return build();
     }
 
-    private FetchResponse.Envelope buildEnvelope(final Headers headers)
+    private FetchResponse.Envelope buildEnvelope(final MessageResult result)
             throws MessagingException, ParseException {
-        return envelopeBuilder.buildEnvelope(headers);
+        return envelopeBuilder.buildEnvelope(result);
     }
 
     private void setSize(int size) {
@@ -275,7 +277,7 @@ final class FetchResponseBuilder {
             String name, final int[] path, final boolean isBase)
             throws MailboxException {
         final FetchResponse.BodyElement result;
-        final MessageResult.Content body;
+        final Content body;
         if (isBase) {
             body = messageResult.getBody();
         } else {
@@ -355,7 +357,7 @@ final class FetchResponseBuilder {
             final MessageResult messageResult, String name, final int[] path,
             final boolean isBase) throws MessagingException {
         final FetchResponse.BodyElement result;
-        final MessageResult.Content full;
+        final Content full;
         if (isBase) {
             full = messageResult.getFullContent();
         } else {

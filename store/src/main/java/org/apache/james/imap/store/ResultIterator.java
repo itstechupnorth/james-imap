@@ -29,8 +29,10 @@ import java.util.NoSuchElementException;
 import javax.mail.Flags;
 import javax.mail.internet.MimeMessage;
 
+import org.apache.james.imap.mailbox.Content;
 import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.MessageResult;
+import org.apache.james.imap.mailbox.MimeDescriptor;
 import org.apache.james.imap.mailbox.MessageResult.FetchGroup;
 import org.apache.james.imap.mailbox.MessageResult.Header;
 import org.apache.james.imap.mailbox.util.FetchGroupImpl;

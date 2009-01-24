@@ -25,14 +25,13 @@ package org.apache.james.imap.processor.imap4rev1.fetch;
 import java.io.IOException;
 import java.nio.channels.WritableByteChannel;
 
-import org.apache.james.imap.mailbox.MessageResult;
-import org.apache.james.imap.mailbox.MessageResult.Content;
+import org.apache.james.imap.mailbox.Content;
 import org.apache.james.imap.message.response.imap4rev1.FetchResponse.BodyElement;
 
 final class ContentBodyElement implements BodyElement {
     private final String name;
 
-    private final MessageResult.Content content;
+    private final Content content;
 
     public ContentBodyElement(final String name, final Content content) {
         super();

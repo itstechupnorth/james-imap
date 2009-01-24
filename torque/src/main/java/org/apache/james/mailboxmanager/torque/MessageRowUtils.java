@@ -32,9 +32,10 @@ import java.util.List;
 
 import javax.mail.Flags;
 
+import org.apache.james.imap.mailbox.Content;
 import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.MessageResult;
-import org.apache.james.imap.mailbox.MessageResult.Content;
+import org.apache.james.imap.mailbox.MimeDescriptor;
 import org.apache.james.imap.mailbox.MessageResult.FetchGroup;
 import org.apache.james.imap.mailbox.MessageResult.MimePath;
 import org.apache.james.imap.mailbox.util.MessageFlags;
@@ -168,7 +169,7 @@ public class MessageRowUtils {
     private static void addMimeDescriptor(MessageRow messageRow,
             MessageResultImpl messageResult) throws TorqueException {
         try {
-            MessageResult.MimeDescriptor descriptor = MimeDescriptorImpl
+            MimeDescriptor descriptor = MimeDescriptorImpl
                     .build(toInput(messageRow));
             messageResult.setMimeDescriptor(descriptor);
         } catch (IOException e) {

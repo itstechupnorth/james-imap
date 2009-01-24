@@ -28,8 +28,10 @@ import java.util.Map;
 import javax.mail.Flags;
 import javax.mail.internet.MimeMessage;
 
+import org.apache.james.imap.mailbox.Content;
 import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.MessageResult;
+import org.apache.james.imap.mailbox.MimeDescriptor;
 
 /**
  * Bean based implementation. {@link #getIncludedResults()} is updated when
