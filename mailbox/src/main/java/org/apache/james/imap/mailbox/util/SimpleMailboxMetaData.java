@@ -19,13 +19,13 @@
 
 package org.apache.james.imap.mailbox.util;
 
-import org.apache.james.imap.mailbox.ListResult;
+import org.apache.james.imap.mailbox.MailboxMetaData;
+import org.apache.james.imap.mailbox.StandardMailboxMetaDataComparator;
 
-public class ListResultImpl implements ListResult, Comparable {
+public class SimpleMailboxMetaData implements MailboxMetaData, Comparable {
 
-    public static ListResult createNoSelect(String name, String delimiter) {
-        return new ListResultImpl(name, delimiter, false,
-                SELECTABILITY_FLAG_NOSELECT);
+    public static MailboxMetaData createNoSelect(String name, String delimiter) {
+        return new SimpleMailboxMetaData(name, delimiter, false, Selectability.NOSELECT);
     }
 
     private final String name;
@@ -34,14 +34,14 @@ public class ListResultImpl implements ListResult, Comparable {
 
     private final boolean noInferiors;
 
-    private final int selectability;
+    private final Selectability selectability;
 
-    public ListResultImpl(String name, String delimiter) {
-        this(name, delimiter, false, SELECTABILITY_FLAG_NONE);
+    public SimpleMailboxMetaData(String name, String delimiter) {
+        this(name, delimiter, false, Selectability.NONE);
     }
 
-    public ListResultImpl(final String name, final String delimiter,
-            final boolean noInferiors, final int selectability) {
+    public SimpleMailboxMetaData(final String name, final String delimiter,
+            final boolean noInferiors, final Selectability selectability) {
         super();
         this.name = name;
         this.delimiter = delimiter;
@@ -59,14 +59,9 @@ public class ListResultImpl implements ListResult, Comparable {
     }
 
     /**
-     * Gets the RFC3501 Selectability flag setting.
-     * 
-     * @return {@link ListResult#SELECTABILITY_FLAG_NONE},
-     *         {@link ListResult#SELECTABILITY_FLAG_MARKED},
-     *         {@link ListResult#SELECTABILITY_FLAG_NOSELECT}, or
-     *         {@link ListResult#SELECTABILITY_FLAG_UNMARKED}
+     * Gets the RFC3501 Selectability flag.
      */
-    public final int getSelectability() {
+    public final Selectability getSelectability() {
         return selectability;
     }
 
@@ -102,7 +97,7 @@ public class ListResultImpl implements ListResult, Comparable {
             return false;
         if (getClass() != obj.getClass())
             return false;
-        final ListResultImpl other = (ListResultImpl) obj;
+        final SimpleMailboxMetaData other = (SimpleMailboxMetaData) obj;
         if (name == null) {
             if (other.name != null)
                 return false;
@@ -112,21 +107,7 @@ public class ListResultImpl implements ListResult, Comparable {
     }
 
     public int compareTo(Object o) {
-        final ListResultImpl other = (ListResultImpl) o;
-        final String otherName = other.getName();
-        final int result;
-        if ("INBOX".equals(this.name)) {
-            result = "INBOX".equals(otherName) ? 0 : -1;
-        } else if ("INBOX".equals(otherName)) {
-            result = 1;
-        } else if (this.name == null) {
-            result = otherName == null ? 0 : 1;
-        } else if (otherName == null) {
-            result = -1;
-        } else {
-            result = name.compareTo(otherName);
-        }
-        return result;
+        return StandardMailboxMetaDataComparator.order(this, (MailboxMetaData) o);
     }
 
 }

@@ -20,6 +20,7 @@
 package org.apache.james.imap.mailbox;
 
 import java.util.Collection;
+import java.util.List;
 
 
 /**
@@ -130,16 +131,11 @@ public interface MailboxManager {
             MailboxSession session) throws MailboxException;
 
     /**
-     * TODO: Expression requires parsing. Probably easier for the caller to
-     * parse the expression into an object representation and use that instead.
-     * 
-     * @param expression
-     *            <code>MailboxExpression</code> used to select mailboxes to
-     *            be returned
+     * Searches for mailboxes matching the given query.
+     * @param expression not null
      * @throws MailboxException
      */
-    ListResult[] list(MailboxExpression expression)
-            throws MailboxException;
+    List<MailboxMetaData> search(MailboxQuery expression) throws MailboxException;
 
     boolean mailboxExists(String mailboxName) throws MailboxException;
 

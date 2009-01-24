@@ -19,25 +19,18 @@
 
 package org.apache.james.imap.mailbox;
 
+import org.apache.james.imap.mailbox.util.SimpleMailboxMetaData;
+
 /**
  * Returned by the list method of MailboxRepository and others
  */
-public interface ListResult {
-
-    /** Indicates that no RFC3501 Selectability flag is set */
-    public static final int SELECTABILITY_FLAG_NONE = 0;
-
-    /** Indicates that RFC3501 Selectability is set to \Marked */
-    public static final int SELECTABILITY_FLAG_MARKED = 1;
-
-    /** Indicates that RFC3501 Selectability is set to \Unmarked */
-    public static final int SELECTABILITY_FLAG_UNMARKED = 2;
-
-    /** Indicates that RFC3501 Selectability is set to \Noselect */
-    public static final int SELECTABILITY_FLAG_NOSELECT = 3;
-
-    public static final ListResult[] EMPTY_ARRAY = {};
-
+public interface MailboxMetaData {
+   
+    /** RFC3501 Selectability flag */
+    public enum Selectability {
+        NONE, MARKED, UNMARKED, NOSELECT
+    }
+    
     /**
      * Is this mailbox <code>\Noinferiors</code> as per RFC3501.
      * 
@@ -46,14 +39,9 @@ public interface ListResult {
     public boolean isNoInferiors();
 
     /**
-     * Gets the RFC3501 Selectability flag setting.
-     * 
-     * @return {@link #SELECTABILITY_FLAG_NONE},
-     *         {@link #SELECTABILITY_FLAG_MARKED},
-     *         {@link #SELECTABILITY_FLAG_NOSELECT}, or
-     *         {@link #SELECTABILITY_FLAG_UNMARKED}
+     * Gets the RFC3501 Selectability flag.
      */
-    public int getSelectability();
+    public Selectability getSelectability();
 
     String getHierarchyDelimiter();
 

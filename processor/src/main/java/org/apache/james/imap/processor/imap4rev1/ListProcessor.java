@@ -19,6 +19,9 @@
 
 package org.apache.james.imap.processor.imap4rev1;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.james.api.imap.ImapCommand;
 import org.apache.james.api.imap.ImapConstants;
 import org.apache.james.api.imap.ImapMessage;
@@ -27,12 +30,12 @@ import org.apache.james.api.imap.message.response.ImapResponseMessage;
 import org.apache.james.api.imap.message.response.imap4rev1.StatusResponseFactory;
 import org.apache.james.api.imap.process.ImapProcessor;
 import org.apache.james.api.imap.process.ImapSession;
-import org.apache.james.imap.mailbox.ListResult;
+import org.apache.james.imap.mailbox.MailboxMetaData;
 import org.apache.james.imap.mailbox.MailboxException;
-import org.apache.james.imap.mailbox.MailboxExpression;
+import org.apache.james.imap.mailbox.MailboxQuery;
 import org.apache.james.imap.mailbox.MailboxManager;
 import org.apache.james.imap.mailbox.MailboxManagerProvider;
-import org.apache.james.imap.mailbox.util.ListResultImpl;
+import org.apache.james.imap.mailbox.util.SimpleMailboxMetaData;
 import org.apache.james.imap.message.request.imap4rev1.ListRequest;
 import org.apache.james.imap.message.response.imap4rev1.server.ListResponse;
 import org.apache.james.imap.processor.base.ImapSessionUtils;
@@ -73,7 +76,7 @@ public class ListProcessor extends AbstractMailboxProcessor {
             // Should the #user.userName section be removed from names returned?
             final boolean removeUserPrefix;
 
-            final ListResult[] listResults;
+            final List<MailboxMetaData> results;
 
             final String user = ImapSessionUtils.getUserName(session);
             final String personalNamespace = ImapConstants.USER_NAMESPACE
@@ -107,9 +110,9 @@ public class ListProcessor extends AbstractMailboxProcessor {
                 }
 
                 // Get the mailbox for the reference name.
-                listResults = new ListResult[1];
-                listResults[0] = ListResultImpl.createNoSelect(referenceRoot,
-                        ImapConstants.HIERARCHY_DELIMITER);
+                results = new ArrayList<MailboxMetaData>(1);
+                results.add(SimpleMailboxMetaData.createNoSelect(referenceRoot,
+                        ImapConstants.HIERARCHY_DELIMITER));
             } else {
 
                 // If the mailboxPattern is fully qualified, ignore the
@@ -126,15 +129,13 @@ public class ListProcessor extends AbstractMailboxProcessor {
                     referenceName = personalNamespace + "." + referenceName;
                 }
 
-                listResults = doList(session, referenceName, mailboxPattern);
+                results = doList(session, referenceName, mailboxPattern);
             }
 
-            int prefixLength = personalNamespace.length();
+            final int prefixLength = personalNamespace.length();
 
-            for (int i = 0; i < listResults.length; i++) {
-                final ListResult listResult = listResults[i];
-                processResult(responder, removeUserPrefix, prefixLength,
-                        listResult);
+            for (final MailboxMetaData metaData: results) {
+                processResult(responder, removeUserPrefix, prefixLength, metaData);
             }
 
             okComplete(command, tag, responder);
@@ -145,7 +146,7 @@ public class ListProcessor extends AbstractMailboxProcessor {
 
     void processResult(final Responder responder,
             final boolean removeUserPrefix, int prefixLength,
-            final ListResult listResult) {
+            final MailboxMetaData listResult) {
         final String delimiter = listResult.getHierarchyDelimiter();
         final String mailboxName = mailboxName(removeUserPrefix, prefixLength,
                 listResult);
@@ -155,13 +156,13 @@ public class ListProcessor extends AbstractMailboxProcessor {
         boolean marked = false;
         boolean unmarked = false;
         switch (listResult.getSelectability()) {
-            case ListResult.SELECTABILITY_FLAG_MARKED:
+            case MARKED:
                 marked = true;
                 break;
-            case ListResult.SELECTABILITY_FLAG_UNMARKED:
+            case UNMARKED:
                 unmarked = true;
                 break;
-            case ListResult.SELECTABILITY_FLAG_NOSELECT:
+            case NOSELECT:
                 noSelect = true;
                 break;
         }
@@ -170,7 +171,7 @@ public class ListProcessor extends AbstractMailboxProcessor {
     }
 
     private String mailboxName(final boolean removeUserPrefix,
-            int prefixLength, final ListResult listResult) {
+            int prefixLength, final MailboxMetaData listResult) {
         final String mailboxName;
         final String name = listResult.getName();
         if (removeUserPrefix) {
@@ -185,11 +186,11 @@ public class ListProcessor extends AbstractMailboxProcessor {
         return mailboxName;
     }
 
-    protected final ListResult[] doList(ImapSession session, String base,
+    protected final List<MailboxMetaData> doList(ImapSession session, String base,
             String pattern) throws MailboxException {
         final MailboxManager mailboxManager = getMailboxManager();
-        final ListResult[] result = mailboxManager.list(new MailboxExpression(
+        final List<MailboxMetaData> results = mailboxManager.search(new MailboxQuery(
                 base, pattern, '*', '%'));
-        return result;
+        return results;
     }
 }

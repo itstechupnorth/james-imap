@@ -23,7 +23,7 @@ import org.apache.james.api.imap.ImapCommand;
 import org.apache.james.api.imap.message.response.imap4rev1.StatusResponseFactory;
 import org.apache.james.api.imap.process.ImapProcessor;
 import org.apache.james.api.imap.process.ImapSession;
-import org.apache.james.imap.mailbox.ListResult;
+import org.apache.james.imap.mailbox.MailboxMetaData;
 import org.apache.james.imap.mailbox.MailboxManagerProvider;
 import org.apache.james.imap.message.response.imap4rev1.server.ListResponse;
 import org.jmock.Expectations;
@@ -39,7 +39,7 @@ public class ListProcessorTest extends MockObjectTestCase {
 
     ImapProcessor.Responder responder;
 
-    ListResult result;
+    MailboxMetaData result;
 
     ImapSession session;
 
@@ -53,7 +53,7 @@ public class ListProcessorTest extends MockObjectTestCase {
         command = mock(ImapCommand.class);
         next = mock(ImapProcessor.class);
         responder = mock(ImapProcessor.Responder.class);
-        result = mock(ListResult.class);
+        result = mock(MailboxMetaData.class);
         provider = mock(MailboxManagerProvider.class);
         processor = createProcessor(next, provider, serverResponseFactory);
     }
@@ -74,7 +74,7 @@ public class ListProcessorTest extends MockObjectTestCase {
                 hierarchyDelimiter, mailboxName);
     }
 
-    void setUpResult(final boolean isNoinferiors, final int selectability,
+    void setUpResult(final boolean isNoinferiors, final MailboxMetaData.Selectability selectability,
             final String hierarchyDelimiter, final String name) {
         checking(new Expectations() {{
             oneOf(result).isNoInferiors();will(returnValue(isNoinferiors));
@@ -85,7 +85,7 @@ public class ListProcessorTest extends MockObjectTestCase {
     }
 
     public void testNoInferiors() throws Exception {
-        setUpResult(true, ListResult.SELECTABILITY_FLAG_NONE, ".", "#INBOX");
+        setUpResult(true, MailboxMetaData.Selectability.NONE, ".", "#INBOX");
         checking(new Expectations() {{
             oneOf(responder).respond(with(equal(createResponse(true, false, false, false, ".", "#INBOX"))));
         }});
@@ -93,7 +93,7 @@ public class ListProcessorTest extends MockObjectTestCase {
     }
 
     public void testNoSelect() throws Exception {
-        setUpResult(false, ListResult.SELECTABILITY_FLAG_NOSELECT, ".", "#INBOX");
+        setUpResult(false, MailboxMetaData.Selectability.NOSELECT, ".", "#INBOX");
         checking(new Expectations() {{
             oneOf(responder).respond(with(equal(createResponse(false, true, false, false, ".", "#INBOX"))));
         }});
@@ -101,7 +101,7 @@ public class ListProcessorTest extends MockObjectTestCase {
     }
 
     public void testUnMarked() throws Exception {
-        setUpResult(false, ListResult.SELECTABILITY_FLAG_UNMARKED, ".",
+        setUpResult(false, MailboxMetaData.Selectability.UNMARKED, ".",
                 "#INBOX");
         checking(new Expectations() {{
             oneOf(responder).respond(with(equal(createResponse(false, false, false, true, ".", "#INBOX"))));
@@ -110,7 +110,7 @@ public class ListProcessorTest extends MockObjectTestCase {
     }
 
     public void testMarked() throws Exception {
-        setUpResult(false, ListResult.SELECTABILITY_FLAG_MARKED, ".", "#INBOX");
+        setUpResult(false, MailboxMetaData.Selectability.MARKED, ".", "#INBOX");
         checking(new Expectations() {{
             oneOf(responder).respond(with(equal(createResponse(false, false, true, false, ".", "#INBOX"))));
         }});

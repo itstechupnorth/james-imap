@@ -29,7 +29,7 @@ import org.apache.james.api.imap.message.response.imap4rev1.StatusResponse;
 import org.apache.james.api.imap.message.response.imap4rev1.StatusResponseFactory;
 import org.apache.james.api.imap.process.ImapProcessor;
 import org.apache.james.api.imap.process.ImapSession;
-import org.apache.james.imap.mailbox.ListResult;
+import org.apache.james.imap.mailbox.MailboxMetaData;
 import org.apache.james.imap.mailbox.MailboxManager;
 import org.apache.james.imap.mailbox.MailboxManagerProvider;
 import org.apache.james.imap.message.request.imap4rev1.LsubRequest;
@@ -71,7 +71,7 @@ public class LSubProcessorTest extends MockObjectTestCase {
 
     ImapProcessor.Responder responder;
 
-    ListResult result;
+    MailboxMetaData result;
 
     ImapSession session;
 
@@ -92,7 +92,7 @@ public class LSubProcessorTest extends MockObjectTestCase {
         command = mock(ImapCommand.class);
         next = mock(ImapProcessor.class);
         responder = mock(ImapProcessor.Responder.class);
-        result = mock(ListResult.class);
+        result = mock(MailboxMetaData.class);
         provider = mock(MailboxManagerProvider.class);
         statusResponse = mock(StatusResponse.class);
         responderImpl = responder;

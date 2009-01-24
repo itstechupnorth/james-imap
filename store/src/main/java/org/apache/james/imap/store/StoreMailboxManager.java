@@ -20,8 +20,8 @@
 package org.apache.james.imap.store;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -29,17 +29,18 @@ import java.util.Random;
 
 import org.apache.commons.logging.Log;
 import org.apache.james.api.imap.AbstractLogEnabled;
-import org.apache.james.imap.mailbox.ListResult;
 import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.MailboxExistsException;
-import org.apache.james.imap.mailbox.MailboxExpression;
 import org.apache.james.imap.mailbox.MailboxListener;
 import org.apache.james.imap.mailbox.MailboxManager;
+import org.apache.james.imap.mailbox.MailboxMetaData;
 import org.apache.james.imap.mailbox.MailboxNotFoundException;
+import org.apache.james.imap.mailbox.MailboxQuery;
 import org.apache.james.imap.mailbox.MailboxSession;
 import org.apache.james.imap.mailbox.MessageRange;
+import org.apache.james.imap.mailbox.StandardMailboxMetaDataComparator;
 import org.apache.james.imap.mailbox.SubscriptionException;
-import org.apache.james.imap.mailbox.util.ListResultImpl;
+import org.apache.james.imap.mailbox.util.SimpleMailboxMetaData;
 import org.apache.james.imap.store.mail.MailboxMapper;
 import org.apache.james.imap.store.mail.model.Mailbox;
 
@@ -210,7 +211,7 @@ public abstract class StoreMailboxManager extends AbstractLogEnabled implements 
         fromMailbox.copyTo(set, toMailbox, session);
     }
 
-    public ListResult[] list(final MailboxExpression mailboxExpression)
+    public List<MailboxMetaData> search(final MailboxQuery mailboxExpression)
     throws MailboxException {
         final char localWildcard = mailboxExpression.getLocalWildcard();
         final char freeWildcard = mailboxExpression.getFreeWildcard();
@@ -228,20 +229,18 @@ public abstract class StoreMailboxManager extends AbstractLogEnabled implements 
 
         final MailboxMapper mapper = createMailboxMapper();
         final List<Mailbox> mailboxes = mapper.findMailboxWithNameLike(search);
-        final List<ListResult> listResults = new ArrayList<ListResult>(mailboxes.size());
+        final List<MailboxMetaData> results = new ArrayList<MailboxMetaData>(mailboxes.size());
         for (Mailbox mailbox: mailboxes) {
             final String name = mailbox.getName();
             if (name.startsWith(base)) {
                 final String match = name.substring(baseLength);
                 if (mailboxExpression.isExpressionMatch(match,
                         HIERARCHY_DELIMITER)) {
-                    listResults.add(new ListResultImpl(name, "."));
+                    results.add(new SimpleMailboxMetaData(name, "."));
                 }
             }
         }
-        final ListResult[] results = (ListResult[]) listResults
-        .toArray(ListResult.EMPTY_ARRAY);
-        Arrays.sort(results);
+        Collections.sort(results, new StandardMailboxMetaDataComparator());
         return results;
 
     }

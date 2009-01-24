@@ -22,7 +22,7 @@ package org.apache.james.imap.mailbox;
 /**
  * Expresses select criteria for mailboxes.
  */
-public class MailboxExpression {
+public class MailboxQuery {
 
     private final String base;
 
@@ -47,7 +47,7 @@ public class MailboxExpression {
      *            matches any sequence of characters up to the next hierarchy
      *            delimiter
      */
-    public MailboxExpression(final String base, final String expression,
+    public MailboxQuery(final String base, final String expression,
             final char freeWildcard, final char localWildcard) {
         super();
         if (base == null) {

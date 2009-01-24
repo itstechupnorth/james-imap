@@ -20,8 +20,8 @@
 package org.apache.james.mailboxmanager.torque;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -31,18 +31,19 @@ import java.util.Random;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.logging.impl.SimpleLog;
-import org.apache.james.imap.mailbox.ListResult;
 import org.apache.james.imap.mailbox.Mailbox;
-import org.apache.james.imap.mailbox.MailboxExistsException;
 import org.apache.james.imap.mailbox.MailboxException;
-import org.apache.james.imap.mailbox.MailboxExpression;
+import org.apache.james.imap.mailbox.MailboxExistsException;
 import org.apache.james.imap.mailbox.MailboxListener;
 import org.apache.james.imap.mailbox.MailboxManager;
+import org.apache.james.imap.mailbox.MailboxMetaData;
 import org.apache.james.imap.mailbox.MailboxNotFoundException;
+import org.apache.james.imap.mailbox.MailboxQuery;
 import org.apache.james.imap.mailbox.MailboxSession;
 import org.apache.james.imap.mailbox.MessageRange;
+import org.apache.james.imap.mailbox.StandardMailboxMetaDataComparator;
 import org.apache.james.imap.mailbox.SubscriptionException;
-import org.apache.james.imap.mailbox.util.ListResultImpl;
+import org.apache.james.imap.mailbox.util.SimpleMailboxMetaData;
 import org.apache.james.mailboxmanager.torque.om.MailboxRow;
 import org.apache.james.mailboxmanager.torque.om.MailboxRowPeer;
 import org.apache.torque.TorqueException;
@@ -237,7 +238,7 @@ public class TorqueMailboxManager implements MailboxManager {
         fromMailbox.copyTo(set, toMailbox, session);
     }
 
-    public ListResult[] list(final MailboxExpression mailboxExpression)
+    public List<MailboxMetaData> search(final MailboxQuery mailboxExpression)
             throws MailboxException {
         final char localWildcard = mailboxExpression.getLocalWildcard();
         final char freeWildcard = mailboxExpression.getFreeWildcard();
@@ -257,7 +258,7 @@ public class TorqueMailboxManager implements MailboxManager {
         criteria.add(MailboxRowPeer.NAME, (Object) (search), Criteria.LIKE);
         try {
             List mailboxRows = MailboxRowPeer.doSelect(criteria);
-            List listResults = new ArrayList(mailboxRows.size());
+            List<MailboxMetaData> results = new ArrayList<MailboxMetaData>(mailboxRows.size());
             for (Iterator iter = mailboxRows.iterator(); iter.hasNext();) {
                 final MailboxRow mailboxRow = (MailboxRow) iter.next();
                 final String name = mailboxRow.getName();
@@ -265,13 +266,11 @@ public class TorqueMailboxManager implements MailboxManager {
                     final String match = name.substring(baseLength);
                     if (mailboxExpression.isExpressionMatch(match,
                             HIERARCHY_DELIMITER)) {
-                        listResults.add(new ListResultImpl(name, "."));
+                        results.add(new SimpleMailboxMetaData(name, "."));
                     }
                 }
             }
-            final ListResult[] results = (ListResult[]) listResults
-                    .toArray(ListResult.EMPTY_ARRAY);
-            Arrays.sort(results);
+            Collections.sort(results, new StandardMailboxMetaDataComparator());
             return results;
         } catch (TorqueException e) {
             throw new MailboxException(e);

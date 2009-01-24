@@ -31,7 +31,7 @@ import org.apache.james.api.imap.message.response.imap4rev1.StatusResponseFactor
 import org.apache.james.api.imap.process.ImapProcessor;
 import org.apache.james.api.imap.process.ImapSession;
 import org.apache.james.imap.mailbox.MailboxException;
-import org.apache.james.imap.mailbox.MailboxExpression;
+import org.apache.james.imap.mailbox.MailboxQuery;
 import org.apache.james.imap.mailbox.MailboxManager;
 import org.apache.james.imap.mailbox.MailboxManagerProvider;
 import org.apache.james.imap.mailbox.SubscriptionException;
@@ -91,7 +91,7 @@ public class LSubProcessor extends AbstractMailboxProcessor {
         final String userName = ImapSessionUtils.getUserName(session);
         final MailboxManager manager = getMailboxManager();
         final Collection<String> mailboxes = manager.subscriptions(userName);
-        final MailboxExpression expression = new MailboxExpression(
+        final MailboxQuery expression = new MailboxQuery(
                 referenceName, mailboxPattern, '*', '%');
         final Collection<String> mailboxResponses = new ArrayList<String>();
         for (final String mailboxName: mailboxes) {
@@ -101,7 +101,7 @@ public class LSubProcessor extends AbstractMailboxProcessor {
     }
 
     private void respond(Responder responder,
-            final MailboxExpression expression, final String mailboxName,
+            final MailboxQuery expression, final String mailboxName,
             final boolean originalSubscription, final Collection<String> mailboxes,
             final Collection<String> mailboxResponses) {
         if (expression.isExpressionMatch(mailboxName,
