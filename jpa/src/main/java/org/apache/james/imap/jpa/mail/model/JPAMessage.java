@@ -27,6 +27,7 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Lob;
 import javax.persistence.OneToMany;
 
 import org.apache.james.imap.store.mail.model.Header;
@@ -38,7 +39,7 @@ public class JPAMessage implements Document {
     @Id@GeneratedValue private long id;
 
     /** The value for the body field. Lazy loaded */
-    @Basic(optional=false, fetch=FetchType.LAZY) private byte[] body;
+    @Basic(optional=false, fetch=FetchType.LAZY) @Lob private byte[] body;
     /** Headers for this message */
     @OneToMany(cascade = CascadeType.ALL, fetch=FetchType.LAZY) private List<JPAHeader> headers;
 
