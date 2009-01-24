@@ -36,28 +36,11 @@ public class MessageResultUtilsIsIncludedTest extends MockObjectTestCase {
         super.tearDown();
     }
 
-    public void testShouldReturnFalseWhenNull() throws Exception {
-        assertFalse(MessageResultUtils.isIncluded(null, FetchGroup.FLAGS));
-    }
-
     public void testBodyContentIncluded() throws Exception {
         assertFalse(MessageResultUtils.isIncluded(mock(FetchGroupImpl.MINIMAL),
                 FetchGroup.BODY_CONTENT));
-        assertFalse(MessageResultUtils.isIncluded(mock(FetchGroupImpl.FLAGS),
-                FetchGroup.BODY_CONTENT));
         assertTrue(MessageResultUtils.isIncluded(
                 mock(FetchGroupImpl.BODY_CONTENT), FetchGroup.BODY_CONTENT));
-    }
-
-    public void testFlagsIncluded() throws Exception {
-        assertFalse(MessageResultUtils.isIncluded(mock(FetchGroupImpl.MINIMAL),
-                FetchGroup.FLAGS));
-        assertFalse(MessageResultUtils.isIncluded(
-                mock(FetchGroupImpl.BODY_CONTENT), FetchGroup.FLAGS));
-        assertTrue(MessageResultUtils.isIncluded(mock(FetchGroupImpl.FLAGS),
-                FetchGroup.FLAGS));
-        assertTrue(MessageResultUtils.isIncluded(mock(new FetchGroupImpl(
-                FetchGroup.FLAGS | FetchGroup.BODY_CONTENT)), FetchGroup.FLAGS));
     }
 
     public void testFULL_CONTENTIncluded() throws Exception {
@@ -67,9 +50,6 @@ public class MessageResultUtilsIsIncludedTest extends MockObjectTestCase {
                 mock(FetchGroupImpl.BODY_CONTENT), FetchGroup.FULL_CONTENT));
         assertTrue(MessageResultUtils.isIncluded(
                 mock(FetchGroupImpl.FULL_CONTENT), FetchGroup.FULL_CONTENT));
-        assertTrue(MessageResultUtils.isIncluded(mock(new FetchGroupImpl(
-                FetchGroup.FLAGS | FetchGroup.FULL_CONTENT)),
-                FetchGroup.FULL_CONTENT));
     }
 
     public void testHEADERSIncluded() throws Exception {
@@ -79,8 +59,6 @@ public class MessageResultUtilsIsIncludedTest extends MockObjectTestCase {
                 mock(FetchGroupImpl.BODY_CONTENT), FetchGroup.HEADERS));
         assertTrue(MessageResultUtils.isIncluded(mock(FetchGroupImpl.HEADERS),
                 FetchGroup.HEADERS));
-        assertTrue(MessageResultUtils.isIncluded(mock(new FetchGroupImpl(
-                FetchGroup.FLAGS | FetchGroup.HEADERS)), FetchGroup.HEADERS));
     }
 
     public void testShouldNOTHINGAlwaysBeIncluded() throws Exception {

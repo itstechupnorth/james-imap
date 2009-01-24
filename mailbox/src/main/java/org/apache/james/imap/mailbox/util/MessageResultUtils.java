@@ -263,19 +263,6 @@ public class MessageResultUtils {
     }
 
     /**
-     * Is {@link FetchGroup#FLAGS} included in these results?
-     * 
-     * @param message
-     *            <code>MessageResult</code>, possibly null
-     * @return true if <code>MessageResult</code> includes FLAGS, false if
-     *         <code>MessageResult</code> is null or does not contain FLAGS
-     * @see #isIncluded(MessageResult, int)
-     */
-    public static boolean isFlagsIncluded(final MessageResult message) {
-        return isIncluded(message, FetchGroup.FLAGS);
-    }
-
-    /**
      * Is {@link FetchGroup#FULL_CONTENT} included in these results?
      * 
      * @param message

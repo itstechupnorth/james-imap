@@ -106,12 +106,10 @@ public class ResultUtils {
         messageResult.setUid(message.getUid());
         if (fetchGroup != null) {
             int content = fetchGroup.content();
-            if ((content & FetchGroup.FLAGS) > 0) {
-                messageResult.setFlags(message.createFlags());
-                content -= FetchGroup.FLAGS;
-            }
+            messageResult.setFlags(message.createFlags());
             messageResult.setSize(message.getSize());
             messageResult.setInternalDate(message.getInternalDate());
+            
             if ((content & FetchGroup.HEADERS) > 0) {
                 addHeaders(message, messageResult);
                 content -= FetchGroup.HEADERS;

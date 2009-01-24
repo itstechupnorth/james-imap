@@ -31,7 +31,6 @@ import javax.mail.internet.MimeMessage;
 
 import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.MessageResult;
-import org.apache.james.imap.mailbox.MessageResult.Header;
 
 /**
  * Bean based implementation. {@link #getIncludedResults()} is updated when
@@ -76,9 +75,7 @@ public class MessageResultImpl implements MessageResult {
     public MessageResultImpl(MessageResult result)
             throws MailboxException {
         setUid(result.getUid());
-        if (MessageResultUtils.isFlagsIncluded(result)) {
-            setFlags(result.getFlags());
-        }
+        setFlags(result.getFlags());
         setSize(result.getSize());
         setInternalDate(result.getInternalDate());
         if (MessageResultUtils.isHeadersIncluded(result)) {
@@ -138,9 +135,6 @@ public class MessageResultImpl implements MessageResult {
 
     public void setFlags(Flags flags) {
         this.flags = flags;
-        if (flags != null) {
-            includedResults |= FetchGroup.FLAGS;
-        }
     }
 
     public int compareTo(Object o) {

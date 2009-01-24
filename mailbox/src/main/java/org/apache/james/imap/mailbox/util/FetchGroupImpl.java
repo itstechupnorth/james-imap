@@ -35,9 +35,6 @@ public class FetchGroupImpl implements MessageResult.FetchGroup {
     public static final MessageResult.FetchGroup MINIMAL = new FetchGroupImpl(
             MessageResult.FetchGroup.MINIMAL);
 
-    public static final MessageResult.FetchGroup FLAGS = new FetchGroupImpl(
-            MessageResult.FetchGroup.FLAGS);
-
     public static final MessageResult.FetchGroup HEADERS = new FetchGroupImpl(
             MessageResult.FetchGroup.HEADERS);
 

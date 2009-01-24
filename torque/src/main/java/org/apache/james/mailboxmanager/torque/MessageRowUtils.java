@@ -130,13 +130,10 @@ public class MessageRowUtils {
         messageResult.setUid(messageRow.getUid());
         if (fetchGroup != null) {
             int content = fetchGroup.content();
-            if ((content & FetchGroup.FLAGS) > 0) {
-                org.apache.james.mailboxmanager.torque.om.MessageFlags messageFlags = messageRow
-                        .getMessageFlags();
-                if (messageFlags != null) {
-                    messageResult.setFlags(messageFlags.createFlags());
-                }
-                content -= FetchGroup.FLAGS;
+            org.apache.james.mailboxmanager.torque.om.MessageFlags messageFlags = messageRow
+            .getMessageFlags();
+            if (messageFlags != null) {
+                messageResult.setFlags(messageFlags.createFlags());
             }
             messageResult.setSize(messageRow.getSize());
             messageResult.setInternalDate(messageRow.getInternalDate());

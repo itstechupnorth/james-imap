@@ -110,10 +110,7 @@ public class FetchProcessor extends AbstractMailboxProcessor {
 
     private FetchGroup getFetchGroup(FetchData fetch) {
         FetchGroupImpl result = new FetchGroupImpl();
-        if (fetch.isFlags() || fetch.isSetSeen()) {
-            result.or(FetchGroup.FLAGS);
-        }
-        
+
         if (fetch.isEnvelope()) {
             result.or(FetchGroup.HEADERS);
         }

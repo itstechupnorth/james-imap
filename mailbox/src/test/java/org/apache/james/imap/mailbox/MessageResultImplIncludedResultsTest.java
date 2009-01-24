@@ -22,9 +22,6 @@ package org.apache.james.imap.mailbox;
 import java.util.ArrayList;
 import java.util.Date;
 
-import javax.mail.Flags;
-
-import org.apache.james.imap.mailbox.MessageResult;
 import org.apache.james.imap.mailbox.MessageResult.FetchGroup;
 import org.apache.james.imap.mailbox.util.MessageResultImpl;
 import org.apache.james.imap.mailbox.util.MessageResultUtils;
@@ -44,18 +41,6 @@ public class MessageResultImplIncludedResultsTest extends MockObjectTestCase {
 
     protected void tearDown() throws Exception {
         super.tearDown();
-    }
-
-    public void testShouldIncludedResultsWhenFlagsSet() throws Exception {
-        result.setFlags(null);
-        assertEquals(FetchGroup.MINIMAL, result.getIncludedResults().content());
-        Flags flags = new Flags();
-        result.setFlags(flags);
-        assertEquals(FetchGroup.FLAGS, result.getIncludedResults().content());
-        MessageResultImpl result = new MessageResultImpl(77, flags);
-        assertEquals(FetchGroup.FLAGS, result.getIncludedResults().content());
-        result = new MessageResultImpl(this.result);
-        assertEquals(FetchGroup.FLAGS, result.getIncludedResults().content());
     }
 
     public void testShouldIncludedResultsWhenHeadersSet() throws Exception {
@@ -90,46 +75,34 @@ public class MessageResultImplIncludedResultsTest extends MockObjectTestCase {
     }
 
     public void testShouldIncludedResultsWhenAllSet() {
-        Flags flags = new Flags();
-        result.setFlags(flags);
-        assertEquals(FetchGroup.FLAGS, result.getIncludedResults().content());
-        assertTrue(MessageResultUtils.isFlagsIncluded(result));
-        result.setUid(99);
-        assertEquals(FetchGroup.FLAGS, result.getIncludedResults().content());
-        assertTrue(MessageResultUtils.isFlagsIncluded(result));
         result.setBody(content);
-        assertEquals(FetchGroup.FLAGS | FetchGroup.BODY_CONTENT, result
+        assertEquals(FetchGroup.BODY_CONTENT, result
                 .getIncludedResults().content());
-        assertTrue(MessageResultUtils.isFlagsIncluded(result));
         assertTrue(MessageResultUtils.isBodyContentIncluded(result));
         result.setFullContent(content);
-        assertEquals(FetchGroup.FLAGS | FetchGroup.BODY_CONTENT
+        assertEquals(FetchGroup.BODY_CONTENT
                 | FetchGroup.FULL_CONTENT, result.getIncludedResults()
                 .content());
-        assertTrue(MessageResultUtils.isFlagsIncluded(result));
         assertTrue(MessageResultUtils.isBodyContentIncluded(result));
         assertTrue(MessageResultUtils.isFullContentIncluded(result));
         result.setHeaders(new ArrayList());
-        assertEquals(FetchGroup.FLAGS | FetchGroup.BODY_CONTENT
+        assertEquals(FetchGroup.BODY_CONTENT
                 | FetchGroup.FULL_CONTENT | FetchGroup.HEADERS, result
                 .getIncludedResults().content());
-        assertTrue(MessageResultUtils.isFlagsIncluded(result));
         assertTrue(MessageResultUtils.isBodyContentIncluded(result));
         assertTrue(MessageResultUtils.isFullContentIncluded(result));
         assertTrue(MessageResultUtils.isHeadersIncluded(result));
         result.setInternalDate(new Date());
-        assertEquals(FetchGroup.FLAGS | FetchGroup.BODY_CONTENT
+        assertEquals(FetchGroup.BODY_CONTENT
                 | FetchGroup.FULL_CONTENT | FetchGroup.HEADERS, result.getIncludedResults()
                 .content());
-        assertTrue(MessageResultUtils.isFlagsIncluded(result));
         assertTrue(MessageResultUtils.isBodyContentIncluded(result));
         assertTrue(MessageResultUtils.isFullContentIncluded(result));
         assertTrue(MessageResultUtils.isHeadersIncluded(result));
         result.setSize(100);
-        assertEquals(FetchGroup.FLAGS | FetchGroup.BODY_CONTENT
+        assertEquals(FetchGroup.BODY_CONTENT
                 | FetchGroup.FULL_CONTENT | FetchGroup.HEADERS, result
                 .getIncludedResults().content());
-        assertTrue(MessageResultUtils.isFlagsIncluded(result));
         assertTrue(MessageResultUtils.isBodyContentIncluded(result));
         assertTrue(MessageResultUtils.isFullContentIncluded(result));
         assertTrue(MessageResultUtils.isHeadersIncluded(result));

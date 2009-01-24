@@ -555,9 +555,6 @@ public class TorqueMailbox extends AbstractLogEnabled implements Mailbox {
                     messageFlags.save();
                 }
             }
-            final TorqueResultIterator resultIterator = new TorqueResultIterator(messageRows, FetchGroupImpl.FLAGS);
-            final org.apache.james.imap.mailbox.util.MessageFlags[] messageFlags = resultIterator
-                    .getMessageFlags();
             tracker.flagsUpdated(newFlagsByUid, originalFlagsByUid, mailboxSession.getSessionId());
             return newFlagsByUid;
         } catch (Exception e) {
