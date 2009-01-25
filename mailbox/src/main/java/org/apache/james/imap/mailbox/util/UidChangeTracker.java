@@ -19,9 +19,7 @@
 
 package org.apache.james.imap.mailbox.util;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
@@ -31,12 +29,10 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 
 import javax.mail.Flags;
-import javax.mail.MessagingException;
 
 import org.apache.james.imap.mailbox.Constants;
 import org.apache.james.imap.mailbox.Mailbox;
 import org.apache.james.imap.mailbox.MailboxListener;
-import org.apache.james.imap.mailbox.MessageResult;
 
 public class UidChangeTracker implements Constants {
 
@@ -91,28 +87,31 @@ public class UidChangeTracker implements Constants {
         final Set<Long> expectedSet = getSubSet(range);
         for (Map.Entry<Long, Flags> entry:flagsByIndex.entrySet()) {
             final Long uid = entry.getKey();
-            final Flags flags = entry.getValue();
             if (expectedSet.contains(uid)) {
                 expectedSet.remove(uid);
-                if (flags != null) {
-                    final Flags cachedFlags = cache.get(uid);
-                    if (cachedFlags == null || !flags.equals(cachedFlags)) {
-                        eventDispatcher.flagsUpdated(uid, Mailbox.ANONYMOUS_SESSION, cachedFlags, flags);
-                    }
-                }
-            } else {
-                if (uid > lastUid) {
-                    eventDispatcher.added(uid, Mailbox.ANONYMOUS_SESSION);
-                    lastUid = uid;
-                }
             }
-            cache.put(uid, flags);
+            final Flags flags = entry.getValue();
+            found(uid, flags);
         }
 
         for (Iterator iter = expectedSet.iterator(); iter.hasNext();) {
             long uid = ((Long) iter.next()).longValue();
             eventDispatcher.expunged(uid, Mailbox.ANONYMOUS_SESSION);
         }
+    }
+
+    public void found(final Long uid, final Flags flags) {
+        if (flags != null) {
+            final Flags cachedFlags = cache.get(uid);
+            if (cachedFlags == null || !flags.equals(cachedFlags)) {
+                eventDispatcher.flagsUpdated(uid, Mailbox.ANONYMOUS_SESSION, cachedFlags, flags);
+            }
+        }
+        if (uid > lastUid) {
+            eventDispatcher.added(uid, Mailbox.ANONYMOUS_SESSION);
+            lastUid = uid;
+        }
+        cache.put(uid, flags);
     }
 
     private SortedSet<Long> getSubSet(UidRange range) {
@@ -126,19 +125,6 @@ public class UidChangeTracker implements Constants {
             return new TreeSet<Long>(keySet);
         } else {
             return new TreeSet<Long>(cache.tailMap(rangeStartLong).keySet());
-        }
-    }
-
-    public synchronized void found(MessageResult messageResult) throws MessagingException {
-        if (messageResult != null) {
-            long uid = messageResult.getUid();
-            Collection<MessageResult> results = new ArrayList<MessageResult>();
-            results.add(messageResult);
-            final Map<Long, Flags> flagsByIndex = new HashMap<Long, Flags>();
-            for (MessageResult result: results) {
-                flagsByIndex.put(result.getUid(), result.getFlags());
-            }
-            found(new UidRange(uid, uid), flagsByIndex);
         }
     }
     

@@ -162,7 +162,7 @@ public class TorqueMailbox extends AbstractLogEnabled implements Mailbox {
                     save(messageRow);
                     MessageResult messageResult = fillMessageResult(messageRow,
                             FetchGroupImpl.MINIMAL);
-                    getUidChangeTracker().found(messageResult);
+                    getUidChangeTracker().found(messageResult.getUid(), messageResult.getFlags());
                     return messageResult.getUid();
                 } catch (Exception e) {
                     throw new MailboxException(e);
@@ -424,7 +424,7 @@ public class TorqueMailbox extends AbstractLogEnabled implements Mailbox {
                         MessageResult messageResult = fillMessageResult(
                                 (MessageRow) messageRows.get(0), FetchGroupImpl.MINIMAL);
                         if (messageResult != null) {
-                            getUidChangeTracker().found(messageResult);
+                            getUidChangeTracker().found(messageResult.getUid(), messageResult.getFlags());
                         }
 
                         return messageResult.getUid();
@@ -791,7 +791,7 @@ public class TorqueMailbox extends AbstractLogEnabled implements Mailbox {
                     save(newRow);
                     MessageResult messageResult = fillMessageResult(newRow,
                             FetchGroupImpl.MINIMAL);
-                    getUidChangeTracker().found(messageResult);
+                    getUidChangeTracker().found(messageResult.getUid(), messageResult.getFlags());
                 }
             }
         } catch (TorqueException e) {

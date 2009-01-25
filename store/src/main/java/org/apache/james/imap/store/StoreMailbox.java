@@ -49,7 +49,6 @@ import org.apache.james.imap.mailbox.MessageRange;
 import org.apache.james.imap.mailbox.MessageResult;
 import org.apache.james.imap.mailbox.SearchQuery;
 import org.apache.james.imap.mailbox.MessageResult.FetchGroup;
-import org.apache.james.imap.mailbox.util.FetchGroupImpl;
 import org.apache.james.imap.mailbox.util.UidChangeTracker;
 import org.apache.james.imap.mailbox.util.UidRange;
 import org.apache.james.imap.store.mail.MailboxMapper;
@@ -160,10 +159,8 @@ public abstract class StoreMailbox extends AbstractLogEnabled implements org.apa
                 mapper.save(message);
                 mapper.commit();
 
-                final MessageResult messageResult = fillMessageResult(message, FetchGroupImpl.MINIMAL);
-                
-                getUidChangeTracker().found(messageResult);
-                return messageResult.getUid();
+                tracker.found(uid, message.createFlags());
+                return uid;
             } catch (IOException e) {
                 throw new MailboxException(e);
             } catch (MessagingException e) {
@@ -197,7 +194,7 @@ public abstract class StoreMailbox extends AbstractLogEnabled implements org.apa
             flagsByIndex.put(member.getUid(), member.createFlags());
         }
         final ResultIterator results = getResults(result, messages);
-        getUidChangeTracker().found(range, flagsByIndex);
+        tracker.found(range, flagsByIndex);
         return results;
     }
 
@@ -255,22 +252,15 @@ public abstract class StoreMailbox extends AbstractLogEnabled implements org.apa
     public Long getFirstUnseen(MailboxSession mailboxSession) throws MailboxException {
         try {
             final MessageMapper messageMapper = createMessageMapper();
-            final List<MailboxMembership> messageRows = messageMapper.findUnseenMessagesInMailboxOrderByUid(mailboxId);
-            final Iterator<MailboxMembership> it = messageRows.iterator();
-            final MessageResult message;
-            if (it.hasNext()) {
-                message = fillMessageResult(it.next(), FetchGroupImpl.MINIMAL);
-                if (message != null) {
-                    getUidChangeTracker().found(message);
-                }
-            } else {
-                message = null;
-            }
+            final List<MailboxMembership> members = messageMapper.findUnseenMessagesInMailboxOrderByUid(mailboxId);
+            final Iterator<MailboxMembership> it = members.iterator();
             final Long result;
-            if (message == null) {
-                result = null;
+            if (it.hasNext()) {
+                final MailboxMembership member = it.next();
+                result = member.getUid();
+                tracker.found(result, member.createFlags());
             } else {
-                result = message.getUid();
+                result = null;
             }
             return result;
         } catch (MessagingException e) {
@@ -299,7 +289,7 @@ public abstract class StoreMailbox extends AbstractLogEnabled implements org.apa
             mapper.delete(message);
         }
         mapper.commit();
-        getUidChangeTracker().expunged(uids);
+        tracker.expunged(uids);
         return uids.iterator();
     }
 
@@ -355,10 +345,6 @@ public abstract class StoreMailbox extends AbstractLogEnabled implements org.apa
         }
     }
 
-    protected UidChangeTracker getUidChangeTracker() {
-        return tracker;
-    }
-
     public Iterator<Long> search(SearchQuery query, MailboxSession mailboxSession) throws MailboxException {
         final MessageMapper messageMapper = createMessageMapper();
         final List<MailboxMembership> members = messageMapper.searchMailbox(mailboxId, query);
@@ -395,34 +381,25 @@ public abstract class StoreMailbox extends AbstractLogEnabled implements org.apa
             final MessageMapper mapper = createMessageMapper();
             mapper.begin();
 
-            List<MailboxMembership> rows = mapper.findInMailbox(set, mailboxId);
-            for (MailboxMembership originalMessage:rows) {
+            final List<MailboxMembership> copiedRows = new ArrayList<MailboxMembership>();
+            final List<MailboxMembership> originalRows = mapper.findInMailbox(set, mailboxId);
+            for (MailboxMembership originalMessage:originalRows) {
 
                 final Mailbox mailbox = toMailbox.reserveNextUid();
                 if (mailbox != null) {
-                    // To be thread safe, we first get our own copy and the
-                    // exclusive
-                    // Uid
-                    // TODO create own message_id and assign uid later
-                    // at the moment it could lead to the situation that uid 5
-                    // is
-                    // inserted long before 4, when
-                    // mail 4 is big and comes over a slow connection.
                     long uid = mailbox.getLastUid();
-
-                    MailboxMembership newRow = copyMessage(toMailbox, originalMessage, uid);
-
-
+                    final MailboxMembership newRow = copyMessage(toMailbox, originalMessage, uid);
                     mapper.save(newRow);
-
-                    // TODO: Consider detaching instances and moving this code outside the inner loop
-                    MessageResult messageResult = toMailbox.fillMessageResult(newRow,
-                            FetchGroupImpl.MINIMAL);
-                    toMailbox.getUidChangeTracker().found(messageResult);
+                    copiedRows.add(newRow);
                 }
             }
 
             mapper.commit();
+            
+            // Wait until commit before issuing events
+            for (MailboxMembership newMember:copiedRows) {
+                toMailbox.tracker.found(newMember.getUid(), newMember.createFlags());
+            }
 
         } catch (MessagingException e) {
             throw new MailboxException(e);
