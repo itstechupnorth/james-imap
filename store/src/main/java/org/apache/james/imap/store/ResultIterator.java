@@ -34,12 +34,10 @@ import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.MessageResult;
 import org.apache.james.imap.mailbox.MimeDescriptor;
 import org.apache.james.imap.mailbox.MessageResult.FetchGroup;
-import org.apache.james.imap.mailbox.MessageResult.Header;
 import org.apache.james.imap.mailbox.util.FetchGroupImpl;
-import org.apache.james.imap.mailbox.util.MessageFlags;
 import org.apache.james.imap.store.mail.model.MailboxMembership;
 
-public class ResultIterator implements Iterator {
+public class ResultIterator implements Iterator<MessageResult> {
 
     private final List<MailboxMembership> messages;
 
@@ -69,7 +67,7 @@ public class ResultIterator implements Iterator {
         return !messages.isEmpty();
     }
 
-    public Object next() {
+    public MessageResult next() {
         if (messages.isEmpty()) {
             throw new NoSuchElementException("No such element.");
         }

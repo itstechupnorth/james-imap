@@ -183,7 +183,7 @@ public abstract class StoreMailbox extends AbstractLogEnabled implements org.apa
         return mailbox;
     }
 
-    public Iterator getMessages(final MessageRange set, FetchGroup fetchGroup,
+    public Iterator<MessageResult> getMessages(final MessageRange set, FetchGroup fetchGroup,
             MailboxSession mailboxSession) throws MailboxException {
         UidRange range = uidRangeForMessageSet(set);
         final MessageMapper messageMapper = createMessageMapper();
