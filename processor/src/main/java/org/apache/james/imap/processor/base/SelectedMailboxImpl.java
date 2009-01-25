@@ -30,8 +30,6 @@ import org.apache.james.api.imap.process.SelectedMailbox;
 import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.MailboxManager;
 import org.apache.james.imap.mailbox.MailboxSession;
-import org.apache.james.imap.mailbox.util.MailboxEventAnalyser;
-import org.apache.james.imap.mailbox.util.UidToMsnConverter;
 
 public class SelectedMailboxImpl extends AbstractLogEnabled implements
         SelectedMailbox {

@@ -17,16 +17,13 @@
  * under the License.                                           *
  ****************************************************************/
 
-package org.apache.james.imap.mailbox.util;
+package org.apache.james.imap.processor.base;
 
 import java.util.Iterator;
 
 import javax.mail.Flags;
 
 import org.apache.james.imap.mailbox.MailboxListener;
-import org.apache.james.imap.mailbox.FakeMailboxListenerAdded;
-import org.apache.james.imap.mailbox.FakeMailboxListenerFlagsUpdate;
-import org.apache.james.imap.mailbox.util.MailboxEventAnalyser;
 import org.jmock.Expectations;
 import org.jmock.integration.junit3.MockObjectTestCase;
 

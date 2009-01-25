@@ -17,32 +17,20 @@
  * under the License.                                           *
  ****************************************************************/
 
-package org.apache.james.imap.mailbox;
+package org.apache.james.imap.processor.base;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import org.apache.james.imap.mailbox.MailboxListener;
 
-import javax.mail.Flags;
-
-import org.apache.james.imap.mailbox.MailboxListener.FlagsUpdated;
-
-public class FakeMailboxListenerFlagsUpdate extends FlagsUpdated {
-
-    public List<Flags.Flag> flags = new ArrayList<Flags.Flag>();
+public class FakeMailboxListenerAdded extends MailboxListener.Added {
 
     public long subjectUid;
 
     public long sessionId;
 
-    public Flags newFlags;
-
-    public FakeMailboxListenerFlagsUpdate(long subjectUid, Flags newFlags,
-            long sessionId) {
+    public FakeMailboxListenerAdded(long subjectUid, long sessionId) {
         super();
         this.subjectUid = subjectUid;
         this.sessionId = sessionId;
-        this.newFlags = newFlags;
     }
 
     public long getSubjectUid() {
@@ -53,11 +41,4 @@ public class FakeMailboxListenerFlagsUpdate extends FlagsUpdated {
         return sessionId;
     }
 
-    public Iterator flagsIterator() {
-        return flags.iterator();
-    }
-
-    public Flags getNewFlags() {
-        return newFlags;
-    }
 }
