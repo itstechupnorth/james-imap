@@ -100,7 +100,7 @@ public class UidChangeTracker implements Constants {
         }
     }
 
-    public void found(final Long uid, final Flags flags) {
+    public synchronized void found(final Long uid, final Flags flags) {
         if (flags != null) {
             final Flags cachedFlags = cache.get(uid);
             if (cachedFlags == null || !flags.equals(cachedFlags)) {
@@ -128,11 +128,11 @@ public class UidChangeTracker implements Constants {
         }
     }
     
-    public synchronized void addMailboxListener(MailboxListener listener) {
+    public void addMailboxListener(MailboxListener listener) {
         eventDispatcher.addMailboxListener(listener);
     }
     
-    public synchronized void mailboxDeleted(long sessionId) {
+    public void mailboxDeleted(long sessionId) {
         eventDispatcher.mailboxDeleted(sessionId);
     }
 
