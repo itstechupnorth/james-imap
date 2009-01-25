@@ -49,7 +49,7 @@ public class MessageResultImpl implements MessageResult {
 
     private Date internalDate;
 
-    private List headers;
+    private List<Header> headers;
 
     private Content body;
 
@@ -57,7 +57,7 @@ public class MessageResultImpl implements MessageResult {
 
     private int includedResults = FetchGroup.MINIMAL;
 
-    private Map partsByPath = new HashMap();
+    private Map<MimePath, PartContent> partsByPath = new HashMap<MimePath, PartContent>();
 
     private MimeDescriptor mimeDescriptor;
 
@@ -139,11 +139,11 @@ public class MessageResultImpl implements MessageResult {
         return headers.iterator();
     }
 
-    public List getHeaders() {
+    public List<Header> getHeaders() {
         return headers;
     }
 
-    public void setHeaders(List headers) {
+    public void setHeaders(List<Header> headers) {
         this.headers = headers;
         if (headers != null) {
             includedResults |= FetchGroup.HEADERS;
@@ -223,7 +223,7 @@ public class MessageResultImpl implements MessageResult {
 
     public Iterator<Header> iterateHeaders(MimePath path)
             throws MailboxException {
-        final Iterator result;
+        final Iterator<Header> result;
         final PartContent partContent = getPartContent(path);
         if (partContent == null) {
             result = null;
@@ -235,7 +235,7 @@ public class MessageResultImpl implements MessageResult {
 
     public Iterator<Header> iterateMimeHeaders(MimePath path)
             throws MailboxException {
-        final Iterator result;
+        final Iterator<Header> result;
         final PartContent partContent = getPartContent(path);
         if (partContent == null) {
             result = null;
@@ -260,12 +260,12 @@ public class MessageResultImpl implements MessageResult {
         partContent.setFull(content);
     }
 
-    public void setHeaders(MimePath path, Iterator headers) {
+    public void setHeaders(MimePath path, Iterator<Header> headers) {
         final PartContent partContent = getPartContent(path);
         partContent.setHeaders(headers);
     }
 
-    public void setMimeHeaders(MimePath path, Iterator headers) {
+    public void setMimeHeaders(MimePath path, Iterator<Header> headers) {
         final PartContent partContent = getPartContent(path);
         partContent.setMimeHeaders(headers);
     }
@@ -286,9 +286,9 @@ public class MessageResultImpl implements MessageResult {
 
         private Content full;
 
-        private Iterator headers;
+        private Iterator<Header> headers;
 
-        private Iterator mimeHeaders;
+        private Iterator<Header> mimeHeaders;
 
         private int content;
 
@@ -323,20 +323,20 @@ public class MessageResultImpl implements MessageResult {
             this.full = full;
         }
 
-        public final Iterator getHeaders() {
+        public final Iterator<Header> getHeaders() {
             return headers;
         }
 
-        public final void setHeaders(Iterator headers) {
+        public final void setHeaders(Iterator<Header> headers) {
             content = content | FetchGroup.HEADERS;
             this.headers = headers;
         }
 
-        public final Iterator getMimeHeaders() {
+        public final Iterator<Header> getMimeHeaders() {
             return mimeHeaders;
         }
 
-        public final void setMimeHeaders(Iterator mimeHeaders) {
+        public final void setMimeHeaders(Iterator<Header> mimeHeaders) {
             content = content | FetchGroup.MIME_HEADERS;
             this.mimeHeaders = mimeHeaders;
         }

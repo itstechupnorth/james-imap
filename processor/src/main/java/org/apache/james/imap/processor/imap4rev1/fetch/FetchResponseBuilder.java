@@ -36,7 +36,6 @@ import org.apache.james.api.imap.message.FetchData;
 import org.apache.james.api.imap.process.ImapSession;
 import org.apache.james.api.imap.process.SelectedMailbox;
 import org.apache.james.imap.mailbox.Content;
-import org.apache.james.imap.mailbox.Headers;
 import org.apache.james.imap.mailbox.Mailbox;
 import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.MailboxSession;
@@ -292,8 +291,8 @@ final class FetchResponseBuilder {
             final MessageResult messageResult, String name, final int[] path,
             final boolean isBase) throws MessagingException {
         final FetchResponse.BodyElement result;
-        final Iterator headers = getMimeHeaders(messageResult, path, isBase);
-        List lines = MessageResultUtils.getAll(headers);
+        final Iterator<MessageResult.Header> headers = getMimeHeaders(messageResult, path, isBase);
+        List<MessageResult.Header> lines = MessageResultUtils.getAll(headers);
         result = new HeaderBodyElement(name, lines);
         return result;
     }
@@ -303,8 +302,8 @@ final class FetchResponseBuilder {
             final boolean isBase) throws MailboxException,
             MessagingException {
         final FetchResponse.BodyElement result;
-        final Iterator headers = getHeaders(messageResult, path, isBase);
-        List lines = MessageResultUtils.getAll(headers);
+        final Iterator<MessageResult.Header> headers = getHeaders(messageResult, path, isBase);
+        List<MessageResult.Header> lines = MessageResultUtils.getAll(headers);
         result = new HeaderBodyElement(name, lines);
         return result;
     }
@@ -315,9 +314,9 @@ final class FetchResponseBuilder {
             throws MailboxException, MessagingException {
         final FetchResponse.BodyElement result;
 
-        final Iterator headers = getHeaders(messageResult, path, isBase);
+        final Iterator<MessageResult.Header> headers = getHeaders(messageResult, path, isBase);
 
-        List lines = MessageResultUtils.getNotMatching(names, headers);
+        List<MessageResult.Header> lines = MessageResultUtils.getNotMatching(names, headers);
         result = new HeaderBodyElement(name, lines);
         return result;
     }
@@ -327,8 +326,8 @@ final class FetchResponseBuilder {
             final boolean isBase) throws MailboxException,
             MessagingException {
         final FetchResponse.BodyElement result;
-        final Iterator headers = getHeaders(messageResult, path, isBase);
-        List lines = MessageResultUtils.getMatching(names, headers);
+        final Iterator<MessageResult.Header> headers = getHeaders(messageResult, path, isBase);
+        List<MessageResult.Header> lines = MessageResultUtils.getMatching(names, headers);
         result = new HeaderBodyElement(name, lines);
         return result;
     }

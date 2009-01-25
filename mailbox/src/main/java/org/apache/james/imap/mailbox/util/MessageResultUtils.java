@@ -41,8 +41,8 @@ public class MessageResultUtils {
      * 
      * @throws MessagingException
      */
-    public static List getAll(final Iterator iterator) {
-        final List results = new ArrayList();
+    public static List<MessageResult.Header> getAll(final Iterator<MessageResult.Header> iterator) {
+        final List<MessageResult.Header> results = new ArrayList<MessageResult.Header>();
         if (iterator != null) {
             while (iterator.hasNext()) {
                 results.add(iterator.next());
@@ -65,7 +65,7 @@ public class MessageResultUtils {
      */
     public static List getMatching(final String[] names, final Iterator iterator)
             throws MessagingException {
-        final List results = new ArrayList(20);
+        final List<MessageResult.Header> results = new ArrayList<MessageResult.Header>(20);
         if (iterator != null) {
             while (iterator.hasNext()) {
                 MessageResult.Header header = (MessageResult.Header) iterator
@@ -98,20 +98,19 @@ public class MessageResultUtils {
      *         their natural order
      * @throws MessagingException
      */
-    public static List getMatching(final Collection names,
-            final Iterator iterator) throws MessagingException {
-        final List result = matching(names, iterator, false);
+    public static List<MessageResult.Header> getMatching(final Collection names,
+            final Iterator<MessageResult.Header> iterator) throws MessagingException {
+        final List<MessageResult.Header> result = matching(names, iterator, false);
         return result;
     }
 
-    private static List matching(final Collection names,
-            final Iterator iterator, boolean not)
+    private static List<MessageResult.Header> matching(final Collection names,
+            final Iterator<MessageResult.Header> iterator, boolean not)
             throws MailboxException {
-        final List results = new ArrayList(names.size());
+        final List<MessageResult.Header> results = new ArrayList<MessageResult.Header>(names.size());
         if (iterator != null) {
             while (iterator.hasNext()) {
-                final MessageResult.Header header = (MessageResult.Header) iterator
-                        .next();
+                final MessageResult.Header header = iterator.next();
                 final boolean match = contains(names, header);
                 final boolean add = (not && !match) || (!not && match);
                 if (add) {
@@ -150,9 +149,9 @@ public class MessageResultUtils {
      *         their natural order
      * @throws MessagingException
      */
-    public static List getNotMatching(final Collection names,
-            final Iterator iterator) throws MessagingException {
-        final List result = matching(names, iterator, true);
+    public static List<MessageResult.Header> getNotMatching(final Collection names,
+            final Iterator<MessageResult.Header> iterator) throws MessagingException {
+        final List<MessageResult.Header> result = matching(names, iterator, true);
         return result;
     }
 
@@ -197,7 +196,7 @@ public class MessageResultUtils {
      */
     public static List getNotMatching(final String[] names,
             final Iterator iterator) throws MessagingException {
-        final List results = new ArrayList(20);
+        final List<MessageResult.Header> results = new ArrayList<MessageResult.Header>(20);
         if (iterator != null) {
             while (iterator.hasNext()) {
                 MessageResult.Header header = (MessageResult.Header) iterator

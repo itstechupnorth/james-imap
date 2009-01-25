@@ -19,7 +19,6 @@
 
 package org.apache.james.imap.mailbox;
 
-import org.apache.james.imap.mailbox.util.SimpleMailboxMetaData;
 
 /**
  * Returned by the list method of MailboxRepository and others

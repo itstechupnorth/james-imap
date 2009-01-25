@@ -68,10 +68,10 @@ public class ResultUtils {
         return results;
     }
 
-    public static List<ResultHeader> createHeaders(MailboxMembership message) {
+    public static List<MessageResult.Header> createHeaders(MailboxMembership message) {
         final List<Header> headers = getSortedHeaders(message);
 
-        final List<ResultHeader> results = new ArrayList<ResultHeader>(headers.size());
+        final List<MessageResult.Header> results = new ArrayList<MessageResult.Header>(headers.size());
         for (Header header: headers) {
             final ResultHeader resultHeader = new ResultHeader(header);
             results.add(resultHeader);
@@ -161,7 +161,7 @@ public class ResultUtils {
 
     private static void addHeaders(final MailboxMembership message,
             MessageResultImpl messageResult) {
-        final List<ResultHeader> headers = createHeaders(message);
+        final List<MessageResult.Header> headers = createHeaders(message);
         messageResult.setHeaders(headers);
     }
 
@@ -280,7 +280,7 @@ public class ResultUtils {
             addHeaders(message, messageResult);
         } else {
             final PartContentBuilder builder = build(path, message);
-            final List headers = builder.getMessageHeaders();
+            final List<MessageResult.Header> headers = builder.getMessageHeaders();
             messageResult.setHeaders(mimePath, headers.iterator());
         }
     }
@@ -293,7 +293,7 @@ public class ResultUtils {
             addHeaders(message, messageResult);
         } else {
             final PartContentBuilder builder = build(path, message);
-            final List headers = builder.getMimeHeaders();
+            final List<MessageResult.Header> headers = builder.getMimeHeaders();
             messageResult.setMimeHeaders(mimePath, headers.iterator());
         }
     }

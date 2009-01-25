@@ -26,6 +26,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.apache.james.imap.mailbox.Content;
+import org.apache.james.imap.mailbox.MessageResult;
 import org.apache.james.mime4j.MimeException;
 import org.apache.james.mime4j.parser.MimeTokenStream;
 
@@ -191,12 +192,12 @@ public class PartContentBuilder {
     }
 
     @SuppressWarnings("unchecked")
-    public List getMimeHeaders() throws IOException {
-        final List<ResultHeader> results;
+    public List<MessageResult.Header> getMimeHeaders() throws IOException {
+        final List<MessageResult.Header> results;
         if (empty) {
             results = Collections.EMPTY_LIST;
         } else {
-            results = new ArrayList<ResultHeader>();
+            results = new ArrayList<MessageResult.Header>();
             for (int state = parser.getState(); state != MimeTokenStream.T_END_HEADER; state = parser
                     .next()) {
                 switch (state) {
@@ -216,12 +217,12 @@ public class PartContentBuilder {
     }
 
     @SuppressWarnings("unchecked")
-    public List getMessageHeaders() throws IOException {
-        final List<ResultHeader> results;
+    public List<MessageResult.Header> getMessageHeaders() throws IOException {
+        final List<MessageResult.Header> results;
         if (empty) {
             results = Collections.EMPTY_LIST;
         } else {
-            results = new ArrayList<ResultHeader>();
+            results = new ArrayList<MessageResult.Header>();
             try {
                 advancedToMessage();
 
