@@ -32,7 +32,6 @@ import org.apache.james.api.imap.ImapConstants;
 import org.apache.james.imap.mailbox.Headers;
 import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.MessageResult;
-import org.apache.james.imap.mailbox.util.MessageResultUtils;
 import org.apache.james.imap.message.response.imap4rev1.FetchResponse;
 import org.apache.james.mime4j.field.address.Address;
 import org.apache.james.mime4j.field.address.AddressList;

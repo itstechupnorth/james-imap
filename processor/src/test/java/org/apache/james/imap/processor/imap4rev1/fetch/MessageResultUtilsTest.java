@@ -17,7 +17,7 @@
  * under the License.                                           *
  ****************************************************************/
 
-package org.apache.james.imap.mailbox;
+package org.apache.james.imap.processor.imap4rev1.fetch;
 
 import java.io.IOException;
 import java.nio.channels.WritableByteChannel;
@@ -25,7 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.james.imap.mailbox.MessageResult;
-import org.apache.james.imap.mailbox.util.MessageResultUtils;
+import org.apache.james.imap.processor.imap4rev1.fetch.MessageResultUtils;
 
 import junit.framework.TestCase;
 

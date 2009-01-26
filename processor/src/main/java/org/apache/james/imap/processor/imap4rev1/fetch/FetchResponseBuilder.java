@@ -42,7 +42,6 @@ import org.apache.james.imap.mailbox.MailboxSession;
 import org.apache.james.imap.mailbox.MessageResult;
 import org.apache.james.imap.mailbox.MimeDescriptor;
 import org.apache.james.imap.mailbox.util.MessageRangeImpl;
-import org.apache.james.imap.mailbox.util.MessageResultUtils;
 import org.apache.james.imap.message.response.imap4rev1.FetchResponse;
 import org.apache.james.imap.processor.base.ImapSessionUtils;
 import org.apache.james.mime4j.field.address.parser.ParseException;
