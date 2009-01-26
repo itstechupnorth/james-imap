@@ -26,7 +26,6 @@ import java.util.List;
 import java.util.Map;
 
 import javax.mail.Flags;
-import javax.mail.internet.MimeMessage;
 
 import org.apache.james.imap.mailbox.Content;
 import org.apache.james.imap.mailbox.MailboxException;
@@ -34,13 +33,9 @@ import org.apache.james.imap.mailbox.MessageResult;
 import org.apache.james.imap.mailbox.MimeDescriptor;
 
 /**
- * Bean based implementation. {@link #getIncludedResults()} is updated when
- * setters are called.
+ * Bean based implementation.
  */
 public class MessageResultImpl implements MessageResult {
-
-    private MimeMessage mimeMessage;
-
     private long uid;
 
     private Flags flags;
@@ -71,15 +66,6 @@ public class MessageResultImpl implements MessageResult {
     public MessageResultImpl(long uid, Flags flags) {
         setUid(uid);
         setFlags(flags);
-    }
-    
-    public MessageResult.FetchGroup getIncludedResults() {
-        final FetchGroupImpl fetchGroup = new FetchGroupImpl(includedResults);
-        return fetchGroup;
-    }
-
-    public MimeMessage getMimeMessage() {
-        return mimeMessage;
     }
 
     public long getUid() {
