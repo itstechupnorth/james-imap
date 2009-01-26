@@ -36,7 +36,6 @@ import org.apache.james.imap.mailbox.MessageResult;
 import org.apache.james.imap.mailbox.MimeDescriptor;
 import org.apache.james.imap.mailbox.MessageResult.FetchGroup;
 import org.apache.james.imap.mailbox.util.FetchGroupImpl;
-import org.apache.james.imap.mailbox.util.MessageFlags;
 import org.apache.james.mailboxmanager.torque.om.MessageRow;
 import org.apache.torque.TorqueException;
 

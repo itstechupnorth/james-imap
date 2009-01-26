@@ -29,7 +29,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import javax.mail.Flags;
+import javax.swing.text.Document;
 
 import org.apache.james.imap.mailbox.Content;
 import org.apache.james.imap.mailbox.MailboxException;
@@ -37,7 +37,6 @@ import org.apache.james.imap.mailbox.MessageResult;
 import org.apache.james.imap.mailbox.MimeDescriptor;
 import org.apache.james.imap.mailbox.MessageResult.FetchGroup;
 import org.apache.james.imap.mailbox.MessageResult.MimePath;
-import org.apache.james.imap.mailbox.util.MessageFlags;
 import org.apache.james.imap.mailbox.util.MessageResultImpl;
 import org.apache.james.imap.store.mail.model.Header;
 import org.apache.james.imap.store.mail.model.MailboxMembership;
@@ -50,23 +49,6 @@ public class ResultUtils {
     public static final byte[] BYTES_HEADER_FIELD_VALUE_SEP = { 0x3A, 0x20 };
 
     static final Charset US_ASCII = Charset.forName("US-ASCII");
-
-    /**
-     * Converts {@link Document} to {@link MessageFlags}.
-     * 
-     * @param messages not null
-     * @return <code>MessageFlags</code>, not null
-     */
-    public static MessageFlags[] toMessageFlags(final Collection<MailboxMembership> messages) {
-        final MessageFlags[] results = new MessageFlags[messages.size()];
-        int i = 0;
-        for (MailboxMembership message: messages) {
-            final Flags flags = message.createFlags();
-            final long uid = message.getUid();
-            results[i++] = new MessageFlags(uid, flags);
-        }
-        return results;
-    }
 
     public static List<MessageResult.Header> createHeaders(MailboxMembership message) {
         final List<Header> headers = getSortedHeaders(message);

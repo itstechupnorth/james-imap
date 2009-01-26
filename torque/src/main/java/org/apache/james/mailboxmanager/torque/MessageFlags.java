@@ -17,7 +17,7 @@
  * under the License.                                           *
  ****************************************************************/
 
-package org.apache.james.imap.mailbox.util;
+package org.apache.james.mailboxmanager.torque;
 
 import java.util.Collection;
 import java.util.Iterator;
