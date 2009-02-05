@@ -38,6 +38,7 @@ import org.apache.james.imap.store.mail.MessageMapper;
 import org.apache.james.imap.store.mail.model.Header;
 import org.apache.james.imap.store.mail.model.Mailbox;
 import org.apache.james.imap.store.mail.model.MailboxMembership;
+import org.apache.james.imap.store.mail.model.PropertyBuilder;
 
 public class JPAMailbox extends StoreMailbox {
 
@@ -67,12 +68,13 @@ public class JPAMailbox extends StoreMailbox {
     }
     
     @Override
-    protected MailboxMembership createMessage(Date internalDate, final long uid, final int size, final byte[] body, final Flags flags, final List<Header> headers) {
+    protected MailboxMembership createMessage(Date internalDate, final long uid, final int size, final byte[] body, final Flags flags, final List<Header> headers, PropertyBuilder propertyBuilder) {
         final List<JPAHeader> jpaHeaders = new ArrayList<JPAHeader>(headers.size());
         for (Header header: headers) {
             jpaHeaders.add((JPAHeader) header);
         }
-        final MailboxMembership message = new JPAMailboxMembership(mailboxId, uid, internalDate, size, flags, body, jpaHeaders);
+        final MailboxMembership message = new JPAMailboxMembership(mailboxId, uid, internalDate, 
+                size, flags, body, jpaHeaders, propertyBuilder);
         return message;
     }
     

@@ -145,5 +145,5 @@ public interface MimeDescriptor extends Headers {
      * 
      * @return <code>Header</code> <code>Iterator</code>, not null
      */
-    public Iterator<Header> contentTypeParameters();
+    public Map<String, String> contentTypeParameters();
 }

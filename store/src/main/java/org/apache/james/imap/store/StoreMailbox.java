@@ -22,7 +22,6 @@ package org.apache.james.imap.store;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -56,6 +55,8 @@ import org.apache.james.imap.store.mail.MessageMapper;
 import org.apache.james.imap.store.mail.model.Header;
 import org.apache.james.imap.store.mail.model.Mailbox;
 import org.apache.james.imap.store.mail.model.MailboxMembership;
+import org.apache.james.imap.store.mail.model.PropertyBuilder;
+import org.apache.james.mime4j.descriptor.MaximalBodyDescriptor;
 import org.apache.james.mime4j.parser.MimeTokenStream;
 
 public abstract class StoreMailbox extends AbstractLogEnabled implements org.apache.james.imap.mailbox.Mailbox {
@@ -114,7 +115,7 @@ public abstract class StoreMailbox extends AbstractLogEnabled implements org.apa
 
                 final long uid = mailbox.getLastUid();
                 final int size = messageBytes.length;
-                final MimeTokenStream parser = new MimeTokenStream();
+                final MimeTokenStream parser = MimeTokenStream.createMaximalDescriptorStream();
                 parser.setRecursionMode(MimeTokenStream.M_NO_RECURSE);
                 parser.parse(new ByteArrayInputStream(messageBytes));
                 final List<Header> headers = new ArrayList<Header>(INITIAL_SIZE_HEADERS);
@@ -139,20 +140,63 @@ public abstract class StoreMailbox extends AbstractLogEnabled implements org.apa
                     }
                     next = parser.next();
                 }
-                final InputStream bodyStream = parser.getInputStream();
+                final MaximalBodyDescriptor descriptor = (MaximalBodyDescriptor) parser.getBodyDescriptor();
+                final PropertyBuilder propertyBuilder = new PropertyBuilder();
+                final String mediaType;
+                final String mediaTypeFromHeader = descriptor.getMediaType();
+                final String subType;
+                if (mediaTypeFromHeader == null) {
+                    mediaType = "text";
+                    subType = "plain";
+                } else {
+                    mediaType = mediaTypeFromHeader;
+                    subType = descriptor.getSubType();
+                }
+                propertyBuilder.setMediaType(mediaType);
+                propertyBuilder.setSubType(subType);
+                propertyBuilder.setContentID(descriptor.getContentId());
+                propertyBuilder.setContentDescription(descriptor.getContentDescription());
+                propertyBuilder.setContentLocation(descriptor.getContentLocation());
+                propertyBuilder.setContentMD5(descriptor.getContentMD5Raw());
+                propertyBuilder.setContentTransferEncoding(descriptor.getTransferEncoding());
+                propertyBuilder.setContentLanguage(descriptor.getContentLanguage());
+                propertyBuilder.setContentDispositionType(descriptor.getContentDispositionType());
+                propertyBuilder.setContentDispositionParameters(descriptor.getContentDispositionParameters());
+                propertyBuilder.setContentTypeParameters(descriptor.getContentTypeParameters());
+                // Add missing types
+                final String codeset = descriptor.getCharset();
+                if (codeset == null) {
+                    if ("TEXT".equalsIgnoreCase(mediaType)) {
+                        propertyBuilder.setCharset("us-ascii");
+                    }
+                } else {
+                    propertyBuilder.setCharset(codeset);
+                }
+                final String boundary = descriptor.getBoundary();
+                if (boundary != null) {
+                    propertyBuilder.setBoundary(boundary);
+                }
+                final CountingInputStream bodyStream = new CountingInputStream(parser.getInputStream());
                 final ByteArrayOutputStream out = StreamUtils.out(bodyStream);
+                long lines = bodyStream.getLineCount();
+                
                 next = parser.next();
                 if (next == MimeTokenStream.T_EPILOGUE)  {
-                    final InputStream epilogueStream = parser.getInputStream();
+                    final CountingInputStream epilogueStream = new CountingInputStream(parser.getInputStream());
                     StreamUtils.out(epilogueStream, out);
+                    lines+=epilogueStream.getLineCount();
                 }   
+                if ("text".equalsIgnoreCase(mediaType)) {
+                    propertyBuilder.setTextualLineCount(lines);
+                }
                 final byte[] body = out.toByteArray();
                 
                 final Flags flags = new Flags();
                 if (isRecent) {
                     flags.add(Flags.Flag.RECENT);
                 }
-                final MailboxMembership message = createMessage(internalDate, uid, size, body, flags, headers);
+                
+                final MailboxMembership message = createMessage(internalDate, uid, size, body, flags, headers, propertyBuilder);
                 final MessageMapper mapper = createMessageMapper();
 
                 mapper.begin();
@@ -170,7 +214,7 @@ public abstract class StoreMailbox extends AbstractLogEnabled implements org.apa
     }
 
     protected abstract MailboxMembership createMessage(Date internalDate, final long uid, final int size, final byte[] body, 
-            final Flags flags, final List<Header> headers);
+            final Flags flags, final List<Header> headers, PropertyBuilder propertyBuilder);
     
     protected abstract Header createHeader(int lineNumber, String name, String value);
 

@@ -51,7 +51,12 @@ public class ResultUtils {
     static final Charset US_ASCII = Charset.forName("US-ASCII");
 
     public static List<MessageResult.Header> createHeaders(MailboxMembership message) {
-        final List<Header> headers = getSortedHeaders(message);
+        final org.apache.james.imap.store.mail.model.Document document = message.getDocument();
+        return createHeaders(document);
+    }
+
+    public static List<MessageResult.Header> createHeaders(final org.apache.james.imap.store.mail.model.Document document) {
+        final List<Header> headers = getSortedHeaders(document);
 
         final List<MessageResult.Header> results = new ArrayList<MessageResult.Header>(headers.size());
         for (Header header: headers) {
@@ -61,8 +66,8 @@ public class ResultUtils {
         return results;
     }
 
-    private static List<Header> getSortedHeaders(MailboxMembership membership) {
-        final List<Header> headers = new ArrayList<Header>(membership.getDocument().getHeaders());
+    private static List<Header> getSortedHeaders(final org.apache.james.imap.store.mail.model.Document document) {
+        final List<Header> headers = new ArrayList<Header>(document.getHeaders());
         Collections.sort(headers);
         return headers;
     }
@@ -123,8 +128,7 @@ public class ResultUtils {
     }
 
     private static void addMimeDescriptor(MailboxMembership message, MessageResultImpl messageResult) throws IOException {
-            MimeDescriptor descriptor = MimeDescriptorImpl
-                    .build(toInput(message));
+            MimeDescriptor descriptor = MimeDescriptorImpl.build(message.getDocument());
             messageResult.setMimeDescriptor(descriptor);
     }
 
@@ -201,7 +205,12 @@ public class ResultUtils {
     }
 
     public static InputStream toInput(final MailboxMembership membership) {
-        final List<Header> headers = getSortedHeaders(membership);
+        final org.apache.james.imap.store.mail.model.Document document = membership.getDocument();
+        return toInput(document);
+    }
+
+    public static InputStream toInput(final org.apache.james.imap.store.mail.model.Document document) {
+        final List<Header> headers = getSortedHeaders(document);
         final StringBuffer headersToString = new StringBuffer(headers.size() * 50);
         for (Header header: headers) {
             headersToString.append(header.getField());
@@ -210,8 +219,7 @@ public class ResultUtils {
             headersToString.append("\r\n");
         }
         headersToString.append("\r\n");
-
-        byte[] bodyContent = membership.getDocument().getBody();
+        byte[] bodyContent = document.getBody();
         final MessageInputStream stream = new MessageInputStream(headersToString, bodyContent);
         return stream;
     }

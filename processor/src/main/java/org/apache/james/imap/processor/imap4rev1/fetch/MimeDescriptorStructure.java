@@ -100,16 +100,11 @@ final class MimeDescriptorStructure implements FetchResponse.Structure {
     private static List<String> createParameters(MimeDescriptor descriptor)
             throws MailboxException {
         final List<String> results = new ArrayList<String>();
-        // TODO: consider revising this design
-        for (Iterator it = descriptor.contentTypeParameters(); it.hasNext();) {
-            final MessageResult.Header header = (MessageResult.Header) it
-                    .next();
-            final String name = header.getName();
-            results.add(name);
-            final String value = header.getValue();
-            results.add(value);
+        // TODO: consider revising this 
+        for (Map.Entry<String, String> entry:descriptor.contentTypeParameters().entrySet()) {
+            results.add(entry.getKey());
+            results.add(entry.getValue());
         }
-
         return results;
     }
 

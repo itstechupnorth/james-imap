@@ -23,9 +23,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 import org.apache.james.imap.mailbox.MessageResult;
 import org.apache.james.imap.mailbox.MimeDescriptor;
@@ -48,7 +50,7 @@ public class MimeDescriptorImpl implements MimeDescriptor {
     private static MimeDescriptorImpl createDescriptor(
             final MimeTokenStream parser) throws IOException, MimeException {
         int next = parser.next();
-        final Collection headers = new ArrayList();
+        final Collection<Header> headers = new ArrayList<Header>();
         while (next != MimeTokenStream.T_BODY
                 && next != MimeTokenStream.T_END_OF_STREAM
                 && next != MimeTokenStream.T_START_MULTIPART) {
@@ -135,30 +137,24 @@ public class MimeDescriptorImpl implements MimeDescriptor {
         final String subType = descriptor.getSubType();
         final String type = descriptor.getMediaType();
         final String transferEncoding = descriptor.getTransferEncoding();
-        final Collection contentTypeParameters = new ArrayList();
+        final Map<String, String> contentTypeParameters = new TreeMap<String, String>();
         final Map valuesByName = descriptor.getContentTypeParameters();
         for (final Iterator it = valuesByName.keySet().iterator(); it.hasNext();) {
             final String name = (String) it.next();
             final String value = (String) valuesByName.get(name);
-            contentTypeParameters.add(new Header(name, value));
+            contentTypeParameters.put(name, value);
         }
         final String codeset = descriptor.getCharset();
-        Header header;
         if (codeset == null) {
             if ("TEXT".equals(type)) {
-                header = new Header("charset", "us-ascii");
-            } else {
-                header = null;
+                contentTypeParameters.put("charset", "us-ascii");
             }
         } else {
-            header = new Header("charset", codeset);
-        }
-        if (header != null) {
-            contentTypeParameters.add(header);
+            contentTypeParameters.put("charset", codeset);
         }
         final String boundary = descriptor.getBoundary();
         if (boundary != null) {
-            contentTypeParameters.add(new Header("boundary", boundary));
+            contentTypeParameters.put("boundary", boundary);
         }
         final List languages = descriptor.getContentLanguage();
         final String disposition = descriptor.getContentDispositionType();
@@ -193,7 +189,7 @@ public class MimeDescriptorImpl implements MimeDescriptor {
 
     private final Collection<MessageResult.Header> headers;
 
-    private final Collection<MessageResult.Header> contentTypeParameters;
+    private final Map<String, String> contentTypeParameters;
 
     private final String disposition;
 
@@ -211,7 +207,7 @@ public class MimeDescriptorImpl implements MimeDescriptor {
             final String contentDescription, final String contentId,
             final long lines, final String subType, final String type,
             final String transferEncoding, final Collection headers,
-            final Collection contentTypeParameters, final List languages,
+            final Map<String, String> contentTypeParameters, final List languages,
             String disposition, Map dispositionParams,
             final MimeDescriptor embeddedMessage, final Collection parts,
             final String location, final String md5) {
@@ -234,8 +230,8 @@ public class MimeDescriptorImpl implements MimeDescriptor {
         this.md5 = md5;
     }
 
-    public Iterator<MessageResult.Header> contentTypeParameters() {
-        return contentTypeParameters.iterator();
+    public Map<String, String> contentTypeParameters() {
+        return contentTypeParameters;
     }
 
     public MimeDescriptor embeddedMessage() {

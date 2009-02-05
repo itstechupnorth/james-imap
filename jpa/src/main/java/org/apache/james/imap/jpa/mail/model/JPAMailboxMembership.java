@@ -35,6 +35,7 @@ import javax.persistence.NamedQuery;
 
 import org.apache.james.imap.store.mail.model.MailboxMembership;
 import org.apache.james.imap.store.mail.model.Document;
+import org.apache.james.imap.store.mail.model.PropertyBuilder;
 
 @Entity(name="Membership")
 @IdClass(JPAMailboxMembership.MailboxIdUidKey.class)
@@ -143,13 +144,14 @@ public class JPAMailboxMembership implements MailboxMembership {
     @Deprecated
     public JPAMailboxMembership() {}
 
-    public JPAMailboxMembership(long mailboxId, long uid, Date internalDate, int size, Flags flags, byte[] body, final List<JPAHeader> headers) {
+    public JPAMailboxMembership(long mailboxId, long uid, Date internalDate, int size, Flags flags, 
+            byte[] body, final List<JPAHeader> headers, final PropertyBuilder propertyBuilder) {
         super();
         this.mailboxId = mailboxId;
         this.uid = uid;
         this.internalDate = internalDate;
         this.size = size;
-        this.message = new JPAMessage(body, headers);
+        this.message = new JPAMessage(body, headers, propertyBuilder);
         setFlags(flags);
     }
 

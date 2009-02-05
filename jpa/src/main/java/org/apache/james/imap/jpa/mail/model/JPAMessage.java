@@ -29,9 +29,12 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Lob;
 import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
 
 import org.apache.james.imap.store.mail.model.Header;
 import org.apache.james.imap.store.mail.model.Document;
+import org.apache.james.imap.store.mail.model.Property;
+import org.apache.james.imap.store.mail.model.PropertyBuilder;
 
 @Entity(name="Message")
 public class JPAMessage implements Document {
@@ -42,17 +45,37 @@ public class JPAMessage implements Document {
     @Basic(optional=false, fetch=FetchType.LAZY) @Lob private byte[] body;
     /** Headers for this message */
     @OneToMany(cascade = CascadeType.ALL, fetch=FetchType.LAZY) private List<JPAHeader> headers;
-
+    /** Number of octets in the body content */
+    @Basic(optional=false) private long bodyOctets;
+    /** MIME media type */
+    @Basic(optional=true) private String mediaType;
+    /** MIME sub type */
+    @Basic(optional=true) private String subType;
+    /** Meta data for this message */
+    @OneToMany(cascade = CascadeType.ALL, fetch=FetchType.LAZY) @OrderBy("line") private List<JPAProperty> properties;
+    /** THE CRFL count when this document is textual, null otherwise */
+    @Basic(optional=true) private Long textualLineCount;
+    
     /**
      * For enhancement only.
      */
     @Deprecated
     public JPAMessage() {}
 
-    public JPAMessage(byte[] body, final List<JPAHeader> headers) {
+    public JPAMessage(byte[] body, final List<JPAHeader> headers, final PropertyBuilder propertyBuilder) {
         super();
         this.body = body;
+        bodyOctets = body.length;
         this.headers = new ArrayList<JPAHeader>(headers);
+        textualLineCount = propertyBuilder.getTextualLineCount();
+        this.mediaType = propertyBuilder.getMediaType();
+        this.subType = propertyBuilder.getSubType();
+        final List<Property> properties = propertyBuilder.toProperties();
+        this.properties = new ArrayList<JPAProperty>(properties.size());
+        int order = 0;
+        for (final Property property:properties) {
+            this.properties.add(new JPAProperty(property, order++));
+        }
     }
 
     /**
@@ -98,5 +121,51 @@ public class JPAMessage implements Document {
             + "id = " + id
             + " )";
         return retValue;
+    }
+
+    /**
+     * The number of octets contained in the body of this part.
+     * 
+     * @return number of octets
+     */
+    public long getBodyOctets() {
+        return bodyOctets;
+    }
+
+    /**
+     * Gets the top level MIME content media type.
+     * 
+     * @return top level MIME content media type, or null if default
+     */
+    public String getMediaType() {
+        return mediaType;
+    }
+    
+    /**
+     * Gets the MIME content subtype.
+     * 
+     * @return the MIME content subtype, or null if default
+     */
+    public String getSubType() {
+        return subType;
+    }
+
+    /**
+     * Gets a read-only list of meta-data properties.
+     * For properties with multiple values, this list will contain
+     * several enteries with the same namespace and local name.
+     * @return unmodifiable list of meta-data, not null
+     */
+    public List<Property> getProperties() {
+        return new ArrayList<Property>(properties);
+    }
+    
+    /**
+     * Gets the number of CRLF in a textual document.
+     * @return CRLF count when document is textual,
+     * null otherwise
+     */
+    public Long getTextualLineCount() {
+        return textualLineCount;
     }
 }

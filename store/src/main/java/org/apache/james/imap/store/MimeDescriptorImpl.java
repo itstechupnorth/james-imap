@@ -26,15 +26,62 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 import org.apache.james.imap.mailbox.MessageResult;
 import org.apache.james.imap.mailbox.MimeDescriptor;
+import org.apache.james.imap.store.mail.model.Document;
+import org.apache.james.imap.store.mail.model.Property;
+import org.apache.james.imap.store.mail.model.PropertyBuilder;
 import org.apache.james.mime4j.MimeException;
 import org.apache.james.mime4j.descriptor.MaximalBodyDescriptor;
 import org.apache.james.mime4j.parser.MimeTokenStream;
 import org.apache.james.mime4j.parser.RecursionMode;
 
 public class MimeDescriptorImpl implements MimeDescriptor {
+
+    public static MimeDescriptorImpl build(final Document document) throws IOException {
+        final MimeDescriptorImpl result;
+        final String mediaType = document.getMediaType();
+        if (isComposite(mediaType)) {
+            result = build(ResultUtils.toInput(document));
+        } else {
+            final List<MessageResult.Header> headers = ResultUtils.createHeaders(document);
+            final List<Property> properties = document.getProperties();
+            final PropertyBuilder builder = new PropertyBuilder(properties);
+            final Long textualLineCount = document.getTextualLineCount();
+            result = new MimeDescriptorImpl(
+                    document.getBodyOctets(), 
+                    builder.getContentDescription(), 
+                    builder.getContentID(), 
+                    textualLineCount == null? -1: textualLineCount.longValue(), 
+                    document.getSubType(),
+                    mediaType, 
+                    builder.getContentTransferEncoding(), 
+                    headers, 
+                    builder.getContentTypeParameters(),
+                    builder.getContentLanguage(), 
+                    builder.getContentDispositionType(), 
+                    builder.getContentDispositionParameters(), 
+                    null,
+                    new ArrayList<MimeDescriptor>(), 
+                    builder.getContentLocation(), 
+                    builder.getContentMD5());
+        }
+        return result;
+    }
+    
+    /**
+     * Is this a composite media type (as per RFC2045)?
+     * 
+     * TODO: Move to Mime4j
+     * @param mediaType, possibly null
+     * @return true when the type is composite,
+     * false otherwise
+     */
+    private static boolean isComposite(String mediaType) {
+        return "message".equalsIgnoreCase(mediaType) || "multipart".equalsIgnoreCase(mediaType);
+    }
 
     public static MimeDescriptorImpl build(final InputStream stream) throws IOException {
         final MimeTokenStream parser = MimeTokenStream
@@ -134,32 +181,21 @@ public class MimeDescriptorImpl implements MimeDescriptor {
         final String subType = descriptor.getSubType();
         final String type = descriptor.getMediaType();
         final String transferEncoding = descriptor.getTransferEncoding();
-        final Collection<ResultHeader> contentTypeParameters = new ArrayList<ResultHeader>();
-        final Map valuesByName = descriptor.getContentTypeParameters();
-        for (final Iterator it = valuesByName.keySet().iterator(); it.hasNext();) {
-            final String name = (String) it.next();
-            final String value = (String) valuesByName.get(name);
-            contentTypeParameters.add(new ResultHeader(name, value));
-        }
+        final Map<String, String> contentTypeParameters = new TreeMap<String, String>(descriptor.getContentTypeParameters());
         final String codeset = descriptor.getCharset();
-        ResultHeader header;
         if (codeset == null) {
             if ("TEXT".equals(type)) {
-                header = new ResultHeader("charset", "us-ascii");
-            } else {
-                header = null;
+                contentTypeParameters.put("charset", "us-ascii");
             }
         } else {
-            header = new ResultHeader("charset", codeset);
-        }
-        if (header != null) {
-            contentTypeParameters.add(header);
+            contentTypeParameters.put("charset", codeset);
         }
         final String boundary = descriptor.getBoundary();
         if (boundary != null) {
-            contentTypeParameters.add(new ResultHeader("boundary", boundary));
+            contentTypeParameters.put("boundary", boundary);
         }
-        final List languages = descriptor.getContentLanguage();
+        
+        final List<String> languages = descriptor.getContentLanguage();
         final String disposition = descriptor.getContentDispositionType();
         final Map dispositionParams = descriptor
                 .getContentDispositionParameters();
@@ -188,15 +224,15 @@ public class MimeDescriptorImpl implements MimeDescriptor {
 
     private final String transferEncoding;
 
-    private final List languages;
+    private final List<String> languages;
 
     private final Collection<MessageResult.Header> headers;
 
-    private final Collection contentTypeParameters;
+    private final Map<String, String> contentTypeParameters;
 
     private final String disposition;
 
-    private final Map dispositionParams;
+    private final Map<String, String> dispositionParams;
 
     private final MimeDescriptor embeddedMessage;
 
@@ -210,8 +246,8 @@ public class MimeDescriptorImpl implements MimeDescriptor {
             final String contentDescription, final String contentId,
             final long lines, final String subType, final String type,
             final String transferEncoding, final Collection<MessageResult.Header> headers,
-            final Collection contentTypeParameters, final List languages,
-            String disposition, Map dispositionParams,
+            final Map<String, String> contentTypeParameters, final List<String> languages,
+            String disposition, Map<String, String> dispositionParams,
             final MimeDescriptor embeddedMessage, final Collection<MimeDescriptor> parts,
             final String location, final String md5) {
         super();
@@ -233,8 +269,8 @@ public class MimeDescriptorImpl implements MimeDescriptor {
         this.md5 = md5;
     }
 
-    public Iterator<MessageResult.Header> contentTypeParameters() {
-        return contentTypeParameters.iterator();
+    public Map<String, String> contentTypeParameters() {
+        return contentTypeParameters;
     }
 
     public MimeDescriptor embeddedMessage() {
@@ -299,38 +335,5 @@ public class MimeDescriptorImpl implements MimeDescriptor {
 
     public String getContentMD5() {
         return md5;
-    }
-
-    private static final class CountingInputStream extends InputStream {
-
-        private final InputStream in;
-
-        private int lineCount;
-
-        private int octetCount;
-
-        private CountingInputStream(InputStream in) {
-            super();
-            this.in = in;
-        }
-
-        public int read() throws IOException {
-            int next = in.read();
-            if (next > 0) {
-                octetCount++;
-                if (next == '\r') {
-                    lineCount++;
-                }
-            }
-            return next;
-        }
-
-        public final int getLineCount() {
-            return lineCount;
-        }
-
-        public final int getOctetCount() {
-            return octetCount;
-        }
     }
 }

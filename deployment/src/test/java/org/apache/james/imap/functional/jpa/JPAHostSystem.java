@@ -60,6 +60,7 @@ public class JPAHostSystem extends ImapHostSystem {
                 "org.apache.james.imap.jpa.mail.model.JPAMailbox;" +
                 "org.apache.james.imap.jpa.mail.model.JPAMailboxMembership;" +
                 "org.apache.james.imap.jpa.mail.model.JPAMessage;" +
+                "org.apache.james.imap.jpa.mail.model.JPAProperty;" +
                 "org.apache.james.imap.jpa.user.model.JPASubscription)");
         
         userManager = new InMemoryUserManager();

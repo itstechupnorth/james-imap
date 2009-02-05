@@ -18,51 +18,41 @@
  ****************************************************************/
 package org.apache.james.imap.store.mail.model;
 
-import java.util.List;
-
-public interface Document {
-
-    public abstract byte[] getBody();
+/**
+ * <p>Values a namespaced property.</p>
+ * <p>
+ * The full name of a namespaced property consists of 
+ * a local part ({@link #getLocalName()}) and a namespace ({@link #getNamespace()()}). 
+ * This is similar - in concept - the local part and namespace of a <code>QName</code>
+ * in <abbr title='eXtensible Markup Language'>XML</a>. 
+ * </p><p>
+ * Conventionally, the namespace
+ * is an <abbr title='Uniform Resource Identifier'>URI</abbr> 
+ * and the name is simple, leading to a natural mapping into 
+ * <abbr title='Resource Description Framework'>RDF</abbr>.
+ * For example - namespace "http://james.apache.org/rfc2045",
+ * name "Content-Transfer-Encoding", value "BASE64" mapping to
+ * predicate "http://james.apache.org/rfc2045#Content-Transfer-Encoding",
+ * object "BASE64".
+ * </p>
+ */
+public interface Property {
 
     /**
-     * Gets the top level MIME content media type.
-     * 
-     * @return top level MIME content media type, or null if default
+     * Gets the namespace for the name.
+     * @return not null
      */
-    public abstract String getMediaType();
-
-    /**
-     * Gets the MIME content subtype.
-     * 
-     * @return the MIME content subtype, or null if default
-     */
-    public abstract String getSubType();
+    public String getNamespace();
     
     /**
-     * The number of octets contained in the body of this part.
-     * 
-     * @return number of octets
+     * Gets the local part of the name of the property.
+     * @return not null
      */
-    public abstract long getBodyOctets();
+    public String getLocalName();
     
     /**
-     * Gets the number of CRLF in a textual document.
-     * @return CRLF count when document is textual,
-     * null otherwise
+     * Gets the value for this property.
+     * @return not null
      */
-    public Long getTextualLineCount();
-    
-    /**
-     * Gets a read-only list of headers.
-     * @return unmodifiable list of headers, not null
-     */
-    public abstract List<Header> getHeaders();
-    
-    /**
-     * Gets a read-only list of meta-data properties.
-     * For properties with multiple values, this list will contain
-     * several enteries with the same namespace and local name.
-     * @return unmodifiable list of meta-data, not null
-     */
-    public abstract List<Property> getProperties();
+    public String getValue();
 }

@@ -23,11 +23,16 @@ import java.util.List;
 
 import org.apache.james.imap.store.mail.model.Header;
 import org.apache.james.imap.store.mail.model.Document;
+import org.apache.james.imap.store.mail.model.Property;
 
 public class SimpleMessage implements Document {
     
     public byte[] body;
     public List<SimpleHeader> headers;
+    public List<SimpleProperty> properties;
+    public String subType = null;
+    public String mediaType = null;
+    public Long textualLineCount = null;
 
     public SimpleMessage(byte[] body, final List<SimpleHeader> headers) {
         super();
@@ -68,5 +73,25 @@ public class SimpleMessage implements Document {
      */
     public List<Header> getHeaders() {
         return new ArrayList<Header>(headers);
+    }
+
+    public long getBodyOctets() {
+        return body.length;
+    }
+
+    public String getSubType() {
+        return subType;
+    }
+
+    public String getMediaType() {
+        return mediaType;
+    }
+
+    public List<Property> getProperties() {
+        return new ArrayList<Property>(properties);
+    }
+
+    public Long getTextualLineCount() {
+        return textualLineCount;
     }
 }
