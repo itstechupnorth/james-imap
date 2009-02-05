@@ -30,7 +30,6 @@ import org.apache.james.api.imap.imap4rev1.Imap4Rev1CommandFactory;
 import org.apache.james.api.imap.imap4rev1.Imap4Rev1MessageFactory;
 import org.apache.james.api.imap.message.IdRange;
 import org.apache.james.imap.decode.ImapRequestLineReader;
-import org.apache.james.imap.decode.imap4rev1.StoreCommandParser;
 import org.jmock.Expectations;
 import org.jmock.integration.junit3.MockObjectTestCase;
 

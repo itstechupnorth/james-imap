@@ -31,7 +31,6 @@ import org.apache.james.api.imap.message.FetchData;
 import org.apache.james.api.imap.message.IdRange;
 import org.apache.james.imap.decode.ImapRequestLineReader;
 import org.apache.james.imap.decode.ProtocolException;
-import org.apache.james.imap.decode.imap4rev1.FetchCommandParser;
 import org.jmock.Expectations;
 import org.jmock.integration.junit3.MockObjectTestCase;
 

@@ -25,7 +25,6 @@ import javax.mail.Flags;
 
 import org.apache.james.imap.mailbox.MailboxListener;
 import org.apache.james.imap.mailbox.MessageResult;
-import org.apache.james.imap.mailbox.util.MailboxEventDispatcher;
 import org.jmock.Expectations;
 import org.jmock.integration.junit3.MockObjectTestCase;
 

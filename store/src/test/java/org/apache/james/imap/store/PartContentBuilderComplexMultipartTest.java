@@ -26,8 +26,6 @@ import java.util.List;
 
 import junit.framework.TestCase;
 
-import org.apache.james.imap.store.PartContentBuilder;
-import org.apache.james.imap.store.ResultHeader;
 import org.apache.james.imap.store.PartContentBuilder.PartNotFoundException;
 
 public class PartContentBuilderComplexMultipartTest extends TestCase {

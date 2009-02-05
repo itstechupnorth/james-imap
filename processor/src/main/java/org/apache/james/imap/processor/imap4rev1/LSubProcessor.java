@@ -31,9 +31,9 @@ import org.apache.james.api.imap.message.response.imap4rev1.StatusResponseFactor
 import org.apache.james.api.imap.process.ImapProcessor;
 import org.apache.james.api.imap.process.ImapSession;
 import org.apache.james.imap.mailbox.MailboxException;
-import org.apache.james.imap.mailbox.MailboxQuery;
 import org.apache.james.imap.mailbox.MailboxManager;
 import org.apache.james.imap.mailbox.MailboxManagerProvider;
+import org.apache.james.imap.mailbox.MailboxQuery;
 import org.apache.james.imap.mailbox.SubscriptionException;
 import org.apache.james.imap.message.request.imap4rev1.LsubRequest;
 import org.apache.james.imap.message.response.imap4rev1.server.LSubResponse;

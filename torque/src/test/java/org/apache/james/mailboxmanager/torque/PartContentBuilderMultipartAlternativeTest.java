@@ -24,7 +24,6 @@ import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.util.List;
 
-
 import junit.framework.TestCase;
 
 public class PartContentBuilderMultipartAlternativeTest extends TestCase {

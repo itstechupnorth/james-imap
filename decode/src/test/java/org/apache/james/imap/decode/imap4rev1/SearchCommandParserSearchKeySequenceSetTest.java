@@ -29,7 +29,6 @@ import org.apache.james.api.imap.imap4rev1.Imap4Rev1MessageFactory;
 import org.apache.james.api.imap.message.IdRange;
 import org.apache.james.api.imap.message.request.SearchKey;
 import org.apache.james.imap.decode.ImapRequestLineReader;
-import org.apache.james.imap.decode.imap4rev1.SearchCommandParser;
 import org.jmock.Expectations;
 import org.jmock.integration.junit3.MockObjectTestCase;
 

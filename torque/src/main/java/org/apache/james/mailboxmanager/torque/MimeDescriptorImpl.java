@@ -23,7 +23,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -31,8 +30,8 @@ import java.util.TreeMap;
 
 import org.apache.james.imap.mailbox.MessageResult;
 import org.apache.james.imap.mailbox.MimeDescriptor;
-import org.apache.james.mime4j.descriptor.MaximalBodyDescriptor;
 import org.apache.james.mime4j.MimeException;
+import org.apache.james.mime4j.descriptor.MaximalBodyDescriptor;
 import org.apache.james.mime4j.parser.MimeTokenStream;
 import org.apache.james.mime4j.parser.RecursionMode;
 

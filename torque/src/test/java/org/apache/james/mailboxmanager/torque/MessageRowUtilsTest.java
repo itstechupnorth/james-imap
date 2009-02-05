@@ -19,9 +19,9 @@
 
 package org.apache.james.mailboxmanager.torque;
 
-import org.apache.james.mailboxmanager.torque.om.MessageRow;
-
 import junit.framework.TestCase;
+
+import org.apache.james.mailboxmanager.torque.om.MessageRow;
 
 public class MessageRowUtilsTest extends TestCase {
 

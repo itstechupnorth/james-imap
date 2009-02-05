@@ -19,8 +19,6 @@
 
 package org.apache.james.imap.encode;
 
-import org.apache.james.imap.encode.EncoderUtils;
-
 import java.util.Date;
 
 import junit.framework.TestCase;

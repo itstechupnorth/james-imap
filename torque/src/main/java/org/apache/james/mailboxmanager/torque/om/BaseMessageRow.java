@@ -1,5 +1,11 @@
 package org.apache.james.mailboxmanager.torque.om;
 
+import java.sql.Connection;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.torque.TorqueException;
 import org.apache.torque.map.TableMap;
@@ -10,12 +16,6 @@ import org.apache.torque.om.ObjectKey;
 import org.apache.torque.om.SimpleKey;
 import org.apache.torque.util.Criteria;
 import org.apache.torque.util.Transaction;
-
-import java.sql.Connection;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
 
 /**
  * 

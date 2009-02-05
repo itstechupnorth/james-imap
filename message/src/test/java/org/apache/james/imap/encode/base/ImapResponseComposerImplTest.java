@@ -26,7 +26,6 @@ import javax.mail.Flags;
 
 import org.apache.james.api.imap.ImapCommand;
 import org.apache.james.imap.encode.AbstractTestImapResponseComposer;
-import org.apache.james.imap.encode.base.ImapResponseComposerImpl;
 
 public class ImapResponseComposerImplTest extends
         AbstractTestImapResponseComposer {

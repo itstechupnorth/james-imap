@@ -21,8 +21,8 @@ package org.apache.james.imap.store;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.james.imap.store.mail.model.Header;
 import org.apache.james.imap.store.mail.model.Document;
+import org.apache.james.imap.store.mail.model.Header;
 import org.apache.james.imap.store.mail.model.Property;
 
 public class SimpleMessage implements Document {

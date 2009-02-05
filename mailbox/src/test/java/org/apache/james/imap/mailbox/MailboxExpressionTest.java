@@ -19,8 +19,6 @@
 
 package org.apache.james.imap.mailbox;
 
-import org.apache.james.imap.mailbox.MailboxQuery;
-
 import junit.framework.TestCase;
 
 public class MailboxExpressionTest extends TestCase {

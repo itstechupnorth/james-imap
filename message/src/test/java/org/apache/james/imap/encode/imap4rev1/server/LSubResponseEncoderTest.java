@@ -26,7 +26,6 @@ import org.apache.james.api.imap.ImapConstants;
 import org.apache.james.api.imap.ImapMessage;
 import org.apache.james.imap.encode.ImapEncoder;
 import org.apache.james.imap.encode.ImapResponseComposer;
-import org.apache.james.imap.encode.imap4rev1.server.LSubResponseEncoder;
 import org.apache.james.imap.message.response.imap4rev1.server.LSubResponse;
 import org.apache.james.imap.message.response.imap4rev1.server.ListResponse;
 import org.jmock.Expectations;

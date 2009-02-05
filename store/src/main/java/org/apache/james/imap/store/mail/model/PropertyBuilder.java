@@ -18,15 +18,34 @@
  ****************************************************************/
 package org.apache.james.imap.store.mail.model;
 
+import static org.apache.james.imap.store.mail.model.StandardNames.MIME_CONTENT_DESCRIPTION_NAME;
+import static org.apache.james.imap.store.mail.model.StandardNames.MIME_CONTENT_DESCRIPTION_SPACE;
+import static org.apache.james.imap.store.mail.model.StandardNames.MIME_CONTENT_DISPOSITION_PARAMETER_SPACE;
+import static org.apache.james.imap.store.mail.model.StandardNames.MIME_CONTENT_DISPOSITION_SPACE;
+import static org.apache.james.imap.store.mail.model.StandardNames.MIME_CONTENT_DISPOSITION_TYPE_NAME;
+import static org.apache.james.imap.store.mail.model.StandardNames.MIME_CONTENT_ID_NAME;
+import static org.apache.james.imap.store.mail.model.StandardNames.MIME_CONTENT_ID_SPACE;
+import static org.apache.james.imap.store.mail.model.StandardNames.MIME_CONTENT_LANGUAGE_NAME;
+import static org.apache.james.imap.store.mail.model.StandardNames.MIME_CONTENT_LANGUAGE_SPACE;
+import static org.apache.james.imap.store.mail.model.StandardNames.MIME_CONTENT_LOCATION_NAME;
+import static org.apache.james.imap.store.mail.model.StandardNames.MIME_CONTENT_LOCATION_SPACE;
+import static org.apache.james.imap.store.mail.model.StandardNames.MIME_CONTENT_MD5_NAME;
+import static org.apache.james.imap.store.mail.model.StandardNames.MIME_CONTENT_MD5_SPACE;
+import static org.apache.james.imap.store.mail.model.StandardNames.MIME_CONTENT_TRANSFER_ENCODING_NAME;
+import static org.apache.james.imap.store.mail.model.StandardNames.MIME_CONTENT_TRANSFER_ENCODING_SPACE;
+import static org.apache.james.imap.store.mail.model.StandardNames.MIME_CONTENT_TYPE_PARAMETER_BOUNDARY_NAME;
+import static org.apache.james.imap.store.mail.model.StandardNames.MIME_CONTENT_TYPE_PARAMETER_CHARSET_NAME;
+import static org.apache.james.imap.store.mail.model.StandardNames.MIME_CONTENT_TYPE_PARAMETER_SPACE;
+import static org.apache.james.imap.store.mail.model.StandardNames.MIME_MEDIA_TYPE_NAME;
+import static org.apache.james.imap.store.mail.model.StandardNames.MIME_MIME_TYPE_SPACE;
+import static org.apache.james.imap.store.mail.model.StandardNames.MIME_SUB_TYPE_NAME;
+
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
-
-import static org.apache.james.imap.store.mail.model.StandardNames.*;
 
 /**
  * Builds properties

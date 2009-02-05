@@ -24,8 +24,8 @@ import java.util.List;
 
 import javax.mail.Flags;
 
-import org.apache.james.imap.store.mail.model.MailboxMembership;
 import org.apache.james.imap.store.mail.model.Document;
+import org.apache.james.imap.store.mail.model.MailboxMembership;
 
 public class SimpleMailboxMembership implements MailboxMembership {
     

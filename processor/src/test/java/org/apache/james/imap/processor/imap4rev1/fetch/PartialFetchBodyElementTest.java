@@ -20,7 +20,6 @@
 package org.apache.james.imap.processor.imap4rev1.fetch;
 
 import org.apache.james.imap.message.response.imap4rev1.FetchResponse.BodyElement;
-import org.apache.james.imap.processor.imap4rev1.fetch.PartialFetchBodyElement;
 import org.jmock.Expectations;
 import org.jmock.integration.junit3.MockObjectTestCase;
 

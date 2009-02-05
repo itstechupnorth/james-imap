@@ -31,8 +31,8 @@ import javax.persistence.Lob;
 import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
 
-import org.apache.james.imap.store.mail.model.Header;
 import org.apache.james.imap.store.mail.model.Document;
+import org.apache.james.imap.store.mail.model.Header;
 import org.apache.james.imap.store.mail.model.Property;
 import org.apache.james.imap.store.mail.model.PropertyBuilder;
 

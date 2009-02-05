@@ -29,7 +29,6 @@ import javax.mail.Flags;
 import junit.framework.TestCase;
 
 import org.apache.commons.lang.time.FastDateFormat;
-import org.apache.james.imap.decode.DecoderUtils;
 
 public class DecoderUtilsTest extends TestCase {
 

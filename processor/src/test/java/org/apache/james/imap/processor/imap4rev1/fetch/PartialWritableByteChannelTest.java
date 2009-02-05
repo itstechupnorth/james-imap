@@ -19,8 +19,6 @@
 
 package org.apache.james.imap.processor.imap4rev1.fetch;
 
-import org.apache.james.imap.processor.imap4rev1.fetch.PartialWritableByteChannel;
-
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.WritableByteChannel;

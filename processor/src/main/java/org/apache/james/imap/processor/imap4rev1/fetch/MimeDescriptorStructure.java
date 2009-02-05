@@ -30,7 +30,6 @@ import java.util.Map;
 import javax.mail.MessagingException;
 
 import org.apache.james.imap.mailbox.MailboxException;
-import org.apache.james.imap.mailbox.MessageResult;
 import org.apache.james.imap.mailbox.MimeDescriptor;
 import org.apache.james.imap.message.response.imap4rev1.FetchResponse;
 import org.apache.james.imap.message.response.imap4rev1.FetchResponse.Envelope;

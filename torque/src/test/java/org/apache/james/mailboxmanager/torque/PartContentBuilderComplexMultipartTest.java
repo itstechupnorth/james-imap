@@ -24,9 +24,9 @@ import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.util.List;
 
-import org.apache.james.mailboxmanager.torque.PartContentBuilder.PartNotFoundException;
-
 import junit.framework.TestCase;
+
+import org.apache.james.mailboxmanager.torque.PartContentBuilder.PartNotFoundException;
 
 public class PartContentBuilderComplexMultipartTest extends TestCase {
 

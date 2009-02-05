@@ -1,5 +1,11 @@
 package org.apache.james.mailboxmanager.torque.om;
 
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+
 import org.apache.james.mailboxmanager.torque.om.map.MailboxRowMapBuilder;
 import org.apache.torque.NoRowsException;
 import org.apache.torque.TooManyRowsException;
@@ -15,12 +21,6 @@ import org.apache.torque.util.Criteria;
 import com.workingdogs.village.DataSetException;
 import com.workingdogs.village.QueryDataSet;
 import com.workingdogs.village.Record;
-
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
 
 /**
  * Mailbox Table

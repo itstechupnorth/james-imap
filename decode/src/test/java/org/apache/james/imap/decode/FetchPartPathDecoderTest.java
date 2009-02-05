@@ -22,8 +22,6 @@ package org.apache.james.imap.decode;
 import java.util.Collection;
 import java.util.Iterator;
 
-import org.apache.james.imap.decode.FetchPartPathDecoder;
-
 import junit.framework.TestCase;
 
 public class FetchPartPathDecoderTest extends TestCase {
