@@ -32,20 +32,20 @@ import org.apache.james.imap.mailbox.Content;
 import org.apache.james.imap.mailbox.MessageResult;
 
 final class FullContent implements Content {
-    private final byte[] contents;
+    private final ByteBuffer contents;
 
     private final List headers;
 
     private final long size;
 
-    public FullContent(final byte[] contents, final List headers) {
+    public FullContent(final ByteBuffer contents, final List headers) {
         this.contents = contents;
         this.headers = headers;
         this.size = caculateSize();
     }
 
     private long caculateSize() {
-        long result = contents.length;
+        long result = contents.limit();
         result += 2;
         for (final Iterator it = headers.iterator(); it.hasNext();) {
             final MessageResult.Header header = (MessageResult.Header) it
@@ -75,8 +75,8 @@ final class FullContent implements Content {
         }
         newLine.rewind();
         writeAll(channel, newLine);
-        final ByteBuffer wrap = ByteBuffer.wrap(contents);
-        writeAll(channel, wrap);
+        contents.rewind();
+        writeAll(channel, contents);
     }
 
     private void writeAll(WritableByteChannel channel, ByteBuffer buffer)

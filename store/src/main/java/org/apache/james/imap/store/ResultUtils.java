@@ -73,7 +73,7 @@ public class ResultUtils {
     }
 
     public static Content createBodyContent(MailboxMembership membership) {
-        final byte[] bytes = membership.getDocument().getBody();
+        final ByteBuffer bytes = membership.getDocument().getBody();
         final ByteContent result = new ByteContent(bytes);
         return result;
     }
@@ -82,7 +82,7 @@ public class ResultUtils {
         if (headers == null) {
             headers = createHeaders(membership);
         }
-        final byte[] bytes = membership.getDocument().getBody();
+        final ByteBuffer bytes = membership.getDocument().getBody();
         final FullContent results = new FullContent(bytes, headers);
         return results;
     }
@@ -219,7 +219,7 @@ public class ResultUtils {
             headersToString.append("\r\n");
         }
         headersToString.append("\r\n");
-        byte[] bodyContent = document.getBody();
+        final ByteBuffer bodyContent = document.getBody();
         final MessageInputStream stream = new MessageInputStream(headersToString, bodyContent);
         return stream;
     }
@@ -232,10 +232,11 @@ public class ResultUtils {
         private int headerPosition = 0;
 
         public MessageInputStream(final StringBuffer headers,
-                final byte[] bodyContent) {
+                final ByteBuffer bodyContent) {
             super();
             this.headers = headers;
-            this.bodyContent = ByteBuffer.wrap(bodyContent);
+            bodyContent.rewind();
+            this.bodyContent = bodyContent;
         }
 
         public int read() throws IOException {

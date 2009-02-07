@@ -21,6 +21,7 @@ package org.apache.james.imap.store;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -119,12 +120,12 @@ public class PartContentBuilder {
     public Content getFullContent() throws IOException {
         final List headers = getMimeHeaders();
         final byte[] content = mimeBodyContent();
-        return new FullContent(content, headers);
+        return new FullContent(ByteBuffer.wrap(content), headers);
     }
 
     public Content getMessageBodyContent() throws IOException {
         final byte[] content = messageBodyContent();
-        return new ByteContent(content);
+        return new ByteContent(ByteBuffer.wrap(content));
     }
 
     private byte[] messageBodyContent() throws IOException {
@@ -164,7 +165,7 @@ public class PartContentBuilder {
 
     public Content getMimeBodyContent() throws IOException {
         final byte[] content = mimeBodyContent();
-        return new ByteContent(content);
+        return new ByteContent(ByteBuffer.wrap(content));
     }
 
     private byte[] mimeBodyContent() throws IOException {

@@ -18,6 +18,7 @@
  ****************************************************************/
 package org.apache.james.imap.jpa.mail.model;
 
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -88,8 +89,8 @@ public class JPAMessage implements Document {
     /**
      * @see org.apache.james.imap.jpa.mail.model.Document#getBody()
      */    
-    public byte[] getBody() {
-        return body;
+    public ByteBuffer getBody() {
+        return ByteBuffer.wrap(body).asReadOnlyBuffer();
     }
 
     @Override

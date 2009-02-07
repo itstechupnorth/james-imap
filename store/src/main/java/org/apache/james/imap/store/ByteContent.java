@@ -30,13 +30,13 @@ import org.apache.james.imap.mailbox.Content;
 
 final class ByteContent implements Content {
 
-    private final byte[] contents;
+    private final ByteBuffer contents;
 
     private final long size;
 
-    public ByteContent(final byte[] contents) {
+    public ByteContent(final ByteBuffer contents) {
         this.contents = contents;
-        size = contents.length;
+        size = contents.limit();
     }
 
     public long size() {
@@ -44,8 +44,8 @@ final class ByteContent implements Content {
     }
 
     public void writeTo(WritableByteChannel channel) throws IOException {
-        ByteBuffer buffer = ByteBuffer.wrap(contents);
-        while (channel.write(buffer) > 0) {
+        contents.rewind();
+        while (channel.write(contents) > 0) {
             // write more
         }
     }

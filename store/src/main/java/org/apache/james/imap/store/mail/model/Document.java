@@ -18,11 +18,22 @@
  ****************************************************************/
 package org.apache.james.imap.store.mail.model;
 
+import java.nio.ByteBuffer;
 import java.util.List;
 
+/**
+ * A MIME documents, consisting of meta-data (including MIME headers)
+ * plus body content. In the case of multipart documents, this body content
+ * has internal structure described by the meta-data.
+ */
 public interface Document {
 
-    public abstract byte[] getBody();
+    /**
+     * Gets the body content of the document.
+     * Headers are excluded.
+     * @return read only buffer, not null
+     */
+    public abstract ByteBuffer getBody();
 
     /**
      * Gets the top level MIME content media type.
@@ -39,7 +50,7 @@ public interface Document {
     public abstract String getSubType();
     
     /**
-     * The number of octets contained in the body of this part.
+     * The number of octets contained in the body of this document.
      * 
      * @return number of octets
      */
