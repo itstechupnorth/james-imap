@@ -73,17 +73,14 @@ public class ResultUtils {
     }
 
     public static Content createBodyContent(MailboxMembership membership) {
-        final ByteBuffer bytes = membership.getDocument().getBody();
+        final ByteBuffer bytes = membership.getDocument().getBodyContent();
         final ByteContent result = new ByteContent(bytes);
         return result;
     }
 
-    public static Content createFullContent(final MailboxMembership membership, List headers) {
-        if (headers == null) {
-            headers = createHeaders(membership);
-        }
-        final ByteBuffer bytes = membership.getDocument().getBody();
-        final FullContent results = new FullContent(bytes, headers);
+    public static Content createFullContent(final MailboxMembership membership) {
+        final ByteBuffer bytes = membership.getDocument().getFullContent();
+        final ByteContent results = new ByteContent(bytes);
         return results;
     }
 
@@ -134,8 +131,7 @@ public class ResultUtils {
 
     private static void addFullContent(final MailboxMembership messageRow, MessageResultImpl messageResult) 
             throws MailboxException {
-        final List headers = messageResult.getHeaders();
-        final Content content = createFullContent(messageRow, headers);
+        final Content content = createFullContent(messageRow);
         messageResult.setFullContent(content);
     }
 
@@ -219,7 +215,7 @@ public class ResultUtils {
             headersToString.append("\r\n");
         }
         headersToString.append("\r\n");
-        final ByteBuffer bodyContent = document.getBody();
+        final ByteBuffer bodyContent = document.getBodyContent();
         final MessageInputStream stream = new MessageInputStream(headersToString, bodyContent);
         return stream;
     }

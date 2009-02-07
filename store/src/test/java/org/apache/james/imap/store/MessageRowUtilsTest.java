@@ -40,7 +40,7 @@ public class MessageRowUtilsTest extends TestCase {
         assertTrue(ResultUtils.getUidComparator().compare(one, two) > 0);
     }
 
-    private MailboxMembership buildMessage(int uid) {
+    private MailboxMembership buildMessage(int uid) throws Exception {
         MessageBuilder builder = new MessageBuilder();
         builder.uid = uid;
         return builder.build();

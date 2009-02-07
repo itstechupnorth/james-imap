@@ -28,12 +28,19 @@ import java.util.List;
  */
 public interface Document {
 
+
+    /**
+     * Gets the full content (including headers) of the document.
+     * @return read only buffer, not null
+     */
+    public abstract ByteBuffer getFullContent();
+    
     /**
      * Gets the body content of the document.
      * Headers are excluded.
      * @return read only buffer, not null
      */
-    public abstract ByteBuffer getBody();
+    public abstract ByteBuffer getBodyContent();
 
     /**
      * Gets the top level MIME content media type.
@@ -55,6 +62,13 @@ public interface Document {
      * @return number of octets
      */
     public abstract long getBodyOctets();
+    
+    /**
+     * The number of octets contained in the full content of this document.
+     * 
+     * @return number of octets
+     */
+    public abstract long getFullContentOctets();
     
     /**
      * Gets the number of CRLF in a textual document.

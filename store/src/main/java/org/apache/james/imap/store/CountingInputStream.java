@@ -55,4 +55,12 @@ final class CountingInputStream extends InputStream {
     public final int getOctetCount() {
         return octetCount;
     }
+    
+    /**
+     * Reads - and discards - the rest of the stream
+     * @throws IOException
+     */
+    public void readAll() throws IOException {
+        while (read()>0);
+    }
 }

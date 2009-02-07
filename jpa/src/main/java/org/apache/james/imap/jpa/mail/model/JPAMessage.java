@@ -36,6 +36,7 @@ import org.apache.james.imap.store.mail.model.Document;
 import org.apache.james.imap.store.mail.model.Header;
 import org.apache.james.imap.store.mail.model.Property;
 import org.apache.james.imap.store.mail.model.PropertyBuilder;
+import org.apache.openjpa.jdbc.sql.FirebirdDictionary;
 
 @Entity(name="Message")
 public class JPAMessage implements Document {
@@ -43,11 +44,13 @@ public class JPAMessage implements Document {
     @Id@GeneratedValue private long id;
 
     /** The value for the body field. Lazy loaded */
-    @Basic(optional=false, fetch=FetchType.LAZY) @Lob private byte[] body;
+    @Basic(optional=false, fetch=FetchType.LAZY) @Lob private byte[] content;
     /** Headers for this message */
     @OneToMany(cascade = CascadeType.ALL, fetch=FetchType.LAZY) private List<JPAHeader> headers;
-    /** Number of octets in the body content */
-    @Basic(optional=false) private long bodyOctets;
+    /** The first body octet */
+    @Basic(optional=false) private int bodyStartOctet;
+    /** Number of octets in the full document content */
+    @Basic(optional=false) private long contentOctets;
     /** MIME media type */
     @Basic(optional=true) private String mediaType;
     /** MIME sub type */
@@ -63,10 +66,11 @@ public class JPAMessage implements Document {
     @Deprecated
     public JPAMessage() {}
 
-    public JPAMessage(byte[] body, final List<JPAHeader> headers, final PropertyBuilder propertyBuilder) {
+    public JPAMessage(byte[] content, final int bodyStartOctet, final List<JPAHeader> headers, final PropertyBuilder propertyBuilder) {
         super();
-        this.body = body;
-        bodyOctets = body.length;
+        this.content = content;
+        this.contentOctets = content.length;
+        this.bodyStartOctet = bodyStartOctet;
         this.headers = new ArrayList<JPAHeader>(headers);
         textualLineCount = propertyBuilder.getTextualLineCount();
         this.mediaType = propertyBuilder.getMediaType();
@@ -87,10 +91,12 @@ public class JPAMessage implements Document {
     }
     
     /**
-     * @see org.apache.james.imap.jpa.mail.model.Document#getBody()
+     * @see org.apache.james.imap.jpa.mail.model.Document#getBodyContent()
      */    
-    public ByteBuffer getBody() {
-        return ByteBuffer.wrap(body).asReadOnlyBuffer();
+    public ByteBuffer getBodyContent() {
+        final ByteBuffer contentBuffer = getFullContent();
+        contentBuffer.position(bodyStartOctet);
+        return contentBuffer.slice();
     }
 
     @Override
@@ -130,7 +136,7 @@ public class JPAMessage implements Document {
      * @return number of octets
      */
     public long getBodyOctets() {
-        return bodyOctets;
+        return contentOctets - bodyStartOctet;
     }
 
     /**
@@ -168,5 +174,13 @@ public class JPAMessage implements Document {
      */
     public Long getTextualLineCount() {
         return textualLineCount;
+    }
+
+    public ByteBuffer getFullContent() {
+        return ByteBuffer.wrap(content).asReadOnlyBuffer();
+    }
+
+    public long getFullContentOctets() {
+        return contentOctets;
     }
 }

@@ -20,7 +20,6 @@
 package org.apache.james.imap.store;
 
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -115,6 +114,8 @@ public abstract class StoreMailbox extends AbstractLogEnabled implements org.apa
 
                 final long uid = mailbox.getLastUid();
                 final int size = messageBytes.length;
+                final int bodyStartOctet = bodyStartOctet(messageBytes);
+                
                 final MimeTokenStream parser = MimeTokenStream.createMaximalDescriptorStream();
                 parser.setRecursionMode(MimeTokenStream.M_NO_RECURSE);
                 parser.parse(new ByteArrayInputStream(messageBytes));
@@ -172,31 +173,31 @@ public abstract class StoreMailbox extends AbstractLogEnabled implements org.apa
                 } else {
                     propertyBuilder.setCharset(codeset);
                 }
+                
                 final String boundary = descriptor.getBoundary();
                 if (boundary != null) {
                     propertyBuilder.setBoundary(boundary);
-                }
-                final CountingInputStream bodyStream = new CountingInputStream(parser.getInputStream());
-                final ByteArrayOutputStream out = StreamUtils.out(bodyStream);
-                long lines = bodyStream.getLineCount();
-                
-                next = parser.next();
-                if (next == MimeTokenStream.T_EPILOGUE)  {
-                    final CountingInputStream epilogueStream = new CountingInputStream(parser.getInputStream());
-                    StreamUtils.out(epilogueStream, out);
-                    lines+=epilogueStream.getLineCount();
                 }   
                 if ("text".equalsIgnoreCase(mediaType)) {
+                    final CountingInputStream bodyStream = new CountingInputStream(parser.getInputStream());
+                    bodyStream.readAll();
+                    long lines = bodyStream.getLineCount();
+                    
+                    next = parser.next();
+                    if (next == MimeTokenStream.T_EPILOGUE)  {
+                        final CountingInputStream epilogueStream = new CountingInputStream(parser.getInputStream());
+                        epilogueStream.readAll();
+                        lines+=epilogueStream.getLineCount();
+                    }
                     propertyBuilder.setTextualLineCount(lines);
                 }
-                final byte[] body = out.toByteArray();
                 
                 final Flags flags = new Flags();
                 if (isRecent) {
                     flags.add(Flags.Flag.RECENT);
                 }
                 
-                final MailboxMembership message = createMessage(internalDate, uid, size, body, flags, headers, propertyBuilder);
+                final MailboxMembership message = createMessage(internalDate, uid, size, bodyStartOctet, messageBytes, flags, headers, propertyBuilder);
                 final MessageMapper mapper = createMessageMapper();
 
                 mapper.begin();
@@ -213,8 +214,25 @@ public abstract class StoreMailbox extends AbstractLogEnabled implements org.apa
         }
     }
 
-    protected abstract MailboxMembership createMessage(Date internalDate, final long uid, final int size, final byte[] body, 
-            final Flags flags, final List<Header> headers, PropertyBuilder propertyBuilder);
+    private int bodyStartOctet(byte[] messageBytes) {
+        int bodyStartOctet = messageBytes.length;
+        for (int i=0;i<messageBytes.length-4;i++) {
+            if (messageBytes[i] == 0x0D) {
+                if (messageBytes[i+1] == 0x0A) {
+                    if (messageBytes[i+2] == 0x0D) {
+                        if (messageBytes[i+3] == 0x0A) {
+                            bodyStartOctet = i+4;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        return bodyStartOctet;
+    }
+
+    protected abstract MailboxMembership createMessage(Date internalDate, final long uid, final int size, int bodyStartOctet, 
+            final byte[] document, final Flags flags, final List<Header> headers, PropertyBuilder propertyBuilder);
     
     protected abstract Header createHeader(int lineNumber, String name, String value);
 

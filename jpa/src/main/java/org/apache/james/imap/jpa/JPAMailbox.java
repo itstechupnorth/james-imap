@@ -68,13 +68,14 @@ public class JPAMailbox extends StoreMailbox {
     }
     
     @Override
-    protected MailboxMembership createMessage(Date internalDate, final long uid, final int size, final byte[] body, final Flags flags, final List<Header> headers, PropertyBuilder propertyBuilder) {
+    protected MailboxMembership createMessage(Date internalDate, final long uid, final int size, int bodyStartOctet, final byte[] document, 
+            final Flags flags, final List<Header> headers, PropertyBuilder propertyBuilder) {
         final List<JPAHeader> jpaHeaders = new ArrayList<JPAHeader>(headers.size());
         for (Header header: headers) {
             jpaHeaders.add((JPAHeader) header);
         }
         final MailboxMembership message = new JPAMailboxMembership(mailboxId, uid, internalDate, 
-                size, flags, body, jpaHeaders, propertyBuilder);
+                size, flags, document, bodyStartOctet, jpaHeaders, propertyBuilder);
         return message;
     }
     

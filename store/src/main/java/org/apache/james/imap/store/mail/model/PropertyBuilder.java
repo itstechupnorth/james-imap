@@ -139,7 +139,7 @@ public class PropertyBuilder {
         textualLineCount = null;
         properties = new ArrayList<SimpleProperty>(INITIAL_CAPACITY);
     }
-    
+
     /**
      * Gets the number of CRLF in a textual document.
      * @return CRLF count when document is textual,

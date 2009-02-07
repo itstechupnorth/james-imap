@@ -44,7 +44,7 @@ public class SimpleMailboxMembership implements MailboxMembership {
     public SimpleMessage message;
 
     public SimpleMailboxMembership(long mailboxId, long uid, Date internalDate, int size, 
-            Flags flags, byte[] body, final List<SimpleHeader> headers) {
+            Flags flags, byte[] body, final List<SimpleHeader> headers) throws Exception {
         super();
         this.mailboxId = mailboxId;
         this.uid = uid;

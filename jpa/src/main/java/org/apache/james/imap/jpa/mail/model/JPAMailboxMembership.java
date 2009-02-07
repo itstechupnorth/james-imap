@@ -145,13 +145,13 @@ public class JPAMailboxMembership implements MailboxMembership {
     public JPAMailboxMembership() {}
 
     public JPAMailboxMembership(long mailboxId, long uid, Date internalDate, int size, Flags flags, 
-            byte[] body, final List<JPAHeader> headers, final PropertyBuilder propertyBuilder) {
+            byte[] content, int bodyStartOctet, final List<JPAHeader> headers, final PropertyBuilder propertyBuilder) {
         super();
         this.mailboxId = mailboxId;
         this.uid = uid;
         this.internalDate = internalDate;
         this.size = size;
-        this.message = new JPAMessage(body, headers, propertyBuilder);
+        this.message = new JPAMessage(content, bodyStartOctet, headers, propertyBuilder);
         setFlags(flags);
     }
 
