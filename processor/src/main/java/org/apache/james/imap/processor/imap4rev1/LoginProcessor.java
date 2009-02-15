@@ -95,6 +95,7 @@ public class LoginProcessor extends AbstractMailboxProcessor {
                     no(command, tag, responder,
                             HumanReadableTextKey.INVALID_LOGIN);
                 } else {
+                    getLog().info("Too many authentication failures. Closing connection.");
                     bye(responder, HumanReadableTextKey.TOO_MANY_FAILURES);
                     session.logout();
                 }
