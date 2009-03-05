@@ -58,8 +58,8 @@
         <artifactId>maven-compiler-plugin</artifactId>
         <configuration>
           <optimize>true</optimize>
-          <source>1.4</source>
-          <target>1.4</target>
+          <source>1.5</source>
+          <target>1.5</target>
         </configuration>
       </plugin>
       <plugin>
@@ -465,7 +465,7 @@
       <version>2.5.1</version>
       <scope>test</scope>
     </dependency>
-        <dependency>
+    <dependency>
       <groupId>jmock</groupId>
       <artifactId>jmock-junit3</artifactId>
       <version>2.5.1</version>
@@ -481,12 +481,6 @@
       <artifactId>commons-beanutils</artifactId>
       <version>1.7.0</version>
       <scope>runtime</scope>
-    </dependency>
-    <dependency>
-      <groupId>jmock</groupId>
-      <artifactId>jmock</artifactId>
-      <version>1.1.0</version>
-      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.derby</groupId>
@@ -526,6 +520,16 @@
           <artifactId>xercesImpl</artifactId>
         </exclusion>
       </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>javax.persistence</groupId>
+      <artifactId>persistence-api</artifactId>
+      <version>1.0.2</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.openjpa</groupId>
+      <artifactId>openjpa</artifactId>
+      <version>1.2.0</version>
     </dependency>
     </dependencies>
   </dependencyManagement>

@@ -102,6 +102,18 @@
       <groupId>jmock</groupId>
       <artifactId>jmock</artifactId>
     </dependency>
+    <dependency>
+      <groupId>jmock</groupId>
+      <artifactId>jmock-junit3</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>javax.persistence</groupId>
+      <artifactId>persistence-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.openjpa</groupId>
+      <artifactId>openjpa</artifactId>
+    </dependency>
     
     <dependency>
        <groupId>org.apache.derby</groupId>
