@@ -26,7 +26,7 @@
   
   <dependencies>
     <dependency>
-      <groupId>org.jmock</groupId>
+      <groupId>jmock</groupId>
       <artifactId>jmock</artifactId>
       <version>2.5.1</version>
     </dependency>
