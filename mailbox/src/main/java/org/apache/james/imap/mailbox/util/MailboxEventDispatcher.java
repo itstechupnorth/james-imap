@@ -55,28 +55,19 @@ public class MailboxEventDispatcher implements MailboxListener {
     public void added(long uid, long sessionId) {
         pruneClosed();
         final AddedImpl added = new AddedImpl(sessionId, uid);
-        for (Iterator iter = listeners.iterator(); iter.hasNext();) {
-            MailboxListener mailboxListener = (MailboxListener) iter.next();
-            mailboxListener.event(added);
-        }
+        event(added);
     }
 
     public void expunged(final long uid, long sessionId) {
         final ExpungedImpl expunged = new ExpungedImpl(sessionId, uid);
-        for (Iterator iter = listeners.iterator(); iter.hasNext();) {
-            MailboxListener mailboxListener = (MailboxListener) iter.next();
-            mailboxListener.event(expunged);
-        }
+        event(expunged);
     }
 
     public void flagsUpdated(final long uid, long sessionId,
             final Flags original, final Flags updated) {
         final FlagsUpdatedImpl flags = new FlagsUpdatedImpl(sessionId, uid,
                 original, updated);
-        for (Iterator iter = listeners.iterator(); iter.hasNext();) {
-            MailboxListener mailboxListener = (MailboxListener) iter.next();
-            mailboxListener.event(flags);
-        }
+        event(flags);
     }
 
     public void event(Event event) {
@@ -243,10 +234,7 @@ public class MailboxEventDispatcher implements MailboxListener {
     public void mailboxDeleted(long sessionId) {
         final MailboxDeletionEventImpl event = new MailboxDeletionEventImpl(
                 sessionId);
-        for (Iterator iter = listeners.iterator(); iter.hasNext();) {
-            MailboxListener mailboxListener = (MailboxListener) iter.next();
-            mailboxListener.event(event);
-        }
+        event(event);
     }
 
     private static final class MailboxDeletionEventImpl implements
