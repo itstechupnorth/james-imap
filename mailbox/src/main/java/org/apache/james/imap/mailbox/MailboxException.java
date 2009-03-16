@@ -40,7 +40,6 @@ public class MailboxException extends MessagingException {
     
     public MailboxException(final String message, final Exception cause) {
         super(message, cause);
-        initCause(cause);
     }
 
     public MailboxException(String message) {
