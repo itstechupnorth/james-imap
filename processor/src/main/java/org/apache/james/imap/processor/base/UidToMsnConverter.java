@@ -28,6 +28,8 @@ import java.util.TreeMap;
 
 import org.apache.james.imap.mailbox.MailboxListener;
 
+//TODO: This is a major memory hog
+//TODO: Each concurrent session requires one, and typical clients now open many
 public class UidToMsnConverter implements MailboxListener {
     private final SortedMap<Integer, Long> msnToUid;
 
