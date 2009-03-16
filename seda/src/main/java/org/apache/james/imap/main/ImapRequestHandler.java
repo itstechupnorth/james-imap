@@ -102,6 +102,7 @@ public final class ImapRequestHandler extends AbstractLogEnabled {
             } catch (ProtocolException e) {
                 logger.debug("Unexpected end of line. Cannot handle request: ",
                         e);
+                abandon(output, session);
                 return false;
             }
 
@@ -123,14 +124,13 @@ public final class ImapRequestHandler extends AbstractLogEnabled {
                         logger.info("Fault during clean up: " + e.getMessage());
                     }
                     logger.debug("Abandoning after fault in clean up", e);
-                    session.logout();
-                    abandon(output);
+                    abandon(output, session);
                 }
 
                 result = !(ImapSessionState.LOGOUT == session.getState());
             } else {
                 result = false;
-                abandon(output);
+                abandon(output, session);
             }
         }
         return result;
@@ -156,7 +156,14 @@ public final class ImapRequestHandler extends AbstractLogEnabled {
         return selectedMailboxIsDeleted;
     }
 
-    private void abandon(OutputStream out) {
+    private void abandon(OutputStream out, ImapSession session) {
+        if (session != null){
+            try {
+                session.logout();
+            } catch (Throwable t) {
+                getLog().warn("Session logout failed. Resources may not be correctly recycled.");
+            }
+        }
         try {
             out.write(ABANDON_SIGNOFF);
         } catch (Throwable t) {
