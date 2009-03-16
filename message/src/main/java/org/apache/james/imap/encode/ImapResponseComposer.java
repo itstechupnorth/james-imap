@@ -183,6 +183,8 @@ public interface ImapResponseComposer {
     public abstract void untaggedResponse(String message) throws IOException;
 
     public abstract void byeResponse(String message) throws IOException;
+    
+    public abstract void hello(String message) throws IOException;
 
     public abstract void untagged() throws IOException;
 

@@ -174,6 +174,14 @@ public class ImapResponseComposerImpl extends AbstractLogEnabled implements
     public void byeResponse(String message) throws IOException {
         untaggedResponse(BYE + SP + message);
     }
+    
+    /**
+     * @throws IOException
+     * @see org.apache.james.imap.encode.ImapResponseComposer#hello(java.lang.String)
+     */
+    public void hello(String message) throws IOException {
+        untaggedResponse(OK + SP + message);
+    }
 
     /**
      * @throws IOException
