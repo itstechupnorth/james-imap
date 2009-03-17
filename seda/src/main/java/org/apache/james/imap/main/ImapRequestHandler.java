@@ -125,6 +125,7 @@ public final class ImapRequestHandler extends AbstractLogEnabled {
                     }
                     logger.debug("Abandoning after fault in clean up", e);
                     abandon(output, session);
+                    return false;
                 }
 
                 result = !(ImapSessionState.LOGOUT == session.getState());
