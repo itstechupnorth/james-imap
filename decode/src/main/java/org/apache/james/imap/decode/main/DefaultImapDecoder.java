@@ -64,6 +64,7 @@ public class DefaultImapDecoder extends AbstractLogEnabled implements
             // It is probably not possible to recover
             // and (since this may indicate an attack) wiser not to try
             message = messageFactory.bye(HumanReadableTextKey.ILLEGAL_TAG);
+            session.logout();
         }
         return message;
     }
