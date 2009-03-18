@@ -57,6 +57,12 @@ public class HumanReadableTextKey {
     public static final HumanReadableTextKey ILLEGAL_TAG = new HumanReadableTextKey(
             "org.apache.james.imap.ILLEGAL_TAG", "Illegal tag.");
 
+    public static final HumanReadableTextKey FAILURE_EXISTS_COUNT = new HumanReadableTextKey(
+            "org.apache.james.imap.FAILURE_EXISTS_COUNT", "Cannot count number of existing records.");
+    
+    public static final HumanReadableTextKey FAILURE_TO_LOAD_FLAGS= new HumanReadableTextKey(
+            "org.apache.james.imap.FAILURE_TO_LOAD_FLAGS", "Failed to retrieve flags data.");   
+    
     public static final HumanReadableTextKey ILLEGAL_ARGUMENTS = new HumanReadableTextKey(
             "org.apache.james.imap.ILLEGAL_ARGUMENTS",
             "failed. Illegal arguments.");

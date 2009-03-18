@@ -33,7 +33,6 @@ import org.apache.james.imap.encode.imap4rev1.server.LSubResponseEncoder;
 import org.apache.james.imap.encode.imap4rev1.server.ListResponseEncoder;
 import org.apache.james.imap.encode.imap4rev1.server.STATUSResponseEncoder;
 import org.apache.james.imap.encode.imap4rev1.server.SearchResponseEncoder;
-import org.apache.james.imap.encode.imap4rev1.status.UntaggedNoResponseEncoder;
 
 /**
  * TODO: perhaps a POJO would be better
@@ -44,10 +43,8 @@ public class DefaultImapEncoderFactory implements ImapEncoderFactory {
         final EndImapEncoder endImapEncoder = new EndImapEncoder();
         final StatusResponseEncoder statusResponseEncoder = new StatusResponseEncoder(
                 endImapEncoder);
-        final UntaggedNoResponseEncoder untaggedNoResponseEncoder = new UntaggedNoResponseEncoder(
-                statusResponseEncoder);
         final RecentResponseEncoder recentResponseEncoder = new RecentResponseEncoder(
-                untaggedNoResponseEncoder);
+                statusResponseEncoder);
         final FetchResponseEncoder fetchResponseEncoder = new FetchResponseEncoder(
                 recentResponseEncoder);
         final ExpungeResponseEncoder expungeResponseEncoder = new ExpungeResponseEncoder(

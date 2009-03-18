@@ -52,7 +52,6 @@ import org.apache.james.imap.message.response.imap4rev1.ExistsResponse;
 import org.apache.james.imap.message.response.imap4rev1.ExpungeResponse;
 import org.apache.james.imap.message.response.imap4rev1.FetchResponse;
 import org.apache.james.imap.message.response.imap4rev1.RecentResponse;
-import org.apache.james.imap.message.response.imap4rev1.status.UntaggedNoResponse;
 import org.apache.james.imap.processor.base.AbstractChainedProcessor;
 import org.apache.james.imap.processor.base.ImapSessionUtils;
 
@@ -186,8 +185,7 @@ abstract public class AbstractMailboxProcessor extends AbstractChainedProcessor 
                 }
             }
         } catch (MessagingException e) {
-            final String message = "Failed to retrieve flags data";
-            handleResponseException(responder, e, message);
+            handleResponseException(responder, e, HumanReadableTextKey.FAILURE_TO_LOAD_FLAGS);
         }
     }
 
@@ -241,17 +239,16 @@ abstract public class AbstractMailboxProcessor extends AbstractChainedProcessor 
             final ExistsResponse response = new ExistsResponse(messageCount);
             responder.respond(response);
         } catch (MailboxException e) {
-            final String message = "Failed to retrieve exists count data";
-            handleResponseException(responder, e, message);
+            handleResponseException(responder, e, HumanReadableTextKey.FAILURE_EXISTS_COUNT);
         }
     }
 
     private void handleResponseException(final ImapProcessor.Responder responder,
-            MessagingException e, final String message) {
+            MessagingException e, final HumanReadableTextKey message) {
         getLog().info(message);
         getLog().debug(message, e);
         // TODO: consider whether error message should be passed to the user
-        final UntaggedNoResponse response = new UntaggedNoResponse(message, null);
+        final StatusResponse response = factory.untaggedNo(message);;
         responder.respond(response);
     }
 
