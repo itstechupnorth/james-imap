@@ -26,7 +26,7 @@ import org.apache.james.imap.api.ImapMessage;
 import org.apache.james.imap.api.display.HumanReadableTextKey;
 import org.apache.james.imap.api.message.request.ImapRequest;
 import org.apache.james.imap.api.message.response.ImapResponseMessage;
-import org.apache.james.imap.api.message.response.imap4rev1.StatusResponseFactory;
+import org.apache.james.imap.api.message.response.StatusResponseFactory;
 import org.apache.james.imap.api.process.ImapProcessor;
 import org.apache.james.imap.api.process.ImapSession;
 

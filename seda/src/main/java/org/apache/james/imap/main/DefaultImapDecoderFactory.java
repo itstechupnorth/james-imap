@@ -19,16 +19,16 @@
 
 package org.apache.james.imap.main;
 
-import org.apache.james.imap.api.imap4rev1.Imap4Rev1CommandFactory;
-import org.apache.james.imap.api.imap4rev1.Imap4Rev1MessageFactory;
+import org.apache.james.imap.api.Imap4Rev1CommandFactory;
+import org.apache.james.imap.api.Imap4Rev1MessageFactory;
 import org.apache.james.imap.command.imap4rev1.StandardImap4Rev1CommandFactory;
 import org.apache.james.imap.decode.ImapCommandParserFactory;
 import org.apache.james.imap.decode.ImapDecoder;
 import org.apache.james.imap.decode.ImapDecoderFactory;
-import org.apache.james.imap.decode.imap4rev1.Imap4Rev1CommandParserFactory;
 import org.apache.james.imap.decode.main.DefaultImapDecoder;
-import org.apache.james.imap.message.request.imap4rev1.BaseImap4Rev1MessageFactory;
-import org.apache.james.imap.message.response.imap4rev1.status.UnpooledStatusResponseFactory;
+import org.apache.james.imap.decode.parser.Imap4Rev1CommandParserFactory;
+import org.apache.james.imap.message.request.BaseImap4Rev1MessageFactory;
+import org.apache.james.imap.message.response.UnpooledStatusResponseFactory;
 
 /**
  * TODO: this is temporary: should let the container do the coupling. TODO:

@@ -28,7 +28,7 @@ import java.nio.channels.WritableByteChannel;
 import org.apache.james.imap.api.AbstractLogEnabled;
 import org.apache.james.imap.api.ImapConstants;
 import org.apache.james.imap.encode.ImapResponseWriter;
-import org.apache.james.imap.message.response.imap4rev1.Literal;
+import org.apache.james.imap.message.response.Literal;
 
 /**
  * Class providing methods to send response messages from the server to the

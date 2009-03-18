@@ -20,10 +20,10 @@ package org.apache.james.imap.decode.main;
 
 import org.apache.commons.logging.Log;
 import org.apache.james.imap.api.AbstractLogEnabled;
+import org.apache.james.imap.api.Imap4Rev1MessageFactory;
 import org.apache.james.imap.api.ImapMessage;
 import org.apache.james.imap.api.ImapSessionState;
 import org.apache.james.imap.api.display.HumanReadableTextKey;
-import org.apache.james.imap.api.imap4rev1.Imap4Rev1MessageFactory;
 import org.apache.james.imap.api.process.ImapSession;
 import org.apache.james.imap.decode.ImapCommandParser;
 import org.apache.james.imap.decode.ImapCommandParserFactory;

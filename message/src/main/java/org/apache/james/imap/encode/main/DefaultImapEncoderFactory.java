@@ -19,20 +19,20 @@
 
 package org.apache.james.imap.encode.main;
 
+import org.apache.james.imap.encode.CapabilityResponseEncoder;
+import org.apache.james.imap.encode.ExistsResponseEncoder;
+import org.apache.james.imap.encode.ExpungeResponseEncoder;
+import org.apache.james.imap.encode.FetchResponseEncoder;
+import org.apache.james.imap.encode.FlagsResponseEncoder;
 import org.apache.james.imap.encode.ImapEncoder;
 import org.apache.james.imap.encode.ImapEncoderFactory;
+import org.apache.james.imap.encode.LSubResponseEncoder;
+import org.apache.james.imap.encode.ListResponseEncoder;
+import org.apache.james.imap.encode.RecentResponseEncoder;
+import org.apache.james.imap.encode.STATUSResponseEncoder;
+import org.apache.james.imap.encode.SearchResponseEncoder;
+import org.apache.james.imap.encode.StatusResponseEncoder;
 import org.apache.james.imap.encode.base.EndImapEncoder;
-import org.apache.james.imap.encode.imap4rev1.ExistsResponseEncoder;
-import org.apache.james.imap.encode.imap4rev1.ExpungeResponseEncoder;
-import org.apache.james.imap.encode.imap4rev1.FetchResponseEncoder;
-import org.apache.james.imap.encode.imap4rev1.FlagsResponseEncoder;
-import org.apache.james.imap.encode.imap4rev1.RecentResponseEncoder;
-import org.apache.james.imap.encode.imap4rev1.StatusResponseEncoder;
-import org.apache.james.imap.encode.imap4rev1.server.CapabilityResponseEncoder;
-import org.apache.james.imap.encode.imap4rev1.server.LSubResponseEncoder;
-import org.apache.james.imap.encode.imap4rev1.server.ListResponseEncoder;
-import org.apache.james.imap.encode.imap4rev1.server.STATUSResponseEncoder;
-import org.apache.james.imap.encode.imap4rev1.server.SearchResponseEncoder;
 
 /**
  * TODO: perhaps a POJO would be better

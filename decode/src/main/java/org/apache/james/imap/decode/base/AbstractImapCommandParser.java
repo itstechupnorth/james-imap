@@ -34,14 +34,14 @@ import java.util.Date;
 import javax.mail.Flags;
 
 import org.apache.james.imap.api.AbstractLogEnabled;
+import org.apache.james.imap.api.Imap4Rev1MessageFactory;
 import org.apache.james.imap.api.ImapCommand;
 import org.apache.james.imap.api.ImapConstants;
 import org.apache.james.imap.api.ImapMessage;
 import org.apache.james.imap.api.display.HumanReadableTextKey;
-import org.apache.james.imap.api.imap4rev1.Imap4Rev1MessageFactory;
 import org.apache.james.imap.api.message.IdRange;
 import org.apache.james.imap.api.message.request.DayMonthYear;
-import org.apache.james.imap.api.message.response.imap4rev1.StatusResponseFactory;
+import org.apache.james.imap.api.message.response.StatusResponseFactory;
 import org.apache.james.imap.decode.DecoderUtils;
 import org.apache.james.imap.decode.ImapCommandParser;
 import org.apache.james.imap.decode.ImapRequestLineReader;
@@ -87,7 +87,7 @@ public abstract class AbstractImapCommandParser extends AbstractLogEnabled
     }
 
     /**
-     * @see org.apache.james.imap.decode.MessagingImapCommandParser#setMessageFactory(org.apache.james.imap.api.imap4rev1.Imap4Rev1MessageFactory)
+     * @see org.apache.james.imap.decode.MessagingImapCommandParser#setMessageFactory(org.apache.james.imap.api.Imap4Rev1MessageFactory)
      */
     public void setMessageFactory(Imap4Rev1MessageFactory messageFactory) {
         this.messageFactory = messageFactory;

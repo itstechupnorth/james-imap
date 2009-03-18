@@ -18,8 +18,8 @@
  ****************************************************************/
 package org.apache.james.imap.decode;
 
-import org.apache.james.imap.api.imap4rev1.Imap4Rev1MessageFactory;
-import org.apache.james.imap.api.message.response.imap4rev1.StatusResponseFactory;
+import org.apache.james.imap.api.Imap4Rev1MessageFactory;
+import org.apache.james.imap.api.message.response.StatusResponseFactory;
 
 public interface MessagingImapCommandParser {
 
