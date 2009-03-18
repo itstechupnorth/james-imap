@@ -18,8 +18,8 @@
  ****************************************************************/
 package org.apache.james.imap.message.request.imap4rev1;
 
-import org.apache.james.api.imap.ImapCommand;
-import org.apache.james.api.imap.message.request.SearchKey;
+import org.apache.james.imap.api.ImapCommand;
+import org.apache.james.imap.api.message.request.SearchKey;
 
 public class SearchRequest extends AbstractImapRequest {
 

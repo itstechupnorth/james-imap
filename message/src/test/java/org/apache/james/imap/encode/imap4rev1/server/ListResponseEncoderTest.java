@@ -19,7 +19,7 @@
 
 package org.apache.james.imap.encode.imap4rev1.server;
 
-import org.apache.james.api.imap.ImapMessage;
+import org.apache.james.imap.api.ImapMessage;
 import org.apache.james.imap.encode.ImapEncoder;
 import org.apache.james.imap.encode.ImapResponseComposer;
 import org.apache.james.imap.message.response.imap4rev1.server.SearchResponse;

@@ -19,10 +19,10 @@
 
 package org.apache.james.imap.processor.base;
 
-import org.apache.james.api.imap.ImapMessage;
-import org.apache.james.api.imap.message.response.ImapResponseMessage;
-import org.apache.james.api.imap.process.ImapProcessor;
-import org.apache.james.api.imap.process.ImapSession;
+import org.apache.james.imap.api.ImapMessage;
+import org.apache.james.imap.api.message.response.ImapResponseMessage;
+import org.apache.james.imap.api.process.ImapProcessor;
+import org.apache.james.imap.api.process.ImapSession;
 
 public class ImapResponseMessageProcessor extends AbstractChainedProcessor {
 

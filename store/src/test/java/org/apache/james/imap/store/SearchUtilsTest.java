@@ -27,7 +27,7 @@ import javax.mail.Flags;
 
 import junit.framework.TestCase;
 
-import org.apache.james.api.imap.ImapConstants;
+import org.apache.james.imap.api.ImapConstants;
 import org.apache.james.imap.mailbox.SearchQuery;
 import org.apache.james.imap.store.mail.model.MailboxMembership;
 

@@ -19,8 +19,8 @@
 
 package org.apache.james.imap.message.response.imap4rev1.status;
 
-import org.apache.james.api.imap.message.response.imap4rev1.AbstractTestForStatusResponseFactory;
-import org.apache.james.api.imap.message.response.imap4rev1.StatusResponseFactory;
+import org.apache.james.imap.api.message.response.imap4rev1.AbstractTestForStatusResponseFactory;
+import org.apache.james.imap.api.message.response.imap4rev1.StatusResponseFactory;
 
 public class UnpooledStatusResponseFactoryTest extends
         AbstractTestForStatusResponseFactory {

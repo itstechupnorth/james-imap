@@ -18,7 +18,7 @@
  ****************************************************************/
 package org.apache.james.imap.processor.imap4rev1;
 
-import static org.apache.james.api.imap.ImapConstants.NAMESPACE_PREFIX;
+import static org.apache.james.imap.api.ImapConstants.NAMESPACE_PREFIX;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -27,16 +27,16 @@ import javax.mail.Flags;
 import javax.mail.MessagingException;
 
 import org.apache.commons.logging.Log;
-import org.apache.james.api.imap.ImapCommand;
-import org.apache.james.api.imap.ImapMessage;
-import org.apache.james.api.imap.display.HumanReadableTextKey;
-import org.apache.james.api.imap.message.request.ImapRequest;
-import org.apache.james.api.imap.message.response.ImapResponseMessage;
-import org.apache.james.api.imap.message.response.imap4rev1.StatusResponse;
-import org.apache.james.api.imap.message.response.imap4rev1.StatusResponseFactory;
-import org.apache.james.api.imap.process.ImapProcessor;
-import org.apache.james.api.imap.process.ImapSession;
-import org.apache.james.api.imap.process.SelectedMailbox;
+import org.apache.james.imap.api.ImapCommand;
+import org.apache.james.imap.api.ImapMessage;
+import org.apache.james.imap.api.display.HumanReadableTextKey;
+import org.apache.james.imap.api.message.request.ImapRequest;
+import org.apache.james.imap.api.message.response.ImapResponseMessage;
+import org.apache.james.imap.api.message.response.imap4rev1.StatusResponse;
+import org.apache.james.imap.api.message.response.imap4rev1.StatusResponseFactory;
+import org.apache.james.imap.api.process.ImapProcessor;
+import org.apache.james.imap.api.process.ImapSession;
+import org.apache.james.imap.api.process.SelectedMailbox;
 import org.apache.james.imap.mailbox.Mailbox;
 import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.MailboxExistsException;
@@ -135,7 +135,7 @@ abstract public class AbstractMailboxProcessor extends AbstractChainedProcessor 
     }
 
     /**
-     * @see org.apache.james.api.imap.process.SelectedMailbox#unsolicitedResponses(boolean,
+     * @see org.apache.james.imap.api.process.SelectedMailbox#unsolicitedResponses(boolean,
      *      boolean)
      */
     public void unsolicitedResponses(final ImapSession session, final ImapProcessor.Responder responder, 

@@ -19,7 +19,7 @@
 
 package org.apache.james.imap.message.request.imap4rev1;
 
-import org.apache.james.api.imap.ImapCommand;
+import org.apache.james.imap.api.ImapCommand;
 
 public abstract class AbstractMailboxSelectionRequest extends
         AbstractImapRequest {

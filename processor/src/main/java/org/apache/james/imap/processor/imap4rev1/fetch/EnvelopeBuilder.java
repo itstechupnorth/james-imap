@@ -28,7 +28,7 @@ import java.util.List;
 import javax.mail.MessagingException;
 
 import org.apache.commons.logging.Log;
-import org.apache.james.api.imap.ImapConstants;
+import org.apache.james.imap.api.ImapConstants;
 import org.apache.james.imap.mailbox.Headers;
 import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.MessageResult;

@@ -18,9 +18,9 @@
  ****************************************************************/
 package org.apache.james.imap.message.request.imap4rev1;
 
-import org.apache.james.api.imap.ImapCommand;
-import org.apache.james.api.imap.message.FetchData;
-import org.apache.james.api.imap.message.IdRange;
+import org.apache.james.imap.api.ImapCommand;
+import org.apache.james.imap.api.message.FetchData;
+import org.apache.james.imap.api.message.IdRange;
 
 public class FetchRequest extends AbstractImapRequest {
     private final boolean useUids;

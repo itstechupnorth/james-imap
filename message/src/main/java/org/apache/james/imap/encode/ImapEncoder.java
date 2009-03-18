@@ -21,7 +21,7 @@ package org.apache.james.imap.encode;
 
 import java.io.IOException;
 
-import org.apache.james.api.imap.ImapMessage;
+import org.apache.james.imap.api.ImapMessage;
 
 /**
  * TODO: correct this API

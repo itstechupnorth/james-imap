@@ -19,9 +19,9 @@
 
 package org.apache.james.imap.command.imap4rev1;
 
-import org.apache.james.api.imap.AbstractLogEnabled;
-import org.apache.james.api.imap.ImapCommand;
-import org.apache.james.api.imap.ImapSessionState;
+import org.apache.james.imap.api.AbstractLogEnabled;
+import org.apache.james.imap.api.ImapCommand;
+import org.apache.james.imap.api.ImapSessionState;
 
 /**
  * Basic implementation.

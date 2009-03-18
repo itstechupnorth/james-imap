@@ -19,7 +19,7 @@
 
 package org.apache.james.imap.message.response.imap4rev1;
 
-import org.apache.james.api.imap.message.response.ImapResponseMessage;
+import org.apache.james.imap.api.message.response.ImapResponseMessage;
 
 public final class ExistsResponse implements ImapResponseMessage {
     private final int numberOfMessages;

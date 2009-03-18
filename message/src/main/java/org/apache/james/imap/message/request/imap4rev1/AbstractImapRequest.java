@@ -18,10 +18,10 @@
  ****************************************************************/
 package org.apache.james.imap.message.request.imap4rev1;
 
-import org.apache.james.api.imap.AbstractLogEnabled;
-import org.apache.james.api.imap.ImapCommand;
-import org.apache.james.api.imap.ImapMessage;
-import org.apache.james.api.imap.message.request.ImapRequest;
+import org.apache.james.imap.api.AbstractLogEnabled;
+import org.apache.james.imap.api.ImapCommand;
+import org.apache.james.imap.api.ImapMessage;
+import org.apache.james.imap.api.message.request.ImapRequest;
 
 abstract public class AbstractImapRequest extends AbstractLogEnabled implements
         ImapMessage, ImapRequest {
@@ -38,7 +38,7 @@ abstract public class AbstractImapRequest extends AbstractLogEnabled implements
     /**
      * Gets the IMAP command whose execution is requested by the client.
      * 
-     * @see org.apache.james.api.imap.message.request.ImapRequest#getCommand()
+     * @see org.apache.james.imap.api.message.request.ImapRequest#getCommand()
      */
     public final ImapCommand getCommand() {
         return command;
@@ -47,7 +47,7 @@ abstract public class AbstractImapRequest extends AbstractLogEnabled implements
     /**
      * Gets the prefix tag identifying this request.
      * 
-     * @see org.apache.james.api.imap.message.request.ImapRequest#getTag()
+     * @see org.apache.james.imap.api.message.request.ImapRequest#getTag()
      */
     public final String getTag() {
         return tag;

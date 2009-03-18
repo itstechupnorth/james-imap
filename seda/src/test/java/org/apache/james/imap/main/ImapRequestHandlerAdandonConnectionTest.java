@@ -21,8 +21,8 @@ package org.apache.james.imap.main;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 
-import org.apache.james.api.imap.process.ImapProcessor;
-import org.apache.james.api.imap.process.ImapSession;
+import org.apache.james.imap.api.process.ImapProcessor;
+import org.apache.james.imap.api.process.ImapSession;
 import org.apache.james.imap.decode.ImapDecoder;
 import org.apache.james.imap.encode.ImapEncoder;
 import org.jmock.Expectations;

@@ -21,7 +21,7 @@ package org.apache.james.imap.message.response.imap4rev1;
 
 import javax.mail.Flags;
 
-import org.apache.james.api.imap.message.response.ImapResponseMessage;
+import org.apache.james.imap.api.message.response.ImapResponseMessage;
 
 /**
  * Carries a RFC3501 <code>Flags</code> response.

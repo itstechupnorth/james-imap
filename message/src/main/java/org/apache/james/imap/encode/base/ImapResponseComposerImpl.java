@@ -26,9 +26,9 @@ import java.util.List;
 
 import javax.mail.Flags;
 
-import org.apache.james.api.imap.AbstractLogEnabled;
-import org.apache.james.api.imap.ImapCommand;
-import org.apache.james.api.imap.ImapConstants;
+import org.apache.james.imap.api.AbstractLogEnabled;
+import org.apache.james.imap.api.ImapCommand;
+import org.apache.james.imap.api.ImapConstants;
 import org.apache.james.imap.encode.ImapResponseComposer;
 import org.apache.james.imap.encode.ImapResponseWriter;
 import org.apache.james.imap.message.response.imap4rev1.Literal;
@@ -63,7 +63,7 @@ public class ImapResponseComposerImpl extends AbstractLogEnabled implements
 
     /**
      * @throws IOException
-     * @see org.apache.james.imap.encode.ImapResponseComposer#commandComplete(org.apache.james.api.imap.ImapCommand,
+     * @see org.apache.james.imap.encode.ImapResponseComposer#commandComplete(org.apache.james.imap.api.ImapCommand,
      *      java.lang.String, java.lang.String)
      */
     public void commandComplete(final ImapCommand command,
@@ -135,7 +135,7 @@ public class ImapResponseComposerImpl extends AbstractLogEnabled implements
 
     /**
      * @throws IOException
-     * @see org.apache.james.imap.encode.ImapResponseComposer#commandResponse(org.apache.james.api.imap.ImapCommand,
+     * @see org.apache.james.imap.encode.ImapResponseComposer#commandResponse(org.apache.james.imap.api.ImapCommand,
      *      java.lang.String)
      */
     public void commandResponse(ImapCommand command, String message)
@@ -256,7 +256,7 @@ public class ImapResponseComposerImpl extends AbstractLogEnabled implements
     /**
      * @throws IOException
      * @see org.apache.james.imap.encode.ImapResponseComposer#statusResponse(java.lang.String,
-     *      org.apache.james.api.imap.ImapCommand, java.lang.String,
+     *      org.apache.james.imap.api.ImapCommand, java.lang.String,
      *      java.lang.String, Collection, long, java.lang.String)
      */
     public void statusResponse(String tag, ImapCommand command, String type,

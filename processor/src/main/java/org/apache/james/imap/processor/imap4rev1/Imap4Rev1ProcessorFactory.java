@@ -19,14 +19,14 @@
 
 package org.apache.james.imap.processor.imap4rev1;
 
-import static org.apache.james.api.imap.ImapConstants.SUPPORTS_LITERAL_PLUS;
-import static org.apache.james.api.imap.ImapConstants.VERSION;
+import static org.apache.james.imap.api.ImapConstants.SUPPORTS_LITERAL_PLUS;
+import static org.apache.james.imap.api.ImapConstants.VERSION;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.james.api.imap.message.response.imap4rev1.StatusResponseFactory;
-import org.apache.james.api.imap.process.ImapProcessor;
+import org.apache.james.imap.api.message.response.imap4rev1.StatusResponseFactory;
+import org.apache.james.imap.api.process.ImapProcessor;
 import org.apache.james.imap.mailbox.MailboxManagerProvider;
 import org.apache.james.imap.processor.imap4rev1.fetch.FetchProcessor;
 

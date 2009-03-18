@@ -19,9 +19,9 @@
 
 package org.apache.james.imap.processor.main;
 
-import org.apache.james.api.imap.message.response.imap4rev1.StatusResponseFactory;
-import org.apache.james.api.imap.process.ImapProcessor;
-import org.apache.james.api.imap.process.ImapProcessorFactory;
+import org.apache.james.imap.api.message.response.imap4rev1.StatusResponseFactory;
+import org.apache.james.imap.api.process.ImapProcessor;
+import org.apache.james.imap.api.process.ImapProcessorFactory;
 import org.apache.james.imap.mailbox.MailboxManagerProvider;
 import org.apache.james.imap.message.response.imap4rev1.status.UnpooledStatusResponseFactory;
 import org.apache.james.imap.processor.base.ImapResponseMessageProcessor;

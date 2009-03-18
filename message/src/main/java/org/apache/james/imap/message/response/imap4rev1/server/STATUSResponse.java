@@ -19,7 +19,7 @@
 
 package org.apache.james.imap.message.response.imap4rev1.server;
 
-import org.apache.james.api.imap.message.response.ImapResponseMessage;
+import org.apache.james.imap.api.message.response.ImapResponseMessage;
 
 /**
  * Represents a <code>STATUS</code> response. See <code>RFC3501 7.2.4</code>.

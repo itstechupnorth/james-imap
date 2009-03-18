@@ -22,11 +22,11 @@ package org.apache.james.imap.main;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.apache.james.api.imap.AbstractLogEnabled;
-import org.apache.james.api.imap.ImapConstants;
-import org.apache.james.api.imap.ImapSessionState;
-import org.apache.james.api.imap.process.ImapSession;
-import org.apache.james.api.imap.process.SelectedMailbox;
+import org.apache.james.imap.api.AbstractLogEnabled;
+import org.apache.james.imap.api.ImapConstants;
+import org.apache.james.imap.api.ImapSessionState;
+import org.apache.james.imap.api.process.ImapSession;
+import org.apache.james.imap.api.process.SelectedMailbox;
 
 /**
  * Implements a session.

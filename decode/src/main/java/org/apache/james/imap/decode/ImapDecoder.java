@@ -18,8 +18,8 @@
  ****************************************************************/
 package org.apache.james.imap.decode;
 
-import org.apache.james.api.imap.ImapMessage;
-import org.apache.james.api.imap.process.ImapSession;
+import org.apache.james.imap.api.ImapMessage;
+import org.apache.james.imap.api.process.ImapSession;
 
 public interface ImapDecoder {
     public ImapMessage decode(final ImapRequestLineReader request,

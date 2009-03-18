@@ -25,7 +25,7 @@ import java.util.List;
 
 import javax.mail.Flags;
 
-import org.apache.james.api.imap.ImapCommand;
+import org.apache.james.imap.api.ImapCommand;
 import org.apache.james.imap.message.response.imap4rev1.Literal;
 
 public interface ImapResponseComposer {

@@ -24,8 +24,8 @@ import java.nio.ByteBuffer;
 import java.nio.channels.WritableByteChannel;
 import java.nio.charset.Charset;
 
-import org.apache.james.api.imap.AbstractLogEnabled;
-import org.apache.james.api.imap.ImapConstants;
+import org.apache.james.imap.api.AbstractLogEnabled;
+import org.apache.james.imap.api.ImapConstants;
 import org.apache.james.imap.encode.ImapResponseWriter;
 import org.apache.james.imap.message.response.imap4rev1.Literal;
 

@@ -21,13 +21,13 @@ package org.apache.james.imap.processor.imap4rev1;
 
 import java.util.List;
 
-import org.apache.james.api.imap.ImapCommand;
-import org.apache.james.api.imap.ImapMessage;
-import org.apache.james.api.imap.message.request.ImapRequest;
-import org.apache.james.api.imap.message.response.ImapResponseMessage;
-import org.apache.james.api.imap.message.response.imap4rev1.StatusResponseFactory;
-import org.apache.james.api.imap.process.ImapProcessor;
-import org.apache.james.api.imap.process.ImapSession;
+import org.apache.james.imap.api.ImapCommand;
+import org.apache.james.imap.api.ImapMessage;
+import org.apache.james.imap.api.message.request.ImapRequest;
+import org.apache.james.imap.api.message.response.ImapResponseMessage;
+import org.apache.james.imap.api.message.response.imap4rev1.StatusResponseFactory;
+import org.apache.james.imap.api.process.ImapProcessor;
+import org.apache.james.imap.api.process.ImapSession;
 import org.apache.james.imap.mailbox.MailboxManagerProvider;
 import org.apache.james.imap.message.request.imap4rev1.CapabilityRequest;
 import org.apache.james.imap.message.response.imap4rev1.server.CapabilityResponse;

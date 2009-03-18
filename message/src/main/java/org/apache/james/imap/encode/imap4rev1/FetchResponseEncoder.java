@@ -31,8 +31,8 @@ import java.util.TreeSet;
 import javax.mail.Flags;
 
 import org.apache.commons.logging.Log;
-import org.apache.james.api.imap.ImapConstants;
-import org.apache.james.api.imap.ImapMessage;
+import org.apache.james.imap.api.ImapConstants;
+import org.apache.james.imap.api.ImapMessage;
 import org.apache.james.imap.encode.EncoderUtils;
 import org.apache.james.imap.encode.ImapEncoder;
 import org.apache.james.imap.encode.ImapResponseComposer;

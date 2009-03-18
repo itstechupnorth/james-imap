@@ -18,7 +18,7 @@
  ****************************************************************/
 package org.apache.james.imap.message.response.imap4rev1.server;
 
-import org.apache.james.api.imap.message.response.ImapResponseMessage;
+import org.apache.james.imap.api.message.response.ImapResponseMessage;
 
 /**
  * Values an IMAP4rev1 <code>LIST</code> response.

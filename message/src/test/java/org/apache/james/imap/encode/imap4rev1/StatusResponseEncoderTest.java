@@ -19,10 +19,10 @@
 
 package org.apache.james.imap.encode.imap4rev1;
 
-import org.apache.james.api.imap.ImapCommand;
-import org.apache.james.api.imap.ImapConstants;
-import org.apache.james.api.imap.display.HumanReadableTextKey;
-import org.apache.james.api.imap.message.response.imap4rev1.StatusResponse;
+import org.apache.james.imap.api.ImapCommand;
+import org.apache.james.imap.api.ImapConstants;
+import org.apache.james.imap.api.display.HumanReadableTextKey;
+import org.apache.james.imap.api.message.response.imap4rev1.StatusResponse;
 import org.apache.james.imap.encode.ImapEncoder;
 import org.apache.james.imap.encode.ImapResponseComposer;
 import org.apache.james.imap.encode.base.ImapResponseComposerImpl;

@@ -19,8 +19,8 @@
 
 package org.apache.james.imap.main;
 
-import org.apache.james.api.imap.imap4rev1.Imap4Rev1CommandFactory;
-import org.apache.james.api.imap.imap4rev1.Imap4Rev1MessageFactory;
+import org.apache.james.imap.api.imap4rev1.Imap4Rev1CommandFactory;
+import org.apache.james.imap.api.imap4rev1.Imap4Rev1MessageFactory;
 import org.apache.james.imap.command.imap4rev1.StandardImap4Rev1CommandFactory;
 import org.apache.james.imap.decode.ImapCommandParserFactory;
 import org.apache.james.imap.decode.ImapDecoder;

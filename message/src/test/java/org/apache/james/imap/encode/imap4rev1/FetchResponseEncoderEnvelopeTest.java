@@ -21,7 +21,7 @@ package org.apache.james.imap.encode.imap4rev1;
 
 import javax.mail.Flags;
 
-import org.apache.james.api.imap.ImapCommand;
+import org.apache.james.imap.api.ImapCommand;
 import org.apache.james.imap.encode.ImapEncoder;
 import org.apache.james.imap.encode.ImapResponseComposer;
 import org.apache.james.imap.message.response.imap4rev1.FetchResponse;

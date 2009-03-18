@@ -18,10 +18,10 @@
  ****************************************************************/
 package org.apache.james.imap.decode.imap4rev1;
 
-import org.apache.james.api.imap.ImapCommand;
-import org.apache.james.api.imap.ImapMessage;
-import org.apache.james.api.imap.imap4rev1.Imap4Rev1CommandFactory;
-import org.apache.james.api.imap.message.IdRange;
+import org.apache.james.imap.api.ImapCommand;
+import org.apache.james.imap.api.ImapMessage;
+import org.apache.james.imap.api.imap4rev1.Imap4Rev1CommandFactory;
+import org.apache.james.imap.api.message.IdRange;
 import org.apache.james.imap.decode.ImapRequestLineReader;
 import org.apache.james.imap.decode.InitialisableCommandFactory;
 import org.apache.james.imap.decode.ProtocolException;
@@ -33,7 +33,7 @@ class CopyCommandParser extends AbstractUidCommandParser implements
     }
 
     /**
-     * @see org.apache.james.imap.decode.InitialisableCommandFactory#init(org.apache.james.api.imap.imap4rev1.Imap4Rev1CommandFactory)
+     * @see org.apache.james.imap.decode.InitialisableCommandFactory#init(org.apache.james.imap.api.imap4rev1.Imap4Rev1CommandFactory)
      */
     public void init(Imap4Rev1CommandFactory factory) {
         final ImapCommand command = factory.getCopy();

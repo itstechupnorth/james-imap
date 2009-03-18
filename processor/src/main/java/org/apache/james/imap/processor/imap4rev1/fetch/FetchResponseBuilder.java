@@ -31,10 +31,10 @@ import java.util.List;
 import javax.mail.Flags;
 import javax.mail.MessagingException;
 
-import org.apache.james.api.imap.message.BodyFetchElement;
-import org.apache.james.api.imap.message.FetchData;
-import org.apache.james.api.imap.process.ImapSession;
-import org.apache.james.api.imap.process.SelectedMailbox;
+import org.apache.james.imap.api.message.BodyFetchElement;
+import org.apache.james.imap.api.message.FetchData;
+import org.apache.james.imap.api.process.ImapSession;
+import org.apache.james.imap.api.process.SelectedMailbox;
 import org.apache.james.imap.mailbox.Content;
 import org.apache.james.imap.mailbox.Mailbox;
 import org.apache.james.imap.mailbox.MailboxException;

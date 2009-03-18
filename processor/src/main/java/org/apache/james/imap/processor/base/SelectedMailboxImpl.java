@@ -25,8 +25,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.apache.james.api.imap.AbstractLogEnabled;
-import org.apache.james.api.imap.process.SelectedMailbox;
+import org.apache.james.imap.api.AbstractLogEnabled;
+import org.apache.james.imap.api.process.SelectedMailbox;
 import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.MailboxManager;
 import org.apache.james.imap.mailbox.MailboxSession;
@@ -56,7 +56,7 @@ public class SelectedMailboxImpl extends AbstractLogEnabled implements
     }
 
     /**
-     * @see org.apache.james.api.imap.process.SelectedMailbox#deselect()
+     * @see org.apache.james.imap.api.process.SelectedMailbox#deselect()
      */
     public void deselect() {
         converter.close();

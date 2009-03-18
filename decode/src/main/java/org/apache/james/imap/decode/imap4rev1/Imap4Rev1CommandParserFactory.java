@@ -23,11 +23,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
-import org.apache.james.api.imap.AbstractLogEnabled;
-import org.apache.james.api.imap.ImapConstants;
-import org.apache.james.api.imap.imap4rev1.Imap4Rev1CommandFactory;
-import org.apache.james.api.imap.imap4rev1.Imap4Rev1MessageFactory;
-import org.apache.james.api.imap.message.response.imap4rev1.StatusResponseFactory;
+import org.apache.james.imap.api.AbstractLogEnabled;
+import org.apache.james.imap.api.ImapConstants;
+import org.apache.james.imap.api.imap4rev1.Imap4Rev1CommandFactory;
+import org.apache.james.imap.api.imap4rev1.Imap4Rev1MessageFactory;
+import org.apache.james.imap.api.message.response.imap4rev1.StatusResponseFactory;
 import org.apache.james.imap.decode.DelegatingImapCommandParser;
 import org.apache.james.imap.decode.ImapCommandParser;
 import org.apache.james.imap.decode.ImapCommandParserFactory;

@@ -20,7 +20,7 @@ package org.apache.james.imap.message.response.imap4rev1.server;
 
 import java.util.List;
 
-import org.apache.james.api.imap.message.response.ImapResponseMessage;
+import org.apache.james.imap.api.message.response.ImapResponseMessage;
 
 /**
  * A <code>CAPABILITY</code> response. See <code>7.2.1</code> of 

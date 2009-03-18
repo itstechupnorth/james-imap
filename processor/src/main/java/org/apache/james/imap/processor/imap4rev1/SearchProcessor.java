@@ -27,17 +27,17 @@ import java.util.TreeSet;
 
 import javax.mail.Flags.Flag;
 
-import org.apache.james.api.imap.ImapCommand;
-import org.apache.james.api.imap.ImapConstants;
-import org.apache.james.api.imap.ImapMessage;
-import org.apache.james.api.imap.message.IdRange;
-import org.apache.james.api.imap.message.request.DayMonthYear;
-import org.apache.james.api.imap.message.request.ImapRequest;
-import org.apache.james.api.imap.message.request.SearchKey;
-import org.apache.james.api.imap.message.response.imap4rev1.StatusResponseFactory;
-import org.apache.james.api.imap.process.ImapProcessor;
-import org.apache.james.api.imap.process.ImapSession;
-import org.apache.james.api.imap.process.SelectedMailbox;
+import org.apache.james.imap.api.ImapCommand;
+import org.apache.james.imap.api.ImapConstants;
+import org.apache.james.imap.api.ImapMessage;
+import org.apache.james.imap.api.message.IdRange;
+import org.apache.james.imap.api.message.request.DayMonthYear;
+import org.apache.james.imap.api.message.request.ImapRequest;
+import org.apache.james.imap.api.message.request.SearchKey;
+import org.apache.james.imap.api.message.response.imap4rev1.StatusResponseFactory;
+import org.apache.james.imap.api.process.ImapProcessor;
+import org.apache.james.imap.api.process.ImapSession;
+import org.apache.james.imap.api.process.SelectedMailbox;
 import org.apache.james.imap.mailbox.Mailbox;
 import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.MailboxManagerProvider;

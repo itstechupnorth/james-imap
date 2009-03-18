@@ -19,11 +19,11 @@
 
 package org.apache.james.imap.message.response.imap4rev1.status;
 
-import org.apache.james.api.imap.ImapCommand;
-import org.apache.james.api.imap.display.HumanReadableTextKey;
-import org.apache.james.api.imap.message.response.imap4rev1.StatusResponse;
-import org.apache.james.api.imap.message.response.imap4rev1.StatusResponseFactory;
-import org.apache.james.api.imap.message.response.imap4rev1.StatusResponse.ResponseCode;
+import org.apache.james.imap.api.ImapCommand;
+import org.apache.james.imap.api.display.HumanReadableTextKey;
+import org.apache.james.imap.api.message.response.imap4rev1.StatusResponse;
+import org.apache.james.imap.api.message.response.imap4rev1.StatusResponseFactory;
+import org.apache.james.imap.api.message.response.imap4rev1.StatusResponse.ResponseCode;
 
 public abstract class AbstactStatusResponseFactory implements
         StatusResponseFactory {

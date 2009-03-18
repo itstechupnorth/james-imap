@@ -19,7 +19,7 @@
 
 package org.apache.james.imap.decode;
 
-import org.apache.james.api.imap.ImapMessage;
+import org.apache.james.imap.api.ImapMessage;
 
 /**
  * <p>

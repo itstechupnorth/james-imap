@@ -22,7 +22,7 @@ import java.util.Date;
 
 import javax.mail.Flags;
 
-import org.apache.james.api.imap.ImapCommand;
+import org.apache.james.imap.api.ImapCommand;
 
 public class AppendRequest extends AbstractImapRequest {
     private final String mailboxName;

@@ -20,10 +20,10 @@
 package org.apache.james.imap.processor.base;
 
 import org.apache.commons.logging.Log;
-import org.apache.james.api.imap.AbstractLogEnabled;
-import org.apache.james.api.imap.ImapMessage;
-import org.apache.james.api.imap.process.ImapProcessor;
-import org.apache.james.api.imap.process.ImapSession;
+import org.apache.james.imap.api.AbstractLogEnabled;
+import org.apache.james.imap.api.ImapMessage;
+import org.apache.james.imap.api.process.ImapProcessor;
+import org.apache.james.imap.api.process.ImapSession;
 
 abstract public class AbstractChainedProcessor extends AbstractLogEnabled
         implements ImapProcessor {

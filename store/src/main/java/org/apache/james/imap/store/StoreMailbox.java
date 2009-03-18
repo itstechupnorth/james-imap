@@ -38,7 +38,7 @@ import javax.mail.Flags;
 import javax.mail.MessagingException;
 
 import org.apache.commons.logging.Log;
-import org.apache.james.api.imap.AbstractLogEnabled;
+import org.apache.james.imap.api.AbstractLogEnabled;
 import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.MailboxListener;
 import org.apache.james.imap.mailbox.MailboxNotFoundException;

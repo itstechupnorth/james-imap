@@ -23,7 +23,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import org.apache.james.api.imap.AbstractLogEnabled;
+import org.apache.james.imap.api.AbstractLogEnabled;
 
 /**
  * Wraps the client input reader with a bunch of convenience methods, allowing

@@ -27,7 +27,7 @@ import java.util.TimeZone;
 
 import javax.mail.Flags;
 
-import org.apache.james.api.imap.message.MessageFlags;
+import org.apache.james.imap.api.message.MessageFlags;
 
 /**
  * Utility procedures.

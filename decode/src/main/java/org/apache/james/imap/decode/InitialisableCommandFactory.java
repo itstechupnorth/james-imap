@@ -18,7 +18,7 @@
  ****************************************************************/
 package org.apache.james.imap.decode;
 
-import org.apache.james.api.imap.imap4rev1.Imap4Rev1CommandFactory;
+import org.apache.james.imap.api.imap4rev1.Imap4Rev1CommandFactory;
 
 public interface InitialisableCommandFactory {
 

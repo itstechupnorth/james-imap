@@ -19,7 +19,7 @@
 
 package org.apache.james.imap.mailbox;
 
-import org.apache.james.api.imap.display.HumanReadableTextKey;
+import org.apache.james.imap.api.display.HumanReadableTextKey;
 
 /**
  * Indicates exception during subscription processing.
