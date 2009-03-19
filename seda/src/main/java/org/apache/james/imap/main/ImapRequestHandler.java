@@ -130,6 +130,7 @@ public final class ImapRequestHandler extends AbstractLogEnabled {
 
                 result = !(ImapSessionState.LOGOUT == session.getState());
             } else {
+                logger.debug("Connection was abandoned after request processing failed.");
                 result = false;
                 abandon(output, session);
             }
