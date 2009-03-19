@@ -16,6 +16,29 @@
 # specific language governing permissions and limitations      #
 # under the License.                                           #
 ################################################################
+C: f CREATE anothermailbox
+S: f OK CREATE completed\.
+C: g APPEND anothermailbox {704+}
+C: Received: by 10.114.81.13 with HTTP; Sat, 2 Feb 2008 05:14:19 -0800 (PST)
+C: Message-ID: <f470f68e0802020514m6eaba233u96a9021a2697a48d@mail.gmail.com>
+C: Date: Sat, 2 Feb 2008 13:14:19 +0000
+C: From: "Robert Burrell Donkin" <robertburrelldonkin@gmail.com>
+C: To: "James Developers List" <server-dev@james.apache.org>
+C: Subject: JCR -> trunk ...?
+C: MIME-Version: 1.0
+C: Content-Type: text/plain; charset=ISO-8859-1
+C: Content-Transfer-Encoding: 7bit
+C: Content-Disposition: inline
+C: Delivered-To: robertburrelldonkin@gmail.com
+C: 
+C: i'd like to copy james-jcr into trunk and add some example
+C: configurations. development can continue in the sandbox (or not) and
+C: merged in later (if necessary).
+C: 
+C: any objections?
+C: 
+C: - robert
+S: g OK APPEND completed\.
 C: a SEARCH FLAGGED
 S: \* SEARCH
 S: a OK SEARCH completed.

@@ -684,6 +684,7 @@ public class TorqueMailbox extends AbstractLogEnabled implements Mailbox {
                 preSelectUid(results, uidCriterion);
             }
         }
+        results.and(MessageRowPeer.MAILBOX_ID, mailboxRow.getMailboxId());
         return results;
     }
 
