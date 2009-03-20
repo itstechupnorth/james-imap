@@ -19,6 +19,7 @@
 
 package org.apache.james.imap.api.process;
 
+import org.apache.commons.logging.Log;
 import org.apache.james.imap.api.ImapSessionState;
 
 /**
@@ -29,6 +30,15 @@ import org.apache.james.imap.api.ImapSessionState;
  * @version $Revision: 109034 $
  */
 public interface ImapSession {
+    
+    /**
+     * Gets the context sensitive log for this session.
+     * Understanding the context of a log message is an important
+     * comprehension aid when analying multi-threaded systems.
+     * Using this log allows context information to be associated.
+     * @return context sensitive log, not null
+     */
+    Log getLog();
 
     /**
      * Logs out the session. Marks the connection for closure;
