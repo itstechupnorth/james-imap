@@ -25,7 +25,6 @@ import java.io.PrintWriter;
 import java.nio.channels.Channels;
 import java.nio.channels.WritableByteChannel;
 
-import org.apache.james.imap.api.AbstractLogEnabled;
 import org.apache.james.imap.api.ImapConstants;
 import org.apache.james.imap.encode.ImapResponseWriter;
 import org.apache.james.imap.message.response.Literal;
@@ -34,8 +33,7 @@ import org.apache.james.imap.message.response.Literal;
  * Class providing methods to send response messages from the server to the
  * client.
  */
-public class ByteImapResponseWriter extends AbstractLogEnabled implements
-        ImapConstants, ImapResponseWriter {
+public class ByteImapResponseWriter implements ImapConstants, ImapResponseWriter {
 
     private static final int LOWER_CASE_OFFSET = 'a' - 'A';
 

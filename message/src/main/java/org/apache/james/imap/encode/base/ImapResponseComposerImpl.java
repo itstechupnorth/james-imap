@@ -26,7 +26,6 @@ import java.util.List;
 
 import javax.mail.Flags;
 
-import org.apache.james.imap.api.AbstractLogEnabled;
 import org.apache.james.imap.api.ImapCommand;
 import org.apache.james.imap.api.ImapConstants;
 import org.apache.james.imap.encode.ImapResponseComposer;
@@ -37,8 +36,7 @@ import org.apache.james.imap.message.response.Literal;
  * Class providing methods to send response messages from the server to the
  * client.
  */
-public class ImapResponseComposerImpl extends AbstractLogEnabled implements
-        ImapConstants, ImapResponseComposer {
+public class ImapResponseComposerImpl implements ImapConstants, ImapResponseComposer {
 
     public static final String ENVELOPE = "ENVELOPE";
 

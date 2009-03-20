@@ -22,8 +22,6 @@ package org.apache.james.imap.decode.parser;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.james.imap.api.AbstractLogEnabled;
 import org.apache.james.imap.api.Imap4Rev1CommandFactory;
 import org.apache.james.imap.api.Imap4Rev1MessageFactory;
 import org.apache.james.imap.api.ImapConstants;
@@ -40,7 +38,7 @@ import org.apache.james.imap.decode.MessagingImapCommandParser;
  * 
  * @version $Revision: 109034 $
  */
-public class Imap4Rev1CommandParserFactory extends AbstractLogEnabled implements
+public class Imap4Rev1CommandParserFactory implements
         ImapCommandParserFactory {
     private Map<String, Class> _imapCommands;
 
@@ -145,16 +143,12 @@ public class Imap4Rev1CommandParserFactory extends AbstractLogEnabled implements
     }
 
     private ImapCommandParser createCommand(Class commandClass) {
-        final Log logger = getLog();
         try {
             ImapCommandParser cmd = (ImapCommandParser) commandClass
                     .newInstance();
-            initialiseParser(commandClass, logger, cmd);
+            initialiseParser(commandClass, cmd);
             return cmd;
         } catch (Exception e) {
-            if (logger.isWarnEnabled()) {
-                logger.warn("Create command instance failed: ", e);
-            }
             // TODO: would probably be better to manage this in protocol
             // TODO: this runtime will produce a nasty disconnect for the client
             throw new RuntimeException("Could not create command instance: "
@@ -162,13 +156,8 @@ public class Imap4Rev1CommandParserFactory extends AbstractLogEnabled implements
         }
     }
 
-    protected void initialiseParser(Class commandClass, final Log logger,
-            ImapCommandParser cmd) {
-        setupLogger(cmd);
-        if (logger.isDebugEnabled()) {
-            logger.debug("Created command " + commandClass);
-        }
-
+    protected void initialiseParser(Class commandClass, ImapCommandParser cmd) {
+        
         if (cmd instanceof DelegatingImapCommandParser) {
             ((DelegatingImapCommandParser) cmd).setParserFactory(this);
         }

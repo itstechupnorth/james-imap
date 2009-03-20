@@ -23,8 +23,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import org.apache.james.imap.api.AbstractLogEnabled;
-
 /**
  * Wraps the client input reader with a bunch of convenience methods, allowing
  * lookahead=1 on the underlying character stream. TODO need to look at
@@ -32,7 +30,7 @@ import org.apache.james.imap.api.AbstractLogEnabled;
  * 
  * @version $Revision: 109034 $
  */
-public class ImapRequestLineReader extends AbstractLogEnabled {
+public class ImapRequestLineReader {
     private InputStream input;
 
     private OutputStream output;

@@ -106,7 +106,6 @@ public final class ImapRequestHandler extends AbstractLogEnabled {
 
             ImapResponseComposerImpl response = new ImapResponseComposerImpl(
                     new OutputStreamImapResponseWriter(output));
-            response.setLog(logger);
 
             if (doProcessRequest(request, response, session)) {
 
