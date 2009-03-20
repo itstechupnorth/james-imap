@@ -53,7 +53,7 @@ public class StatusProcessor extends AbstractMailboxProcessor {
         final StatusRequest request = (StatusRequest) message;
         final String mailboxName = request.getMailboxName();
         final StatusDataItems statusDataItems = request.getStatusDataItems();
-        final Log logger = getLog();
+        final Log logger = session.getLog();
         final MailboxSession mailboxSession = ImapSessionUtils
                 .getMailboxSession(session);
 
@@ -84,7 +84,7 @@ public class StatusProcessor extends AbstractMailboxProcessor {
             okComplete(command, tag, responder);
 
         } catch (MailboxException e) {
-            no(command, tag, responder, e);
+            no(command, tag, responder, e, session);
         }
     }
 

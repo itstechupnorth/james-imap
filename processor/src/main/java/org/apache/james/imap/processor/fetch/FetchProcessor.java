@@ -72,7 +72,7 @@ public class FetchProcessor extends AbstractMailboxProcessor {
             final Mailbox mailbox = getSelectedMailbox(session);
             for (int i = 0; i < idSet.length; i++) {
                 final FetchResponseBuilder builder = new FetchResponseBuilder(
-                        new EnvelopeBuilder(getLog()));
+                        new EnvelopeBuilder(session.getLog()));
                 final long highVal;
                 final long lowVal;
                 if (useUids) {
@@ -102,7 +102,7 @@ public class FetchProcessor extends AbstractMailboxProcessor {
             no(command, tag, responder,
                     HumanReadableTextKey.UNSUPPORTED_SEARCH_CRITERIA);
         } catch (MessagingException e) {
-            no(command, tag, responder, e);
+            no(command, tag, responder, e, session);
         } catch (ParseException e) {
             no(command, tag, responder, HumanReadableTextKey.FAILURE_MAIL_PARSE);
         }

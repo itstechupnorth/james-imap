@@ -58,7 +58,7 @@ public class SubscribeProcessor extends AbstractMailboxProcessor {
             okComplete(command, tag, responder);
 
         } catch (SubscriptionException e) {
-            getLog().debug("Subscription failed", e);
+            session.getLog().debug("Subscription failed", e);
             unsolicitedResponses(session, responder, false);
 
             final HumanReadableTextKey exceptionKey = e.getKey();
@@ -70,7 +70,7 @@ public class SubscribeProcessor extends AbstractMailboxProcessor {
             }
             no(command, tag, responder, displayTextKey);
         } catch (MailboxException e) {
-            getLog().debug("Subscription failed", e);
+            session.getLog().debug("Subscription failed", e);
             unsolicitedResponses(session, responder, false);
 
             final HumanReadableTextKey displayTextKey = HumanReadableTextKey.GENERIC_SUBSCRIPTION_FAILURE;

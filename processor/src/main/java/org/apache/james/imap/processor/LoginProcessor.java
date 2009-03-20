@@ -70,13 +70,13 @@ public class LoginProcessor extends AbstractMailboxProcessor {
                 ImapSessionUtils.setUserName(session, userid);
                 final String inboxName = buildFullName(session, MailboxManager.INBOX);
                 if (mailboxManager.mailboxExists(inboxName)) {
-                    getLog().debug("INBOX exists. No need to create it.");
+                    session.getLog().debug("INBOX exists. No need to create it.");
                 } else {
                     try {
-                        getLog().debug("INBOX does not exist. Creating it.");
+                        session.getLog().debug("INBOX does not exist. Creating it.");
                         mailboxManager.createMailbox(inboxName);
                     } catch (MailboxExistsException e) {
-                        getLog().debug("Mailbox created by concurrent call. Safe to ignore this exception.");
+                        session.getLog().debug("Mailbox created by concurrent call. Safe to ignore this exception.");
                     }
                 }
                 okComplete(command, tag, responder);
@@ -95,13 +95,13 @@ public class LoginProcessor extends AbstractMailboxProcessor {
                     no(command, tag, responder,
                             HumanReadableTextKey.INVALID_LOGIN);
                 } else {
-                    getLog().info("Too many authentication failures. Closing connection.");
+                    session.getLog().info("Too many authentication failures. Closing connection.");
                     bye(responder, HumanReadableTextKey.TOO_MANY_FAILURES);
                     session.logout();
                 }
             }
         } catch (MailboxException e) {
-            getLog().debug("Login failed", e);
+            session.getLog().debug("Login failed", e);
             final HumanReadableTextKey displayTextKey = HumanReadableTextKey.INVALID_LOGIN;
             no(command, tag, responder, displayTextKey);
         }

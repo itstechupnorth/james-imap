@@ -77,7 +77,7 @@ public class SearchProcessor extends AbstractMailboxProcessor {
             unsolicitedResponses(session, responder, omitExpunged, useUids);
             okComplete(command, tag, responder);
         } catch (MailboxException e) {
-            no(command, tag, responder, e);
+            no(command, tag, responder, e, session);
         }
     }
 
@@ -217,7 +217,7 @@ public class SearchProcessor extends AbstractMailboxProcessor {
             case SearchKey.TYPE_UNSEEN:
                 return SearchQuery.flagIsUnSet(Flag.SEEN);
             default:
-                getLog().warn("Ignoring unknown search key.");
+                session.getLog().warn("Ignoring unknown search key.");
                 return SearchQuery.all();
         }
     }

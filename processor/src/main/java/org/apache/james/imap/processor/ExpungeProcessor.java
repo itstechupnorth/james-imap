@@ -71,7 +71,7 @@ public class ExpungeProcessor extends AbstractMailboxProcessor {
                 okComplete(command, tag, responder);
             }
         } catch (MailboxException e) {
-            no(command, tag, responder, e);
+            no(command, tag, responder, e, session);
         }
     }
 }

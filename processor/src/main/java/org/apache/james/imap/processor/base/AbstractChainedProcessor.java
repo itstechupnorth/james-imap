@@ -19,14 +19,11 @@
 
 package org.apache.james.imap.processor.base;
 
-import org.apache.commons.logging.Log;
-import org.apache.james.imap.api.AbstractLogEnabled;
 import org.apache.james.imap.api.ImapMessage;
 import org.apache.james.imap.api.process.ImapProcessor;
 import org.apache.james.imap.api.process.ImapSession;
 
-abstract public class AbstractChainedProcessor extends AbstractLogEnabled
-        implements ImapProcessor {
+abstract public class AbstractChainedProcessor implements ImapProcessor {
 
     private final ImapProcessor next;
 
@@ -38,11 +35,6 @@ abstract public class AbstractChainedProcessor extends AbstractLogEnabled
      */
     public AbstractChainedProcessor(final ImapProcessor next) {
         this.next = next;
-    }
-
-    public void setLog(Log logger) {
-        super.setLog(logger);
-        setupLogger(next);
     }
 
     public void process(ImapMessage message, Responder responder,

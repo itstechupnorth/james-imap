@@ -44,7 +44,7 @@ public class AuthenticateProcessor extends AbstractMailboxProcessor {
             String tag, ImapCommand command, Responder responder) {
         final AuthenticateRequest request = (AuthenticateRequest) message;
         final String authType = request.getAuthType();
-        getLog()
+        session.getLog()
                 .info("Unsupported authentication mechanism '" + authType + "'");
         no(command, tag, responder,
                 HumanReadableTextKey.UNSUPPORTED_AUTHENTICATION_MECHANISM);

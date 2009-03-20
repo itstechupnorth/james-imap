@@ -69,7 +69,7 @@ public class LSubProcessor extends AbstractMailboxProcessor {
             okComplete(command, tag, responder);
 
         } catch (SubscriptionException e) {
-            getLog().debug("Subscription failed", e);
+            session.getLog().debug("Subscription failed", e);
             final HumanReadableTextKey exceptionKey = e.getKey();
             final HumanReadableTextKey displayTextKey;
             if (exceptionKey == null) {
@@ -79,7 +79,7 @@ public class LSubProcessor extends AbstractMailboxProcessor {
             }
             no(command, tag, responder, displayTextKey);
         } catch (MailboxException e) {
-            getLog().debug("Subscription failed", e);
+            session.getLog().debug("Subscription failed", e);
             final HumanReadableTextKey displayTextKey = HumanReadableTextKey.GENERIC_LSUB_FAILURE;
             no(command, tag, responder, displayTextKey);
         }

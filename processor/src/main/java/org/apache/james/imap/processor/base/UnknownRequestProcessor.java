@@ -20,7 +20,6 @@
 package org.apache.james.imap.processor.base;
 
 import org.apache.commons.logging.Log;
-import org.apache.james.imap.api.AbstractLogEnabled;
 import org.apache.james.imap.api.ImapCommand;
 import org.apache.james.imap.api.ImapMessage;
 import org.apache.james.imap.api.display.HumanReadableTextKey;
@@ -30,8 +29,7 @@ import org.apache.james.imap.api.message.response.StatusResponseFactory;
 import org.apache.james.imap.api.process.ImapProcessor;
 import org.apache.james.imap.api.process.ImapSession;
 
-public class UnknownRequestProcessor extends AbstractLogEnabled implements
-        ImapProcessor {
+public class UnknownRequestProcessor implements ImapProcessor {
 
     private final StatusResponseFactory factory;
 
@@ -41,7 +39,7 @@ public class UnknownRequestProcessor extends AbstractLogEnabled implements
     }
 
     public ImapResponseMessage process(ImapMessage message, ImapSession session) {
-        Log logger = getLog();
+        Log logger = session.getLog();
         if (logger != null && logger.isDebugEnabled()) {
             logger.debug("Unknown message: " + message);
         }

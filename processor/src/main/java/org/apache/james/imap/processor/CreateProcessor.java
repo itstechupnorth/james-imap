@@ -54,7 +54,7 @@ public class CreateProcessor extends AbstractMailboxProcessor {
             unsolicitedResponses(session, responder, false);
             okComplete(command, tag, responder);
         } catch (MailboxException e) {
-            no(command, tag, responder, e);
+            no(command, tag, responder, e, session);
         }
     }
 }

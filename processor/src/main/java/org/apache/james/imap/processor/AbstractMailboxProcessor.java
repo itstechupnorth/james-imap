@@ -83,8 +83,8 @@ abstract public class AbstractMailboxProcessor extends AbstractChainedProcessor 
     }
 
     protected void no(final ImapCommand command, final String tag,
-            final Responder responder, final MessagingException e) {
-        final Log logger = getLog();
+            final Responder responder, final MessagingException e, ImapSession session) {
+        final Log logger = session.getLog();
         final ImapResponseMessage response;
         if (e instanceof MailboxExistsException) {
             response = factory.taggedNo(tag, command,
@@ -128,7 +128,7 @@ abstract public class AbstractMailboxProcessor extends AbstractChainedProcessor 
             boolean omitExpunged, boolean useUid) {
         final SelectedMailbox selected = session.getSelected();
         if (selected == null) {
-            getLog().debug("No mailbox selected");
+            session.getLog().debug("No mailbox selected");
         } else {
             unsolicitedResponses(session, responder, selected, omitExpunged, useUid);
         }
@@ -185,7 +185,7 @@ abstract public class AbstractMailboxProcessor extends AbstractChainedProcessor 
                 }
             }
         } catch (MessagingException e) {
-            handleResponseException(responder, e, HumanReadableTextKey.FAILURE_TO_LOAD_FLAGS);
+            handleResponseException(responder, e, HumanReadableTextKey.FAILURE_TO_LOAD_FLAGS, session);
         }
     }
 
@@ -239,14 +239,14 @@ abstract public class AbstractMailboxProcessor extends AbstractChainedProcessor 
             final ExistsResponse response = new ExistsResponse(messageCount);
             responder.respond(response);
         } catch (MailboxException e) {
-            handleResponseException(responder, e, HumanReadableTextKey.FAILURE_EXISTS_COUNT);
+            handleResponseException(responder, e, HumanReadableTextKey.FAILURE_EXISTS_COUNT, session);
         }
     }
 
     private void handleResponseException(final ImapProcessor.Responder responder,
-            MessagingException e, final HumanReadableTextKey message) {
-        getLog().info(message);
-        getLog().debug(message, e);
+            MessagingException e, final HumanReadableTextKey message, ImapSession session) {
+        session.getLog().info(message);
+        session.getLog().debug(message, e);
         // TODO: consider whether error message should be passed to the user
         final StatusResponse response = factory.untaggedNo(message);;
         responder.respond(response);

@@ -76,7 +76,7 @@ public class AppendProcessor extends AbstractMailboxProcessor {
             // assume that
             // TODO: improved API should communicate when this operation
             // TODO: fails whether the mailbox exists
-            Log logger = getLog();
+            Log logger = session.getLog();
             if (logger.isInfoEnabled()) {
                 logger.info(mme.getMessage());
             }
@@ -108,7 +108,7 @@ public class AppendProcessor extends AbstractMailboxProcessor {
             okComplete(command, tag, responder);
         } catch (MailboxException e) {
             // TODO why not TRYCREATE?
-            no(command, tag, responder, e);
+            no(command, tag, responder, e, session);
         }
     }
 }
