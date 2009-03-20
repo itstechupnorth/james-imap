@@ -24,7 +24,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 import org.apache.commons.logging.Log;
-import org.apache.james.imap.api.AbstractLogEnabled;
+import org.apache.commons.logging.LogFactory;
 import org.apache.james.imap.api.ImapMessage;
 import org.apache.james.imap.api.ImapSessionState;
 import org.apache.james.imap.api.message.response.ImapResponseMessage;
@@ -42,7 +42,7 @@ import org.apache.james.imap.encode.base.ImapResponseComposerImpl;
 /**
  * @version $Revision: 109034 $
  */
-public final class ImapRequestHandler extends AbstractLogEnabled {
+public final class ImapRequestHandler  {
 
     private static final byte[] ABANDON_SIGNOFF = { '*', ' ', 'B', 'Y', 'E',
             ' ', 'A', 'b', 'a', 'n', 'd', 'o', 'n', 'e', 'd', '\r', '\n' };
@@ -52,6 +52,11 @@ public final class ImapRequestHandler extends AbstractLogEnabled {
             'i', 'l', 'b', 'o', 'x', ' ', 'h', 'a', 's', ' ', 'b', 'e', 'e',
             'n', ' ', 'd', 'e', 'l', 'e', 't', 'e', 'd', '\r', '\n' };
 
+    private static final Log IMAP_LOG = LogFactory.getLog("org.apache.james.imap");
+    
+    private Log log = IMAP_LOG;
+
+    
     private final ImapDecoder decoder;
 
     private final ImapProcessor processor;
@@ -65,11 +70,12 @@ public final class ImapRequestHandler extends AbstractLogEnabled {
         this.encoder = encoder;
     }
 
-    /**
-     * @see org.apache.avalon.framework.logger.AbstractLogEnabled#enableLogging(org.apache.avalon.framework.logger.Logger)
-     */
-    public void setLog(Log logger) {
-        super.setLog(logger);
+    public Log getLog() {
+        return log;
+    }
+
+    public void setLog(Log log) {
+        this.log = log;
     }
 
     /**
@@ -92,7 +98,6 @@ public final class ImapRequestHandler extends AbstractLogEnabled {
         } else {
             ImapRequestLineReader request = new ImapRequestLineReader(input,
                     output);
-            setupLogger(request);
 
             final Log logger = getLog();
             try {

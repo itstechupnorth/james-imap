@@ -25,14 +25,12 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.apache.james.imap.api.AbstractLogEnabled;
 import org.apache.james.imap.api.process.SelectedMailbox;
 import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.MailboxManager;
 import org.apache.james.imap.mailbox.MailboxSession;
 
-public class SelectedMailboxImpl extends AbstractLogEnabled implements
-        SelectedMailbox {
+public class SelectedMailboxImpl implements SelectedMailbox {
 
     private final MailboxEventAnalyser events;
 

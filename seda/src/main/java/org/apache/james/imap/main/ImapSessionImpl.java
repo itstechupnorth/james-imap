@@ -22,7 +22,8 @@ package org.apache.james.imap.main;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.apache.james.imap.api.AbstractLogEnabled;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.james.imap.api.ImapConstants;
 import org.apache.james.imap.api.ImapSessionState;
 import org.apache.james.imap.api.process.ImapSession;
@@ -31,18 +32,30 @@ import org.apache.james.imap.api.process.SelectedMailbox;
 /**
  * Implements a session.
  */
-public final class ImapSessionImpl extends AbstractLogEnabled implements
-        ImapSession, ImapConstants {
+public final class ImapSessionImpl implements ImapSession, ImapConstants {
+    private static final Log IMAP_LOG = LogFactory.getLog("org.apache.james.imap");
+
+    private Log log = IMAP_LOG;
+    
     private ImapSessionState state = ImapSessionState.NON_AUTHENTICATED;
 
     private SelectedMailbox selectedMailbox = null;
-
+    
     private final Map<String, Object> attributesByKey;
 
     public ImapSessionImpl() {
         this.attributesByKey = new ConcurrentHashMap<String, Object>();
     }
 
+
+    public Log getLog() {
+        return log;
+    }
+    
+    public void setLog(Log log) {
+        this.log = log;
+    }
+    
     public void logout() {
         closeMailbox();
         state = ImapSessionState.LOGOUT;
@@ -58,7 +71,6 @@ public final class ImapSessionImpl extends AbstractLogEnabled implements
     }
 
     public void selected(SelectedMailbox mailbox) {
-        setupLogger(mailbox);
         this.state = ImapSessionState.SELECTED;
         closeMailbox();
         this.selectedMailbox = mailbox;

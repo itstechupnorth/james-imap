@@ -18,13 +18,11 @@
  ****************************************************************/
 package org.apache.james.imap.message.request;
 
-import org.apache.james.imap.api.AbstractLogEnabled;
 import org.apache.james.imap.api.ImapCommand;
 import org.apache.james.imap.api.ImapMessage;
 import org.apache.james.imap.api.message.request.ImapRequest;
 
-abstract public class AbstractImapRequest extends AbstractLogEnabled implements
-        ImapMessage, ImapRequest {
+abstract public class AbstractImapRequest implements ImapMessage, ImapRequest {
 
     private final String tag;
 
