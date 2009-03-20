@@ -85,7 +85,7 @@ public class FetchCommandParserPartialFetchTest extends MockObjectTestCase {
             ImapRequestLineReader reader = new ImapRequestLineReader(
                     new ByteArrayInputStream("1 (BODY[]<20.0>)\r\n"
                             .getBytes("US-ASCII")), new ByteArrayOutputStream());
-            parser.decode(command, reader, "A01", false);
+            parser.decode(command, reader, "A01", false, new MockLogger());
             fail("Number of octets must be non-zero");
         } catch (ProtocolException e) {
             // expected
@@ -101,6 +101,6 @@ public class FetchCommandParserPartialFetchTest extends MockObjectTestCase {
             oneOf (mockMessageFactory).createFetchMessage( with(equal(command)), with(equal(useUids)), 
                     with(equal(idSet)),with(equal(data)), with(same(tag)));will(returnValue(message));
         }});
-        parser.decode(command, reader, tag, useUids);
+        parser.decode(command, reader, tag, useUids, new MockLogger());
     }
 }

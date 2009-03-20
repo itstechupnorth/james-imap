@@ -18,6 +18,7 @@
  ****************************************************************/
 package org.apache.james.imap.decode.parser;
 
+import org.apache.commons.logging.Log;
 import org.apache.james.imap.api.Imap4Rev1CommandFactory;
 import org.apache.james.imap.api.ImapCommand;
 import org.apache.james.imap.api.ImapMessage;
@@ -41,7 +42,7 @@ class SelectCommandParser extends AbstractImapCommandParser implements
     }
 
     protected ImapMessage decode(ImapCommand command,
-            ImapRequestLineReader request, String tag) throws ProtocolException {
+            ImapRequestLineReader request, String tag, Log logger) throws ProtocolException {
         final String mailboxName = mailbox(request);
         endLine(request);
         final ImapMessage result = getMessageFactory().createSelectMessage(

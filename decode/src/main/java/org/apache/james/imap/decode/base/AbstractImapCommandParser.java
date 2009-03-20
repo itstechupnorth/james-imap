@@ -33,7 +33,7 @@ import java.util.Date;
 
 import javax.mail.Flags;
 
-import org.apache.james.imap.api.AbstractLogEnabled;
+import org.apache.commons.logging.Log;
 import org.apache.james.imap.api.Imap4Rev1MessageFactory;
 import org.apache.james.imap.api.ImapCommand;
 import org.apache.james.imap.api.ImapConstants;
@@ -55,8 +55,7 @@ import org.apache.james.imap.decode.ProtocolException;
  * 
  * @version $Revision: 109034 $
  */
-public abstract class AbstractImapCommandParser extends AbstractLogEnabled
-        implements ImapCommandParser, MessagingImapCommandParser {
+public abstract class AbstractImapCommandParser implements ImapCommandParser, MessagingImapCommandParser {
     private static final int QUOTED_BUFFER_INITIAL_CAPACITY = 64;
 
     private static final Charset US_ASCII = Charset.forName("US-ASCII");
@@ -109,16 +108,15 @@ public abstract class AbstractImapCommandParser extends AbstractLogEnabled
      *            <code>ImapRequestLineReader</code>, not null
      * @return <code>ImapCommandMessage</code>, not null
      */
-    public final ImapMessage parse(ImapRequestLineReader request, String tag) {
+    public final ImapMessage parse(ImapRequestLineReader request, String tag, Log logger) {
         ImapMessage result;
         try {
 
-            ImapMessage message = decode(command, request, tag);
-            setupLogger(message);
+            ImapMessage message = decode(command, request, tag, logger);
             result = message;
 
         } catch (ProtocolException e) {
-            getLog().debug("Cannot parse protocol ", e);
+            logger.debug("Cannot parse protocol ", e);
             result = messageFactory.taggedBad(tag, command,
                     HumanReadableTextKey.ILLEGAL_ARGUMENTS);
         }
@@ -127,18 +125,19 @@ public abstract class AbstractImapCommandParser extends AbstractLogEnabled
 
     /**
      * Parses a request into a command message for later processing.
-     * 
+     * @param command
+     *            <code>ImapCommand</code> to be parsed, not null
      * @param request
      *            <code>ImapRequestLineReader</code>, not null
      * @param tag command tag, not null
-     * @param command
-     *            <code>ImapCommand</code> to be parsed, not null
+     * @param logger TODO
+     * @param logger TODO
      * @return <code>ImapCommandMessage</code>, not null
      * @throws ProtocolException
      *             if the request cannot be parsed
      */
     protected abstract ImapMessage decode(ImapCommand command,
-            ImapRequestLineReader request, String tag) throws ProtocolException;
+            ImapRequestLineReader request, String tag, Log logger) throws ProtocolException;
 
     /**
      * Reads an argument of type "atom" from the request.

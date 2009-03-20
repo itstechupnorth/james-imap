@@ -19,7 +19,6 @@
 package org.apache.james.imap.decode.main;
 
 import org.apache.commons.logging.Log;
-import org.apache.james.imap.api.AbstractLogEnabled;
 import org.apache.james.imap.api.Imap4Rev1MessageFactory;
 import org.apache.james.imap.api.ImapMessage;
 import org.apache.james.imap.api.ImapSessionState;
@@ -32,8 +31,7 @@ import org.apache.james.imap.decode.ImapRequestLineReader;
 import org.apache.james.imap.decode.ProtocolException;
 import org.apache.james.imap.decode.base.AbstractImapCommandParser;
 
-public class DefaultImapDecoder extends AbstractLogEnabled implements
-        ImapDecoder {
+public class DefaultImapDecoder implements ImapDecoder {
 
     private final Imap4Rev1MessageFactory messageFactory;
 
@@ -44,15 +42,10 @@ public class DefaultImapDecoder extends AbstractLogEnabled implements
         this.messageFactory = messageFactory;
         this.imapCommands = imapCommands;
     }
-
-    public void setLog(Log logger) {
-        super.setLog(logger);
-        setupLogger(imapCommands);
-    }
-
+    
     public ImapMessage decode(ImapRequestLineReader request, ImapSession session) {
         ImapMessage message;
-        final Log logger = getLog();
+        final Log logger = session.getLog();
 
         try {
             final String tag = AbstractImapCommandParser.tag(request);
@@ -113,7 +106,7 @@ public class DefaultImapDecoder extends AbstractLogEnabled implements
             logger.info("Missing command implementation.");
             message = unknownCommand(tag, session);
         } else {
-            message = command.parse(request, tag);
+            message = command.parse(request, tag, logger);
         }
         return message;
     }

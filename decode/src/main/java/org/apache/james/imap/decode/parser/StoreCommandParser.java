@@ -20,6 +20,7 @@ package org.apache.james.imap.decode.parser;
 
 import javax.mail.Flags;
 
+import org.apache.commons.logging.Log;
 import org.apache.james.imap.api.Imap4Rev1CommandFactory;
 import org.apache.james.imap.api.ImapCommand;
 import org.apache.james.imap.api.ImapMessage;
@@ -42,7 +43,7 @@ class StoreCommandParser extends AbstractUidCommandParser implements
     }
 
     protected ImapMessage decode(ImapCommand command,
-            ImapRequestLineReader request, String tag, boolean useUids)
+            ImapRequestLineReader request, String tag, boolean useUids, Log logger)
             throws ProtocolException {
         final IdRange[] idSet = parseIdRange(request);
         final Boolean sign;

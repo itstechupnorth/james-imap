@@ -18,6 +18,7 @@
  ****************************************************************/
 package org.apache.james.imap.decode.parser;
 
+import org.apache.commons.logging.Log;
 import org.apache.james.imap.api.Imap4Rev1CommandFactory;
 import org.apache.james.imap.api.ImapCommand;
 import org.apache.james.imap.api.ImapMessage;
@@ -59,7 +60,7 @@ class UidCommandParser extends AbstractImapCommandParser implements
     }
 
     protected ImapMessage decode(ImapCommand command,
-            ImapRequestLineReader request, String tag) throws ProtocolException {
+            ImapRequestLineReader request, String tag, Log logger) throws ProtocolException {
         // TODO: check the logic against the specification:
         // TODO: suspect that it is now bust
         // TODO: the command written may be wrong
@@ -74,7 +75,7 @@ class UidCommandParser extends AbstractImapCommandParser implements
                     + "'");
         }
         final AbstractUidCommandParser uidEnabled = (AbstractUidCommandParser) helperCommand;
-        final ImapMessage result = uidEnabled.decode(request, tag, true);
+        final ImapMessage result = uidEnabled.decode(request, tag, true, logger);
         return result;
     }
 

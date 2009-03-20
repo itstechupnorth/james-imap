@@ -152,7 +152,6 @@ public class SearchCommandParserQuotedCharsetTest extends MockObjectTestCase {
         parser.init(mockCommandFactory);
         parser.setMessageFactory(mockMessageFactory);
         parser.setStatusResponseFactory(mockStatusResponseFactory);
-        parser.setLog(new MockLogger());
     }
 
     protected void tearDown() throws Exception {
@@ -199,7 +198,7 @@ public class SearchCommandParserQuotedCharsetTest extends MockObjectTestCase {
         ImapRequestLineReader reader = new ImapRequestLineReader(
                 new ByteArrayInputStream("CHARSET BOGUS ".getBytes("US-ASCII")),
                 new ByteArrayOutputStream());
-        parser.decode(command, reader, TAG, false);
+        parser.decode(command, reader, TAG, false, new MockLogger());
     }
 
     public void testShouldThrowProtocolExceptionWhenBytesAreNotEncodedByCharset()
@@ -209,7 +208,7 @@ public class SearchCommandParserQuotedCharsetTest extends MockObjectTestCase {
                     new ByteArrayInputStream(add("CHARSET US-ASCII BCC "
                             .getBytes("US-ASCII"), BYTES_NON_ASCII_SEARCH_TERM)),
                     new ByteArrayOutputStream());
-            parser.decode(command, reader, TAG, false);
+            parser.decode(command, reader, TAG, false, new MockLogger());
             fail("A protocol exception should be thrown when charset is incompatible with input");
         } catch (ProtocolException e) {
             // expected

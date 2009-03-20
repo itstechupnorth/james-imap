@@ -28,6 +28,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.logging.Log;
 import org.apache.james.imap.api.Imap4Rev1CommandFactory;
 import org.apache.james.imap.api.ImapCommand;
 import org.apache.james.imap.api.ImapMessage;
@@ -947,7 +948,7 @@ class SearchCommandParser extends AbstractUidCommandParser implements
     }
 
     protected ImapMessage decode(ImapCommand command,
-            ImapRequestLineReader request, String tag, boolean useUids)
+            ImapRequestLineReader request, String tag, boolean useUids, Log logger)
             throws ProtocolException {
         try {
             // Parse the search term from the request
@@ -957,10 +958,10 @@ class SearchCommandParser extends AbstractUidCommandParser implements
                     command, key, useUids, tag);
             return result;
         } catch (IllegalCharsetNameException e) {
-            getLog().debug(e.getMessage());
+            logger.debug(e.getMessage());
             return unsupportedCharset(tag, command);
         } catch (UnsupportedCharsetException e) {
-            getLog().debug(e.getMessage());
+            logger.debug(e.getMessage());
             return unsupportedCharset(tag, command);
         }
     }

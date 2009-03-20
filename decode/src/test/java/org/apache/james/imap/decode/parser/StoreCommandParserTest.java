@@ -91,6 +91,6 @@ public class StoreCommandParserTest extends MockObjectTestCase {
                     with(same(tag))
                     );will(returnValue(message));
         }});
-        parser.decode(command, reader, tag, useUids);
+        parser.decode(command, reader, tag, useUids, new MockLogger());
     }
 }

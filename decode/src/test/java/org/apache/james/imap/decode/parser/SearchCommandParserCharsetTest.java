@@ -88,7 +88,6 @@ public class SearchCommandParserCharsetTest extends MockObjectTestCase {
         parser.init(mockCommandFactory);
         parser.setMessageFactory(mockMessageFactory);
         parser.setStatusResponseFactory(mockStatusResponseFactory);
-        parser.setLog(new MockLogger());
     }
 
     protected void tearDown() throws Exception {
@@ -113,7 +112,7 @@ public class SearchCommandParserCharsetTest extends MockObjectTestCase {
         ImapRequestLineReader reader = new ImapRequestLineReader(
                 new ByteArrayInputStream("CHARSET BOGUS ".getBytes("US-ASCII")),
                 new ByteArrayOutputStream());
-        parser.decode(command, reader, TAG, false);
+        parser.decode(command, reader, TAG, false, new MockLogger());
     }
 
     public void testBCCShouldConvertCharset() throws Exception {

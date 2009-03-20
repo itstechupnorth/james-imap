@@ -22,6 +22,7 @@ import java.util.Date;
 
 import javax.mail.Flags;
 
+import org.apache.commons.logging.Log;
 import org.apache.james.imap.api.Imap4Rev1CommandFactory;
 import org.apache.james.imap.api.Imap4Rev1MessageFactory;
 import org.apache.james.imap.api.ImapCommand;
@@ -75,7 +76,7 @@ class AppendCommandParser extends AbstractImapCommandParser implements
     }
 
     protected ImapMessage decode(ImapCommand command,
-            ImapRequestLineReader request, String tag) throws ProtocolException {
+            ImapRequestLineReader request, String tag, Log logger) throws ProtocolException {
         String mailboxName = mailbox(request);
         Flags flags = optionalAppendFlags(request);
         if (flags == null) {

@@ -19,6 +19,7 @@
 
 package org.apache.james.imap.decode;
 
+import org.apache.commons.logging.Log;
 import org.apache.james.imap.api.ImapMessage;
 
 /**
@@ -35,9 +36,9 @@ public interface ImapCommandParser {
      * 
      * @param request
      *            <code>ImapRequestLineReader</code>, not null
-     * @param tag
-     *            TODO
+     * @param tag not null
+     * @param logger context sensitive log, not null
      * @return <code>ImapCommandMessage</code>
      */
-    ImapMessage parse(ImapRequestLineReader request, String tag);
+    ImapMessage parse(ImapRequestLineReader request, String tag, Log logger);
 }
