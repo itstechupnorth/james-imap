@@ -19,14 +19,13 @@
 
 package org.apache.james.imap.command.imap4rev1;
 
-import org.apache.james.imap.api.AbstractLogEnabled;
 import org.apache.james.imap.api.ImapCommand;
 import org.apache.james.imap.api.ImapSessionState;
 
 /**
  * Basic implementation.
  */
-class ImapCommandImpl extends AbstractLogEnabled implements ImapCommand {
+class ImapCommandImpl implements ImapCommand {
 
     public static ImapCommand nonAuthenticatedStateCommand(final String name) {
         return new ImapCommandImpl(false, false, true, name);
