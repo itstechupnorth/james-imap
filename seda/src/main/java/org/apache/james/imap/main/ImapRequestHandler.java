@@ -70,8 +70,6 @@ public final class ImapRequestHandler extends AbstractLogEnabled {
      */
     public void setLog(Log logger) {
         super.setLog(logger);
-        setupLogger(decoder);
-        setupLogger(processor);
     }
 
     /**
@@ -177,7 +175,7 @@ public final class ImapRequestHandler extends AbstractLogEnabled {
             ImapResponseComposer response, ImapSession session) {
         ImapMessage message = decoder.decode(request, session);
         final ResponseEncoder responseEncoder = new ResponseEncoder(encoder,
-                response);
+                response, session);
         processor.process(message, responseEncoder, session);
         final boolean result;
         final IOException failure = responseEncoder.getFailure();
@@ -196,21 +194,23 @@ public final class ImapRequestHandler extends AbstractLogEnabled {
 
     private static final class ResponseEncoder implements Responder {
         private final ImapEncoder encoder;
-
+        private final ImapSession session;
         private final ImapResponseComposer composer;
 
         private IOException failure;
+        
 
         public ResponseEncoder(final ImapEncoder encoder,
-                final ImapResponseComposer composer) {
+                final ImapResponseComposer composer, final ImapSession session) {
             super();
             this.encoder = encoder;
             this.composer = composer;
+            this.session = session;
         }
 
         public void respond(final ImapResponseMessage message) {
             try {
-                encoder.encode(message, composer);
+                encoder.encode(message, composer, session);
             } catch (IOException failure) {
                 this.failure = failure;
             }

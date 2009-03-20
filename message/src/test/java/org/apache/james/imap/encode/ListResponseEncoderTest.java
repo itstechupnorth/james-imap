@@ -61,6 +61,6 @@ public class ListResponseEncoderTest extends MockObjectTestCase {
         checking(new Expectations() {{
             oneOf(composer).searchResponse(with(same(IDS)));
         }});
-        encoder.encode(response, composer);
+        encoder.encode(response, composer, new FakeImapSession());
     }
 }

@@ -21,14 +21,12 @@ package org.apache.james.imap.encode.base;
 
 import java.io.IOException;
 
-import org.apache.commons.logging.Log;
-import org.apache.james.imap.api.AbstractLogEnabled;
 import org.apache.james.imap.api.ImapMessage;
+import org.apache.james.imap.api.process.ImapSession;
 import org.apache.james.imap.encode.ImapEncoder;
 import org.apache.james.imap.encode.ImapResponseComposer;
 
-abstract public class AbstractChainedImapEncoder extends AbstractLogEnabled
-        implements ImapEncoder {
+abstract public class AbstractChainedImapEncoder implements ImapEncoder {
 
     private final ImapEncoder next;
 
@@ -37,24 +35,19 @@ abstract public class AbstractChainedImapEncoder extends AbstractLogEnabled
         this.next = next;
     }
 
-    public void setLog(Log logger) {
-        super.setLog(logger);
-        setupLogger(next);
-    }
-
-    public void encode(ImapMessage message, ImapResponseComposer composer)
+    public void encode(ImapMessage message, ImapResponseComposer composer, ImapSession session)
             throws IOException {
         final boolean isAcceptable = isAcceptable(message);
         if (isAcceptable) {
-            doEncode(message, composer);
+            doEncode(message, composer, session);
         } else {
-            chainEncode(message, composer);
+            chainEncode(message, composer, session);
         }
     }
 
     protected void chainEncode(ImapMessage message,
-            ImapResponseComposer composer) throws IOException {
-        next.encode(message, composer);
+            ImapResponseComposer composer, ImapSession session) throws IOException {
+        next.encode(message, composer, session);
     }
 
     /**
@@ -74,7 +67,8 @@ abstract public class AbstractChainedImapEncoder extends AbstractLogEnabled
      *            <code>ImapMessage</code>, not null
      * @param composer
      *            <code>ImapResponseComposer</code>, not null
+     * @param session TODO
      */
     abstract protected void doEncode(ImapMessage acceptableMessage,
-            ImapResponseComposer composer) throws IOException;
+            ImapResponseComposer composer, ImapSession session) throws IOException;
 }

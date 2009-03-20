@@ -22,6 +22,7 @@ package org.apache.james.imap.encode;
 import java.io.IOException;
 
 import org.apache.james.imap.api.ImapMessage;
+import org.apache.james.imap.api.process.ImapSession;
 import org.apache.james.imap.encode.base.AbstractChainedImapEncoder;
 import org.apache.james.imap.message.response.STATUSResponse;
 
@@ -35,7 +36,7 @@ public class STATUSResponseEncoder extends AbstractChainedImapEncoder {
     }
 
     protected void doEncode(ImapMessage acceptableMessage,
-            ImapResponseComposer composer) throws IOException {
+            ImapResponseComposer composer, ImapSession session) throws IOException {
         STATUSResponse response = (STATUSResponse) acceptableMessage;
         composer.statusResponse(response.getMessages(), response.getRecent(),
                 response.getUidNext(), response.getUidValidity(), response

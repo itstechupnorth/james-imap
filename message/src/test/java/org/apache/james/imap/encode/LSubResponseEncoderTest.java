@@ -63,21 +63,21 @@ public class LSubResponseEncoderTest extends MockObjectTestCase {
         checking(new Expectations() {{
             oneOf(composer).listResponse(with(same("LSUB")),with(aNull(List.class)), with(same(".")), with(same("INBOX.name")));
         }});
-        encoder.encode(new LSubResponse("INBOX.name", ".", false), composer);
+        encoder.encode(new LSubResponse("INBOX.name", ".", false), composer, new FakeImapSession());
     }
 
     public void testDelimiter() throws Exception {
         checking(new Expectations() {{
             oneOf(composer).listResponse(with(same("LSUB")),with(aNull(List.class)), with(same("@")), with(same("INBOX.name")));
         }});
-        encoder.encode(new LSubResponse("INBOX.name", "@", false), composer);
+        encoder.encode(new LSubResponse("INBOX.name", "@", false), composer, new FakeImapSession());
     }
 
     public void testNoDelimiter() throws Exception {
         checking(new Expectations() {{
             oneOf(composer).listResponse(with(same("LSUB")),with(aNull(List.class)), with(aNull(String.class)), with(same("INBOX.name")));
         }});
-        encoder.encode(new LSubResponse("INBOX.name", null, false), composer);
+        encoder.encode(new LSubResponse("INBOX.name", null, false), composer, new FakeImapSession());
     }
 
     public void testNoSelect() throws Exception {
@@ -85,6 +85,6 @@ public class LSubResponseEncoderTest extends MockObjectTestCase {
         checking(new Expectations() {{
             oneOf(composer).listResponse(with(same("LSUB")),with(equal(Arrays.asList(values))), with(equal(".")), with(same("INBOX.name")));
         }});
-        encoder.encode(new LSubResponse("INBOX.name", ".", true), composer);
+        encoder.encode(new LSubResponse("INBOX.name", ".", true), composer, new FakeImapSession());
     }
 }

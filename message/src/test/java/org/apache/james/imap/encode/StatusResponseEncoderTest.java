@@ -289,7 +289,7 @@ public class StatusResponseEncoderTest extends MockObjectTestCase {
     }
 
     private void compose() throws Exception {
-        encoder.doEncode(mockStatusResponse, response);
+        encoder.doEncode(mockStatusResponse, response, new FakeImapSession());
     }
 
     private void configure(final StatusResponse.Type type,

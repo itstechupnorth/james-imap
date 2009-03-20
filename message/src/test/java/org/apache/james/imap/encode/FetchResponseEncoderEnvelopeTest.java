@@ -164,7 +164,7 @@ public class FetchResponseEncoderEnvelopeTest extends MockObjectTestCase {
             oneOf(composer).endEnvelope(null, null); inSequence(composition);
             oneOf(composer).closeFetchResponse();inSequence(composition);
         }});
-        encoder.doEncode(message, composer);
+        encoder.doEncode(message, composer, new FakeImapSession());
     }
 
     public void testShouldComposeDate() throws Exception {
@@ -178,7 +178,7 @@ public class FetchResponseEncoderEnvelopeTest extends MockObjectTestCase {
             oneOf(composer).endEnvelope(null, null); inSequence(composition);
             oneOf(composer).closeFetchResponse();inSequence(composition);
         }});
-        encoder.doEncode(message, composer);
+        encoder.doEncode(message, composer, new FakeImapSession());
     }
 
     public void testShouldComposeSubject() throws Exception {
@@ -192,7 +192,7 @@ public class FetchResponseEncoderEnvelopeTest extends MockObjectTestCase {
             oneOf(composer).endEnvelope(null, null); inSequence(composition);
             oneOf(composer).closeFetchResponse();inSequence(composition);
         }});
-        encoder.doEncode(message, composer);
+        encoder.doEncode(message, composer, new FakeImapSession());
     }
 
     public void testShouldComposeInReplyTo() throws Exception {
@@ -206,7 +206,7 @@ public class FetchResponseEncoderEnvelopeTest extends MockObjectTestCase {
             oneOf(composer).endEnvelope(with(equal(inReplyTo)), with(aNull(String.class))); inSequence(composition);
             oneOf(composer).closeFetchResponse();inSequence(composition);
         }});
-        encoder.doEncode(message, composer);
+        encoder.doEncode(message, composer, new FakeImapSession());
     }
 
     public void testShouldComposeMessageId() throws Exception {
@@ -220,7 +220,7 @@ public class FetchResponseEncoderEnvelopeTest extends MockObjectTestCase {
             oneOf(composer).endEnvelope(with(aNull(String.class)), with(equal(messageId))); inSequence(composition);
             oneOf(composer).closeFetchResponse();inSequence(composition);
         }});
-        encoder.doEncode(message, composer);
+        encoder.doEncode(message, composer, new FakeImapSession());
     }
 
     public void testShouldComposeOneFromAddress() throws Exception {
@@ -241,7 +241,7 @@ public class FetchResponseEncoderEnvelopeTest extends MockObjectTestCase {
             oneOf(composer).endEnvelope(with(aNull(String.class)), with(equal(messageId))); inSequence(composition);
             oneOf(composer).closeFetchResponse();inSequence(composition);
         }});
-        encoder.doEncode(message, composer);
+        encoder.doEncode(message, composer, new FakeImapSession());
     }
 
     public void testShouldComposeManyFromAddress() throws Exception {
@@ -267,7 +267,7 @@ public class FetchResponseEncoderEnvelopeTest extends MockObjectTestCase {
             oneOf(composer).endEnvelope(with(aNull(String.class)), with(equal(messageId))); inSequence(composition);
             oneOf(composer).closeFetchResponse();inSequence(composition);
         }});
-        encoder.doEncode(message, composer);
+        encoder.doEncode(message, composer, new FakeImapSession());
     }
 
     public void testShouldComposeOneSenderAddress() throws Exception {
@@ -289,7 +289,7 @@ public class FetchResponseEncoderEnvelopeTest extends MockObjectTestCase {
             oneOf(composer).endEnvelope(with(aNull(String.class)), with(equal(messageId))); inSequence(composition);
             oneOf(composer).closeFetchResponse();inSequence(composition);
         }});
-        encoder.doEncode(message, composer);
+        encoder.doEncode(message, composer, new FakeImapSession());
     }
 
     public void testShouldComposeManySenderAddress() throws Exception {
@@ -316,7 +316,7 @@ public class FetchResponseEncoderEnvelopeTest extends MockObjectTestCase {
             oneOf(composer).endEnvelope(with(aNull(String.class)), with(equal(messageId))); inSequence(composition);
             oneOf(composer).closeFetchResponse();inSequence(composition);
         }});
-        encoder.doEncode(message, composer);
+        encoder.doEncode(message, composer, new FakeImapSession());
     }
     
 
@@ -339,7 +339,7 @@ public class FetchResponseEncoderEnvelopeTest extends MockObjectTestCase {
             oneOf(composer).endEnvelope(with(aNull(String.class)), with(equal(messageId))); inSequence(composition);
             oneOf(composer).closeFetchResponse();inSequence(composition);
         }});
-        encoder.doEncode(message, composer);
+        encoder.doEncode(message, composer, new FakeImapSession());
     }
 
     public void testShouldComposeManyReplyToAddress() throws Exception {
@@ -366,7 +366,7 @@ public class FetchResponseEncoderEnvelopeTest extends MockObjectTestCase {
             oneOf(composer).endEnvelope(with(aNull(String.class)), with(equal(messageId))); inSequence(composition);
             oneOf(composer).closeFetchResponse();inSequence(composition);
         }});
-        encoder.doEncode(message, composer);
+        encoder.doEncode(message, composer, new FakeImapSession());
     }
 
     public void testShouldComposeOneToAddress() throws Exception {
@@ -388,7 +388,7 @@ public class FetchResponseEncoderEnvelopeTest extends MockObjectTestCase {
             oneOf(composer).endEnvelope(with(aNull(String.class)), with(equal(messageId))); inSequence(composition);
             oneOf(composer).closeFetchResponse();inSequence(composition);
         }});
-        encoder.doEncode(message, composer);
+        encoder.doEncode(message, composer, new FakeImapSession());
     }
 
     public void testShouldComposeManyToAddress() throws Exception {
@@ -415,7 +415,7 @@ public class FetchResponseEncoderEnvelopeTest extends MockObjectTestCase {
             oneOf(composer).endEnvelope(with(aNull(String.class)), with(equal(messageId))); inSequence(composition);
             oneOf(composer).closeFetchResponse();inSequence(composition);
         }});
-        encoder.doEncode(message, composer);
+        encoder.doEncode(message, composer, new FakeImapSession());
     }
 
     public void testShouldComposeOneCcAddress() throws Exception {
@@ -437,7 +437,7 @@ public class FetchResponseEncoderEnvelopeTest extends MockObjectTestCase {
             oneOf(composer).endEnvelope(with(aNull(String.class)), with(equal(messageId))); inSequence(composition);
             oneOf(composer).closeFetchResponse();inSequence(composition);
         }});
-        encoder.doEncode(message, composer);
+        encoder.doEncode(message, composer, new FakeImapSession());
     }
 
     public void testShouldComposeManyCcAddress() throws Exception {
@@ -464,7 +464,7 @@ public class FetchResponseEncoderEnvelopeTest extends MockObjectTestCase {
             oneOf(composer).endEnvelope(with(aNull(String.class)), with(equal(messageId))); inSequence(composition);
             oneOf(composer).closeFetchResponse();inSequence(composition);
         }});
-        encoder.doEncode(message, composer);
+        encoder.doEncode(message, composer, new FakeImapSession());
     }
 
     public void testShouldComposeOneBccAddress() throws Exception {
@@ -485,7 +485,7 @@ public class FetchResponseEncoderEnvelopeTest extends MockObjectTestCase {
             oneOf(composer).endEnvelope(with(aNull(String.class)), with(equal(messageId))); inSequence(composition);
             oneOf(composer).closeFetchResponse();inSequence(composition);
         }});
-        encoder.doEncode(message, composer);
+        encoder.doEncode(message, composer, new FakeImapSession());
     }
 
     public void testShouldComposeManyBccAddress() throws Exception {
@@ -511,6 +511,6 @@ public class FetchResponseEncoderEnvelopeTest extends MockObjectTestCase {
             oneOf(composer).endEnvelope(with(aNull(String.class)), with(equal(messageId))); inSequence(composition);
             oneOf(composer).closeFetchResponse();inSequence(composition);
         }});
-        encoder.doEncode(message, composer);
+        encoder.doEncode(message, composer, new FakeImapSession());
     }
 }

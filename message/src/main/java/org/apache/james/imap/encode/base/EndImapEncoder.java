@@ -24,14 +24,15 @@ import java.io.IOException;
 import org.apache.commons.logging.Log;
 import org.apache.james.imap.api.AbstractLogEnabled;
 import org.apache.james.imap.api.ImapMessage;
+import org.apache.james.imap.api.process.ImapSession;
 import org.apache.james.imap.encode.ImapEncoder;
 import org.apache.james.imap.encode.ImapResponseComposer;
 
-public class EndImapEncoder extends AbstractLogEnabled implements ImapEncoder {
+public class EndImapEncoder implements ImapEncoder {
 
-    public void encode(ImapMessage message, ImapResponseComposer composer)
+    public void encode(ImapMessage message, ImapResponseComposer composer, ImapSession session)
             throws IOException {
-        final Log logger = getLog();
+        final Log logger = session.getLog();
         logger.warn("Unknown message");
         if (logger.isDebugEnabled()) {
             logger.debug("Chain end reached for " + message);

@@ -33,6 +33,7 @@ import javax.mail.Flags;
 import org.apache.commons.logging.Log;
 import org.apache.james.imap.api.ImapConstants;
 import org.apache.james.imap.api.ImapMessage;
+import org.apache.james.imap.api.process.ImapSession;
 import org.apache.james.imap.encode.base.AbstractChainedImapEncoder;
 import org.apache.james.imap.message.response.FetchResponse;
 import org.apache.james.imap.message.response.FetchResponse.Structure;
@@ -48,7 +49,7 @@ public class FetchResponseEncoder extends AbstractChainedImapEncoder {
     }
 
     protected void doEncode(ImapMessage acceptableMessage,
-            ImapResponseComposer composer) throws IOException {
+            ImapResponseComposer composer, ImapSession session) throws IOException {
         if (acceptableMessage instanceof FetchResponse) {
             final FetchResponse fetchResponse = (FetchResponse) acceptableMessage;
             final long messageNumber = fetchResponse.getMessageNumber();
@@ -57,33 +58,33 @@ public class FetchResponseEncoder extends AbstractChainedImapEncoder {
             encodeInternalDate(composer, fetchResponse);
             encodeSize(composer, fetchResponse);
             encodeEnvelope(composer, fetchResponse);
-            encodeBody(composer, fetchResponse.getBody());
-            encodeBodyStructure(composer, fetchResponse.getBodyStructure());
+            encodeBody(composer, fetchResponse.getBody(), session);
+            encodeBodyStructure(composer, fetchResponse.getBodyStructure(), session);
             encodeUid(composer, fetchResponse);
             encodeBodyElements(composer, fetchResponse.getElements());
             composer.closeFetchResponse();
         }
     }
 
-    private void encodeBody(ImapResponseComposer composer, Structure body)
+    private void encodeBody(ImapResponseComposer composer, Structure body, ImapSession session)
             throws IOException {
         if (body != null) {
             composer.message(ImapConstants.FETCH_BODY);
-            encodeStructure(composer, body, false, false);
+            encodeStructure(composer, body, false, false, session);
         }
     }
 
     private void encodeBodyStructure(ImapResponseComposer composer,
-            Structure bodyStructure) throws IOException {
+            Structure bodyStructure, ImapSession session) throws IOException {
         if (bodyStructure != null) {
             composer.message(ImapConstants.FETCH_BODY_STRUCTURE);
-            encodeStructure(composer, bodyStructure, true, false);
+            encodeStructure(composer, bodyStructure, true, false, session);
         }
     }
 
     private void encodeStructure(final ImapResponseComposer composer,
             final Structure structure, final boolean includeExtensions,
-            final boolean isInnerPart) throws IOException {
+            final boolean isInnerPart, ImapSession session) throws IOException {
 
         final String mediaType;
         final String subType;
@@ -96,19 +97,19 @@ public class FetchResponseEncoder extends AbstractChainedImapEncoder {
             subType = structure.getSubType();
         }
         encodeStructure(composer, structure, includeExtensions, mediaType,
-                subType, isInnerPart);
+                subType, isInnerPart, session);
     }
 
     private void encodeStructure(final ImapResponseComposer composer,
             final Structure structure, final boolean includeExtensions,
-            final String mediaType, final String subType, boolean isInnerPart)
+            final String mediaType, final String subType, boolean isInnerPart, ImapSession session)
             throws IOException {
         if (isInnerPart) {
             composer.skipNextSpace();
         }
         if (ImapConstants.MIME_TYPE_MULTIPART.equalsIgnoreCase(mediaType)) {
 
-            encodeMultipart(composer, structure, subType, includeExtensions);
+            encodeMultipart(composer, structure, subType, includeExtensions, session);
 
         } else {
             if (ImapConstants.MIME_TYPE_MESSAGE.equalsIgnoreCase(mediaType)
@@ -116,17 +117,17 @@ public class FetchResponseEncoder extends AbstractChainedImapEncoder {
                             .equalsIgnoreCase(subType)) {
 
                 encodeRfc822Message(composer, structure, mediaType, subType,
-                        includeExtensions);
+                        includeExtensions, session);
             } else {
                 encodeBasic(composer, structure, includeExtensions, mediaType,
-                        subType);
+                        subType, session);
             }
         }
     }
 
     private void encodeBasic(final ImapResponseComposer composer,
             final Structure structure, final boolean includeExtensions,
-            final String mediaType, final String subType) throws IOException {
+            final String mediaType, final String subType, ImapSession session) throws IOException {
         if (ImapConstants.MIME_TYPE_TEXT.equalsIgnoreCase(mediaType)) {
 
             final long lines = structure.getLines();
@@ -137,24 +138,24 @@ public class FetchResponseEncoder extends AbstractChainedImapEncoder {
             encodeBodyFields(composer, structure, mediaType, subType);
         }
         if (includeExtensions) {
-            encodeOnePartBodyExtensions(composer, structure);
+            encodeOnePartBodyExtensions(composer, structure, session);
         }
         composer.closeParen();
     }
 
     private void encodeOnePartBodyExtensions(
-            final ImapResponseComposer composer, final Structure structure)
+            final ImapResponseComposer composer, final Structure structure, ImapSession session)
             throws IOException {
         final String md5 = structure.getMD5();
         final List<String> languages = structure.getLanguages();
         final String location = structure.getLocation();
         composer.nillableQuote(md5);
-        bodyFldDsp(structure, composer).nillableQuotes(languages)
+        bodyFldDsp(structure, composer, session).nillableQuotes(languages)
                 .nillableQuote(location);
     }
 
     private ImapResponseComposer bodyFldDsp(final Structure structure,
-            final ImapResponseComposer composer) throws IOException {
+            final ImapResponseComposer composer, ImapSession session) throws IOException {
         final String disposition = structure.getDisposition();
         if (disposition == null) {
             composer.nil();
@@ -162,14 +163,14 @@ public class FetchResponseEncoder extends AbstractChainedImapEncoder {
             composer.openParen();
             composer.quote(disposition);
             final Map<String, String> params = structure.getDispositionParams();
-            bodyFldParam(params, composer);
+            bodyFldParam(params, composer, session);
             composer.closeParen();
         }
         return composer;
     }
 
     private void bodyFldParam(final Map<String,String> params,
-            final ImapResponseComposer composer) throws IOException {
+            final ImapResponseComposer composer, ImapSession session) throws IOException {
         if (params == null || params.isEmpty()) {
             composer.nil();
         } else {
@@ -180,7 +181,7 @@ public class FetchResponseEncoder extends AbstractChainedImapEncoder {
                 final String name = iter.next();
                 final String value = params.get(name);
                 if (value == null) {
-                    final Log logger = getLog();
+                    final Log logger = session.getLog();
                     logger.warn("Disposition parameter name has no value.");
                     if (logger.isDebugEnabled()) {
                         logger.debug("Disposition parameter " + name
@@ -211,19 +212,19 @@ public class FetchResponseEncoder extends AbstractChainedImapEncoder {
 
     private void encodeMultipart(ImapResponseComposer composer,
             Structure structure, final String subType,
-            final boolean includeExtensions) throws IOException {
+            final boolean includeExtensions, ImapSession session) throws IOException {
         composer.openParen();
 
         for (Iterator<Structure> it = structure.parts(); it.hasNext();) {
             final Structure part = it.next();
-            encodeStructure(composer, part, includeExtensions, true);
+            encodeStructure(composer, part, includeExtensions, true, session);
         }
 
         composer.quoteUpperCaseAscii(subType);
         if (includeExtensions) {
             final List<String> languages = structure.getLanguages();
             composer.nillableQuotes(structure.getParameters());
-            bodyFldDsp(structure, composer).nillableQuotes(languages)
+            bodyFldDsp(structure, composer, session).nillableQuotes(languages)
                     .nillableQuote(structure.getLocation());
         }
         composer.closeParen();
@@ -231,18 +232,18 @@ public class FetchResponseEncoder extends AbstractChainedImapEncoder {
 
     private void encodeRfc822Message(ImapResponseComposer composer,
             Structure structure, final String mediaType, final String subType,
-            final boolean includeExtensions) throws IOException {
+            final boolean includeExtensions, ImapSession session) throws IOException {
         final long lines = structure.getLines();
         final FetchResponse.Envelope envelope = structure.getEnvelope();
         final FetchResponse.Structure embeddedStructure = structure.getBody();
 
         encodeBodyFields(composer, structure, mediaType, subType);
         encodeEnvelope(composer, envelope, false);
-        encodeStructure(composer, embeddedStructure, includeExtensions, false);
+        encodeStructure(composer, embeddedStructure, includeExtensions, false, session);
         composer.message(lines);
 
         if (includeExtensions) {
-            encodeOnePartBodyExtensions(composer, structure);
+            encodeOnePartBodyExtensions(composer, structure, session);
         }
         composer.closeParen();
     }

@@ -75,7 +75,7 @@ public class FetchResponseEncoderTest extends MockObjectTestCase {
             oneOf(composer).flags(with(equal(flags))); inSequence(sequence);
             oneOf(composer).closeFetchResponse(); inSequence(sequence);
         }});
-        encoder.doEncode(message, composer);
+        encoder.doEncode(message, composer, new FakeImapSession());
     }
 
     public void testShouldEncodeUidResponse() throws Exception {
@@ -88,7 +88,7 @@ public class FetchResponseEncoderTest extends MockObjectTestCase {
             oneOf(composer).message(with(equal(72L))); inSequence(sequence);
             oneOf(composer).closeFetchResponse(); inSequence(sequence);
         }});
-        encoder.doEncode(message, composer);
+        encoder.doEncode(message, composer, new FakeImapSession());
     }
 
     public void testShouldEncodeAllResponse() throws Exception {
@@ -102,6 +102,6 @@ public class FetchResponseEncoderTest extends MockObjectTestCase {
             oneOf(composer).message(with(equal(72L))); inSequence(sequence);
             oneOf(composer).closeFetchResponse(); inSequence(sequence);
         }});
-        encoder.doEncode(message, composer);
+        encoder.doEncode(message, composer, new FakeImapSession());
     }
 }

@@ -28,6 +28,7 @@ import org.apache.james.imap.api.display.HumanReadableTextKey;
 import org.apache.james.imap.api.message.response.StatusResponse;
 import org.apache.james.imap.api.message.response.StatusResponse.ResponseCode;
 import org.apache.james.imap.api.message.response.StatusResponse.Type;
+import org.apache.james.imap.api.process.ImapSession;
 import org.apache.james.imap.encode.base.AbstractChainedImapEncoder;
 
 public class StatusResponseEncoder extends AbstractChainedImapEncoder {
@@ -37,7 +38,7 @@ public class StatusResponseEncoder extends AbstractChainedImapEncoder {
     }
 
     protected void doEncode(ImapMessage acceptableMessage,
-            ImapResponseComposer composer) throws IOException {
+            ImapResponseComposer composer, ImapSession session) throws IOException {
         StatusResponse response = (StatusResponse) acceptableMessage;
         final Type serverResponseType = response.getServerResponseType();
         final String type = asString(serverResponseType);

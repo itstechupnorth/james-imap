@@ -22,6 +22,7 @@ import java.io.IOException;
 
 import org.apache.james.imap.api.ImapConstants;
 import org.apache.james.imap.api.ImapMessage;
+import org.apache.james.imap.api.process.ImapSession;
 import org.apache.james.imap.encode.base.AbstractChainedImapEncoder;
 import org.apache.james.imap.message.response.AbstractListingResponse;
 import org.apache.james.imap.message.response.LSubResponse;
@@ -36,7 +37,7 @@ public class LSubResponseEncoder extends AbstractChainedImapEncoder {
     }
 
     protected void doEncode(final ImapMessage acceptableMessage,
-            final ImapResponseComposer composer) throws IOException {
+            final ImapResponseComposer composer, ImapSession session) throws IOException {
         final AbstractListingResponse response = (AbstractListingResponse) acceptableMessage;
         ListingEncodingUtils.encodeListingResponse(
                 ImapConstants.LSUB_RESPONSE_NAME, composer, response);

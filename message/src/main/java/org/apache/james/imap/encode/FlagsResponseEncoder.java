@@ -24,6 +24,7 @@ import java.io.IOException;
 import javax.mail.Flags;
 
 import org.apache.james.imap.api.ImapMessage;
+import org.apache.james.imap.api.process.ImapSession;
 import org.apache.james.imap.encode.base.AbstractChainedImapEncoder;
 import org.apache.james.imap.message.response.FlagsResponse;
 
@@ -38,7 +39,7 @@ public class FlagsResponseEncoder extends AbstractChainedImapEncoder {
     }
 
     protected void doEncode(ImapMessage acceptableMessage,
-            ImapResponseComposer composer) throws IOException {
+            ImapResponseComposer composer, ImapSession session) throws IOException {
         final FlagsResponse flagsResponse = (FlagsResponse) acceptableMessage;
         final Flags flags = flagsResponse.getFlags();
         composer.flagsResponse(flags);

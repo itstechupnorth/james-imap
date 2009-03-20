@@ -72,6 +72,6 @@ public class STATUSResponseEncoderTest extends MockObjectTestCase {
         }});
 
         encoder.encode(new STATUSResponse(messages, recent, uidNext,
-                uidValidity, unseen, mailbox), composer);
+                uidValidity, unseen, mailbox), composer, new FakeImapSession());
     }
 }
