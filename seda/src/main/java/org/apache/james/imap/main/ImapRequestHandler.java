@@ -24,7 +24,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.james.imap.api.ImapMessage;
 import org.apache.james.imap.api.ImapSessionState;
 import org.apache.james.imap.api.message.response.ImapResponseMessage;
@@ -51,11 +50,6 @@ public final class ImapRequestHandler  {
             'E', ' ', 'S', 'e', 'l', 'e', 'c', 't', 'e', 'd', ' ', 'm', 'a',
             'i', 'l', 'b', 'o', 'x', ' ', 'h', 'a', 's', ' ', 'b', 'e', 'e',
             'n', ' ', 'd', 'e', 'l', 'e', 't', 'e', 'd', '\r', '\n' };
-
-    private static final Log IMAP_LOG = LogFactory.getLog("org.apache.james.imap");
-    
-    private Log log = IMAP_LOG;
-
     
     private final ImapDecoder decoder;
 
@@ -68,14 +62,6 @@ public final class ImapRequestHandler  {
         this.decoder = decoder;
         this.processor = processor;
         this.encoder = encoder;
-    }
-
-    public Log getLog() {
-        return log;
-    }
-
-    public void setLog(Log log) {
-        this.log = log;
     }
 
     /**
@@ -93,13 +79,13 @@ public final class ImapRequestHandler  {
             ImapSession session) {
         final boolean result;
         if (isSelectedMailboxDeleted(session)) {
-            writeSignoff(output);
+            writeSignoff(output, session);
             result = false;
         } else {
             ImapRequestLineReader request = new ImapRequestLineReader(input,
                     output);
 
-            final Log logger = getLog();
+            final Log logger = session.getLog();
             try {
                 request.nextChar();
             } catch (ProtocolException e) {
@@ -140,12 +126,12 @@ public final class ImapRequestHandler  {
         return result;
     }
 
-    private void writeSignoff(OutputStream output) {
+    private void writeSignoff(OutputStream output, ImapSession session) {
         try {
             output.write(MAILBOX_DELETED_SIGNOFF);
         } catch (IOException e) {
-            getLog().warn("Failed to write signoff");
-            getLog().debug("Failed to write signoff:", e);
+            session.getLog().warn("Failed to write signoff");
+            session.getLog().debug("Failed to write signoff:", e);
         }
     }
 
@@ -165,13 +151,13 @@ public final class ImapRequestHandler  {
             try {
                 session.logout();
             } catch (Throwable t) {
-                getLog().warn("Session logout failed. Resources may not be correctly recycled.");
+                session.getLog().warn("Session logout failed. Resources may not be correctly recycled.");
             }
         }
         try {
             out.write(ABANDON_SIGNOFF);
         } catch (Throwable t) {
-            getLog().debug("Failed to write ABANDON_SIGNOFF", t);
+            session.getLog().debug("Failed to write ABANDON_SIGNOFF", t);
         }
     }
 
@@ -187,7 +173,7 @@ public final class ImapRequestHandler  {
             result = true;
         } else {
             result = false;
-            final Log logger = getLog();
+            final Log logger = session.getLog();
             logger.info(failure.getMessage());
             if (logger.isDebugEnabled()) {
                 logger.debug("Failed to write " + message, failure);

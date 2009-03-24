@@ -113,8 +113,8 @@ public abstract class ImapHostSystem implements HostSystem {
             out = new ByteBufferOutputStream(continuation);
             in = new ByteBufferInputStream();
             handler = new ImapRequestHandler(decoder, processor, encoder);
-            handler.setLog(new SilentLog());
             session = new ImapSessionImpl();
+            session.setLog(new SilentLog());
         }
 
         public String readLine() throws Exception {
