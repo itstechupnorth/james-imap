@@ -91,8 +91,7 @@ public class TorqueMailboxManager implements MailboxManager {
                     TorqueMailbox torqueMailbox = (TorqueMailbox) mailboxes
                             .get(mailboxName);
                     if (torqueMailbox == null) {
-                        torqueMailbox = new TorqueMailbox(mailboxRow, lock,
-                                getLog());
+                        torqueMailbox = new TorqueMailbox(mailboxRow, lock);
                         mailboxes.put(mailboxName, torqueMailbox);
                     }
 
@@ -326,8 +325,8 @@ public class TorqueMailboxManager implements MailboxManager {
         return log;
     }
 
-    public MailboxSession createSession() {
-        return new TorqueMailboxSession(random.nextLong());
+    public MailboxSession createSession(Log log) {
+        return new TorqueMailboxSession(random.nextLong(), log);
     }
 
     public String resolve(final String userName, String mailboxPath) {

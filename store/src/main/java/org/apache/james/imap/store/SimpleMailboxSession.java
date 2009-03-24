@@ -19,6 +19,7 @@
 
 package org.apache.james.imap.store;
 
+import org.apache.commons.logging.Log;
 import org.apache.james.imap.mailbox.MailboxSession;
 
 /**
@@ -27,12 +28,19 @@ import org.apache.james.imap.mailbox.MailboxSession;
 public class SimpleMailboxSession implements MailboxSession {
 
     private final long sessionId;
+    
+    private final Log log;
 
     private boolean open;
 
-    public SimpleMailboxSession(final long sessionId) {
+    public SimpleMailboxSession(final long sessionId, final Log log) {
         super();
         this.sessionId = sessionId;
+        this.log = log;
+    }
+
+    public Log getLog() {
+        return log;
     }
 
     public void close() {

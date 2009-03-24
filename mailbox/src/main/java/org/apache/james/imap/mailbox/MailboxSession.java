@@ -19,6 +19,8 @@
 
 package org.apache.james.imap.mailbox;
 
+import org.apache.commons.logging.Log;
+
 /**
  * Mailbox session.
  */
@@ -42,4 +44,10 @@ public interface MailboxSession {
      * Closes this session.
      */
     public void close();
+    
+    /**
+     * Gets the logger for this session context.
+     * @return not null
+     */
+    public Log getLog();
 }

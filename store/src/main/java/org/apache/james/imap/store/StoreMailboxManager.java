@@ -134,7 +134,7 @@ public abstract class StoreMailboxManager extends AbstractLogEnabled implements 
 
     public void deleteMailbox(String mailboxName, MailboxSession session)
     throws MailboxException {
-        getLog().info("deleteMailbox " + mailboxName);
+        session.getLog().info("deleteMailbox " + mailboxName);
         synchronized (mailboxes) {
             // TODO put this into a serilizable transaction
             final MailboxMapper mapper = createMailboxMapper();
@@ -270,8 +270,8 @@ public abstract class StoreMailboxManager extends AbstractLogEnabled implements 
         mailboxes.clear();
     }
 
-    public MailboxSession createSession() {
-        return new SimpleMailboxSession(random.nextLong());
+    public MailboxSession createSession(Log log) {
+        return new SimpleMailboxSession(random.nextLong(), log);
     }
 
     public String resolve(final String userName, String mailboxPath) {

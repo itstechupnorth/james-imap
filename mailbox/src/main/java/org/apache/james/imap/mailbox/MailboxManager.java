@@ -22,6 +22,8 @@ package org.apache.james.imap.mailbox;
 import java.util.Collection;
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+
 
 /**
  * <p>
@@ -141,10 +143,11 @@ public interface MailboxManager {
 
     /**
      * Creates a new session.
+     * @param log TODO
      * 
      * @return <code>MailboxSession</code>, not null
      */
-    public MailboxSession createSession();
+    public MailboxSession createSession(Log log);
 
     /**
      * Autenticates the given user against the given password.

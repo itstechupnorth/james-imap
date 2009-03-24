@@ -44,8 +44,8 @@ public class JPAMailbox extends StoreMailbox {
 
     private final EntityManagerFactory entityManagerFactory;
 
-    public JPAMailbox(final Mailbox mailbox, final Log log, final EntityManagerFactory entityManagerfactory) {
-        super(mailbox, log);
+    public JPAMailbox(final Mailbox mailbox, final EntityManagerFactory entityManagerfactory) {
+        super(mailbox);
         this.entityManagerFactory = entityManagerfactory;
     }    
 

@@ -49,7 +49,7 @@ public class JPAMailboxManager extends StoreMailboxManager {
     @Override
     protected StoreMailbox createMailbox(Mailbox mailboxRow) {
         StoreMailbox result;
-        result = new JPAMailbox(mailboxRow, getLog(), entityManagerFactory);
+        result = new JPAMailbox(mailboxRow, entityManagerFactory);
         return result;
     }
     

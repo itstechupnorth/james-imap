@@ -73,9 +73,7 @@ import EDU.oswego.cs.dl.util.concurrent.ReadWriteLock;
 
 import com.workingdogs.village.DataSetException;
 
-public class TorqueMailbox extends AbstractLogEnabled implements Mailbox {
-
-    private Log log;
+public class TorqueMailbox implements Mailbox {
 
     private boolean open = true;
 
@@ -87,10 +85,8 @@ public class TorqueMailbox extends AbstractLogEnabled implements Mailbox {
 
     private final MessageSearches searches;
 
-    TorqueMailbox(final MailboxRow mailboxRow, final ReadWriteLock lock,
-            final Log log) {
+    TorqueMailbox(final MailboxRow mailboxRow, final ReadWriteLock lock) {
         this.searches = new MessageSearches();
-        setLog(log);
         this.mailboxRow = mailboxRow;
         this.tracker = new UidChangeTracker(mailboxRow.getLastUid());
         this.lock = lock;
@@ -654,12 +650,12 @@ public class TorqueMailbox extends AbstractLogEnabled implements Mailbox {
                             uids.add(row.getUid());
                         }
                     } catch (TorqueException e) {
-                        getLog()
+                        mailboxSession.getLog()
                                 .info(
                                         "Cannot test message against search criteria. Will continue to test other messages.",
                                         e);
-                        if (getLog().isDebugEnabled())
-                            getLog().debug("UID: " + row.getUid());
+                        if (mailboxSession.getLog().isDebugEnabled())
+                            mailboxSession.getLog().debug("UID: " + row.getUid());
                     }
                 }
 
@@ -715,12 +711,6 @@ public class TorqueMailbox extends AbstractLogEnabled implements Mailbox {
 
     public boolean isWriteable() {
         return true;
-    }
-
-    public void setLog(Log log) {
-        super.setLog(log);
-        this.log = log;
-        searches.setLog(log);
     }
 
     public void copyTo(MessageRange set, TorqueMailbox toMailbox,

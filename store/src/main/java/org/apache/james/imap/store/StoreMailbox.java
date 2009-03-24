@@ -37,8 +37,6 @@ import java.util.TreeSet;
 import javax.mail.Flags;
 import javax.mail.MessagingException;
 
-import org.apache.commons.logging.Log;
-import org.apache.james.imap.api.AbstractLogEnabled;
 import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.MailboxListener;
 import org.apache.james.imap.mailbox.MailboxNotFoundException;
@@ -58,7 +56,7 @@ import org.apache.james.imap.store.mail.model.PropertyBuilder;
 import org.apache.james.mime4j.descriptor.MaximalBodyDescriptor;
 import org.apache.james.mime4j.parser.MimeTokenStream;
 
-public abstract class StoreMailbox extends AbstractLogEnabled implements org.apache.james.imap.mailbox.Mailbox {
+public abstract class StoreMailbox implements org.apache.james.imap.mailbox.Mailbox {
 
     private static final int INITIAL_SIZE_FLAGS = 32;
 
@@ -68,11 +66,7 @@ public abstract class StoreMailbox extends AbstractLogEnabled implements org.apa
 
     private final UidChangeTracker tracker;
 
-    private final MessageSearches searches;
-
-    public StoreMailbox(final Mailbox mailbox, final Log log) {
-        this.searches = new MessageSearches();
-        setLog(log);
+    public StoreMailbox(final Mailbox mailbox) {
         this.mailboxId = mailbox.getMailboxId();
         this.tracker = new UidChangeTracker(mailbox.getLastUid());
     }
@@ -413,16 +407,18 @@ public abstract class StoreMailbox extends AbstractLogEnabled implements org.apa
         final Set<Long> uids = new TreeSet<Long>();
         for (MailboxMembership member:members) {
             try {
+                final MessageSearches searches = new MessageSearches();
+                searches.setLog(mailboxSession.getLog());
                 if (searches.isMatch(query, member)) {
                     uids.add(member.getUid());
                 }
             } catch (MailboxException e) {
-                getLog()
+                mailboxSession.getLog()
                 .info(
                         "Cannot test message against search criteria. Will continue to test other messages.",
                         e);
-                if (getLog().isDebugEnabled())
-                    getLog().debug("UID: " + member.getUid());
+                if (mailboxSession.getLog().isDebugEnabled())
+                    mailboxSession.getLog().debug("UID: " + member.getUid());
             }
         }
 
@@ -431,11 +427,6 @@ public abstract class StoreMailbox extends AbstractLogEnabled implements org.apa
 
     public boolean isWriteable() {
         return true;
-    }
-
-    public void setLog(Log log) {
-        super.setLog(log);
-        searches.setLog(log);
     }
 
     public void copyTo(MessageRange set, StoreMailbox toMailbox, MailboxSession session) throws MailboxException {

@@ -19,6 +19,7 @@
 
 package org.apache.james.mailboxmanager.torque;
 
+import org.apache.commons.logging.Log;
 import org.apache.james.imap.mailbox.MailboxSession;
 
 /**
@@ -27,13 +28,23 @@ import org.apache.james.imap.mailbox.MailboxSession;
 public class TorqueMailboxSession implements MailboxSession {
 
     private final long sessionId;
+    
+    private final Log log;
 
     private boolean open;
 
-    public TorqueMailboxSession(final long sessionId) {
+    public TorqueMailboxSession(final long sessionId, final Log log) {
         super();
         this.sessionId = sessionId;
+        this.log = log;
     }
+    
+    
+    public Log getLog() {
+        return log;
+    }
+
+
 
     public void close() {
         open = false;

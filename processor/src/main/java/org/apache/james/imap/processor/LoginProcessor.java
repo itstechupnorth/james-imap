@@ -63,7 +63,7 @@ public class LoginProcessor extends AbstractMailboxProcessor {
             final MailboxManager mailboxManager = getMailboxManager();
             if (mailboxManager.isAuthentic(userid, passwd)) {
                 session.authenticated();
-                final MailboxSession mailboxSession = mailboxManager.createSession();
+                final MailboxSession mailboxSession = mailboxManager.createSession(session.getLog());
                 session.setAttribute(
                         ImapSessionUtils.MAILBOX_SESSION_ATTRIBUTE_SESSION_KEY,
                         mailboxSession);
