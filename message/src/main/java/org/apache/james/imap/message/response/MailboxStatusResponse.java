@@ -24,7 +24,7 @@ import org.apache.james.imap.api.message.response.ImapResponseMessage;
 /**
  * Represents a <code>STATUS</code> response. See <code>RFC3501 7.2.4</code>.
  */
-public class STATUSResponse implements ImapResponseMessage {
+public class MailboxStatusResponse implements ImapResponseMessage {
 
     private final Long messages;
 
@@ -38,7 +38,7 @@ public class STATUSResponse implements ImapResponseMessage {
 
     private final String mailbox;
 
-    public STATUSResponse(final Long messages, final Long recent,
+    public MailboxStatusResponse(final Long messages, final Long recent,
             final Long uidNext, final Long uidValidity, final Long unseen,
             final String mailbox) {
         super();

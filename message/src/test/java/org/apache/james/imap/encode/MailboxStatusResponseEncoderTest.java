@@ -22,14 +22,14 @@ package org.apache.james.imap.encode;
 import org.apache.james.imap.api.ImapMessage;
 import org.apache.james.imap.encode.ImapEncoder;
 import org.apache.james.imap.encode.ImapResponseComposer;
-import org.apache.james.imap.encode.STATUSResponseEncoder;
-import org.apache.james.imap.message.response.STATUSResponse;
+import org.apache.james.imap.encode.MailboxStatusResponseEncoder;
+import org.apache.james.imap.message.response.MailboxStatusResponse;
 import org.jmock.Expectations;
 import org.jmock.integration.junit3.MockObjectTestCase;
 
-public class STATUSResponseEncoderTest extends MockObjectTestCase {
+public class MailboxStatusResponseEncoderTest extends MockObjectTestCase {
 
-    STATUSResponseEncoder encoder;
+    MailboxStatusResponseEncoder encoder;
 
     ImapEncoder mockNextEncoder;
 
@@ -39,7 +39,7 @@ public class STATUSResponseEncoderTest extends MockObjectTestCase {
         super.setUp();
         mockNextEncoder = mock(ImapEncoder.class);
         composer = mock(ImapResponseComposer.class);
-        encoder = new STATUSResponseEncoder(mockNextEncoder);
+        encoder = new MailboxStatusResponseEncoder(mockNextEncoder);
     }
 
     protected void tearDown() throws Exception {
@@ -47,7 +47,7 @@ public class STATUSResponseEncoderTest extends MockObjectTestCase {
     }
 
     public void testIsAcceptable() throws Exception {
-        assertTrue(encoder.isAcceptable(new STATUSResponse(null, null, null,
+        assertTrue(encoder.isAcceptable(new MailboxStatusResponse(null, null, null,
                 null, null, "mailbox")));
         assertFalse(encoder.isAcceptable(mock(ImapMessage.class)));
         assertFalse(encoder.isAcceptable(null));
@@ -71,7 +71,7 @@ public class STATUSResponseEncoderTest extends MockObjectTestCase {
                     );
         }});
 
-        encoder.encode(new STATUSResponse(messages, recent, uidNext,
+        encoder.encode(new MailboxStatusResponse(messages, recent, uidNext,
                 uidValidity, unseen, mailbox), composer, new FakeImapSession());
     }
 }

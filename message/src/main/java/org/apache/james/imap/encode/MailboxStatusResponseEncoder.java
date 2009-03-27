@@ -24,20 +24,20 @@ import java.io.IOException;
 import org.apache.james.imap.api.ImapMessage;
 import org.apache.james.imap.api.process.ImapSession;
 import org.apache.james.imap.encode.base.AbstractChainedImapEncoder;
-import org.apache.james.imap.message.response.STATUSResponse;
+import org.apache.james.imap.message.response.MailboxStatusResponse;
 
 /**
  * Encodes <code>STATUS</code> responses.
  */
-public class STATUSResponseEncoder extends AbstractChainedImapEncoder {
+public class MailboxStatusResponseEncoder extends AbstractChainedImapEncoder {
 
-    public STATUSResponseEncoder(ImapEncoder next) {
+    public MailboxStatusResponseEncoder(ImapEncoder next) {
         super(next);
     }
 
     protected void doEncode(ImapMessage acceptableMessage,
             ImapResponseComposer composer, ImapSession session) throws IOException {
-        STATUSResponse response = (STATUSResponse) acceptableMessage;
+        MailboxStatusResponse response = (MailboxStatusResponse) acceptableMessage;
         composer.statusResponse(response.getMessages(), response.getRecent(),
                 response.getUidNext(), response.getUidValidity(), response
                         .getUnseen(), response.getMailbox());
@@ -45,7 +45,7 @@ public class STATUSResponseEncoder extends AbstractChainedImapEncoder {
     }
 
     protected boolean isAcceptable(ImapMessage message) {
-        return message != null && message instanceof STATUSResponse;
+        return message != null && message instanceof MailboxStatusResponse;
     }
 
 }

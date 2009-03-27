@@ -33,7 +33,7 @@ import org.apache.james.imap.mailbox.MailboxManager;
 import org.apache.james.imap.mailbox.MailboxManagerProvider;
 import org.apache.james.imap.mailbox.MailboxSession;
 import org.apache.james.imap.message.request.StatusRequest;
-import org.apache.james.imap.message.response.STATUSResponse;
+import org.apache.james.imap.message.response.MailboxStatusResponse;
 import org.apache.james.imap.processor.base.ImapSessionUtils;
 
 public class StatusProcessor extends AbstractMailboxProcessor {
@@ -77,7 +77,7 @@ public class StatusProcessor extends AbstractMailboxProcessor {
                     mailboxSession, mailbox);
             final Long unseen = unseen(statusDataItems, mailboxSession, mailbox);
 
-            final STATUSResponse response = new STATUSResponse(messages,
+            final MailboxStatusResponse response = new MailboxStatusResponse(messages,
                     recent, uidNext, uidValidity, unseen, mailboxName);
             responder.respond(response);
             unsolicitedResponses(session, responder, false);
