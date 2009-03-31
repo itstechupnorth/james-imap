@@ -34,11 +34,8 @@ import org.apache.james.imap.decode.ProtocolException;
 
 class FetchCommandParser extends AbstractUidCommandParser {
 
-	private final ImapCommand fetch = ImapCommand.selectedStateCommand(ImapConstants.FETCH_COMMAND_NAME);
-
-	
-    public FetchCommandParser() {
-    	setCommand(fetch);
+	public FetchCommandParser() {
+    	super(ImapCommand.selectedStateCommand(ImapConstants.FETCH_COMMAND_NAME));
     }
 
     public FetchData fetchRequest(ImapRequestLineReader request)

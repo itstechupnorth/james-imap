@@ -28,11 +28,8 @@ import org.apache.james.imap.decode.base.AbstractImapCommandParser;
 
 class SubscribeCommandParser extends AbstractImapCommandParser {
 
-    private final ImapCommand subscribe = ImapCommand
-    .authenticatedStateCommand(ImapConstants.SUBSCRIBE_COMMAND_NAME);
-	
     public SubscribeCommandParser() {
-    	setCommand(subscribe);
+    	super(ImapCommand.authenticatedStateCommand(ImapConstants.SUBSCRIBE_COMMAND_NAME));
     }
 
     protected ImapMessage decode(ImapCommand command,

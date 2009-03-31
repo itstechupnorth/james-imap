@@ -29,11 +29,8 @@ import org.apache.james.imap.decode.base.AbstractImapCommandParser;
 
 class ExpungeCommandParser extends AbstractImapCommandParser {
 
-    private final ImapCommand expunge = ImapCommand
-            .selectedStateCommand(ImapConstants.EXPUNGE_COMMAND_NAME);
-	
     public ExpungeCommandParser() {
-    	setCommand(expunge);
+    	super(ImapCommand.selectedStateCommand(ImapConstants.EXPUNGE_COMMAND_NAME));
     }
 
     protected ImapMessage decode(ImapCommand command,

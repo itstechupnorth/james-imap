@@ -30,10 +30,8 @@ import org.apache.james.imap.decode.base.AbstractImapCommandParser;
 
 class StatusCommandParser extends AbstractImapCommandParser {
 	
-    private final ImapCommand status = ImapCommand.authenticatedStateCommand(ImapConstants.STATUS_COMMAND_NAME);
-	
     public StatusCommandParser() {
-    	setCommand(status);
+    	super(ImapCommand.authenticatedStateCommand(ImapConstants.STATUS_COMMAND_NAME));
     }
 
     StatusDataItems statusDataItems(ImapRequestLineReader request)

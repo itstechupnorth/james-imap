@@ -29,10 +29,8 @@ import org.apache.james.imap.decode.base.AbstractImapCommandParser;
 
 class CapabilityCommandParser extends AbstractImapCommandParser {
 
-    private final ImapCommand capability = ImapCommand.anyStateCommand(ImapConstants.CAPABILITY_COMMAND_NAME);
-	
     public CapabilityCommandParser() {
-    	setCommand(capability);
+    	super(ImapCommand.anyStateCommand(ImapConstants.CAPABILITY_COMMAND_NAME));
     }
 
     protected ImapMessage decode(ImapCommand command,

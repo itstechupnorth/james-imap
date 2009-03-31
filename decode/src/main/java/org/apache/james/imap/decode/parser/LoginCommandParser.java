@@ -28,11 +28,8 @@ import org.apache.james.imap.decode.base.AbstractImapCommandParser;
 
 class LoginCommandParser extends AbstractImapCommandParser {
 
-    private final ImapCommand login = ImapCommand
-    .nonAuthenticatedStateCommand(ImapConstants.LOGIN_COMMAND_NAME);
-	
     public LoginCommandParser() {
-    	setCommand(login);
+    	super(ImapCommand.nonAuthenticatedStateCommand(ImapConstants.LOGIN_COMMAND_NAME));
     }
 
     protected ImapMessage decode(ImapCommand command,

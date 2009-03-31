@@ -28,10 +28,8 @@ import org.apache.james.imap.decode.base.AbstractImapCommandParser;
 
 class NoopCommandParser extends AbstractImapCommandParser {
 	
-    private final ImapCommand noop = ImapCommand.anyStateCommand(ImapConstants.NOOP_COMMAND_NAME);
-	
     public NoopCommandParser() {
-    	setCommand(noop);
+    	super(ImapCommand.anyStateCommand(ImapConstants.NOOP_COMMAND_NAME));
     }
 
     protected ImapMessage decode(ImapCommand command,

@@ -28,11 +28,9 @@ import org.apache.james.imap.decode.ProtocolException;
 import org.apache.james.imap.decode.base.AbstractImapCommandParser;
 
 class AuthenticateCommandParser extends AbstractImapCommandParser {
-
-    private final ImapCommand authenticate = ImapCommand.nonAuthenticatedStateCommand(ImapConstants.AUTHENTICATE_COMMAND_NAME);
 	
     public AuthenticateCommandParser() {
-    	setCommand(authenticate);
+    	super(ImapCommand.nonAuthenticatedStateCommand(ImapConstants.AUTHENTICATE_COMMAND_NAME));
     }
 
     protected ImapMessage decode(ImapCommand command,

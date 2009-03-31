@@ -28,11 +28,8 @@ import org.apache.james.imap.decode.base.AbstractImapCommandParser;
 
 class CheckCommandParser extends AbstractImapCommandParser {
 
-    private final ImapCommand check = ImapCommand
-    .selectedStateCommand(ImapConstants.CHECK_COMMAND_NAME);
-	
     public CheckCommandParser() {
-    	setCommand(check);
+    	super(ImapCommand.selectedStateCommand(ImapConstants.CHECK_COMMAND_NAME));
     }
 
     protected ImapMessage decode(ImapCommand command,

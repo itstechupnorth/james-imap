@@ -27,11 +27,9 @@ import org.apache.james.imap.decode.ProtocolException;
 import org.apache.james.imap.decode.base.AbstractImapCommandParser;
 
 class RenameCommandParser extends AbstractImapCommandParser {
-
-    private final ImapCommand rename = ImapCommand.authenticatedStateCommand(ImapConstants.RENAME_COMMAND_NAME);
 	
     public RenameCommandParser() {
-    	setCommand(rename);
+    	super(ImapCommand.authenticatedStateCommand(ImapConstants.RENAME_COMMAND_NAME));
     }
 
     protected ImapMessage decode(ImapCommand command,

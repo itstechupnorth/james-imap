@@ -28,7 +28,8 @@ import org.apache.james.imap.decode.base.AbstractImapCommandParser;
 
 abstract class AbstractUidCommandParser extends AbstractImapCommandParser {
 
-    public AbstractUidCommandParser() {
+    public AbstractUidCommandParser(final ImapCommand command) {
+    	super(command);
     }
 
     protected ImapMessage decode(ImapCommand command,

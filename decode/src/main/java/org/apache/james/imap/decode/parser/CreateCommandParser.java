@@ -29,11 +29,8 @@ import org.apache.james.imap.decode.base.AbstractImapCommandParser;
 
 class CreateCommandParser extends AbstractImapCommandParser  {
 
-    private final ImapCommand create = ImapCommand
-    .authenticatedStateCommand(ImapConstants.CREATE_COMMAND_NAME);
-	
     public CreateCommandParser() {
-    	setCommand(create);
+    	super(ImapCommand.authenticatedStateCommand(ImapConstants.CREATE_COMMAND_NAME));
     }
 
     protected ImapMessage decode(ImapCommand command,

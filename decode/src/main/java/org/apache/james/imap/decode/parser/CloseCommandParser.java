@@ -28,12 +28,9 @@ import org.apache.james.imap.decode.ProtocolException;
 import org.apache.james.imap.decode.base.AbstractImapCommandParser;
 
 class CloseCommandParser extends AbstractImapCommandParser  {
-
-    private final ImapCommand close = ImapCommand
-            .selectedStateCommand(ImapConstants.CLOSE_COMMAND_NAME);
     
     public CloseCommandParser() {
-    	setCommand(close);
+    	super(ImapCommand.selectedStateCommand(ImapConstants.CLOSE_COMMAND_NAME));
     }
 
     protected ImapMessage decode(ImapCommand command,

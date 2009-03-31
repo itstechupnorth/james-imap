@@ -28,11 +28,8 @@ import org.apache.james.imap.decode.base.AbstractImapCommandParser;
 
 class LogoutCommandParser extends AbstractImapCommandParser {
 	
-    private final ImapCommand logout = ImapCommand
-    .anyStateCommand(ImapConstants.LOGOUT_COMMAND_NAME);
-
-    public LogoutCommandParser() {
-    	setCommand(logout);
+	public LogoutCommandParser() {
+    	super(ImapCommand.anyStateCommand(ImapConstants.LOGOUT_COMMAND_NAME));
     }
 
     protected ImapMessage decode(ImapCommand command,

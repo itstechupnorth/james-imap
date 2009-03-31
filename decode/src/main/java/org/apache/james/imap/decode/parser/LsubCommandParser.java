@@ -23,13 +23,9 @@ import org.apache.james.imap.api.ImapConstants;
 import org.apache.james.imap.api.ImapMessage;
 
 class LsubCommandParser extends ListCommandParser {
-
-
-    private final ImapCommand lsub = ImapCommand
-            .authenticatedStateCommand(ImapConstants.LSUB_COMMAND_NAME);
 	
     public LsubCommandParser() {
-    	setCommand(lsub);
+    	super(ImapCommand.authenticatedStateCommand(ImapConstants.LSUB_COMMAND_NAME));
     }
 
     protected ImapMessage createMessage(ImapCommand command,

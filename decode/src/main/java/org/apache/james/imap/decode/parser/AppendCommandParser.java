@@ -33,10 +33,8 @@ import org.apache.james.imap.decode.base.AbstractImapCommandParser;
 
 class AppendCommandParser extends AbstractImapCommandParser {
 
-    private final ImapCommand append = ImapCommand.authenticatedStateCommand(ImapConstants.APPEND_COMMAND_NAME);
-	
     public AppendCommandParser() {
-    	setCommand(append);
+    	super(ImapCommand.authenticatedStateCommand(ImapConstants.APPEND_COMMAND_NAME));
     }
 
     /**

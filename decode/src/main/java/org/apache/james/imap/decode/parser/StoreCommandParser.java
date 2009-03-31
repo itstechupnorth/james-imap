@@ -29,11 +29,9 @@ import org.apache.james.imap.decode.ImapRequestLineReader;
 import org.apache.james.imap.decode.ProtocolException;
 
 class StoreCommandParser extends AbstractUidCommandParser  {
-    private final ImapCommand store = ImapCommand
-    .selectedStateCommand(ImapConstants.STORE_COMMAND_NAME);
 	
     public StoreCommandParser() {
-    	setCommand(store);
+    	super(ImapCommand.selectedStateCommand(ImapConstants.STORE_COMMAND_NAME));
     }
 
     protected ImapMessage decode(ImapCommand command,

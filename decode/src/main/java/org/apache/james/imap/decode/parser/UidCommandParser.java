@@ -32,12 +32,10 @@ import org.apache.james.imap.decode.base.AbstractImapCommandParser;
 class UidCommandParser extends AbstractImapCommandParser implements
         DelegatingImapCommandParser {
 	
-    private final ImapCommand uid = ImapCommand.selectedStateCommand(ImapConstants.UID_COMMAND_NAME);
-	
 	private ImapCommandParserFactory parserFactory;
 
     public UidCommandParser() {
-    	setCommand(uid);
+    	super(ImapCommand.selectedStateCommand(ImapConstants.UID_COMMAND_NAME));
     }
 
     /**

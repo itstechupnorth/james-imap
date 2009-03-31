@@ -27,12 +27,9 @@ import org.apache.james.imap.decode.ProtocolException;
 import org.apache.james.imap.decode.base.AbstractImapCommandParser;
 
 class UnsubscribeCommandParser extends AbstractImapCommandParser {
-	
-    private final ImapCommand unsubscribe = ImapCommand
-    	.authenticatedStateCommand(ImapConstants.UNSUBSCRIBE_COMMAND_NAME);
 
     public UnsubscribeCommandParser() {
-    	setCommand(unsubscribe);
+    	super(ImapCommand.authenticatedStateCommand(ImapConstants.UNSUBSCRIBE_COMMAND_NAME));
     }
 
     protected ImapMessage decode(ImapCommand command,

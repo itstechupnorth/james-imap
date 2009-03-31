@@ -27,12 +27,9 @@ import org.apache.james.imap.decode.ImapRequestLineReader;
 import org.apache.james.imap.decode.ProtocolException;
 
 class CopyCommandParser extends AbstractUidCommandParser {
-
-    private final ImapCommand copy = ImapCommand
-            .selectedStateCommand(ImapConstants.COPY_COMMAND_NAME);
 	
     public CopyCommandParser() {
-    	setCommand(copy);
+    	super(ImapCommand.selectedStateCommand(ImapConstants.COPY_COMMAND_NAME));
     }
 
     protected ImapMessage decode(ImapCommand command,

@@ -28,12 +28,9 @@ import org.apache.james.imap.decode.ProtocolException;
 import org.apache.james.imap.decode.base.AbstractImapCommandParser;
 
 class DeleteCommandParser extends AbstractImapCommandParser {
-
-    private final ImapCommand delete = ImapCommand
-    .authenticatedStateCommand(ImapConstants.DELETE_COMMAND_NAME);
 	
     public DeleteCommandParser() {
-    	setCommand(delete);
+    	super(ImapCommand.authenticatedStateCommand(ImapConstants.DELETE_COMMAND_NAME));
     }
 
     protected ImapMessage decode(ImapCommand command,

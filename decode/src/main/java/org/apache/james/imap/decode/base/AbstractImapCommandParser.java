@@ -60,23 +60,21 @@ public abstract class AbstractImapCommandParser implements ImapCommandParser, Me
 
     private static final Charset US_ASCII = Charset.forName("US-ASCII");
 
-    private ImapCommand command;
+    private final ImapCommand command;
 
     private Imap4Rev1MessageFactory messageFactory;
 
     private StatusResponseFactory statusResponseFactory;
 
-    public AbstractImapCommandParser() {
+    public AbstractImapCommandParser(final ImapCommand command) {
         super();
+        this.command = command;
     }
 
     public ImapCommand getCommand() {
         return command;
     }
 
-    protected void setCommand(ImapCommand command) {
-        this.command = command;
-    }
 
     /**
      * @see org.apache.james.imap.decode.MessagingImapCommandParser#getMessageFactory()

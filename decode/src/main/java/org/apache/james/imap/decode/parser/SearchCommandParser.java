@@ -44,13 +44,11 @@ import org.apache.james.imap.decode.ProtocolException;
 
 class SearchCommandParser extends AbstractUidCommandParser {
 	
-    private final ImapCommand search = ImapCommand.selectedStateCommand(ImapConstants.SEARCH_COMMAND_NAME);
-	
     /** Lazy loaded */
     private Collection<String> charsetNames;
 
     public SearchCommandParser() {
-    	setCommand(search);
+    	super(ImapCommand.selectedStateCommand(ImapConstants.SEARCH_COMMAND_NAME));
     }
 
     /**

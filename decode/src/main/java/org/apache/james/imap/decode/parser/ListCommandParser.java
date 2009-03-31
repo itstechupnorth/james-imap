@@ -27,13 +27,14 @@ import org.apache.james.imap.decode.ImapRequestLineReader;
 import org.apache.james.imap.decode.ProtocolException;
 
 class ListCommandParser extends AbstractUidCommandParser {
-	
-    private final ImapCommand list = ImapCommand
-    .authenticatedStateCommand(ImapConstants.LIST_COMMAND_NAME);
 
 	public ListCommandParser() {
-    	setCommand(list);
+    	super(ImapCommand.authenticatedStateCommand(ImapConstants.LIST_COMMAND_NAME));
     }
+	
+	protected ListCommandParser(final ImapCommand command) {
+		super(command);
+	}
 
 
     /**
