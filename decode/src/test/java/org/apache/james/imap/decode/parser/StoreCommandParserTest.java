@@ -54,7 +54,7 @@ public class StoreCommandParserTest extends MockObjectTestCase {
             oneOf (mockCommandFactory).getStore();
         }});
         mockMessageFactory = mock(Imap4Rev1MessageFactory.class);
-        command = mock(ImapCommand.class);
+        command = ImapCommand.anyStateCommand("Command");
         message = mock(ImapMessage.class);
         parser.init(mockCommandFactory);
         parser.setMessageFactory(mockMessageFactory);

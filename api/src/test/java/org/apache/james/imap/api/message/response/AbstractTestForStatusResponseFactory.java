@@ -45,7 +45,7 @@ abstract public class AbstractTestForStatusResponseFactory extends
     protected void setUp() throws Exception {
         super.setUp();
         factory = createInstance();
-        command = mock(ImapCommand.class);
+        command = ImapCommand.anyStateCommand("Command");
     }
 
     protected void tearDown() throws Exception {

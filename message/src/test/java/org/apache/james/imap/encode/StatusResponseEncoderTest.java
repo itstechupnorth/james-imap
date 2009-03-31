@@ -49,7 +49,7 @@ public class StatusResponseEncoderTest extends MockObjectTestCase {
 
     StatusResponseEncoder encoder;
 
-    ImapCommand mockCommand;
+    ImapCommand stubCommand;
 
     protected void setUp() throws Exception {
         super.setUp();
@@ -58,7 +58,7 @@ public class StatusResponseEncoderTest extends MockObjectTestCase {
         mockNextEncoder = mock(ImapEncoder.class);
         mockStatusResponse = mock(StatusResponse.class);
         encoder = new StatusResponseEncoder(mockNextEncoder);
-        mockCommand = mock(ImapCommand.class);
+        stubCommand = ImapCommand.anyStateCommand(COMMAND);
     }
 
     protected void tearDown() throws Exception {
@@ -303,8 +303,7 @@ public class StatusResponseEncoderTest extends MockObjectTestCase {
             if (tag == null) {
                 oneOf(mockStatusResponse).getCommand();will(returnValue(null));
             } else {
-                oneOf(mockCommand).getName();will(returnValue(COMMAND));
-                oneOf(mockStatusResponse).getCommand();will(returnValue(mockCommand));
+                oneOf(mockStatusResponse).getCommand();will(returnValue(stubCommand));
             }
         }});
     }

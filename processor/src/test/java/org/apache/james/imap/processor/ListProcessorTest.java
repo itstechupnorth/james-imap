@@ -51,7 +51,7 @@ public class ListProcessorTest extends MockObjectTestCase {
     protected void setUp() throws Exception {
         serverResponseFactory = mock(StatusResponseFactory.class);
         session = mock(ImapSession.class);
-        command = mock(ImapCommand.class);
+        command = ImapCommand.anyStateCommand("Command");
         next = mock(ImapProcessor.class);
         responder = mock(ImapProcessor.Responder.class);
         result = mock(MailboxMetaData.class);

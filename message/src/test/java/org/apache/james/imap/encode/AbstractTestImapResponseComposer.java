@@ -27,7 +27,6 @@ import java.util.List;
 import javax.mail.Flags;
 
 import org.apache.james.imap.api.ImapCommand;
-import org.jmock.Expectations;
 import org.jmock.integration.junit3.MockObjectTestCase;
 
 public abstract class AbstractTestImapResponseComposer extends MockObjectTestCase {
@@ -38,11 +37,8 @@ public abstract class AbstractTestImapResponseComposer extends MockObjectTestCas
 
     private static final long[] EMPTY = {};
 
-    ImapCommand mockCommand;
-
     protected void setUp() throws Exception {
         super.setUp();
-        mockCommand = mock(ImapCommand.class);
     }
 
     protected void tearDown() throws Exception {
@@ -259,9 +255,6 @@ public abstract class AbstractTestImapResponseComposer extends MockObjectTestCas
     }
 
     private ImapCommand command(final String name) {
-        checking(new Expectations() {{
-            oneOf (mockCommand).getName();will(returnValue(name));
-        }});
-        return mockCommand;
+        return ImapCommand.anyStateCommand(name);
     }
 }

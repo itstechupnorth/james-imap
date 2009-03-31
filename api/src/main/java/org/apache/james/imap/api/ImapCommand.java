@@ -19,27 +19,71 @@
 
 package org.apache.james.imap.api;
 
+
 /**
  * Represents a processor for a particular Imap command. Implementations of this
  * interface should encpasulate all command specific processing.
  * 
  * @version $Revision: 109034 $
  */
-public interface ImapCommand {
-    /**
-     * @return the name of the command, as specified in rfc2060.
-     */
-    String getName();
+public class ImapCommand {
+	public static ImapCommand nonAuthenticatedStateCommand(final String name) {
+		return new ImapCommand(false, false, true, name);
+	}
 
-    /**
-     * Specifies if this command is valid for the given session state.
-     * 
-     * @param state
-     *            The current
-     *            {@link org.apache.james.imap.api.ImapSessionState state} of
-     *            the
-     *            {@link org.apache.james.experimental.imapserver.ImapSession}
-     * @return <code>true</code> if the command is valid in this state.
-     */
-    boolean validForState(ImapSessionState state);
+	public static ImapCommand authenticatedStateCommand(final String name) {
+		return new ImapCommand(true, true, false, name);
+	}
+
+	public static ImapCommand selectedStateCommand(final String name) {
+		return new ImapCommand(false, true, false, name);
+	}
+
+	public static ImapCommand anyStateCommand(final String name) {
+		return new ImapCommand(true, true, true, name);
+	}
+
+	private final boolean validInAuthenticated;
+
+	private final boolean validInSelected;
+
+	private final boolean validInNonAuthenticated;
+
+	private final String name;
+
+	private ImapCommand(boolean validInAuthenticated,
+			boolean validInSelected, boolean validInNonAuthenticated,
+			final String name) {
+		super();
+		this.validInAuthenticated = validInAuthenticated;
+		this.validInSelected = validInSelected;
+		this.validInNonAuthenticated = validInNonAuthenticated;
+		this.name = name;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public boolean validForState(ImapSessionState state) {
+		final boolean result;
+		switch (state) {
+		case AUTHENTICATED:
+			result = validInAuthenticated;
+			break;
+		case NON_AUTHENTICATED:
+			result = validInNonAuthenticated;
+			break;
+		case SELECTED:
+			result = validInSelected;
+			break;
+		default:
+			result = false;
+		}
+		return result;
+	}
+
+	public String toString() {
+		return name;
+	}
 }

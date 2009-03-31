@@ -146,7 +146,7 @@ public class SearchCommandParserQuotedCharsetTest extends MockObjectTestCase {
             oneOf (mockCommandFactory).getSearch();
         }});
         mockMessageFactory = mock(Imap4Rev1MessageFactory.class);
-        command = mock(ImapCommand.class);
+        command = ImapCommand.anyStateCommand("Command");
         message = mock(ImapMessage.class);
         mockStatusResponseFactory = mock(StatusResponseFactory.class);
         parser.init(mockCommandFactory);

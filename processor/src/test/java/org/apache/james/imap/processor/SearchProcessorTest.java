@@ -106,7 +106,7 @@ public class SearchProcessorTest extends MockObjectTestCase {
         super.setUp();
         serverResponseFactory = mock(StatusResponseFactory.class);
         session = mock(ImapSession.class);
-        command = mock(ImapCommand.class);
+        command = ImapCommand.anyStateCommand("Command");
         next = mock(ImapProcessor.class);
         responder = mock(ImapProcessor.Responder.class);
         statusResponse = mock(StatusResponse.class);

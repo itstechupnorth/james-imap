@@ -24,76 +24,76 @@ import org.apache.james.imap.api.ImapConstants;
 
 public class StandardImap4Rev1CommandFactory implements Imap4Rev1CommandFactory {
 
-    private final ImapCommand append = ImapCommandImpl
+    private final ImapCommand append = ImapCommand
             .authenticatedStateCommand(ImapConstants.APPEND_COMMAND_NAME);
 
-    private final ImapCommand authenticate = ImapCommandImpl
+    private final ImapCommand authenticate = ImapCommand
             .nonAuthenticatedStateCommand(ImapConstants.AUTHENTICATE_COMMAND_NAME);
 
-    private final ImapCommand capability = ImapCommandImpl
+    private final ImapCommand capability = ImapCommand
             .anyStateCommand(ImapConstants.CAPABILITY_COMMAND_NAME);
 
-    private final ImapCommand check = ImapCommandImpl
+    private final ImapCommand check = ImapCommand
             .selectedStateCommand(ImapConstants.CHECK_COMMAND_NAME);
 
-    private final ImapCommand close = ImapCommandImpl
+    private final ImapCommand close = ImapCommand
             .selectedStateCommand(ImapConstants.CLOSE_COMMAND_NAME);
 
-    private final ImapCommand copy = ImapCommandImpl
+    private final ImapCommand copy = ImapCommand
             .selectedStateCommand(ImapConstants.COPY_COMMAND_NAME);
 
-    private final ImapCommand create = ImapCommandImpl
+    private final ImapCommand create = ImapCommand
             .authenticatedStateCommand(ImapConstants.CREATE_COMMAND_NAME);
 
-    private final ImapCommand delete = ImapCommandImpl
+    private final ImapCommand delete = ImapCommand
             .authenticatedStateCommand(ImapConstants.DELETE_COMMAND_NAME);
 
-    private final ImapCommand examine = ImapCommandImpl
+    private final ImapCommand examine = ImapCommand
             .authenticatedStateCommand(ImapConstants.EXAMINE_COMMAND_NAME);
 
-    private final ImapCommand expunge = ImapCommandImpl
+    private final ImapCommand expunge = ImapCommand
             .selectedStateCommand(ImapConstants.EXPUNGE_COMMAND_NAME);
 
-    private final ImapCommand fetch = ImapCommandImpl
+    private final ImapCommand fetch = ImapCommand
             .selectedStateCommand(ImapConstants.FETCH_COMMAND_NAME);
 
-    private final ImapCommand list = ImapCommandImpl
+    private final ImapCommand list = ImapCommand
             .authenticatedStateCommand(ImapConstants.LIST_COMMAND_NAME);
 
-    private final ImapCommand login = ImapCommandImpl
+    private final ImapCommand login = ImapCommand
             .nonAuthenticatedStateCommand(ImapConstants.LOGIN_COMMAND_NAME);
 
-    private final ImapCommand logout = ImapCommandImpl
+    private final ImapCommand logout = ImapCommand
             .anyStateCommand(ImapConstants.LOGOUT_COMMAND_NAME);
 
-    private final ImapCommand lsub = ImapCommandImpl
+    private final ImapCommand lsub = ImapCommand
             .authenticatedStateCommand(ImapConstants.LSUB_COMMAND_NAME);
 
-    private final ImapCommand noop = ImapCommandImpl
+    private final ImapCommand noop = ImapCommand
             .anyStateCommand(ImapConstants.NOOP_COMMAND_NAME);
 
-    private final ImapCommand rename = ImapCommandImpl
+    private final ImapCommand rename = ImapCommand
             .authenticatedStateCommand(ImapConstants.RENAME_COMMAND_NAME);
 
-    private final ImapCommand search = ImapCommandImpl
+    private final ImapCommand search = ImapCommand
             .selectedStateCommand(ImapConstants.SEARCH_COMMAND_NAME);
 
-    private final ImapCommand select = ImapCommandImpl
+    private final ImapCommand select = ImapCommand
             .authenticatedStateCommand(ImapConstants.SELECT_COMMAND_NAME);
 
-    private final ImapCommand status = ImapCommandImpl
+    private final ImapCommand status = ImapCommand
             .authenticatedStateCommand(ImapConstants.STATUS_COMMAND_NAME);
 
-    private final ImapCommand store = ImapCommandImpl
+    private final ImapCommand store = ImapCommand
             .selectedStateCommand(ImapConstants.STORE_COMMAND_NAME);
 
-    private final ImapCommand subscribe = ImapCommandImpl
+    private final ImapCommand subscribe = ImapCommand
             .authenticatedStateCommand(ImapConstants.SUBSCRIBE_COMMAND_NAME);
 
-    private final ImapCommand uid = ImapCommandImpl
+    private final ImapCommand uid = ImapCommand
             .selectedStateCommand(ImapConstants.UID_COMMAND_NAME);
 
-    private final ImapCommand unsubscribe = ImapCommandImpl
+    private final ImapCommand unsubscribe = ImapCommand
             .authenticatedStateCommand(ImapConstants.UNSUBSCRIBE_COMMAND_NAME);
 
     /**

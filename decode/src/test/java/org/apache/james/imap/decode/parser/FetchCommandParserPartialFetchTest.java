@@ -54,7 +54,7 @@ public class FetchCommandParserPartialFetchTest extends MockObjectTestCase {
             oneOf (mockCommandFactory).getFetch();
         }});
         mockMessageFactory = mock(Imap4Rev1MessageFactory.class);
-        command = mock(ImapCommand.class);
+        command = ImapCommand.anyStateCommand("Command");
         message = mock(ImapMessage.class);
         parser.init(mockCommandFactory);
         parser.setMessageFactory(mockMessageFactory);

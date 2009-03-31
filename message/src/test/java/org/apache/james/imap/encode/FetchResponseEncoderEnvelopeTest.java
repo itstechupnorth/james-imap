@@ -59,7 +59,7 @@ public class FetchResponseEncoderEnvelopeTest extends MockObjectTestCase {
 
     FetchResponseEncoder encoder;
 
-    ImapCommand mockCommand;
+    ImapCommand stubCommand;
 
     FetchResponse message;
 
@@ -104,7 +104,7 @@ public class FetchResponseEncoderEnvelopeTest extends MockObjectTestCase {
         composer = mock(ImapResponseComposer.class);
         mockNextEncoder = mock(ImapEncoder.class);
         encoder = new FetchResponseEncoder(mockNextEncoder);
-        mockCommand = mock(ImapCommand.class);
+        stubCommand = ImapCommand.anyStateCommand("COMMAND");
         flags = new Flags(Flags.Flag.DELETED);
     }
 
