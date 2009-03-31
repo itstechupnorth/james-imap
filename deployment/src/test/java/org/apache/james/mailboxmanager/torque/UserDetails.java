@@ -23,15 +23,13 @@ import java.util.Collection;
 import java.util.HashSet;
 
 public class UserDetails {
-    private final String userName;
 
     private String password;
 
-    private final Collection subscriptions;
+    private final Collection<String> subscriptions;
 
     public UserDetails(final String userName) {
-        this.userName = userName;
-        this.subscriptions = new HashSet();
+        this.subscriptions = new HashSet<String>();
     }
 
     public String getPassword() {
