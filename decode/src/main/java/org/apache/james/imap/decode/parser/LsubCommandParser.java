@@ -18,23 +18,18 @@
  ****************************************************************/
 package org.apache.james.imap.decode.parser;
 
-import org.apache.james.imap.api.Imap4Rev1CommandFactory;
 import org.apache.james.imap.api.ImapCommand;
+import org.apache.james.imap.api.ImapConstants;
 import org.apache.james.imap.api.ImapMessage;
-import org.apache.james.imap.decode.InitialisableCommandFactory;
 
-class LsubCommandParser extends ListCommandParser implements
-        InitialisableCommandFactory {
+class LsubCommandParser extends ListCommandParser {
 
+
+    private final ImapCommand lsub = ImapCommand
+            .authenticatedStateCommand(ImapConstants.LSUB_COMMAND_NAME);
+	
     public LsubCommandParser() {
-    }
-
-    /**
-     * @see org.apache.james.imap.decode.InitialisableCommandFactory#init(org.apache.james.imap.api.Imap4Rev1CommandFactory)
-     */
-    public void init(Imap4Rev1CommandFactory factory) {
-        final ImapCommand command = factory.getLsub();
-        setCommand(command);
+    	setCommand(lsub);
     }
 
     protected ImapMessage createMessage(ImapCommand command,

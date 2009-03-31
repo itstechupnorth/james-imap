@@ -19,28 +19,21 @@
 package org.apache.james.imap.decode.parser;
 
 import org.apache.commons.logging.Log;
-import org.apache.james.imap.api.Imap4Rev1CommandFactory;
 import org.apache.james.imap.api.Imap4Rev1MessageFactory;
 import org.apache.james.imap.api.ImapCommand;
 import org.apache.james.imap.api.ImapConstants;
 import org.apache.james.imap.api.ImapMessage;
 import org.apache.james.imap.api.message.StatusDataItems;
 import org.apache.james.imap.decode.ImapRequestLineReader;
-import org.apache.james.imap.decode.InitialisableCommandFactory;
 import org.apache.james.imap.decode.ProtocolException;
 import org.apache.james.imap.decode.base.AbstractImapCommandParser;
 
-class StatusCommandParser extends AbstractImapCommandParser implements
-        InitialisableCommandFactory {
+class StatusCommandParser extends AbstractImapCommandParser {
+	
+    private final ImapCommand status = ImapCommand.authenticatedStateCommand(ImapConstants.STATUS_COMMAND_NAME);
+	
     public StatusCommandParser() {
-    }
-
-    /**
-     * @see org.apache.james.imap.decode.InitialisableCommandFactory#init(org.apache.james.imap.api.Imap4Rev1CommandFactory)
-     */
-    public void init(Imap4Rev1CommandFactory factory) {
-        final ImapCommand command = factory.getStatus();
-        setCommand(command);
+    	setCommand(status);
     }
 
     StatusDataItems statusDataItems(ImapRequestLineReader request)

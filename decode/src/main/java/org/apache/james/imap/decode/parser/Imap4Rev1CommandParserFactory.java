@@ -22,14 +22,12 @@ package org.apache.james.imap.decode.parser;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.james.imap.api.Imap4Rev1CommandFactory;
 import org.apache.james.imap.api.Imap4Rev1MessageFactory;
 import org.apache.james.imap.api.ImapConstants;
 import org.apache.james.imap.api.message.response.StatusResponseFactory;
 import org.apache.james.imap.decode.DelegatingImapCommandParser;
 import org.apache.james.imap.decode.ImapCommandParser;
 import org.apache.james.imap.decode.ImapCommandParserFactory;
-import org.apache.james.imap.decode.InitialisableCommandFactory;
 import org.apache.james.imap.decode.MessagingImapCommandParser;
 
 /**
@@ -46,14 +44,11 @@ public class Imap4Rev1CommandParserFactory implements
 
     private final StatusResponseFactory statusResponseFactory;
 
-    private final Imap4Rev1CommandFactory commandFactory;
 
     public Imap4Rev1CommandParserFactory(
             final Imap4Rev1MessageFactory messageFactory,
-            final Imap4Rev1CommandFactory commandFactory,
             final StatusResponseFactory statusResponseFactory) {
         this.messageFactory = messageFactory;
-        this.commandFactory = commandFactory;
         this.statusResponseFactory = statusResponseFactory;
         _imapCommands = new HashMap<String, Class>();
 
@@ -167,10 +162,6 @@ public class Imap4Rev1CommandParserFactory implements
             messagingImapCommandParser.setMessageFactory(messageFactory);
             messagingImapCommandParser
                     .setStatusResponseFactory(statusResponseFactory);
-        }
-
-        if (cmd instanceof InitialisableCommandFactory) {
-            ((InitialisableCommandFactory) cmd).init(commandFactory);
         }
     }
 

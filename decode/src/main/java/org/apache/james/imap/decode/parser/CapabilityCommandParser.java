@@ -19,27 +19,20 @@
 package org.apache.james.imap.decode.parser;
 
 import org.apache.commons.logging.Log;
-import org.apache.james.imap.api.Imap4Rev1CommandFactory;
 import org.apache.james.imap.api.Imap4Rev1MessageFactory;
 import org.apache.james.imap.api.ImapCommand;
+import org.apache.james.imap.api.ImapConstants;
 import org.apache.james.imap.api.ImapMessage;
 import org.apache.james.imap.decode.ImapRequestLineReader;
-import org.apache.james.imap.decode.InitialisableCommandFactory;
 import org.apache.james.imap.decode.ProtocolException;
 import org.apache.james.imap.decode.base.AbstractImapCommandParser;
 
-class CapabilityCommandParser extends AbstractImapCommandParser implements
-        InitialisableCommandFactory {
+class CapabilityCommandParser extends AbstractImapCommandParser {
 
+    private final ImapCommand capability = ImapCommand.anyStateCommand(ImapConstants.CAPABILITY_COMMAND_NAME);
+	
     public CapabilityCommandParser() {
-    }
-
-    /**
-     * @see org.apache.james.imap.decode.InitialisableCommandFactory#init(org.apache.james.imap.api.Imap4Rev1CommandFactory)
-     */
-    public void init(Imap4Rev1CommandFactory factory) {
-        final ImapCommand command = factory.getCapability();
-        setCommand(command);
+    	setCommand(capability);
     }
 
     protected ImapMessage decode(ImapCommand command,

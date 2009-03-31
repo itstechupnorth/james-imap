@@ -29,8 +29,8 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.logging.Log;
-import org.apache.james.imap.api.Imap4Rev1CommandFactory;
 import org.apache.james.imap.api.ImapCommand;
+import org.apache.james.imap.api.ImapConstants;
 import org.apache.james.imap.api.ImapMessage;
 import org.apache.james.imap.api.display.HumanReadableTextKey;
 import org.apache.james.imap.api.message.IdRange;
@@ -40,23 +40,17 @@ import org.apache.james.imap.api.message.response.StatusResponse;
 import org.apache.james.imap.api.message.response.StatusResponseFactory;
 import org.apache.james.imap.api.message.response.StatusResponse.ResponseCode;
 import org.apache.james.imap.decode.ImapRequestLineReader;
-import org.apache.james.imap.decode.InitialisableCommandFactory;
 import org.apache.james.imap.decode.ProtocolException;
 
-class SearchCommandParser extends AbstractUidCommandParser implements
-        InitialisableCommandFactory {
+class SearchCommandParser extends AbstractUidCommandParser {
+	
+    private final ImapCommand search = ImapCommand.selectedStateCommand(ImapConstants.SEARCH_COMMAND_NAME);
+	
     /** Lazy loaded */
     private Collection<String> charsetNames;
 
     public SearchCommandParser() {
-    }
-
-    /**
-     * @see org.apache.james.imap.decode.InitialisableCommandFactory#init(org.apache.james.imap.api.Imap4Rev1CommandFactory)
-     */
-    public void init(Imap4Rev1CommandFactory factory) {
-        final ImapCommand command = factory.getSearch();
-        setCommand(command);
+    	setCommand(search);
     }
 
     /**

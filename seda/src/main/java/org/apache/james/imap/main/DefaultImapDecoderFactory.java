@@ -19,9 +19,7 @@
 
 package org.apache.james.imap.main;
 
-import org.apache.james.imap.api.Imap4Rev1CommandFactory;
 import org.apache.james.imap.api.Imap4Rev1MessageFactory;
-import org.apache.james.imap.command.imap4rev1.StandardImap4Rev1CommandFactory;
 import org.apache.james.imap.decode.ImapCommandParserFactory;
 import org.apache.james.imap.decode.ImapDecoder;
 import org.apache.james.imap.decode.ImapDecoderFactory;
@@ -40,9 +38,8 @@ public class DefaultImapDecoderFactory implements ImapDecoderFactory {
         final UnpooledStatusResponseFactory unpooledStatusResponseFactory = new UnpooledStatusResponseFactory();
         final Imap4Rev1MessageFactory messageFactory = new BaseImap4Rev1MessageFactory(
                 unpooledStatusResponseFactory);
-        final Imap4Rev1CommandFactory commandFactory = new StandardImap4Rev1CommandFactory();
         final ImapCommandParserFactory imapCommands = new Imap4Rev1CommandParserFactory(
-                messageFactory, commandFactory, unpooledStatusResponseFactory);
+                messageFactory, unpooledStatusResponseFactory);
         final ImapDecoder result = new DefaultImapDecoder(messageFactory,
                 imapCommands);
         return result;

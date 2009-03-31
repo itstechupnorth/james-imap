@@ -24,13 +24,11 @@ import java.io.ByteArrayOutputStream;
 
 import javax.mail.Flags;
 
-import org.apache.james.imap.api.Imap4Rev1CommandFactory;
 import org.apache.james.imap.api.Imap4Rev1MessageFactory;
 import org.apache.james.imap.api.ImapCommand;
 import org.apache.james.imap.api.ImapMessage;
 import org.apache.james.imap.api.message.IdRange;
 import org.apache.james.imap.decode.ImapRequestLineReader;
-import org.apache.james.imap.decode.parser.StoreCommandParser;
 import org.jmock.Expectations;
 import org.jmock.integration.junit3.MockObjectTestCase;
 
@@ -38,7 +36,6 @@ public class StoreCommandParserTest extends MockObjectTestCase {
 
     StoreCommandParser parser;
 
-    Imap4Rev1CommandFactory mockCommandFactory;
 
     Imap4Rev1MessageFactory mockMessageFactory;
 
@@ -49,14 +46,9 @@ public class StoreCommandParserTest extends MockObjectTestCase {
     protected void setUp() throws Exception {
         super.setUp();
         parser = new StoreCommandParser();
-        mockCommandFactory = mock(Imap4Rev1CommandFactory.class);
-        checking(new Expectations() {{
-            oneOf (mockCommandFactory).getStore();
-        }});
         mockMessageFactory = mock(Imap4Rev1MessageFactory.class);
         command = ImapCommand.anyStateCommand("Command");
         message = mock(ImapMessage.class);
-        parser.init(mockCommandFactory);
         parser.setMessageFactory(mockMessageFactory);
     }
 

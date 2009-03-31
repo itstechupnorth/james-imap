@@ -19,27 +19,21 @@
 package org.apache.james.imap.decode.parser;
 
 import org.apache.commons.logging.Log;
-import org.apache.james.imap.api.Imap4Rev1CommandFactory;
 import org.apache.james.imap.api.Imap4Rev1MessageFactory;
 import org.apache.james.imap.api.ImapCommand;
+import org.apache.james.imap.api.ImapConstants;
 import org.apache.james.imap.api.ImapMessage;
 import org.apache.james.imap.decode.ImapRequestLineReader;
-import org.apache.james.imap.decode.InitialisableCommandFactory;
 import org.apache.james.imap.decode.ProtocolException;
 import org.apache.james.imap.decode.base.AbstractImapCommandParser;
 
-class DeleteCommandParser extends AbstractImapCommandParser implements
-        InitialisableCommandFactory {
+class DeleteCommandParser extends AbstractImapCommandParser {
 
+    private final ImapCommand delete = ImapCommand
+    .authenticatedStateCommand(ImapConstants.DELETE_COMMAND_NAME);
+	
     public DeleteCommandParser() {
-    }
-
-    /**
-     * @see org.apache.james.imap.decode.InitialisableCommandFactory#init(org.apache.james.imap.api.Imap4Rev1CommandFactory)
-     */
-    public void init(Imap4Rev1CommandFactory factory) {
-        final ImapCommand command = factory.getDelete();
-        setCommand(command);
+    	setCommand(delete);
     }
 
     protected ImapMessage decode(ImapCommand command,

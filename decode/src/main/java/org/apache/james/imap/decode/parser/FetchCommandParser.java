@@ -21,29 +21,24 @@ package org.apache.james.imap.decode.parser;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
-import org.apache.james.imap.api.Imap4Rev1CommandFactory;
 import org.apache.james.imap.api.Imap4Rev1MessageFactory;
 import org.apache.james.imap.api.ImapCommand;
+import org.apache.james.imap.api.ImapConstants;
 import org.apache.james.imap.api.ImapMessage;
 import org.apache.james.imap.api.message.BodyFetchElement;
 import org.apache.james.imap.api.message.FetchData;
 import org.apache.james.imap.api.message.IdRange;
 import org.apache.james.imap.decode.FetchPartPathDecoder;
 import org.apache.james.imap.decode.ImapRequestLineReader;
-import org.apache.james.imap.decode.InitialisableCommandFactory;
 import org.apache.james.imap.decode.ProtocolException;
 
-class FetchCommandParser extends AbstractUidCommandParser implements
-        InitialisableCommandFactory {
-    public FetchCommandParser() {
-    }
+class FetchCommandParser extends AbstractUidCommandParser {
 
-    /**
-     * @see org.apache.james.imap.decode.InitialisableCommandFactory#init(org.apache.james.imap.api.Imap4Rev1CommandFactory)
-     */
-    public void init(Imap4Rev1CommandFactory factory) {
-        final ImapCommand command = factory.getFetch();
-        setCommand(command);
+	private final ImapCommand fetch = ImapCommand.selectedStateCommand(ImapConstants.FETCH_COMMAND_NAME);
+
+	
+    public FetchCommandParser() {
+    	setCommand(fetch);
     }
 
     public FetchData fetchRequest(ImapRequestLineReader request)

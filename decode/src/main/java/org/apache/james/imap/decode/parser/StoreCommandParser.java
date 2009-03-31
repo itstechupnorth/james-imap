@@ -21,25 +21,19 @@ package org.apache.james.imap.decode.parser;
 import javax.mail.Flags;
 
 import org.apache.commons.logging.Log;
-import org.apache.james.imap.api.Imap4Rev1CommandFactory;
 import org.apache.james.imap.api.ImapCommand;
+import org.apache.james.imap.api.ImapConstants;
 import org.apache.james.imap.api.ImapMessage;
 import org.apache.james.imap.api.message.IdRange;
 import org.apache.james.imap.decode.ImapRequestLineReader;
-import org.apache.james.imap.decode.InitialisableCommandFactory;
 import org.apache.james.imap.decode.ProtocolException;
 
-class StoreCommandParser extends AbstractUidCommandParser implements
-        InitialisableCommandFactory {
+class StoreCommandParser extends AbstractUidCommandParser  {
+    private final ImapCommand store = ImapCommand
+    .selectedStateCommand(ImapConstants.STORE_COMMAND_NAME);
+	
     public StoreCommandParser() {
-    }
-
-    /**
-     * @see org.apache.james.imap.decode.InitialisableCommandFactory#init(org.apache.james.imap.api.Imap4Rev1CommandFactory)
-     */
-    public void init(Imap4Rev1CommandFactory factory) {
-        final ImapCommand command = factory.getStore();
-        setCommand(command);
+    	setCommand(store);
     }
 
     protected ImapMessage decode(ImapCommand command,

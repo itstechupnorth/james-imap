@@ -19,26 +19,22 @@
 package org.apache.james.imap.decode.parser;
 
 import org.apache.commons.logging.Log;
-import org.apache.james.imap.api.Imap4Rev1CommandFactory;
 import org.apache.james.imap.api.Imap4Rev1MessageFactory;
 import org.apache.james.imap.api.ImapCommand;
+import org.apache.james.imap.api.ImapConstants;
 import org.apache.james.imap.api.ImapMessage;
 import org.apache.james.imap.decode.ImapRequestLineReader;
-import org.apache.james.imap.decode.InitialisableCommandFactory;
 import org.apache.james.imap.decode.ProtocolException;
 
-class ListCommandParser extends AbstractUidCommandParser implements
-        InitialisableCommandFactory {
-    public ListCommandParser() {
+class ListCommandParser extends AbstractUidCommandParser {
+	
+    private final ImapCommand list = ImapCommand
+    .authenticatedStateCommand(ImapConstants.LIST_COMMAND_NAME);
+
+	public ListCommandParser() {
+    	setCommand(list);
     }
 
-    /**
-     * @see org.apache.james.imap.decode.InitialisableCommandFactory#init(org.apache.james.imap.api.Imap4Rev1CommandFactory)
-     */
-    public void init(Imap4Rev1CommandFactory factory) {
-        final ImapCommand command = factory.getList();
-        setCommand(command);
-    }
 
     /**
      * Reads an argument of type "list_mailbox" from the request, which is the

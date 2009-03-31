@@ -25,7 +25,6 @@ import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.james.imap.api.Imap4Rev1CommandFactory;
 import org.apache.james.imap.api.Imap4Rev1MessageFactory;
 import org.apache.james.imap.api.ImapCommand;
 import org.apache.james.imap.api.ImapMessage;
@@ -34,8 +33,6 @@ import org.apache.james.imap.api.message.request.DayMonthYear;
 import org.apache.james.imap.api.message.request.SearchKey;
 import org.apache.james.imap.decode.ImapRequestLineReader;
 import org.apache.james.imap.decode.ProtocolException;
-import org.apache.james.imap.decode.parser.SearchCommandParser;
-import org.jmock.Expectations;
 import org.jmock.integration.junit3.MockObjectTestCase;
 
 public class SearchCommandParserTopLevelAndTest extends MockObjectTestCase {
@@ -128,8 +125,6 @@ public class SearchCommandParserTopLevelAndTest extends MockObjectTestCase {
 
     SearchCommandParser parser;
 
-    Imap4Rev1CommandFactory mockCommandFactory;
-
     Imap4Rev1MessageFactory mockMessageFactory;
 
     ImapCommand command;
@@ -139,14 +134,9 @@ public class SearchCommandParserTopLevelAndTest extends MockObjectTestCase {
     protected void setUp() throws Exception {
         super.setUp();
         parser = new SearchCommandParser();
-        mockCommandFactory = mock(Imap4Rev1CommandFactory.class);
-        checking(new Expectations() {{
-            oneOf (mockCommandFactory).getSearch();
-        }});
         mockMessageFactory = mock(Imap4Rev1MessageFactory.class);
         command = ImapCommand.anyStateCommand("Command");
         message = mock(ImapMessage.class);
-        parser.init(mockCommandFactory);
         parser.setMessageFactory(mockMessageFactory);
     }
 
