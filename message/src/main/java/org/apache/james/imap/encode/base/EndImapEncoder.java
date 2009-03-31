@@ -22,7 +22,6 @@ package org.apache.james.imap.encode.base;
 import java.io.IOException;
 
 import org.apache.commons.logging.Log;
-import org.apache.james.imap.api.AbstractLogEnabled;
 import org.apache.james.imap.api.ImapMessage;
 import org.apache.james.imap.api.process.ImapSession;
 import org.apache.james.imap.encode.ImapEncoder;

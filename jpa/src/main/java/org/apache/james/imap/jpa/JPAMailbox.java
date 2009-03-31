@@ -25,7 +25,6 @@ import java.util.List;
 import javax.mail.Flags;
 import javax.persistence.EntityManagerFactory;
 
-import org.apache.commons.logging.Log;
 import org.apache.james.imap.jpa.mail.JPAMailboxMapper;
 import org.apache.james.imap.jpa.mail.JPAMessageMapper;
 import org.apache.james.imap.jpa.mail.map.openjpa.OpenJPAMailboxMapper;
