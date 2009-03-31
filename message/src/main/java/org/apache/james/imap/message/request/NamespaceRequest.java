@@ -16,27 +16,16 @@
  * specific language governing permissions and limitations      *
  * under the License.                                           *
  ****************************************************************/
-package org.apache.james.imap.decode.parser;
+package org.apache.james.imap.message.request;
 
-import org.apache.commons.logging.Log;
 import org.apache.james.imap.api.ImapCommand;
-import org.apache.james.imap.api.ImapConstants;
-import org.apache.james.imap.api.ImapMessage;
-import org.apache.james.imap.decode.ImapRequestLineReader;
-import org.apache.james.imap.decode.ProtocolException;
-import org.apache.james.imap.decode.base.AbstractImapCommandParser;
 
-class NoopCommandParser extends AbstractImapCommandParser {
-	
-    public NoopCommandParser() {
-    	super(ImapCommand.anyStateCommand(ImapConstants.NOOP_COMMAND_NAME));
+/**
+ * Describes a NAMESPACE command.
+ */
+public class NamespaceRequest extends AbstractImapRequest {
+
+    public NamespaceRequest(ImapCommand command, String tag) {
+        super(tag, command);
     }
-
-    protected ImapMessage decode(ImapCommand command,
-            ImapRequestLineReader request, String tag, Log logger) throws ProtocolException {
-        endLine(request);
-        final ImapMessage result = getMessageFactory().createNoopMessage(command, tag);
-        return result;
-    }
-
 }

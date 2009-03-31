@@ -167,4 +167,8 @@ public class BaseImap4Rev1MessageFactory implements Imap4Rev1MessageFactory {
     public StatusResponse bye(HumanReadableTextKey displayTextKey) {
         return statusResponseFactory.bye(displayTextKey);
     }
+
+	public ImapMessage createNamespaceMessage(ImapCommand command, String tag) {
+		return new NamespaceRequest(command, tag);
+	}
 }

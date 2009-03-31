@@ -26,17 +26,18 @@ import org.apache.james.imap.decode.ImapRequestLineReader;
 import org.apache.james.imap.decode.ProtocolException;
 import org.apache.james.imap.decode.base.AbstractImapCommandParser;
 
-class NoopCommandParser extends AbstractImapCommandParser {
-	
-    public NoopCommandParser() {
-    	super(ImapCommand.anyStateCommand(ImapConstants.NOOP_COMMAND_NAME));
+public class NamespaceCommandParser extends AbstractImapCommandParser {
+
+    public NamespaceCommandParser() {
+        super(
+                ImapCommand
+                        .authenticatedStateCommand(ImapConstants.NAMESPACE_COMMAND_NAME));
     }
 
+    @Override
     protected ImapMessage decode(ImapCommand command,
-            ImapRequestLineReader request, String tag, Log logger) throws ProtocolException {
-        endLine(request);
-        final ImapMessage result = getMessageFactory().createNoopMessage(command, tag);
-        return result;
+            ImapRequestLineReader request, String tag, Log logger)
+            throws ProtocolException {
+        return getMessageFactory().createNamespaceMessage(command, tag);
     }
-
 }

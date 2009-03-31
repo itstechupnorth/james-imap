@@ -125,4 +125,6 @@ public interface Imap4Rev1MessageFactory {
 
     public ImapMessage createUnsubscribeMessage(final ImapCommand command,
             final String mailboxName, final String tag);
+    
+    public ImapMessage createNamespaceMessage(final ImapCommand command, final String tag);
 }

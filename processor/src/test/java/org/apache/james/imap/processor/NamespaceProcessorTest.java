@@ -16,27 +16,33 @@
  * specific language governing permissions and limitations      *
  * under the License.                                           *
  ****************************************************************/
-package org.apache.james.imap.decode.parser;
+package org.apache.james.imap.processor;
 
-import org.apache.commons.logging.Log;
 import org.apache.james.imap.api.ImapCommand;
-import org.apache.james.imap.api.ImapConstants;
 import org.apache.james.imap.api.ImapMessage;
-import org.apache.james.imap.decode.ImapRequestLineReader;
-import org.apache.james.imap.decode.ProtocolException;
-import org.apache.james.imap.decode.base.AbstractImapCommandParser;
+import org.apache.james.imap.api.message.response.StatusResponseFactory;
+import org.apache.james.imap.api.process.ImapProcessor;
+import org.apache.james.imap.mailbox.MailboxManagerProvider;
+import org.apache.james.imap.message.request.NamespaceRequest;
+import org.jmock.integration.junit3.MockObjectTestCase;
 
-class NoopCommandParser extends AbstractImapCommandParser {
-	
-    public NoopCommandParser() {
-    	super(ImapCommand.anyStateCommand(ImapConstants.NOOP_COMMAND_NAME));
+public class NamespaceProcessorTest extends MockObjectTestCase {
+
+    NamespaceProcessor subject;
+    StatusResponseFactory mockStatusResponse;
+    
+    protected void setUp() throws Exception {
+        super.setUp();
+        mockStatusResponse = mock(StatusResponseFactory.class);
+        subject = new NamespaceProcessor(mock(ImapProcessor.class), mock(MailboxManagerProvider.class), mockStatusResponse);
     }
 
-    protected ImapMessage decode(ImapCommand command,
-            ImapRequestLineReader request, String tag, Log logger) throws ProtocolException {
-        endLine(request);
-        final ImapMessage result = getMessageFactory().createNoopMessage(command, tag);
-        return result;
+    protected void tearDown() throws Exception {
+        super.tearDown();
     }
-
+    
+    public void testShouldAcceptNamespaceRequests() throws Exception {
+        assertFalse(subject.isAcceptable(mock(ImapMessage.class)));
+        assertTrue(subject.isAcceptable(new NamespaceRequest(ImapCommand.anyStateCommand("Name"), "TAG")));
+    }
 }

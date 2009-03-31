@@ -143,6 +143,8 @@ public interface ImapConstants {
 
     public String RFC822_MESSAGE_ID = "Message-ID";
 
+    public static final String NAMESPACE_COMMAND_NAME = "NAMESPACE";
+
     public static final char BACK_SLASH = '\\';
 
     public static final String STATUS_UNSEEN = "UNSEEN";
