@@ -33,5 +33,24 @@ public class Listing extends FrameworkForAuthenticatedState {
     public void testListPlusUS() throws Exception {
         scriptTest("ListPlus", Locale.US);
     }
+    
+    public void testListPercentWildcardUS() throws Exception {
+        scriptTest("ListPercentWildcard", Locale.US);
+    }
 
+    public void testListPlusKOREA() throws Exception {
+        scriptTest("ListPlus", Locale.KOREA);
+    }
+    
+    public void testListPercentWildcardKOREA() throws Exception {
+        scriptTest("ListPercentWildcard", Locale.KOREA);
+    }
+    
+    public void testListPlusITALY() throws Exception {
+        scriptTest("ListPlus", Locale.ITALY);
+    }
+    
+    public void testListPercentWildcardITALY() throws Exception {
+        scriptTest("ListPercentWildcard", Locale.ITALY);
+    }
 }

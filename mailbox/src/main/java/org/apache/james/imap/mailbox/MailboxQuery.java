@@ -177,11 +177,9 @@ public class MailboxQuery {
                 for (int i = nameIndex; i < name.length(); i++) {
                     final char tasteNextName = name.charAt(i);
                     if (expressionNext == tasteNextName) {
-                        if (isLocalWildcardMatch(name, i, expressionIndex + 1,
-                                hierarchyDelimiter)) {
-                            matchRest = true;
-                            break;
-                        }
+                        matchRest = isLocalWildcardMatch(name, i + 1, expressionIndex + 1,
+                                hierarchyDelimiter);
+                        break;
                     } else if (tasteNextName == hierarchyDelimiter) {
                         matchRest = false;
                         break;
@@ -192,7 +190,8 @@ public class MailboxQuery {
         } else {
             boolean containsDelimiter = false;
             for (int i = nameIndex; i < name.length(); i++) {
-                if (name.charAt(i) == hierarchyDelimiter) {
+                final char nextRemaining = name.charAt(i);
+                if (nextRemaining == hierarchyDelimiter) {
                     containsDelimiter = true;
                     break;
                 }

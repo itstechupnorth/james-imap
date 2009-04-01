@@ -299,4 +299,11 @@ public class MailboxExpressionTest extends TestCase {
         assertTrue(expression.isExpressionMatch(SECOND_PART + '.' + PART + '.'
                 + SECOND_PART + PART + SECOND_PART, '.'));
     }
+    
+    public void testTwoLocalWildcardsShouldMatchMailboxs() throws Exception {
+        MailboxQuery expression = create("%.%");
+        assertFalse(expression.isExpressionMatch(PART, '.'));
+        assertFalse(expression.isExpressionMatch(PART + '.' + SECOND_PART + '.' + SECOND_PART, '.'));
+        assertTrue(expression.isExpressionMatch(PART + '.' + SECOND_PART, '.'));
+    }
 }
