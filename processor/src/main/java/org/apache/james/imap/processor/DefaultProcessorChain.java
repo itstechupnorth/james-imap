@@ -34,7 +34,7 @@ import org.apache.james.imap.processor.fetch.FetchProcessor;
 /**
  * TODO: perhaps this should be a POJO
  */
-public class Imap4Rev1ProcessorFactory {
+public class DefaultProcessorChain {
 
     public static final ImapProcessor createDefaultChain(
             final ImapProcessor chainEndProcessor,
