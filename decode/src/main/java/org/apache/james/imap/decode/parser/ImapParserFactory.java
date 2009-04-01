@@ -36,7 +36,7 @@ import org.apache.james.imap.decode.MessagingImapCommandParser;
  * 
  * @version $Revision: 109034 $
  */
-public class Imap4Rev1CommandParserFactory implements
+public class ImapParserFactory implements
         ImapCommandParserFactory {
     private Map<String, Class> _imapCommands;
 
@@ -45,7 +45,7 @@ public class Imap4Rev1CommandParserFactory implements
     private final StatusResponseFactory statusResponseFactory;
 
 
-    public Imap4Rev1CommandParserFactory(
+    public ImapParserFactory(
             final ImapMessageFactory messageFactory,
             final StatusResponseFactory statusResponseFactory) {
         this.messageFactory = messageFactory;
