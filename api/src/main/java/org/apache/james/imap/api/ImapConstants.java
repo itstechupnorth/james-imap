@@ -98,6 +98,8 @@ public interface ImapConstants {
     String VERSION = "IMAP4rev1";
 
     String SUPPORTS_LITERAL_PLUS = "LITERAL+";
+    
+    public static final String SUPPORTS_NAMESPACES = "NAMESPACE";
 
     String USER_NAMESPACE = "#mail";
 
