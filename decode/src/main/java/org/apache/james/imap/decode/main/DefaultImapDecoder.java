@@ -19,7 +19,7 @@
 package org.apache.james.imap.decode.main;
 
 import org.apache.commons.logging.Log;
-import org.apache.james.imap.api.Imap4Rev1MessageFactory;
+import org.apache.james.imap.api.ImapMessageFactory;
 import org.apache.james.imap.api.ImapMessage;
 import org.apache.james.imap.api.ImapSessionState;
 import org.apache.james.imap.api.display.HumanReadableTextKey;
@@ -33,11 +33,11 @@ import org.apache.james.imap.decode.base.AbstractImapCommandParser;
 
 public class DefaultImapDecoder implements ImapDecoder {
 
-    private final Imap4Rev1MessageFactory messageFactory;
+    private final ImapMessageFactory messageFactory;
 
     private final ImapCommandParserFactory imapCommands;
 
-    public DefaultImapDecoder(final Imap4Rev1MessageFactory messageFactory,
+    public DefaultImapDecoder(final ImapMessageFactory messageFactory,
             final ImapCommandParserFactory imapCommands) {
         this.messageFactory = messageFactory;
         this.imapCommands = imapCommands;

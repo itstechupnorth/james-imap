@@ -22,7 +22,7 @@ package org.apache.james.imap.decode.parser;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.james.imap.api.Imap4Rev1MessageFactory;
+import org.apache.james.imap.api.ImapMessageFactory;
 import org.apache.james.imap.api.ImapConstants;
 import org.apache.james.imap.api.message.response.StatusResponseFactory;
 import org.apache.james.imap.decode.DelegatingImapCommandParser;
@@ -40,13 +40,13 @@ public class Imap4Rev1CommandParserFactory implements
         ImapCommandParserFactory {
     private Map<String, Class> _imapCommands;
 
-    private final Imap4Rev1MessageFactory messageFactory;
+    private final ImapMessageFactory messageFactory;
 
     private final StatusResponseFactory statusResponseFactory;
 
 
     public Imap4Rev1CommandParserFactory(
-            final Imap4Rev1MessageFactory messageFactory,
+            final ImapMessageFactory messageFactory,
             final StatusResponseFactory statusResponseFactory) {
         this.messageFactory = messageFactory;
         this.statusResponseFactory = statusResponseFactory;

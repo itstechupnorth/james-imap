@@ -19,7 +19,7 @@
 package org.apache.james.imap.decode.parser;
 
 import org.apache.commons.logging.Log;
-import org.apache.james.imap.api.Imap4Rev1MessageFactory;
+import org.apache.james.imap.api.ImapMessageFactory;
 import org.apache.james.imap.api.ImapCommand;
 import org.apache.james.imap.api.ImapConstants;
 import org.apache.james.imap.api.ImapMessage;
@@ -80,7 +80,7 @@ class ListCommandParser extends AbstractUidCommandParser {
     protected ImapMessage createMessage(ImapCommand command,
             final String referenceName, final String mailboxPattern,
             final String tag) {
-        final Imap4Rev1MessageFactory factory = getMessageFactory();
+        final ImapMessageFactory factory = getMessageFactory();
         final ImapMessage result = factory.createListMessage(command,
                 referenceName, mailboxPattern, tag);
         return result;

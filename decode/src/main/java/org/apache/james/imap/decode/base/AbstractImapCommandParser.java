@@ -34,7 +34,7 @@ import java.util.Date;
 import javax.mail.Flags;
 
 import org.apache.commons.logging.Log;
-import org.apache.james.imap.api.Imap4Rev1MessageFactory;
+import org.apache.james.imap.api.ImapMessageFactory;
 import org.apache.james.imap.api.ImapCommand;
 import org.apache.james.imap.api.ImapConstants;
 import org.apache.james.imap.api.ImapMessage;
@@ -62,7 +62,7 @@ public abstract class AbstractImapCommandParser implements ImapCommandParser, Me
 
     private final ImapCommand command;
 
-    private Imap4Rev1MessageFactory messageFactory;
+    private ImapMessageFactory messageFactory;
 
     private StatusResponseFactory statusResponseFactory;
 
@@ -79,14 +79,14 @@ public abstract class AbstractImapCommandParser implements ImapCommandParser, Me
     /**
      * @see org.apache.james.imap.decode.MessagingImapCommandParser#getMessageFactory()
      */
-    public Imap4Rev1MessageFactory getMessageFactory() {
+    public ImapMessageFactory getMessageFactory() {
         return messageFactory;
     }
 
     /**
-     * @see org.apache.james.imap.decode.MessagingImapCommandParser#setMessageFactory(org.apache.james.imap.api.Imap4Rev1MessageFactory)
+     * @see org.apache.james.imap.decode.MessagingImapCommandParser#setMessageFactory(org.apache.james.imap.api.ImapMessageFactory)
      */
-    public void setMessageFactory(Imap4Rev1MessageFactory messageFactory) {
+    public void setMessageFactory(ImapMessageFactory messageFactory) {
         this.messageFactory = messageFactory;
     }
 

@@ -33,7 +33,7 @@ import org.apache.james.imap.api.message.response.StatusResponse;
  * Creates messages. Implementations may support message pooling but this is not
  * required.
  */
-public interface Imap4Rev1MessageFactory {
+public interface ImapMessageFactory {
 
     /**
      * Creates a tagged BAD status response.

@@ -22,7 +22,7 @@ import java.util.Date;
 
 import javax.mail.Flags;
 
-import org.apache.james.imap.api.Imap4Rev1MessageFactory;
+import org.apache.james.imap.api.ImapMessageFactory;
 import org.apache.james.imap.api.ImapCommand;
 import org.apache.james.imap.api.ImapMessage;
 import org.apache.james.imap.api.display.HumanReadableTextKey;
@@ -36,7 +36,7 @@ import org.apache.james.imap.api.message.response.StatusResponseFactory;
 /**
  * Naive, factory creates unpooled instances.
  */
-public class BaseImap4Rev1MessageFactory implements Imap4Rev1MessageFactory {
+public class BaseImap4Rev1MessageFactory implements ImapMessageFactory {
 
     private StatusResponseFactory statusResponseFactory;
 

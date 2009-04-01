@@ -19,7 +19,7 @@
 package org.apache.james.imap.decode.parser;
 
 import org.apache.commons.logging.Log;
-import org.apache.james.imap.api.Imap4Rev1MessageFactory;
+import org.apache.james.imap.api.ImapMessageFactory;
 import org.apache.james.imap.api.ImapCommand;
 import org.apache.james.imap.api.ImapConstants;
 import org.apache.james.imap.api.ImapMessage;
@@ -77,7 +77,7 @@ class StatusCommandParser extends AbstractImapCommandParser {
         final String mailboxName = mailbox(request);
         final StatusDataItems statusDataItems = statusDataItems(request);
         endLine(request);
-        final Imap4Rev1MessageFactory factory = getMessageFactory();
+        final ImapMessageFactory factory = getMessageFactory();
         final ImapMessage result = factory.createStatusMessage(command,
                 mailboxName, statusDataItems, tag);
         return result;
