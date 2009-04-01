@@ -137,4 +137,16 @@ public class SelectedState extends FrameworkForSelectedStateBase {
     public void testUidKOREA() throws Exception {
         scriptTest("Uid", Locale.KOREA);
     }
+    
+    public void testNamespaceUS() throws Exception {
+        scriptTest("Namespace", Locale.US);
+    }
+
+    public void testNamespaceITALY() throws Exception {
+        scriptTest("Namespace", Locale.ITALY);
+    }
+    
+    public void testNamespaceKOREA() throws Exception {
+        scriptTest("Namespace", Locale.KOREA);
+    }
 }

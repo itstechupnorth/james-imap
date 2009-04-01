@@ -28,6 +28,7 @@ import org.apache.james.imap.encode.ImapEncoder;
 import org.apache.james.imap.encode.ImapEncoderFactory;
 import org.apache.james.imap.encode.LSubResponseEncoder;
 import org.apache.james.imap.encode.ListResponseEncoder;
+import org.apache.james.imap.encode.NamespaceResponseEncoder;
 import org.apache.james.imap.encode.RecentResponseEncoder;
 import org.apache.james.imap.encode.MailboxStatusResponseEncoder;
 import org.apache.james.imap.encode.SearchResponseEncoder;
@@ -41,8 +42,9 @@ public class DefaultImapEncoderFactory implements ImapEncoderFactory {
 
     public static final ImapEncoder createDefaultEncoder() {
         final EndImapEncoder endImapEncoder = new EndImapEncoder();
+        final NamespaceResponseEncoder namespaceEncoder = new NamespaceResponseEncoder(endImapEncoder);
         final StatusResponseEncoder statusResponseEncoder = new StatusResponseEncoder(
-                endImapEncoder);
+                namespaceEncoder);
         final RecentResponseEncoder recentResponseEncoder = new RecentResponseEncoder(
                 statusResponseEncoder);
         final FetchResponseEncoder fetchResponseEncoder = new FetchResponseEncoder(

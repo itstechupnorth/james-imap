@@ -92,7 +92,9 @@ public class Imap4Rev1ProcessorFactory {
                 listProcessor, mailboxManagerProvider, statusResponseFactory);
         final SelectProcessor selectProcessor = new SelectProcessor(
                 searchProcessor, mailboxManagerProvider, statusResponseFactory);
-        final ImapProcessor result = new FetchProcessor(selectProcessor,
+        final NamespaceProcessor namespaceProcessor = new NamespaceProcessor(
+                selectProcessor, mailboxManagerProvider, statusResponseFactory);
+        final ImapProcessor result = new FetchProcessor(namespaceProcessor,
                 mailboxManagerProvider, statusResponseFactory);
         return result;
     }

@@ -94,8 +94,8 @@ public class Imap4Rev1CommandParserFactory implements
         _imapCommands.put(ImapConstants.APPEND_COMMAND_NAME,
                 AppendCommandParser.class);
 
-        // // RFC2342 NAMESPACE
-        // _imapCommands.put( "NAMESPACE", NamespaceCommand.class );
+        // RFC2342 NAMESPACE
+        _imapCommands.put( ImapConstants.NAMESPACE_COMMAND_NAME, NamespaceCommandParser.class );
 
         // RFC2086 GETACL, SETACL, DELETEACL, LISTRIGHTS, MYRIGHTS
         // _imapCommands.put( "GETACL", GetAclCommand.class );

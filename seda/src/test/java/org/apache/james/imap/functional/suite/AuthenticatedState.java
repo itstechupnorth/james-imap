@@ -247,4 +247,15 @@ public class AuthenticatedState extends FrameworkForAuthenticatedState {
         scriptTest("ValidNonAuthenticated", Locale.KOREA);
     }
 
+    public void testNamespaceUS() throws Exception {
+        scriptTest("Namespace", Locale.US);
+    }
+
+    public void testNamespaceITALY() throws Exception {
+        scriptTest("Namespace", Locale.ITALY);
+    }
+    
+    public void testNamespaceKOREA() throws Exception {
+        scriptTest("Namespace", Locale.KOREA);
+    }
 }

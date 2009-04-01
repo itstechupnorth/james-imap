@@ -21,6 +21,7 @@ package org.apache.james.imap.encode;
 import java.io.IOException;
 import java.util.List;
 
+import org.apache.james.imap.api.ImapConstants;
 import org.apache.james.imap.api.ImapMessage;
 import org.apache.james.imap.api.process.ImapSession;
 import org.apache.james.imap.encode.base.AbstractChainedImapEncoder;
@@ -42,6 +43,7 @@ public class NamespaceResponseEncoder extends AbstractChainedImapEncoder {
             throws IOException {
         final NamespaceResponse response = (NamespaceResponse) acceptableMessage;
         composer.untagged();
+        composer.commandName(ImapConstants.NAMESPACE_COMMAND_NAME);
 
         final List<NamespaceResponse.Namespace> personal = response
                 .getPersonal();
@@ -50,6 +52,8 @@ public class NamespaceResponseEncoder extends AbstractChainedImapEncoder {
         encode(users, composer);
         final List<NamespaceResponse.Namespace> shared = response.getShared();
         encode(shared, composer);
+        
+        composer.end();
     }
 
     private void encode(List<Namespace> namespaces,
