@@ -19,9 +19,7 @@
 
 package org.apache.james.imap.processor;
 
-import static org.apache.james.imap.api.ImapConstants.SUPPORTS_LITERAL_PLUS;
-import static org.apache.james.imap.api.ImapConstants.SUPPORTS_NAMESPACES;
-import static org.apache.james.imap.api.ImapConstants.VERSION;
+import static org.apache.james.imap.api.ImapConstants.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,6 +45,7 @@ public class DefaultProcessorChain {
         capabilities.add(VERSION);
         capabilities.add(SUPPORTS_LITERAL_PLUS);
         capabilities.add(SUPPORTS_NAMESPACES);
+        capabilities.add(SUPPORTS_RFC3348);
         final CapabilityProcessor capabilityProcessor = new CapabilityProcessor(
                 logoutProcessor, mailboxManagerProvider, statusResponseFactory, capabilities);
         final CheckProcessor checkProcessor = new CheckProcessor(
