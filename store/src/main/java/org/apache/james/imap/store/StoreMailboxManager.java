@@ -39,7 +39,9 @@ import org.apache.james.imap.mailbox.MailboxQuery;
 import org.apache.james.imap.mailbox.MailboxSession;
 import org.apache.james.imap.mailbox.MessageRange;
 import org.apache.james.imap.mailbox.StandardMailboxMetaDataComparator;
+import org.apache.james.imap.mailbox.StorageException;
 import org.apache.james.imap.mailbox.SubscriptionException;
+import org.apache.james.imap.mailbox.MailboxMetaData.Selectability;
 import org.apache.james.imap.mailbox.util.SimpleMailboxMetaData;
 import org.apache.james.imap.store.mail.MailboxMapper;
 import org.apache.james.imap.store.mail.model.Mailbox;
@@ -234,15 +236,32 @@ public abstract class StoreMailboxManager extends AbstractLogEnabled implements 
             final String name = mailbox.getName();
             if (name.startsWith(base)) {
                 final String match = name.substring(baseLength);
-                if (mailboxExpression.isExpressionMatch(match,
-                        HIERARCHY_DELIMITER)) {
-                    results.add(new SimpleMailboxMetaData(name, "."));
+                if (mailboxExpression.isExpressionMatch(match, HIERARCHY_DELIMITER)) {
+                    final MailboxMetaData.Children inferiors; 
+                    if (hasChildren(name, mapper)) {
+                        inferiors = MailboxMetaData.Children.HAS_CHILDREN;
+                    } else {
+                        inferiors = MailboxMetaData.Children.HAS_NO_CHILDREN;
+                    }
+                    results.add(new SimpleMailboxMetaData(name, ".", inferiors, Selectability.NONE));
                 }
             }
         }
         Collections.sort(results, new StandardMailboxMetaDataComparator());
         return results;
 
+    }
+
+    /**
+     * Does the mailbox with the given name have inferior child mailboxes?
+     * @param name not null
+     * @return true when the mailbox has children, false otherwise
+     * @throws StorageException 
+     * @throws TorqueException
+     */
+    private boolean hasChildren(String name, final MailboxMapper mapper) throws StorageException {
+        final String search = name + HIERARCHY_DELIMITER + SQL_WILDCARD_CHAR;
+        return !mapper.findMailboxWithNameLike(search).isEmpty();
     }
 
     public boolean mailboxExists(String mailboxName) throws MailboxException {

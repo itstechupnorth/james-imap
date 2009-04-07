@@ -36,45 +36,45 @@ S: 17 OK CREATE completed.
 
 # Empty 1st arg searches default context (#mail)
 C: 10 LIST "" listtest
-S: \* LIST \(\) \"\.\" "listtest"
+S: \* LIST \(\\HasChildren\) \"\.\" "listtest"
 S: 10 OK LIST completed.
 
 # % returns all mailboxes matching
 C: a1 LIST "" %
 SUB {
-S: \* LIST \(\) \"\.\" \"listtest\"
-S: \* LIST \(\) \"\.\" \"listtest1\"
-S: \* LIST \(\) \"\.\" \"INBOX\"
-S: \* LIST \(\) \"\.\" \"funny\"
+S: \* LIST \(\\HasChildren\) \"\.\" \"listtest\"
+S: \* LIST \(\\HasChildren\) \"\.\" \"listtest1\"
+S: \* LIST \(\\HasNoChildren\) \"\.\" \"INBOX\"
+S: \* LIST \(\\HasChildren\) \"\.\" \"funny\"
 }
 S: a1 OK LIST completed.
 
 C: a2 list "" funny.%
 SUB {
-S: \* LIST \(\) \"\.\" \"funny.name with gaps\"
-S: \* LIST \(\) \"\.\" \"funny.name\"
+S: \* LIST \(\\HasChildren\) \"\.\" \"funny.name with gaps\"
+S: \* LIST \(\\HasNoChildren\) \"\.\" \"funny.name\"
 }
 S: a2 OK LIST completed.
 
 C: a3 LIST "" *
 SUB {
-S: \* LIST \(\) \"\.\" \"listtest\"
-S: \* LIST \(\) \"\.\" \"listtest.subfolder\"
-S: \* LIST \(\) \"\.\" \"listtest1\"
-S: \* LIST \(\) \"\.\" \"listtest1.subfolder1\"
-S: \* LIST \(\) \"\.\" \"INBOX\"
-S: \* LIST \(\) \"\.\" \"funny\"
-S: \* LIST \(\) \"\.\" \"funny.name with gaps\"
-S: \* LIST \(\) \"\.\" \"funny.name with gaps\.more\"
-S: \* LIST \(\) \"\.\" \"funny.name\"
+S: \* LIST \(\\HasChildren\) \"\.\" \"listtest\"
+S: \* LIST \(\\HasNoChildren\) \"\.\" \"listtest.subfolder\"
+S: \* LIST \(\\HasChildren\) \"\.\" \"listtest1\"
+S: \* LIST \(\\HasNoChildren\) \"\.\" \"listtest1.subfolder1\"
+S: \* LIST \(\\HasNoChildren\) \"\.\" \"INBOX\"
+S: \* LIST \(\\HasChildren\) \"\.\" \"funny\"
+S: \* LIST \(\\HasChildren\) \"\.\" \"funny.name with gaps\"
+S: \* LIST \(\\HasNoChildren\) \"\.\" \"funny.name with gaps\.more\"
+S: \* LIST \(\\HasNoChildren\) \"\.\" \"funny.name\"
 }
 S: a3 OK LIST completed.
 
 C: a4 LIST "" funny.*
 SUB {
-S: \* LIST \(\) \"\.\" \"funny.name with gaps\"
-S: \* LIST \(\) \"\.\" \"funny.name with gaps\.more\"
-S: \* LIST \(\) \"\.\" \"funny.name\"
+S: \* LIST \(\\HasChildren\) \"\.\" \"funny.name with gaps\"
+S: \* LIST \(\\HasNoChildren\) \"\.\" \"funny.name with gaps\.more\"
+S: \* LIST \(\\HasNoChildren\) \"\.\" \"funny.name\"
 }
 S: a4 OK LIST completed.
 

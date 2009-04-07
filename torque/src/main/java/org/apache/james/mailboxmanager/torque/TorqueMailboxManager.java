@@ -43,6 +43,7 @@ import org.apache.james.imap.mailbox.MailboxSession;
 import org.apache.james.imap.mailbox.MessageRange;
 import org.apache.james.imap.mailbox.StandardMailboxMetaDataComparator;
 import org.apache.james.imap.mailbox.SubscriptionException;
+import org.apache.james.imap.mailbox.MailboxMetaData.Selectability;
 import org.apache.james.imap.mailbox.util.SimpleMailboxMetaData;
 import org.apache.james.mailboxmanager.torque.om.MailboxRow;
 import org.apache.james.mailboxmanager.torque.om.MailboxRowPeer;
@@ -263,9 +264,14 @@ public class TorqueMailboxManager implements MailboxManager {
                 final String name = mailboxRow.getName();
                 if (name.startsWith(base)) {
                     final String match = name.substring(baseLength);
-                    if (mailboxExpression.isExpressionMatch(match,
-                            HIERARCHY_DELIMITER)) {
-                        results.add(new SimpleMailboxMetaData(name, "."));
+                    if (mailboxExpression.isExpressionMatch(match, HIERARCHY_DELIMITER)) {
+                        final MailboxMetaData.Children inferiors; 
+                        if (hasChildren(name)) {
+                            inferiors = MailboxMetaData.Children.HAS_CHILDREN;
+                        } else {
+                            inferiors = MailboxMetaData.Children.HAS_NO_CHILDREN;
+                        }
+                        results.add(new SimpleMailboxMetaData(name, ".", inferiors, Selectability.NONE));
                     }
                 }
             }
@@ -275,6 +281,19 @@ public class TorqueMailboxManager implements MailboxManager {
             throw new MailboxException(e);
         }
 
+    }
+
+    /**
+     * Does the mailbox with the given name have inferior child mailboxes?
+     * @param name not null
+     * @return true when the mailbox has children, false otherwise
+     * @throws TorqueException
+     */
+    private boolean hasChildren(String name) throws TorqueException {
+        final Criteria criteria = new Criteria();
+        criteria.add(MailboxRowPeer.NAME, (Object)(name + HIERARCHY_DELIMITER + SQL_WILDCARD_CHAR), Criteria.LIKE);
+        final List mailboxes = MailboxRowPeer.doSelect(criteria);
+        return !mailboxes.isEmpty();
     }
 
     public void setSubscription(String mailboxName, boolean value) {

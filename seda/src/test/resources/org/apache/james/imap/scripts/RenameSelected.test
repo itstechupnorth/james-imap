@@ -124,18 +124,18 @@ S: \)
 S: A10 OK FETCH completed\.
 C: A11 LIST "" "*"
 SUB {
-S: \* LIST \(\) "\." "testmailbox"
-S: \* LIST \(\) "\." "INBOX"
-S: \* LIST \(\) "\." "selected"
+S: \* LIST \(\\HasNoChildren\) "\." "testmailbox"
+S: \* LIST \(\\HasNoChildren\) "\." "INBOX"
+S: \* LIST \(\\HasNoChildren\) "\." "selected"
 }
 S: A11 OK LIST completed\.
 C: A12 RENAME testmailbox anothermailbox
 S: A12 OK RENAME completed.
 C: A13 LIST "" "*"
 SUB {
-S: \* LIST \(\) "\." "anothermailbox"
-S: \* LIST \(\) "\." "INBOX"
-S: \* LIST \(\) "\." "selected"
+S: \* LIST \(\\HasNoChildren\) "\." "anothermailbox"
+S: \* LIST \(\\HasNoChildren\) "\." "INBOX"
+S: \* LIST \(\\HasNoChildren\) "\." "selected"
 }
 S: A13 OK LIST completed\.
 C: A14 FETCH 1:* (FLAGS UID BODY.PEEK[HEADER.FIELDS (DATE FROM TO ORIGINATOR X-LIST)])

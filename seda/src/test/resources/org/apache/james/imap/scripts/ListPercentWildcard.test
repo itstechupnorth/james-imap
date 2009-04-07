@@ -29,30 +29,30 @@ S: A05 OK CREATE completed.
 
 C: A06 LIST "" %
 SUB {
-S: \* LIST \(\) \"\.\" \"one\"
-S: \* LIST \(\) \"\.\" \"two\"
-S: \* LIST \(\) \"\.\" \"three\"
-S: \* LIST \(\) \"\.\" \"four\"
-S: \* LIST \(\) \"\.\" \"five\"
-S: \* LIST \(\) \"\.\" \"INBOX\"
+S: \* LIST \(\\HasNoChildren\) \"\.\" \"one\"
+S: \* LIST \(\\HasNoChildren\) \"\.\" \"two\"
+S: \* LIST \(\\HasChildren\) \"\.\" \"three\"
+S: \* LIST \(\\HasChildren\) \"\.\" \"four\"
+S: \* LIST \(\\HasNoChildren\) \"\.\" \"five\"
+S: \* LIST \(\\HasNoChildren\) \"\.\" \"INBOX\"
 }
 S: A06 OK LIST completed.
 
 C: A07 LIST "" "%"
 SUB {
-S: \* LIST \(\) \"\.\" \"one\"
-S: \* LIST \(\) \"\.\" \"two\"
-S: \* LIST \(\) \"\.\" \"three\"
-S: \* LIST \(\) \"\.\" \"four\"
-S: \* LIST \(\) \"\.\" \"five\"
-S: \* LIST \(\) \"\.\" \"INBOX\"
+S: \* LIST \(\\HasNoChildren\) \"\.\" \"one\"
+S: \* LIST \(\\HasNoChildren\) \"\.\" \"two\"
+S: \* LIST \(\\HasChildren\) \"\.\" \"three\"
+S: \* LIST \(\\HasChildren\) \"\.\" \"four\"
+S: \* LIST \(\\HasNoChildren\) \"\.\" \"five\"
+S: \* LIST \(\\HasNoChildren\) \"\.\" \"INBOX\"
 }
 S: A07 OK LIST completed.
 
 C: A08 LIST "" "%.%"
 SUB {
-S: \* LIST \(\) \"\.\" \"three.sub\"
-S: \* LIST \(\) \"\.\" \"four.sub\"
+S: \* LIST \(\\HasNoChildren\) \"\.\" \"three.sub\"
+S: \* LIST \(\\HasChildren\) \"\.\" \"four.sub\"
 }
 S: A08 OK LIST completed.
 
