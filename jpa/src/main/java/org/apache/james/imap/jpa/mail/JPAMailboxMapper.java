@@ -36,9 +36,23 @@ import org.apache.james.imap.store.mail.model.Mailbox;
  */
 public abstract class JPAMailboxMapper extends Mapper implements MailboxMapper {
 
+    private static final char SQL_WILDCARD_CHAR = '%';
+    
     public JPAMailboxMapper(EntityManager entityManager) {
         super(entityManager);
     }
+
+    /**
+     * @see org.apache.james.imap.jpa.mail.MailboxMapper#hasChildren
+     */
+    public boolean hasChildren(String mailboxName, char hierarchyDeliminator) throws StorageException {
+        
+        final String name = mailboxName + hierarchyDeliminator + SQL_WILDCARD_CHAR; 
+        final Long numberOfChildMailboxes = (Long) entityManager.createNamedQuery("countMailboxesWithNameLike").setParameter("nameParam", name).getSingleResult();
+        return numberOfChildMailboxes != null && numberOfChildMailboxes > 0;
+    }
+
+
 
     /**
      * @see org.apache.james.imap.jpa.mail.MailboxMapper#save(org.apache.james.imap.jpa.mail.model.JPAMailbox)

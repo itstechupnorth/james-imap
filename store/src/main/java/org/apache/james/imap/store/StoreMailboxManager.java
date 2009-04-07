@@ -260,8 +260,7 @@ public abstract class StoreMailboxManager extends AbstractLogEnabled implements 
      * @throws TorqueException
      */
     private boolean hasChildren(String name, final MailboxMapper mapper) throws StorageException {
-        final String search = name + HIERARCHY_DELIMITER + SQL_WILDCARD_CHAR;
-        return !mapper.findMailboxWithNameLike(search).isEmpty();
+        return mapper.hasChildren(name, HIERARCHY_DELIMITER);
     }
 
     public boolean mailboxExists(String mailboxName) throws MailboxException {

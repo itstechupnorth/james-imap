@@ -38,7 +38,9 @@ import org.apache.james.imap.store.mail.model.Mailbox;
     @NamedQuery(name="deleteAll",
                 query="DELETE FROM Mailbox mailbox"),
     @NamedQuery(name="findMailboxWithNameLike",
-                query="SELECT mailbox FROM Mailbox mailbox WHERE mailbox.name LIKE :nameParam")            
+                query="SELECT mailbox FROM Mailbox mailbox WHERE mailbox.name LIKE :nameParam"),
+    @NamedQuery(name="countMailboxesWithNameLike",
+                query="SELECT COUNT(mailbox) FROM Mailbox mailbox WHERE mailbox.name LIKE :nameParam")     
 })
 public class JPAMailbox implements Mailbox {
     
