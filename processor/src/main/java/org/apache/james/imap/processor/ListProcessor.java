@@ -35,6 +35,7 @@ import org.apache.james.imap.mailbox.MailboxManager;
 import org.apache.james.imap.mailbox.MailboxManagerProvider;
 import org.apache.james.imap.mailbox.MailboxMetaData;
 import org.apache.james.imap.mailbox.MailboxQuery;
+import org.apache.james.imap.mailbox.MailboxMetaData.Children;
 import org.apache.james.imap.mailbox.util.SimpleMailboxMetaData;
 import org.apache.james.imap.message.request.ListRequest;
 import org.apache.james.imap.message.response.ListResponse;
@@ -63,9 +64,9 @@ public class ListProcessor extends AbstractMailboxProcessor {
 
     protected ImapResponseMessage createResponse(boolean noInferior,
             boolean noSelect, boolean marked, boolean unmarked,
-            String hierarchyDelimiter, String mailboxName) {
+            boolean hasChildren, boolean hasNoChildren, String hierarchyDelimiter, String mailboxName) {
         return new ListResponse(noInferior, noSelect, marked, unmarked,
-                false, false, hierarchyDelimiter, mailboxName);
+                hasChildren, hasNoChildren, hierarchyDelimiter, mailboxName);
     }
 
     protected final void doProcess(final String baseReferenceName,
@@ -151,7 +152,10 @@ public class ListProcessor extends AbstractMailboxProcessor {
         final String mailboxName = mailboxName(removeUserPrefix, prefixLength,
                 listResult);
 
-        final boolean noInferior = MailboxMetaData.Children.NO_INFERIORS.equals(listResult.inferiors());
+        final Children inferiors = listResult.inferiors();
+        final boolean noInferior = MailboxMetaData.Children.NO_INFERIORS.equals(inferiors);
+        final boolean hasChildren = MailboxMetaData.Children.HAS_CHILDREN.equals(inferiors);
+        final boolean hasNoChildren = MailboxMetaData.Children.HAS_NO_CHILDREN.equals(inferiors);
         boolean noSelect = false;
         boolean marked = false;
         boolean unmarked = false;
@@ -167,7 +171,7 @@ public class ListProcessor extends AbstractMailboxProcessor {
                 break;
         }
         responder.respond(createResponse(noInferior, noSelect, marked,
-                unmarked, delimiter, mailboxName));
+                unmarked, hasChildren, hasNoChildren, delimiter, mailboxName));
     }
 
     private String mailboxName(final boolean removeUserPrefix,

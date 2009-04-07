@@ -69,51 +69,67 @@ public class ListProcessorTest extends MockObjectTestCase {
     }
 
     ListResponse createResponse(boolean noinferior, boolean noselect,
-            boolean marked, boolean unmarked, String hierarchyDelimiter,
-            String mailboxName) {
+            boolean marked, boolean unmarked, boolean hasChildren,
+            boolean hasNoChildren, String hierarchyDelimiter, String mailboxName) {
         return new ListResponse(noinferior, noselect, marked, unmarked,
-                false, false, hierarchyDelimiter, mailboxName);
+                hasChildren, hasNoChildren, hierarchyDelimiter, mailboxName);
     }
 
-    void setUpResult(final boolean isNoinferiors, final MailboxMetaData.Selectability selectability,
+    void setUpResult(final MailboxMetaData.Children children, final MailboxMetaData.Selectability selectability,
             final String hierarchyDelimiter, final String name) {
         checking(new Expectations() {{
-            oneOf(result).inferiors();will(returnValue(isNoinferiors?MailboxMetaData.Children.NO_INFERIORS:MailboxMetaData.Children.CHILDREN_ALLOWED_BUT_UNKNOWN));
+            oneOf(result).inferiors();will(returnValue(children));
             oneOf(result).getSelectability();will(returnValue(selectability));
             oneOf(result).getHierarchyDelimiter();will(returnValue(hierarchyDelimiter));
             oneOf(result).getName();will(returnValue(name));
         }});
     }
-
-    public void testNoInferiors() throws Exception {
-        setUpResult(true, MailboxMetaData.Selectability.NONE, ".", "#INBOX");
+    
+    public void testHasChildren() throws Exception {
+        setUpResult(MailboxMetaData.Children.HAS_CHILDREN, MailboxMetaData.Selectability.NONE, ".", "#INBOX");
         checking(new Expectations() {{
-            oneOf(responder).respond(with(equal(createResponse(true, false, false, false, ".", "#INBOX"))));
+            oneOf(responder).respond(with(equal(createResponse(false, false, false, false, true, false, ".", "#INBOX"))));
+        }});
+        processor.processResult(responder, false, 0, result);
+    }
+
+    public void testHasNoChildren() throws Exception {
+        setUpResult(MailboxMetaData.Children.HAS_NO_CHILDREN, MailboxMetaData.Selectability.NONE, ".", "#INBOX");
+        checking(new Expectations() {{
+            oneOf(responder).respond(with(equal(createResponse(false, false, false, false, false, true, ".", "#INBOX"))));
+        }});
+        processor.processResult(responder, false, 0, result);
+    }
+    
+    public void testNoInferiors() throws Exception {
+        setUpResult(MailboxMetaData.Children.NO_INFERIORS, MailboxMetaData.Selectability.NONE, ".", "#INBOX");
+        checking(new Expectations() {{
+            oneOf(responder).respond(with(equal(createResponse(true, false, false, false, false, false, ".", "#INBOX"))));
         }});
         processor.processResult(responder, false, 0, result);
     }
 
     public void testNoSelect() throws Exception {
-        setUpResult(false, MailboxMetaData.Selectability.NOSELECT, ".", "#INBOX");
+        setUpResult(MailboxMetaData.Children.CHILDREN_ALLOWED_BUT_UNKNOWN, MailboxMetaData.Selectability.NOSELECT, ".", "#INBOX");
         checking(new Expectations() {{
-            oneOf(responder).respond(with(equal(createResponse(false, true, false, false, ".", "#INBOX"))));
+            oneOf(responder).respond(with(equal(createResponse(false, true, false, false, false, false, ".", "#INBOX"))));
         }});
         processor.processResult(responder, false, 0, result);
     }
 
     public void testUnMarked() throws Exception {
-        setUpResult(false, MailboxMetaData.Selectability.UNMARKED, ".",
+        setUpResult(MailboxMetaData.Children.CHILDREN_ALLOWED_BUT_UNKNOWN, MailboxMetaData.Selectability.UNMARKED, ".",
                 "#INBOX");
         checking(new Expectations() {{
-            oneOf(responder).respond(with(equal(createResponse(false, false, false, true, ".", "#INBOX"))));
+            oneOf(responder).respond(with(equal(createResponse(false, false, false, true, false, false, ".", "#INBOX"))));
         }});
         processor.processResult(responder, false, 0, result);
     }
 
     public void testMarked() throws Exception {
-        setUpResult(false, MailboxMetaData.Selectability.MARKED, ".", "#INBOX");
+        setUpResult(MailboxMetaData.Children.CHILDREN_ALLOWED_BUT_UNKNOWN, MailboxMetaData.Selectability.MARKED, ".", "#INBOX");
         checking(new Expectations() {{
-            oneOf(responder).respond(with(equal(createResponse(false, false, true, false, ".", "#INBOX"))));
+            oneOf(responder).respond(with(equal(createResponse(false, false, true, false, false, false, ".", "#INBOX"))));
         }});
         processor.processResult(responder, false, 0, result);
     }
