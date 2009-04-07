@@ -295,11 +295,7 @@ public class TorqueMailboxManager implements MailboxManager {
         final List mailboxes = MailboxRowPeer.doSelect(criteria);
         return !mailboxes.isEmpty();
     }
-
-    public void setSubscription(String mailboxName, boolean value) {
-        // TODO implement subscriptions
-    }
-
+    
     public boolean mailboxExists(String mailboxName)
             throws MailboxException {
         Criteria c = new Criteria();
