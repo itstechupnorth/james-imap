@@ -31,11 +31,36 @@ public interface MailboxMetaData {
     }
     
     /**
-     * Is this mailbox <code>\Noinferiors</code> as per RFC3501.
-     * 
-     * @return true if marked, false otherwise
+     * Indicates whether this mailbox allows
+     * children and - if so - whether it has 
+     * any.
      */
-    public boolean isNoInferiors();
+    public enum Children {
+        /**
+         * No children allowed.
+         */
+        NO_INFERIORS,
+        /**
+         * Children allowed by this mailbox 
+         * but it is unknown whether this mailbox has children.
+         */
+        CHILDREN_ALLOWED_BUT_UNKNOWN,
+        /**
+         * Indicates that this mailbox has children.
+         */
+        HAS_CHILDREN,
+        /**
+         * Indicates that this mailbox allows interiors
+         * but currently has no children.
+         */
+        HAS_NO_CHILDREN
+    }
+    
+    /**
+     * Gets the inferiors status of this mailbox.
+     * @return not null
+     */
+    public Children inferiors();
 
     /**
      * Gets the RFC3501 Selectability flag.

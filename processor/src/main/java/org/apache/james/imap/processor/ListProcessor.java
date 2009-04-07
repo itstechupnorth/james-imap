@@ -151,7 +151,7 @@ public class ListProcessor extends AbstractMailboxProcessor {
         final String mailboxName = mailboxName(removeUserPrefix, prefixLength,
                 listResult);
 
-        final boolean noInferior = listResult.isNoInferiors();
+        final boolean noInferior = MailboxMetaData.Children.NO_INFERIORS.equals(listResult.inferiors());
         boolean noSelect = false;
         boolean marked = false;
         boolean unmarked = false;

@@ -25,27 +25,27 @@ import org.apache.james.imap.mailbox.StandardMailboxMetaDataComparator;
 public class SimpleMailboxMetaData implements MailboxMetaData, Comparable {
 
     public static MailboxMetaData createNoSelect(String name, String delimiter) {
-        return new SimpleMailboxMetaData(name, delimiter, false, Selectability.NOSELECT);
+        return new SimpleMailboxMetaData(name, delimiter, Children.CHILDREN_ALLOWED_BUT_UNKNOWN, Selectability.NOSELECT);
     }
 
     private final String name;
 
     private final String delimiter;
 
-    private final boolean noInferiors;
+    private final Children inferiors;
 
     private final Selectability selectability;
 
     public SimpleMailboxMetaData(String name, String delimiter) {
-        this(name, delimiter, false, Selectability.NONE);
+        this(name, delimiter, Children.CHILDREN_ALLOWED_BUT_UNKNOWN, Selectability.NONE);
     }
 
     public SimpleMailboxMetaData(final String name, final String delimiter,
-            final boolean noInferiors, final Selectability selectability) {
+            final Children inferiors, final Selectability selectability) {
         super();
         this.name = name;
         this.delimiter = delimiter;
-        this.noInferiors = noInferiors;
+        this.inferiors = inferiors;
         this.selectability = selectability;
     }
 
@@ -54,8 +54,8 @@ public class SimpleMailboxMetaData implements MailboxMetaData, Comparable {
      * 
      * @return true if marked, false otherwise
      */
-    public final boolean isNoInferiors() {
-        return noInferiors;
+    public final Children inferiors() {
+        return inferiors;
     }
 
     /**

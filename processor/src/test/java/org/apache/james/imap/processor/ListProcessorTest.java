@@ -78,7 +78,7 @@ public class ListProcessorTest extends MockObjectTestCase {
     void setUpResult(final boolean isNoinferiors, final MailboxMetaData.Selectability selectability,
             final String hierarchyDelimiter, final String name) {
         checking(new Expectations() {{
-            oneOf(result).isNoInferiors();will(returnValue(isNoinferiors));
+            oneOf(result).inferiors();will(returnValue(isNoinferiors?MailboxMetaData.Children.NO_INFERIORS:MailboxMetaData.Children.CHILDREN_ALLOWED_BUT_UNKNOWN));
             oneOf(result).getSelectability();will(returnValue(selectability));
             oneOf(result).getHierarchyDelimiter();will(returnValue(hierarchyDelimiter));
             oneOf(result).getName();will(returnValue(name));
