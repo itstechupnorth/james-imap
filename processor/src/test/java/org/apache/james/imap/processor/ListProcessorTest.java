@@ -72,7 +72,7 @@ public class ListProcessorTest extends MockObjectTestCase {
             boolean marked, boolean unmarked, String hierarchyDelimiter,
             String mailboxName) {
         return new ListResponse(noinferior, noselect, marked, unmarked,
-                hierarchyDelimiter, mailboxName);
+                false, false, hierarchyDelimiter, mailboxName);
     }
 
     void setUpResult(final boolean isNoinferiors, final MailboxMetaData.Selectability selectability,

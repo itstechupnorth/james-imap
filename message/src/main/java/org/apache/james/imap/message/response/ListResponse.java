@@ -25,9 +25,10 @@ import org.apache.james.imap.api.message.response.ImapResponseMessage;
  */
 public final class ListResponse extends AbstractListingResponse implements
         ImapResponseMessage {
+    
     public ListResponse(final boolean noInferiors, final boolean noSelect,
             final boolean marked, final boolean unmarked,
-            final String hierarchyDelimiter, final String name) {
-        super(noInferiors, noSelect, marked, unmarked, hierarchyDelimiter, name);
+            boolean hasChildren, boolean hasNoChildren, final String hierarchyDelimiter, final String name) {
+        super(noInferiors, noSelect, marked, unmarked, hasChildren, hasNoChildren, hierarchyDelimiter, name);
     }
 }

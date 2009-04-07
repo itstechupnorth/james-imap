@@ -53,7 +53,7 @@ public class SearchResponseEncoderTest extends MockObjectTestCase {
 
     public void testIsAcceptable() {
         assertTrue(encoder.isAcceptable(new ListResponse(true, true, true,
-                true, ".", "name")));
+                true, false, false, ".", "name")));
         assertFalse(encoder.isAcceptable(new LSubResponse("name", ".", true)));
         assertFalse(encoder.isAcceptable(mock(ImapMessage.class)));
         assertFalse(encoder.isAcceptable(null));
@@ -67,7 +67,7 @@ public class SearchResponseEncoderTest extends MockObjectTestCase {
                             with(same(".")), 
                             with(same("INBOX.name")));
         }});
-        encoder.encode(new ListResponse(false, false, false, false, ".", "INBOX.name"), composer, new FakeImapSession());
+        encoder.encode(new ListResponse(false, false, false, false, false, false, ".", "INBOX.name"), composer, new FakeImapSession());
     }
 
     public void testDelimiter() throws Exception {
@@ -78,7 +78,7 @@ public class SearchResponseEncoderTest extends MockObjectTestCase {
                             with(same("@")), 
                             with(same("INBOX.name")));
         }});
-        encoder.encode(new ListResponse(false, false, false, false, "@", "INBOX.name"), composer, new FakeImapSession());
+        encoder.encode(new ListResponse(false, false, false, false, false, false, "@", "INBOX.name"), composer, new FakeImapSession());
     }
 
     public void testNoDelimiter() throws Exception {
@@ -89,7 +89,7 @@ public class SearchResponseEncoderTest extends MockObjectTestCase {
                             with(aNull(String.class)), 
                             with(same("INBOX.name")));
         }});
-        encoder.encode(new ListResponse(false, false, false, false, null, "INBOX.name"), composer, new FakeImapSession());
+        encoder.encode(new ListResponse(false, false, false, false, false, false, null, "INBOX.name"), composer, new FakeImapSession());
     }
 
     public void testAllAttributes() throws Exception {
@@ -104,7 +104,7 @@ public class SearchResponseEncoderTest extends MockObjectTestCase {
                             with(same(".")), 
                             with(same("INBOX.name")));
         }});
-        encoder.encode(new ListResponse(true, true, true, true, ".", "INBOX.name"), composer, new FakeImapSession());
+        encoder.encode(new ListResponse(true, true, true, true, false, false, ".", "INBOX.name"), composer, new FakeImapSession());
     }
 
     public void testNoInferiors() throws Exception {
@@ -116,7 +116,7 @@ public class SearchResponseEncoderTest extends MockObjectTestCase {
                             with(same(".")), 
                             with(same("INBOX.name")));
         }});
-        encoder.encode(new ListResponse(true, false, false, false, ".", "INBOX.name"), composer, new FakeImapSession());
+        encoder.encode(new ListResponse(true, false, false, false, false, false, ".", "INBOX.name"), composer, new FakeImapSession());
     }
 
     public void testNoSelect() throws Exception {
@@ -128,7 +128,7 @@ public class SearchResponseEncoderTest extends MockObjectTestCase {
                             with(same(".")), 
                             with(same("INBOX.name")));
         }});
-        encoder.encode(new ListResponse(false, true, false, false, ".", "INBOX.name"), composer, new FakeImapSession());
+        encoder.encode(new ListResponse(false, true, false, false, false, false, ".", "INBOX.name"), composer, new FakeImapSession());
     }
 
     public void testMarked() throws Exception {
@@ -140,7 +140,7 @@ public class SearchResponseEncoderTest extends MockObjectTestCase {
                             with(same(".")), 
                             with(same("INBOX.name")));
         }});
-        encoder.encode(new ListResponse(false, false, true, false, ".", "INBOX.name"), composer, new FakeImapSession());
+        encoder.encode(new ListResponse(false, false, true, false, false, false, ".", "INBOX.name"), composer, new FakeImapSession());
     }
 
     public void testUnmarked() throws Exception {
@@ -152,6 +152,6 @@ public class SearchResponseEncoderTest extends MockObjectTestCase {
                             with(same(".")), 
                             with(same("INBOX.name")));
         }});
-        encoder.encode(new ListResponse(false, false, false, true, ".", "INBOX.name"), composer, new FakeImapSession());
+        encoder.encode(new ListResponse(false, false, false, true, false, false, ".", "INBOX.name"), composer, new FakeImapSession());
     }
 }

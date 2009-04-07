@@ -53,7 +53,7 @@ public class LSubResponseEncoderTest extends MockObjectTestCase {
 
     public void testIsAcceptable() {
         assertFalse(encoder.isAcceptable(new ListResponse(true, true, true,
-                true, ".", "name")));
+                true, false, false, ".", "name")));
         assertTrue(encoder.isAcceptable(new LSubResponse("name", ".", true)));
         assertFalse(encoder.isAcceptable(mock(ImapMessage.class)));
         assertFalse(encoder.isAcceptable(null));

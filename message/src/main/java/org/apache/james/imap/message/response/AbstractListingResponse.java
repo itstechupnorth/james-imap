@@ -24,6 +24,10 @@ package org.apache.james.imap.message.response;
  */
 public abstract class AbstractListingResponse {
 
+    private final boolean children;
+    
+    private final boolean noChildren;
+    
     private final boolean noInferiors;
 
     private final boolean noSelect;
@@ -38,13 +42,15 @@ public abstract class AbstractListingResponse {
 
     public AbstractListingResponse(final boolean noInferiors,
             final boolean noSelect, final boolean marked,
-            final boolean unmarked, final String hierarchyDelimiter,
-            final String name) {
+            final boolean unmarked, boolean hasChildren,
+            boolean hasNoChildren, final String hierarchyDelimiter, final String name) {
         super();
         this.noInferiors = noInferiors;
         this.noSelect = noSelect;
         this.marked = marked;
         this.unmarked = unmarked;
+        this.children = hasChildren;
+        this.noChildren = hasNoChildren;
         this.hierarchyDelimiter = hierarchyDelimiter;
         this.name = name;
     }
@@ -103,6 +109,23 @@ public abstract class AbstractListingResponse {
         return unmarked;
     }
 
+    
+    /**
+     * Is the <code>HasNoChildren</code> name attribute set?
+     * @return true if <code>HasNoChildren</code>, false otherwise
+     */
+    public boolean hasNoChildren() {
+        return noChildren;
+    }
+    
+    /**
+     * Is the <code>HasChildren</code> name attribute set?
+     * @return true if <code>HasChildren</code>, false otherwise
+     */
+    public boolean hasChildren() {
+        return children;
+    }
+    
     /**
      * Are any name attributes set?
      * 
@@ -110,30 +133,25 @@ public abstract class AbstractListingResponse {
      *         {@link #isMarked()} or {@link #isUnmarked(){
      */
     public final boolean isNameAttributed() {
-        return noInferiors || noSelect || marked || unmarked;
+        return noInferiors || noSelect || marked || unmarked || children || noChildren;
     }
 
-    /**
-     * @see java.lang.Object#hashCode()
-     */
+    @Override
     public int hashCode() {
         final int PRIME = 31;
         int result = 1;
-        result = PRIME
-                * result
-                + ((hierarchyDelimiter == null) ? 0 : hierarchyDelimiter
-                        .hashCode());
+        result = PRIME * result + (children ? 1231 : 1237);
+        result = PRIME * result + ((hierarchyDelimiter == null) ? 0 : hierarchyDelimiter.hashCode());
         result = PRIME * result + (marked ? 1231 : 1237);
         result = PRIME * result + ((name == null) ? 0 : name.hashCode());
+        result = PRIME * result + (noChildren ? 1231 : 1237);
         result = PRIME * result + (noInferiors ? 1231 : 1237);
         result = PRIME * result + (noSelect ? 1231 : 1237);
         result = PRIME * result + (unmarked ? 1231 : 1237);
         return result;
     }
 
-    /**
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
+    @Override
     public boolean equals(Object obj) {
         if (this == obj)
             return true;
@@ -142,6 +160,8 @@ public abstract class AbstractListingResponse {
         if (getClass() != obj.getClass())
             return false;
         final AbstractListingResponse other = (AbstractListingResponse) obj;
+        if (children != other.children)
+            return false;
         if (hierarchyDelimiter == null) {
             if (other.hierarchyDelimiter != null)
                 return false;
@@ -153,6 +173,8 @@ public abstract class AbstractListingResponse {
             if (other.name != null)
                 return false;
         } else if (!name.equals(other.name))
+            return false;
+        if (noChildren != other.noChildren)
             return false;
         if (noInferiors != other.noInferiors)
             return false;

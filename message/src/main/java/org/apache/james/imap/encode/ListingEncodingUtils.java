@@ -26,6 +26,9 @@ import java.util.List;
 import org.apache.james.imap.api.ImapConstants;
 import org.apache.james.imap.message.response.AbstractListingResponse;
 
+/**
+ * Utilities for encoding LIST and LSUB responses.
+ */
 public class ListingEncodingUtils {
 
     public static void encodeListingResponse(final String responseTypeName,
@@ -40,10 +43,10 @@ public class ListingEncodingUtils {
                 name);
     }
 
-    private static List getNameAttributes(final AbstractListingResponse response) {
-        final List attributes;
+    private static List<String> getNameAttributes(final AbstractListingResponse response) {
+        final List<String> attributes;
         if (response.isNameAttributed()) {
-            attributes = new ArrayList();
+            attributes = new ArrayList<String>();
             if (response.isNoInferiors()) {
                 attributes.add(ImapConstants.NAME_ATTRIBUTE_NOINFERIORS);
             }
@@ -55,6 +58,12 @@ public class ListingEncodingUtils {
             }
             if (response.isUnmarked()) {
                 attributes.add(ImapConstants.NAME_ATTRIBUTE_UNMARKED);
+            }
+            if (response.hasChildren()) {
+                attributes.add(ImapConstants.NAME_ATTRIBUTE_HAS_CHILDREN);
+            }
+            if (response.hasNoChildren()) {
+                attributes.add(ImapConstants.NAME_ATTRIBUTE_HAS_NO_CHILDREN);
             }
         } else {
             attributes = null;

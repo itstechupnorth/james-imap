@@ -65,7 +65,7 @@ public class ListProcessor extends AbstractMailboxProcessor {
             boolean noSelect, boolean marked, boolean unmarked,
             String hierarchyDelimiter, String mailboxName) {
         return new ListResponse(noInferior, noSelect, marked, unmarked,
-                hierarchyDelimiter, mailboxName);
+                false, false, hierarchyDelimiter, mailboxName);
     }
 
     protected final void doProcess(final String baseReferenceName,

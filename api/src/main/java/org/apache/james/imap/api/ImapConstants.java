@@ -147,6 +147,10 @@ public interface ImapConstants {
 
     public String RFC822_MESSAGE_ID = "Message-ID";
 
+    public String NAME_ATTRIBUTE_HAS_CHILDREN = "\\HasChildren";
+
+    public String NAME_ATTRIBUTE_HAS_NO_CHILDREN = "\\HasNoChildren";
+
     public static final String NAMESPACE_COMMAND_NAME = "NAMESPACE";
 
     public static final char BACK_SLASH = '\\';
