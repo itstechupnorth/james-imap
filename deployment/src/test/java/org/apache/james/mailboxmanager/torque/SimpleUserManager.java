@@ -27,10 +27,10 @@ import org.apache.james.imap.mailbox.SubscriptionException;
 
 public class SimpleUserManager implements UserManager {
 
-    private final Map users;
+    private final Map<String, UserDetails> users;
 
     public SimpleUserManager() {
-        this.users = new HashMap();
+        this.users = new HashMap<String, UserDetails>();
     }
 
     public boolean isAuthentic(String userid, String passwd) {
@@ -54,7 +54,7 @@ public class SimpleUserManager implements UserManager {
         user.addSubscription(mailbox);
     }
 
-    public Collection subscriptions(String userid) throws SubscriptionException {
+    public Collection<String> subscriptions(String userid) throws SubscriptionException {
         UserDetails user = (UserDetails) users.get(userid);
         if (user == null) {
             user = new UserDetails(userid);

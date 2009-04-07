@@ -30,7 +30,7 @@ public interface UserManager {
     public void subscribe(String user, String mailbox)
             throws SubscriptionException;
 
-    public Collection subscriptions(String user) throws SubscriptionException;
+    public Collection<String> subscriptions(String user) throws SubscriptionException;
 
     public void unsubscribe(String user, String mailbox)
             throws SubscriptionException;

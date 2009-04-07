@@ -63,13 +63,13 @@ public class TorqueMailboxManager implements MailboxManager {
 
     private final ReadWriteLock lock;
 
-    private final Map mailboxes;
+    private final Map<String, TorqueMailbox> mailboxes;
 
     private final UserManager userManager;
 
     public TorqueMailboxManager(final UserManager userManager) {
         this.lock = new ReentrantWriterPreferenceReadWriteLock();
-        mailboxes = new HashMap();
+        mailboxes = new HashMap<String, TorqueMailbox>();
         this.userManager = userManager;
     }
 
@@ -347,7 +347,7 @@ public class TorqueMailboxManager implements MailboxManager {
         userManager.subscribe(user, mailbox);
     }
 
-    public Collection subscriptions(String user) throws SubscriptionException {
+    public Collection<String> subscriptions(String user) throws SubscriptionException {
         return userManager.subscriptions(user);
     }
 

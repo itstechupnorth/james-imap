@@ -40,7 +40,7 @@ public class UserDetails {
         this.password = password;
     }
 
-    public Collection getSubscriptions() {
+    public Collection<String> getSubscriptions() {
         return subscriptions;
     }
 
