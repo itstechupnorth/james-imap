@@ -75,9 +75,10 @@ class MessageSearches {
      *            <code>MessageRow</code>, not null
      * @return true if the row matches the given criteria, false otherwise
      * @throws TorqueException
+     * @throws MimeException 
      */
     public boolean isMatch(final SearchQuery query, final MessageRow row)
-            throws TorqueException {
+            throws TorqueException, MimeException {
         final List criteria = query.getCriterias();
         final Collection recentMessageUids = query.getRecentMessageUids();
         boolean result = true;
@@ -103,9 +104,10 @@ class MessageSearches {
      *            <code>MessageRow</code>, not null
      * @return true if the row matches the given criterion, false otherwise
      * @throws TorqueException
+     * @throws MimeException 
      */
     public boolean isMatch(SearchQuery.Criterion criterion, MessageRow row,
-            final Collection recentMessageUids) throws TorqueException {
+            final Collection recentMessageUids) throws TorqueException, MimeException {
         final boolean result;
         if (criterion instanceof SearchQuery.InternalDateCriterion) {
             result = matches((SearchQuery.InternalDateCriterion) criterion, row);
@@ -132,7 +134,7 @@ class MessageSearches {
     }
 
     private boolean matches(SearchQuery.TextCriterion criterion, MessageRow row)
-            throws TorqueException {
+            throws TorqueException, MimeException {
         try {
             final SearchQuery.ContainsOperator operator = criterion
                     .getOperator();
@@ -177,7 +179,7 @@ class MessageSearches {
 
     private boolean matches(SearchQuery.ConjunctionCriterion criterion,
             MessageRow row, final Collection recentMessageUids)
-            throws TorqueException {
+            throws TorqueException, MimeException {
         final List criteria = criterion.getCriteria();
         switch (criterion.getType()) {
             case NOR:
@@ -192,7 +194,7 @@ class MessageSearches {
     }
 
     private boolean and(final List criteria, final MessageRow row,
-            final Collection recentMessageUids) throws TorqueException {
+            final Collection recentMessageUids) throws TorqueException, MimeException {
         boolean result = true;
         for (Iterator it = criteria.iterator(); it.hasNext();) {
             final SearchQuery.Criterion criterion = (SearchQuery.Criterion) it
@@ -207,7 +209,7 @@ class MessageSearches {
     }
 
     private boolean or(final List criteria, final MessageRow row,
-            final Collection recentMessageUids) throws TorqueException {
+            final Collection recentMessageUids) throws TorqueException, MimeException {
         boolean result = false;
         for (Iterator it = criteria.iterator(); it.hasNext();) {
             final SearchQuery.Criterion criterion = (SearchQuery.Criterion) it
@@ -222,7 +224,7 @@ class MessageSearches {
     }
 
     private boolean nor(final List criteria, final MessageRow row,
-            final Collection recentMessageUids) throws TorqueException {
+            final Collection recentMessageUids) throws TorqueException, MimeException {
         boolean result = true;
         for (Iterator it = criteria.iterator(); it.hasNext();) {
             final SearchQuery.Criterion criterion = (SearchQuery.Criterion) it

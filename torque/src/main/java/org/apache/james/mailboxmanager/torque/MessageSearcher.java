@@ -185,7 +185,7 @@ class MessageSearcher {
     private boolean checkHeader(final boolean isCaseInsensitive,
             final CharBuffer buffer, boolean result, MimeTokenStream parser)
             throws IOException {
-        final String value = parser.getFieldValue();
+        final String value = parser.getField().getBody();
         final StringReader reader = new StringReader(value);
         if (isFoundIn(reader, buffer, isCaseInsensitive)) {
             result = true;

@@ -53,6 +53,7 @@ import org.apache.james.imap.store.mail.model.Header;
 import org.apache.james.imap.store.mail.model.Mailbox;
 import org.apache.james.imap.store.mail.model.MailboxMembership;
 import org.apache.james.imap.store.mail.model.PropertyBuilder;
+import org.apache.james.mime4j.MimeException;
 import org.apache.james.mime4j.descriptor.MaximalBodyDescriptor;
 import org.apache.james.mime4j.parser.MimeTokenStream;
 
@@ -121,7 +122,7 @@ public abstract class StoreMailbox implements org.apache.james.imap.mailbox.Mail
                         && next != MimeTokenStream.T_END_OF_STREAM
                         && next != MimeTokenStream.T_START_MULTIPART) {
                     if (next == MimeTokenStream.T_FIELD) {
-                        String fieldValue = parser.getFieldValue();
+                        String fieldValue = parser.getField().getBody();
                         if (fieldValue.endsWith("\r\f")) {
                             fieldValue = fieldValue.substring(0,fieldValue.length() - 2);
                         }
@@ -129,7 +130,7 @@ public abstract class StoreMailbox implements org.apache.james.imap.mailbox.Mail
                             fieldValue = fieldValue.substring(1);
                         }
                         final Header header 
-                            = createHeader(++lineNumber, parser.getFieldName(), 
+                            = createHeader(++lineNumber, parser.getField().getName(), 
                                 fieldValue);
                         headers.add(header);
                     }
@@ -204,7 +205,9 @@ public abstract class StoreMailbox implements org.apache.james.imap.mailbox.Mail
                 throw new MailboxException(e);
             } catch (MessagingException e) {
                 throw new MailboxException(e);
-            }    
+            } catch (MimeException e) {
+                throw new MailboxException(e);
+            }
         }
     }
 

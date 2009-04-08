@@ -146,6 +146,8 @@ class MessageSearches {
             }
         } catch (IOException e) {
             throw new MailboxException(e);
+        } catch (MimeException e) {
+            throw new MailboxException(e);
         }
     }
 

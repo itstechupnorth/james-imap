@@ -124,7 +124,7 @@ public class MessageRowUtils {
 
     public static MessageResult loadMessageResult(final MessageRow messageRow,
             final FetchGroup fetchGroup) throws TorqueException,
-            MailboxException {
+            MailboxException, MimeException {
 
         MessageResultImpl messageResult = new MessageResultImpl();
         messageResult.setUid(messageRow.getUid());
@@ -160,13 +160,15 @@ public class MessageRowUtils {
                 addPartContent(fetchGroup, messageRow, messageResult);
             } catch (IOException e) {
                 throw new TorqueException("Cannot parse message", e);
+            } catch (MimeException e) {
+                throw new TorqueException("Cannot parse message", e);
             }
         }
         return messageResult;
     }
 
     private static void addMimeDescriptor(MessageRow messageRow,
-            MessageResultImpl messageResult) throws TorqueException {
+            MessageResultImpl messageResult) throws TorqueException, MimeException {
         try {
             MimeDescriptor descriptor = MimeDescriptorImpl
                     .build(toInput(messageRow));

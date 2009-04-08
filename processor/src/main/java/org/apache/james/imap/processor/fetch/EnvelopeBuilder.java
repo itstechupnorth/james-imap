@@ -38,7 +38,6 @@ import org.apache.james.mime4j.field.address.AddressList;
 import org.apache.james.mime4j.field.address.DomainList;
 import org.apache.james.mime4j.field.address.Group;
 import org.apache.james.mime4j.field.address.MailboxList;
-import org.apache.james.mime4j.field.address.NamedMailbox;
 import org.apache.james.mime4j.field.address.parser.ParseException;
 
 final class EnvelopeBuilder {
@@ -150,17 +149,11 @@ final class EnvelopeBuilder {
 
     private FetchResponse.Envelope.Address buildMailboxAddress(
             final org.apache.james.mime4j.field.address.Mailbox mailbox) {
-        final String name;
-        if (mailbox instanceof NamedMailbox) {
-            final NamedMailbox namedMailbox = (NamedMailbox) mailbox;
-            name = namedMailbox.getName();
-        } else {
-            name = null;
-        }
+        final String name = mailbox.getName();
         final String domain = mailbox.getDomain();
         final DomainList route = mailbox.getRoute();
         final String atDomainList;
-        if (route == null) {
+        if (route == null || route.size() == 0) {
             atDomainList = null;
         } else {
             atDomainList = route.toRouteString();

@@ -119,12 +119,14 @@ public class ResultUtils {
                 addPartContent(fetchGroup, message, messageResult);
             } catch (IOException e) {
                 throw new MailboxException(e);
+            } catch (MimeException e) {
+                throw new MailboxException(e);
             }
         }
         return messageResult;
     }
 
-    private static void addMimeDescriptor(MailboxMembership message, MessageResultImpl messageResult) throws IOException {
+    private static void addMimeDescriptor(MailboxMembership message, MessageResultImpl messageResult) throws IOException, MimeException {
             MimeDescriptor descriptor = MimeDescriptorImpl.build(message.getDocument());
             messageResult.setMimeDescriptor(descriptor);
     }

@@ -62,6 +62,7 @@ import org.apache.james.mailboxmanager.torque.om.MessageFlagsPeer;
 import org.apache.james.mailboxmanager.torque.om.MessageHeader;
 import org.apache.james.mailboxmanager.torque.om.MessageRow;
 import org.apache.james.mailboxmanager.torque.om.MessageRowPeer;
+import org.apache.james.mime4j.MimeException;
 import org.apache.torque.NoRowsException;
 import org.apache.torque.TooManyRowsException;
 import org.apache.torque.TorqueException;
@@ -339,7 +340,7 @@ public class TorqueMailbox implements Mailbox {
 
     public MessageResult fillMessageResult(MessageRow messageRow,
             FetchGroup result) throws TorqueException, MessagingException,
-            MailboxException {
+            MailboxException, MimeException {
         return MessageRowUtils.loadMessageResult(messageRow, result);
     }
 
@@ -428,6 +429,8 @@ public class TorqueMailbox implements Mailbox {
                 } catch (TorqueException e) {
                     throw new MailboxException(e);
                 } catch (MessagingException e) {
+                    throw new MailboxException(e);
+                } catch (MimeException e) {
                     throw new MailboxException(e);
                 }
             } finally {
@@ -660,6 +663,8 @@ public class TorqueMailbox implements Mailbox {
                 return uids.iterator();
             } catch (TorqueException e) {
                 throw new MailboxException(e);
+            } catch (MimeException e) {
+                throw new MailboxException(e);
             } finally {
                 lock.readLock().release();
             }
@@ -788,6 +793,8 @@ public class TorqueMailbox implements Mailbox {
         } catch (InterruptedException e) {
             throw new MailboxException(e);
         } catch (MessagingException e) {
+            throw new MailboxException(e);
+        } catch (MimeException e) {
             throw new MailboxException(e);
         }
     }

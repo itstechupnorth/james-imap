@@ -53,7 +53,7 @@ public class PartContentBuilder {
         topLevel = true;
     }
 
-    private void skipToStartOfInner(int position) throws IOException {
+    private void skipToStartOfInner(int position) throws IOException, MimeException {
         final int state = parser.next();
         switch (state) {
             case MimeTokenStream.T_START_MULTIPART:
@@ -69,7 +69,7 @@ public class PartContentBuilder {
         }
     }
 
-    public void to(int position) throws IOException {
+    public void to(int position) throws IOException, MimeException {
         try {
             if (topLevel) {
                 topLevel = false;
@@ -101,7 +101,7 @@ public class PartContentBuilder {
         }
     }
 
-    private void ignoreInnerMessage() throws IOException {
+    private void ignoreInnerMessage() throws IOException, UnexpectedEOFException, MimeException {
         for (int state = parser.next(); state != MimeTokenStream.T_END_MULTIPART; state = parser
                 .next()) {
             switch (state) {
@@ -115,18 +115,18 @@ public class PartContentBuilder {
         }
     }
 
-    public Content getFullContent() throws IOException {
+    public Content getFullContent() throws IOException, MimeException {
         final List headers = getMimeHeaders();
         final byte[] content = mimeBodyContent();
         return new FullContent(content, headers);
     }
 
-    public Content getMessageBodyContent() throws IOException {
+    public Content getMessageBodyContent() throws IOException, MimeException {
         final byte[] content = messageBodyContent();
         return new ByteContent(content);
     }
 
-    private byte[] messageBodyContent() throws IOException {
+    private byte[] messageBodyContent() throws IOException, MimeException {
         final byte[] content;
         if (empty) {
             content = EMPTY;
@@ -161,12 +161,12 @@ public class PartContentBuilder {
         return content;
     }
 
-    public Content getMimeBodyContent() throws IOException {
+    public Content getMimeBodyContent() throws IOException, MimeException {
         final byte[] content = mimeBodyContent();
         return new ByteContent(content);
     }
 
-    private byte[] mimeBodyContent() throws IOException {
+    private byte[] mimeBodyContent() throws IOException, MimeException {
         final byte[] content;
         if (empty) {
             content = EMPTY;
@@ -190,7 +190,7 @@ public class PartContentBuilder {
         return content;
     }
 
-    public List getMimeHeaders() throws IOException {
+    public List getMimeHeaders() throws IOException, MimeException {
         final List results;
         if (empty) {
             results = Collections.EMPTY_LIST;
@@ -203,8 +203,8 @@ public class PartContentBuilder {
                         throw new UnexpectedEOFException();
 
                     case MimeTokenStream.T_FIELD:
-                        final String fieldValue = parser.getFieldValue().trim();
-                        final String fieldName = parser.getFieldName();
+                        final String fieldValue = parser.getField().getBody().trim();
+                        final String fieldName = parser.getField().getName();
                         Header header = new Header(fieldName, fieldValue);
                         results.add(header);
                         break;
@@ -214,7 +214,7 @@ public class PartContentBuilder {
         return results;
     }
 
-    public List getMessageHeaders() throws IOException {
+    public List getMessageHeaders() throws IOException, MimeException {
         final List results;
         if (empty) {
             results = Collections.EMPTY_LIST;
@@ -230,9 +230,9 @@ public class PartContentBuilder {
                             throw new IOException("Unexpected EOF");
 
                         case MimeTokenStream.T_FIELD:
-                            final String fieldValue = parser.getFieldValue()
+                            final String fieldValue = parser.getField().getBody()
                                     .trim();
-                            final String fieldName = parser.getFieldName();
+                            final String fieldName = parser.getField().getName();
                             Header header = new Header(fieldName, fieldValue);
                             results.add(header);
                             break;
@@ -245,7 +245,7 @@ public class PartContentBuilder {
         return results;
     }
 
-    private void advancedToMessage() throws IOException {
+    private void advancedToMessage() throws IOException, MimeException {
         for (int state = parser.getState(); state != MimeTokenStream.T_START_MESSAGE; state = parser
                 .next()) {
             if (state == MimeTokenStream.T_END_OF_STREAM) {

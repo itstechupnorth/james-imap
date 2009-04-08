@@ -37,6 +37,7 @@ import org.apache.james.imap.mailbox.MimeDescriptor;
 import org.apache.james.imap.mailbox.MessageResult.FetchGroup;
 import org.apache.james.imap.mailbox.util.FetchGroupImpl;
 import org.apache.james.mailboxmanager.torque.om.MessageRow;
+import org.apache.james.mime4j.MimeException;
 import org.apache.torque.TorqueException;
 
 public class TorqueResultIterator implements Iterator {
@@ -90,6 +91,8 @@ public class TorqueResultIterator implements Iterator {
                     new MailboxException(e));
         } catch (MailboxException e) {
             result = new UnloadedMessageResult(messageRow, e);
+        } catch (MimeException e) {
+            result = new UnloadedMessageResult(messageRow, new MailboxException(e));
         }
         return result;
     }

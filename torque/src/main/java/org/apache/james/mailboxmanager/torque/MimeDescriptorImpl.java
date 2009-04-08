@@ -38,7 +38,7 @@ import org.apache.james.mime4j.parser.RecursionMode;
 public class MimeDescriptorImpl implements MimeDescriptor {
 
     public static MimeDescriptorImpl build(final InputStream stream)
-            throws IOException {
+            throws IOException, MimeException {
         final MimeTokenStream parser = MimeTokenStream
                 .createMaximalDescriptorStream();
         parser.parse(stream);
@@ -54,8 +54,8 @@ public class MimeDescriptorImpl implements MimeDescriptor {
                 && next != MimeTokenStream.T_END_OF_STREAM
                 && next != MimeTokenStream.T_START_MULTIPART) {
             if (next == MimeTokenStream.T_FIELD) {
-                headers.add(new Header(parser.getFieldName(), parser
-                        .getFieldValue().trim()));
+                headers.add(new Header(parser.getField().getName(), parser
+                        .getField().getBody().trim()));
             }
             next = parser.next();
         }
@@ -78,7 +78,7 @@ public class MimeDescriptorImpl implements MimeDescriptor {
 
     private static MimeDescriptorImpl compositePartDescriptor(
             final MimeTokenStream parser, final Collection headers)
-            throws IOException {
+            throws IOException, MimeException {
         MaximalBodyDescriptor descriptor = (MaximalBodyDescriptor) parser
                 .getBodyDescriptor();
         MimeDescriptorImpl mimeDescriptor = createDescriptor(0, 0, descriptor,
@@ -96,7 +96,7 @@ public class MimeDescriptorImpl implements MimeDescriptor {
 
     private static MimeDescriptorImpl simplePartDescriptor(
             final MimeTokenStream parser, final Collection headers)
-            throws IOException {
+            throws IOException, MimeException {
         MaximalBodyDescriptor descriptor = (MaximalBodyDescriptor) parser
                 .getBodyDescriptor();
         final MimeDescriptorImpl mimeDescriptorImpl;
