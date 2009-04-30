@@ -32,6 +32,7 @@ import org.apache.james.imap.api.process.ImapSession;
 import org.apache.james.imap.mailbox.MailboxManager;
 import org.apache.james.imap.mailbox.MailboxManagerProvider;
 import org.apache.james.imap.mailbox.MailboxMetaData;
+import org.apache.james.imap.mailbox.MailboxSession;
 import org.apache.james.imap.message.request.LsubRequest;
 import org.apache.james.imap.message.response.LSubResponse;
 import org.apache.james.imap.processor.LSubProcessor;
@@ -75,6 +76,8 @@ public class LSubProcessorTest extends MockObjectTestCase {
     MailboxMetaData result;
 
     ImapSession session;
+    
+    MailboxSession mailboxSession;
 
     StatusResponseFactory serverResponseFactory;
 
@@ -98,6 +101,7 @@ public class LSubProcessorTest extends MockObjectTestCase {
         statusResponse = mock(StatusResponse.class);
         responderImpl = responder;
         manager = mock(MailboxManager.class);
+        mailboxSession = mock(MailboxSession.class);
         processor = new LSubProcessor(next, provider, serverResponseFactory);
         checking(new Expectations() {{
             atMost(1).of(provider).getMailboxManager(); will(returnValue(manager));
@@ -232,8 +236,9 @@ public class LSubProcessorTest extends MockObjectTestCase {
 
     private void expectSubscriptions() throws Exception {
         checking(new Expectations() {{
-            oneOf(session).getAttribute(
-                    with(equal(ImapSessionUtils.MAILBOX_USER_ATTRIBUTE_SESSION_KEY)));
+            oneOf(session).getAttribute(ImapSessionUtils.MAILBOX_SESSION_ATTRIBUTE_SESSION_KEY);
+                    will(returnValue(mailboxSession));
+            oneOf(mailboxSession).getUserName();
                     will(returnValue(USER));
             oneOf(manager).subscriptions(with(same(USER)));will(returnValue(subscriptions));     
         }});

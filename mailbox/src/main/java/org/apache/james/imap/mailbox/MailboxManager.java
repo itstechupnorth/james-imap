@@ -98,8 +98,7 @@ public interface MailboxManager {
      */
     void createMailbox(String mailboxName) throws MailboxException;
 
-    void deleteMailbox(String mailboxName, MailboxSession session)
-            throws MailboxException;
+    void deleteMailbox(String mailboxName, MailboxSession session) throws MailboxException;
 
     /**
      * Renames a mailbox.
@@ -143,11 +142,11 @@ public interface MailboxManager {
 
     /**
      * Creates a new session.
-     * @param log TODO
-     * 
+     * @param userName the name of the user whose session is being created
+     * @param log context sensitive log
      * @return <code>MailboxSession</code>, not null
      */
-    public MailboxSession createSession(Log log);
+    public MailboxSession createSession(String userName, Log log);
 
     /**
      * Autenticates the given user against the given password.

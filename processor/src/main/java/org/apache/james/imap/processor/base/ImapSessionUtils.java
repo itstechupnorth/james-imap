@@ -34,14 +34,14 @@ public class ImapSessionUtils {
         return result;
     }
 
-    public static String getUserName(final ImapSession session) {
-        final String result = (String) session
-                .getAttribute(MAILBOX_USER_ATTRIBUTE_SESSION_KEY);
+    public static String getUserName(final ImapSession imapSession) {
+        final String result;
+        final MailboxSession mailboxSession = getMailboxSession(imapSession);
+        if (imapSession == null) {
+            result = null;
+        } else {
+            result = mailboxSession.getUserName();
+        }
         return result;
     }
-
-    public static void setUserName(final ImapSession session, final String user) {
-        session.setAttribute(MAILBOX_USER_ATTRIBUTE_SESSION_KEY, user);
-    }
-
 }

@@ -31,12 +31,15 @@ public class SimpleMailboxSession implements MailboxSession {
     
     private final Log log;
 
+    private final String userName;
+    
     private boolean open;
 
-    public SimpleMailboxSession(final long sessionId, final Log log) {
+    public SimpleMailboxSession(final long sessionId, final String userName, final Log log) {
         super();
         this.sessionId = sessionId;
         this.log = log;
+        this.userName = userName;
     }
 
     public Log getLog() {
@@ -68,5 +71,13 @@ public class SimpleMailboxSession implements MailboxSession {
 
         return retValue;
     }
+
+    /**
+     * Gets the name of the user executing this session.
+     * @return not null
+     */
+	public String getUserName() {
+		return userName;
+	}
 
 }

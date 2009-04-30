@@ -288,8 +288,8 @@ public abstract class StoreMailboxManager extends AbstractLogEnabled implements 
         mailboxes.clear();
     }
 
-    public MailboxSession createSession(Log log) {
-        return new SimpleMailboxSession(random.nextLong(), log);
+    public MailboxSession createSession(String userName, Log log) {
+        return new SimpleMailboxSession(random.nextLong(), userName, log);
     }
 
     public String resolve(final String userName, String mailboxPath) {

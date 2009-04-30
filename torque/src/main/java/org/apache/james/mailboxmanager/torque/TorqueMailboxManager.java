@@ -340,8 +340,8 @@ public class TorqueMailboxManager implements MailboxManager {
         return log;
     }
 
-    public MailboxSession createSession(Log log) {
-        return new TorqueMailboxSession(random.nextLong(), log);
+    public MailboxSession createSession(String userName, Log log) {
+        return new TorqueMailboxSession(random.nextLong(), log, userName);
     }
 
     public String resolve(final String userName, String mailboxPath) {

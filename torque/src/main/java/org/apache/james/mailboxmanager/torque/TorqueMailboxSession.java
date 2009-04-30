@@ -31,12 +31,16 @@ public class TorqueMailboxSession implements MailboxSession {
     
     private final Log log;
 
+    private final String userName;
+    
     private boolean open;
 
-    public TorqueMailboxSession(final long sessionId, final Log log) {
+
+    public TorqueMailboxSession(final long sessionId, final Log log, final String userName) {
         super();
         this.sessionId = sessionId;
         this.log = log;
+        this.userName = userName;
     }
     
     
@@ -71,5 +75,14 @@ public class TorqueMailboxSession implements MailboxSession {
 
         return retValue;
     }
+
+
+    /**
+     * Gets the name of the user executing this session.
+     * @return not null
+     */
+	public String getUserName() {
+		return userName;
+	}
 
 }

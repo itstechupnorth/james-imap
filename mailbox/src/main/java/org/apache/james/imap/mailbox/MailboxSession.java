@@ -50,4 +50,10 @@ public interface MailboxSession {
      * @return not null
      */
     public Log getLog();
+    
+    /**
+     * Gets the name of the user executing this session.
+     * @return not null
+     */
+    public String getUserName();
 }

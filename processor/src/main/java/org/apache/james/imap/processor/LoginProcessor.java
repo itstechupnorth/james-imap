@@ -63,11 +63,10 @@ public class LoginProcessor extends AbstractMailboxProcessor {
             final MailboxManager mailboxManager = getMailboxManager();
             if (mailboxManager.isAuthentic(userid, passwd)) {
                 session.authenticated();
-                final MailboxSession mailboxSession = mailboxManager.createSession(session.getLog());
+                final MailboxSession mailboxSession = mailboxManager.createSession(userid, session.getLog());
                 session.setAttribute(
                         ImapSessionUtils.MAILBOX_SESSION_ATTRIBUTE_SESSION_KEY,
                         mailboxSession);
-                ImapSessionUtils.setUserName(session, userid);
                 final String inboxName = buildFullName(session, MailboxManager.INBOX);
                 if (mailboxManager.mailboxExists(inboxName)) {
                     session.getLog().debug("INBOX exists. No need to create it.");
