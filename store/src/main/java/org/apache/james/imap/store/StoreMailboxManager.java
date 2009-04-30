@@ -305,18 +305,18 @@ public abstract class StoreMailboxManager extends AbstractLogEnabled implements 
         return authenticator.isAuthentic(userid, passwd);
     }
 
-    public void subscribe(String user, String mailbox)
+    public void subscribe(MailboxSession session, String mailbox)
     throws SubscriptionException {
-        subscriber.subscribe(user, mailbox);
+        subscriber.subscribe(session.getUserName(), mailbox);
     }
 
-    public Collection<String> subscriptions(String user) throws SubscriptionException {
-        return subscriber.subscriptions(user);
+    public Collection<String> subscriptions(MailboxSession session) throws SubscriptionException {
+        return subscriber.subscriptions(session.getUserName());
     }
 
-    public void unsubscribe(String user, String mailbox)
+    public void unsubscribe(MailboxSession session, String mailbox)
     throws SubscriptionException {
-        subscriber.unsubscribe(user, mailbox);
+        subscriber.unsubscribe(session.getUserName(), mailbox);
     }
 
     public void addListener(String mailboxName, MailboxListener listener) throws MailboxException {

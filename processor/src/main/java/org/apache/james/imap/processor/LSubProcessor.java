@@ -34,6 +34,7 @@ import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.MailboxManager;
 import org.apache.james.imap.mailbox.MailboxManagerProvider;
 import org.apache.james.imap.mailbox.MailboxQuery;
+import org.apache.james.imap.mailbox.MailboxSession;
 import org.apache.james.imap.mailbox.SubscriptionException;
 import org.apache.james.imap.message.request.LsubRequest;
 import org.apache.james.imap.message.response.LSubResponse;
@@ -88,9 +89,9 @@ public class LSubProcessor extends AbstractMailboxProcessor {
     private void listSubscriptions(ImapSession session, Responder responder,
             final String referenceName, final String mailboxPattern)
             throws SubscriptionException, MailboxException {
-        final String userName = ImapSessionUtils.getUserName(session);
+        final MailboxSession mailboxSession = ImapSessionUtils.getMailboxSession(session);
         final MailboxManager manager = getMailboxManager();
-        final Collection<String> mailboxes = manager.subscriptions(userName);
+        final Collection<String> mailboxes = manager.subscriptions(mailboxSession);
         final MailboxQuery expression = new MailboxQuery(
                 referenceName, mailboxPattern, '*', '%');
         final Collection<String> mailboxResponses = new ArrayList<String>();

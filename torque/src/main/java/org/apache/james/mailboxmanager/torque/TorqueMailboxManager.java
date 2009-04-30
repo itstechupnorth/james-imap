@@ -357,18 +357,18 @@ public class TorqueMailboxManager implements MailboxManager {
         return userManager.isAuthentic(userid, passwd);
     }
 
-    public void subscribe(String user, String mailbox)
+    public void subscribe(MailboxSession session, String mailbox)
             throws SubscriptionException {
-        userManager.subscribe(user, mailbox);
+        userManager.subscribe(session.getUserName(), mailbox);
     }
 
-    public Collection<String> subscriptions(String user) throws SubscriptionException {
-        return userManager.subscriptions(user);
+    public Collection<String> subscriptions(MailboxSession session) throws SubscriptionException {
+        return userManager.subscriptions(session.getUserName());
     }
 
-    public void unsubscribe(String user, String mailbox)
+    public void unsubscribe(MailboxSession session, String mailbox)
             throws SubscriptionException {
-        userManager.unsubscribe(user, mailbox);
+        userManager.unsubscribe(session.getUserName(), mailbox);
     }
 
     public void addListener(String mailboxName, MailboxListener listener) throws MailboxException {

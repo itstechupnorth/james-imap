@@ -29,6 +29,7 @@ import org.apache.james.imap.api.process.ImapSession;
 import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.MailboxManager;
 import org.apache.james.imap.mailbox.MailboxManagerProvider;
+import org.apache.james.imap.mailbox.MailboxSession;
 import org.apache.james.imap.mailbox.SubscriptionException;
 import org.apache.james.imap.message.request.UnsubscribeRequest;
 import org.apache.james.imap.processor.base.ImapSessionUtils;
@@ -49,10 +50,10 @@ public class UnsubscribeProcessor extends AbstractMailboxProcessor {
             String tag, ImapCommand command, Responder responder) {
         final UnsubscribeRequest request = (UnsubscribeRequest) message;
         final String mailboxName = request.getMailboxName();
-        final String userName = ImapSessionUtils.getUserName(session);
+        final MailboxSession mailboxSession = ImapSessionUtils.getMailboxSession(session);
         try {
             final MailboxManager mailboxManager = getMailboxManager();
-            mailboxManager.unsubscribe(userName, mailboxName);
+            mailboxManager.unsubscribe(mailboxSession, mailboxName);
 
             unsolicitedResponses(session, responder, false);
             okComplete(command, tag, responder);

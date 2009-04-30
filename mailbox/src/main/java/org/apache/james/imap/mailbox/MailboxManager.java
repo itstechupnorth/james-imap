@@ -162,33 +162,33 @@ public interface MailboxManager {
     /**
      * Subscribes the user to the given mailbox.
      * 
-     * @param user
+     * @param session
      *            the user name, not null
      * @param mailbox
      *            the mailbox name, not null
      */
-    public void subscribe(String user, String mailbox)
+    public void subscribe(MailboxSession session, String mailbox)
             throws SubscriptionException;
 
     /**
      * Unsubscribes the user from the given mailbox.
      * 
-     * @param user
+     * @param session
      *            the user name, not null
      * @param mailbox
      *            the mailbox name, not null
      */
-    public void unsubscribe(String user, String mailbox)
+    public void unsubscribe(MailboxSession session, String mailbox)
             throws SubscriptionException;
 
     /**
      * Lists current subscriptions for the given user.
      * 
-     * @param user
+     * @param session
      *            the user name, not null
      * @return a <code>Collection<String></code> of mailbox names
      */
-    public Collection<String> subscriptions(String user) throws SubscriptionException;
+    public Collection<String> subscriptions(MailboxSession session) throws SubscriptionException;
     
     /**
      * <p>Implementations of Mailbox may interpret the fact that someone is

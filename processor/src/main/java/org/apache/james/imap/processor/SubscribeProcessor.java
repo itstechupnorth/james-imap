@@ -29,6 +29,7 @@ import org.apache.james.imap.api.process.ImapSession;
 import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.MailboxManager;
 import org.apache.james.imap.mailbox.MailboxManagerProvider;
+import org.apache.james.imap.mailbox.MailboxSession;
 import org.apache.james.imap.mailbox.SubscriptionException;
 import org.apache.james.imap.message.request.SubscribeRequest;
 import org.apache.james.imap.processor.base.ImapSessionUtils;
@@ -49,10 +50,10 @@ public class SubscribeProcessor extends AbstractMailboxProcessor {
             String tag, ImapCommand command, Responder responder) {
         final SubscribeRequest request = (SubscribeRequest) message;
         final String mailboxName = request.getMailboxName();
-        final String userName = ImapSessionUtils.getUserName(session);
+        final MailboxSession mailboxSession = ImapSessionUtils.getMailboxSession(session);
         try {
             final MailboxManager manager = getMailboxManager();
-            manager.subscribe(userName, mailboxName);
+            manager.subscribe(mailboxSession, mailboxName);
 
             unsolicitedResponses(session, responder, false);
             okComplete(command, tag, responder);

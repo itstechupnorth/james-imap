@@ -238,9 +238,7 @@ public class LSubProcessorTest extends MockObjectTestCase {
         checking(new Expectations() {{
             oneOf(session).getAttribute(ImapSessionUtils.MAILBOX_SESSION_ATTRIBUTE_SESSION_KEY);
                     will(returnValue(mailboxSession));
-            oneOf(mailboxSession).getUserName();
-                    will(returnValue(USER));
-            oneOf(manager).subscriptions(with(same(USER)));will(returnValue(subscriptions));     
+            oneOf(manager).subscriptions(with(same(mailboxSession)));will(returnValue(subscriptions));     
         }});
     }
 }
