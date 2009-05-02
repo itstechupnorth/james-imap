@@ -307,16 +307,16 @@ public abstract class StoreMailboxManager extends AbstractLogEnabled implements 
 
     public void subscribe(MailboxSession session, String mailbox)
     throws SubscriptionException {
-        subscriber.subscribe(session.getUserName(), mailbox);
+        subscriber.subscribe(session.getUser().getUserName(), mailbox);
     }
 
     public Collection<String> subscriptions(MailboxSession session) throws SubscriptionException {
-        return subscriber.subscriptions(session.getUserName());
+        return subscriber.subscriptions(session.getUser().getUserName());
     }
 
     public void unsubscribe(MailboxSession session, String mailbox)
     throws SubscriptionException {
-        subscriber.unsubscribe(session.getUserName(), mailbox);
+        subscriber.unsubscribe(session.getUser().getUserName(), mailbox);
     }
 
     public void addListener(String mailboxName, MailboxListener listener) throws MailboxException {

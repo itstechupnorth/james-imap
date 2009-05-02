@@ -40,7 +40,7 @@ public class ImapSessionUtils {
         if (imapSession == null) {
             result = null;
         } else {
-            result = mailboxSession.getUserName();
+            result = mailboxSession.getUser().getUserName();
         }
         return result;
     }

@@ -52,8 +52,20 @@ public interface MailboxSession {
     public Log getLog();
     
     /**
-     * Gets the name of the user executing this session.
+     * Gets the user executing this session.
      * @return not null
      */
-    public String getUserName();
+    public User getUser();
+    
+    /**
+     * A mailbox user.
+     * Useful for specialist mailbox implementation.
+     */
+    public interface User {
+        /**
+         * Gets the name of the user.
+         * @return not null
+         */
+        public String getUserName();
+    }
 }

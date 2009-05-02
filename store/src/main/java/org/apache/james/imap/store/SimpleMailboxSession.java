@@ -25,7 +25,7 @@ import org.apache.james.imap.mailbox.MailboxSession;
 /**
  * Describes a mailbox session.
  */
-public class SimpleMailboxSession implements MailboxSession {
+public class SimpleMailboxSession implements MailboxSession, MailboxSession.User {
 
     private final long sessionId;
     
@@ -71,7 +71,15 @@ public class SimpleMailboxSession implements MailboxSession {
 
         return retValue;
     }
-
+    
+    /**
+     * Gets the user executing this session.
+     * @return not null
+     */
+    public User getUser() {
+        return this;
+    }
+    
     /**
      * Gets the name of the user executing this session.
      * @return not null
