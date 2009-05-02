@@ -45,9 +45,44 @@ public class CreateScript {
 
     public static final void main(String[] args) throws Exception {
         ScriptBuilder builder = ScriptBuilder.open("localhost", 143);
-        rfcFetch(builder);
+        expunge(builder);
     }
 
+
+    public static void expunge(ScriptBuilder builder) throws Exception {
+        try {
+            setup(builder);
+            builder.append();
+            builder.setFile("wild-example.mail");
+            builder.append();
+            builder.setFile("multipart-alt.mail");
+            builder.append();
+            builder.setFile("multipart-mixed-complex.mail");
+            builder.append();
+            builder.setFile("rfc822-hello-world.mail");
+            builder.append();
+            builder.setFile("wild-mixed-alt.mail");
+            builder.append();
+            builder.setFile("wild-mixed.mail");
+            builder.append();
+            builder.setFile("rfc822-resent.mail");
+            builder.append();
+            builder.setFile("rfc822-trace.mail");
+            builder.append();
+            builder.setFile("wild-alt-reply4.mail");
+            builder.append();
+            builder.select();
+            builder.flagDeleted(4);
+            builder.flagDeleted(6);
+            builder.flagDeleted(7);
+            builder.expunge();
+            builder.select();
+
+        } finally {
+            builder.quit();
+        }
+    }
+    
     public static void rfcFetch(ScriptBuilder builder) throws Exception {
         try {
             setup(builder);

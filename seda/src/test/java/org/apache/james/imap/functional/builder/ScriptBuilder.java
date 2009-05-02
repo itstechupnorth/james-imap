@@ -57,7 +57,7 @@ public class ScriptBuilder {
 
     private String file = "rfc822.mail";
 
-    private String basedir = "/org/apache/james/test/functional/";
+    private String basedir = "/org/apache/james/imap/samples/";
 
     private boolean createdMailbox = false;
 
@@ -190,6 +190,10 @@ public class ScriptBuilder {
     }
 
     public ScriptBuilder flagDeleted() throws Exception {
+        return flagDeleted(messageNumber);
+    }
+    
+    public ScriptBuilder flagDeleted(int messageNumber) throws Exception {
         store(new Flags().deleted().msn(messageNumber));
         return this;
     }
@@ -1323,6 +1327,8 @@ public class ScriptBuilder {
     }
 
     private static final class Out {
+        private static final String OK_APPEND_COMPLETED = "OK APPEND completed.";
+
         private static final String[] IGNORE_LINES_STARTING_WITH = {
                 "S: \\* OK \\[PERMANENTFLAGS", "C: A22 LOGOUT",
                 "S: \\* BYE Logging out", "S: \\* OK Dovecot ready\\." };
@@ -1384,39 +1390,67 @@ public class ScriptBuilder {
             for (int i = 0; i < lines.length; i++) {
                 String line = StringUtils.chomp(lines[i]);
                 if (!ignoreLine(line)) {
-                    line = StringUtils.replace(line, "OK Create completed",
-                            "OK CREATE completed");
-                    line = StringUtils.replace(line, "OK Fetch completed",
-                            "OK FETCH completed");
-                    line = StringUtils.replace(line, "OK Append completed",
-                            "OK APPEND completed");
-                    line = StringUtils.replace(line, "OK Delete completed",
-                            "OK DELETE completed");
-                    line = StringUtils.replace(line, "OK Store completed",
-                            "OK STORE completed");
-                    line = StringUtils.replace(line, "OK Rename completed",
-                            "OK RENAME completed");
-                    line = StringUtils.replace(line, "OK Expunge completed",
-                            "OK EXPUNGE completed");
-                    line = StringUtils.replace(line, "OK List completed",
-                            "OK LIST completed");
-                    line = StringUtils.replace(line, "Select completed",
-                            "SELECT completed");
+                    final String[] words = StringUtils.split(line);
+                    if (words.length > 3 && "S:".equalsIgnoreCase(words[0]) && "OK".equalsIgnoreCase(words[2])) {
+                        final int commandWordIndex;
+                        if (words[3] == null || !words[3].startsWith("\\[")) {
+                            commandWordIndex = 3;
+                        } else {
+                            int wordsCount = 3;
+                            while (wordsCount < words.length) {
+                                if (words[wordsCount++].endsWith("]")) {
+                                    break;
+                                }
+                            }
+                            commandWordIndex = wordsCount;
+                        }
+                        final String command = words[commandWordIndex];
+                        final String commandOkPhrase;
+                        if ("CREATE".equalsIgnoreCase(command)) {
+                            commandOkPhrase = "OK CREATE completed.";
+                        } else if ("FETCH".equalsIgnoreCase(command)) {
+                            commandOkPhrase = "OK FETCH completed.";
+                        } else if ("APPEND".equalsIgnoreCase(command)) {
+                            commandOkPhrase = OK_APPEND_COMPLETED;
+                        } else if ("DELETE".equalsIgnoreCase(command)) {
+                            commandOkPhrase = "OK DELETE completed.";
+                        } else if ("STORE".equalsIgnoreCase(command)) {
+                            commandOkPhrase = "OK STORE completed.";
+                        } else if ("RENAME".equalsIgnoreCase(command)) {
+                            commandOkPhrase = "OK RENAME completed.";
+                        } else if ("EXPUNGE".equalsIgnoreCase(command)) {
+                            commandOkPhrase = "OK EXPUNGE completed.";
+                        } else if ("LIST".equalsIgnoreCase(command)) {
+                            commandOkPhrase = "OK LIST completed.";
+                        } else if ("SELECT".equalsIgnoreCase(command)) {
+                            if (commandWordIndex == 3) {
+                                commandOkPhrase = "OK SELECT completed.";
+                            } else {
+                                commandOkPhrase = "OK " + words[3].toUpperCase() + " SELECT completed.";
+                            }
+                        } else {
+                            commandOkPhrase = null;
+                        }
+                        if (commandOkPhrase != null) {
+                            line = words[0] + " "  + words[1] + " " + commandOkPhrase;
+                        }
+                    }
                     line = StringUtils.replace(line, "\\\\Seen \\\\Draft",
-                            "\\\\Draft \\\\Seen");
+                    "\\\\Draft \\\\Seen");
                     line = StringUtils.replace(line, "\\\\Flagged \\\\Deleted",
-                            "\\\\Deleted \\\\Flagged");
+                    "\\\\Deleted \\\\Flagged");
                     line = StringUtils.replace(line, "\\\\Flagged \\\\Draft",
-                            "\\\\Draft \\\\Flagged");
+                    "\\\\Draft \\\\Flagged");
                     line = StringUtils.replace(line, "\\\\Seen \\\\Recent",
-                            "\\\\Recent \\\\Seen");
+                    "\\\\Recent \\\\Seen");
                     line = StringUtils.replace(line, "\\] First unseen\\.",
-                            "\\](.)*");
+                    "\\](.)*");
                     if (line.startsWith("S: \\* OK \\[UIDVALIDITY ")) {
                         line = "S: \\* OK \\[UIDVALIDITY \\d+\\]";
                     } else if (line.startsWith("S: \\* OK \\[UIDNEXT")) {
                         line = "S: \\* OK \\[PERMANENTFLAGS \\(\\\\Answered \\\\Deleted \\\\Draft \\\\Flagged \\\\Seen\\)\\]";
                     }
+
                     System.out.println(line);
                 }
             }
