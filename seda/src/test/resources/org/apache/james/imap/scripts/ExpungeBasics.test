@@ -696,8 +696,8 @@ S: \* 7 FETCH \(FLAGS \(\\Deleted \\Recent\)\)
 S: A17 OK STORE completed.
 C: A18 EXPUNGE
 S: \* 4 EXPUNGE
-S: \* 6 EXPUNGE
-S: \* 7 EXPUNGE
+S: \* 5 EXPUNGE
+S: \* 5 EXPUNGE
 S: \* 7 RECENT
 S: A18 OK EXPUNGE completed.
 C: A19 SELECT testmailbox

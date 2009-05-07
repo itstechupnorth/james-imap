@@ -143,11 +143,10 @@ public class SelectedMailboxImpl implements SelectedMailbox {
         return events.expungedUids();
     }
 
-    public void expunged(Collection<Long> expungedUids) {
-        for (final Long uid: expungedUids) {
-            final long uidValue = uid.longValue();
-            converter.expunge(uidValue);
-        }
+    public int remove(Long uid) {
+        final int result = msn(uid);
+        converter.expunge(uid);
+        return result;
     }
 
     public Collection<Long> flagUpdateUids() {

@@ -164,12 +164,11 @@ abstract public class AbstractMailboxProcessor extends AbstractChainedProcessor 
         final Collection<Long> expungedUids = selected.expungedUids();
         for (final Long uid: expungedUids) {
             final long uidValue = uid.longValue();
-            final int msn = selected.msn(uidValue);
+            final int msn = selected.remove(uidValue);
             // TODO: use factory
             ExpungeResponse response = new ExpungeResponse(msn);
             responder.respond(response);
         }
-        selected.expunged(expungedUids);
     }
 
     private void addFlagsResponses(final ImapSession session, final SelectedMailbox selected, 

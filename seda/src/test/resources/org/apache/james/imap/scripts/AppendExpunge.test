@@ -80,7 +80,7 @@ S: A109 OK STORE completed.
 
 C: A007 EXPUNGE
 S: \* 1 EXPUNGE
-S: \* 2 EXPUNGE
+S: \* 1 EXPUNGE
 S: \* \d+ RECENT
 S: A007 OK EXPUNGE completed.
 

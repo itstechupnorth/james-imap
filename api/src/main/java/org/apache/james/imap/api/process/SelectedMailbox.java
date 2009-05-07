@@ -60,7 +60,13 @@ public interface SelectedMailbox {
 
     public Collection<Long> expungedUids();
 
-    public void expunged(Collection<Long> expungedUids);
+    /**
+     * Removes the given UID.
+     * @param uid not null
+     * @return the message sequence number that the UID held before
+     * being expunged
+     */
+    public int remove(Long uid);
 
     public Collection<Long> flagUpdateUids();
 }
