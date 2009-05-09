@@ -37,9 +37,10 @@ public class MailboxMetaData implements Mailbox.MetaData {
     private final int messageCount;
     private final int unseenCount;
     private final Long firstUnseen;
+    private final boolean writeable;
     
     public MailboxMetaData(final long[] recent, final Flags premanentFlags, final long uidValidity, final long nextUid,
-            final int messageCount, final int unseenCount, final Long firstUnseen) {
+            final int messageCount, final int unseenCount, final Long firstUnseen, final boolean writeable) {
         super();
         if (recent == null) {
             recentCount = 0;
@@ -53,6 +54,7 @@ public class MailboxMetaData implements Mailbox.MetaData {
         this.messageCount = messageCount;
         this.unseenCount = unseenCount;
         this.firstUnseen = firstUnseen;
+        this.writeable = writeable;
     }
 
     /**
@@ -106,5 +108,9 @@ public class MailboxMetaData implements Mailbox.MetaData {
 
     public Long getFirstUnseen() {
         return firstUnseen;
+    }
+
+    public boolean isWriteable() {
+        return writeable;
     }
 }

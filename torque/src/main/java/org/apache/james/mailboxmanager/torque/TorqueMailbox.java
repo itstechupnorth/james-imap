@@ -834,6 +834,6 @@ public class TorqueMailbox implements Mailbox {
                 break;
         }
             
-        return new MailboxMetaData(recent, permanentFlags, uidValidity, uidNext, messageCount, unseenCount, firstUnseen);
+        return new MailboxMetaData(recent, permanentFlags, uidValidity, uidNext, messageCount, unseenCount, firstUnseen, isWriteable());
     }
 }

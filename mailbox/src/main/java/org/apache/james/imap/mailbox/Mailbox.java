@@ -180,5 +180,13 @@ public interface Mailbox {
          * @see FetchGroup#FIRST_UNSEEN
          */
         Long getFirstUnseen();
+        
+        /**
+         * Is this mailbox writable?
+         * @return true if read-write, 
+         * false if read only
+         */
+        boolean isWriteable();
+
     }
 }

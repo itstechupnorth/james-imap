@@ -41,6 +41,7 @@ import org.apache.james.imap.mailbox.MailboxManagerProvider;
 import org.apache.james.imap.mailbox.MailboxNotFoundException;
 import org.apache.james.imap.mailbox.MailboxSession;
 import org.apache.james.imap.mailbox.MessageResult;
+import org.apache.james.imap.mailbox.Mailbox.MetaData;
 import org.apache.james.imap.mailbox.util.FetchGroupImpl;
 import org.apache.james.imap.mailbox.util.MessageRangeImpl;
 import org.apache.james.imap.message.request.AbstractMailboxSelectionRequest;
@@ -93,7 +94,6 @@ abstract class AbstractSelectionProcessor extends AbstractMailboxProcessor {
     private void respond(String tag, ImapCommand command, ImapSession session,
             final Mailbox.MetaData metaData, Responder responder) throws MailboxException {
 
-        Mailbox mailbox = getSelectedMailbox(session);
         final SelectedMailbox selected = session.getSelected();
         
         flags(responder);
@@ -103,7 +103,7 @@ abstract class AbstractSelectionProcessor extends AbstractMailboxProcessor {
         unseen(responder, metaData, selected);
         permanentFlags(responder, metaData);
         uidNext(responder, metaData);
-        taggedOk(responder, tag, command, mailbox);
+        taggedOk(responder, tag, command, metaData);
     }
 
     private void uidNext(final Responder responder, final Mailbox.MetaData metaData)
@@ -115,8 +115,8 @@ abstract class AbstractSelectionProcessor extends AbstractMailboxProcessor {
     }
     
     private void taggedOk(final Responder responder, final String tag,
-            final ImapCommand command, final Mailbox mailbox) {
-        final boolean writeable = mailbox.isWriteable() && !openReadOnly;
+            final ImapCommand command, final MetaData metaData) {
+        final boolean writeable = metaData.isWriteable() && !openReadOnly;
         final ResponseCode code;
         if (writeable) {
             code = ResponseCode.readWrite();

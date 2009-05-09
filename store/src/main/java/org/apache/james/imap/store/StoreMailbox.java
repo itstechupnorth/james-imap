@@ -497,6 +497,6 @@ public abstract class StoreMailbox implements org.apache.james.imap.mailbox.Mail
                 break;
         }
             
-        return new MailboxMetaData(recent, permanentFlags, uidValidity, uidNext, messageCount, unseenCount, firstUnseen);
+        return new MailboxMetaData(recent, permanentFlags, uidValidity, uidNext, messageCount, unseenCount, firstUnseen, isWriteable());
     }
 }
