@@ -106,9 +106,19 @@ abstract class AbstractSelectionProcessor extends AbstractMailboxProcessor {
         uidValidity(responder, metaData);
         unseen(responder, mailbox, mailboxSession, selected);
         permanentFlags(responder, metaData);
+        uidNext(responder, mailboxSession, mailbox);
         taggedOk(responder, tag, command, mailbox);
     }
 
+    private void uidNext(final Responder responder,
+            final MailboxSession mailboxSession, final Mailbox mailbox)
+    throws MailboxException {
+        final long uid = mailbox.getUidNext(mailboxSession);
+        final StatusResponse untaggedOk = statusResponseFactory.untaggedOk(
+                HumanReadableTextKey.UNSEEN, ResponseCode.uidNext(uid));
+        responder.respond(untaggedOk);
+    }
+    
     private void taggedOk(final Responder responder, final String tag,
             final ImapCommand command, final Mailbox mailbox) {
         final boolean writeable = mailbox.isWriteable() && !openReadOnly;

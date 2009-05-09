@@ -25,6 +25,7 @@ S: \* 0 EXISTS
 S: \* 0 RECENT
 S: \* OK \[UIDVALIDITY \d+\]
 S: \* OK \[PERMANENTFLAGS \(\\Answered \\Deleted \\Draft \\Flagged \\Seen\)\]
+S: \* OK \[UIDNEXT 1\]
 S: 10 OK \[READ-WRITE\] SELECT completed.
 
 C: A003 APPEND selectappend {310}

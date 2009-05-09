@@ -49,6 +49,7 @@ S: \* \d+ RECENT
 S: \* OK \[UIDVALIDITY \d+\]
 S: \* OK \[UNSEEN \d+\]
 S: \* OK \[PERMANENTFLAGS \(\\Answered \\Deleted \\Draft \\Flagged \\Seen\)\]
+S: \* OK \[UIDNEXT 4\]
 S: a1 OK \[READ-WRITE\] SELECT completed.
 
 C: a1 FETCH 1:4 (FLAGS)

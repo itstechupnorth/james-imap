@@ -254,7 +254,7 @@ public interface StatusResponse extends ImapResponseMessage {
          *            positive non-zero integer
          * @return <code>ResponseCode</code>, not null
          */
-        public static final ResponseCode uidNext(int uid) {
+        public static final ResponseCode uidNext(long uid) {
             return new ResponseCode("UIDNEXT", uid);
         }
 

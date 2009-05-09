@@ -24,6 +24,7 @@ S: \* 0 EXISTS
 S: \* 0 RECENT
 S: \* OK \[UIDVALIDITY \d+\]
 S: \* OK \[PERMANENTFLAGS \(\\Answered \\Deleted \\Draft \\Flagged \\Seen\)\]
+S: \* OK \[UIDNEXT 1\]
 S: A3 OK \[READ-WRITE\] SELECT completed\.
 C: A4 APPEND testmailbox {318+}
 C: From: "Brian G. Hutton" <brian@example.org>

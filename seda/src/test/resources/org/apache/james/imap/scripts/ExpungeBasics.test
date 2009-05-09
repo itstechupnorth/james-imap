@@ -24,6 +24,7 @@ S: \* 0 EXISTS
 S: \* 0 RECENT
 S: \* OK \[UIDVALIDITY \d+\]
 S: \* OK \[PERMANENTFLAGS \(\\Answered \\Deleted \\Draft \\Flagged \\Seen\)\]
+S: \* OK \[UIDNEXT 1\]
 S: A3 OK \[READ-WRITE\] SELECT completed.
 C: A4 APPEND testmailbox {185+}
 C: From: Timothy Tayler <timothy@example.org>
@@ -684,6 +685,7 @@ S: \* 10 RECENT
 S: \* OK \[UIDVALIDITY \d+\]
 S: \* OK \[UNSEEN 1\](.)*
 S: \* OK \[PERMANENTFLAGS \(\\Answered \\Deleted \\Draft \\Flagged \\Seen\)\]
+S: \* OK \[UIDNEXT 11\]
 S: A14 OK \[READ-WRITE\] SELECT completed.
 C: A15 STORE 4  FLAGS (\DELETED)
 S: \* 4 FETCH \(FLAGS \(\\Deleted \\Recent\)\)
@@ -707,6 +709,7 @@ S: \* 7 RECENT
 S: \* OK \[UIDVALIDITY \d+\]
 S: \* OK \[UNSEEN 1\](.)*
 S: \* OK \[PERMANENTFLAGS \(\\Answered \\Deleted \\Draft \\Flagged \\Seen\)\]
+S: \* OK \[UIDNEXT 11\]
 S: A19 OK \[READ-WRITE\] SELECT completed.
 C: A20 DELETE testmailbox
 S: A20 OK DELETE completed.

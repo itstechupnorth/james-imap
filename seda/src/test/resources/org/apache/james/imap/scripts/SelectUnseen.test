@@ -28,6 +28,7 @@ S: \* 0 EXISTS
 S: \* 0 RECENT
 S: \* OK \[UIDVALIDITY \d+\]
 S: \* OK \[PERMANENTFLAGS \(\\Answered \\Deleted \\Draft \\Flagged \\Seen\)\]
+S: \* OK \[UIDNEXT 1\]
 S: 10 OK \[READ-WRITE\] SELECT completed.
 
 C: A003 APPEND selectappend {310}
@@ -70,6 +71,7 @@ S: \* 0 EXISTS
 S: \* 0 RECENT
 S: \* OK \[UIDVALIDITY \d+\]
 S: \* OK \[PERMANENTFLAGS \(\\Answered \\Deleted \\Draft \\Flagged \\Seen\)\]
+S: \* OK \[UIDNEXT 1\]
 S: 20 OK \[READ-WRITE\] SELECT completed.
 
 C: 21 SELECT selectappend
@@ -79,6 +81,7 @@ S: \* 0 RECENT
 S: \* OK \[UIDVALIDITY \d+\]
 S: \* OK \[UNSEEN 1\]
 S: \* OK \[PERMANENTFLAGS \(\\Answered \\Deleted \\Draft \\Flagged \\Seen\)\]
+S: \* OK \[UIDNEXT 3\]
 S: 21 OK \[READ-WRITE\] SELECT completed.
 
 C: 30 FETCH 1 BODY[]
@@ -101,6 +104,7 @@ S: \* 0 EXISTS
 S: \* 0 RECENT
 S: \* OK \[UIDVALIDITY \d+\]
 S: \* OK \[PERMANENTFLAGS \(\\Answered \\Deleted \\Draft \\Flagged \\Seen\)\]
+S: \* OK \[UIDNEXT 1\]
 S: 30 OK \[READ-WRITE\] SELECT completed.
 
 C: 40 SELECT selectappend
@@ -110,6 +114,7 @@ S: \* 0 RECENT
 S: \* OK \[UIDVALIDITY \d+\]
 S: \* OK \[UNSEEN 2\]
 S: \* OK \[PERMANENTFLAGS \(\\Answered \\Deleted \\Draft \\Flagged \\Seen\)\]
+S: \* OK \[UIDNEXT 3\]
 S: 40 OK \[READ-WRITE\] SELECT completed.
 
 C: a1 DELETE another

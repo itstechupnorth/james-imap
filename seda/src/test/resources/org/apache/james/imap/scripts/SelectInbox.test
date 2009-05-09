@@ -22,4 +22,5 @@ S: \* \d+ EXISTS
 S: \* \d+ RECENT
 S: \* OK \[UIDVALIDITY \d+\]
 S: \* OK \[PERMANENTFLAGS \(\\Answered \\Deleted \\Draft \\Flagged \\Seen\)\]
+S: \* OK \[UIDNEXT 1\]
 S: abcd OK \[READ-WRITE\] SELECT completed.

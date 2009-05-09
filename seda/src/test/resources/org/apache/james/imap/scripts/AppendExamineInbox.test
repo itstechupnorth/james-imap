@@ -50,6 +50,7 @@ S: \* 2 RECENT
 S: \* OK \[UIDVALIDITY \d+\]
 S: \* OK \[UNSEEN 1\]
 S: \* OK \[PERMANENTFLAGS \(\\Answered \\Deleted \\Draft \\Flagged \\Seen\)\]
+S: \* OK \[UIDNEXT 3\]
 S: abcd OK \[READ-ONLY\] EXAMINE completed.
 
 # Try again to ensure that no changes to flags were made.
@@ -60,6 +61,7 @@ S: \* 2 RECENT
 S: \* OK \[UIDVALIDITY \d+\]
 S: \* OK \[UNSEEN 1\]
 S: \* OK \[PERMANENTFLAGS \(\\Answered \\Deleted \\Draft \\Flagged \\Seen\)\]
+S: \* OK \[UIDNEXT 3\]
 S: abcd OK \[READ-ONLY\] EXAMINE completed.
 
 # Rename the INBOX - this copies all of the messages out

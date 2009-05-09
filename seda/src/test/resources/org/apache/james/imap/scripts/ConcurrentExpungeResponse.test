@@ -79,6 +79,7 @@ S: \* 4 RECENT
 S: \* OK \[UIDVALIDITY \d+\]
 S: \* OK \[UNSEEN 1\] Message 1 is the first unseen
 S: \* OK \[PERMANENTFLAGS \(\\Answered \\Deleted \\Draft \\Flagged \\Seen\)\]
+S: \* OK \[UIDNEXT 5\]
 S: 1e OK \[READ-WRITE\] SELECT completed
 
 SESSION: 2
@@ -89,6 +90,7 @@ S: \* 0 RECENT
 S: \* OK \[UIDVALIDITY \d+\]
 S: \* OK \[UNSEEN 1\] Message 1 is the first unseen
 S: \* OK \[PERMANENTFLAGS \(\\Answered \\Deleted \\Draft \\Flagged \\Seen\)\]
+S: \* OK \[UIDNEXT 5\]
 S: 2a OK \[READ-WRITE\] SELECT completed
 
 SESSION: 3
@@ -99,6 +101,7 @@ S: \* 0 RECENT
 S: \* OK \[UIDVALIDITY \d+\]
 S: \* OK \[UNSEEN 1\] Message 1 is the first unseen
 S: \* OK \[PERMANENTFLAGS \(\\Answered \\Deleted \\Draft \\Flagged \\Seen\)\]
+S: \* OK \[UIDNEXT 5\]
 S: 3a OK \[READ-WRITE\] SELECT completed
 
 # Do an expunge with session 1

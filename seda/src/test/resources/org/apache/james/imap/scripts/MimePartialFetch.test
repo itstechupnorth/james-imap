@@ -24,6 +24,7 @@ S: \* 0 EXISTS
 S: \* 0 RECENT
 S: \* OK \[UIDVALIDITY \d+\]
 S: \* OK \[PERMANENTFLAGS \(\\Answered \\Deleted \\Draft \\Flagged \\Seen\)\]
+S: \* OK \[UIDNEXT 1\]
 S: A3 OK \[READ-WRITE\] SELECT completed\.
 C: A4 APPEND testmailbox {1767+}
 C: From: Timothy Tayler <timothy@example.org>
@@ -127,6 +128,7 @@ S: \* 1 RECENT
 S: \* OK \[UIDVALIDITY \d+\]
 S: \* OK \[UNSEEN 1\](.)*
 S: \* OK \[PERMANENTFLAGS \(\\Answered \\Deleted \\Draft \\Flagged \\Seen\)\]
+S: \* OK \[UIDNEXT 2\]
 S: A5 OK \[READ-WRITE\] SELECT completed\.
 C: A6 FETCH 1 (BODY[4.1.MIME]<0.0>)
 S: A6 BAD FETCH failed. Illegal arguments.
