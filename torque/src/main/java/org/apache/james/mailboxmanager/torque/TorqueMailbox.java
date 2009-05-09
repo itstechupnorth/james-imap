@@ -807,4 +807,14 @@ public class TorqueMailbox implements Mailbox {
         tracker.reportRenamed(mailboxRow.getName());
         this.mailboxRow = mailboxRow;
     }
+
+    /**
+     * @see {@link Mailbox#getMetaData(boolean, MailboxSession)}
+     */
+    public MetaData getMetaData(boolean resetRecent, MailboxSession mailboxSession) throws MailboxException {
+        final long[] recent = recent(resetRecent, mailboxSession);
+        final Flags permanentFlags = getPermanentFlags();
+        final long uidValidity = getUidValidity(mailboxSession);
+        return new MailboxMetaData(recent, permanentFlags, uidValidity);
+    }
 }

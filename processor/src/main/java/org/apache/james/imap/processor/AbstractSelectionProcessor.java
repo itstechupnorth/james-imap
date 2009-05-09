@@ -80,8 +80,8 @@ abstract class AbstractSelectionProcessor extends AbstractMailboxProcessor {
         final String mailboxName = request.getMailboxName();
         try {
             final String fullMailboxName = buildFullName(session, mailboxName);
-            selectMailbox(fullMailboxName, session);
-            respond(tag, command, session, responder);
+            final Mailbox.MetaData metaData = selectMailbox(fullMailboxName, session);
+            respond(tag, command, session, metaData, responder);
         } catch (MailboxNotFoundException e) {
             responder.respond(statusResponseFactory.taggedNo(tag, command,
                     HumanReadableTextKey.FAILURE_NO_SUCH_MAILBOX));
@@ -91,7 +91,7 @@ abstract class AbstractSelectionProcessor extends AbstractMailboxProcessor {
     }
 
     private void respond(String tag, ImapCommand command, ImapSession session,
-            Responder responder) throws MailboxException {
+            final Mailbox.MetaData metaData, Responder responder) throws MailboxException {
 
         Mailbox mailbox = getSelectedMailbox(session);
         final MailboxSession mailboxSession = ImapSessionUtils
@@ -103,9 +103,9 @@ abstract class AbstractSelectionProcessor extends AbstractMailboxProcessor {
         flags(responder);
         exists(responder, mailbox, mailboxSession);
         recent(responder, selected);
-        uidValidity(responder, mailbox, mailboxSession);
+        uidValidity(responder, metaData);
         unseen(responder, mailbox, mailboxSession, selected);
-        permanentFlags(responder, mailbox);
+        permanentFlags(responder, metaData);
         taggedOk(responder, tag, command, mailbox);
     }
 
@@ -127,8 +127,8 @@ abstract class AbstractSelectionProcessor extends AbstractMailboxProcessor {
         responder.respond(standardFlags);
     }
 
-    private void permanentFlags(Responder responder, Mailbox mailbox) {
-        final Flags permanentFlags = mailbox.getPermanentFlags();
+    private void permanentFlags(Responder responder, Mailbox.MetaData metaData) {
+        final Flags permanentFlags = metaData.getPermanentFlags();
         final StatusResponse untaggedOk = statusResponseFactory.untaggedOk(
                 HumanReadableTextKey.PERMANENT_FLAGS, ResponseCode
                         .permanentFlags(permanentFlags));
@@ -149,9 +149,8 @@ abstract class AbstractSelectionProcessor extends AbstractMailboxProcessor {
 
     }
 
-    private void uidValidity(Responder responder, Mailbox mailbox,
-            final MailboxSession mailboxSession) throws MailboxException {
-        final long uidValidity = mailbox.getUidValidity(mailboxSession);
+    private void uidValidity(Responder responder, Mailbox.MetaData metaData) throws MailboxException {
+        final long uidValidity = metaData.getUidValidity();
         final StatusResponse untaggedOk = statusResponseFactory.untaggedOk(
                 HumanReadableTextKey.UID_VALIDITY, ResponseCode
                         .uidValidity(uidValidity));
@@ -171,7 +170,7 @@ abstract class AbstractSelectionProcessor extends AbstractMailboxProcessor {
         responder.respond(existsResponse);
     }
 
-    private void selectMailbox(String mailboxName, ImapSession session)
+    private Mailbox.MetaData  selectMailbox(String mailboxName, ImapSession session)
             throws MailboxException {
         final MailboxManager mailboxManager = getMailboxManager();
         final MailboxSession mailboxSession = ImapSessionUtils.getMailboxSession(session);
@@ -186,7 +185,9 @@ abstract class AbstractSelectionProcessor extends AbstractMailboxProcessor {
         } else {
             sessionMailbox = currentMailbox;
         }
-        addRecent(mailbox, mailboxSession, sessionMailbox);
+        final Mailbox.MetaData metaData = mailbox.getMetaData(!openReadOnly, mailboxSession);
+        addRecent(metaData, sessionMailbox);
+        return metaData;
     }
 
     private SelectedMailbox createNewSelectedMailbox(final Mailbox mailbox,
@@ -206,13 +207,14 @@ abstract class AbstractSelectionProcessor extends AbstractMailboxProcessor {
         return sessionMailbox;
     }
 
-    private void addRecent(final Mailbox mailbox,
-            final MailboxSession mailboxSession,
+    private void addRecent(final Mailbox.MetaData metaData,
             SelectedMailbox sessionMailbox) throws MailboxException {
-        final long[] recentUids = mailbox.recent(!openReadOnly, mailboxSession);
-        for (int i = 0; i < recentUids.length; i++) {
-            long uid = recentUids[i];
-            sessionMailbox.addRecent(uid);
+        final long[] recentUids = metaData.getRecent();
+        if (recentUids != null) {
+            for (int i = 0; i < recentUids.length; i++) {
+                long uid = recentUids[i];
+                sessionMailbox.addRecent(uid);
+            }
         }
     }
 }

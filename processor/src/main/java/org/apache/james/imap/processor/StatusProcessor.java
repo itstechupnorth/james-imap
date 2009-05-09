@@ -67,14 +67,13 @@ public class StatusProcessor extends AbstractMailboxProcessor {
 
             final MailboxManager mailboxManager = getMailboxManager();
             final Mailbox mailbox = mailboxManager.getMailbox(fullMailboxName, ImapSessionUtils.getMailboxSession(session));
-
-            final Long messages = messages(statusDataItems, mailboxSession,
-                    mailbox);
-            final Long recent = recent(statusDataItems, mailboxSession, mailbox);
+            final Mailbox.MetaData metaData = mailbox.getMetaData(false, mailboxSession);
+            
+            final Long messages = messages(statusDataItems, mailboxSession, mailbox);
+            final Long recent = recent(statusDataItems, metaData, mailbox);
             final Long uidNext = uidNext(statusDataItems, mailboxSession,
                     mailbox);
-            final Long uidValidity = uidValidity(statusDataItems,
-                    mailboxSession, mailbox);
+            final Long uidValidity = uidValidity(statusDataItems, metaData);
             final Long unseen = unseen(statusDataItems, mailboxSession, mailbox);
 
             final MailboxStatusResponse response = new MailboxStatusResponse(messages,
@@ -102,12 +101,10 @@ public class StatusProcessor extends AbstractMailboxProcessor {
     }
 
     private Long uidValidity(final StatusDataItems statusDataItems,
-            final MailboxSession mailboxSession, final Mailbox mailbox)
-            throws MailboxException {
+            final Mailbox.MetaData metaData) throws MailboxException {
         final Long uidValidity;
         if (statusDataItems.isUidValidity()) {
-            final long uidValidityValue = mailbox
-                    .getUidValidity(mailboxSession);
+            final long uidValidityValue = metaData.getUidValidity();
             uidValidity = new Long(uidValidityValue);
         } else {
             uidValidity = null;
@@ -129,11 +126,11 @@ public class StatusProcessor extends AbstractMailboxProcessor {
     }
 
     private Long recent(final StatusDataItems statusDataItems,
-            final MailboxSession mailboxSession, final Mailbox mailbox)
+            final Mailbox.MetaData metaData, final Mailbox mailbox)
             throws MailboxException {
         final Long recent;
         if (statusDataItems.isRecent()) {
-            final int recentCount = mailbox.recent(false, mailboxSession).length;
+            final int recentCount = metaData.countRecent();
             recent = new Long(recentCount);
         } else {
             recent = null;

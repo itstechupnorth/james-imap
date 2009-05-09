@@ -47,9 +47,6 @@ public interface Mailbox {
      */
     Iterator<Long> search(SearchQuery searchQuery, MailboxSession mailboxSession) throws MailboxException;
 
-    long getUidValidity(MailboxSession mailboxSession)
-            throws MailboxException;
-
     /**
      * 
      * @param mailboxSession not null
@@ -58,13 +55,6 @@ public interface Mailbox {
      */
 
     long getUidNext(MailboxSession mailboxSession) throws MailboxException;
-
-    /**
-     * @return Flags that can be stored
-     */
-    Flags getPermanentFlags();
-
-    long[] recent(boolean reset, MailboxSession mailboxSession) throws MailboxException;
 
     int getUnseenCount(MailboxSession mailboxSession) throws MailboxException;
 
@@ -126,4 +116,48 @@ public interface Mailbox {
      * @throws MailboxException
      */
     Iterator<MessageResult> getMessages(MessageRange set, FetchGroup fetchGroup, MailboxSession mailboxSession) throws MailboxException;
+    
+    /**
+     * Gets current meta data for the mailbox.
+     * Consolidates common calls together to allow improved performance.
+     * The meta-data returned should be immutable and represent the current state
+     * of the mailbox.
+     * @param resetRecent true when recent flags should be reset,
+     * false otherwise
+     * @param mailboxSession context, not null
+     * @return meta data, not null
+     * @throws MailboxException
+     */
+    MetaData getMetaData(boolean resetRecent, MailboxSession mailboxSession) throws MailboxException;
+    
+    /**
+     * Meta data about the current state of the mailbox.
+     */
+    public interface MetaData {
+        
+        /**
+         * Gets the UIDs of recent messages. 
+         * @return the uids flagged RECENT in this mailbox, 
+         * or null when there are no recent uids
+         */
+        public long[] getRecent();
+
+        /**
+         * Gets the number of recent messages.
+         * @return the number of messages flagged RECENT in this mailbox
+         */
+        public int countRecent();
+        
+        /**
+         * Gets the flags which can be stored by this mailbox.
+         * @return Flags that can be stored
+         */
+        Flags getPermanentFlags();
+        
+        /**
+         * Gets the UIDVALIDITY.
+         * @return UIDVALIDITY
+         */
+        long getUidValidity();
+    }
 }

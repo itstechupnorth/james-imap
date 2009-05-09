@@ -469,4 +469,14 @@ public abstract class StoreMailbox implements org.apache.james.imap.mailbox.Mail
     public void reportRenamed(String to) {
         tracker.reportRenamed(to);
     }
+    
+    /**
+     * @see {@link Mailbox#getMetaData(boolean, MailboxSession)}
+     */
+    public MetaData getMetaData(boolean resetRecent, MailboxSession mailboxSession) throws MailboxException {
+        final long[] recent = recent(resetRecent, mailboxSession);
+        final Flags permanentFlags = getPermanentFlags();
+        final long uidValidity = getUidValidity(mailboxSession);
+        return new MailboxMetaData(recent, permanentFlags, uidValidity);
+    }
 }
