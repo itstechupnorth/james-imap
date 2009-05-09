@@ -94,17 +94,13 @@ abstract class AbstractSelectionProcessor extends AbstractMailboxProcessor {
             final Mailbox.MetaData metaData, Responder responder) throws MailboxException {
 
         Mailbox mailbox = getSelectedMailbox(session);
-        final MailboxSession mailboxSession = ImapSessionUtils
-                .getMailboxSession(session);
         final SelectedMailbox selected = session.getSelected();
-
-        // TODO: compact this into a single API call for meta-data about the
-        // repository
+        
         flags(responder);
         exists(responder, metaData);
         recent(responder, selected);
         uidValidity(responder, metaData);
-        unseen(responder, mailbox, mailboxSession, selected);
+        unseen(responder, metaData, selected);
         permanentFlags(responder, metaData);
         uidNext(responder, metaData);
         taggedOk(responder, tag, command, mailbox);
@@ -144,10 +140,9 @@ abstract class AbstractSelectionProcessor extends AbstractMailboxProcessor {
         responder.respond(untaggedOk);
     }
 
-    private void unseen(Responder responder, Mailbox mailbox,
-            final MailboxSession mailboxSession,
+    private void unseen(Responder responder, Mailbox.MetaData metaData,
             final SelectedMailbox selected) throws MailboxException {
-        final Long firstUnseen = mailbox.getFirstUnseen(mailboxSession);
+        final Long firstUnseen = metaData.getFirstUnseen();
         if (firstUnseen != null) {
             final long unseenUid = firstUnseen;
             int msn = selected.msn(unseenUid);
@@ -193,7 +188,7 @@ abstract class AbstractSelectionProcessor extends AbstractMailboxProcessor {
         } else {
             sessionMailbox = currentMailbox;
         }
-        final Mailbox.MetaData metaData = mailbox.getMetaData(!openReadOnly, mailboxSession);
+        final Mailbox.MetaData metaData = mailbox.getMetaData(!openReadOnly, mailboxSession, Mailbox.MetaData.FetchGroup.FIRST_UNSEEN);
         addRecent(metaData, sessionMailbox);
         return metaData;
     }

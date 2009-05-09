@@ -809,14 +809,31 @@ public class TorqueMailbox implements Mailbox {
     }
 
     /**
-     * @see {@link Mailbox#getMetaData(boolean, MailboxSession)}
+     * @see {@link Mailbox#getMetaData(boolean, MailboxSession, FetchGroup)}
      */
-    public MetaData getMetaData(boolean resetRecent, MailboxSession mailboxSession) throws MailboxException {
+    public MetaData getMetaData(boolean resetRecent, MailboxSession mailboxSession, Mailbox.MetaData.FetchGroup fetchGroup) throws MailboxException {
         final long[] recent = recent(resetRecent, mailboxSession);
         final Flags permanentFlags = getPermanentFlags();
         final long uidValidity = getUidValidity(mailboxSession);
         final long uidNext = getUidNext(mailboxSession);
         final int messageCount = getMessageCount(mailboxSession);
-        return new MailboxMetaData(recent, permanentFlags, uidValidity, uidNext, messageCount);
+        final int unseenCount;
+        final Long firstUnseen;
+        switch (fetchGroup) {
+            case UNSEEN_COUNT:
+                unseenCount = getUnseenCount(mailboxSession);
+                firstUnseen = null;
+                break;
+            case FIRST_UNSEEN:
+                firstUnseen = getFirstUnseen(mailboxSession);
+                unseenCount = 0;
+                break;
+            default:
+                firstUnseen = null;
+                unseenCount = 0;
+                break;
+        }
+            
+        return new MailboxMetaData(recent, permanentFlags, uidValidity, uidNext, messageCount, unseenCount, firstUnseen);
     }
 }

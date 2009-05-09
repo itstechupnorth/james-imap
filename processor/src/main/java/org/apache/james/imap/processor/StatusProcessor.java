@@ -67,13 +67,19 @@ public class StatusProcessor extends AbstractMailboxProcessor {
 
             final MailboxManager mailboxManager = getMailboxManager();
             final Mailbox mailbox = mailboxManager.getMailbox(fullMailboxName, ImapSessionUtils.getMailboxSession(session));
-            final Mailbox.MetaData metaData = mailbox.getMetaData(false, mailboxSession);
+            final Mailbox.MetaData.FetchGroup fetchGroup;
+            if (statusDataItems.isUnseen()) {
+                fetchGroup = Mailbox.MetaData.FetchGroup.UNSEEN_COUNT;
+            } else {
+                fetchGroup = Mailbox.MetaData.FetchGroup.NO_UNSEEN;
+            }
+            final Mailbox.MetaData metaData = mailbox.getMetaData(false, mailboxSession, fetchGroup);
             
             final Long messages = messages(statusDataItems, metaData);
             final Long recent = recent(statusDataItems, metaData);
             final Long uidNext = uidNext(statusDataItems, metaData);
             final Long uidValidity = uidValidity(statusDataItems, metaData);
-            final Long unseen = unseen(statusDataItems, mailboxSession, mailbox);
+            final Long unseen = unseen(statusDataItems, metaData);
 
             final MailboxStatusResponse response = new MailboxStatusResponse(messages,
                     recent, uidNext, uidValidity, unseen, mailboxName);
@@ -87,11 +93,11 @@ public class StatusProcessor extends AbstractMailboxProcessor {
     }
 
     private Long unseen(final StatusDataItems statusDataItems,
-            final MailboxSession mailboxSession, final Mailbox mailbox)
+            final Mailbox.MetaData metaData)
             throws MailboxException {
         final Long unseen;
         if (statusDataItems.isUnseen()) {
-            final int unseenCountValue = mailbox.getUnseenCount(mailboxSession);
+            final int unseenCountValue = metaData.getUnseenCount();
             unseen = new Long(unseenCountValue);
         } else {
             unseen = null;

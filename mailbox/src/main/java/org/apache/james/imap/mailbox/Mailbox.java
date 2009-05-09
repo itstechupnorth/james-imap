@@ -47,17 +47,6 @@ public interface Mailbox {
      */
     Iterator<Long> search(SearchQuery searchQuery, MailboxSession mailboxSession) throws MailboxException;
 
-    int getUnseenCount(MailboxSession mailboxSession) throws MailboxException;
-
-    /**
-     * Gets the UID of the first unseen message.
-     * @param mailboxSession not null
-     * @return uid of the first unseen message,
-     * or null when there are no unseen messages
-     * @throws MailboxException 
-     */
-    Long getFirstUnseen(MailboxSession mailboxSession) throws MailboxException;
-
     /**
      * Expunges messages in the given range from this mailbox.
      * @param set not null
@@ -106,7 +95,8 @@ public interface Mailbox {
      * @return MessageResult with the fields defined by FetchGroup
      * @throws MailboxException
      */
-    Iterator<MessageResult> getMessages(MessageRange set, FetchGroup fetchGroup, MailboxSession mailboxSession) throws MailboxException;
+    Iterator<MessageResult> getMessages(MessageRange set, FetchGroup fetchGroup, 
+            MailboxSession mailboxSession) throws MailboxException;
     
     /**
      * Gets current meta data for the mailbox.
@@ -116,15 +106,23 @@ public interface Mailbox {
      * @param resetRecent true when recent flags should be reset,
      * false otherwise
      * @param mailboxSession context, not null
+     * @param fetchGroup describes which optional data should be returned
      * @return meta data, not null
      * @throws MailboxException
      */
-    MetaData getMetaData(boolean resetRecent, MailboxSession mailboxSession) throws MailboxException;
+    MetaData getMetaData(boolean resetRecent, MailboxSession mailboxSession, Mailbox.MetaData.FetchGroup fetchGroup) throws MailboxException;
     
     /**
      * Meta data about the current state of the mailbox.
      */
     public interface MetaData {
+        
+        /**
+         * Describes the optional data types.
+         */
+        public enum FetchGroup {
+            NO_UNSEEN, UNSEEN_COUNT, FIRST_UNSEEN
+        };
         
         /**
          * Gets the UIDs of recent messages. 
@@ -156,7 +154,6 @@ public interface Mailbox {
          * Gets the next UID predicted.
          * @param mailboxSession not null
          * @return the uid that will be assigned to the next appended message
-         * @throws MailboxException
          */
         long getUidNext();
         
@@ -165,5 +162,23 @@ public interface Mailbox {
          * @return number of messages contained
          */
         int getMessageCount();
+        
+        /**
+         * Gets the number of unseen messages contained in this mailbox.
+         * This is an optional property.
+         * @return number of unseen messages contained 
+         * or zero when this optional data has not been requested
+         * @see FetchGroup#UNSEEN_COUNT
+         */
+        int getUnseenCount();
+        
+        /**
+         * Gets the UID of the first unseen message.
+         * This is an optional property.
+         * @return uid of the first unseen message,
+         * or null when there are no unseen messages
+         * @see FetchGroup#FIRST_UNSEEN
+         */
+        Long getFirstUnseen();
     }
 }
