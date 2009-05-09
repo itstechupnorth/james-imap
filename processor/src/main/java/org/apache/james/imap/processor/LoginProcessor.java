@@ -68,12 +68,12 @@ public class LoginProcessor extends AbstractMailboxProcessor {
                         ImapSessionUtils.MAILBOX_SESSION_ATTRIBUTE_SESSION_KEY,
                         mailboxSession);
                 final String inboxName = buildFullName(session, MailboxManager.INBOX);
-                if (mailboxManager.mailboxExists(inboxName)) {
+                if (mailboxManager.mailboxExists(inboxName, mailboxSession)) {
                     session.getLog().debug("INBOX exists. No need to create it.");
                 } else {
                     try {
                         session.getLog().debug("INBOX does not exist. Creating it.");
-                        mailboxManager.createMailbox(inboxName);
+                        mailboxManager.createMailbox(inboxName, mailboxSession);
                     } catch (MailboxExistsException e) {
                         session.getLog().debug("Mailbox created by concurrent call. Safe to ignore this exception.");
                     }

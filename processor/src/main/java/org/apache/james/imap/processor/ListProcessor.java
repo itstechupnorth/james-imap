@@ -194,7 +194,7 @@ public class ListProcessor extends AbstractMailboxProcessor {
             String pattern) throws MailboxException {
         final MailboxManager mailboxManager = getMailboxManager();
         final List<MailboxMetaData> results = mailboxManager.search(new MailboxQuery(
-                base, pattern, '*', '%'));
+                base, pattern, '*', '%'), ImapSessionUtils.getMailboxSession(session));
         return results;
     }
 }

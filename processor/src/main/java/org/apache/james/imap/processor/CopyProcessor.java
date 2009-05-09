@@ -58,10 +58,11 @@ public class CopyProcessor extends AbstractMailboxProcessor {
         final boolean useUids = request.isUseUids();
         final SelectedMailbox currentMailbox = session.getSelected();
         try {
+            final MailboxSession mailboxSession = ImapSessionUtils.getMailboxSession(session);
             final String fullMailboxName = buildFullName(session, mailboxName);
             final MailboxManager mailboxManager = getMailboxManager();
             final boolean mailboxExists = mailboxManager
-                    .mailboxExists(fullMailboxName);
+                    .mailboxExists(fullMailboxName, mailboxSession);
             if (!mailboxExists) {
                 no(command, tag, responder,
                         HumanReadableTextKey.FAILURE_NO_SUCH_MAILBOX,
@@ -81,8 +82,6 @@ public class CopyProcessor extends AbstractMailboxProcessor {
                     }
                     MessageRange messageSet = MessageRangeImpl.uidRange(lowVal,
                             highVal);
-                    final MailboxSession mailboxSession = ImapSessionUtils
-                            .getMailboxSession(session);
                     mailboxManager.copyMessages(messageSet, currentMailbox
                             .getName(), fullMailboxName, mailboxSession);
                 }

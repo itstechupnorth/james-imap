@@ -69,7 +69,7 @@ public abstract class StoreMailboxManager extends AbstractLogEnabled implements 
     
     protected abstract void doCreate(String namespaceName) throws MailboxException;
     
-    public org.apache.james.imap.mailbox.Mailbox getMailbox(String mailboxName)
+    public org.apache.james.imap.mailbox.Mailbox getMailbox(String mailboxName, MailboxSession session)
     throws MailboxException {
         return doGetMailbox(mailboxName);
     }
@@ -96,14 +96,14 @@ public abstract class StoreMailboxManager extends AbstractLogEnabled implements 
         }
     }
 
-    public void createMailbox(String namespaceName)
+    public void createMailbox(String namespaceName, MailboxSession mailboxSession)
     throws MailboxException {
         getLog().debug("createMailbox " + namespaceName);
         final int length = namespaceName.length();
         if (length == 0) {
             getLog().warn("Ignoring mailbox with empty name");
         } else if (namespaceName.charAt(length - 1) == HIERARCHY_DELIMITER) {
-            createMailbox(namespaceName.substring(0, length - 1));
+            createMailbox(namespaceName.substring(0, length - 1), mailboxSession);
         } else {
             synchronized (mailboxes) {
                 // Create root first
@@ -119,13 +119,13 @@ public abstract class StoreMailboxManager extends AbstractLogEnabled implements 
                     if (index > 0 && count++ > 1) {
                         final String mailbox = namespaceName
                         .substring(0, index);
-                        if (!mailboxExists(mailbox)) {
+                        if (!mailboxExists(mailbox, mailboxSession)) {
                             doCreate(mailbox);
                         }
                     }
                     index = namespaceName.indexOf(HIERARCHY_DELIMITER, ++index);
                 }
-                if (mailboxExists(namespaceName)) {
+                if (mailboxExists(namespaceName, mailboxSession)) {
                     throw new MailboxExistsException(namespaceName); 
                 } else {
                     doCreate(namespaceName);
@@ -154,12 +154,12 @@ public abstract class StoreMailboxManager extends AbstractLogEnabled implements 
         }
     }
 
-    public void renameMailbox(String from, String to)
+    public void renameMailbox(String from, String to, MailboxSession session)
     throws MailboxException {
         final Log log = getLog();
         if (log.isDebugEnabled()) log.debug("renameMailbox " + from + " to " + to);
         synchronized (mailboxes) {
-            if (mailboxExists(to)) {
+            if (mailboxExists(to, session)) {
                 throw new MailboxExistsException(to);
             }
 
@@ -213,7 +213,7 @@ public abstract class StoreMailboxManager extends AbstractLogEnabled implements 
         fromMailbox.copyTo(set, toMailbox, session);
     }
 
-    public List<MailboxMetaData> search(final MailboxQuery mailboxExpression)
+    public List<MailboxMetaData> search(final MailboxQuery mailboxExpression, MailboxSession session)
     throws MailboxException {
         final char localWildcard = mailboxExpression.getLocalWildcard();
         final char freeWildcard = mailboxExpression.getFreeWildcard();
@@ -263,7 +263,7 @@ public abstract class StoreMailboxManager extends AbstractLogEnabled implements 
         return mapper.hasChildren(name, HIERARCHY_DELIMITER);
     }
 
-    public boolean mailboxExists(String mailboxName) throws MailboxException {
+    public boolean mailboxExists(String mailboxName, MailboxSession session) throws MailboxException {
         synchronized (mailboxes) {
             final MailboxMapper mapper = createMailboxMapper();
             final long count = mapper.countMailboxesWithName(mailboxName);

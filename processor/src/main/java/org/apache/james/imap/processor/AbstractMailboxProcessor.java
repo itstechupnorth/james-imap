@@ -217,7 +217,7 @@ abstract public class AbstractMailboxProcessor extends AbstractChainedProcessor 
     private Mailbox getMailbox(final ImapSession session, final SelectedMailbox selected) throws MailboxException {
         final String fullMailboxName = buildFullName(session, selected.getName());
         final MailboxManager mailboxManager = getMailboxManager();
-        final Mailbox mailbox = mailboxManager.getMailbox(fullMailboxName);
+        final Mailbox mailbox = mailboxManager.getMailbox(fullMailboxName, ImapSessionUtils.getMailboxSession(session));
         return mailbox;
     }
 
@@ -314,7 +314,7 @@ abstract public class AbstractMailboxProcessor extends AbstractChainedProcessor 
         } else {
             final String mailboxName = selectedMailbox.getName();
             final MailboxManager mailboxManager = getMailboxManager();
-            result = mailboxManager.getMailbox(mailboxName);
+            result = mailboxManager.getMailbox(mailboxName, ImapSessionUtils.getMailboxSession(session));
         }
         return result;
     }

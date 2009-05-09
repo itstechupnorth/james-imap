@@ -192,8 +192,8 @@ public class SearchProcessorTest extends MockObjectTestCase {
         checking(new Expectations() {{
             atMost(1).of(mailboxManagerProvider).getMailboxManager();will(returnValue(mailboxManager));
             atMost(1).of(mailboxManager).resolve(with(equal("user")), with(equal("name")));will(returnValue("user"));
-            atMost(1).of(mailboxManager).getMailbox(with(equal("user")));will(returnValue(mailbox));
-            atMost(1).of(mailboxManager).getMailbox(with(equal("MailboxName")));will(returnValue(mailbox));
+            atMost(1).of(mailboxManager).getMailbox(with(equal("user")),  with(same(mailboxSession)));will(returnValue(mailbox));
+            atMost(1).of(mailboxManager).getMailbox(with(equal("MailboxName")), with(same(mailboxSession)));will(returnValue(mailbox));
             allowing(session).getSelected();will(returnValue(selectedMailbox));
             atMost(1).of(selectedMailbox).isRecentUidRemoved();will(returnValue(false));
             atLeast(1).of(selectedMailbox).isSizeChanged();will(returnValue(false));

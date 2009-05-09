@@ -74,7 +74,7 @@ public class TorqueMailboxManager implements MailboxManager {
         this.userManager = userManager;
     }
 
-    public Mailbox getMailbox(String mailboxName)
+    public Mailbox getMailbox(String mailboxName, MailboxSession session)
             throws MailboxException {
         return doGetMailbox(mailboxName);
     }
@@ -107,14 +107,14 @@ public class TorqueMailboxManager implements MailboxManager {
         }
     }
 
-    public void createMailbox(String namespaceName)
+    public void createMailbox(String namespaceName, MailboxSession mailboxSession)
             throws MailboxException {
         getLog().debug("createMailbox " + namespaceName);
         final int length = namespaceName.length();
         if (length == 0) {
             getLog().warn("Ignoring mailbox with empty name");
         } else if (namespaceName.charAt(length - 1) == HIERARCHY_DELIMITER) {
-            createMailbox(namespaceName.substring(0, length - 1));
+            createMailbox(namespaceName.substring(0, length - 1), mailboxSession);
         } else {
             synchronized (mailboxes) {
                 // Create root first
@@ -130,13 +130,13 @@ public class TorqueMailboxManager implements MailboxManager {
                     if (index > 0 && count++ > 1) {
                         final String mailbox = namespaceName
                                 .substring(0, index);
-                        if (!mailboxExists(mailbox)) {
+                        if (!mailboxExists(mailbox, mailboxSession)) {
                             doCreate(mailbox);
                         }
                     }
                     index = namespaceName.indexOf(HIERARCHY_DELIMITER, ++index);
                 }
-                if (mailboxExists(namespaceName)) {
+                if (mailboxExists(namespaceName, mailboxSession)) {
                     throw new MailboxExistsException(namespaceName); 
                 } else {
                     doCreate(namespaceName);
@@ -179,12 +179,12 @@ public class TorqueMailboxManager implements MailboxManager {
         }
     }
 
-    public void renameMailbox(String from, String to)
+    public void renameMailbox(String from, String to, MailboxSession session)
             throws MailboxException {
         getLog().debug("renameMailbox " + from + " to " + to);
         try {
             synchronized (mailboxes) {
-                if (mailboxExists(to)) {
+                if (mailboxExists(to, session)) {
                     throw new MailboxExistsException(to);
                 }
                 // TODO put this into a serilizable transaction
@@ -238,7 +238,7 @@ public class TorqueMailboxManager implements MailboxManager {
         fromMailbox.copyTo(set, toMailbox, session);
     }
 
-    public List<MailboxMetaData> search(final MailboxQuery mailboxExpression)
+    public List<MailboxMetaData> search(final MailboxQuery mailboxExpression, MailboxSession session)
             throws MailboxException {
         final char localWildcard = mailboxExpression.getLocalWildcard();
         final char freeWildcard = mailboxExpression.getFreeWildcard();
@@ -296,7 +296,7 @@ public class TorqueMailboxManager implements MailboxManager {
         return !mailboxes.isEmpty();
     }
     
-    public boolean mailboxExists(String mailboxName)
+    public boolean mailboxExists(String mailboxName, MailboxSession session)
             throws MailboxException {
         Criteria c = new Criteria();
         c.add(MailboxRowPeer.NAME, mailboxName);

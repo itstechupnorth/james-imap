@@ -80,13 +80,14 @@ public interface MailboxManager {
      * 
      * @param mailboxName
      *            the name of the mailbox, not null
+     * @param session the context for this call, not null
      * @return <code>ImapMailboxSession</code>, not null
      * @throws MailboxException
      *             when the mailbox cannot be opened
      * @throws MailboxNotFoundException
      *             when the given mailbox does not exist
      */
-    Mailbox getMailbox(String mailboxName) throws MailboxException;
+    Mailbox getMailbox(String mailboxName, MailboxSession session) throws MailboxException;
 
     /**
      * Creates a new mailbox. Any intermediary mailboxes missing from the
@@ -94,9 +95,10 @@ public interface MailboxManager {
      * 
      * @param mailboxName
      *            name, not null
+     * @param mailboxSession the context for this call, not null
      * @throws MailboxException
      */
-    void createMailbox(String mailboxName) throws MailboxException;
+    void createMailbox(String mailboxName, MailboxSession mailboxSession) throws MailboxException;
 
     void deleteMailbox(String mailboxName, MailboxSession session) throws MailboxException;
 
@@ -107,13 +109,14 @@ public interface MailboxManager {
      *            original name for the mailbox
      * @param to
      *            new name for the mailbox
+     * @param session the context for this call, not nul
      * @throws MailboxException
      * @throws MailboxExistsException
      *             when the <code>to</code> mailbox exists
      * @throws MailboxNotFound
      *             when the <code>from</code> mailbox does not exist
      */
-    void renameMailbox(String from, String to) throws MailboxException;
+    void renameMailbox(String from, String to, MailboxSession session) throws MailboxException;
 
     /**
      * this is done by the MailboxRepository because maybe this operation could
@@ -134,11 +137,19 @@ public interface MailboxManager {
     /**
      * Searches for mailboxes matching the given query.
      * @param expression not null
+     * @param session the context for this call, not null
      * @throws MailboxException
      */
-    List<MailboxMetaData> search(MailboxQuery expression) throws MailboxException;
+    List<MailboxMetaData> search(MailboxQuery expression, MailboxSession session) throws MailboxException;
 
-    boolean mailboxExists(String mailboxName) throws MailboxException;
+    /**
+     * Does the given mailbox exist?
+     * @param mailboxName not null
+     * @param session the context for this call, not null
+     * @return true when the mailbox exists and is accessible for the given user, false otherwise
+     * @throws MailboxException
+     */
+    boolean mailboxExists(String mailboxName, MailboxSession session) throws MailboxException;
 
     /**
      * Creates a new session.

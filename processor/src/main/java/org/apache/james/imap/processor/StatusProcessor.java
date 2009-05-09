@@ -66,7 +66,7 @@ public class StatusProcessor extends AbstractMailboxProcessor {
             }
 
             final MailboxManager mailboxManager = getMailboxManager();
-            final Mailbox mailbox = mailboxManager.getMailbox(fullMailboxName);
+            final Mailbox mailbox = mailboxManager.getMailbox(fullMailboxName, ImapSessionUtils.getMailboxSession(session));
 
             final Long messages = messages(statusDataItems, mailboxSession,
                     mailbox);

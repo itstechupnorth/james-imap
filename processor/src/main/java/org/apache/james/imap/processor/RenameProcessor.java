@@ -32,6 +32,7 @@ import org.apache.james.imap.mailbox.MailboxManager;
 import org.apache.james.imap.mailbox.MailboxManagerProvider;
 import org.apache.james.imap.mailbox.MailboxNotFoundException;
 import org.apache.james.imap.message.request.RenameRequest;
+import org.apache.james.imap.processor.base.ImapSessionUtils;
 
 public class RenameProcessor extends AbstractMailboxProcessor {
 
@@ -55,7 +56,7 @@ public class RenameProcessor extends AbstractMailboxProcessor {
             final String fullExistingName = buildFullName(session, existingName);
             final String fullNewName = buildFullName(session, newName);
             final MailboxManager mailboxManager = getMailboxManager();
-            mailboxManager.renameMailbox(fullExistingName, fullNewName);
+            mailboxManager.renameMailbox(fullExistingName, fullNewName, ImapSessionUtils.getMailboxSession(session));
             okComplete(command, tag, responder);
             unsolicitedResponses(session, responder, false);
 

@@ -29,6 +29,7 @@ import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.MailboxManager;
 import org.apache.james.imap.mailbox.MailboxManagerProvider;
 import org.apache.james.imap.message.request.CreateRequest;
+import org.apache.james.imap.processor.base.ImapSessionUtils;
 
 public class CreateProcessor extends AbstractMailboxProcessor {
 
@@ -50,7 +51,7 @@ public class CreateProcessor extends AbstractMailboxProcessor {
 
             final String fullMailboxName = buildFullName(session, mailboxName);
             final MailboxManager mailboxManager = getMailboxManager();
-            mailboxManager.createMailbox(fullMailboxName);
+            mailboxManager.createMailbox(fullMailboxName, ImapSessionUtils.getMailboxSession(session));
             unsolicitedResponses(session, responder, false);
             okComplete(command, tag, responder);
         } catch (MailboxException e) {
