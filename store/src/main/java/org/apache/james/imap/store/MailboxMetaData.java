@@ -23,6 +23,7 @@ import javax.mail.Flags;
 
 import org.apache.james.imap.mailbox.Mailbox;
 
+
 /**
  * Describes the current state of a mailbox.
  */
@@ -32,9 +33,9 @@ public class MailboxMetaData implements Mailbox.MetaData {
     private final long[] recent;
     private final Flags premanentFlags;
     private final long uidValidity;
+    private final long nextUid;
     
-    
-    public MailboxMetaData(final long[] recent, final Flags premanentFlags, final long uidValidity) {
+    public MailboxMetaData(final long[] recent, final Flags premanentFlags, final long uidValidity, final long nextUid) {
         super();
         if (recent == null) {
             recentCount = 0;
@@ -44,6 +45,7 @@ public class MailboxMetaData implements Mailbox.MetaData {
         this.recent = recent;
         this.premanentFlags = premanentFlags;
         this.uidValidity = uidValidity;
+        this.nextUid = nextUid;
     }
 
     /**
@@ -74,4 +76,10 @@ public class MailboxMetaData implements Mailbox.MetaData {
         return uidValidity;
     }
 
+    /**
+     * @see {@link Mailbox.MetaData#getUidNext()}
+     */
+    public long getUidNext() {
+        return nextUid;
+    }
 }

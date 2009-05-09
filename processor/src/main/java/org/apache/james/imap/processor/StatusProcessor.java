@@ -71,8 +71,7 @@ public class StatusProcessor extends AbstractMailboxProcessor {
             
             final Long messages = messages(statusDataItems, mailboxSession, mailbox);
             final Long recent = recent(statusDataItems, metaData, mailbox);
-            final Long uidNext = uidNext(statusDataItems, mailboxSession,
-                    mailbox);
+            final Long uidNext = uidNext(statusDataItems, metaData);
             final Long uidValidity = uidValidity(statusDataItems, metaData);
             final Long unseen = unseen(statusDataItems, mailboxSession, mailbox);
 
@@ -112,12 +111,11 @@ public class StatusProcessor extends AbstractMailboxProcessor {
         return uidValidity;
     }
 
-    private Long uidNext(final StatusDataItems statusDataItems,
-            final MailboxSession mailboxSession, final Mailbox mailbox)
+    private Long uidNext(final StatusDataItems statusDataItems, final Mailbox.MetaData metaData)
             throws MailboxException {
         final Long uidNext;
         if (statusDataItems.isUidNext()) {
-            final long uidNextValue = mailbox.getUidNext(mailboxSession);
+            final long uidNextValue = metaData.getUidNext();
             uidNext = new Long(uidNextValue);
         } else {
             uidNext = null;

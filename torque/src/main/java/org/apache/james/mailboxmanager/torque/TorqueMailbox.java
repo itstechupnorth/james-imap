@@ -815,6 +815,7 @@ public class TorqueMailbox implements Mailbox {
         final long[] recent = recent(resetRecent, mailboxSession);
         final Flags permanentFlags = getPermanentFlags();
         final long uidValidity = getUidValidity(mailboxSession);
-        return new MailboxMetaData(recent, permanentFlags, uidValidity);
+        final long uidNext = getUidNext(mailboxSession);
+        return new MailboxMetaData(recent, permanentFlags, uidValidity, uidNext);
     }
 }

@@ -47,15 +47,6 @@ public interface Mailbox {
      */
     Iterator<Long> search(SearchQuery searchQuery, MailboxSession mailboxSession) throws MailboxException;
 
-    /**
-     * 
-     * @param mailboxSession not null
-     * @return the uid that will be assigned to the next appended message
-     * @throws MailboxException
-     */
-
-    long getUidNext(MailboxSession mailboxSession) throws MailboxException;
-
     int getUnseenCount(MailboxSession mailboxSession) throws MailboxException;
 
     /**
@@ -159,5 +150,14 @@ public interface Mailbox {
          * @return UIDVALIDITY
          */
         long getUidValidity();
+        
+
+        /**
+         * Gets the next UID predicted.
+         * @param mailboxSession not null
+         * @return the uid that will be assigned to the next appended message
+         * @throws MailboxException
+         */
+        long getUidNext();
     }
 }

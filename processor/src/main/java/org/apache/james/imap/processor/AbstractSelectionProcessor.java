@@ -106,14 +106,13 @@ abstract class AbstractSelectionProcessor extends AbstractMailboxProcessor {
         uidValidity(responder, metaData);
         unseen(responder, mailbox, mailboxSession, selected);
         permanentFlags(responder, metaData);
-        uidNext(responder, mailboxSession, mailbox);
+        uidNext(responder, metaData);
         taggedOk(responder, tag, command, mailbox);
     }
 
-    private void uidNext(final Responder responder,
-            final MailboxSession mailboxSession, final Mailbox mailbox)
+    private void uidNext(final Responder responder, final Mailbox.MetaData metaData)
     throws MailboxException {
-        final long uid = mailbox.getUidNext(mailboxSession);
+        final long uid = metaData.getUidNext();
         final StatusResponse untaggedOk = statusResponseFactory.untaggedOk(
                 HumanReadableTextKey.UNSEEN, ResponseCode.uidNext(uid));
         responder.respond(untaggedOk);
