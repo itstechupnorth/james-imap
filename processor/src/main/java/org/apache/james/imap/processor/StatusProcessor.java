@@ -69,8 +69,8 @@ public class StatusProcessor extends AbstractMailboxProcessor {
             final Mailbox mailbox = mailboxManager.getMailbox(fullMailboxName, ImapSessionUtils.getMailboxSession(session));
             final Mailbox.MetaData metaData = mailbox.getMetaData(false, mailboxSession);
             
-            final Long messages = messages(statusDataItems, mailboxSession, mailbox);
-            final Long recent = recent(statusDataItems, metaData, mailbox);
+            final Long messages = messages(statusDataItems, metaData);
+            final Long recent = recent(statusDataItems, metaData);
             final Long uidNext = uidNext(statusDataItems, metaData);
             final Long uidValidity = uidValidity(statusDataItems, metaData);
             final Long unseen = unseen(statusDataItems, mailboxSession, mailbox);
@@ -123,8 +123,7 @@ public class StatusProcessor extends AbstractMailboxProcessor {
         return uidNext;
     }
 
-    private Long recent(final StatusDataItems statusDataItems,
-            final Mailbox.MetaData metaData, final Mailbox mailbox)
+    private Long recent(final StatusDataItems statusDataItems, final Mailbox.MetaData metaData)
             throws MailboxException {
         final Long recent;
         if (statusDataItems.isRecent()) {
@@ -136,12 +135,11 @@ public class StatusProcessor extends AbstractMailboxProcessor {
         return recent;
     }
 
-    private Long messages(final StatusDataItems statusDataItems,
-            final MailboxSession mailboxSession, final Mailbox mailbox)
+    private Long messages(final StatusDataItems statusDataItems, final Mailbox.MetaData metaData)
             throws MailboxException {
         final Long messages;
         if (statusDataItems.isMessages()) {
-            final int messageCount = mailbox.getMessageCount(mailboxSession);
+            final int messageCount = metaData.getMessageCount();
             messages = new Long(messageCount);
         } else {
             messages = null;

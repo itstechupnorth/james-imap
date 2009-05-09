@@ -159,5 +159,11 @@ public interface Mailbox {
          * @throws MailboxException
          */
         long getUidNext();
+        
+        /**
+         * Gets the number of messages that this mailbox contains.
+         * @return number of messages contained
+         */
+        int getMessageCount();
     }
 }

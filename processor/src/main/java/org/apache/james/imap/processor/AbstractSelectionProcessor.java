@@ -101,7 +101,7 @@ abstract class AbstractSelectionProcessor extends AbstractMailboxProcessor {
         // TODO: compact this into a single API call for meta-data about the
         // repository
         flags(responder);
-        exists(responder, mailbox, mailboxSession);
+        exists(responder, metaData);
         recent(responder, selected);
         uidValidity(responder, metaData);
         unseen(responder, mailbox, mailboxSession, selected);
@@ -172,9 +172,8 @@ abstract class AbstractSelectionProcessor extends AbstractMailboxProcessor {
         responder.respond(recentResponse);
     }
 
-    private void exists(Responder responder, Mailbox mailbox,
-            final MailboxSession mailboxSession) throws MailboxException {
-        final int messageCount = mailbox.getMessageCount(mailboxSession);
+    private void exists(Responder responder, Mailbox.MetaData metaData) throws MailboxException {
+        final int messageCount = metaData.getMessageCount();
         final ExistsResponse existsResponse = new ExistsResponse(messageCount);
         responder.respond(existsResponse);
     }

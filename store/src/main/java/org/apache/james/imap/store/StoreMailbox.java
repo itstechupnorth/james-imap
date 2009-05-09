@@ -478,6 +478,7 @@ public abstract class StoreMailbox implements org.apache.james.imap.mailbox.Mail
         final Flags permanentFlags = getPermanentFlags();
         final long uidValidity = getUidValidity(mailboxSession);
         final long uidNext = getUidNext(mailboxSession);
-        return new MailboxMetaData(recent, permanentFlags, uidValidity, uidNext);
+        final int messageCount = getMessageCount(mailboxSession);
+        return new MailboxMetaData(recent, permanentFlags, uidValidity, uidNext, messageCount);
     }
 }
