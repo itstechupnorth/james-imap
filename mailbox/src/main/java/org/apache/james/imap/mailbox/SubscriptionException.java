@@ -26,27 +26,13 @@ import org.apache.james.imap.api.display.HumanReadableTextKey;
  */
 public class SubscriptionException extends MailboxException {
 
-    private static final long serialVersionUID = -2057022968413471837L;
-
-    private final HumanReadableTextKey key;
+    private static final long serialVersionUID = -4512372322774311468L;
 
     public SubscriptionException(final HumanReadableTextKey key) {
-        super(key.toString());
-        this.key = key;
+        super(key);
     }
 
     public SubscriptionException(final HumanReadableTextKey key, Throwable cause) {
-        super(cause);
-        this.key = key;
+        super(key, cause);
     }
-
-    /**
-     * Gets the message key.
-     * 
-     * @return the key, possibly null
-     */
-    public final HumanReadableTextKey getKey() {
-        return key;
-    }
-
 }

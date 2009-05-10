@@ -21,10 +21,14 @@ package org.apache.james.imap.mailbox;
 
 import javax.mail.MessagingException;
 
+import org.apache.james.imap.api.display.HumanReadableTextKey;
+
 public class MailboxException extends MessagingException {
 
-    private static final long serialVersionUID = -4076702573622808863L;
+    private static final long serialVersionUID = 4612761817238115904L;
 
+    private final HumanReadableTextKey key;
+    
     public MailboxException(final Exception cause) {
         this(cause.getMessage(), cause);
     }
@@ -36,13 +40,36 @@ public class MailboxException extends MessagingException {
     public MailboxException(final String message, final Throwable cause) {
         super(message);
         initCause(cause);
+        key = null;
     }
     
     public MailboxException(final String message, final Exception cause) {
         super(message, cause);
+        key = null;
     }
 
     public MailboxException(String message) {
         super(message);
+        key = null;
+    }
+    
+    public MailboxException(final HumanReadableTextKey key) {
+        super(key.toString());
+        this.key = key;
+    }
+
+    public MailboxException(final HumanReadableTextKey key, Throwable cause) {
+        super(key.getDefaultValue());
+        initCause(cause);
+        this.key = key;
+    }
+
+    /**
+     * Gets the message key.
+     * 
+     * @return the key, possibly null
+     */
+    public final HumanReadableTextKey getKey() {
+        return key;
     }
 }
