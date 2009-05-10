@@ -30,19 +30,14 @@ public class SubscriptionException extends MailboxException {
 
     private final HumanReadableTextKey key;
 
-    public SubscriptionException(HumanReadableTextKey key, Throwable cause) {
-        super(key.toString(), cause);
-        this.key = key;
-    }
-
-    public SubscriptionException(HumanReadableTextKey key) {
+    public SubscriptionException(final HumanReadableTextKey key) {
         super(key.toString());
         this.key = key;
     }
 
-    public SubscriptionException(Throwable cause) {
+    public SubscriptionException(final HumanReadableTextKey key, Throwable cause) {
         super(cause);
-        key = null;
+        this.key = key;
     }
 
     /**

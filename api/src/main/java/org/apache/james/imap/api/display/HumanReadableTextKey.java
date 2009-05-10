@@ -75,6 +75,26 @@ public class HumanReadableTextKey {
             "org.apache.james.imap.FAILURE_NO_SUCH_MAILBOX",
             "failed. No such mailbox.");
 
+    public static final HumanReadableTextKey START_TRANSACTION_FAILED = new HumanReadableTextKey(
+            "org.apache.james.imap.START_TRANSACTION_FAILED",
+            "failed. Cannot start transaction.");
+    
+    public static final HumanReadableTextKey COMMIT_TRANSACTION_FAILED = new HumanReadableTextKey(
+            "org.apache.james.imap.COMMIT_TRANSACTION_FAILED",
+            "failed. Transaction commit failed.");
+    
+    public static final HumanReadableTextKey DELETED_FAILED = new HumanReadableTextKey(
+            "org.apache.james.imap.DELETED_FAILED",
+            "failed. Deletion failed.");
+    
+    public static final HumanReadableTextKey SEARCH_FAILED = new HumanReadableTextKey(
+            "org.apache.james.imap.SEARCH_FAILED",
+            "failed. Search failed.");
+    
+    public static final HumanReadableTextKey SAVE_FAILED = new HumanReadableTextKey(
+            "org.apache.james.imap.SAVE_FAILED",
+            "failed. Save failed.");
+    
     public static final HumanReadableTextKey GENERIC_FAILURE_DURING_PROCESSING = new HumanReadableTextKey(
             "org.apache.james.imap.GENERIC_FAILURE_DURING_PROCESSING",
             "processing failed.");
