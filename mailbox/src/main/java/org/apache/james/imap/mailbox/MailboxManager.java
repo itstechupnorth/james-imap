@@ -62,8 +62,6 @@ public interface MailboxManager {
 
     public static final char HIERARCHY_DELIMITER = '.';
 
-    public static final String USER_NAMESPACE = "#mail";
-
     public static final String INBOX = "INBOX";
 
     /**

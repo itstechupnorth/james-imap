@@ -48,6 +48,8 @@ import org.apache.james.imap.store.mail.model.Mailbox;
 
 public abstract class StoreMailboxManager extends AbstractLogEnabled implements MailboxManager {
 
+    public static final String USER_NAMESPACE_PREFIX = "#mail";
+    
     private static final char SQL_WILDCARD_CHAR = '%';
 
     protected final static Random random = new Random();
@@ -296,7 +298,7 @@ public abstract class StoreMailboxManager extends AbstractLogEnabled implements 
         if (mailboxPath.charAt(0) != HIERARCHY_DELIMITER) {
             mailboxPath = HIERARCHY_DELIMITER + mailboxPath;
         }
-        final String result = USER_NAMESPACE + HIERARCHY_DELIMITER + userName
+        final String result = USER_NAMESPACE_PREFIX + HIERARCHY_DELIMITER + userName
         + mailboxPath;
         return result;
     }

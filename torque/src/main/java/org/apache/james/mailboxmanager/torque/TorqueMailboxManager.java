@@ -56,6 +56,8 @@ import EDU.oswego.cs.dl.util.concurrent.ReentrantWriterPreferenceReadWriteLock;
 
 public class TorqueMailboxManager implements MailboxManager {
 
+    public static final String USER_NAMESPACE_PREFIX = "#mail";
+    
     private static final char SQL_WILDCARD_CHAR = '%';
 
     private final static Random random = new Random();
@@ -348,7 +350,7 @@ public class TorqueMailboxManager implements MailboxManager {
         if (mailboxPath.charAt(0) != HIERARCHY_DELIMITER) {
             mailboxPath = HIERARCHY_DELIMITER + mailboxPath;
         }
-        final String result = USER_NAMESPACE + HIERARCHY_DELIMITER + userName
+        final String result = USER_NAMESPACE_PREFIX + HIERARCHY_DELIMITER + userName
                 + mailboxPath;
         return result;
     }
