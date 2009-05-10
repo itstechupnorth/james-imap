@@ -47,9 +47,6 @@ import org.apache.james.imap.store.mail.MailboxMapper;
 import org.apache.james.imap.store.mail.model.Mailbox;
 
 public abstract class StoreMailboxManager extends AbstractLogEnabled implements MailboxManager {
-
-    public static final char HIERARCHY_DELIMITER = '.';
-    
     public static final String USER_NAMESPACE_PREFIX = "#mail";
     
     private static final char SQL_WILDCARD_CHAR = '%';
@@ -60,11 +57,19 @@ public abstract class StoreMailboxManager extends AbstractLogEnabled implements 
 
     private final Authenticator authenticator;    
     private final Subscriber subscriber;    
+    
+    private final char delimiter;
 
     public StoreMailboxManager(final Authenticator authenticator, final Subscriber subscriber) {
+        this(authenticator, subscriber, '.');
+    }
+
+    
+    public StoreMailboxManager(final Authenticator authenticator, final Subscriber subscriber, final char delimiter) {
         mailboxes = new HashMap<String, StoreMailbox>();
         this.authenticator = authenticator;
         this.subscriber = subscriber;
+        this.delimiter = delimiter;
     }
 
     protected abstract StoreMailbox createMailbox(Mailbox mailboxRow);
@@ -106,14 +111,14 @@ public abstract class StoreMailboxManager extends AbstractLogEnabled implements 
         final int length = namespaceName.length();
         if (length == 0) {
             getLog().warn("Ignoring mailbox with empty name");
-        } else if (namespaceName.charAt(length - 1) == HIERARCHY_DELIMITER) {
+        } else if (namespaceName.charAt(length - 1) == delimiter) {
             createMailbox(namespaceName.substring(0, length - 1), mailboxSession);
         } else {
             synchronized (mailboxes) {
                 // Create root first
                 // If any creation fails then mailbox will not be created
                 // TODO: transaction
-                int index = namespaceName.indexOf(HIERARCHY_DELIMITER);
+                int index = namespaceName.indexOf(delimiter);
                 int count = 0;
                 while (index >= 0) {
                     // Until explicit namespace support is added,
@@ -127,7 +132,7 @@ public abstract class StoreMailboxManager extends AbstractLogEnabled implements 
                             doCreate(mailbox);
                         }
                     }
-                    index = namespaceName.indexOf(HIERARCHY_DELIMITER, ++index);
+                    index = namespaceName.indexOf(delimiter, ++index);
                 }
                 if (mailboxExists(namespaceName, mailboxSession)) {
                     throw new MailboxExistsException(namespaceName); 
@@ -181,7 +186,7 @@ public abstract class StoreMailboxManager extends AbstractLogEnabled implements 
             changeMailboxName(from, to);
 
             // rename submailbox
-            final List<Mailbox> subMailboxes = mapper.findMailboxWithNameLike(from + HIERARCHY_DELIMITER + "%");
+            final List<Mailbox> subMailboxes = mapper.findMailboxWithNameLike(from + delimiter + "%");
             for (Mailbox sub:subMailboxes) {
                 final String subOriginalName = sub.getName();
                 final String subNewName = to + subOriginalName.substring(from.length());
@@ -230,7 +235,7 @@ public abstract class StoreMailboxManager extends AbstractLogEnabled implements 
         }
 
         final String search = mailboxExpression.getCombinedName(
-                HIERARCHY_DELIMITER).replace(freeWildcard, SQL_WILDCARD_CHAR)
+                delimiter).replace(freeWildcard, SQL_WILDCARD_CHAR)
                 .replace(localWildcard, SQL_WILDCARD_CHAR);
 
         final MailboxMapper mapper = createMailboxMapper();
@@ -240,7 +245,7 @@ public abstract class StoreMailboxManager extends AbstractLogEnabled implements 
             final String name = mailbox.getName();
             if (name.startsWith(base)) {
                 final String match = name.substring(baseLength);
-                if (mailboxExpression.isExpressionMatch(match, HIERARCHY_DELIMITER)) {
+                if (mailboxExpression.isExpressionMatch(match, delimiter)) {
                     final MailboxMetaData.Children inferiors; 
                     if (hasChildren(name, mapper)) {
                         inferiors = MailboxMetaData.Children.HAS_CHILDREN;
@@ -264,7 +269,7 @@ public abstract class StoreMailboxManager extends AbstractLogEnabled implements 
      * @throws TorqueException
      */
     private boolean hasChildren(String name, final MailboxMapper mapper) throws StorageException {
-        return mapper.hasChildren(name, HIERARCHY_DELIMITER);
+        return mapper.hasChildren(name, delimiter);
     }
 
     public boolean mailboxExists(String mailboxName, MailboxSession session) throws MailboxException {
@@ -293,14 +298,14 @@ public abstract class StoreMailboxManager extends AbstractLogEnabled implements 
     }
 
     public MailboxSession createSession(String userName, Log log) {
-        return new SimpleMailboxSession(random.nextLong(), userName, log, HIERARCHY_DELIMITER);
+        return new SimpleMailboxSession(random.nextLong(), userName, log, delimiter);
     }
 
     public String resolve(final String userName, String mailboxPath) {
-        if (mailboxPath.charAt(0) != HIERARCHY_DELIMITER) {
-            mailboxPath = HIERARCHY_DELIMITER + mailboxPath;
+        if (mailboxPath.charAt(0) != delimiter) {
+            mailboxPath = delimiter + mailboxPath;
         }
-        final String result = USER_NAMESPACE_PREFIX + HIERARCHY_DELIMITER + userName
+        final String result = USER_NAMESPACE_PREFIX + delimiter + userName
         + mailboxPath;
         return result;
     }

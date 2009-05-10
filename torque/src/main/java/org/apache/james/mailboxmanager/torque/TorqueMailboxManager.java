@@ -56,8 +56,6 @@ import EDU.oswego.cs.dl.util.concurrent.ReentrantWriterPreferenceReadWriteLock;
 
 public class TorqueMailboxManager implements MailboxManager {
 
-    public static final char HIERARCHY_DELIMITER = '.';
-    
     public static final String USER_NAMESPACE_PREFIX = "#mail";
     
     private static final char SQL_WILDCARD_CHAR = '%';
@@ -72,10 +70,17 @@ public class TorqueMailboxManager implements MailboxManager {
 
     private final UserManager userManager;
 
+    private final char delimiter;
+    
     public TorqueMailboxManager(final UserManager userManager) {
+        this(userManager, '.');
+    }
+    
+    public TorqueMailboxManager(final UserManager userManager, final char delimiter) {
         this.lock = new ReentrantWriterPreferenceReadWriteLock();
         mailboxes = new HashMap<String, TorqueMailbox>();
         this.userManager = userManager;
+        this.delimiter = delimiter;
     }
 
     public Mailbox getMailbox(String mailboxName, MailboxSession session)
@@ -117,14 +122,14 @@ public class TorqueMailboxManager implements MailboxManager {
         final int length = namespaceName.length();
         if (length == 0) {
             getLog().warn("Ignoring mailbox with empty name");
-        } else if (namespaceName.charAt(length - 1) == HIERARCHY_DELIMITER) {
+        } else if (namespaceName.charAt(length - 1) == delimiter) {
             createMailbox(namespaceName.substring(0, length - 1), mailboxSession);
         } else {
             synchronized (mailboxes) {
                 // Create root first
                 // If any creation fails then mailbox will not be created
                 // TODO: transaction
-                int index = namespaceName.indexOf(HIERARCHY_DELIMITER);
+                int index = namespaceName.indexOf(delimiter);
                 int count = 0;
                 while (index >= 0) {
                     // Until explicit namespace support is added,
@@ -138,7 +143,7 @@ public class TorqueMailboxManager implements MailboxManager {
                             doCreate(mailbox);
                         }
                     }
-                    index = namespaceName.indexOf(HIERARCHY_DELIMITER, ++index);
+                    index = namespaceName.indexOf(delimiter, ++index);
                 }
                 if (mailboxExists(namespaceName, mailboxSession)) {
                     throw new MailboxExistsException(namespaceName); 
@@ -207,7 +212,7 @@ public class TorqueMailboxManager implements MailboxManager {
                 // rename submailbox
                 Criteria c = new Criteria();
                 c.add(MailboxRowPeer.NAME,
-                        (Object) (from + HIERARCHY_DELIMITER + "%"),
+                        (Object) (from + delimiter + "%"),
                         Criteria.LIKE);
                 List l = MailboxRowPeer.doSelect(c);
                 for (Iterator iter = l.iterator(); iter.hasNext();) {
@@ -255,7 +260,7 @@ public class TorqueMailboxManager implements MailboxManager {
         }
 
         final String search = mailboxExpression.getCombinedName(
-                HIERARCHY_DELIMITER).replace(freeWildcard, SQL_WILDCARD_CHAR)
+                delimiter).replace(freeWildcard, SQL_WILDCARD_CHAR)
                 .replace(localWildcard, SQL_WILDCARD_CHAR);
 
         Criteria criteria = new Criteria();
@@ -268,7 +273,7 @@ public class TorqueMailboxManager implements MailboxManager {
                 final String name = mailboxRow.getName();
                 if (name.startsWith(base)) {
                     final String match = name.substring(baseLength);
-                    if (mailboxExpression.isExpressionMatch(match, HIERARCHY_DELIMITER)) {
+                    if (mailboxExpression.isExpressionMatch(match, delimiter)) {
                         final MailboxMetaData.Children inferiors; 
                         if (hasChildren(name)) {
                             inferiors = MailboxMetaData.Children.HAS_CHILDREN;
@@ -295,7 +300,7 @@ public class TorqueMailboxManager implements MailboxManager {
      */
     private boolean hasChildren(String name) throws TorqueException {
         final Criteria criteria = new Criteria();
-        criteria.add(MailboxRowPeer.NAME, (Object)(name + HIERARCHY_DELIMITER + SQL_WILDCARD_CHAR), Criteria.LIKE);
+        criteria.add(MailboxRowPeer.NAME, (Object)(name + delimiter + SQL_WILDCARD_CHAR), Criteria.LIKE);
         final List mailboxes = MailboxRowPeer.doSelect(criteria);
         return !mailboxes.isEmpty();
     }
@@ -345,14 +350,14 @@ public class TorqueMailboxManager implements MailboxManager {
     }
 
     public MailboxSession createSession(String userName, Log log) {
-        return new TorqueMailboxSession(random.nextLong(), log, userName, HIERARCHY_DELIMITER);
+        return new TorqueMailboxSession(random.nextLong(), log, userName, delimiter);
     }
 
     public String resolve(final String userName, String mailboxPath) {
-        if (mailboxPath.charAt(0) != HIERARCHY_DELIMITER) {
-            mailboxPath = HIERARCHY_DELIMITER + mailboxPath;
+        if (mailboxPath.charAt(0) != delimiter) {
+            mailboxPath = delimiter + mailboxPath;
         }
-        final String result = USER_NAMESPACE_PREFIX + HIERARCHY_DELIMITER + userName
+        final String result = USER_NAMESPACE_PREFIX + delimiter + userName
                 + mailboxPath;
         return result;
     }
