@@ -97,8 +97,19 @@ abstract public class AbstractMailboxProcessor extends AbstractChainedProcessor 
                 logger.info(e.getMessage());
                 logger.debug("Processing failed:", e);
             }
-            response = factory.taggedNo(tag, command,
-                    HumanReadableTextKey.GENERIC_FAILURE_DURING_PROCESSING);
+            final HumanReadableTextKey key;
+            if (e instanceof MailboxException) {
+                final MailboxException mailboxException = (MailboxException) e;
+                final HumanReadableTextKey exceptionKey = mailboxException.getKey();
+                if (exceptionKey == null) {
+                    key = HumanReadableTextKey.GENERIC_FAILURE_DURING_PROCESSING;
+                } else {
+                    key = exceptionKey;
+                }
+            } else {
+                key = HumanReadableTextKey.GENERIC_FAILURE_DURING_PROCESSING;
+            }
+            response = factory.taggedNo(tag, command, key);
         }
         responder.respond(response);
     }
