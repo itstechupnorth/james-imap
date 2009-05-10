@@ -289,7 +289,7 @@ public abstract class StoreMailboxManager extends AbstractLogEnabled implements 
     }
 
     public MailboxSession createSession(String userName, Log log) {
-        return new SimpleMailboxSession(random.nextLong(), userName, log);
+        return new SimpleMailboxSession(random.nextLong(), userName, log, MailboxManager.HIERARCHY_DELIMITER);
     }
 
     public String resolve(final String userName, String mailboxPath) {

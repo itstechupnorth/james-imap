@@ -19,14 +19,25 @@
 
 package org.apache.james.imap.store;
 
+import java.util.ArrayList;
+import java.util.Collection;
+
 import org.apache.commons.logging.Log;
 import org.apache.james.imap.mailbox.MailboxSession;
+import org.apache.james.imap.mailbox.util.SimpleMailboxNamespace;
 
 /**
  * Describes a mailbox session.
  */
 public class SimpleMailboxSession implements MailboxSession, MailboxSession.User {
 
+
+    private final Collection<Namespace> sharedSpaces;
+
+    private final Namespace otherUsersSpace;
+
+    private final Namespace personalSpace;
+    
     private final long sessionId;
     
     private final Log log;
@@ -35,11 +46,14 @@ public class SimpleMailboxSession implements MailboxSession, MailboxSession.User
     
     private boolean open;
 
-    public SimpleMailboxSession(final long sessionId, final String userName, final Log log) {
+    public SimpleMailboxSession(final long sessionId, final String userName, final Log log, char deliminator) {
         super();
         this.sessionId = sessionId;
         this.log = log;
         this.userName = userName;
+        sharedSpaces = new ArrayList<Namespace>();
+        otherUsersSpace = null;
+        personalSpace = new SimpleMailboxNamespace(deliminator, "");
     }
 
     public Log getLog() {
@@ -87,5 +101,26 @@ public class SimpleMailboxSession implements MailboxSession, MailboxSession.User
 	public String getUserName() {
 		return userName;
 	}
+
+    /**
+     * @see {@link MailboxSession#getOtherUsersSpace()}
+     */
+    public Namespace getOtherUsersSpace() {
+        return otherUsersSpace;
+    }
+
+    /**
+     * @see {@link MailboxSession#getPersonalSpace()}
+     */
+    public Namespace getPersonalSpace() {
+        return personalSpace;
+    }
+
+    /**
+     * @see {@link MailboxSession#getSharedSpace()}
+     */
+    public Collection<Namespace> getSharedSpaces() {
+        return sharedSpaces;
+    }
 
 }

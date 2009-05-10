@@ -98,5 +98,89 @@ public class NamespaceResponse implements ImapResponseMessage {
         public String getPrefix() {
             return prefix;
         }
+
+        @Override
+        public int hashCode() {
+            final int PRIME = 31;
+            int result = 1;
+            result = PRIME * result + deliminator;
+            result = PRIME * result + ((prefix == null) ? 0 : prefix.hashCode());
+            return result;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj)
+                return true;
+            if (obj == null)
+                return false;
+            if (getClass() != obj.getClass())
+                return false;
+            final Namespace other = (Namespace) obj;
+            if (deliminator != other.deliminator)
+                return false;
+            if (prefix == null) {
+                if (other.prefix != null)
+                    return false;
+            } else if (!prefix.equals(other.prefix))
+                return false;
+            return true;
+        }
+        
+        @Override
+        public String toString() {
+            return "Namespace [prefix=" + prefix + ", delim=" + deliminator + "]";
+        }
+    }
+
+    @Override
+    public int hashCode() {
+        final int PRIME = 31;
+        int result = 1;
+        result = PRIME * result + ((personal == null) ? 0 : personal.hashCode());
+        result = PRIME * result + ((shared == null) ? 0 : shared.hashCode());
+        result = PRIME * result + ((users == null) ? 0 : users.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        final NamespaceResponse other = (NamespaceResponse) obj;
+        if (personal == null) {
+            if (other.personal != null)
+                return false;
+        } else if (!personal.equals(other.personal))
+            return false;
+        if (shared == null) {
+            if (other.shared != null)
+                return false;
+        } else if (!shared.equals(other.shared))
+            return false;
+        if (users == null) {
+            if (other.users != null)
+                return false;
+        } else if (!users.equals(other.users))
+            return false;
+        return true;
+    }
+
+    /**
+     * Renders object suitably for logging.
+     * @return a <code>String</code> representation 
+     * of this object.
+     */
+    public String toString()
+    {
+        return "NamespaceResponse ["  
+            + "personal = " + this.personal + " "
+            + "users = " + this.users + " "
+            + "shared = " + this.shared + " "
+            + " ]";
     }
 }

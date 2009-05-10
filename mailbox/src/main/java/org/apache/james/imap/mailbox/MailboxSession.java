@@ -19,6 +19,8 @@
 
 package org.apache.james.imap.mailbox;
 
+import java.util.Collection;
+
 import org.apache.commons.logging.Log;
 
 /**
@@ -67,5 +69,52 @@ public interface MailboxSession {
          * @return not null
          */
         public String getUserName();
+    }
+    
+    /**
+     * Gets the <a href='http://www.isi.edu/in-notes/rfc2342.txt' rel='tag'>RFC 2342</a> 
+     * personal namespace for the current session.
+     * Note that though servers may offer multiple personal namespaces,
+     * support is not offered through this API. This decision may be revised if reasonable
+     * use cases emerge.
+     * @return Personal Namespace, not null
+     */
+    public Namespace getPersonalSpace();
+    
+    /**
+     * Gets the <a href='http://www.isi.edu/in-notes/rfc2342.txt' rel='tag'>RFC 2342</a> 
+     * other users namespace for the current session.
+     * Note that though servers may offer multiple other users namespaces,
+     * support is not offered through this API. This decision may be revised if reasonable
+     * use cases emerge.
+     * @return Other Users Namespace 
+     * or null when there is non available
+     */
+    public Namespace getOtherUsersSpace();
+    
+    /**
+     * Iterates the <a href='http://www.isi.edu/in-notes/rfc2342.txt' rel='tag'>RFC 2342</a>
+     * Shared Namespaces available for the current session.
+     * @return not null though possibly empty
+     */
+    public Collection<Namespace> getSharedSpaces();
+    
+    /**
+     * Describes a <a href='http://www.isi.edu/in-notes/rfc2342.txt' rel='tag'>RFC 2342</a> namespace.
+     */
+    public interface Namespace {
+        
+        /**
+         * Gets the hierachy deliminator for this namespace.
+         * @return character that delimits this hierarchy
+         */
+        public char getDeliminator();
+        
+        /**
+         * Gets the prefix for this namespace.
+         * Clients will prefix 
+         * @return not null, though may be empty
+         */
+        public String getPrefix();
     }
 }
