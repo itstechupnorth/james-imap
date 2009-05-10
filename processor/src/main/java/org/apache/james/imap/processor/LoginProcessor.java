@@ -39,6 +39,8 @@ import org.apache.james.imap.processor.base.ImapSessionUtils;
  */
 public class LoginProcessor extends AbstractMailboxProcessor {
 
+    public static final String INBOX = "INBOX";
+    
     private static final String ATTRIBUTE_NUMBER_OF_FAILURES = "org.apache.james.imap.processor.imap4rev1.LoginProcessor.NUMBER_OF_FAILURES";
 
     // TODO: this should be configurable
@@ -67,7 +69,7 @@ public class LoginProcessor extends AbstractMailboxProcessor {
                 session.setAttribute(
                         ImapSessionUtils.MAILBOX_SESSION_ATTRIBUTE_SESSION_KEY,
                         mailboxSession);
-                final String inboxName = buildFullName(session, MailboxManager.INBOX);
+                final String inboxName = buildFullName(session, INBOX);
                 if (mailboxManager.mailboxExists(inboxName, mailboxSession)) {
                     session.getLog().debug("INBOX exists. No need to create it.");
                 } else {

@@ -62,8 +62,6 @@ public interface MailboxManager {
 
     public static final char HIERARCHY_DELIMITER = '.';
 
-    public static final String INBOX = "INBOX";
-
     /**
      * <p>
      * Resolves a path for the given user.
