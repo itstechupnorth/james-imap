@@ -48,6 +48,8 @@ import org.apache.james.imap.store.mail.model.Mailbox;
 
 public abstract class StoreMailboxManager extends AbstractLogEnabled implements MailboxManager {
 
+    public static final char HIERARCHY_DELIMITER = '.';
+    
     public static final String USER_NAMESPACE_PREFIX = "#mail";
     
     private static final char SQL_WILDCARD_CHAR = '%';
@@ -291,7 +293,7 @@ public abstract class StoreMailboxManager extends AbstractLogEnabled implements 
     }
 
     public MailboxSession createSession(String userName, Log log) {
-        return new SimpleMailboxSession(random.nextLong(), userName, log, MailboxManager.HIERARCHY_DELIMITER);
+        return new SimpleMailboxSession(random.nextLong(), userName, log, HIERARCHY_DELIMITER);
     }
 
     public String resolve(final String userName, String mailboxPath) {

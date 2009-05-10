@@ -60,8 +60,6 @@ import org.apache.commons.logging.Log;
 
 public interface MailboxManager {
 
-    public static final char HIERARCHY_DELIMITER = '.';
-
     /**
      * <p>
      * Resolves a path for the given user.
