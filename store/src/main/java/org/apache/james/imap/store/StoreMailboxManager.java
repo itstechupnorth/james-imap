@@ -29,6 +29,7 @@ import java.util.Random;
 
 import org.apache.commons.logging.Log;
 import org.apache.james.imap.api.AbstractLogEnabled;
+import org.apache.james.imap.api.display.HumanReadableTextKey;
 import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.MailboxExistsException;
 import org.apache.james.imap.mailbox.MailboxListener;
@@ -283,7 +284,8 @@ public abstract class StoreMailboxManager extends AbstractLogEnabled implements 
                 if (count == 1) {
                     return true;
                 } else {
-                    throw new MailboxException("Expected one mailbox but found " + count + " mailboxes");
+                    throw new MailboxException(HumanReadableTextKey.DUPLICATE_MAILBOXES, 
+                            "Expected one mailbox but found " + count + " mailboxes");
                 }
             }
         }

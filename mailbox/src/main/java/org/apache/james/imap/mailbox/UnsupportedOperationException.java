@@ -21,15 +21,16 @@ package org.apache.james.imap.mailbox;
 
 import org.apache.james.imap.api.display.HumanReadableTextKey;
 
-
 /**
- * Indicates that the requested search is not supported by this implementation.
+ * Indicates that an operation required is not supported
+ * by this mailbox.
  */
-public class UnsupportedSearchException extends MailboxException {
+public class UnsupportedOperationException extends MailboxException {
 
-    private static final long serialVersionUID = -7442949630563672557L;
+    private static final long serialVersionUID = 1943118588115772317L;
 
-    public UnsupportedSearchException() {
-        super(HumanReadableTextKey.UNSUPPORTED_SEARCH);
+    public UnsupportedOperationException(String message) {
+        super(HumanReadableTextKey.UNSUPPORTED, message);
     }
+
 }

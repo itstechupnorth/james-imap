@@ -25,6 +25,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceException;
 
+import org.apache.james.imap.api.display.HumanReadableTextKey;
 import org.apache.james.imap.jpa.mail.model.JPAMailbox;
 import org.apache.james.imap.mailbox.MailboxNotFoundException;
 import org.apache.james.imap.mailbox.StorageException;
@@ -61,7 +62,7 @@ public abstract class JPAMailboxMapper extends Mapper implements MailboxMapper {
         try {
             entityManager.persist(mailbox);
         } catch (PersistenceException e) {
-            throw new StorageException(e);
+            throw new StorageException(HumanReadableTextKey.SAVE_FAILED, e);
         } 
     }
 
@@ -75,7 +76,7 @@ public abstract class JPAMailboxMapper extends Mapper implements MailboxMapper {
             throw new MailboxNotFoundException(name);
             
         } catch (PersistenceException e) {
-            throw new StorageException(e);
+            throw new StorageException(HumanReadableTextKey.SEARCH_FAILED, e);
         } 
     }
 
@@ -86,7 +87,7 @@ public abstract class JPAMailboxMapper extends Mapper implements MailboxMapper {
         try {  
             entityManager.remove(mailbox);
         } catch (PersistenceException e) {
-            throw new StorageException(e);
+            throw new StorageException(HumanReadableTextKey.DELETED_FAILED, e);
         } 
     }
 
@@ -98,7 +99,7 @@ public abstract class JPAMailboxMapper extends Mapper implements MailboxMapper {
         try {
             return entityManager.createNamedQuery("findMailboxWithNameLike").setParameter("nameParam", name).getResultList();
         } catch (PersistenceException e) {
-            throw new StorageException(e);
+            throw new StorageException(HumanReadableTextKey.SEARCH_FAILED, e);
         } 
     }
 
@@ -109,7 +110,7 @@ public abstract class JPAMailboxMapper extends Mapper implements MailboxMapper {
         try {
             entityManager.createNamedQuery("deleteAll").executeUpdate();
         } catch (PersistenceException e) {
-            throw new StorageException(e);
+            throw new StorageException(HumanReadableTextKey.DELETED_FAILED, e);
         } 
     }
 
@@ -120,7 +121,7 @@ public abstract class JPAMailboxMapper extends Mapper implements MailboxMapper {
         try {
             return (Long) entityManager.createNamedQuery("countMailboxesWithName").setParameter("nameParam", name).getSingleResult();
         } catch (PersistenceException e) {
-            throw new StorageException(e);
+            throw new StorageException(HumanReadableTextKey.COUNT_FAILED, e);
         } 
     }
 
@@ -133,7 +134,7 @@ public abstract class JPAMailboxMapper extends Mapper implements MailboxMapper {
         } catch (NoResultException e) {
             throw new MailboxNotFoundException(mailboxId);   
         } catch (PersistenceException e) {
-            throw new StorageException(e);
+            throw new StorageException(HumanReadableTextKey.SEARCH_FAILED, e);
         } 
     }
 
@@ -146,7 +147,7 @@ public abstract class JPAMailboxMapper extends Mapper implements MailboxMapper {
         } catch (NoResultException e) {
             throw new MailboxNotFoundException(mailboxId);
         } catch (PersistenceException e) {
-            throw new StorageException(e);
+            throw new StorageException(HumanReadableTextKey.COMSUME_UID_FAILED, e);
         } 
     }
 

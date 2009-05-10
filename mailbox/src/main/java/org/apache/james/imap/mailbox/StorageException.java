@@ -18,19 +18,17 @@
  ****************************************************************/
 package org.apache.james.imap.mailbox;
 
+import org.apache.james.imap.api.display.HumanReadableTextKey;
+
 /**
  * Indicates a general problem in the underlying storage layer.
  * Used to wrap undiagnosed storage exceptions.
  */
 public class StorageException extends MailboxException {
 
-    private static final long serialVersionUID = -2645843238080782034L;
+    private static final long serialVersionUID = 2708951014093934093L;
 
-    public StorageException(Exception cause) {
-        super(cause);
-    }
-
-    public StorageException(Throwable cause) {
-        super(cause);
+    public StorageException(HumanReadableTextKey key, Throwable cause) {
+        super(key, cause);
     }
 }

@@ -91,9 +91,45 @@ public class HumanReadableTextKey {
             "org.apache.james.imap.SEARCH_FAILED",
             "failed. Search failed.");
     
+    public static final HumanReadableTextKey COUNT_FAILED = new HumanReadableTextKey(
+            "org.apache.james.imap.COUNT_FAILED",
+            "failed. Count failed.");
+    
     public static final HumanReadableTextKey SAVE_FAILED = new HumanReadableTextKey(
             "org.apache.james.imap.SAVE_FAILED",
             "failed. Save failed.");
+    
+    public static final HumanReadableTextKey UNSUPPORTED_SEARCH = new HumanReadableTextKey(
+            "org.apache.james.imap.UNSUPPORTED_SEARCH",
+            "failed. Unsupported search.");
+  
+    public static final HumanReadableTextKey LOCK_FAILED = new HumanReadableTextKey(
+            "org.apache.james.imap.LOCK_FAILED",
+            "failed. Failed to lock mailbox.");
+    
+    public static final HumanReadableTextKey UNSUPPORTED = new HumanReadableTextKey(
+            "org.apache.james.imap.UNSUPPORTED",
+            "failed. Unsupported operation.");
+    
+    public static final HumanReadableTextKey DUPLICATE_MAILBOXES = new HumanReadableTextKey(
+            "org.apache.james.imap.DUPLICATE_MAILBOXES",
+            "failed. Expected unique mailbox but duplicate exists.");
+    
+    public static final HumanReadableTextKey MAILBOX_EXISTS = new HumanReadableTextKey(
+            "org.apache.james.imap.MAILBOX_EXISTS",
+            "failed. Mailbox already exists.");
+    
+    public static final HumanReadableTextKey MAILBOX_NOT_FOUND = new HumanReadableTextKey(
+            "org.apache.james.imap.MAILBOX_NOT_FOUND",
+            "failed. Mailbox not found.");
+    
+    public static final HumanReadableTextKey MAILBOX_DELETED = new HumanReadableTextKey(
+            "org.apache.james.imap.MAILBOX_DELETED",
+            "failed. Mailbox has been deleted.");
+    
+    public static final HumanReadableTextKey COMSUME_UID_FAILED = new HumanReadableTextKey(
+            "org.apache.james.imap.COMSUME_UID_FAILED",
+            "failed. Failed to acquire UID.");
     
     public static final HumanReadableTextKey GENERIC_FAILURE_DURING_PROCESSING = new HumanReadableTextKey(
             "org.apache.james.imap.GENERIC_FAILURE_DURING_PROCESSING",

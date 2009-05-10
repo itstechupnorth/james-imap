@@ -19,6 +19,8 @@
 
 package org.apache.james.imap.mailbox;
 
+import org.apache.james.imap.api.display.HumanReadableTextKey;
+
 /**
  * Indicates that a search criteria is not supported.
  */
@@ -26,8 +28,8 @@ public class UnsupportedCriteriaException extends MailboxException {
 
     private static final long serialVersionUID = 3791907285083231285L;
 
-    public UnsupportedCriteriaException(String string) {
-        super(string);
+    public UnsupportedCriteriaException(final HumanReadableTextKey key) {
+        super(key);
     }
 
 }

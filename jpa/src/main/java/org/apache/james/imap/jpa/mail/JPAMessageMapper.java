@@ -23,6 +23,7 @@ import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceException;
 
+import org.apache.james.imap.api.display.HumanReadableTextKey;
 import org.apache.james.imap.mailbox.MessageRange;
 import org.apache.james.imap.mailbox.SearchQuery;
 import org.apache.james.imap.mailbox.StorageException;
@@ -63,7 +64,7 @@ public class JPAMessageMapper extends Mapper implements MessageMapper {
             }
             return results;
         } catch (PersistenceException e) {
-            throw new StorageException(e);
+            throw new StorageException(HumanReadableTextKey.SEARCH_FAILED, e);
         }
     }
 
@@ -120,7 +121,7 @@ public class JPAMessageMapper extends Mapper implements MessageMapper {
             }
             return results;
         } catch (PersistenceException e) {
-            throw new StorageException(e);
+            throw new StorageException(HumanReadableTextKey.SEARCH_FAILED, e);
         }
     }
 
@@ -158,7 +159,7 @@ public class JPAMessageMapper extends Mapper implements MessageMapper {
         try {
             return (Long) entityManager.createNamedQuery("countMessagesInMailbox").setParameter("idParam", mailboxId).getSingleResult();
         } catch (PersistenceException e) {
-            throw new StorageException(e);
+            throw new StorageException(HumanReadableTextKey.COUNT_FAILED, e);
         }
     }
 
@@ -169,7 +170,7 @@ public class JPAMessageMapper extends Mapper implements MessageMapper {
         try {
             return (Long) entityManager.createNamedQuery("countUnseenMessagesInMailbox").setParameter("idParam", mailboxId).getSingleResult();
         } catch (PersistenceException e) {
-            throw new StorageException(e);
+            throw new StorageException(HumanReadableTextKey.COUNT_FAILED, e);
         }
     }
 
@@ -182,7 +183,7 @@ public class JPAMessageMapper extends Mapper implements MessageMapper {
             final String jql = formulateJQL(mailboxId, query);
             return entityManager.createQuery(jql).getResultList();
         } catch (PersistenceException e) {
-            throw new StorageException(e);
+            throw new StorageException(HumanReadableTextKey.SEARCH_FAILED, e);
         }
     }
 
@@ -220,7 +221,7 @@ public class JPAMessageMapper extends Mapper implements MessageMapper {
         try {
             entityManager.remove(message);
         } catch (PersistenceException e) {
-            throw new StorageException(e);
+            throw new StorageException(HumanReadableTextKey.DELETED_FAILED, e);
         }
     }
 
@@ -232,7 +233,7 @@ public class JPAMessageMapper extends Mapper implements MessageMapper {
         try {
             return entityManager.createNamedQuery("findUnseenMessagesInMailboxOrderByUid").setParameter("idParam", mailboxId).getResultList();
         } catch (PersistenceException e) {
-            throw new StorageException(e);
+            throw new StorageException(HumanReadableTextKey.SEARCH_FAILED, e);
         }
     }
 
@@ -244,7 +245,7 @@ public class JPAMessageMapper extends Mapper implements MessageMapper {
         try {
             return entityManager.createNamedQuery("findRecentMessagesInMailbox").setParameter("idParam", mailboxId).getResultList();
         } catch (PersistenceException e) {
-            throw new StorageException(e);
+            throw new StorageException(HumanReadableTextKey.SEARCH_FAILED, e);
         }
     }
 
@@ -255,7 +256,7 @@ public class JPAMessageMapper extends Mapper implements MessageMapper {
         try {
             entityManager.persist(message);
         } catch (PersistenceException e) {
-            throw new StorageException(e);
+            throw new StorageException(HumanReadableTextKey.SAVE_FAILED, e);
         }
     }
 }

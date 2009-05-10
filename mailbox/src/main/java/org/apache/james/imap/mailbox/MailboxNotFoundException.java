@@ -19,6 +19,8 @@
 
 package org.apache.james.imap.mailbox;
 
+import org.apache.james.imap.api.display.HumanReadableTextKey;
+
 /**
  * Indicates that the failure is caused by a reference to a mailbox which does
  * not exist.
@@ -42,7 +44,7 @@ public class MailboxNotFoundException extends MailboxException {
     private final long id;
     
     public MailboxNotFoundException(long id) {
-        super(message(Long.toString(id)));
+        super(HumanReadableTextKey.MAILBOX_NOT_FOUND, message(Long.toString(id)));
         this.id = id;
         mailboxName = null;
     }
@@ -53,7 +55,7 @@ public class MailboxNotFoundException extends MailboxException {
      *            name of the mailbox, not null
      */
     public MailboxNotFoundException(String mailboxName) {
-        super(message(mailboxName));
+        super(HumanReadableTextKey.MAILBOX_NOT_FOUND, message(mailboxName));
         this.mailboxName = mailboxName;
         this.id = 0;
     }

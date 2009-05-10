@@ -29,29 +29,11 @@ public class MailboxException extends MessagingException {
 
     private final HumanReadableTextKey key;
     
-    public MailboxException(final Exception cause) {
-        this(cause.getMessage(), cause);
-    }
-    
-    public MailboxException(final Throwable cause) {
-        this(cause.getMessage(), cause);
-    }
-    
-    public MailboxException(final String message, final Throwable cause) {
+    public MailboxException(final HumanReadableTextKey key, final String message) {
         super(message);
-        initCause(cause);
-        key = null;
-    }
-    
-    public MailboxException(final String message, final Exception cause) {
-        super(message, cause);
-        key = null;
+        this.key = key;
     }
 
-    public MailboxException(String message) {
-        super(message);
-        key = null;
-    }
     
     public MailboxException(final HumanReadableTextKey key) {
         super(key.toString());
