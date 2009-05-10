@@ -44,7 +44,7 @@ public abstract class JPAMailboxMapper extends Mapper implements MailboxMapper {
     }
 
     /**
-     * @see org.apache.james.imap.jpa.mail.MailboxMapper#hasChildren
+     * @see org.apache.james.imap.store.mail.MailboxMapper#hasChildren
      */
     public boolean hasChildren(String mailboxName, char hierarchyDeliminator) throws StorageException {
         
@@ -56,7 +56,7 @@ public abstract class JPAMailboxMapper extends Mapper implements MailboxMapper {
 
 
     /**
-     * @see org.apache.james.imap.jpa.mail.MailboxMapper#save(org.apache.james.imap.jpa.mail.model.JPAMailbox)
+     * @see org.apache.james.imap.store.mail.MailboxMapper#save(Mailbox)
      */
     public void save(Mailbox mailbox) throws StorageException {
         try {
@@ -67,7 +67,7 @@ public abstract class JPAMailboxMapper extends Mapper implements MailboxMapper {
     }
 
     /**
-     * @see org.apache.james.imap.jpa.mail.MailboxMapper#findMailboxByName(java.lang.String)
+     * @see org.apache.james.imap.store.mail.MailboxMapper#findMailboxByName(java.lang.String)
      */
     public Mailbox findMailboxByName(String name) throws StorageException, MailboxNotFoundException {
         try {
@@ -81,7 +81,7 @@ public abstract class JPAMailboxMapper extends Mapper implements MailboxMapper {
     }
 
     /**
-     * @see org.apache.james.imap.jpa.mail.MailboxMapper#delete(org.apache.james.imap.jpa.mail.model.JPAMailbox)
+     * @see org.apache.james.imap.store.mail.MailboxMapper#delete(Mailbox)
      */
     public void delete(Mailbox mailbox) throws StorageException {
         try {  
@@ -92,7 +92,7 @@ public abstract class JPAMailboxMapper extends Mapper implements MailboxMapper {
     }
 
     /**
-     * @see org.apache.james.imap.jpa.mail.MailboxMapper#findMailboxWithNameLike(java.lang.String)
+     * @see org.apache.james.imap.store.mail.MailboxMapper#findMailboxWithNameLike(java.lang.String)
      */
     @SuppressWarnings("unchecked")
     public List<Mailbox> findMailboxWithNameLike(String name) throws StorageException {
@@ -104,7 +104,7 @@ public abstract class JPAMailboxMapper extends Mapper implements MailboxMapper {
     }
 
     /**
-     * @see org.apache.james.imap.jpa.mail.MailboxMapper#deleteAll()
+     * @see org.apache.james.imap.store.mail.MailboxMapper#deleteAll()
      */
     public void deleteAll() throws StorageException {
         try {
@@ -115,7 +115,7 @@ public abstract class JPAMailboxMapper extends Mapper implements MailboxMapper {
     }
 
     /**
-     * @see org.apache.james.imap.jpa.mail.MailboxMapper#countMailboxesWithName(java.lang.String)
+     * @see org.apache.james.imap.store.mail.MailboxMapper#countMailboxesWithName(java.lang.String)
      */
     public long countMailboxesWithName(String name) throws StorageException {
         try {
@@ -126,7 +126,7 @@ public abstract class JPAMailboxMapper extends Mapper implements MailboxMapper {
     }
 
     /**
-     * @see org.apache.james.imap.jpa.mail.MailboxMapper#findMailboxById(long)
+     * @see org.apache.james.imap.store.mail.MailboxMapper#findMailboxById(long)
      */
     public Mailbox findMailboxById(long mailboxId) throws StorageException, MailboxNotFoundException  {
         try {
@@ -139,7 +139,7 @@ public abstract class JPAMailboxMapper extends Mapper implements MailboxMapper {
     }
 
     /**
-     * @see org.apache.james.imap.jpa.mail.MailboxMapper#consumeNextUid(long)
+     * @see org.apache.james.imap.store.mail.MailboxMapper#consumeNextUid(long)
      */
     public Mailbox consumeNextUid(long mailboxId) throws StorageException, MailboxNotFoundException {
         try {

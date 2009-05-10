@@ -82,56 +82,56 @@ public class JPAMailbox implements Mailbox {
     }
 
     /**
-     * @see org.apache.james.imap.jpa.mail.model.Mailbox#getLastUid()
+     * @see org.apache.james.imap.store.mail.model.Mailbox#getLastUid()
      */
     public long getLastUid() {
         return lastUid;
     }
 
     /**
-     * @see org.apache.james.imap.jpa.mail.model.Mailbox#getMailboxId()
+     * @see org.apache.james.imap.store.mail.model.Mailbox#getMailboxId()
      */
     public long getMailboxId() {
         return mailboxId;
     }
 
     /**
-     * @see org.apache.james.imap.jpa.mail.model.Mailbox#getMessageCount()
+     * @see org.apache.james.imap.store.mail.model.Mailbox#getMessageCount()
      */
     public int getMessageCount() {
         return messageCount;
     }
 
     /**
-     * @see org.apache.james.imap.jpa.mail.model.Mailbox#getName()
+     * @see org.apache.james.imap.store.mail.model.Mailbox#getName()
      */
     public String getName() {
         return name;
     }
 
     /**
-     * @see org.apache.james.imap.jpa.mail.model.Mailbox#getSize()
+     * @see org.apache.james.imap.store.mail.model.Mailbox#getSize()
      */
     public long getSize() {
         return size;
     }
 
     /**
-     * @see org.apache.james.imap.jpa.mail.model.Mailbox#getUidValidity()
+     * @see org.apache.james.imap.store.mail.model.Mailbox#getUidValidity()
      */
     public long getUidValidity() {
         return uidValidity;
     }
 
     /**
-     * @see org.apache.james.imap.jpa.mail.model.Mailbox#consumeUid()
+     * @see org.apache.james.imap.store.mail.model.Mailbox#consumeUid()
      */
     public void consumeUid() {
         ++lastUid;
     }
     
     /**
-     * @see org.apache.james.imap.jpa.mail.model.Mailbox#setName(java.lang.String)
+     * @see org.apache.james.imap.store.mail.model.Mailbox#setName(java.lang.String)
      */
     public void setName(String name) {
         this.name = name;

@@ -69,14 +69,14 @@ public class JPASubscription implements Subscription {
     }
 
     /**
-     * @see org.apache.james.imap.jpa.user.model.Subscription#getMailbox()
+     * @see org.apache.james.imap.store.user.model.Subscription#getMailbox()
      */
     public String getMailbox() {
         return mailbox;
     }
     
     /**
-     * @see org.apache.james.imap.jpa.user.model.Subscription#getUser()
+     * @see org.apache.james.imap.store.user.model.Subscription#getUser()
      */
     public String getUser() {
         return user;

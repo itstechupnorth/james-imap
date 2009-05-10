@@ -39,7 +39,7 @@ public class JPAMessageMapper extends Mapper implements MessageMapper {
     }
 
     /**
-     * @see org.apache.james.imap.jpa.mail.MessageMapper#findInMailbox(org.apache.james.imap.mailbox.MessageRange, long)
+     * @see org.apache.james.imap.store.mail.MessageMapper#findInMailbox(org.apache.james.imap.mailbox.MessageRange, long)
      */
     public List<MailboxMembership> findInMailbox(MessageRange set, long mailboxId) throws StorageException {
         try {
@@ -96,7 +96,7 @@ public class JPAMessageMapper extends Mapper implements MessageMapper {
     }
 
     /**
-     * @see org.apache.james.imap.jpa.mail.MessageMapper#findMarkedForDeletionInMailbox(org.apache.james.imap.mailbox.MessageRange, long)
+     * @see org.apache.james.imap.store.mail.MessageMapper#findMarkedForDeletionInMailbox(org.apache.james.imap.mailbox.MessageRange, long)
      */
     public List<MailboxMembership> findMarkedForDeletionInMailbox(final MessageRange set, final long mailboxId) throws StorageException {
         try {
@@ -153,7 +153,7 @@ public class JPAMessageMapper extends Mapper implements MessageMapper {
     }
 
     /**
-     * @see org.apache.james.imap.jpa.mail.MessageMapper#countMessagesInMailbox(long)
+     * @see org.apache.james.imap.store.mail.MessageMapper#countMessagesInMailbox(long)
      */
     public long countMessagesInMailbox(long mailboxId) throws StorageException {
         try {
@@ -164,7 +164,7 @@ public class JPAMessageMapper extends Mapper implements MessageMapper {
     }
 
     /**
-     * @see org.apache.james.imap.jpa.mail.MessageMapper#countUnseenMessagesInMailbox(long)
+     * @see org.apache.james.imap.store.mail.MessageMapper#countUnseenMessagesInMailbox(long)
      */
     public long countUnseenMessagesInMailbox(long mailboxId) throws StorageException {
         try {
@@ -175,7 +175,7 @@ public class JPAMessageMapper extends Mapper implements MessageMapper {
     }
 
     /**
-     * @see org.apache.james.imap.jpa.mail.MessageMapper#searchMailbox(long, org.apache.james.imap.mailbox.SearchQuery)
+     * @see org.apache.james.imap.store.mail.MessageMapper#searchMailbox(long, org.apache.james.imap.mailbox.SearchQuery)
      */
     @SuppressWarnings("unchecked")
     public List<MailboxMembership> searchMailbox(long mailboxId, SearchQuery query) throws StorageException {
@@ -215,7 +215,7 @@ public class JPAMessageMapper extends Mapper implements MessageMapper {
     }
 
     /**
-     * @see org.apache.james.imap.jpa.mail.MessageMapper#delete(org.apache.james.imap.jpa.mail.model.JPAMessage)
+     * @see org.apache.james.imap.store.mail.MessageMapper#delete(MailboxMembership)
      */
     public void delete(MailboxMembership message) throws StorageException {
         try {
@@ -226,7 +226,7 @@ public class JPAMessageMapper extends Mapper implements MessageMapper {
     }
 
     /**
-     * @see org.apache.james.imap.jpa.mail.MessageMapper#findUnseenMessagesInMailboxOrderByUid(long)
+     * @see org.apache.james.imap.store.mail.MessageMapper#findUnseenMessagesInMailboxOrderByUid(long)
      */
     @SuppressWarnings("unchecked")
     public List<MailboxMembership> findUnseenMessagesInMailboxOrderByUid(final long mailboxId)  throws StorageException {
@@ -238,7 +238,7 @@ public class JPAMessageMapper extends Mapper implements MessageMapper {
     }
 
     /**
-     * @see org.apache.james.imap.jpa.mail.MessageMapper#findRecentMessagesInMailbox(long)
+     * @see org.apache.james.imap.store.mail.MessageMapper#findRecentMessagesInMailbox(long)
      */
     @SuppressWarnings("unchecked")
     public List<MailboxMembership> findRecentMessagesInMailbox(final long mailboxId) throws StorageException {
@@ -250,7 +250,7 @@ public class JPAMessageMapper extends Mapper implements MessageMapper {
     }
 
     /**
-     * @see org.apache.james.imap.jpa.mail.MessageMapper#save(org.apache.james.imap.jpa.mail.model.JPAMessage)
+     * @see org.apache.james.imap.store.mail.MessageMapper#save(MailboxMembership)
      */
     public void save(MailboxMembership message) throws StorageException {
         try {

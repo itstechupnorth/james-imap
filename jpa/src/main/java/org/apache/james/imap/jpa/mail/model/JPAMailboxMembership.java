@@ -178,70 +178,70 @@ public class JPAMailboxMembership implements MailboxMembership {
     }
 
     /**
-     * @see org.apache.james.imap.jpa.mail.model.MailboxMembership#getInternalDate()
+     * @see org.apache.james.imap.store.mail.model.MailboxMembership#getInternalDate()
      */
     public Date getInternalDate() {
         return internalDate;
     }
 
     /**
-     * @see org.apache.james.imap.jpa.mail.model.MailboxMembership#getMailboxId()
+     * @see org.apache.james.imap.store.mail.model.MailboxMembership#getMailboxId()
      */
     public long getMailboxId() {
         return mailboxId;
     }
 
     /**
-     * @see org.apache.james.imap.jpa.mail.model.Document#getSize()
+     * @see org.apache.james.imap.store.mail.model.MailboxMembership#getSize()
      */
     public int getSize() {
         return size;
     }
 
     /**
-     * @see org.apache.james.imap.jpa.mail.model.MailboxMembership#getUid()
+     * @see org.apache.james.imap.store.mail.model.MailboxMembership#getUid()
      */
     public long getUid() {
         return uid;
     }
 
     /**
-     * @see org.apache.james.imap.jpa.mail.model.Document#isAnswered()
+     * @see org.apache.james.imap.store.mail.model.MailboxMembership#isAnswered()
      */
     public boolean isAnswered() {
         return answered;
     }
 
     /**
-     * @see org.apache.james.imap.jpa.mail.model.MailboxMembership#isDeleted()
+     * @see org.apache.james.imap.store.mail.model.MailboxMembership#isDeleted()
      */
     public boolean isDeleted() {
         return deleted;
     }
 
     /**
-     * @see org.apache.james.imap.jpa.mail.model.MailboxMembership#isDraft()
+     * @see org.apache.james.imap.store.mail.model.MailboxMembership#isDraft()
      */
     public boolean isDraft() {
         return draft;
     }
 
     /**
-     * @see org.apache.james.imap.jpa.mail.model.MailboxMembership#isFlagged()
+     * @see org.apache.james.imap.store.mail.model.MailboxMembership#isFlagged()
      */
     public boolean isFlagged() {
         return flagged;
     }
 
     /**
-     * @see org.apache.james.imap.jpa.mail.model.MailboxMembership#isRecent()
+     * @see org.apache.james.imap.store.mail.model.MailboxMembership#isRecent()
      */
     public boolean isRecent() {
         return recent;
     }
 
     /**
-     * @see org.apache.james.imap.jpa.mail.model.MailboxMembership#isSeen()
+     * @see org.apache.james.imap.store.mail.model.MailboxMembership#isSeen()
      */
     public boolean isSeen() {
         return seen;
@@ -256,14 +256,14 @@ public class JPAMailboxMembership implements MailboxMembership {
     }
     
     /**
-     * @see org.apache.james.imap.jpa.mail.model.MailboxMembership#unsetRecent()
+     * @see org.apache.james.imap.store.mail.model.MailboxMembership#unsetRecent()
      */
     public void unsetRecent() {
         recent = false;
     }
     
     /**
-     * @see org.apache.james.imap.jpa.mail.model.MailboxMembership#setFlags(javax.mail.Flags)
+     * @see org.apache.james.imap.store.mail.model.MailboxMembership#setFlags(javax.mail.Flags)
      */
     public void setFlags(Flags flags) {
         answered = flags.contains(Flags.Flag.ANSWERED);
@@ -275,7 +275,7 @@ public class JPAMailboxMembership implements MailboxMembership {
     }
 
     /**
-     * @see org.apache.james.imap.jpa.mail.model.MailboxMembership#createFlags()
+     * @see org.apache.james.imap.store.mail.model.MailboxMembership#createFlags()
      */
     public Flags createFlags() {
         final Flags flags = new Flags();

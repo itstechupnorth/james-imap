@@ -83,14 +83,14 @@ public class JPAMessage implements Document {
     }
 
     /**
-     * @see org.apache.james.imap.jpa.mail.model.Document#getHeaders()
+     * @see org.apache.james.imap.store.mail.model.Document#getHeaders()
      */
     public List<Header> getHeaders() {
         return new ArrayList<Header>(headers);
     }
     
     /**
-     * @see org.apache.james.imap.jpa.mail.model.Document#getBodyContent()
+     * @see org.apache.james.imap.store.mail.model.Document#getBodyContent()
      */    
     public ByteBuffer getBodyContent() {
         final ByteBuffer contentBuffer = getFullContent();

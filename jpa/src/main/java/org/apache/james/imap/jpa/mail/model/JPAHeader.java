@@ -51,8 +51,6 @@ public class JPAHeader implements Comparable<Header>, Header {
     
     /**
      * Copies the content of an existing header.
-     * @param mailboxId mailbox ID
-     * @param uid UI
      * @param header
      */
     public JPAHeader(JPAHeader header) {
@@ -67,21 +65,21 @@ public class JPAHeader implements Comparable<Header>, Header {
     }
 
     /**
-     * @see org.apache.james.imap.jpa.mail.model.Header#getField()
+     * @see org.apache.james.imap.store.mail.model.Header#getField()
      */
     public String getField() {
         return field;
     }
 
     /**
-     * @see org.apache.james.imap.jpa.mail.model.Header#getLineNumber()
+     * @see org.apache.james.imap.store.mail.model.Header#getLineNumber()
      */
     public int getLineNumber() {
         return lineNumber;
     }
 
     /**
-     * @see org.apache.james.imap.jpa.mail.model.Header#getValue()
+     * @see org.apache.james.imap.store.mail.model.Header#getValue()
      */
     public String getValue() {
         return value;

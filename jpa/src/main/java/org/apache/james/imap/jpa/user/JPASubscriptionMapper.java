@@ -42,7 +42,7 @@ public class JPASubscriptionMapper implements SubscriptionMapper {
 
     /**
      * @throws SubscriptionException 
-     * @see org.apache.james.imap.jpa.user.SubscriptionManager#begin()
+     * @see org.apache.james.imap.store.user.SubscriptionMapper#begin()
      */
     public void begin() throws SubscriptionException {
         try {
@@ -53,8 +53,7 @@ public class JPASubscriptionMapper implements SubscriptionMapper {
     }
 
     /**
-     * @throws SubscriptionException 
-     * @see org.apache.james.imap.jpa.user.SubscriptionManager#commit()
+     * @throws SubscriptionException
      */
     public void commit() throws SubscriptionException {
         try {
@@ -66,7 +65,7 @@ public class JPASubscriptionMapper implements SubscriptionMapper {
 
     /**
      * @throws SubscriptionException 
-     * @see org.apache.james.imap.jpa.user.SubscriptionManager#findFindMailboxSubscriptionForUser(java.lang.String, java.lang.String)
+     * @see org.apache.james.imap.store.user.SubscriptionMapper#findFindMailboxSubscriptionForUser(java.lang.String, java.lang.String)
      */
     public Subscription findFindMailboxSubscriptionForUser(final String user, final String mailbox) throws SubscriptionException {
         try {
@@ -81,7 +80,7 @@ public class JPASubscriptionMapper implements SubscriptionMapper {
 
     /**
      * @throws SubscriptionException 
-     * @see org.apache.james.imap.jpa.user.SubscriptionManager#save(org.apache.james.imap.jpa.user.model.Subscription)
+     * @see org.apache.james.imap.store.user.SubscriptionMapper#save(Subscription)
      */
     public void save(Subscription subscription) throws SubscriptionException {
         try {
@@ -93,7 +92,7 @@ public class JPASubscriptionMapper implements SubscriptionMapper {
 
     /**
      * @throws SubscriptionException 
-     * @see org.apache.james.imap.jpa.user.SubscriptionManager#findSubscriptionsForUser(java.lang.String)
+     * @see org.apache.james.imap.store.user.SubscriptionMapper#findSubscriptionsForUser(java.lang.String)
      */
     @SuppressWarnings("unchecked")
     public List<Subscription> findSubscriptionsForUser(String user) throws SubscriptionException {
@@ -106,7 +105,7 @@ public class JPASubscriptionMapper implements SubscriptionMapper {
 
     /**
      * @throws SubscriptionException 
-     * @see org.apache.james.imap.jpa.user.SubscriptionManager#delete(org.apache.james.imap.jpa.user.model.Subscription)
+     * @see org.apache.james.imap.store.user.SubscriptionMapper#delete(Subscription)
      */
     public void delete(Subscription subscription) throws SubscriptionException {
         try {
