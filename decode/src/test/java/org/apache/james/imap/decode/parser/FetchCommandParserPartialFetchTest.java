@@ -29,7 +29,7 @@ import org.apache.james.imap.api.message.BodyFetchElement;
 import org.apache.james.imap.api.message.FetchData;
 import org.apache.james.imap.api.message.IdRange;
 import org.apache.james.imap.decode.ImapRequestLineReader;
-import org.apache.james.imap.decode.ProtocolException;
+import org.apache.james.imap.decode.DecodingException;
 import org.apache.james.imap.decode.parser.FetchCommandParser;
 import org.jmock.Expectations;
 import org.jmock.integration.junit3.MockObjectTestCase;
@@ -79,7 +79,7 @@ public class FetchCommandParserPartialFetchTest extends MockObjectTestCase {
                             .getBytes("US-ASCII")), new ByteArrayOutputStream());
             parser.decode(command, reader, "A01", false, new MockLogger());
             fail("Number of octets must be non-zero");
-        } catch (ProtocolException e) {
+        } catch (DecodingException e) {
             // expected
         }
     }

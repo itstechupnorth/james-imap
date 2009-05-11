@@ -49,14 +49,14 @@ public class ImapRequestLineReader {
     /**
      * Reads the next regular, non-space character in the current line. Spaces
      * are skipped over, but end-of-line characters will cause a
-     * {@link ProtocolException} to be thrown. This method will continue to
+     * {@link DecodingException} to be thrown. This method will continue to
      * return the same character until the {@link #consume()} method is called.
      * 
      * @return The next non-space character.
-     * @throws ProtocolException
+     * @throws DecodingException
      *             If the end-of-line or end-of-stream is reached.
      */
-    public char nextWordChar() throws ProtocolException {
+    public char nextWordChar() throws DecodingException {
         char next = nextChar();
         while (next == ' ') {
             consume();
@@ -64,7 +64,7 @@ public class ImapRequestLineReader {
         }
 
         if (next == '\r' || next == '\n') {
-            throw new ProtocolException(HumanReadableTextKey.ILLEGAL_ARGUMENTS, "Missing argument.");
+            throw new DecodingException(HumanReadableTextKey.ILLEGAL_ARGUMENTS, "Missing argument.");
         }
 
         return next;
@@ -78,21 +78,21 @@ public class ImapRequestLineReader {
      * @return The next character TODO: character encoding is variable and
      *         cannot be determine at the token level; this char is not accurate
      *         reported; should be an octet
-     * @throws ProtocolException
+     * @throws DecodingException
      *             If the end-of-stream is reached.
      */
-    public char nextChar() throws ProtocolException {
+    public char nextChar() throws DecodingException {
         if (!nextSeen) {
             int next = -1;
 
             try {
                 next = input.read();
             } catch (IOException e) {
-                throw new ProtocolException(HumanReadableTextKey.SOCKET_IO_FAILURE, 
+                throw new DecodingException(HumanReadableTextKey.SOCKET_IO_FAILURE, 
                         "Error reading from stream.", e);
             }
             if (next == -1) {
-                throw new ProtocolException(HumanReadableTextKey.ILLEGAL_ARGUMENTS, 
+                throw new DecodingException(HumanReadableTextKey.ILLEGAL_ARGUMENTS, 
                         "Unexpected end of stream.");
             }
 
@@ -106,11 +106,11 @@ public class ImapRequestLineReader {
      * Moves the request line reader to end of the line, checking that no
      * non-space character are found.
      * 
-     * @throws ProtocolException
+     * @throws DecodingException
      *             If more non-space tokens are found in this line, or the
      *             end-of-file is reached.
      */
-    public void eol() throws ProtocolException {
+    public void eol() throws DecodingException {
         char next = nextChar();
 
         // Ignore trailing spaces.
@@ -127,7 +127,7 @@ public class ImapRequestLineReader {
 
         // Check if we found extra characters.
         if (next != '\n') {
-            throw new ProtocolException(HumanReadableTextKey.ILLEGAL_ARGUMENTS, 
+            throw new DecodingException(HumanReadableTextKey.ILLEGAL_ARGUMENTS, 
                     "Expected end-of-line, found '" + (char) next + "'.");
         }
     }
@@ -139,11 +139,11 @@ public class ImapRequestLineReader {
      * character has been seen, the method moves to the next character, consumes
      * it, and moves on to the subsequent one.
      * 
-     * @throws ProtocolException
+     * @throws DecodingException
      *             if a the current character can't be obtained (eg we're at
      *             end-of-file).
      */
-    public char consume() throws ProtocolException {
+    public char consume() throws DecodingException {
         char current = nextChar();
         nextSeen = false;
         nextChar = 0;
@@ -158,10 +158,10 @@ public class ImapRequestLineReader {
      * @param holder
      *            A char array which will be filled with chars read from the
      *            underlying reader.
-     * @throws ProtocolException
+     * @throws DecodingException
      *             If a char can't be read into each array element.
      */
-    public void read(byte[] holder) throws ProtocolException {
+    public void read(byte[] holder) throws DecodingException {
         int readTotal = 0;
         try {
             while (readTotal < holder.length) {
@@ -169,7 +169,7 @@ public class ImapRequestLineReader {
                 count = input
                         .read(holder, readTotal, holder.length - readTotal);
                 if (count == -1) {
-                    throw new ProtocolException(HumanReadableTextKey.ILLEGAL_ARGUMENTS, "Unexpected end of stream.");
+                    throw new DecodingException(HumanReadableTextKey.ILLEGAL_ARGUMENTS, "Unexpected end of stream.");
                 }
                 readTotal += count;
             }
@@ -177,7 +177,7 @@ public class ImapRequestLineReader {
             nextSeen = false;
             nextChar = 0;
         } catch (IOException e) {
-            throw new ProtocolException(HumanReadableTextKey.SOCKET_IO_FAILURE, 
+            throw new DecodingException(HumanReadableTextKey.SOCKET_IO_FAILURE, 
                     "Error reading from stream.", e);
         }
 
@@ -187,21 +187,21 @@ public class ImapRequestLineReader {
      * Sends a server command continuation request '+' back to the client,
      * requesting more data to be sent.
      */
-    public void commandContinuationRequest() throws ProtocolException {
+    public void commandContinuationRequest() throws DecodingException {
         try {
             output.write('+');
             output.write('\r');
             output.write('\n');
             output.flush();
         } catch (IOException e) {
-            throw new ProtocolException(
+            throw new DecodingException(
                     HumanReadableTextKey.SOCKET_IO_FAILURE, 
                     "Unexpected exception in sending command continuation request.",
                     e);
         }
     }
 
-    public void consumeLine() throws ProtocolException {
+    public void consumeLine() throws DecodingException {
         char next = nextChar();
         while (next != '\n') {
             consume();

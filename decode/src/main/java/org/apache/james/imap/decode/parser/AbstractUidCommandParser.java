@@ -23,7 +23,7 @@ import org.apache.commons.logging.Log;
 import org.apache.james.imap.api.ImapCommand;
 import org.apache.james.imap.api.ImapMessage;
 import org.apache.james.imap.decode.ImapRequestLineReader;
-import org.apache.james.imap.decode.ProtocolException;
+import org.apache.james.imap.decode.DecodingException;
 import org.apache.james.imap.decode.base.AbstractImapCommandParser;
 
 abstract class AbstractUidCommandParser extends AbstractImapCommandParser {
@@ -33,13 +33,13 @@ abstract class AbstractUidCommandParser extends AbstractImapCommandParser {
     }
 
     protected ImapMessage decode(ImapCommand command,
-            ImapRequestLineReader request, String tag, Log logger) throws ProtocolException {
+            ImapRequestLineReader request, String tag, Log logger) throws DecodingException {
         final ImapMessage result = decode(command, request, tag, false, logger);
         return result;
     }
 
     public ImapMessage decode(ImapRequestLineReader request, String tag,
-            boolean useUids, Log logger) throws ProtocolException {
+            boolean useUids, Log logger) throws DecodingException {
         final ImapCommand command = getCommand();
         final ImapMessage result = decode(command, request, tag, useUids, logger);
         return result;
@@ -47,5 +47,5 @@ abstract class AbstractUidCommandParser extends AbstractImapCommandParser {
 
     protected abstract ImapMessage decode(ImapCommand command,
             ImapRequestLineReader request, String tag, boolean useUids, Log logger)
-            throws ProtocolException;
+            throws DecodingException;
 }

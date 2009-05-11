@@ -33,7 +33,7 @@ import org.apache.james.imap.api.process.SelectedMailbox;
 import org.apache.james.imap.api.process.ImapProcessor.Responder;
 import org.apache.james.imap.decode.ImapDecoder;
 import org.apache.james.imap.decode.ImapRequestLineReader;
-import org.apache.james.imap.decode.ProtocolException;
+import org.apache.james.imap.decode.DecodingException;
 import org.apache.james.imap.encode.ImapEncoder;
 import org.apache.james.imap.encode.ImapResponseComposer;
 import org.apache.james.imap.encode.base.ImapResponseComposerImpl;
@@ -88,7 +88,7 @@ public final class ImapRequestHandler  {
             final Log logger = session.getLog();
             try {
                 request.nextChar();
-            } catch (ProtocolException e) {
+            } catch (DecodingException e) {
                 logger.debug("Unexpected end of line. Cannot handle request: ",
                         e);
                 abandon(output, session);
@@ -105,7 +105,7 @@ public final class ImapRequestHandler  {
                     // This allows us
                     // to clean up after a protocol error.
                     request.consumeLine();
-                } catch (ProtocolException e) {
+                } catch (DecodingException e) {
                     // Cannot clean up. No recovery is therefore possible.
                     // Abandon connection.
                     if (logger.isInfoEnabled()) {

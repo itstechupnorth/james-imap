@@ -26,7 +26,7 @@ import org.apache.james.imap.api.ImapMessage;
 import org.apache.james.imap.api.display.HumanReadableTextKey;
 import org.apache.james.imap.api.message.StatusDataItems;
 import org.apache.james.imap.decode.ImapRequestLineReader;
-import org.apache.james.imap.decode.ProtocolException;
+import org.apache.james.imap.decode.DecodingException;
 import org.apache.james.imap.decode.base.AbstractImapCommandParser;
 
 class StatusCommandParser extends AbstractImapCommandParser {
@@ -36,7 +36,7 @@ class StatusCommandParser extends AbstractImapCommandParser {
     }
 
     StatusDataItems statusDataItems(ImapRequestLineReader request)
-            throws ProtocolException {
+            throws DecodingException {
         StatusDataItems items = new StatusDataItems();
 
         request.nextWordChar();
@@ -56,7 +56,7 @@ class StatusCommandParser extends AbstractImapCommandParser {
     }
 
     private void addItem(String nextWord, StatusDataItems items)
-            throws ProtocolException {
+            throws DecodingException {
         if (nextWord.equals(ImapConstants.STATUS_MESSAGES)) {
             items.setMessages(true);
         } else if (nextWord.equals(ImapConstants.STATUS_RECENT)) {
@@ -68,13 +68,13 @@ class StatusCommandParser extends AbstractImapCommandParser {
         } else if (nextWord.equals(ImapConstants.STATUS_UNSEEN)) {
             items.setUnseen(true);
         } else {
-            throw new ProtocolException(HumanReadableTextKey.ILLEGAL_ARGUMENTS, 
+            throw new DecodingException(HumanReadableTextKey.ILLEGAL_ARGUMENTS, 
                     "Unknown status item: '" + nextWord + "'");
         }
     }
 
     protected ImapMessage decode(ImapCommand command,
-            ImapRequestLineReader request, String tag, Log logger) throws ProtocolException {
+            ImapRequestLineReader request, String tag, Log logger) throws DecodingException {
         final String mailboxName = mailbox(request);
         final StatusDataItems statusDataItems = statusDataItems(request);
         endLine(request);

@@ -120,7 +120,7 @@ public class FetchPartPathDecoderTest extends TestCase {
         try {
             decoder.decode("1.34.BOGUS");
             fail("Expected protocol exception to be thrown");
-        } catch (ProtocolException e) {
+        } catch (DecodingException e) {
             // expected
         }
     }
@@ -130,7 +130,7 @@ public class FetchPartPathDecoderTest extends TestCase {
         try {
             decoder.decode("1.34.BOGUS.44.34234.324");
             fail("Expected protocol exception to be thrown");
-        } catch (ProtocolException e) {
+        } catch (DecodingException e) {
             // expected
         }
     }

@@ -104,7 +104,7 @@ public class DecoderUtilsTest extends TestCase {
         try {
             DecoderUtils.decodeDateTime(datetime);
             fail("Bad date-time" + datetime);
-        } catch (ProtocolException e) {
+        } catch (DecodingException e) {
             // expected
         }
     }
@@ -271,14 +271,14 @@ public class DecoderUtilsTest extends TestCase {
         try {
             DecoderUtils.decodeDigit('/');
             fail("/ is not a digit");
-        } catch (ProtocolException e) {
+        } catch (DecodingException e) {
             // expected
         }
 
         try {
             DecoderUtils.decodeDigit(':');
             fail(": is not a digit");
-        } catch (ProtocolException e) {
+        } catch (DecodingException e) {
             // expected
         }
     }
@@ -324,7 +324,7 @@ public class DecoderUtilsTest extends TestCase {
         try {
             DecoderUtils.decodeMonth(one, two, three);
             fail(one + two + three + "is not a month");
-        } catch (ProtocolException e) {
+        } catch (DecodingException e) {
             // expected
         }
     }
@@ -354,7 +354,7 @@ public class DecoderUtilsTest extends TestCase {
         try {
             DecoderUtils.decodeYear(one, two, three, four);
             fail(one + two + three + four + "is not a month");
-        } catch (ProtocolException e) {
+        } catch (DecodingException e) {
             // expected
         }
     }
@@ -434,7 +434,7 @@ public class DecoderUtilsTest extends TestCase {
             DecoderUtils.decodeZone(zone.charAt(0), zone.charAt(1), zone
                     .charAt(2), zone.charAt(3), zone.charAt(4));
             fail(zone + "is not a timezone");
-        } catch (ProtocolException e) {
+        } catch (DecodingException e) {
             // expected
         }
     }
@@ -497,7 +497,7 @@ public class DecoderUtilsTest extends TestCase {
         try {
             DecoderUtils.decodeNumber(number.charAt(0), number.charAt(1));
             fail(number + "is not a number");
-        } catch (ProtocolException e) {
+        } catch (DecodingException e) {
             // expected
         }
     }

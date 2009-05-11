@@ -93,11 +93,11 @@ public final class DecoderUtils {
      * @param dateString
      *            standard IMAP date-time
      * @return <code>Date</code> with time component, not null
-     * @throws ProtocolException
+     * @throws DecodingException
      *             when this conversion fails
      */
     public static final Date decodeDateTime(CharSequence chars)
-            throws ProtocolException {
+            throws DecodingException {
         if (isDateTime(chars)) {
             final char dayHigh = chars.charAt(0);
             final char dayLow = chars.charAt(1);
@@ -153,7 +153,7 @@ public final class DecoderUtils {
                         .append(chars.toString()).toString();
             }
 
-            throw new ProtocolException(HumanReadableTextKey.ILLEGAL_ARGUMENTS, message);
+            throw new DecodingException(HumanReadableTextKey.ILLEGAL_ARGUMENTS, message);
         }
 
     }
@@ -184,13 +184,13 @@ public final class DecoderUtils {
     }
 
     public static int decodeNumber(final char high, final char low)
-            throws ProtocolException {
+            throws DecodingException {
         return (10 * decodeDigit(high)) + decodeDigit(low);
     }
 
     public static int decodeZone(char zoneDeterminent, char zoneDigitOne,
             char zoneDigitTwo, char zoneDigitThree, char zoneDigitFour)
-            throws ProtocolException {
+            throws DecodingException {
         if (isInvalidZone(zoneDeterminent, zoneDigitOne, zoneDigitTwo,
                 zoneDigitThree, zoneDigitFour)) {
             throw createTimeZoneException(zoneDeterminent, zoneDigitOne,
@@ -212,10 +212,10 @@ public final class DecoderUtils {
         return result;
     }
 
-    private static ProtocolException createTimeZoneException(
+    private static DecodingException createTimeZoneException(
             char zoneDeterminent, char zoneDigitOne, char zoneDigitTwo,
             char zoneDigitThree, char zoneDigitFour) {
-        return new ProtocolException(HumanReadableTextKey.ILLEGAL_ARGUMENTS, 
+        return new DecodingException(HumanReadableTextKey.ILLEGAL_ARGUMENTS, 
                 "Expected time-zone but was "
                 + zoneDeterminent + zoneDigitOne + zoneDigitTwo
                 + zoneDigitThree + zoneDigitFour);
@@ -259,11 +259,11 @@ public final class DecoderUtils {
      * @param yearChar
      *            forth digit
      * @return {@link Calendar} year
-     * @throws ProtocolException
+     * @throws DecodingException
      */
     public static int decodeYear(final char milleniumChar,
             final char centuryChar, final char decadeChar, final char yearChar)
-            throws ProtocolException {
+            throws DecodingException {
         return (decodeDigit(milleniumChar) * 1000)
                 + (decodeDigit(centuryChar) * 100)
                 + (decodeDigit(decadeChar) * 10) + decodeDigit(yearChar);
@@ -279,11 +279,11 @@ public final class DecoderUtils {
      * @param monthThirdChar
      *            third character in a month triple
      * @return {@link Calendar} month (<code>JAN</code>=0)
-     * @throws ProtocolException
+     * @throws DecodingException
      */
     public static int decodeMonth(final char monthFirstChar,
             final char monthSecondChar, final char monthThirdChar)
-            throws ProtocolException {
+            throws DecodingException {
         final int result;
         // Bitwise magic! Eliminate possibility by three switches
         int possibleMonths = ALL_MONTH_BITS;
@@ -436,14 +436,14 @@ public final class DecoderUtils {
                 result = Calendar.DECEMBER;
                 break;
             default:
-                throw new ProtocolException(HumanReadableTextKey.ILLEGAL_ARGUMENTS, 
+                throw new DecodingException(HumanReadableTextKey.ILLEGAL_ARGUMENTS, 
                         "Expected month name but was " + monthFirstChar + monthSecondChar + monthThirdChar);
         }
         return result;
     }
 
     public static int decodeFixedDay(final char dayHigh, final char dayLow)
-            throws ProtocolException {
+            throws DecodingException {
         int result = decodeDigit(dayLow);
         switch (dayHigh) {
             case '0':
@@ -457,7 +457,7 @@ public final class DecoderUtils {
             case ' ':
                 return result;
         }
-        throw new ProtocolException(HumanReadableTextKey.ILLEGAL_ARGUMENTS, 
+        throw new DecodingException(HumanReadableTextKey.ILLEGAL_ARGUMENTS, 
                 "Expected SP, 0, 1, 2, or 3 but was " + dayHigh);
     }
 
@@ -466,14 +466,14 @@ public final class DecoderUtils {
      * 
      * @param character
      * @return a digit
-     * @throws ProtocolException
+     * @throws DecodingException
      *             if the char is not a digit
      */
     public static final int decodeDigit(char character)
-            throws ProtocolException {
+            throws DecodingException {
         final int result = character - ASCII_ZERO;
         if (result < 0 || result > 9) {
-            throw new ProtocolException(HumanReadableTextKey.ILLEGAL_ARGUMENTS, 
+            throw new DecodingException(HumanReadableTextKey.ILLEGAL_ARGUMENTS, 
                     "Expected a digit but was '" + character + "'");
         }
         return result;

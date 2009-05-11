@@ -28,7 +28,7 @@ import org.apache.james.imap.decode.ImapCommandParser;
 import org.apache.james.imap.decode.ImapCommandParserFactory;
 import org.apache.james.imap.decode.ImapDecoder;
 import org.apache.james.imap.decode.ImapRequestLineReader;
-import org.apache.james.imap.decode.ProtocolException;
+import org.apache.james.imap.decode.DecodingException;
 import org.apache.james.imap.decode.base.AbstractImapCommandParser;
 
 public class DefaultImapDecoder implements ImapDecoder {
@@ -50,7 +50,7 @@ public class DefaultImapDecoder implements ImapDecoder {
         try {
             final String tag = AbstractImapCommandParser.tag(request);
             message = decodeCommandTagged(request, logger, tag, session);
-        } catch (ProtocolException e) {
+        } catch (DecodingException e) {
             logger.debug("Cannot parse tag", e);
 
             // When the tag cannot be read, there is something seriously wrong.
@@ -73,7 +73,7 @@ public class DefaultImapDecoder implements ImapDecoder {
             final String commandName = AbstractImapCommandParser.atom(request);
             message = decodeCommandNamed(request, tag, commandName, logger,
                     session);
-        } catch (ProtocolException e) {
+        } catch (DecodingException e) {
             logger.debug("Error during initial request parsing", e);
             message = unknownCommand(tag, session);
         }

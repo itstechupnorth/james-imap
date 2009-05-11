@@ -62,7 +62,7 @@ public class FetchPartPathDecoder {
     }
 
     public int decode(final CharSequence sectionSpecification)
-            throws ProtocolException {
+            throws DecodingException {
         init();
         sectionType = decode(0, sectionSpecification);
         prunePath();
@@ -81,7 +81,7 @@ public class FetchPartPathDecoder {
     }
 
     private int decode(final int at, final CharSequence sectionSpecification)
-            throws ProtocolException {
+            throws DecodingException {
         final int result;
         final int length = sectionSpecification.length();
         if (at < length) {
@@ -148,7 +148,7 @@ public class FetchPartPathDecoder {
                     break;
 
                 default:
-                    throw new ProtocolException(HumanReadableTextKey.ILLEGAL_ARGUMENTS, 
+                    throw new DecodingException(HumanReadableTextKey.ILLEGAL_ARGUMENTS, 
                             "Did not expect '" + next + "' here in body specification.");
             }
         } else {
@@ -159,140 +159,140 @@ public class FetchPartPathDecoder {
     }
 
     private int mime(int at, CharSequence sectionSpecification)
-            throws ProtocolException {
+            throws DecodingException {
         if (sectionSpecification.length() == at + 4) {
             mustBeI(sectionSpecification, at + 1);
             mustBeM(sectionSpecification, at + 2);
             mustBeE(sectionSpecification, at + 3);
             storePartial();
         } else {
-            throw new ProtocolException(HumanReadableTextKey.ILLEGAL_ARGUMENTS, "Unknown body specification");
+            throw new DecodingException(HumanReadableTextKey.ILLEGAL_ARGUMENTS, "Unknown body specification");
         }
         return MIME;
     }
 
     private void mustBeI(CharSequence sectionSpecification, int position)
-            throws ProtocolException {
+            throws DecodingException {
         final char i = sectionSpecification.charAt(position);
         if (!(i == 'i' || i == 'I')) {
-            throw new ProtocolException(HumanReadableTextKey.ILLEGAL_ARGUMENTS, "Unknown body specification");
+            throw new DecodingException(HumanReadableTextKey.ILLEGAL_ARGUMENTS, "Unknown body specification");
         }
     }
 
     private void mustBeM(CharSequence sectionSpecification, int position)
-            throws ProtocolException {
+            throws DecodingException {
         final char next = sectionSpecification.charAt(position);
         if (!(next == 'm' || next == 'M')) {
-            throw new ProtocolException(HumanReadableTextKey.ILLEGAL_ARGUMENTS, "Unknown body specification");
+            throw new DecodingException(HumanReadableTextKey.ILLEGAL_ARGUMENTS, "Unknown body specification");
         }
     }
 
     private void mustBeN(CharSequence sectionSpecification, int position)
-            throws ProtocolException {
+            throws DecodingException {
         final char next = sectionSpecification.charAt(position);
         if (!(next == 'n' || next == 'N')) {
-            throw new ProtocolException(HumanReadableTextKey.ILLEGAL_ARGUMENTS, "Unknown body specification");
+            throw new DecodingException(HumanReadableTextKey.ILLEGAL_ARGUMENTS, "Unknown body specification");
         }
     }
 
     private void mustBeO(CharSequence sectionSpecification, int position)
-            throws ProtocolException {
+            throws DecodingException {
         final char next = sectionSpecification.charAt(position);
         if (!(next == 'o' || next == 'O')) {
-            throw new ProtocolException(HumanReadableTextKey.ILLEGAL_ARGUMENTS, "Unknown body specification");
+            throw new DecodingException(HumanReadableTextKey.ILLEGAL_ARGUMENTS, "Unknown body specification");
         }
     }
 
     private void mustBeE(CharSequence sectionSpecification, int position)
-            throws ProtocolException {
+            throws DecodingException {
         final char next = sectionSpecification.charAt(position);
         if (!(next == 'e' || next == 'E')) {
-            throw new ProtocolException(HumanReadableTextKey.ILLEGAL_ARGUMENTS, "Unknown body specification");
+            throw new DecodingException(HumanReadableTextKey.ILLEGAL_ARGUMENTS, "Unknown body specification");
         }
     }
 
     private void mustBeA(CharSequence sectionSpecification, int position)
-            throws ProtocolException {
+            throws DecodingException {
         final char next = sectionSpecification.charAt(position);
         if (!(next == 'a' || next == 'A')) {
-            throw new ProtocolException(HumanReadableTextKey.ILLEGAL_ARGUMENTS, "Unknown body specification");
+            throw new DecodingException(HumanReadableTextKey.ILLEGAL_ARGUMENTS, "Unknown body specification");
         }
     }
 
     private void mustBeD(CharSequence sectionSpecification, int position)
-            throws ProtocolException {
+            throws DecodingException {
         final char next = sectionSpecification.charAt(position);
         if (!(next == 'd' || next == 'D')) {
-            throw new ProtocolException(HumanReadableTextKey.ILLEGAL_ARGUMENTS, "Unknown body specification");
+            throw new DecodingException(HumanReadableTextKey.ILLEGAL_ARGUMENTS, "Unknown body specification");
         }
     }
 
     private void mustBeR(CharSequence sectionSpecification, int position)
-            throws ProtocolException {
+            throws DecodingException {
         final char next = sectionSpecification.charAt(position);
         if (!(next == 'r' || next == 'R')) {
-            throw new ProtocolException(HumanReadableTextKey.ILLEGAL_ARGUMENTS, "Unknown body specification");
+            throw new DecodingException(HumanReadableTextKey.ILLEGAL_ARGUMENTS, "Unknown body specification");
         }
     }
 
     private void mustBeX(CharSequence sectionSpecification, int position)
-            throws ProtocolException {
+            throws DecodingException {
         final char next = sectionSpecification.charAt(position);
         if (!(next == 'x' || next == 'X')) {
-            throw new ProtocolException(HumanReadableTextKey.ILLEGAL_ARGUMENTS, "Unknown body specification");
+            throw new DecodingException(HumanReadableTextKey.ILLEGAL_ARGUMENTS, "Unknown body specification");
         }
     }
 
     private void mustBeT(CharSequence sectionSpecification, int position)
-            throws ProtocolException {
+            throws DecodingException {
         final char next = sectionSpecification.charAt(position);
         if (!(next == 't' || next == 'T')) {
-            throw new ProtocolException(HumanReadableTextKey.ILLEGAL_ARGUMENTS, "Unknown body specification");
+            throw new DecodingException(HumanReadableTextKey.ILLEGAL_ARGUMENTS, "Unknown body specification");
         }
     }
 
     private void mustBeF(CharSequence sectionSpecification, int position)
-            throws ProtocolException {
+            throws DecodingException {
         final char next = sectionSpecification.charAt(position);
         if (!(next == 'f' || next == 'F')) {
-            throw new ProtocolException(HumanReadableTextKey.ILLEGAL_ARGUMENTS, "Unknown body specification");
+            throw new DecodingException(HumanReadableTextKey.ILLEGAL_ARGUMENTS, "Unknown body specification");
         }
     }
 
     private void mustBeL(CharSequence sectionSpecification, int position)
-            throws ProtocolException {
+            throws DecodingException {
         final char next = sectionSpecification.charAt(position);
         if (!(next == 'l' || next == 'L')) {
-            throw new ProtocolException(HumanReadableTextKey.ILLEGAL_ARGUMENTS, "Unknown body specification");
+            throw new DecodingException(HumanReadableTextKey.ILLEGAL_ARGUMENTS, "Unknown body specification");
         }
     }
 
     private void mustBeS(CharSequence sectionSpecification, int position)
-            throws ProtocolException {
+            throws DecodingException {
         final char next = sectionSpecification.charAt(position);
         if (!(next == 's' || next == 'S')) {
-            throw new ProtocolException(HumanReadableTextKey.ILLEGAL_ARGUMENTS, "Unknown body specification");
+            throw new DecodingException(HumanReadableTextKey.ILLEGAL_ARGUMENTS, "Unknown body specification");
         }
     }
 
     private void mustBeDot(CharSequence sectionSpecification, int position)
-            throws ProtocolException {
+            throws DecodingException {
         final char next = sectionSpecification.charAt(position);
         if (!(next == '.')) {
-            throw new ProtocolException(HumanReadableTextKey.ILLEGAL_ARGUMENTS, "Unknown body specification");
+            throw new DecodingException(HumanReadableTextKey.ILLEGAL_ARGUMENTS, "Unknown body specification");
         }
     }
 
     private void mustBeOpenParen(CharSequence sectionSpecification, int position)
-            throws ProtocolException {
+            throws DecodingException {
         final char next = sectionSpecification.charAt(position);
         if (!(next == '(')) {
-            throw new ProtocolException(HumanReadableTextKey.ILLEGAL_ARGUMENTS, "Unknown body specification");
+            throw new DecodingException(HumanReadableTextKey.ILLEGAL_ARGUMENTS, "Unknown body specification");
         }
     }
 
     private int header(int at, CharSequence sectionSpecification)
-            throws ProtocolException {
+            throws DecodingException {
         final int result;
         final int length = sectionSpecification.length();
         if (length > at + 5) {
@@ -308,13 +308,13 @@ public class FetchPartPathDecoder {
                 result = headerFields(at + 6, sectionSpecification);
             }
         } else {
-            throw new ProtocolException(HumanReadableTextKey.ILLEGAL_ARGUMENTS, "Unknown body specification");
+            throw new DecodingException(HumanReadableTextKey.ILLEGAL_ARGUMENTS, "Unknown body specification");
         }
         return result;
     }
 
     private int headerFields(int at, CharSequence sectionSpecification)
-            throws ProtocolException {
+            throws DecodingException {
         final int result;
         final int length = sectionSpecification.length();
         if (length > at + 7) {
@@ -340,31 +340,31 @@ public class FetchPartPathDecoder {
                         result = HEADER_NOT_FIELDS;
                         namesStartAt = skipSpaces(at + 11, sectionSpecification);
                     } else {
-                        throw new ProtocolException(HumanReadableTextKey.ILLEGAL_ARGUMENTS, 
+                        throw new DecodingException(HumanReadableTextKey.ILLEGAL_ARGUMENTS, 
                                 "Unknown body specification");
                     }
                     break;
                 default:
-                    throw new ProtocolException(HumanReadableTextKey.ILLEGAL_ARGUMENTS, "Unknown body specification");
+                    throw new DecodingException(HumanReadableTextKey.ILLEGAL_ARGUMENTS, "Unknown body specification");
             }
             mustBeOpenParen(sectionSpecification, namesStartAt);
             readHeaderNames(namesStartAt + 1, sectionSpecification);
 
         } else {
-            throw new ProtocolException(HumanReadableTextKey.ILLEGAL_ARGUMENTS, "Unknown body specification");
+            throw new DecodingException(HumanReadableTextKey.ILLEGAL_ARGUMENTS, "Unknown body specification");
         }
         return result;
     }
 
     private void readHeaderNames(final int at,
-            final CharSequence sectionSpecification) throws ProtocolException {
+            final CharSequence sectionSpecification) throws DecodingException {
         names = new ArrayList<String>();
         final int firstWordStart = skipSpaces(at, sectionSpecification);
         readHeaderNames(firstWordStart, firstWordStart, sectionSpecification);
     }
 
     private void readHeaderNames(final int at, final int lastWordStart,
-            final CharSequence sectionSpecification) throws ProtocolException {
+            final CharSequence sectionSpecification) throws DecodingException {
         if (at < sectionSpecification.length()) {
             final char next = sectionSpecification.charAt(at);
             switch (next) {
@@ -380,7 +380,7 @@ public class FetchPartPathDecoder {
                     readHeaderNames(at + 1, lastWordStart, sectionSpecification);
             }
         } else {
-            throw new ProtocolException(HumanReadableTextKey.ILLEGAL_ARGUMENTS, "Closing parenthesis missing.");
+            throw new DecodingException(HumanReadableTextKey.ILLEGAL_ARGUMENTS, "Closing parenthesis missing.");
         }
     }
 
@@ -410,20 +410,20 @@ public class FetchPartPathDecoder {
     }
 
     private int text(int at, CharSequence sectionSpecification)
-            throws ProtocolException {
+            throws DecodingException {
         if (sectionSpecification.length() == at + 4) {
             mustBeE(sectionSpecification, at + 1);
             mustBeX(sectionSpecification, at + 2);
             mustBeT(sectionSpecification, at + 3);
             storePartial();
         } else {
-            throw new ProtocolException(HumanReadableTextKey.ILLEGAL_ARGUMENTS, "Unknown body specification");
+            throw new DecodingException(HumanReadableTextKey.ILLEGAL_ARGUMENTS, "Unknown body specification");
         }
         return TEXT;
     }
 
     private int digit(final int at, final CharSequence sectionSpecification,
-            int digit) throws ProtocolException {
+            int digit) throws DecodingException {
         final int result;
         digit(digit);
         result = decode(at + 1, sectionSpecification);

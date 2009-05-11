@@ -24,7 +24,7 @@ import org.apache.james.imap.api.ImapConstants;
 import org.apache.james.imap.api.ImapMessage;
 import org.apache.james.imap.api.message.IdRange;
 import org.apache.james.imap.decode.ImapRequestLineReader;
-import org.apache.james.imap.decode.ProtocolException;
+import org.apache.james.imap.decode.DecodingException;
 
 class CopyCommandParser extends AbstractUidCommandParser {
 	
@@ -34,7 +34,7 @@ class CopyCommandParser extends AbstractUidCommandParser {
 
     protected ImapMessage decode(ImapCommand command,
             ImapRequestLineReader request, String tag, boolean useUids, Log logger)
-            throws ProtocolException {
+            throws DecodingException {
         IdRange[] idSet = parseIdRange(request);
         String mailboxName = mailbox(request);
         endLine(request);

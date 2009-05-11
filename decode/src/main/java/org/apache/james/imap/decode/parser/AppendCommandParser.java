@@ -28,7 +28,7 @@ import org.apache.james.imap.api.ImapCommand;
 import org.apache.james.imap.api.ImapConstants;
 import org.apache.james.imap.api.ImapMessage;
 import org.apache.james.imap.decode.ImapRequestLineReader;
-import org.apache.james.imap.decode.ProtocolException;
+import org.apache.james.imap.decode.DecodingException;
 import org.apache.james.imap.decode.base.AbstractImapCommandParser;
 
 class AppendCommandParser extends AbstractImapCommandParser {
@@ -43,7 +43,7 @@ class AppendCommandParser extends AbstractImapCommandParser {
      * with no flags set.
      */
     public Flags optionalAppendFlags(ImapRequestLineReader request)
-            throws ProtocolException {
+            throws DecodingException {
         char next = request.nextWordChar();
         if (next == '(') {
             return flagList(request);
@@ -57,7 +57,7 @@ class AppendCommandParser extends AbstractImapCommandParser {
      * argument. If not, returns null.
      */
     public Date optionalDateTime(ImapRequestLineReader request)
-            throws ProtocolException {
+            throws DecodingException {
         char next = request.nextWordChar();
         if (next == '"') {
             return dateTime(request);
@@ -67,7 +67,7 @@ class AppendCommandParser extends AbstractImapCommandParser {
     }
 
     protected ImapMessage decode(ImapCommand command,
-            ImapRequestLineReader request, String tag, Log logger) throws ProtocolException {
+            ImapRequestLineReader request, String tag, Log logger) throws DecodingException {
         String mailboxName = mailbox(request);
         Flags flags = optionalAppendFlags(request);
         if (flags == null) {

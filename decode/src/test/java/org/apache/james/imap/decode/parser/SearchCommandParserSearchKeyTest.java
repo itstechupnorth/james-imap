@@ -29,7 +29,7 @@ import org.apache.james.imap.api.message.IdRange;
 import org.apache.james.imap.api.message.request.DayMonthYear;
 import org.apache.james.imap.api.message.request.SearchKey;
 import org.apache.james.imap.decode.ImapRequestLineReader;
-import org.apache.james.imap.decode.ProtocolException;
+import org.apache.james.imap.decode.DecodingException;
 import org.jmock.integration.junit3.MockObjectTestCase;
 
 public class SearchCommandParserSearchKeyTest extends MockObjectTestCase {
@@ -689,7 +689,7 @@ public class SearchCommandParserSearchKeyTest extends MockObjectTestCase {
         try {
             parser.searchKey(reader, null, false);
             fail("Expected protocol exception to be throw since input is invalid");
-        } catch (ProtocolException e) {
+        } catch (DecodingException e) {
             // expected
         }
     }

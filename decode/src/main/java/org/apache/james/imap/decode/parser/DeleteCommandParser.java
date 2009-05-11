@@ -24,7 +24,7 @@ import org.apache.james.imap.api.ImapCommand;
 import org.apache.james.imap.api.ImapConstants;
 import org.apache.james.imap.api.ImapMessage;
 import org.apache.james.imap.decode.ImapRequestLineReader;
-import org.apache.james.imap.decode.ProtocolException;
+import org.apache.james.imap.decode.DecodingException;
 import org.apache.james.imap.decode.base.AbstractImapCommandParser;
 
 class DeleteCommandParser extends AbstractImapCommandParser {
@@ -34,7 +34,7 @@ class DeleteCommandParser extends AbstractImapCommandParser {
     }
 
     protected ImapMessage decode(ImapCommand command,
-            ImapRequestLineReader request, String tag, Log logger) throws ProtocolException {
+            ImapRequestLineReader request, String tag, Log logger) throws DecodingException {
         String mailboxName = mailbox(request);
         endLine(request);
         final ImapMessageFactory factory = getMessageFactory();

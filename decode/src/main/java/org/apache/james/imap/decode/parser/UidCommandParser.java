@@ -27,7 +27,7 @@ import org.apache.james.imap.decode.DelegatingImapCommandParser;
 import org.apache.james.imap.decode.ImapCommandParser;
 import org.apache.james.imap.decode.ImapCommandParserFactory;
 import org.apache.james.imap.decode.ImapRequestLineReader;
-import org.apache.james.imap.decode.ProtocolException;
+import org.apache.james.imap.decode.DecodingException;
 import org.apache.james.imap.decode.base.AbstractImapCommandParser;
 
 class UidCommandParser extends AbstractImapCommandParser implements
@@ -54,7 +54,7 @@ class UidCommandParser extends AbstractImapCommandParser implements
     }
 
     protected ImapMessage decode(ImapCommand command,
-            ImapRequestLineReader request, String tag, Log logger) throws ProtocolException {
+            ImapRequestLineReader request, String tag, Log logger) throws DecodingException {
         // TODO: check the logic against the specification:
         // TODO: suspect that it is now bust
         // TODO: the command written may be wrong
@@ -65,7 +65,7 @@ class UidCommandParser extends AbstractImapCommandParser implements
         // TODO: replace abstract class with interface
         if (helperCommand == null
                 || !(helperCommand instanceof AbstractUidCommandParser)) {
-            throw new ProtocolException(HumanReadableTextKey.ILLEGAL_ARGUMENTS, 
+            throw new DecodingException(HumanReadableTextKey.ILLEGAL_ARGUMENTS, 
                     "Invalid UID command: '" + commandName + "'");
         }
         final AbstractUidCommandParser uidEnabled = (AbstractUidCommandParser) helperCommand;

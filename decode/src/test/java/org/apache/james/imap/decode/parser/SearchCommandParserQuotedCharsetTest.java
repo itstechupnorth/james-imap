@@ -35,7 +35,7 @@ import org.apache.james.imap.api.message.request.SearchKey;
 import org.apache.james.imap.api.message.response.StatusResponse;
 import org.apache.james.imap.api.message.response.StatusResponseFactory;
 import org.apache.james.imap.decode.ImapRequestLineReader;
-import org.apache.james.imap.decode.ProtocolException;
+import org.apache.james.imap.decode.DecodingException;
 import org.jmock.Expectations;
 import org.jmock.integration.junit3.MockObjectTestCase;
 
@@ -201,7 +201,7 @@ public class SearchCommandParserQuotedCharsetTest extends MockObjectTestCase {
                     new ByteArrayOutputStream());
             parser.decode(command, reader, TAG, false, new MockLogger());
             fail("A protocol exception should be thrown when charset is incompatible with input");
-        } catch (ProtocolException e) {
+        } catch (DecodingException e) {
             // expected
         }
     }

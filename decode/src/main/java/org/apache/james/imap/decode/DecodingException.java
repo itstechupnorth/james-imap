@@ -22,20 +22,43 @@ package org.apache.james.imap.decode;
 import org.apache.james.imap.api.display.HumanReadableTextKey;
 
 /**
- * @version $Revision: 109034 $
+ * <p>Indicates that decoding failured.</p>
+ * <p>All decoding exception should be supplied with:</p>
+ * <ul>
+ * <li>A finely grained descriptive string</li>
+ * <li>A coursely grained key for i18n</li>
+ * </ul>
+ * <p>
+ * The following keys are frequently used when decoding:
+ * </p>
+ * <ul>
+ * <li>{@link HumanReadableTextKey#ILLEGAL_ARGUMENTS}</li>
+ * <li>{@link HumanReadableTextKey#BAD_IO_ENCODING}</li>
+ * </ul>
  */
-public class ProtocolException extends Exception {
+public class DecodingException extends Exception {
 
     private static final long serialVersionUID = 8719349386686261422L;
 
     private final HumanReadableTextKey key;
     
-    public ProtocolException(final HumanReadableTextKey key, final String s) {
+    /**
+     * Constructs a decoding exception
+     * @param key coursely grained i18n, not null
+     * @param s specific description suitable for logging, not null
+     */
+    public DecodingException(final HumanReadableTextKey key, final String s) {
         super(s);
         this.key = key;
     }
 
-    public ProtocolException(final HumanReadableTextKey key, final String s, final Throwable t) {
+    /**
+     * Constructs a decoding exception.
+     * @param key coursely grained i18n, not null
+     * @param s specific description suitable for logging, not null
+     * @param t cause, not null
+     */
+    public DecodingException(final HumanReadableTextKey key, final String s, final Throwable t) {
         super(s, t);
         this.key = key;
     }
@@ -43,7 +66,7 @@ public class ProtocolException extends Exception {
     /**
      * Gets the message key.
      * 
-     * @return the key, possibly null
+     * @return the key, not null
      */
     public final HumanReadableTextKey getKey() {
         return key;

@@ -46,7 +46,7 @@ import org.apache.james.imap.decode.DecoderUtils;
 import org.apache.james.imap.decode.ImapCommandParser;
 import org.apache.james.imap.decode.ImapRequestLineReader;
 import org.apache.james.imap.decode.MessagingImapCommandParser;
-import org.apache.james.imap.decode.ProtocolException;
+import org.apache.james.imap.decode.DecodingException;
 
 /**
  * <p>
@@ -113,7 +113,7 @@ public abstract class AbstractImapCommandParser implements ImapCommandParser, Me
             ImapMessage message = decode(command, request, tag, logger);
             result = message;
 
-        } catch (ProtocolException e) {
+        } catch (DecodingException e) {
             logger.debug("Cannot parse protocol ", e);
             result = messageFactory.taggedBad(tag, command,
                     HumanReadableTextKey.ILLEGAL_ARGUMENTS);
@@ -131,17 +131,17 @@ public abstract class AbstractImapCommandParser implements ImapCommandParser, Me
      * @param logger TODO
      * @param logger TODO
      * @return <code>ImapCommandMessage</code>, not null
-     * @throws ProtocolException
+     * @throws DecodingException
      *             if the request cannot be parsed
      */
     protected abstract ImapMessage decode(ImapCommand command,
-            ImapRequestLineReader request, String tag, Log logger) throws ProtocolException;
+            ImapRequestLineReader request, String tag, Log logger) throws DecodingException;
 
     /**
      * Reads an argument of type "atom" from the request.
      */
     public static String atom(ImapRequestLineReader request)
-            throws ProtocolException {
+            throws DecodingException {
         return consumeWord(request, new ATOM_CHARValidator());
     }
 
@@ -149,7 +149,7 @@ public abstract class AbstractImapCommandParser implements ImapCommandParser, Me
      * Reads a command "tag" from the request.
      */
     public static String tag(ImapRequestLineReader request)
-            throws ProtocolException {
+            throws DecodingException {
         CharacterValidator validator = new TagCharValidator();
         return consumeWord(request, validator);
     }
@@ -158,7 +158,7 @@ public abstract class AbstractImapCommandParser implements ImapCommandParser, Me
      * Reads an argument of type "astring" from the request.
      */
     public String astring(ImapRequestLineReader request)
-            throws ProtocolException {
+            throws DecodingException {
         return astring(request, null);
     }
 
@@ -166,7 +166,7 @@ public abstract class AbstractImapCommandParser implements ImapCommandParser, Me
      * Reads an argument of type "astring" from the request.
      */
     public String astring(ImapRequestLineReader request, Charset charset)
-            throws ProtocolException {
+            throws DecodingException {
         char next = request.nextWordChar();
         switch (next) {
             case '"':
@@ -182,7 +182,7 @@ public abstract class AbstractImapCommandParser implements ImapCommandParser, Me
      * Reads an argument of type "nstring" from the request.
      */
     public String nstring(ImapRequestLineReader request)
-            throws ProtocolException {
+            throws DecodingException {
         char next = request.nextWordChar();
         switch (next) {
             case '"':
@@ -194,7 +194,7 @@ public abstract class AbstractImapCommandParser implements ImapCommandParser, Me
                 if ("NIL".equals(value)) {
                     return null;
                 } else {
-                    throw new ProtocolException(HumanReadableTextKey.ILLEGAL_ARGUMENTS, 
+                    throw new DecodingException(HumanReadableTextKey.ILLEGAL_ARGUMENTS, 
                             "Invalid nstring value: valid values are '\"...\"', '{12} CRLF *CHAR8', and 'NIL'.");
                 }
         }
@@ -210,7 +210,7 @@ public abstract class AbstractImapCommandParser implements ImapCommandParser, Me
      * as an astring.
      */
     public String mailbox(ImapRequestLineReader request)
-            throws ProtocolException {
+            throws DecodingException {
         String mailbox = astring(request);
         if (mailbox.equalsIgnoreCase(ImapConstants.INBOX_NAME)) {
             return ImapConstants.INBOX_NAME;
@@ -225,10 +225,10 @@ public abstract class AbstractImapCommandParser implements ImapCommandParser, Me
      * @param request
      *            <code>ImapRequestLineReader</code>, not null
      * @return <code>DayMonthYear</code>, not null
-     * @throws ProtocolException
+     * @throws DecodingException
      */
     public DayMonthYear date(ImapRequestLineReader request)
-            throws ProtocolException {
+            throws DecodingException {
 
         final char one = request.consume();
         final char two = request.consume();
@@ -257,10 +257,10 @@ public abstract class AbstractImapCommandParser implements ImapCommandParser, Me
     }
 
     private void nextIsDash(ImapRequestLineReader request)
-            throws ProtocolException {
+            throws DecodingException {
         final char next = request.consume();
         if (next != '-') {
-            throw new ProtocolException(HumanReadableTextKey.ILLEGAL_ARGUMENTS, "Expected dash but was " + next);
+            throw new DecodingException(HumanReadableTextKey.ILLEGAL_ARGUMENTS, "Expected dash but was " + next);
         }
     }
 
@@ -268,13 +268,13 @@ public abstract class AbstractImapCommandParser implements ImapCommandParser, Me
      * Reads a "date-time" argument from the request.
      */
     public Date dateTime(ImapRequestLineReader request)
-            throws ProtocolException {
+            throws DecodingException {
         char next = request.nextWordChar();
         String dateString;
         if (next == '"') {
             dateString = consumeQuoted(request);
         } else {
-            throw new ProtocolException(HumanReadableTextKey.ILLEGAL_ARGUMENTS, "DateTime values must be quoted.");
+            throw new DecodingException(HumanReadableTextKey.ILLEGAL_ARGUMENTS, "DateTime values must be quoted.");
         }
 
         return DecoderUtils.decodeDateTime(dateString);
@@ -286,7 +286,7 @@ public abstract class AbstractImapCommandParser implements ImapCommandParser, Me
      * and an exception is thrown if invalid characters are encountered.
      */
     protected static String consumeWord(ImapRequestLineReader request,
-            CharacterValidator validator) throws ProtocolException {
+            CharacterValidator validator) throws DecodingException {
         StringBuffer atom = new StringBuffer();
 
         char next = request.nextWordChar();
@@ -295,7 +295,7 @@ public abstract class AbstractImapCommandParser implements ImapCommandParser, Me
                 atom.append(next);
                 request.consume();
             } else {
-                throw new ProtocolException(HumanReadableTextKey.ILLEGAL_ARGUMENTS, "Invalid character: '" + next + "'");
+                throw new DecodingException(HumanReadableTextKey.ILLEGAL_ARGUMENTS, "Invalid character: '" + next + "'");
             }
             next = request.nextChar();
         }
@@ -316,7 +316,7 @@ public abstract class AbstractImapCommandParser implements ImapCommandParser, Me
      *            or null for <code>US-ASCII</code>
      */
     protected String consumeLiteral(final ImapRequestLineReader request,
-            final Charset charset) throws ProtocolException {
+            final Charset charset) throws DecodingException {
         if (charset == null) {
             return consumeLiteral(request, US_ASCII);
         } else {
@@ -326,7 +326,7 @@ public abstract class AbstractImapCommandParser implements ImapCommandParser, Me
         }
     }
 
-    protected byte[] consumeLiteral(final ImapRequestLineReader request) throws ProtocolException {
+    protected byte[] consumeLiteral(final ImapRequestLineReader request) throws DecodingException {
         // The 1st character must be '{'
         consumeChar(request, '{');
 
@@ -365,7 +365,7 @@ public abstract class AbstractImapCommandParser implements ImapCommandParser, Me
     }
 
     private String decode(final Charset charset, final ByteBuffer buffer)
-            throws ProtocolException {
+            throws DecodingException {
         try {
 
             final String result = charset.newDecoder().onMalformedInput(
@@ -374,13 +374,13 @@ public abstract class AbstractImapCommandParser implements ImapCommandParser, Me
             return result;
 
         } catch (IllegalStateException e) {
-            throw new ProtocolException(HumanReadableTextKey.BAD_IO_ENCODING, "Bad character encoding", e);
+            throw new DecodingException(HumanReadableTextKey.BAD_IO_ENCODING, "Bad character encoding", e);
         } catch (MalformedInputException e) {
-            throw new ProtocolException(HumanReadableTextKey.BAD_IO_ENCODING, "Bad character encoding", e);
+            throw new DecodingException(HumanReadableTextKey.BAD_IO_ENCODING, "Bad character encoding", e);
         } catch (UnmappableCharacterException e) {
-            throw new ProtocolException(HumanReadableTextKey.BAD_IO_ENCODING, "Bad character encoding", e);
+            throw new DecodingException(HumanReadableTextKey.BAD_IO_ENCODING, "Bad character encoding", e);
         } catch (CharacterCodingException e) {
-            throw new ProtocolException(HumanReadableTextKey.BAD_IO_ENCODING, "Bad character encoding", e);
+            throw new DecodingException(HumanReadableTextKey.BAD_IO_ENCODING, "Bad character encoding", e);
         }
     }
 
@@ -389,10 +389,10 @@ public abstract class AbstractImapCommandParser implements ImapCommandParser, Me
      * TODO: This is too liberal, the spec insists on \r\n for new lines.
      * 
      * @param request
-     * @throws ProtocolException
+     * @throws DecodingException
      */
     private void consumeCRLF(ImapRequestLineReader request)
-            throws ProtocolException {
+            throws DecodingException {
         char next = request.nextChar();
         if (next != '\n') {
             consumeChar(request, '\r');
@@ -405,10 +405,10 @@ public abstract class AbstractImapCommandParser implements ImapCommandParser, Me
      * expected one. This method should be used when the
      */
     protected void consumeChar(ImapRequestLineReader request, char expected)
-            throws ProtocolException {
+            throws DecodingException {
         char consumed = request.consume();
         if (consumed != expected) {
-            throw new ProtocolException(HumanReadableTextKey.ILLEGAL_ARGUMENTS, 
+            throw new DecodingException(HumanReadableTextKey.ILLEGAL_ARGUMENTS, 
                     "Expected:'" + expected + "' found:'" + consumed + "'");
         }
     }
@@ -417,7 +417,7 @@ public abstract class AbstractImapCommandParser implements ImapCommandParser, Me
      * Reads a quoted string value from the request.
      */
     protected String consumeQuoted(ImapRequestLineReader request)
-            throws ProtocolException {
+            throws DecodingException {
         return consumeQuoted(request, null);
     }
 
@@ -425,7 +425,7 @@ public abstract class AbstractImapCommandParser implements ImapCommandParser, Me
      * Reads a quoted string value from the request.
      */
     protected String consumeQuoted(ImapRequestLineReader request,
-            Charset charset) throws ProtocolException {
+            Charset charset) throws DecodingException {
         if (charset == null) {
             return consumeQuoted(request, US_ASCII);
         } else {
@@ -442,7 +442,7 @@ public abstract class AbstractImapCommandParser implements ImapCommandParser, Me
      * Reads a "flags" argument from the request.
      */
     public Flags flagList(ImapRequestLineReader request)
-            throws ProtocolException {
+            throws DecodingException {
         Flags flags = new Flags();
         request.nextWordChar();
         consumeChar(request, '(');
@@ -467,12 +467,12 @@ public abstract class AbstractImapCommandParser implements ImapCommandParser, Me
     /**
      * Reads an argument of type "number" from the request.
      */
-    public long number(ImapRequestLineReader request) throws ProtocolException {
+    public long number(ImapRequestLineReader request) throws DecodingException {
         return readDigits(request, 0, 0, true);
     }
 
     private long readDigits(final ImapRequestLineReader request, int add,
-            final long total, final boolean first) throws ProtocolException {
+            final long total, final boolean first) throws DecodingException {
         final char next;
         if (first) {
             next = request.nextWordChar();
@@ -510,7 +510,7 @@ public abstract class AbstractImapCommandParser implements ImapCommandParser, Me
             case '\t':
                 return currentTotal;
             default:
-                throw new ProtocolException(HumanReadableTextKey.ILLEGAL_ARGUMENTS, "Expected a digit but was " + next);
+                throw new DecodingException(HumanReadableTextKey.ILLEGAL_ARGUMENTS, "Expected a digit but was " + next);
         }
     }
 
@@ -521,10 +521,10 @@ public abstract class AbstractImapCommandParser implements ImapCommandParser, Me
      * shonky.)
      */
     public long nzNumber(ImapRequestLineReader request)
-            throws ProtocolException {
+            throws DecodingException {
         long number = number(request);
         if (number == 0) {
-            throw new ProtocolException(HumanReadableTextKey.ILLEGAL_ARGUMENTS, "Zero value not permitted.");
+            throw new DecodingException(HumanReadableTextKey.ILLEGAL_ARGUMENTS, "Zero value not permitted.");
         }
         return number;
     }
@@ -546,10 +546,10 @@ public abstract class AbstractImapCommandParser implements ImapCommandParser, Me
      * 
      * @param request
      *            The request
-     * @throws ProtocolException
+     * @throws DecodingException
      *             If characters are encountered before the endLine.
      */
-    public void endLine(ImapRequestLineReader request) throws ProtocolException {
+    public void endLine(ImapRequestLineReader request) throws DecodingException {
         request.eol();
     }
 
@@ -558,7 +558,7 @@ public abstract class AbstractImapCommandParser implements ImapCommandParser, Me
      * supports a single range of values.
      */
     public IdRange[] parseIdRange(ImapRequestLineReader request)
-            throws ProtocolException {
+            throws DecodingException {
         CharacterValidator validator = new MessageSetCharValidator();
         String nextWord = consumeWord(request, validator);
 
@@ -582,7 +582,7 @@ public abstract class AbstractImapCommandParser implements ImapCommandParser, Me
         return (IdRange[]) rangeList.toArray(new IdRange[rangeList.size()]);
     }
 
-    private IdRange parseRange(String range) throws ProtocolException {
+    private IdRange parseRange(String range) throws DecodingException {
         int pos = range.indexOf(':');
         try {
             if (pos == -1) {
@@ -594,7 +594,7 @@ public abstract class AbstractImapCommandParser implements ImapCommandParser, Me
                 return new IdRange(lowVal, highVal);
             }
         } catch (NumberFormatException e) {
-            throw new ProtocolException(HumanReadableTextKey.ILLEGAL_ARGUMENTS, "Invalid message set.", e);
+            throw new DecodingException(HumanReadableTextKey.ILLEGAL_ARGUMENTS, "Invalid message set.", e);
         }
     }
 
@@ -675,7 +675,7 @@ public abstract class AbstractImapCommandParser implements ImapCommandParser, Me
         }
 
         public String decode(ImapRequestLineReader request)
-                throws ProtocolException {
+                throws DecodingException {
             try {
                 decoder.reset();
                 char next = request.nextChar();
@@ -688,7 +688,7 @@ public abstract class AbstractImapCommandParser implements ImapCommandParser, Me
                         request.consume();
                         next = request.nextChar();
                         if (!isQuotedSpecial(next)) {
-                            throw new ProtocolException(HumanReadableTextKey.ILLEGAL_ARGUMENTS, 
+                            throw new DecodingException(HumanReadableTextKey.ILLEGAL_ARGUMENTS, 
                                     "Invalid escaped character in quote: '"
                                             + next + "'");
                         }
@@ -704,23 +704,23 @@ public abstract class AbstractImapCommandParser implements ImapCommandParser, Me
                 return result;
 
             } catch (IllegalStateException e) {
-                throw new ProtocolException(HumanReadableTextKey.BAD_IO_ENCODING, "Bad character encoding", e);
+                throw new DecodingException(HumanReadableTextKey.BAD_IO_ENCODING, "Bad character encoding", e);
             }
         }
 
-        private void completeDecoding() throws ProtocolException {
+        private void completeDecoding() throws DecodingException {
             decodeByteBufferToCharacterBuffer(true);
             flush();
             charBuffer.flip();
         }
 
-        private void flush() throws ProtocolException {
+        private void flush() throws DecodingException {
             final CoderResult coderResult = decoder.flush(charBuffer);
             if (coderResult.isOverflow()) {
                 upsizeCharBuffer();
                 flush();
             } else if (coderResult.isError()) {
-                throw new ProtocolException(HumanReadableTextKey.BAD_IO_ENCODING, "Bad character encoding");
+                throw new DecodingException(HumanReadableTextKey.BAD_IO_ENCODING, "Bad character encoding");
             }
         }
 
@@ -732,20 +732,20 @@ public abstract class AbstractImapCommandParser implements ImapCommandParser, Me
          *            is the input ended
          */
         private CoderResult decodeByteBufferToCharacterBuffer(
-                final boolean endOfInput) throws ProtocolException {
+                final boolean endOfInput) throws DecodingException {
             buffer.flip();
             return decodeMoreBytesToCharacterBuffer(endOfInput);
         }
 
         private CoderResult decodeMoreBytesToCharacterBuffer(
-                final boolean endOfInput) throws ProtocolException {
+                final boolean endOfInput) throws DecodingException {
             final CoderResult coderResult = decoder.decode(buffer, charBuffer,
                     endOfInput);
             if (coderResult.isOverflow()) {
                 upsizeCharBuffer();
                 return decodeMoreBytesToCharacterBuffer(endOfInput);
             } else if (coderResult.isError()) {
-                throw new ProtocolException(HumanReadableTextKey.BAD_IO_ENCODING, "Bad character encoding");
+                throw new DecodingException(HumanReadableTextKey.BAD_IO_ENCODING, "Bad character encoding");
             } else if (coderResult.isUnderflow()) {
                 buffer.clear();
             }

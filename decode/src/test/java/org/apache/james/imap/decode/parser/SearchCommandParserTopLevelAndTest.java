@@ -32,7 +32,7 @@ import org.apache.james.imap.api.message.IdRange;
 import org.apache.james.imap.api.message.request.DayMonthYear;
 import org.apache.james.imap.api.message.request.SearchKey;
 import org.apache.james.imap.decode.ImapRequestLineReader;
-import org.apache.james.imap.decode.ProtocolException;
+import org.apache.james.imap.decode.DecodingException;
 import org.jmock.integration.junit3.MockObjectTestCase;
 
 public class SearchCommandParserTopLevelAndTest extends MockObjectTestCase {
@@ -184,7 +184,7 @@ public class SearchCommandParserTopLevelAndTest extends MockObjectTestCase {
     }
 
     private void check(List<SearchKey> keys, StringBuffer buffer)
-            throws UnsupportedEncodingException, ProtocolException {
+            throws UnsupportedEncodingException, DecodingException {
         buffer.append("\r\n");
         String input = buffer.toString();
         SearchKey key = SearchKey.buildAnd(keys);

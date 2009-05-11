@@ -24,7 +24,7 @@ import org.apache.james.imap.api.ImapCommand;
 import org.apache.james.imap.api.ImapConstants;
 import org.apache.james.imap.api.ImapMessage;
 import org.apache.james.imap.decode.ImapRequestLineReader;
-import org.apache.james.imap.decode.ProtocolException;
+import org.apache.james.imap.decode.DecodingException;
 
 class ListCommandParser extends AbstractUidCommandParser {
 
@@ -45,7 +45,7 @@ class ListCommandParser extends AbstractUidCommandParser {
      * @return An argument of type "list_mailbox"
      */
     public String listMailbox(ImapRequestLineReader request)
-            throws ProtocolException {
+            throws DecodingException {
         char next = request.nextWordChar();
         switch (next) {
             case '"':
@@ -68,7 +68,7 @@ class ListCommandParser extends AbstractUidCommandParser {
 
     protected ImapMessage decode(ImapCommand command,
             ImapRequestLineReader request, String tag, boolean useUids, Log logger)
-            throws ProtocolException {
+            throws DecodingException {
         String referenceName = mailbox(request);
         String mailboxPattern = listMailbox(request);
         endLine(request);
