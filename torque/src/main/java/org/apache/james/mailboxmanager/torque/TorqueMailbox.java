@@ -808,7 +808,7 @@ public class TorqueMailbox implements Mailbox {
     }
 
     /**
-     * @see {@link Mailbox#getMetaData(boolean, MailboxSession, FetchGroup)}
+     * @see org.apache.james.imap.mailbox.Mailbox#getMetaData(boolean, MailboxSession, org.apache.james.imap.mailbox.Mailbox.MetaData.FetchGroup)
      */
     public MetaData getMetaData(boolean resetRecent, MailboxSession mailboxSession, Mailbox.MetaData.FetchGroup fetchGroup) throws MailboxException {
         final long[] recent = recent(resetRecent, mailboxSession);

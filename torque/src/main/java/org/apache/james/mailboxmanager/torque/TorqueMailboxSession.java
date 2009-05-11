@@ -106,21 +106,21 @@ public class TorqueMailboxSession implements MailboxSession, MailboxSession.User
 	}
     
     /**
-     * @see {@link MailboxSession#getOtherUsersSpace()}
+     * @see org.apache.james.imap.mailbox.MailboxSession#getOtherUsersSpace()
      */
     public Namespace getOtherUsersSpace() {
         return otherUsersSpace;
     }
 
     /**
-     * @see {@link MailboxSession#getPersonalSpace()}
+     * @see org.apache.james.imap.mailbox.MailboxSession#getPersonalSpace()
      */
     public Namespace getPersonalSpace() {
         return personalSpace;
     }
 
     /**
-     * @see {@link MailboxSession#getSharedSpace()}
+     * @see org.apache.james.imap.mailbox.MailboxSession#getSharedSpaces()
      */
     public Collection<Namespace> getSharedSpaces() {
         return sharedSpaces;

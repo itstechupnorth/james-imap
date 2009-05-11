@@ -57,49 +57,49 @@ public class MailboxMetaData implements Mailbox.MetaData {
     }
 
     /**
-     * @see {@link Mailbox.MetaData#countRecent()()}
+     * @see org.apache.james.imap.mailbox.Mailbox.MetaData#countRecent()()
      */
     public int countRecent() {
         return recentCount;
     }
 
     /**
-     * @see {@link Mailbox.MetaData#getPermanentFlags()()}
+     * @see org.apache.james.imap.mailbox.Mailbox.MetaData#getPermanentFlags()()
      */
     public Flags getPermanentFlags() {
         return premanentFlags;
     }
 
     /**
-     * @see {@link Mailbox.MetaData#getRecent()}
+     * @see org.apache.james.imap.mailbox.Mailbox.MetaData#getRecent()
      */
     public long[] getRecent() {
         return recent;
     }
 
     /**
-     * @see {@link Mailbox.MetaData#getUidValidity()}
+     * @see org.apache.james.imap.mailbox.Mailbox.MetaData#getUidValidity()
      */
     public long getUidValidity() {
         return uidValidity;
     }
 
     /**
-     * @see {@link Mailbox.MetaData#getUidNext()}
+     * @see org.apache.james.imap.mailbox.Mailbox.MetaData#getUidNext()
      */
     public long getUidNext() {
         return nextUid;
     }
 
     /**
-     * @see {@link Mailbox.MetaData#getMessageCount()}
+     * @see org.apache.james.imap.mailbox.Mailbox.MetaData#getMessageCount()
      */
     public int getMessageCount() {
         return messageCount;
     }
 
     /**
-     * @see {@link Mailbox.MetaData#getUnseenCount()}
+     * @see org.apache.james.imap.mailbox.Mailbox.MetaData#getUnseenCount()
      */
     public int getUnseenCount() {
         return unseenCount;
