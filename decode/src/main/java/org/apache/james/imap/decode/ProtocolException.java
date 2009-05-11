@@ -19,6 +19,8 @@
 
 package org.apache.james.imap.decode;
 
+import org.apache.james.imap.api.display.HumanReadableTextKey;
+
 /**
  * @version $Revision: 109034 $
  */
@@ -26,12 +28,25 @@ public class ProtocolException extends Exception {
 
     private static final long serialVersionUID = 8719349386686261422L;
 
-    public ProtocolException(final String s) {
+    private final HumanReadableTextKey key;
+    
+    public ProtocolException(final HumanReadableTextKey key, final String s) {
         super(s);
+        this.key = key;
     }
 
-    public ProtocolException(final String s, final Throwable t) {
+    public ProtocolException(final HumanReadableTextKey key, final String s, final Throwable t) {
         super(s, t);
+        this.key = key;
+    }
+
+    /**
+     * Gets the message key.
+     * 
+     * @return the key, possibly null
+     */
+    public final HumanReadableTextKey getKey() {
+        return key;
     }
 
 }

@@ -81,31 +81,31 @@ class SearchCommandParser extends AbstractUidCommandParser {
                 case 'D':
                     return d(request);
                 case 'E':
-                    throw new ProtocolException("Unknown search key");
+                    throw new ProtocolException(HumanReadableTextKey.ILLEGAL_ARGUMENTS, "Unknown search key");
                 case 'F':
                     return f(request, charset);
                 case 'G':
-                    throw new ProtocolException("Unknown search key");
+                    throw new ProtocolException(HumanReadableTextKey.ILLEGAL_ARGUMENTS, "Unknown search key");
                 case 'H':
                     return header(request, charset);
                 case 'I':
-                    throw new ProtocolException("Unknown search key");
+                    throw new ProtocolException(HumanReadableTextKey.ILLEGAL_ARGUMENTS, "Unknown search key");
                 case 'J':
-                    throw new ProtocolException("Unknown search key");
+                    throw new ProtocolException(HumanReadableTextKey.ILLEGAL_ARGUMENTS, "Unknown search key");
                 case 'K':
                     return keyword(request);
                 case 'L':
                     return larger(request);
                 case 'M':
-                    throw new ProtocolException("Unknown search key");
+                    throw new ProtocolException(HumanReadableTextKey.ILLEGAL_ARGUMENTS, "Unknown search key");
                 case 'N':
                     return n(request, charset);
                 case 'O':
                     return o(request, charset);
                 case 'P':
-                    throw new ProtocolException("Unknown search key");
+                    throw new ProtocolException(HumanReadableTextKey.ILLEGAL_ARGUMENTS, "Unknown search key");
                 case 'Q':
-                    throw new ProtocolException("Unknown search key");
+                    throw new ProtocolException(HumanReadableTextKey.ILLEGAL_ARGUMENTS, "Unknown search key");
                 case 'R':
                     return recent(request);
                 case 'S':
@@ -115,7 +115,7 @@ class SearchCommandParser extends AbstractUidCommandParser {
                 case 'U':
                     return u(request);
                 default:
-                    throw new ProtocolException("Unknown search key");
+                    throw new ProtocolException(HumanReadableTextKey.ILLEGAL_ARGUMENTS, "Unknown search key");
             }
         }
     }
@@ -167,7 +167,7 @@ class SearchCommandParser extends AbstractUidCommandParser {
             case 'H':
                 return charset(request, isFirstToken);
             default:
-                throw new ProtocolException("Unknown search key");
+                throw new ProtocolException(HumanReadableTextKey.ILLEGAL_ARGUMENTS, "Unknown search key");
         }
     }
 
@@ -182,7 +182,7 @@ class SearchCommandParser extends AbstractUidCommandParser {
         nextIsT(request);
         nextIsSpace(request);
         if (!isFirstToken) {
-            throw new ProtocolException("Unknown search key");
+            throw new ProtocolException(HumanReadableTextKey.ILLEGAL_ARGUMENTS, "Unknown search key");
         }
         final String value = astring(request);
         final Charset charset = Charset.forName(value);
@@ -199,7 +199,7 @@ class SearchCommandParser extends AbstractUidCommandParser {
             case 'N':
                 return un(request);
             default:
-                throw new ProtocolException("Unknown search key");
+                throw new ProtocolException(HumanReadableTextKey.ILLEGAL_ARGUMENTS, "Unknown search key");
         }
     }
 
@@ -218,7 +218,7 @@ class SearchCommandParser extends AbstractUidCommandParser {
             case 'S':
                 return unseen(request);
             default:
-                throw new ProtocolException("Unknown search key");
+                throw new ProtocolException(HumanReadableTextKey.ILLEGAL_ARGUMENTS, "Unknown search key");
         }
     }
 
@@ -231,7 +231,7 @@ class SearchCommandParser extends AbstractUidCommandParser {
             case 'R':
                 return undraft(request);
             default:
-                throw new ProtocolException("Unknown search key");
+                throw new ProtocolException(HumanReadableTextKey.ILLEGAL_ARGUMENTS, "Unknown search key");
         }
     }
 
@@ -244,7 +244,7 @@ class SearchCommandParser extends AbstractUidCommandParser {
             case 'O':
                 return to(request, charset);
             default:
-                throw new ProtocolException("Unknown search key");
+                throw new ProtocolException(HumanReadableTextKey.ILLEGAL_ARGUMENTS, "Unknown search key");
         }
     }
 
@@ -261,7 +261,7 @@ class SearchCommandParser extends AbstractUidCommandParser {
             case 'U':
                 return subject(request, charset);
             default:
-                throw new ProtocolException("Unknown search key");
+                throw new ProtocolException(HumanReadableTextKey.ILLEGAL_ARGUMENTS, "Unknown search key");
         }
     }
 
@@ -274,7 +274,7 @@ class SearchCommandParser extends AbstractUidCommandParser {
             case 'N':
                 return sen(request);
             default:
-                throw new ProtocolException("Unknown search key");
+                throw new ProtocolException(HumanReadableTextKey.ILLEGAL_ARGUMENTS, "Unknown search key");
         }
     }
 
@@ -285,7 +285,7 @@ class SearchCommandParser extends AbstractUidCommandParser {
             case 'T':
                 return sent(request);
             default:
-                throw new ProtocolException("Unknown search key");
+                throw new ProtocolException(HumanReadableTextKey.ILLEGAL_ARGUMENTS, "Unknown search key");
         }
     }
 
@@ -300,7 +300,7 @@ class SearchCommandParser extends AbstractUidCommandParser {
             case 'S':
                 return sentSince(request);
             default:
-                throw new ProtocolException("Unknown search key");
+                throw new ProtocolException(HumanReadableTextKey.ILLEGAL_ARGUMENTS, "Unknown search key");
         }
     }
 
@@ -315,7 +315,7 @@ class SearchCommandParser extends AbstractUidCommandParser {
             case 'R':
                 return or(request, charset);
             default:
-                throw new ProtocolException("Unknown search key");
+                throw new ProtocolException(HumanReadableTextKey.ILLEGAL_ARGUMENTS, "Unknown search key");
         }
     }
 
@@ -328,7 +328,7 @@ class SearchCommandParser extends AbstractUidCommandParser {
             case 'O':
                 return not(request, charset);
             default:
-                throw new ProtocolException("Unknown search key");
+                throw new ProtocolException(HumanReadableTextKey.ILLEGAL_ARGUMENTS, "Unknown search key");
         }
     }
 
@@ -341,7 +341,7 @@ class SearchCommandParser extends AbstractUidCommandParser {
             case 'R':
                 return from(request, charset);
             default:
-                throw new ProtocolException("Unknown search key");
+                throw new ProtocolException(HumanReadableTextKey.ILLEGAL_ARGUMENTS, "Unknown search key");
         }
     }
 
@@ -353,7 +353,7 @@ class SearchCommandParser extends AbstractUidCommandParser {
             case 'R':
                 return draft(request);
             default:
-                throw new ProtocolException("Unknown search key");
+                throw new ProtocolException(HumanReadableTextKey.ILLEGAL_ARGUMENTS, "Unknown search key");
         }
     }
 
@@ -603,7 +603,7 @@ class SearchCommandParser extends AbstractUidCommandParser {
             case 'O':
                 return body(request, charset);
             default:
-                throw new ProtocolException("Unknown search key");
+                throw new ProtocolException(HumanReadableTextKey.ILLEGAL_ARGUMENTS, "Unknown search key");
         }
     }
 
@@ -758,7 +758,7 @@ class SearchCommandParser extends AbstractUidCommandParser {
             case 'N':
                 return answered(request);
             default:
-                throw new ProtocolException("Unknown search key");
+                throw new ProtocolException(HumanReadableTextKey.ILLEGAL_ARGUMENTS, "Unknown search key");
         }
     }
 
@@ -787,7 +787,7 @@ class SearchCommandParser extends AbstractUidCommandParser {
             throws ProtocolException {
         final char next = request.consume();
         if (next != ' ') {
-            throw new ProtocolException("Unknown search key");
+            throw new ProtocolException(HumanReadableTextKey.ILLEGAL_ARGUMENTS, "Unknown search key");
         }
     }
 
@@ -890,7 +890,7 @@ class SearchCommandParser extends AbstractUidCommandParser {
             final char lower) throws ProtocolException {
         final char next = request.consume();
         if (next != upper && next != lower) {
-            throw new ProtocolException("Unknown search key");
+            throw new ProtocolException(HumanReadableTextKey.ILLEGAL_ARGUMENTS, "Unknown search key");
         }
     }
 

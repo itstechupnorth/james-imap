@@ -23,6 +23,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import org.apache.james.imap.api.display.HumanReadableTextKey;
+
 /**
  * Wraps the client input reader with a bunch of convenience methods, allowing
  * lookahead=1 on the underlying character stream. TODO need to look at
@@ -62,7 +64,7 @@ public class ImapRequestLineReader {
         }
 
         if (next == '\r' || next == '\n') {
-            throw new ProtocolException("Missing argument.");
+            throw new ProtocolException(HumanReadableTextKey.ILLEGAL_ARGUMENTS, "Missing argument.");
         }
 
         return next;
@@ -86,10 +88,12 @@ public class ImapRequestLineReader {
             try {
                 next = input.read();
             } catch (IOException e) {
-                throw new ProtocolException("Error reading from stream.", e);
+                throw new ProtocolException(HumanReadableTextKey.SOCKET_IO_FAILURE, 
+                        "Error reading from stream.", e);
             }
             if (next == -1) {
-                throw new ProtocolException("Unexpected end of stream.");
+                throw new ProtocolException(HumanReadableTextKey.ILLEGAL_ARGUMENTS, 
+                        "Unexpected end of stream.");
             }
 
             nextSeen = true;
@@ -123,8 +127,8 @@ public class ImapRequestLineReader {
 
         // Check if we found extra characters.
         if (next != '\n') {
-            throw new ProtocolException("Expected end-of-line, found '"
-                    + (char) next + "'.");
+            throw new ProtocolException(HumanReadableTextKey.ILLEGAL_ARGUMENTS, 
+                    "Expected end-of-line, found '" + (char) next + "'.");
         }
     }
 
@@ -165,7 +169,7 @@ public class ImapRequestLineReader {
                 count = input
                         .read(holder, readTotal, holder.length - readTotal);
                 if (count == -1) {
-                    throw new ProtocolException("Unexpected end of stream.");
+                    throw new ProtocolException(HumanReadableTextKey.ILLEGAL_ARGUMENTS, "Unexpected end of stream.");
                 }
                 readTotal += count;
             }
@@ -173,7 +177,8 @@ public class ImapRequestLineReader {
             nextSeen = false;
             nextChar = 0;
         } catch (IOException e) {
-            throw new ProtocolException("Error reading from stream.", e);
+            throw new ProtocolException(HumanReadableTextKey.SOCKET_IO_FAILURE, 
+                    "Error reading from stream.", e);
         }
 
     }
@@ -190,6 +195,7 @@ public class ImapRequestLineReader {
             output.flush();
         } catch (IOException e) {
             throw new ProtocolException(
+                    HumanReadableTextKey.SOCKET_IO_FAILURE, 
                     "Unexpected exception in sending command continuation request.",
                     e);
         }

@@ -22,6 +22,7 @@ import org.apache.commons.logging.Log;
 import org.apache.james.imap.api.ImapCommand;
 import org.apache.james.imap.api.ImapConstants;
 import org.apache.james.imap.api.ImapMessage;
+import org.apache.james.imap.api.display.HumanReadableTextKey;
 import org.apache.james.imap.decode.DelegatingImapCommandParser;
 import org.apache.james.imap.decode.ImapCommandParser;
 import org.apache.james.imap.decode.ImapCommandParserFactory;
@@ -64,8 +65,8 @@ class UidCommandParser extends AbstractImapCommandParser implements
         // TODO: replace abstract class with interface
         if (helperCommand == null
                 || !(helperCommand instanceof AbstractUidCommandParser)) {
-            throw new ProtocolException("Invalid UID command: '" + commandName
-                    + "'");
+            throw new ProtocolException(HumanReadableTextKey.ILLEGAL_ARGUMENTS, 
+                    "Invalid UID command: '" + commandName + "'");
         }
         final AbstractUidCommandParser uidEnabled = (AbstractUidCommandParser) helperCommand;
         final ImapMessage result = uidEnabled.decode(request, tag, true, logger);

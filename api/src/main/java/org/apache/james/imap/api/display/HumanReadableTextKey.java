@@ -139,6 +139,13 @@ public class HumanReadableTextKey {
             "org.apache.james.imap.FAILURE_NO_SUCH_MAILBOX",
             "failed. Mailbox already exists.");
 
+    public static final HumanReadableTextKey SOCKET_IO_FAILURE = new HumanReadableTextKey(
+            "org.apache.james.imap.SOCKET_IO_FAILURE",
+            "failed. IO failure.");
+
+    public static final HumanReadableTextKey BAD_IO_ENCODING = new HumanReadableTextKey(
+            "org.apache.james.imap.BAD_IO_ENCODING",
+            "failed. Illegal encoding.");   
     public static final HumanReadableTextKey COMPLETED = new HumanReadableTextKey(
             "org.apache.james.imap.COMPLETED", "completed.");
 

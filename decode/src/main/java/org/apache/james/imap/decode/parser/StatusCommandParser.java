@@ -23,6 +23,7 @@ import org.apache.james.imap.api.ImapMessageFactory;
 import org.apache.james.imap.api.ImapCommand;
 import org.apache.james.imap.api.ImapConstants;
 import org.apache.james.imap.api.ImapMessage;
+import org.apache.james.imap.api.display.HumanReadableTextKey;
 import org.apache.james.imap.api.message.StatusDataItems;
 import org.apache.james.imap.decode.ImapRequestLineReader;
 import org.apache.james.imap.decode.ProtocolException;
@@ -67,8 +68,8 @@ class StatusCommandParser extends AbstractImapCommandParser {
         } else if (nextWord.equals(ImapConstants.STATUS_UNSEEN)) {
             items.setUnseen(true);
         } else {
-            throw new ProtocolException("Unknown status item: '" + nextWord
-                    + "'");
+            throw new ProtocolException(HumanReadableTextKey.ILLEGAL_ARGUMENTS, 
+                    "Unknown status item: '" + nextWord + "'");
         }
     }
 

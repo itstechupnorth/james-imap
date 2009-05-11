@@ -25,6 +25,7 @@ import org.apache.james.imap.api.ImapMessageFactory;
 import org.apache.james.imap.api.ImapCommand;
 import org.apache.james.imap.api.ImapConstants;
 import org.apache.james.imap.api.ImapMessage;
+import org.apache.james.imap.api.display.HumanReadableTextKey;
 import org.apache.james.imap.api.message.BodyFetchElement;
 import org.apache.james.imap.api.message.FetchData;
 import org.apache.james.imap.api.message.IdRange;
@@ -103,7 +104,7 @@ class FetchCommandParser extends AbstractUidCommandParser {
             } else if ("RFC822.TEXT".equalsIgnoreCase(name)) {
                 fetch.add(BodyFetchElement.createRFC822Text(), false);
             } else {
-                throw new ProtocolException("Invalid fetch attribute: " + name);
+                throw new ProtocolException(HumanReadableTextKey.ILLEGAL_ARGUMENTS, "Invalid fetch attribute: " + name);
             }
         } else {
             consumeChar(reader, '[');
@@ -143,8 +144,8 @@ class FetchCommandParser extends AbstractUidCommandParser {
         } else if ("BODY.PEEK".equalsIgnoreCase(name)) {
             isPeek = true;
         } else {
-            throw new ProtocolException("Invalid fetch attibute: " + name
-                    + "[]");
+            throw new ProtocolException(HumanReadableTextKey.ILLEGAL_ARGUMENTS, 
+                    "Invalid fetch attibute: " + name + "[]");
         }
         return isPeek;
     }
@@ -188,7 +189,7 @@ class FetchCommandParser extends AbstractUidCommandParser {
                 sectionType = BodyFetchElement.TEXT;
                 break;
             default:
-                throw new ProtocolException("Section type is unsupported.");
+                throw new ProtocolException(HumanReadableTextKey.ILLEGAL_ARGUMENTS, "Section type is unsupported.");
         }
         return sectionType;
     }

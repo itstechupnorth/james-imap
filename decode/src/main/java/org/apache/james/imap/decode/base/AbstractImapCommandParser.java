@@ -194,7 +194,7 @@ public abstract class AbstractImapCommandParser implements ImapCommandParser, Me
                 if ("NIL".equals(value)) {
                     return null;
                 } else {
-                    throw new ProtocolException(
+                    throw new ProtocolException(HumanReadableTextKey.ILLEGAL_ARGUMENTS, 
                             "Invalid nstring value: valid values are '\"...\"', '{12} CRLF *CHAR8', and 'NIL'.");
                 }
         }
@@ -260,7 +260,7 @@ public abstract class AbstractImapCommandParser implements ImapCommandParser, Me
             throws ProtocolException {
         final char next = request.consume();
         if (next != '-') {
-            throw new ProtocolException("Expected dash but was " + next);
+            throw new ProtocolException(HumanReadableTextKey.ILLEGAL_ARGUMENTS, "Expected dash but was " + next);
         }
     }
 
@@ -274,7 +274,7 @@ public abstract class AbstractImapCommandParser implements ImapCommandParser, Me
         if (next == '"') {
             dateString = consumeQuoted(request);
         } else {
-            throw new ProtocolException("DateTime values must be quoted.");
+            throw new ProtocolException(HumanReadableTextKey.ILLEGAL_ARGUMENTS, "DateTime values must be quoted.");
         }
 
         return DecoderUtils.decodeDateTime(dateString);
@@ -295,7 +295,7 @@ public abstract class AbstractImapCommandParser implements ImapCommandParser, Me
                 atom.append(next);
                 request.consume();
             } else {
-                throw new ProtocolException("Invalid character: '" + next + "'");
+                throw new ProtocolException(HumanReadableTextKey.ILLEGAL_ARGUMENTS, "Invalid character: '" + next + "'");
             }
             next = request.nextChar();
         }
@@ -374,13 +374,13 @@ public abstract class AbstractImapCommandParser implements ImapCommandParser, Me
             return result;
 
         } catch (IllegalStateException e) {
-            throw new ProtocolException("Bad character encoding", e);
+            throw new ProtocolException(HumanReadableTextKey.BAD_IO_ENCODING, "Bad character encoding", e);
         } catch (MalformedInputException e) {
-            throw new ProtocolException("Bad character encoding", e);
+            throw new ProtocolException(HumanReadableTextKey.BAD_IO_ENCODING, "Bad character encoding", e);
         } catch (UnmappableCharacterException e) {
-            throw new ProtocolException("Bad character encoding", e);
+            throw new ProtocolException(HumanReadableTextKey.BAD_IO_ENCODING, "Bad character encoding", e);
         } catch (CharacterCodingException e) {
-            throw new ProtocolException("Bad character encoding", e);
+            throw new ProtocolException(HumanReadableTextKey.BAD_IO_ENCODING, "Bad character encoding", e);
         }
     }
 
@@ -408,8 +408,8 @@ public abstract class AbstractImapCommandParser implements ImapCommandParser, Me
             throws ProtocolException {
         char consumed = request.consume();
         if (consumed != expected) {
-            throw new ProtocolException("Expected:'" + expected + "' found:'"
-                    + consumed + "'");
+            throw new ProtocolException(HumanReadableTextKey.ILLEGAL_ARGUMENTS, 
+                    "Expected:'" + expected + "' found:'" + consumed + "'");
         }
     }
 
@@ -510,7 +510,7 @@ public abstract class AbstractImapCommandParser implements ImapCommandParser, Me
             case '\t':
                 return currentTotal;
             default:
-                throw new ProtocolException("Expected a digit but was " + next);
+                throw new ProtocolException(HumanReadableTextKey.ILLEGAL_ARGUMENTS, "Expected a digit but was " + next);
         }
     }
 
@@ -524,7 +524,7 @@ public abstract class AbstractImapCommandParser implements ImapCommandParser, Me
             throws ProtocolException {
         long number = number(request);
         if (number == 0) {
-            throw new ProtocolException("Zero value not permitted.");
+            throw new ProtocolException(HumanReadableTextKey.ILLEGAL_ARGUMENTS, "Zero value not permitted.");
         }
         return number;
     }
@@ -594,7 +594,7 @@ public abstract class AbstractImapCommandParser implements ImapCommandParser, Me
                 return new IdRange(lowVal, highVal);
             }
         } catch (NumberFormatException e) {
-            throw new ProtocolException("Invalid message set.", e);
+            throw new ProtocolException(HumanReadableTextKey.ILLEGAL_ARGUMENTS, "Invalid message set.", e);
         }
     }
 
@@ -688,7 +688,7 @@ public abstract class AbstractImapCommandParser implements ImapCommandParser, Me
                         request.consume();
                         next = request.nextChar();
                         if (!isQuotedSpecial(next)) {
-                            throw new ProtocolException(
+                            throw new ProtocolException(HumanReadableTextKey.ILLEGAL_ARGUMENTS, 
                                     "Invalid escaped character in quote: '"
                                             + next + "'");
                         }
@@ -704,7 +704,7 @@ public abstract class AbstractImapCommandParser implements ImapCommandParser, Me
                 return result;
 
             } catch (IllegalStateException e) {
-                throw new ProtocolException("Bad character encoding", e);
+                throw new ProtocolException(HumanReadableTextKey.BAD_IO_ENCODING, "Bad character encoding", e);
             }
         }
 
@@ -720,7 +720,7 @@ public abstract class AbstractImapCommandParser implements ImapCommandParser, Me
                 upsizeCharBuffer();
                 flush();
             } else if (coderResult.isError()) {
-                throw new ProtocolException("Bad character encoding");
+                throw new ProtocolException(HumanReadableTextKey.BAD_IO_ENCODING, "Bad character encoding");
             }
         }
 
@@ -745,7 +745,7 @@ public abstract class AbstractImapCommandParser implements ImapCommandParser, Me
                 upsizeCharBuffer();
                 return decodeMoreBytesToCharacterBuffer(endOfInput);
             } else if (coderResult.isError()) {
-                throw new ProtocolException("Bad character encoding");
+                throw new ProtocolException(HumanReadableTextKey.BAD_IO_ENCODING, "Bad character encoding");
             } else if (coderResult.isUnderflow()) {
                 buffer.clear();
             }
