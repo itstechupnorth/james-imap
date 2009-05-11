@@ -52,6 +52,13 @@ public class MailboxException extends MessagingException {
      * @return the key, possibly null
      */
     public final HumanReadableTextKey getKey() {
+        final HumanReadableTextKey key;
+        if (this.key == null) {
+            // API specifies not null but best to default to generic message 
+            key = HumanReadableTextKey.GENERIC_FAILURE_DURING_PROCESSING;
+        } else {
+            key = this.key;
+        }
         return key;
     }
 }

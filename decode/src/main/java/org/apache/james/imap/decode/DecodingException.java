@@ -69,6 +69,13 @@ public class DecodingException extends Exception {
      * @return the key, not null
      */
     public final HumanReadableTextKey getKey() {
+        final HumanReadableTextKey key;
+        if (this.key == null) {
+            // API specifies not null but best to default to generic message 
+            key = HumanReadableTextKey.ILLEGAL_ARGUMENTS;
+        } else {
+            key = this.key;
+        }
         return key;
     }
 
