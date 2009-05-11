@@ -115,8 +115,7 @@ public abstract class AbstractImapCommandParser implements ImapCommandParser, Me
 
         } catch (DecodingException e) {
             logger.debug("Cannot parse protocol ", e);
-            result = messageFactory.taggedBad(tag, command,
-                    HumanReadableTextKey.ILLEGAL_ARGUMENTS);
+            result = messageFactory.taggedBad(tag, command, e.getKey());
         }
         return result;
     }
