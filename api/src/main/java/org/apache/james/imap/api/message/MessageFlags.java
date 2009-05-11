@@ -73,8 +73,8 @@ public class MessageFlags {
      * @return <code>Collection</code> of <code>String</code>'s naming the
      *         flags.
      */
-    public static Collection names(Flags flags) {
-        final Collection results = new ArrayList();
+    public static Collection<String> names(Flags flags) {
+        final Collection<String> results = new ArrayList<String>();
         if (flags.contains(Flags.Flag.ANSWERED)) {
             results.add(ANSWERED_OUTPUT_CAPITALISED);
         }

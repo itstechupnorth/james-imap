@@ -174,7 +174,7 @@ public interface StatusResponse extends ImapResponseMessage {
          *            names
          * @return <code>ResponseCode</code>, not null
          */
-        public static final ResponseCode badCharset(Collection charsetNames) {
+        public static final ResponseCode badCharset(Collection<String> charsetNames) {
             return new ResponseCode("BADCHARSET", charsetNames);
         }
 
@@ -278,23 +278,25 @@ public interface StatusResponse extends ImapResponseMessage {
 
         private final String code;
 
-        private final Collection parameters;
+        private final Collection<String> parameters;
 
         private final long number;
 
+        @SuppressWarnings ("unchecked")
         private ResponseCode(final String code) {
             this(code, Collections.EMPTY_LIST, 0);
         }
 
+        @SuppressWarnings ("unchecked")
         private ResponseCode(final String code, final long number) {
             this(code, Collections.EMPTY_LIST, number);
         }
 
-        private ResponseCode(final String code, final Collection parameters) {
+        private ResponseCode(final String code, final Collection<String> parameters) {
             this(code, parameters, 0);
         }
 
-        private ResponseCode(final String code, final Collection parameters,
+        private ResponseCode(final String code, final Collection<String> parameters,
                 final long number) {
             super();
             this.code = code;
@@ -321,7 +323,7 @@ public interface StatusResponse extends ImapResponseMessage {
          * @return the parameters <code>Collection</code> of
          *         <code>String</code> parameters, not null
          */
-        public final Collection getParameters() {
+        public final Collection<String> getParameters() {
             return parameters;
         }
 
