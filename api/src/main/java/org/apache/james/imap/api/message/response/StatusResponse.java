@@ -78,55 +78,25 @@ public interface StatusResponse extends ImapResponseMessage {
     /**
      * Enumerates types of RC2060 status response
      */
-    public static final class Type {
+    public enum Type {
         /** RFC2060 <code>OK</code> server response */
-        public static final Type OK = new Type("OK");
-
+        OK ("OK"),
         /** RFC2060 <code>OK</code> server response */
-        public static final Type NO = new Type("NO");
-
+        NO ("NO"),
         /** RFC2060 <code>BAD</code> server response */
-        public static final Type BAD = new Type("BAD")
+        BAD ("BAD"),
         /** RFC2060 <code>PREAUTH</code> server response */
-        ;
-
-        public static final Type PREAUTH = new Type("PREAUTH");
-
+        PREAUTH ("PREAUTH"),
         /** RFC2060 <code>BYE</code> server response */
-        public static final Type BYE = new Type("BYE");
+        BYE ("BYE");
 
         private final String code;
 
         private Type(final String code) {
-            super();
             this.code = code;
         }
-
-        public int hashCode() {
-            final int PRIME = 31;
-            int result = 1;
-            result = PRIME * result + ((code == null) ? 0 : code.hashCode());
-            return result;
-        }
-
         public final String getCode() {
             return code;
-        }
-
-        public boolean equals(Object obj) {
-            if (this == obj)
-                return true;
-            if (obj == null)
-                return false;
-            if (getClass() != obj.getClass())
-                return false;
-            final ResponseCode other = (ResponseCode) obj;
-            if (code == null) {
-                if (other.code != null)
-                    return false;
-            } else if (!code.equals(other.code))
-                return false;
-            return true;
         }
 
         public String toString() {
