@@ -91,7 +91,7 @@ public abstract class StoreMailbox implements org.apache.james.imap.mailbox.Mail
     }
 
     public long appendMessage(byte[] messageBytes, Date internalDate,
-            MailboxSession mailboxSession, boolean isRecent)
+            MailboxSession mailboxSession, boolean isRecent, Flags flagsToBeSet)
     throws MailboxException {
         final Mailbox mailbox = reserveNextUid();
 
@@ -188,7 +188,12 @@ public abstract class StoreMailbox implements org.apache.james.imap.mailbox.Mail
                     propertyBuilder.setTextualLineCount(lines);
                 }
                 
-                final Flags flags = new Flags();
+                final Flags flags;
+                if (flagsToBeSet == null) {
+                    flags = new Flags();
+                } else {
+                    flags = flagsToBeSet;
+                }
                 if (isRecent) {
                     flags.add(Flags.Flag.RECENT);
                 }

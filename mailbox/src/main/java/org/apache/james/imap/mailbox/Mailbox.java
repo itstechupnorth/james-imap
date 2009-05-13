@@ -82,11 +82,13 @@ public interface Mailbox {
      * @param mailboxSession not null
      * @param isRecent true when the message should be marked recent,
      * false otherwise
+     * @param flags optionally set these flags on created message, 
+     * or null when no additional flags should be set
      * @return uid for the newly added message
      * @throws MailboxException when message cannot be appended
      */
     long appendMessage(byte[] message, Date internalDate, MailboxSession mailboxSession, 
-            boolean isRecent) throws MailboxException;
+            boolean isRecent, Flags flags) throws MailboxException;
 
     /**
      * Gets messages in the given range.

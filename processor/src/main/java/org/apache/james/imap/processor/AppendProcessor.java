@@ -21,6 +21,8 @@ package org.apache.james.imap.processor;
 
 import java.util.Date;
 
+import javax.mail.Flags;
+
 import org.apache.commons.logging.Log;
 import org.apache.james.imap.api.ImapCommand;
 import org.apache.james.imap.api.ImapMessage;
@@ -60,15 +62,14 @@ public class AppendProcessor extends AbstractMailboxProcessor {
         final String mailboxName = request.getMailboxName();
         final byte[] messageBytes = request.getMessage();
         final Date datetime = request.getDatetime();
-        // TODO: Flags are ignore: check whether the specification says that
-        // they should be processed
+        final Flags flags = request.getFlags();
         try {
 
             final String fullMailboxName = buildFullName(session, mailboxName);
             final MailboxManager mailboxManager = getMailboxManager();
             final Mailbox mailbox = mailboxManager.getMailbox(fullMailboxName, ImapSessionUtils.getMailboxSession(session));
-            appendToMailbox(messageBytes, datetime, session, tag, command,
-                    mailbox, responder, fullMailboxName);
+            appendToMailbox(messageBytes, datetime, flags, session, tag,
+                    command, mailbox, responder, fullMailboxName);
 
         } catch (MailboxException mme) {
             // Mailbox API does not provide facilities for diagnosing the
@@ -91,8 +92,8 @@ public class AppendProcessor extends AbstractMailboxProcessor {
     }
 
     private void appendToMailbox(final byte[] message, final Date datetime,
-            final ImapSession session, final String tag, final ImapCommand command,
-            final Mailbox mailbox, Responder responder, final String fullMailboxName) {
+            final Flags flagsToBeSet, final ImapSession session, final String tag,
+            final ImapCommand command, final Mailbox mailbox, Responder responder, final String fullMailboxName) {
         try {
             final MailboxSession mailboxSession = ImapSessionUtils
                     .getMailboxSession(session);
@@ -100,7 +101,7 @@ public class AppendProcessor extends AbstractMailboxProcessor {
             final boolean isSelectedMailbox = selectedMailbox != null
                     && fullMailboxName.equals(selectedMailbox.getName());
             final long uid  = mailbox.appendMessage(message, datetime, mailboxSession, 
-                    !isSelectedMailbox);
+                    !isSelectedMailbox, flagsToBeSet);
             if (isSelectedMailbox) {
                 selectedMailbox.addRecent(uid);
             }

@@ -59,7 +59,7 @@ S: 2a OK RENAME completed.
 # Client #1 is still able to do operations that do not reference the mailbox name.
 SESSION: 1
 C: 1d FETCH 1:* (FLAGS)
-S: \* 1 FETCH \(FLAGS \(\\Recent\)\)
+S: \* 1 FETCH \(FLAGS \(\\Deleted \\Recent\)\)
 S: 1d OK FETCH completed.
 
 # Client #1 is not able to do operations that reference the mailbox name.

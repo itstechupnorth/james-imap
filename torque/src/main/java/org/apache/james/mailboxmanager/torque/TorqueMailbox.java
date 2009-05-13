@@ -118,7 +118,7 @@ public class TorqueMailbox implements Mailbox {
     }
 
     public long appendMessage(byte[] message, Date internalDate,
-            MailboxSession mailboxSession, boolean isRecent)
+            MailboxSession mailboxSession, boolean isRecent, Flags flags)
             throws MailboxException {
 
         try {
@@ -146,6 +146,11 @@ public class TorqueMailbox implements Mailbox {
                     final MimeMessage mimeMessage = new MimeMessage(null, new ByteArrayInputStream(message));
                     if (isRecent) {
                         mimeMessage.setFlag(Flags.Flag.RECENT, true);
+                    }
+                    if (flags != null) {
+                        for (final Flags.Flag flag:flags.getSystemFlags()) {
+                            mimeMessage.setFlag(flag, true);
+                        }
                     }
                     final int size = size(mimeMessage);
                     messageRow.setSize(size);
