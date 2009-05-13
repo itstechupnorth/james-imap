@@ -49,7 +49,7 @@ C: Hello Joe, could we change that to 4:00pm tomorrow?
 C:
 S: A003 OK APPEND completed.
 
-C: A004 APPEND appendexpunge (\Deleted) {310+}
+C: A004 APPEND appendexpunge {310+}
 C: Date: Mon, 7 Feb 1994 21:52:25 -0800 (PST)
 C: From: Fred Foobar <foobar@Blurdybloop.COM>
 C: Subject: afternoon meeting 2
@@ -76,7 +76,7 @@ S: \* OK \[PERMANENTFLAGS \(\\Answered \\Deleted \\Draft \\Flagged \\Seen\)\]
 S: \* OK \[UIDNEXT 4\]
 S: A006 OK \[READ-WRITE\] SELECT completed.
 
-C: A109 STORE 1:2 FLAGS.SILENT (\Deleted)
+C: A109 STORE 2 FLAGS.SILENT (\Deleted)
 S: A109 OK STORE completed.
 
 C: A007 EXPUNGE

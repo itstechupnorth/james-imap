@@ -37,6 +37,7 @@ import org.apache.james.imap.mailbox.Mailbox;
 import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.MailboxManager;
 import org.apache.james.imap.mailbox.MailboxManagerProvider;
+import org.apache.james.imap.mailbox.MailboxNotFoundException;
 import org.apache.james.imap.mailbox.MailboxSession;
 import org.apache.james.imap.message.request.AppendRequest;
 import org.apache.james.imap.processor.base.ImapSessionUtils;
@@ -70,25 +71,38 @@ public class AppendProcessor extends AbstractMailboxProcessor {
             final Mailbox mailbox = mailboxManager.getMailbox(fullMailboxName, ImapSessionUtils.getMailboxSession(session));
             appendToMailbox(messageBytes, datetime, flags, session, tag,
                     command, mailbox, responder, fullMailboxName);
-
-        } catch (MailboxException mme) {
-            // Mailbox API does not provide facilities for diagnosing the
-            // problem
-            // assume that
-            // TODO: improved API should communicate when this operation
-            // TODO: fails whether the mailbox exists
-            Log logger = session.getLog();
-            if (logger.isInfoEnabled()) {
-                logger.info(mme.getMessage());
-            }
-            if (logger.isDebugEnabled()) {
-                logger.debug("Cannot open mailbox: ", mme);
-            }
-            no(command, tag, responder,
-                    HumanReadableTextKey.FAILURE_NO_SUCH_MAILBOX,
-                    StatusResponse.ResponseCode.tryCreate());
+        } catch (MailboxNotFoundException e) {
+//          Indicates that the mailbox does not exist
+//          So TRY CREATE
+            tryCreate(session, tag, command, responder, e);
+        } catch (MailboxException e) {
+//          Some other issue
+            no(command, tag, responder, e, session);
         }
 
+    }
+
+    /**
+     * Issues a TRY CREATE response.
+     * @param session not null
+     * @param tag not null
+     * @param command not null
+     * @param responder not null
+     * @param e not null
+     */
+    private void tryCreate(ImapSession session, String tag, ImapCommand command, 
+            Responder responder, MailboxNotFoundException e) {
+        
+        final Log logger = session.getLog();
+        if (logger.isInfoEnabled()) {
+            logger.info(e.getMessage());
+        }
+        if (logger.isDebugEnabled()) {
+            logger.debug("Cannot open mailbox: ", e);
+        }
+        no(command, tag, responder,
+                HumanReadableTextKey.FAILURE_NO_SUCH_MAILBOX,
+                StatusResponse.ResponseCode.tryCreate());
     }
 
     private void appendToMailbox(final byte[] message, final Date datetime,
@@ -107,8 +121,12 @@ public class AppendProcessor extends AbstractMailboxProcessor {
             }
             unsolicitedResponses(session, responder, false);
             okComplete(command, tag, responder);
+        } catch (MailboxNotFoundException e) {
+//          Indicates that the mailbox does not exist
+//          So TRY CREATE
+            tryCreate(session, tag, command, responder, e);
         } catch (MailboxException e) {
-            // TODO why not TRYCREATE?
+//          Some other issue
             no(command, tag, responder, e, session);
         }
     }
