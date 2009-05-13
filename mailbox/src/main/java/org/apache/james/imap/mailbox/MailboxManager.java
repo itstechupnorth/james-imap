@@ -182,6 +182,10 @@ public interface MailboxManager {
      * Mailboxes that create sessions which are expensive to maintain
      * <code>MUST</code> retain a reference and periodically check {@link MailboxSession#isOpen()}.
      * </p>
+     * <p>
+     * Note that implementations much be aware that it is possible that this method 
+     * may be called more than once with the same session.
+     * </p>
      * @param session not null
      * @param force true when the session logout is forced by premature connection termination
      * @throws MailboxException when logout fails

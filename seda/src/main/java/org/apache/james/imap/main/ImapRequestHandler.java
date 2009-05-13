@@ -37,6 +37,7 @@ import org.apache.james.imap.decode.DecodingException;
 import org.apache.james.imap.encode.ImapEncoder;
 import org.apache.james.imap.encode.ImapResponseComposer;
 import org.apache.james.imap.encode.base.ImapResponseComposerImpl;
+import org.apache.james.imap.message.request.SystemMessage;
 
 /**
  * @version $Revision: 109034 $
@@ -159,6 +160,7 @@ public final class ImapRequestHandler  {
         } catch (Throwable t) {
             session.getLog().debug("Failed to write ABANDON_SIGNOFF", t);
         }
+        processor.process(SystemMessage.FORCE_LOGOUT, new SilentResponder(), session);
     }
 
     private boolean doProcessRequest(ImapRequestLineReader request,
@@ -182,6 +184,16 @@ public final class ImapRequestHandler  {
         return result;
     }
 
+    /**
+     * Silents swallows all responses.
+     */
+    private static final class SilentResponder implements Responder {
+
+        public void respond(ImapResponseMessage message) {
+            // Swallow
+        }
+    }
+    
     private static final class ResponseEncoder implements Responder {
         private final ImapEncoder encoder;
         private final ImapSession session;

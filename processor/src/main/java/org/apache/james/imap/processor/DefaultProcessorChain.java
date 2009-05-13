@@ -38,9 +38,9 @@ public class DefaultProcessorChain {
             final ImapProcessor chainEndProcessor,
             final MailboxManagerProvider mailboxManagerProvider,
             final StatusResponseFactory statusResponseFactory) {
-        
+        final SystemMessageProcessor systemProcessor = new SystemMessageProcessor(chainEndProcessor, mailboxManagerProvider);
         final LogoutProcessor logoutProcessor = new LogoutProcessor(
-                chainEndProcessor, mailboxManagerProvider, statusResponseFactory);
+                systemProcessor, mailboxManagerProvider, statusResponseFactory);
         final List<String> capabilities = new ArrayList<String>();
         capabilities.add(VERSION);
         capabilities.add(SUPPORTS_LITERAL_PLUS);
