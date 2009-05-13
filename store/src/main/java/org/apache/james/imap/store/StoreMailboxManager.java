@@ -30,6 +30,7 @@ import java.util.Random;
 import org.apache.commons.logging.Log;
 import org.apache.james.imap.api.AbstractLogEnabled;
 import org.apache.james.imap.api.display.HumanReadableTextKey;
+import org.apache.james.imap.mailbox.BadCredentialsException;
 import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.MailboxExistsException;
 import org.apache.james.imap.mailbox.MailboxListener;
@@ -299,7 +300,12 @@ public abstract class StoreMailboxManager extends AbstractLogEnabled implements 
         mailboxes.clear();
     }
 
-    public MailboxSession createSession(String userName, Log log) {
+    public MailboxSession createSystemSession(String userName, Log log) {
+        return createSession(userName, log);
+    }
+
+
+    private SimpleMailboxSession createSession(String userName, Log log) {
         return new SimpleMailboxSession(random.nextLong(), userName, log, delimiter);
     }
 
@@ -312,7 +318,7 @@ public abstract class StoreMailboxManager extends AbstractLogEnabled implements 
         return result;
     }
 
-    public boolean isAuthentic(String userid, String passwd) {
+    public boolean login(String userid, String passwd) {
         return authenticator.isAuthentic(userid, passwd);
     }
 
@@ -334,4 +340,15 @@ public abstract class StoreMailboxManager extends AbstractLogEnabled implements 
         final StoreMailbox mailbox = doGetMailbox(mailboxName);
         mailbox.addListener(listener);
     }
+
+
+    public MailboxSession login(String userid, String passwd, Log log) throws BadCredentialsException, MailboxException {
+        if (login(userid, passwd)) {
+            return createSession(userid, log);
+        } else {
+            throw new BadCredentialsException();
+        }
+    }
+    
+    
 }

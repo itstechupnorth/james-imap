@@ -90,7 +90,7 @@ public interface MailboxManager {
      * @param mailboxName
      *            name, not null
      * @param mailboxSession the context for this call, not null
-     * @throws MailboxException
+     * @throws MailboxException when creation fails
      */
     void createMailbox(String mailboxName, MailboxSession mailboxSession) throws MailboxException;
 
@@ -104,7 +104,7 @@ public interface MailboxManager {
      * @param to
      *            new name for the mailbox
      * @param session the context for this call, not nul
-     * @throws MailboxException
+     * @throws MailboxException otherwise
      * @throws MailboxExistsException
      *             when the <code>to</code> mailbox exists
      * @throws MailboxNotFound
@@ -146,23 +146,31 @@ public interface MailboxManager {
     boolean mailboxExists(String mailboxName, MailboxSession session) throws MailboxException;
 
     /**
-     * Creates a new session.
+     * Creates a new system session.
+     * A system session is intended to be used for programmatic access.
+     * Use {@link #login(String, String, Log)} when accessing this API
+     * from a protocol.
      * @param userName the name of the user whose session is being created
      * @param log context sensitive log
      * @return <code>MailboxSession</code>, not null
+     * @throws BadCredentialsException when system access is not allowed for the given user
+     * @throws MailboxException when the creation fails for other reasons
      */
-    public MailboxSession createSession(String userName, Log log);
+    public MailboxSession createSystemSession(String userName, Log log) throws BadCredentialsException, MailboxException;
 
     /**
      * Autenticates the given user against the given password.
-     * 
+     * When authentic and authorized, a session will be supplied
      * @param userid
      *            user name
      * @param passwd
      *            password supplied
-     * @return true if the user is authenticated
+     * @param log context sensitive log    
+     * @return a <code>MailboxSession</code> when the user is authentic and authorized to access
+     * @throws BadCredentialsException when system access is denighed for the given user
+     * @throws MailboxException when the creation fails for other reasons
      */
-    boolean isAuthentic(String userid, String passwd);
+    MailboxSession login(String userid, String passwd, Log log) throws BadCredentialsException, MailboxException;
 
     /**
      * Subscribes the user to the given mailbox.

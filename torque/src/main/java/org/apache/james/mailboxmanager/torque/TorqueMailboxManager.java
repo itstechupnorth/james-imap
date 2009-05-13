@@ -32,6 +32,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.logging.impl.SimpleLog;
 import org.apache.james.imap.api.display.HumanReadableTextKey;
+import org.apache.james.imap.mailbox.BadCredentialsException;
 import org.apache.james.imap.mailbox.Mailbox;
 import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.MailboxExistsException;
@@ -350,7 +351,11 @@ public class TorqueMailboxManager implements MailboxManager {
         return log;
     }
 
-    public MailboxSession createSession(String userName, Log log) {
+    public MailboxSession createSystemSession(String userName, Log log) {
+        return createSession(userName, log);
+    }
+
+    private TorqueMailboxSession createSession(String userName, Log log) {
         return new TorqueMailboxSession(random.nextLong(), log, userName, delimiter);
     }
 
@@ -363,7 +368,7 @@ public class TorqueMailboxManager implements MailboxManager {
         return result;
     }
 
-    public boolean isAuthentic(String userid, String passwd) {
+    public boolean login(String userid, String passwd) {
         return userManager.isAuthentic(userid, passwd);
     }
 
@@ -384,6 +389,14 @@ public class TorqueMailboxManager implements MailboxManager {
     public void addListener(String mailboxName, MailboxListener listener) throws MailboxException {
         final TorqueMailbox mailbox = doGetMailbox(mailboxName);
         mailbox.addListener(listener);
+    }
+
+    public MailboxSession login(String userid, String passwd, Log log) throws BadCredentialsException, MailboxException {
+        if (login(userid, passwd)) {
+            return createSession(userid, log);
+        } else {
+            throw new BadCredentialsException();
+        }
     }
 
 }

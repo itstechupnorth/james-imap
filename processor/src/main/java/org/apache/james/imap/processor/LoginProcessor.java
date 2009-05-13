@@ -26,6 +26,7 @@ import org.apache.james.imap.api.message.request.ImapRequest;
 import org.apache.james.imap.api.message.response.StatusResponseFactory;
 import org.apache.james.imap.api.process.ImapProcessor;
 import org.apache.james.imap.api.process.ImapSession;
+import org.apache.james.imap.mailbox.BadCredentialsException;
 import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.MailboxExistsException;
 import org.apache.james.imap.mailbox.MailboxManager;
@@ -63,9 +64,9 @@ public class LoginProcessor extends AbstractMailboxProcessor {
             final String userid = request.getUserid();
             final String passwd = request.getPassword();
             final MailboxManager mailboxManager = getMailboxManager();
-            if (mailboxManager.isAuthentic(userid, passwd)) {
+            try {
+                final MailboxSession mailboxSession = mailboxManager.login(userid, passwd, session.getLog());
                 session.authenticated();
-                final MailboxSession mailboxSession = mailboxManager.createSession(userid, session.getLog());
                 session.setAttribute(
                         ImapSessionUtils.MAILBOX_SESSION_ATTRIBUTE_SESSION_KEY,
                         mailboxSession);
@@ -81,7 +82,7 @@ public class LoginProcessor extends AbstractMailboxProcessor {
                     }
                 }
                 okComplete(command, tag, responder);
-            } else {
+            } catch (BadCredentialsException e) {
                 final Integer currentNumberOfFailures = (Integer) session
                         .getAttribute(ATTRIBUTE_NUMBER_OF_FAILURES);
                 final int failures;
@@ -103,8 +104,7 @@ public class LoginProcessor extends AbstractMailboxProcessor {
             }
         } catch (MailboxException e) {
             session.getLog().debug("Login failed", e);
-            final HumanReadableTextKey displayTextKey = HumanReadableTextKey.INVALID_LOGIN;
-            no(command, tag, responder, displayTextKey);
+            no(command, tag, responder, e.getKey());
         }
     }
 }
