@@ -30,6 +30,18 @@ public class ConcurrentSessions extends FrameworkForAuthenticatedState {
         super(system);
     }
     
+    public void testConcurrentCrossExpungeUS() throws Exception {
+          scriptTest("ConcurrentCrossExpunge", Locale.US);
+    }
+    
+    public void testConcurrentCrossExpungeITALY() throws Exception {
+          scriptTest("ConcurrentCrossExpunge", Locale.ITALY);
+    }
+    
+    public void testConcurrentCrossExpungeKOREA() throws Exception {
+          scriptTest("ConcurrentCrossExpunge", Locale.KOREA);
+    }
+    
     public void testConcurrentRenameSelectedSubUS() throws Exception {
         scriptTest("ConcurrentRenameSelectedSub", Locale.US);
     }
