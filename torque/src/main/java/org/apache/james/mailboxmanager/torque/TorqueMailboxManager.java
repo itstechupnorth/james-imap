@@ -399,4 +399,8 @@ public class TorqueMailboxManager implements MailboxManager {
         }
     }
 
+    public void logout(MailboxSession session, boolean force) throws MailboxException {
+        // fine
+    }
+
 }

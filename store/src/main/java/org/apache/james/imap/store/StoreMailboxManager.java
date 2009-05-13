@@ -350,5 +350,7 @@ public abstract class StoreMailboxManager extends AbstractLogEnabled implements 
         }
     }
     
-    
+    public void logout(MailboxSession session, boolean force) throws MailboxException {
+        // fine
+    }
 }

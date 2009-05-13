@@ -25,8 +25,11 @@ import org.apache.james.imap.api.message.request.ImapRequest;
 import org.apache.james.imap.api.message.response.StatusResponseFactory;
 import org.apache.james.imap.api.process.ImapProcessor;
 import org.apache.james.imap.api.process.ImapSession;
+import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.MailboxManagerProvider;
+import org.apache.james.imap.mailbox.MailboxSession;
 import org.apache.james.imap.message.request.LogoutRequest;
+import org.apache.james.imap.processor.base.ImapSessionUtils;
 
 public class LogoutProcessor extends AbstractMailboxProcessor {
 
@@ -41,8 +44,14 @@ public class LogoutProcessor extends AbstractMailboxProcessor {
 
     protected void doProcess(ImapRequest message, ImapSession session,
             String tag, ImapCommand command, Responder responder) {
-        session.logout();
-        bye(responder);
-        okComplete(command, tag, responder);
+        final MailboxSession mailboxSession = ImapSessionUtils.getMailboxSession(session);
+        try {
+            getMailboxManager().logout(mailboxSession, false);
+            session.logout();
+            bye(responder);
+            okComplete(command, tag, responder);
+        } catch (MailboxException e) {
+            no(command, tag, responder, e, session);
+        }
     }
 }

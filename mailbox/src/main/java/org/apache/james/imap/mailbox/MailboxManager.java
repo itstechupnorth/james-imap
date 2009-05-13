@@ -171,6 +171,22 @@ public interface MailboxManager {
      * @throws MailboxException when the creation fails for other reasons
      */
     MailboxSession login(String userid, String passwd, Log log) throws BadCredentialsException, MailboxException;
+    
+    /**
+     * <p>Logs the session out, freeing any resources.
+     * Clients who open session should make best efforts to call this
+     * when the session is closed.
+     * </p>
+     * <p>
+     * Note that clients may not always be able to call logout (whether forced or not).
+     * Mailboxes that create sessions which are expensive to maintain
+     * <code>MUST</code> retain a reference and periodically check {@link MailboxSession#isOpen()}.
+     * </p>
+     * @param session not null
+     * @param force true when the session logout is forced by premature connection termination
+     * @throws MailboxException when logout fails
+     */
+    void logout(MailboxSession session, boolean force) throws MailboxException;
 
     /**
      * Subscribes the user to the given mailbox.
