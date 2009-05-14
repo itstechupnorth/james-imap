@@ -336,7 +336,7 @@ public abstract class StoreMailboxManager extends AbstractLogEnabled implements 
         subscriber.unsubscribe(session.getUser().getUserName(), mailbox);
     }
 
-    public void addListener(String mailboxName, MailboxListener listener) throws MailboxException {
+    public void addListener(String mailboxName, MailboxListener listener, MailboxSession session) throws MailboxException {
         final StoreMailbox mailbox = doGetMailbox(mailboxName);
         mailbox.addListener(listener);
     }

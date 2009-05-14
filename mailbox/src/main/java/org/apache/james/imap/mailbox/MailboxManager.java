@@ -233,7 +233,8 @@ public interface MailboxManager {
      * </p>
      * @param mailboxName not null
      * @param listener not null
+     * @param session not null
      * @throws MailboxException
      */
-    void addListener(String mailboxName, MailboxListener listener) throws MailboxException;
+    void addListener(String mailboxName, MailboxListener listener, MailboxSession session) throws MailboxException;
 }

@@ -48,9 +48,9 @@ public class SelectedMailboxImpl implements SelectedMailbox {
         events = new MailboxEventAnalyser(sessionId, name);
         // Ignore events from our session
         events.setSilentFlagChanges(true);
-        mailboxManager.addListener(name, events);
+        mailboxManager.addListener(name, events, mailboxSession);
         converter = new UidToMsnConverter(uids);
-        mailboxManager.addListener(name, converter);
+        mailboxManager.addListener(name, converter, mailboxSession);
     }
 
     /**
