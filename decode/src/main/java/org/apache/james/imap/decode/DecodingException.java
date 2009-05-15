@@ -19,7 +19,7 @@
 
 package org.apache.james.imap.decode;
 
-import org.apache.james.imap.api.display.HumanReadableTextKey;
+import org.apache.james.imap.api.display.HumanReadableText;
 
 /**
  * <p>Indicates that decoding failured.</p>
@@ -32,22 +32,22 @@ import org.apache.james.imap.api.display.HumanReadableTextKey;
  * The following keys are frequently used when decoding:
  * </p>
  * <ul>
- * <li>{@link HumanReadableTextKey#ILLEGAL_ARGUMENTS}</li>
- * <li>{@link HumanReadableTextKey#BAD_IO_ENCODING}</li>
+ * <li>{@link HumanReadableText#ILLEGAL_ARGUMENTS}</li>
+ * <li>{@link HumanReadableText#BAD_IO_ENCODING}</li>
  * </ul>
  */
 public class DecodingException extends Exception {
 
     private static final long serialVersionUID = 8719349386686261422L;
 
-    private final HumanReadableTextKey key;
+    private final HumanReadableText key;
     
     /**
      * Constructs a decoding exception
      * @param key coursely grained i18n, not null
      * @param s specific description suitable for logging, not null
      */
-    public DecodingException(final HumanReadableTextKey key, final String s) {
+    public DecodingException(final HumanReadableText key, final String s) {
         super(s);
         this.key = key;
     }
@@ -58,7 +58,7 @@ public class DecodingException extends Exception {
      * @param s specific description suitable for logging, not null
      * @param t cause, not null
      */
-    public DecodingException(final HumanReadableTextKey key, final String s, final Throwable t) {
+    public DecodingException(final HumanReadableText key, final String s, final Throwable t) {
         super(s, t);
         this.key = key;
     }
@@ -68,11 +68,11 @@ public class DecodingException extends Exception {
      * 
      * @return the key, not null
      */
-    public final HumanReadableTextKey getKey() {
-        final HumanReadableTextKey key;
+    public final HumanReadableText getKey() {
+        final HumanReadableText key;
         if (this.key == null) {
             // API specifies not null but best to default to generic message 
-            key = HumanReadableTextKey.ILLEGAL_ARGUMENTS;
+            key = HumanReadableText.ILLEGAL_ARGUMENTS;
         } else {
             key = this.key;
         }

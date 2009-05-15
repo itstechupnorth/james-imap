@@ -21,7 +21,7 @@ package org.apache.james.imap.encode;
 
 import org.apache.james.imap.api.ImapCommand;
 import org.apache.james.imap.api.ImapConstants;
-import org.apache.james.imap.api.display.HumanReadableTextKey;
+import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.api.message.response.StatusResponse;
 import org.apache.james.imap.encode.ImapEncoder;
 import org.apache.james.imap.encode.ImapResponseComposer;
@@ -36,7 +36,7 @@ public class StatusResponseEncoderTest extends MockObjectTestCase {
 
     private static final String TAG = "TAG";
 
-    private static final HumanReadableTextKey KEY = new HumanReadableTextKey(
+    private static final HumanReadableText KEY = new HumanReadableText(
             "KEY", "TEXT");
 
     MockImapResponseWriter writer;
@@ -282,7 +282,7 @@ public class StatusResponseEncoderTest extends MockObjectTestCase {
     }
 
     private void execute(StatusResponse.Type type,
-            StatusResponse.ResponseCode code, HumanReadableTextKey key,
+            StatusResponse.ResponseCode code, HumanReadableText key,
             String tag) throws Exception {
         configure(type, code, key, tag);
         compose();
@@ -293,7 +293,7 @@ public class StatusResponseEncoderTest extends MockObjectTestCase {
     }
 
     private void configure(final StatusResponse.Type type,
-            final StatusResponse.ResponseCode code, final HumanReadableTextKey key,
+            final StatusResponse.ResponseCode code, final HumanReadableText key,
             final String tag) {
         checking(new Expectations() {{
             oneOf(mockStatusResponse).getServerResponseType();will(returnValue(type));

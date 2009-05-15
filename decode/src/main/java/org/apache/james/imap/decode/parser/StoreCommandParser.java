@@ -24,7 +24,7 @@ import org.apache.commons.logging.Log;
 import org.apache.james.imap.api.ImapCommand;
 import org.apache.james.imap.api.ImapConstants;
 import org.apache.james.imap.api.ImapMessage;
-import org.apache.james.imap.api.display.HumanReadableTextKey;
+import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.api.message.IdRange;
 import org.apache.james.imap.decode.ImapRequestLineReader;
 import org.apache.james.imap.decode.DecodingException;
@@ -59,7 +59,7 @@ class StoreCommandParser extends AbstractUidCommandParser  {
         } else if ("FLAGS.SILENT".equalsIgnoreCase(directive)) {
             silent = true;
         } else {
-            throw new DecodingException(HumanReadableTextKey.ILLEGAL_ARGUMENTS, 
+            throw new DecodingException(HumanReadableText.ILLEGAL_ARGUMENTS, 
                     "Invalid Store Directive: '" + directive + "'");
         }
 

@@ -29,7 +29,7 @@ import javax.mail.MessagingException;
 import org.apache.commons.logging.Log;
 import org.apache.james.imap.api.ImapCommand;
 import org.apache.james.imap.api.ImapMessage;
-import org.apache.james.imap.api.display.HumanReadableTextKey;
+import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.api.message.request.ImapRequest;
 import org.apache.james.imap.api.message.response.ImapResponseMessage;
 import org.apache.james.imap.api.message.response.StatusResponse;
@@ -88,26 +88,26 @@ abstract public class AbstractMailboxProcessor extends AbstractChainedProcessor 
         final ImapResponseMessage response;
         if (e instanceof MailboxExistsException) {
             response = factory.taggedNo(tag, command,
-                    HumanReadableTextKey.FAILURE_MAILBOX_EXISTS);
+                    HumanReadableText.FAILURE_MAILBOX_EXISTS);
         } else if (e instanceof MailboxNotFoundException) {
             response = factory.taggedNo(tag, command,
-                    HumanReadableTextKey.FAILURE_NO_SUCH_MAILBOX);
+                    HumanReadableText.FAILURE_NO_SUCH_MAILBOX);
         } else {
             if (logger != null) {
                 logger.info(e.getMessage());
                 logger.debug("Processing failed:", e);
             }
-            final HumanReadableTextKey key;
+            final HumanReadableText key;
             if (e instanceof MailboxException) {
                 final MailboxException mailboxException = (MailboxException) e;
-                final HumanReadableTextKey exceptionKey = mailboxException.getKey();
+                final HumanReadableText exceptionKey = mailboxException.getKey();
                 if (exceptionKey == null) {
-                    key = HumanReadableTextKey.GENERIC_FAILURE_DURING_PROCESSING;
+                    key = HumanReadableText.GENERIC_FAILURE_DURING_PROCESSING;
                 } else {
                     key = exceptionKey;
                 }
             } else {
-                key = HumanReadableTextKey.GENERIC_FAILURE_DURING_PROCESSING;
+                key = HumanReadableText.GENERIC_FAILURE_DURING_PROCESSING;
             }
             response = factory.taggedNo(tag, command, key);
         }
@@ -118,7 +118,7 @@ abstract public class AbstractMailboxProcessor extends AbstractChainedProcessor 
             final String tag, Responder responder, ImapSession session) {
         if (!command.validForState(session.getState())) {
             ImapResponseMessage response = factory.taggedNo(tag, command,
-                    HumanReadableTextKey.INVALID_COMMAND);
+                    HumanReadableText.INVALID_COMMAND);
             responder.respond(response);
 
         } else {
@@ -195,7 +195,7 @@ abstract public class AbstractMailboxProcessor extends AbstractChainedProcessor 
                 }
             }
         } catch (MessagingException e) {
-            handleResponseException(responder, e, HumanReadableTextKey.FAILURE_TO_LOAD_FLAGS, session);
+            handleResponseException(responder, e, HumanReadableText.FAILURE_TO_LOAD_FLAGS, session);
         }
     }
 
@@ -249,12 +249,12 @@ abstract public class AbstractMailboxProcessor extends AbstractChainedProcessor 
             final ExistsResponse response = new ExistsResponse(messageCount);
             responder.respond(response);
         } catch (MailboxException e) {
-            handleResponseException(responder, e, HumanReadableTextKey.FAILURE_EXISTS_COUNT, session);
+            handleResponseException(responder, e, HumanReadableText.FAILURE_EXISTS_COUNT, session);
         }
     }
 
     private void handleResponseException(final ImapProcessor.Responder responder,
-            MessagingException e, final HumanReadableTextKey message, ImapSession session) {
+            MessagingException e, final HumanReadableText message, ImapSession session) {
         session.getLog().info(message);
         session.getLog().debug(message, e);
         // TODO: consider whether error message should be passed to the user
@@ -265,13 +265,13 @@ abstract public class AbstractMailboxProcessor extends AbstractChainedProcessor 
     protected void okComplete(final ImapCommand command, final String tag,
             final ImapProcessor.Responder responder) {
         final StatusResponse response = factory.taggedOk(tag, command,
-                HumanReadableTextKey.COMPLETED);
+                HumanReadableText.COMPLETED);
         responder.respond(response);
     }
 
     protected void no(final ImapCommand command, final String tag,
             final ImapProcessor.Responder responder,
-            final HumanReadableTextKey displayTextKey) {
+            final HumanReadableText displayTextKey) {
         final StatusResponse response = factory.taggedNo(tag, command,
                 displayTextKey);
         responder.respond(response);
@@ -279,7 +279,7 @@ abstract public class AbstractMailboxProcessor extends AbstractChainedProcessor 
 
     protected void no(final ImapCommand command, final String tag,
             final ImapProcessor.Responder responder,
-            final HumanReadableTextKey displayTextKey,
+            final HumanReadableText displayTextKey,
             final StatusResponse.ResponseCode responseCode) {
         final StatusResponse response = factory.taggedNo(tag, command,
                 displayTextKey, responseCode);
@@ -287,12 +287,12 @@ abstract public class AbstractMailboxProcessor extends AbstractChainedProcessor 
     }
 
     protected void bye(final ImapProcessor.Responder responder) {
-        final StatusResponse response = factory.bye(HumanReadableTextKey.BYE);
+        final StatusResponse response = factory.bye(HumanReadableText.BYE);
         responder.respond(response);
     }
 
     protected void bye(final ImapProcessor.Responder responder,
-            final HumanReadableTextKey key) {
+            final HumanReadableText key) {
         final StatusResponse response = factory.bye(key);
         responder.respond(response);
     }

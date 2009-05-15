@@ -26,7 +26,7 @@ import javax.mail.Flags;
 import org.apache.commons.logging.Log;
 import org.apache.james.imap.api.ImapCommand;
 import org.apache.james.imap.api.ImapMessage;
-import org.apache.james.imap.api.display.HumanReadableTextKey;
+import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.api.message.request.ImapRequest;
 import org.apache.james.imap.api.message.response.StatusResponse;
 import org.apache.james.imap.api.message.response.StatusResponseFactory;
@@ -101,7 +101,7 @@ public class AppendProcessor extends AbstractMailboxProcessor {
             logger.debug("Cannot open mailbox: ", e);
         }
         no(command, tag, responder,
-                HumanReadableTextKey.FAILURE_NO_SUCH_MAILBOX,
+                HumanReadableText.FAILURE_NO_SUCH_MAILBOX,
                 StatusResponse.ResponseCode.tryCreate());
     }
 

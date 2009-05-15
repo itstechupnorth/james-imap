@@ -20,7 +20,7 @@
 package org.apache.james.imap.api.message.response;
 
 import org.apache.james.imap.api.ImapCommand;
-import org.apache.james.imap.api.display.HumanReadableTextKey;
+import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.api.message.response.StatusResponse;
 import org.apache.james.imap.api.message.response.StatusResponseFactory;
 import org.jmock.integration.junit3.MockObjectTestCase;
@@ -30,7 +30,7 @@ abstract public class AbstractTestForStatusResponseFactory extends
 
     private static final String TAG = "ATAG";
 
-    private static final HumanReadableTextKey KEY = new HumanReadableTextKey(
+    private static final HumanReadableText KEY = new HumanReadableText(
             "KEY", "TEXT");
 
     private static final StatusResponse.ResponseCode CODE = StatusResponse.ResponseCode

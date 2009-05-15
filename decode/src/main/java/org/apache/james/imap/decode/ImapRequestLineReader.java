@@ -23,7 +23,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import org.apache.james.imap.api.display.HumanReadableTextKey;
+import org.apache.james.imap.api.display.HumanReadableText;
 
 /**
  * Wraps the client input reader with a bunch of convenience methods, allowing
@@ -64,7 +64,7 @@ public class ImapRequestLineReader {
         }
 
         if (next == '\r' || next == '\n') {
-            throw new DecodingException(HumanReadableTextKey.ILLEGAL_ARGUMENTS, "Missing argument.");
+            throw new DecodingException(HumanReadableText.ILLEGAL_ARGUMENTS, "Missing argument.");
         }
 
         return next;
@@ -88,11 +88,11 @@ public class ImapRequestLineReader {
             try {
                 next = input.read();
             } catch (IOException e) {
-                throw new DecodingException(HumanReadableTextKey.SOCKET_IO_FAILURE, 
+                throw new DecodingException(HumanReadableText.SOCKET_IO_FAILURE, 
                         "Error reading from stream.", e);
             }
             if (next == -1) {
-                throw new DecodingException(HumanReadableTextKey.ILLEGAL_ARGUMENTS, 
+                throw new DecodingException(HumanReadableText.ILLEGAL_ARGUMENTS, 
                         "Unexpected end of stream.");
             }
 
@@ -127,7 +127,7 @@ public class ImapRequestLineReader {
 
         // Check if we found extra characters.
         if (next != '\n') {
-            throw new DecodingException(HumanReadableTextKey.ILLEGAL_ARGUMENTS, 
+            throw new DecodingException(HumanReadableText.ILLEGAL_ARGUMENTS, 
                     "Expected end-of-line, found '" + (char) next + "'.");
         }
     }
@@ -169,7 +169,7 @@ public class ImapRequestLineReader {
                 count = input
                         .read(holder, readTotal, holder.length - readTotal);
                 if (count == -1) {
-                    throw new DecodingException(HumanReadableTextKey.ILLEGAL_ARGUMENTS, "Unexpected end of stream.");
+                    throw new DecodingException(HumanReadableText.ILLEGAL_ARGUMENTS, "Unexpected end of stream.");
                 }
                 readTotal += count;
             }
@@ -177,7 +177,7 @@ public class ImapRequestLineReader {
             nextSeen = false;
             nextChar = 0;
         } catch (IOException e) {
-            throw new DecodingException(HumanReadableTextKey.SOCKET_IO_FAILURE, 
+            throw new DecodingException(HumanReadableText.SOCKET_IO_FAILURE, 
                     "Error reading from stream.", e);
         }
 
@@ -195,7 +195,7 @@ public class ImapRequestLineReader {
             output.flush();
         } catch (IOException e) {
             throw new DecodingException(
-                    HumanReadableTextKey.SOCKET_IO_FAILURE, 
+                    HumanReadableText.SOCKET_IO_FAILURE, 
                     "Unexpected exception in sending command continuation request.",
                     e);
         }

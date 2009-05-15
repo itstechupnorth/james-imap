@@ -21,7 +21,7 @@ package org.apache.james.imap.jpa.mail;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceException;
 
-import org.apache.james.imap.api.display.HumanReadableTextKey;
+import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.mailbox.StorageException;
 
 abstract class Mapper {
@@ -37,7 +37,7 @@ abstract class Mapper {
         try {
             entityManager.getTransaction().begin();
         } catch (PersistenceException e) {
-            throw new StorageException(HumanReadableTextKey.START_TRANSACTION_FAILED, e);
+            throw new StorageException(HumanReadableText.START_TRANSACTION_FAILED, e);
         }
     }
     
@@ -45,7 +45,7 @@ abstract class Mapper {
         try {
             entityManager.getTransaction().commit();
         } catch (PersistenceException e) {
-            throw new StorageException(HumanReadableTextKey.COMMIT_TRANSACTION_FAILED, e);
+            throw new StorageException(HumanReadableText.COMMIT_TRANSACTION_FAILED, e);
         }
     }
 }

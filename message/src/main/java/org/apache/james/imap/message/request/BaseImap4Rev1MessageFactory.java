@@ -25,7 +25,7 @@ import javax.mail.Flags;
 import org.apache.james.imap.api.ImapMessageFactory;
 import org.apache.james.imap.api.ImapCommand;
 import org.apache.james.imap.api.ImapMessage;
-import org.apache.james.imap.api.display.HumanReadableTextKey;
+import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.api.message.FetchData;
 import org.apache.james.imap.api.message.IdRange;
 import org.apache.james.imap.api.message.StatusDataItems;
@@ -160,11 +160,11 @@ public class BaseImap4Rev1MessageFactory implements ImapMessageFactory {
     }
 
     public StatusResponse taggedBad(String tag, ImapCommand command,
-            HumanReadableTextKey displayTextKey) {
+            HumanReadableText displayTextKey) {
         return statusResponseFactory.taggedBad(tag, command, displayTextKey);
     }
 
-    public StatusResponse bye(HumanReadableTextKey displayTextKey) {
+    public StatusResponse bye(HumanReadableText displayTextKey) {
         return statusResponseFactory.bye(displayTextKey);
     }
 

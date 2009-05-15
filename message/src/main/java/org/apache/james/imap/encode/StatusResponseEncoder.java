@@ -24,7 +24,7 @@ import java.util.Collection;
 
 import org.apache.james.imap.api.ImapCommand;
 import org.apache.james.imap.api.ImapMessage;
-import org.apache.james.imap.api.display.HumanReadableTextKey;
+import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.api.message.response.StatusResponse;
 import org.apache.james.imap.api.message.response.StatusResponse.ResponseCode;
 import org.apache.james.imap.api.message.response.StatusResponse.Type;
@@ -46,7 +46,7 @@ public class StatusResponseEncoder extends AbstractChainedImapEncoder {
         final String code = asString(responseCode);
         final String tag = response.getTag();
         final ImapCommand command = response.getCommand();
-        final HumanReadableTextKey textKey = response.getTextKey();
+        final HumanReadableText textKey = response.getTextKey();
         final String text = asString(textKey);
         final Collection parameters;
         final long number;
@@ -61,7 +61,7 @@ public class StatusResponseEncoder extends AbstractChainedImapEncoder {
                 text);
     }
 
-    private String asString(HumanReadableTextKey text) {
+    private String asString(HumanReadableText text) {
         final String result;
         if (text == null) {
             result = null;

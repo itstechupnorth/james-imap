@@ -22,7 +22,7 @@ package org.apache.james.imap.decode;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.james.imap.api.display.HumanReadableTextKey;
+import org.apache.james.imap.api.display.HumanReadableText;
 
 
 public class FetchPartPathDecoder {
@@ -148,7 +148,7 @@ public class FetchPartPathDecoder {
                     break;
 
                 default:
-                    throw new DecodingException(HumanReadableTextKey.ILLEGAL_ARGUMENTS, 
+                    throw new DecodingException(HumanReadableText.ILLEGAL_ARGUMENTS, 
                             "Did not expect '" + next + "' here in body specification.");
             }
         } else {
@@ -166,7 +166,7 @@ public class FetchPartPathDecoder {
             mustBeE(sectionSpecification, at + 3);
             storePartial();
         } else {
-            throw new DecodingException(HumanReadableTextKey.ILLEGAL_ARGUMENTS, "Unknown body specification");
+            throw new DecodingException(HumanReadableText.ILLEGAL_ARGUMENTS, "Unknown body specification");
         }
         return MIME;
     }
@@ -175,7 +175,7 @@ public class FetchPartPathDecoder {
             throws DecodingException {
         final char i = sectionSpecification.charAt(position);
         if (!(i == 'i' || i == 'I')) {
-            throw new DecodingException(HumanReadableTextKey.ILLEGAL_ARGUMENTS, "Unknown body specification");
+            throw new DecodingException(HumanReadableText.ILLEGAL_ARGUMENTS, "Unknown body specification");
         }
     }
 
@@ -183,7 +183,7 @@ public class FetchPartPathDecoder {
             throws DecodingException {
         final char next = sectionSpecification.charAt(position);
         if (!(next == 'm' || next == 'M')) {
-            throw new DecodingException(HumanReadableTextKey.ILLEGAL_ARGUMENTS, "Unknown body specification");
+            throw new DecodingException(HumanReadableText.ILLEGAL_ARGUMENTS, "Unknown body specification");
         }
     }
 
@@ -191,7 +191,7 @@ public class FetchPartPathDecoder {
             throws DecodingException {
         final char next = sectionSpecification.charAt(position);
         if (!(next == 'n' || next == 'N')) {
-            throw new DecodingException(HumanReadableTextKey.ILLEGAL_ARGUMENTS, "Unknown body specification");
+            throw new DecodingException(HumanReadableText.ILLEGAL_ARGUMENTS, "Unknown body specification");
         }
     }
 
@@ -199,7 +199,7 @@ public class FetchPartPathDecoder {
             throws DecodingException {
         final char next = sectionSpecification.charAt(position);
         if (!(next == 'o' || next == 'O')) {
-            throw new DecodingException(HumanReadableTextKey.ILLEGAL_ARGUMENTS, "Unknown body specification");
+            throw new DecodingException(HumanReadableText.ILLEGAL_ARGUMENTS, "Unknown body specification");
         }
     }
 
@@ -207,7 +207,7 @@ public class FetchPartPathDecoder {
             throws DecodingException {
         final char next = sectionSpecification.charAt(position);
         if (!(next == 'e' || next == 'E')) {
-            throw new DecodingException(HumanReadableTextKey.ILLEGAL_ARGUMENTS, "Unknown body specification");
+            throw new DecodingException(HumanReadableText.ILLEGAL_ARGUMENTS, "Unknown body specification");
         }
     }
 
@@ -215,7 +215,7 @@ public class FetchPartPathDecoder {
             throws DecodingException {
         final char next = sectionSpecification.charAt(position);
         if (!(next == 'a' || next == 'A')) {
-            throw new DecodingException(HumanReadableTextKey.ILLEGAL_ARGUMENTS, "Unknown body specification");
+            throw new DecodingException(HumanReadableText.ILLEGAL_ARGUMENTS, "Unknown body specification");
         }
     }
 
@@ -223,7 +223,7 @@ public class FetchPartPathDecoder {
             throws DecodingException {
         final char next = sectionSpecification.charAt(position);
         if (!(next == 'd' || next == 'D')) {
-            throw new DecodingException(HumanReadableTextKey.ILLEGAL_ARGUMENTS, "Unknown body specification");
+            throw new DecodingException(HumanReadableText.ILLEGAL_ARGUMENTS, "Unknown body specification");
         }
     }
 
@@ -231,7 +231,7 @@ public class FetchPartPathDecoder {
             throws DecodingException {
         final char next = sectionSpecification.charAt(position);
         if (!(next == 'r' || next == 'R')) {
-            throw new DecodingException(HumanReadableTextKey.ILLEGAL_ARGUMENTS, "Unknown body specification");
+            throw new DecodingException(HumanReadableText.ILLEGAL_ARGUMENTS, "Unknown body specification");
         }
     }
 
@@ -239,7 +239,7 @@ public class FetchPartPathDecoder {
             throws DecodingException {
         final char next = sectionSpecification.charAt(position);
         if (!(next == 'x' || next == 'X')) {
-            throw new DecodingException(HumanReadableTextKey.ILLEGAL_ARGUMENTS, "Unknown body specification");
+            throw new DecodingException(HumanReadableText.ILLEGAL_ARGUMENTS, "Unknown body specification");
         }
     }
 
@@ -247,7 +247,7 @@ public class FetchPartPathDecoder {
             throws DecodingException {
         final char next = sectionSpecification.charAt(position);
         if (!(next == 't' || next == 'T')) {
-            throw new DecodingException(HumanReadableTextKey.ILLEGAL_ARGUMENTS, "Unknown body specification");
+            throw new DecodingException(HumanReadableText.ILLEGAL_ARGUMENTS, "Unknown body specification");
         }
     }
 
@@ -255,7 +255,7 @@ public class FetchPartPathDecoder {
             throws DecodingException {
         final char next = sectionSpecification.charAt(position);
         if (!(next == 'f' || next == 'F')) {
-            throw new DecodingException(HumanReadableTextKey.ILLEGAL_ARGUMENTS, "Unknown body specification");
+            throw new DecodingException(HumanReadableText.ILLEGAL_ARGUMENTS, "Unknown body specification");
         }
     }
 
@@ -263,7 +263,7 @@ public class FetchPartPathDecoder {
             throws DecodingException {
         final char next = sectionSpecification.charAt(position);
         if (!(next == 'l' || next == 'L')) {
-            throw new DecodingException(HumanReadableTextKey.ILLEGAL_ARGUMENTS, "Unknown body specification");
+            throw new DecodingException(HumanReadableText.ILLEGAL_ARGUMENTS, "Unknown body specification");
         }
     }
 
@@ -271,7 +271,7 @@ public class FetchPartPathDecoder {
             throws DecodingException {
         final char next = sectionSpecification.charAt(position);
         if (!(next == 's' || next == 'S')) {
-            throw new DecodingException(HumanReadableTextKey.ILLEGAL_ARGUMENTS, "Unknown body specification");
+            throw new DecodingException(HumanReadableText.ILLEGAL_ARGUMENTS, "Unknown body specification");
         }
     }
 
@@ -279,7 +279,7 @@ public class FetchPartPathDecoder {
             throws DecodingException {
         final char next = sectionSpecification.charAt(position);
         if (!(next == '.')) {
-            throw new DecodingException(HumanReadableTextKey.ILLEGAL_ARGUMENTS, "Unknown body specification");
+            throw new DecodingException(HumanReadableText.ILLEGAL_ARGUMENTS, "Unknown body specification");
         }
     }
 
@@ -287,7 +287,7 @@ public class FetchPartPathDecoder {
             throws DecodingException {
         final char next = sectionSpecification.charAt(position);
         if (!(next == '(')) {
-            throw new DecodingException(HumanReadableTextKey.ILLEGAL_ARGUMENTS, "Unknown body specification");
+            throw new DecodingException(HumanReadableText.ILLEGAL_ARGUMENTS, "Unknown body specification");
         }
     }
 
@@ -308,7 +308,7 @@ public class FetchPartPathDecoder {
                 result = headerFields(at + 6, sectionSpecification);
             }
         } else {
-            throw new DecodingException(HumanReadableTextKey.ILLEGAL_ARGUMENTS, "Unknown body specification");
+            throw new DecodingException(HumanReadableText.ILLEGAL_ARGUMENTS, "Unknown body specification");
         }
         return result;
     }
@@ -340,18 +340,18 @@ public class FetchPartPathDecoder {
                         result = HEADER_NOT_FIELDS;
                         namesStartAt = skipSpaces(at + 11, sectionSpecification);
                     } else {
-                        throw new DecodingException(HumanReadableTextKey.ILLEGAL_ARGUMENTS, 
+                        throw new DecodingException(HumanReadableText.ILLEGAL_ARGUMENTS, 
                                 "Unknown body specification");
                     }
                     break;
                 default:
-                    throw new DecodingException(HumanReadableTextKey.ILLEGAL_ARGUMENTS, "Unknown body specification");
+                    throw new DecodingException(HumanReadableText.ILLEGAL_ARGUMENTS, "Unknown body specification");
             }
             mustBeOpenParen(sectionSpecification, namesStartAt);
             readHeaderNames(namesStartAt + 1, sectionSpecification);
 
         } else {
-            throw new DecodingException(HumanReadableTextKey.ILLEGAL_ARGUMENTS, "Unknown body specification");
+            throw new DecodingException(HumanReadableText.ILLEGAL_ARGUMENTS, "Unknown body specification");
         }
         return result;
     }
@@ -380,7 +380,7 @@ public class FetchPartPathDecoder {
                     readHeaderNames(at + 1, lastWordStart, sectionSpecification);
             }
         } else {
-            throw new DecodingException(HumanReadableTextKey.ILLEGAL_ARGUMENTS, "Closing parenthesis missing.");
+            throw new DecodingException(HumanReadableText.ILLEGAL_ARGUMENTS, "Closing parenthesis missing.");
         }
     }
 
@@ -417,7 +417,7 @@ public class FetchPartPathDecoder {
             mustBeT(sectionSpecification, at + 3);
             storePartial();
         } else {
-            throw new DecodingException(HumanReadableTextKey.ILLEGAL_ARGUMENTS, "Unknown body specification");
+            throw new DecodingException(HumanReadableText.ILLEGAL_ARGUMENTS, "Unknown body specification");
         }
         return TEXT;
     }

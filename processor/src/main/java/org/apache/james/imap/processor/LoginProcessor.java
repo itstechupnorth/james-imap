@@ -21,7 +21,7 @@ package org.apache.james.imap.processor;
 
 import org.apache.james.imap.api.ImapCommand;
 import org.apache.james.imap.api.ImapMessage;
-import org.apache.james.imap.api.display.HumanReadableTextKey;
+import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.api.message.request.ImapRequest;
 import org.apache.james.imap.api.message.response.StatusResponseFactory;
 import org.apache.james.imap.api.process.ImapProcessor;
@@ -95,10 +95,10 @@ public class LoginProcessor extends AbstractMailboxProcessor {
                     session.setAttribute(ATTRIBUTE_NUMBER_OF_FAILURES,
                             new Integer(failures));
                     no(command, tag, responder,
-                            HumanReadableTextKey.INVALID_LOGIN);
+                            HumanReadableText.INVALID_LOGIN);
                 } else {
                     session.getLog().info("Too many authentication failures. Closing connection.");
-                    bye(responder, HumanReadableTextKey.TOO_MANY_FAILURES);
+                    bye(responder, HumanReadableText.TOO_MANY_FAILURES);
                     session.logout();
                 }
             }

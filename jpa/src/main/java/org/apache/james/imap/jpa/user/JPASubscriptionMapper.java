@@ -24,7 +24,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceException;
 
-import org.apache.james.imap.api.display.HumanReadableTextKey;
+import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.mailbox.SubscriptionException;
 import org.apache.james.imap.store.user.SubscriptionMapper;
 import org.apache.james.imap.store.user.model.Subscription;
@@ -48,7 +48,7 @@ public class JPASubscriptionMapper implements SubscriptionMapper {
         try {
             entityManager.getTransaction().begin();
         } catch (PersistenceException e) {
-            throw new SubscriptionException(HumanReadableTextKey.START_TRANSACTION_FAILED, e);
+            throw new SubscriptionException(HumanReadableText.START_TRANSACTION_FAILED, e);
         }
     }
 
@@ -59,7 +59,7 @@ public class JPASubscriptionMapper implements SubscriptionMapper {
         try {
             entityManager.getTransaction().commit();
         } catch (PersistenceException e) {
-            throw new SubscriptionException(HumanReadableTextKey.COMMIT_TRANSACTION_FAILED, e);
+            throw new SubscriptionException(HumanReadableText.COMMIT_TRANSACTION_FAILED, e);
         }
     }
 
@@ -74,7 +74,7 @@ public class JPASubscriptionMapper implements SubscriptionMapper {
         } catch (NoResultException e) {
             return null;
         } catch (PersistenceException e) {
-            throw new SubscriptionException(HumanReadableTextKey.SEARCH_FAILED, e);
+            throw new SubscriptionException(HumanReadableText.SEARCH_FAILED, e);
         }
     }
 
@@ -86,7 +86,7 @@ public class JPASubscriptionMapper implements SubscriptionMapper {
         try {
             entityManager.persist(subscription);
         } catch (PersistenceException e) {
-            throw new SubscriptionException(HumanReadableTextKey.SAVE_FAILED, e);
+            throw new SubscriptionException(HumanReadableText.SAVE_FAILED, e);
         }
     }
 
@@ -99,7 +99,7 @@ public class JPASubscriptionMapper implements SubscriptionMapper {
         try {
             return (List<Subscription>) entityManager.createNamedQuery("findSubscriptionsForUser").setParameter("userParam", user).getResultList();
         } catch (PersistenceException e) {
-            throw new SubscriptionException(HumanReadableTextKey.SEARCH_FAILED, e);
+            throw new SubscriptionException(HumanReadableText.SEARCH_FAILED, e);
         }
     }
 
@@ -111,7 +111,7 @@ public class JPASubscriptionMapper implements SubscriptionMapper {
         try {
             entityManager.remove(subscription);
         } catch (PersistenceException e) {
-            throw new SubscriptionException(HumanReadableTextKey.DELETED_FAILED, e);
+            throw new SubscriptionException(HumanReadableText.DELETED_FAILED, e);
         }
     }
 }

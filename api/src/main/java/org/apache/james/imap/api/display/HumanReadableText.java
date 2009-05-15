@@ -24,170 +24,170 @@ import org.apache.james.imap.api.ImapConstants;
 /**
  * Keys human response text that may be displayed to the user.
  */
-public class HumanReadableTextKey {
+public class HumanReadableText {
 
-    public static final HumanReadableTextKey SELECT = new HumanReadableTextKey(
+    public static final HumanReadableText SELECT = new HumanReadableText(
             "org.apache.james.imap.SELECT", "completed.");
 
-    public static final HumanReadableTextKey UNSEEN = new HumanReadableTextKey(
+    public static final HumanReadableText UNSEEN = new HumanReadableText(
             "org.apache.james.imap.UNSEEN", "");
 
-    public static final HumanReadableTextKey UID_VALIDITY = new HumanReadableTextKey(
+    public static final HumanReadableText UID_VALIDITY = new HumanReadableText(
             "org.apache.james.imap.UID_VALIDITY", "");
 
-    public static final HumanReadableTextKey PERMANENT_FLAGS = new HumanReadableTextKey(
+    public static final HumanReadableText PERMANENT_FLAGS = new HumanReadableText(
             "org.apache.james.imap.PERMANENT_FLAGS", "");
 
-    public static final HumanReadableTextKey GENERIC_LSUB_FAILURE = new HumanReadableTextKey(
+    public static final HumanReadableText GENERIC_LSUB_FAILURE = new HumanReadableText(
             "org.apache.james.imap.GENERIC_SUBSCRIPTION_FAILURE",
             "Cannot list subscriptions.");
 
-    public static final HumanReadableTextKey GENERIC_UNSUBSCRIPTION_FAILURE = new HumanReadableTextKey(
+    public static final HumanReadableText GENERIC_UNSUBSCRIPTION_FAILURE = new HumanReadableText(
             "org.apache.james.imap.GENERIC_SUBSCRIPTION_FAILURE",
             "Cannot unsubscribe.");
 
-    public static final HumanReadableTextKey GENERIC_SUBSCRIPTION_FAILURE = new HumanReadableTextKey(
+    public static final HumanReadableText GENERIC_SUBSCRIPTION_FAILURE = new HumanReadableText(
             "org.apache.james.imap.GENERIC_SUBSCRIPTION_FAILURE",
             "Cannot subscribe.");
 
-    public static final HumanReadableTextKey INVALID_COMMAND = new HumanReadableTextKey(
+    public static final HumanReadableText INVALID_COMMAND = new HumanReadableText(
             "org.apache.james.imap.INVALID_COMMAND",
             "failed. Command not valid in this state.");
 
-    public static final HumanReadableTextKey ILLEGAL_TAG = new HumanReadableTextKey(
+    public static final HumanReadableText ILLEGAL_TAG = new HumanReadableText(
             "org.apache.james.imap.ILLEGAL_TAG", "Illegal tag.");
 
-    public static final HumanReadableTextKey FAILURE_EXISTS_COUNT = new HumanReadableTextKey(
+    public static final HumanReadableText FAILURE_EXISTS_COUNT = new HumanReadableText(
             "org.apache.james.imap.FAILURE_EXISTS_COUNT", "Cannot count number of existing records.");
     
-    public static final HumanReadableTextKey FAILURE_TO_LOAD_FLAGS= new HumanReadableTextKey(
+    public static final HumanReadableText FAILURE_TO_LOAD_FLAGS= new HumanReadableText(
             "org.apache.james.imap.FAILURE_TO_LOAD_FLAGS", "Failed to retrieve flags data.");   
     
-    public static final HumanReadableTextKey ILLEGAL_ARGUMENTS = new HumanReadableTextKey(
+    public static final HumanReadableText ILLEGAL_ARGUMENTS = new HumanReadableText(
             "org.apache.james.imap.ILLEGAL_ARGUMENTS",
             "failed. Illegal arguments.");
 
-    public static final HumanReadableTextKey FAILURE_MAIL_PARSE = new HumanReadableTextKey(
+    public static final HumanReadableText FAILURE_MAIL_PARSE = new HumanReadableText(
             "org.apache.james.imap.FAILURE_MAIL_PARSE",
             "failed. Mail cannot be parsed.");
 
-    public static final HumanReadableTextKey FAILURE_NO_SUCH_MAILBOX = new HumanReadableTextKey(
+    public static final HumanReadableText FAILURE_NO_SUCH_MAILBOX = new HumanReadableText(
             "org.apache.james.imap.FAILURE_NO_SUCH_MAILBOX",
             "failed. No such mailbox.");
 
-    public static final HumanReadableTextKey START_TRANSACTION_FAILED = new HumanReadableTextKey(
+    public static final HumanReadableText START_TRANSACTION_FAILED = new HumanReadableText(
             "org.apache.james.imap.START_TRANSACTION_FAILED",
             "failed. Cannot start transaction.");
     
-    public static final HumanReadableTextKey COMMIT_TRANSACTION_FAILED = new HumanReadableTextKey(
+    public static final HumanReadableText COMMIT_TRANSACTION_FAILED = new HumanReadableText(
             "org.apache.james.imap.COMMIT_TRANSACTION_FAILED",
             "failed. Transaction commit failed.");
     
-    public static final HumanReadableTextKey DELETED_FAILED = new HumanReadableTextKey(
+    public static final HumanReadableText DELETED_FAILED = new HumanReadableText(
             "org.apache.james.imap.DELETED_FAILED",
             "failed. Deletion failed.");
     
-    public static final HumanReadableTextKey SEARCH_FAILED = new HumanReadableTextKey(
+    public static final HumanReadableText SEARCH_FAILED = new HumanReadableText(
             "org.apache.james.imap.SEARCH_FAILED",
             "failed. Search failed.");
     
-    public static final HumanReadableTextKey COUNT_FAILED = new HumanReadableTextKey(
+    public static final HumanReadableText COUNT_FAILED = new HumanReadableText(
             "org.apache.james.imap.COUNT_FAILED",
             "failed. Count failed.");
     
-    public static final HumanReadableTextKey SAVE_FAILED = new HumanReadableTextKey(
+    public static final HumanReadableText SAVE_FAILED = new HumanReadableText(
             "org.apache.james.imap.SAVE_FAILED",
             "failed. Save failed.");
     
-    public static final HumanReadableTextKey UNSUPPORTED_SEARCH = new HumanReadableTextKey(
+    public static final HumanReadableText UNSUPPORTED_SEARCH = new HumanReadableText(
             "org.apache.james.imap.UNSUPPORTED_SEARCH",
             "failed. Unsupported search.");
   
-    public static final HumanReadableTextKey LOCK_FAILED = new HumanReadableTextKey(
+    public static final HumanReadableText LOCK_FAILED = new HumanReadableText(
             "org.apache.james.imap.LOCK_FAILED",
             "failed. Failed to lock mailbox.");
     
-    public static final HumanReadableTextKey UNSUPPORTED = new HumanReadableTextKey(
+    public static final HumanReadableText UNSUPPORTED = new HumanReadableText(
             "org.apache.james.imap.UNSUPPORTED",
             "failed. Unsupported operation.");
     
-    public static final HumanReadableTextKey DUPLICATE_MAILBOXES = new HumanReadableTextKey(
+    public static final HumanReadableText DUPLICATE_MAILBOXES = new HumanReadableText(
             "org.apache.james.imap.DUPLICATE_MAILBOXES",
             "failed. Expected unique mailbox but duplicate exists.");
     
-    public static final HumanReadableTextKey MAILBOX_EXISTS = new HumanReadableTextKey(
+    public static final HumanReadableText MAILBOX_EXISTS = new HumanReadableText(
             "org.apache.james.imap.MAILBOX_EXISTS",
             "failed. Mailbox already exists.");
     
-    public static final HumanReadableTextKey MAILBOX_NOT_FOUND = new HumanReadableTextKey(
+    public static final HumanReadableText MAILBOX_NOT_FOUND = new HumanReadableText(
             "org.apache.james.imap.MAILBOX_NOT_FOUND",
             "failed. Mailbox not found.");
     
-    public static final HumanReadableTextKey MAILBOX_DELETED = new HumanReadableTextKey(
+    public static final HumanReadableText MAILBOX_DELETED = new HumanReadableText(
             "org.apache.james.imap.MAILBOX_DELETED",
             "failed. Mailbox has been deleted.");
     
-    public static final HumanReadableTextKey COMSUME_UID_FAILED = new HumanReadableTextKey(
+    public static final HumanReadableText COMSUME_UID_FAILED = new HumanReadableText(
             "org.apache.james.imap.COMSUME_UID_FAILED",
             "failed. Failed to acquire UID.");
     
-    public static final HumanReadableTextKey GENERIC_FAILURE_DURING_PROCESSING = new HumanReadableTextKey(
+    public static final HumanReadableText GENERIC_FAILURE_DURING_PROCESSING = new HumanReadableText(
             "org.apache.james.imap.GENERIC_FAILURE_DURING_PROCESSING",
             "processing failed.");
 
-    public static final HumanReadableTextKey FAILURE_MAILBOX_EXISTS = new HumanReadableTextKey(
+    public static final HumanReadableText FAILURE_MAILBOX_EXISTS = new HumanReadableText(
             "org.apache.james.imap.FAILURE_NO_SUCH_MAILBOX",
             "failed. Mailbox already exists.");
 
-    public static final HumanReadableTextKey SOCKET_IO_FAILURE = new HumanReadableTextKey(
+    public static final HumanReadableText SOCKET_IO_FAILURE = new HumanReadableText(
             "org.apache.james.imap.SOCKET_IO_FAILURE",
             "failed. IO failure.");
 
-    public static final HumanReadableTextKey BAD_IO_ENCODING = new HumanReadableTextKey(
+    public static final HumanReadableText BAD_IO_ENCODING = new HumanReadableText(
             "org.apache.james.imap.BAD_IO_ENCODING",
             "failed. Illegal encoding.");   
-    public static final HumanReadableTextKey COMPLETED = new HumanReadableTextKey(
+    public static final HumanReadableText COMPLETED = new HumanReadableText(
             "org.apache.james.imap.COMPLETED", "completed.");
 
-    public static final HumanReadableTextKey INVALID_LOGIN = new HumanReadableTextKey(
+    public static final HumanReadableText INVALID_LOGIN = new HumanReadableText(
             "org.apache.james.imap.INVALID_LOGIN",
             "failed. Invalid login/password.");
 
-    public static final HumanReadableTextKey UNSUPPORTED_SEARCH_CRITERIA = new HumanReadableTextKey(
+    public static final HumanReadableText UNSUPPORTED_SEARCH_CRITERIA = new HumanReadableText(
             "org.apache.james.imap.UNSUPPORTED_CRITERIA",
             "failed. One or more search criteria is unsupported.");
 
-    public static final HumanReadableTextKey UNSUPPORTED_AUTHENTICATION_MECHANISM = new HumanReadableTextKey(
+    public static final HumanReadableText UNSUPPORTED_AUTHENTICATION_MECHANISM = new HumanReadableText(
             "org.apache.james.imap.UNSUPPORTED_AUTHENTICATION_MECHANISM",
             "failed. Authentication mechanism is unsupported.");
 
-    public static final HumanReadableTextKey UNKNOWN_COMMAND = new HumanReadableTextKey(
+    public static final HumanReadableText UNKNOWN_COMMAND = new HumanReadableText(
             "org.apache.james.imap.UNKNOWN_COMMAND", "failed. Unknown command.");
 
-    public static final HumanReadableTextKey BAD_CHARSET = new HumanReadableTextKey(
+    public static final HumanReadableText BAD_CHARSET = new HumanReadableText(
             "org.apache.james.imap.BAD_CHARSET",
             "failed. Charset is unsupported.");
 
-    public static final HumanReadableTextKey MAILBOX_IS_READ_ONLY = new HumanReadableTextKey(
+    public static final HumanReadableText MAILBOX_IS_READ_ONLY = new HumanReadableText(
             "org.apache.james.imap.MAILBOX_IS_READ_ONLY",
             "failed. Mailbox is read only.");
 
-    public static final HumanReadableTextKey BYE = new HumanReadableTextKey(
+    public static final HumanReadableText BYE = new HumanReadableText(
             "org.apache.james.imap.BYE", ImapConstants.VERSION
                     + " Server logging out");
 
-    public static final HumanReadableTextKey TOO_MANY_FAILURES = new HumanReadableTextKey(
+    public static final HumanReadableText TOO_MANY_FAILURES = new HumanReadableText(
             "org.apache.james.imap.TOO_MANY_FAILURES",
             "Login failed too many times.");
 
-    public static final HumanReadableTextKey BYE_UNKNOWN_COMMAND = new HumanReadableTextKey(
+    public static final HumanReadableText BYE_UNKNOWN_COMMAND = new HumanReadableText(
             "org.apache.james.imap.BYE_UNKNOWN_COMMAND", "Unknown command.");
 
     private final String defaultValue;
 
     private final String key;
 
-    public HumanReadableTextKey(final String key, final String defaultValue) {
+    public HumanReadableText(final String key, final String defaultValue) {
         super();
         this.defaultValue = defaultValue;
         this.key = key;
@@ -226,7 +226,7 @@ public class HumanReadableTextKey {
             return false;
         if (getClass() != obj.getClass())
             return false;
-        final HumanReadableTextKey other = (HumanReadableTextKey) obj;
+        final HumanReadableText other = (HumanReadableText) obj;
         if (key == null) {
             if (other.key != null)
                 return false;

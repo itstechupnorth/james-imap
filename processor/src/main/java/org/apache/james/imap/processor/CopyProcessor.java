@@ -21,7 +21,7 @@ package org.apache.james.imap.processor;
 
 import org.apache.james.imap.api.ImapCommand;
 import org.apache.james.imap.api.ImapMessage;
-import org.apache.james.imap.api.display.HumanReadableTextKey;
+import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.api.message.IdRange;
 import org.apache.james.imap.api.message.request.ImapRequest;
 import org.apache.james.imap.api.message.response.StatusResponseFactory;
@@ -65,7 +65,7 @@ public class CopyProcessor extends AbstractMailboxProcessor {
                     .mailboxExists(fullMailboxName, mailboxSession);
             if (!mailboxExists) {
                 no(command, tag, responder,
-                        HumanReadableTextKey.FAILURE_NO_SUCH_MAILBOX,
+                        HumanReadableText.FAILURE_NO_SUCH_MAILBOX,
                         ResponseCode.tryCreate());
             } else {
                 for (int i = 0; i < idSet.length; i++) {

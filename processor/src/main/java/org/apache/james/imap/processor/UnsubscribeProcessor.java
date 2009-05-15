@@ -21,7 +21,7 @@ package org.apache.james.imap.processor;
 
 import org.apache.james.imap.api.ImapCommand;
 import org.apache.james.imap.api.ImapMessage;
-import org.apache.james.imap.api.display.HumanReadableTextKey;
+import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.api.message.request.ImapRequest;
 import org.apache.james.imap.api.message.response.StatusResponseFactory;
 import org.apache.james.imap.api.process.ImapProcessor;
@@ -62,10 +62,10 @@ public class UnsubscribeProcessor extends AbstractMailboxProcessor {
             session.getLog().debug("Subscription failed", e);
             unsolicitedResponses(session, responder, false);
 
-            final HumanReadableTextKey exceptionKey = e.getKey();
-            final HumanReadableTextKey displayTextKey;
+            final HumanReadableText exceptionKey = e.getKey();
+            final HumanReadableText displayTextKey;
             if (exceptionKey == null) {
-                displayTextKey = HumanReadableTextKey.GENERIC_UNSUBSCRIPTION_FAILURE;
+                displayTextKey = HumanReadableText.GENERIC_UNSUBSCRIPTION_FAILURE;
             } else {
                 displayTextKey = exceptionKey;
             }
@@ -74,7 +74,7 @@ public class UnsubscribeProcessor extends AbstractMailboxProcessor {
             session.getLog().debug("Subscription failed", e);
             unsolicitedResponses(session, responder, false);
 
-            final HumanReadableTextKey displayTextKey = HumanReadableTextKey.GENERIC_SUBSCRIPTION_FAILURE;
+            final HumanReadableText displayTextKey = HumanReadableText.GENERIC_SUBSCRIPTION_FAILURE;
             no(command, tag, responder, displayTextKey);
         }
     }

@@ -25,7 +25,7 @@ import java.util.Collection;
 import org.apache.james.imap.api.ImapCommand;
 import org.apache.james.imap.api.ImapConstants;
 import org.apache.james.imap.api.ImapMessage;
-import org.apache.james.imap.api.display.HumanReadableTextKey;
+import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.api.message.request.ImapRequest;
 import org.apache.james.imap.api.message.response.StatusResponseFactory;
 import org.apache.james.imap.api.process.ImapProcessor;
@@ -71,17 +71,17 @@ public class LSubProcessor extends AbstractMailboxProcessor {
 
         } catch (SubscriptionException e) {
             session.getLog().debug("Subscription failed", e);
-            final HumanReadableTextKey exceptionKey = e.getKey();
-            final HumanReadableTextKey displayTextKey;
+            final HumanReadableText exceptionKey = e.getKey();
+            final HumanReadableText displayTextKey;
             if (exceptionKey == null) {
-                displayTextKey = HumanReadableTextKey.GENERIC_LSUB_FAILURE;
+                displayTextKey = HumanReadableText.GENERIC_LSUB_FAILURE;
             } else {
                 displayTextKey = exceptionKey;
             }
             no(command, tag, responder, displayTextKey);
         } catch (MailboxException e) {
             session.getLog().debug("Subscription failed", e);
-            final HumanReadableTextKey displayTextKey = HumanReadableTextKey.GENERIC_LSUB_FAILURE;
+            final HumanReadableText displayTextKey = HumanReadableText.GENERIC_LSUB_FAILURE;
             no(command, tag, responder, displayTextKey);
         }
     }

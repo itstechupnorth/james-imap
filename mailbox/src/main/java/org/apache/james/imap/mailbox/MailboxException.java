@@ -21,26 +21,26 @@ package org.apache.james.imap.mailbox;
 
 import javax.mail.MessagingException;
 
-import org.apache.james.imap.api.display.HumanReadableTextKey;
+import org.apache.james.imap.api.display.HumanReadableText;
 
 public class MailboxException extends MessagingException {
 
     private static final long serialVersionUID = 4612761817238115904L;
 
-    private final HumanReadableTextKey key;
+    private final HumanReadableText key;
     
-    public MailboxException(final HumanReadableTextKey key, final String message) {
+    public MailboxException(final HumanReadableText key, final String message) {
         super(message);
         this.key = key;
     }
 
     
-    public MailboxException(final HumanReadableTextKey key) {
+    public MailboxException(final HumanReadableText key) {
         super(key.toString());
         this.key = key;
     }
 
-    public MailboxException(final HumanReadableTextKey key, Throwable cause) {
+    public MailboxException(final HumanReadableText key, Throwable cause) {
         super(key.getDefaultValue());
         initCause(cause);
         this.key = key;
@@ -51,11 +51,11 @@ public class MailboxException extends MessagingException {
      * 
      * @return the key, possibly null
      */
-    public final HumanReadableTextKey getKey() {
-        final HumanReadableTextKey key;
+    public final HumanReadableText getKey() {
+        final HumanReadableText key;
         if (this.key == null) {
             // API specifies not null but best to default to generic message 
-            key = HumanReadableTextKey.GENERIC_FAILURE_DURING_PROCESSING;
+            key = HumanReadableText.GENERIC_FAILURE_DURING_PROCESSING;
         } else {
             key = this.key;
         }

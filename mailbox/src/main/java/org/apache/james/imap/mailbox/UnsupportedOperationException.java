@@ -19,7 +19,7 @@
 
 package org.apache.james.imap.mailbox;
 
-import org.apache.james.imap.api.display.HumanReadableTextKey;
+import org.apache.james.imap.api.display.HumanReadableText;
 
 /**
  * Indicates that an operation required is not supported
@@ -30,7 +30,7 @@ public class UnsupportedOperationException extends MailboxException {
     private static final long serialVersionUID = 1943118588115772317L;
 
     public UnsupportedOperationException(String message) {
-        super(HumanReadableTextKey.UNSUPPORTED, message);
+        super(HumanReadableText.UNSUPPORTED, message);
     }
 
 }

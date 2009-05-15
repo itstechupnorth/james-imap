@@ -22,7 +22,7 @@ import java.util.Date;
 
 import javax.mail.Flags;
 
-import org.apache.james.imap.api.display.HumanReadableTextKey;
+import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.api.message.FetchData;
 import org.apache.james.imap.api.message.IdRange;
 import org.apache.james.imap.api.message.StatusDataItems;
@@ -47,9 +47,9 @@ public interface ImapMessageFactory {
      * @return <code>StatusResponse</code>, not null
      */
     public StatusResponse taggedBad(String tag, ImapCommand command,
-            HumanReadableTextKey displayTextKey);
+            HumanReadableText displayTextKey);
 
-    public StatusResponse bye(HumanReadableTextKey message);
+    public StatusResponse bye(HumanReadableText message);
 
     public ImapMessage createAppendMessage(ImapCommand command,
             String mailboxName, Flags flags, Date datetime,

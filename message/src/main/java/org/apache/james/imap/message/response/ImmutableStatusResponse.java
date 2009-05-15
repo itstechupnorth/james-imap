@@ -20,7 +20,7 @@
 package org.apache.james.imap.message.response;
 
 import org.apache.james.imap.api.ImapCommand;
-import org.apache.james.imap.api.display.HumanReadableTextKey;
+import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.api.message.response.StatusResponse;
 
 /**
@@ -36,13 +36,13 @@ public class ImmutableStatusResponse implements StatusResponse {
 
     private final String tag;
 
-    private final HumanReadableTextKey textKey;
+    private final HumanReadableText textKey;
 
     private final ImapCommand command;
 
     public ImmutableStatusResponse(final Type serverResponseType,
             final String tag, final ImapCommand command,
-            final HumanReadableTextKey textKey, final ResponseCode responseCode) {
+            final HumanReadableText textKey, final ResponseCode responseCode) {
         super();
         this.responseCode = responseCode;
         this.serverResponseType = serverResponseType;
@@ -75,7 +75,7 @@ public class ImmutableStatusResponse implements StatusResponse {
     /**
      * @see {@link StatusResponse#getTextKey()}
      */
-    public HumanReadableTextKey getTextKey() {
+    public HumanReadableText getTextKey() {
         return textKey;
     }
 

@@ -31,7 +31,7 @@ import java.util.List;
 
 import javax.swing.text.Document;
 
-import org.apache.james.imap.api.display.HumanReadableTextKey;
+import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.mailbox.Content;
 import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.MessageResult;
@@ -119,9 +119,9 @@ public class ResultUtils {
             
                 addPartContent(fetchGroup, message, messageResult);
             } catch (IOException e) {
-                throw new MailboxException(HumanReadableTextKey.FAILURE_MAIL_PARSE, e);
+                throw new MailboxException(HumanReadableText.FAILURE_MAIL_PARSE, e);
             } catch (MimeException e) {
-                throw new MailboxException(HumanReadableTextKey.FAILURE_MAIL_PARSE, e);
+                throw new MailboxException(HumanReadableText.FAILURE_MAIL_PARSE, e);
             }
         }
         return messageResult;

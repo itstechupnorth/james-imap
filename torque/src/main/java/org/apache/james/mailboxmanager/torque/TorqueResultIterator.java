@@ -30,7 +30,7 @@ import javax.mail.internet.MimeMessage;
 import org.apache.commons.collections.Buffer;
 import org.apache.commons.collections.BufferUtils;
 import org.apache.commons.collections.buffer.BoundedFifoBuffer;
-import org.apache.james.imap.api.display.HumanReadableTextKey;
+import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.mailbox.Content;
 import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.MessageResult;
@@ -89,11 +89,11 @@ public class TorqueResultIterator implements Iterator {
                     this.fetchGroup);
         } catch (TorqueException e) {
             result = new UnloadedMessageResult(messageRow,
-                    new MailboxException(HumanReadableTextKey.SEARCH_FAILED, e));
+                    new MailboxException(HumanReadableText.SEARCH_FAILED, e));
         } catch (MailboxException e) {
             result = new UnloadedMessageResult(messageRow, e);
         } catch (MimeException e) {
-            result = new UnloadedMessageResult(messageRow, new MailboxException(HumanReadableTextKey.FAILURE_MAIL_PARSE, e));
+            result = new UnloadedMessageResult(messageRow, new MailboxException(HumanReadableText.FAILURE_MAIL_PARSE, e));
         }
         return result;
     }

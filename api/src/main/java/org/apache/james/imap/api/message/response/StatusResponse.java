@@ -25,7 +25,7 @@ import java.util.Collections;
 import javax.mail.Flags;
 
 import org.apache.james.imap.api.ImapCommand;
-import org.apache.james.imap.api.display.HumanReadableTextKey;
+import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.api.message.MessageFlags;
 
 /**
@@ -65,7 +65,7 @@ public interface StatusResponse extends ImapResponseMessage {
      * 
      * @return key for the text message to be displayed, not null
      */
-    public HumanReadableTextKey getTextKey();
+    public HumanReadableText getTextKey();
 
     /**
      * Gets the response code. Optional.

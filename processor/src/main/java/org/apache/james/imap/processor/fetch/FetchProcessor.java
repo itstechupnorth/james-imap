@@ -26,7 +26,7 @@ import javax.mail.MessagingException;
 
 import org.apache.james.imap.api.ImapCommand;
 import org.apache.james.imap.api.ImapMessage;
-import org.apache.james.imap.api.display.HumanReadableTextKey;
+import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.api.message.BodyFetchElement;
 import org.apache.james.imap.api.message.FetchData;
 import org.apache.james.imap.api.message.IdRange;
@@ -100,11 +100,11 @@ public class FetchProcessor extends AbstractMailboxProcessor {
             okComplete(command, tag, responder);
         } catch (UnsupportedCriteriaException e) {
             no(command, tag, responder,
-                    HumanReadableTextKey.UNSUPPORTED_SEARCH_CRITERIA);
+                    HumanReadableText.UNSUPPORTED_SEARCH_CRITERIA);
         } catch (MessagingException e) {
             no(command, tag, responder, e, session);
         } catch (ParseException e) {
-            no(command, tag, responder, HumanReadableTextKey.FAILURE_MAIL_PARSE);
+            no(command, tag, responder, HumanReadableText.FAILURE_MAIL_PARSE);
         }
     }
 

@@ -27,7 +27,7 @@ import java.util.TimeZone;
 
 import javax.mail.Flags;
 
-import org.apache.james.imap.api.display.HumanReadableTextKey;
+import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.api.message.MessageFlags;
 
 /**
@@ -153,7 +153,7 @@ public final class DecoderUtils {
                         .append(chars.toString()).toString();
             }
 
-            throw new DecodingException(HumanReadableTextKey.ILLEGAL_ARGUMENTS, message);
+            throw new DecodingException(HumanReadableText.ILLEGAL_ARGUMENTS, message);
         }
 
     }
@@ -215,7 +215,7 @@ public final class DecoderUtils {
     private static DecodingException createTimeZoneException(
             char zoneDeterminent, char zoneDigitOne, char zoneDigitTwo,
             char zoneDigitThree, char zoneDigitFour) {
-        return new DecodingException(HumanReadableTextKey.ILLEGAL_ARGUMENTS, 
+        return new DecodingException(HumanReadableText.ILLEGAL_ARGUMENTS, 
                 "Expected time-zone but was "
                 + zoneDeterminent + zoneDigitOne + zoneDigitTwo
                 + zoneDigitThree + zoneDigitFour);
@@ -436,7 +436,7 @@ public final class DecoderUtils {
                 result = Calendar.DECEMBER;
                 break;
             default:
-                throw new DecodingException(HumanReadableTextKey.ILLEGAL_ARGUMENTS, 
+                throw new DecodingException(HumanReadableText.ILLEGAL_ARGUMENTS, 
                         "Expected month name but was " + monthFirstChar + monthSecondChar + monthThirdChar);
         }
         return result;
@@ -457,7 +457,7 @@ public final class DecoderUtils {
             case ' ':
                 return result;
         }
-        throw new DecodingException(HumanReadableTextKey.ILLEGAL_ARGUMENTS, 
+        throw new DecodingException(HumanReadableText.ILLEGAL_ARGUMENTS, 
                 "Expected SP, 0, 1, 2, or 3 but was " + dayHigh);
     }
 
@@ -473,7 +473,7 @@ public final class DecoderUtils {
             throws DecodingException {
         final int result = character - ASCII_ZERO;
         if (result < 0 || result > 9) {
-            throw new DecodingException(HumanReadableTextKey.ILLEGAL_ARGUMENTS, 
+            throw new DecodingException(HumanReadableText.ILLEGAL_ARGUMENTS, 
                     "Expected a digit but was '" + character + "'");
         }
         return result;

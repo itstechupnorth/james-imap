@@ -25,7 +25,7 @@ import java.util.List;
 import org.apache.james.imap.api.ImapCommand;
 import org.apache.james.imap.api.ImapMessage;
 import org.apache.james.imap.api.ImapSessionState;
-import org.apache.james.imap.api.display.HumanReadableTextKey;
+import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.api.message.response.StatusResponse;
 import org.apache.james.imap.api.message.response.StatusResponseFactory;
 import org.apache.james.imap.api.message.response.StatusResponse.ResponseCode;
@@ -88,7 +88,7 @@ public class NamespaceProcessorTest extends MockObjectTestCase {
             allowing(imapSessionStub).getState();will(returnValue(ImapSessionState.AUTHENTICATED));
             allowing(statusResponseStub).taggedOk(
                     with(any(String.class)), with(any(ImapCommand.class)), 
-                    with(any(HumanReadableTextKey.class)), with(any(ResponseCode.class))); will(returnValue(mock(StatusResponse.class)));
+                    with(any(HumanReadableText.class)), with(any(ResponseCode.class))); will(returnValue(mock(StatusResponse.class)));
             ignoring(imapSessionStub);
             ignoring(mailboxSessionStub);
             ignoring(mailboxManagerStub);

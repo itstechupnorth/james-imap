@@ -22,7 +22,7 @@ import org.apache.commons.logging.Log;
 import org.apache.james.imap.api.ImapMessageFactory;
 import org.apache.james.imap.api.ImapMessage;
 import org.apache.james.imap.api.ImapSessionState;
-import org.apache.james.imap.api.display.HumanReadableTextKey;
+import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.api.process.ImapSession;
 import org.apache.james.imap.decode.ImapCommandParser;
 import org.apache.james.imap.decode.ImapCommandParserFactory;
@@ -56,7 +56,7 @@ public class DefaultImapDecoder implements ImapDecoder {
             // When the tag cannot be read, there is something seriously wrong.
             // It is probably not possible to recover
             // and (since this may indicate an attack) wiser not to try
-            message = messageFactory.bye(HumanReadableTextKey.ILLEGAL_TAG);
+            message = messageFactory.bye(HumanReadableText.ILLEGAL_TAG);
             session.logout();
         }
         return message;
@@ -85,11 +85,11 @@ public class DefaultImapDecoder implements ImapDecoder {
         ImapMessage message;
         if (session.getState() == ImapSessionState.NON_AUTHENTICATED) {
             message = messageFactory
-                    .bye(HumanReadableTextKey.BYE_UNKNOWN_COMMAND);
+                    .bye(HumanReadableText.BYE_UNKNOWN_COMMAND);
             session.logout();
         } else {
             message = messageFactory.taggedBad(tag, null,
-                    HumanReadableTextKey.UNKNOWN_COMMAND);
+                    HumanReadableText.UNKNOWN_COMMAND);
         }
         return message;
     }

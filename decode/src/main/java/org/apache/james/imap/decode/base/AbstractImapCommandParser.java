@@ -38,7 +38,7 @@ import org.apache.james.imap.api.ImapMessageFactory;
 import org.apache.james.imap.api.ImapCommand;
 import org.apache.james.imap.api.ImapConstants;
 import org.apache.james.imap.api.ImapMessage;
-import org.apache.james.imap.api.display.HumanReadableTextKey;
+import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.api.message.IdRange;
 import org.apache.james.imap.api.message.request.DayMonthYear;
 import org.apache.james.imap.api.message.response.StatusResponseFactory;
@@ -193,7 +193,7 @@ public abstract class AbstractImapCommandParser implements ImapCommandParser, Me
                 if ("NIL".equals(value)) {
                     return null;
                 } else {
-                    throw new DecodingException(HumanReadableTextKey.ILLEGAL_ARGUMENTS, 
+                    throw new DecodingException(HumanReadableText.ILLEGAL_ARGUMENTS, 
                             "Invalid nstring value: valid values are '\"...\"', '{12} CRLF *CHAR8', and 'NIL'.");
                 }
         }
@@ -259,7 +259,7 @@ public abstract class AbstractImapCommandParser implements ImapCommandParser, Me
             throws DecodingException {
         final char next = request.consume();
         if (next != '-') {
-            throw new DecodingException(HumanReadableTextKey.ILLEGAL_ARGUMENTS, "Expected dash but was " + next);
+            throw new DecodingException(HumanReadableText.ILLEGAL_ARGUMENTS, "Expected dash but was " + next);
         }
     }
 
@@ -273,7 +273,7 @@ public abstract class AbstractImapCommandParser implements ImapCommandParser, Me
         if (next == '"') {
             dateString = consumeQuoted(request);
         } else {
-            throw new DecodingException(HumanReadableTextKey.ILLEGAL_ARGUMENTS, "DateTime values must be quoted.");
+            throw new DecodingException(HumanReadableText.ILLEGAL_ARGUMENTS, "DateTime values must be quoted.");
         }
 
         return DecoderUtils.decodeDateTime(dateString);
@@ -294,7 +294,7 @@ public abstract class AbstractImapCommandParser implements ImapCommandParser, Me
                 atom.append(next);
                 request.consume();
             } else {
-                throw new DecodingException(HumanReadableTextKey.ILLEGAL_ARGUMENTS, "Invalid character: '" + next + "'");
+                throw new DecodingException(HumanReadableText.ILLEGAL_ARGUMENTS, "Invalid character: '" + next + "'");
             }
             next = request.nextChar();
         }
@@ -373,13 +373,13 @@ public abstract class AbstractImapCommandParser implements ImapCommandParser, Me
             return result;
 
         } catch (IllegalStateException e) {
-            throw new DecodingException(HumanReadableTextKey.BAD_IO_ENCODING, "Bad character encoding", e);
+            throw new DecodingException(HumanReadableText.BAD_IO_ENCODING, "Bad character encoding", e);
         } catch (MalformedInputException e) {
-            throw new DecodingException(HumanReadableTextKey.BAD_IO_ENCODING, "Bad character encoding", e);
+            throw new DecodingException(HumanReadableText.BAD_IO_ENCODING, "Bad character encoding", e);
         } catch (UnmappableCharacterException e) {
-            throw new DecodingException(HumanReadableTextKey.BAD_IO_ENCODING, "Bad character encoding", e);
+            throw new DecodingException(HumanReadableText.BAD_IO_ENCODING, "Bad character encoding", e);
         } catch (CharacterCodingException e) {
-            throw new DecodingException(HumanReadableTextKey.BAD_IO_ENCODING, "Bad character encoding", e);
+            throw new DecodingException(HumanReadableText.BAD_IO_ENCODING, "Bad character encoding", e);
         }
     }
 
@@ -407,7 +407,7 @@ public abstract class AbstractImapCommandParser implements ImapCommandParser, Me
             throws DecodingException {
         char consumed = request.consume();
         if (consumed != expected) {
-            throw new DecodingException(HumanReadableTextKey.ILLEGAL_ARGUMENTS, 
+            throw new DecodingException(HumanReadableText.ILLEGAL_ARGUMENTS, 
                     "Expected:'" + expected + "' found:'" + consumed + "'");
         }
     }
@@ -509,7 +509,7 @@ public abstract class AbstractImapCommandParser implements ImapCommandParser, Me
             case '\t':
                 return currentTotal;
             default:
-                throw new DecodingException(HumanReadableTextKey.ILLEGAL_ARGUMENTS, "Expected a digit but was " + next);
+                throw new DecodingException(HumanReadableText.ILLEGAL_ARGUMENTS, "Expected a digit but was " + next);
         }
     }
 
@@ -523,7 +523,7 @@ public abstract class AbstractImapCommandParser implements ImapCommandParser, Me
             throws DecodingException {
         long number = number(request);
         if (number == 0) {
-            throw new DecodingException(HumanReadableTextKey.ILLEGAL_ARGUMENTS, "Zero value not permitted.");
+            throw new DecodingException(HumanReadableText.ILLEGAL_ARGUMENTS, "Zero value not permitted.");
         }
         return number;
     }
@@ -593,7 +593,7 @@ public abstract class AbstractImapCommandParser implements ImapCommandParser, Me
                 return new IdRange(lowVal, highVal);
             }
         } catch (NumberFormatException e) {
-            throw new DecodingException(HumanReadableTextKey.ILLEGAL_ARGUMENTS, "Invalid message set.", e);
+            throw new DecodingException(HumanReadableText.ILLEGAL_ARGUMENTS, "Invalid message set.", e);
         }
     }
 
@@ -687,7 +687,7 @@ public abstract class AbstractImapCommandParser implements ImapCommandParser, Me
                         request.consume();
                         next = request.nextChar();
                         if (!isQuotedSpecial(next)) {
-                            throw new DecodingException(HumanReadableTextKey.ILLEGAL_ARGUMENTS, 
+                            throw new DecodingException(HumanReadableText.ILLEGAL_ARGUMENTS, 
                                     "Invalid escaped character in quote: '"
                                             + next + "'");
                         }
@@ -703,7 +703,7 @@ public abstract class AbstractImapCommandParser implements ImapCommandParser, Me
                 return result;
 
             } catch (IllegalStateException e) {
-                throw new DecodingException(HumanReadableTextKey.BAD_IO_ENCODING, "Bad character encoding", e);
+                throw new DecodingException(HumanReadableText.BAD_IO_ENCODING, "Bad character encoding", e);
             }
         }
 
@@ -719,7 +719,7 @@ public abstract class AbstractImapCommandParser implements ImapCommandParser, Me
                 upsizeCharBuffer();
                 flush();
             } else if (coderResult.isError()) {
-                throw new DecodingException(HumanReadableTextKey.BAD_IO_ENCODING, "Bad character encoding");
+                throw new DecodingException(HumanReadableText.BAD_IO_ENCODING, "Bad character encoding");
             }
         }
 
@@ -744,7 +744,7 @@ public abstract class AbstractImapCommandParser implements ImapCommandParser, Me
                 upsizeCharBuffer();
                 return decodeMoreBytesToCharacterBuffer(endOfInput);
             } else if (coderResult.isError()) {
-                throw new DecodingException(HumanReadableTextKey.BAD_IO_ENCODING, "Bad character encoding");
+                throw new DecodingException(HumanReadableText.BAD_IO_ENCODING, "Bad character encoding");
             } else if (coderResult.isUnderflow()) {
                 buffer.clear();
             }

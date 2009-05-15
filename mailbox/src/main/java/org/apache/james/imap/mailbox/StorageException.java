@@ -18,7 +18,7 @@
  ****************************************************************/
 package org.apache.james.imap.mailbox;
 
-import org.apache.james.imap.api.display.HumanReadableTextKey;
+import org.apache.james.imap.api.display.HumanReadableText;
 
 /**
  * Indicates a general problem in the underlying storage layer.
@@ -28,7 +28,7 @@ public class StorageException extends MailboxException {
 
     private static final long serialVersionUID = 2708951014093934093L;
 
-    public StorageException(HumanReadableTextKey key, Throwable cause) {
+    public StorageException(HumanReadableText key, Throwable cause) {
         super(key, cause);
     }
 }

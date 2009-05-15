@@ -20,7 +20,7 @@
 package org.apache.james.imap.message.response;
 
 import org.apache.james.imap.api.ImapCommand;
-import org.apache.james.imap.api.display.HumanReadableTextKey;
+import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.api.message.response.StatusResponse;
 import org.apache.james.imap.api.message.response.StatusResponseFactory;
 import org.apache.james.imap.api.message.response.StatusResponse.ResponseCode;
@@ -30,7 +30,7 @@ public class UnpooledStatusResponseFactory extends AbstactStatusResponseFactory
         implements StatusResponseFactory {
 
     protected StatusResponse createResponse(Type type, String tag,
-            ImapCommand command, HumanReadableTextKey displayTextKey,
+            ImapCommand command, HumanReadableText displayTextKey,
             ResponseCode code) {
         return new ImmutableStatusResponse(type, tag, command, displayTextKey,
                 code);

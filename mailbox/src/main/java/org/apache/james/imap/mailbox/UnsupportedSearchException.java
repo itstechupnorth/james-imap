@@ -19,7 +19,7 @@
 
 package org.apache.james.imap.mailbox;
 
-import org.apache.james.imap.api.display.HumanReadableTextKey;
+import org.apache.james.imap.api.display.HumanReadableText;
 
 
 /**
@@ -30,6 +30,6 @@ public class UnsupportedSearchException extends MailboxException {
     private static final long serialVersionUID = -7442949630563672557L;
 
     public UnsupportedSearchException() {
-        super(HumanReadableTextKey.UNSUPPORTED_SEARCH);
+        super(HumanReadableText.UNSUPPORTED_SEARCH);
     }
 }

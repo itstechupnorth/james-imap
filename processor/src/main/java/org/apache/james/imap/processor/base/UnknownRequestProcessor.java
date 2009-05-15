@@ -22,7 +22,7 @@ package org.apache.james.imap.processor.base;
 import org.apache.commons.logging.Log;
 import org.apache.james.imap.api.ImapCommand;
 import org.apache.james.imap.api.ImapMessage;
-import org.apache.james.imap.api.display.HumanReadableTextKey;
+import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.api.message.request.ImapRequest;
 import org.apache.james.imap.api.message.response.ImapResponseMessage;
 import org.apache.james.imap.api.message.response.StatusResponseFactory;
@@ -49,9 +49,9 @@ public class UnknownRequestProcessor implements ImapProcessor {
             final String tag = request.getTag();
             final ImapCommand command = request.getCommand();
             result = factory.taggedBad(tag, command,
-                    HumanReadableTextKey.UNKNOWN_COMMAND);
+                    HumanReadableText.UNKNOWN_COMMAND);
         } else {
-            result = factory.untaggedBad(HumanReadableTextKey.UNKNOWN_COMMAND);
+            result = factory.untaggedBad(HumanReadableText.UNKNOWN_COMMAND);
         }
         return result;
     }

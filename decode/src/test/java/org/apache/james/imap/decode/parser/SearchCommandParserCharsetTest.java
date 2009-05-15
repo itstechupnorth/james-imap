@@ -30,7 +30,7 @@ import java.util.Set;
 import org.apache.james.imap.api.ImapMessageFactory;
 import org.apache.james.imap.api.ImapCommand;
 import org.apache.james.imap.api.ImapMessage;
-import org.apache.james.imap.api.display.HumanReadableTextKey;
+import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.api.message.request.SearchKey;
 import org.apache.james.imap.api.message.response.StatusResponse;
 import org.apache.james.imap.api.message.response.StatusResponseFactory;
@@ -98,7 +98,7 @@ public class SearchCommandParserCharsetTest extends MockObjectTestCase {
             oneOf (mockStatusResponseFactory).taggedNo(
                     with(equal(TAG)), 
                     with(same(command)), 
-                    with(equal(HumanReadableTextKey.BAD_CHARSET)),
+                    with(equal(HumanReadableText.BAD_CHARSET)),
                     with(equal(StatusResponse.ResponseCode.badCharset(charsetNames))));
         }});
         ImapRequestLineReader reader = new ImapRequestLineReader(

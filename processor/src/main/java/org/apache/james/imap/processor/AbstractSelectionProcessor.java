@@ -26,7 +26,7 @@ import java.util.List;
 import javax.mail.Flags;
 
 import org.apache.james.imap.api.ImapCommand;
-import org.apache.james.imap.api.display.HumanReadableTextKey;
+import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.api.message.request.ImapRequest;
 import org.apache.james.imap.api.message.response.StatusResponse;
 import org.apache.james.imap.api.message.response.StatusResponseFactory;
@@ -85,7 +85,7 @@ abstract class AbstractSelectionProcessor extends AbstractMailboxProcessor {
             respond(tag, command, session, metaData, responder);
         } catch (MailboxNotFoundException e) {
             responder.respond(statusResponseFactory.taggedNo(tag, command,
-                    HumanReadableTextKey.FAILURE_NO_SUCH_MAILBOX));
+                    HumanReadableText.FAILURE_NO_SUCH_MAILBOX));
         } catch (MailboxException e) {
             no(command, tag, responder, e, session);
         }
@@ -110,7 +110,7 @@ abstract class AbstractSelectionProcessor extends AbstractMailboxProcessor {
     throws MailboxException {
         final long uid = metaData.getUidNext();
         final StatusResponse untaggedOk = statusResponseFactory.untaggedOk(
-                HumanReadableTextKey.UNSEEN, ResponseCode.uidNext(uid));
+                HumanReadableText.UNSEEN, ResponseCode.uidNext(uid));
         responder.respond(untaggedOk);
     }
     
@@ -124,7 +124,7 @@ abstract class AbstractSelectionProcessor extends AbstractMailboxProcessor {
             code = ResponseCode.readOnly();
         }
         final StatusResponse taggedOk = statusResponseFactory.taggedOk(tag,
-                command, HumanReadableTextKey.SELECT, code);
+                command, HumanReadableText.SELECT, code);
         responder.respond(taggedOk);
     }
 
@@ -135,7 +135,7 @@ abstract class AbstractSelectionProcessor extends AbstractMailboxProcessor {
     private void permanentFlags(Responder responder, Mailbox.MetaData metaData) {
         final Flags permanentFlags = metaData.getPermanentFlags();
         final StatusResponse untaggedOk = statusResponseFactory.untaggedOk(
-                HumanReadableTextKey.PERMANENT_FLAGS, ResponseCode
+                HumanReadableText.PERMANENT_FLAGS, ResponseCode
                         .permanentFlags(permanentFlags));
         responder.respond(untaggedOk);
     }
@@ -147,7 +147,7 @@ abstract class AbstractSelectionProcessor extends AbstractMailboxProcessor {
             final long unseenUid = firstUnseen;
             int msn = selected.msn(unseenUid);
             final StatusResponse untaggedOk = statusResponseFactory.untaggedOk(
-                    HumanReadableTextKey.UNSEEN, ResponseCode.unseen(msn));
+                    HumanReadableText.UNSEEN, ResponseCode.unseen(msn));
             responder.respond(untaggedOk);
         }
 
@@ -156,7 +156,7 @@ abstract class AbstractSelectionProcessor extends AbstractMailboxProcessor {
     private void uidValidity(Responder responder, Mailbox.MetaData metaData) throws MailboxException {
         final long uidValidity = metaData.getUidValidity();
         final StatusResponse untaggedOk = statusResponseFactory.untaggedOk(
-                HumanReadableTextKey.UID_VALIDITY, ResponseCode
+                HumanReadableText.UID_VALIDITY, ResponseCode
                         .uidValidity(uidValidity));
         responder.respond(untaggedOk);
     }

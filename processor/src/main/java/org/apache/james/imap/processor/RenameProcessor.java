@@ -21,7 +21,7 @@ package org.apache.james.imap.processor;
 
 import org.apache.james.imap.api.ImapCommand;
 import org.apache.james.imap.api.ImapMessage;
-import org.apache.james.imap.api.display.HumanReadableTextKey;
+import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.api.message.request.ImapRequest;
 import org.apache.james.imap.api.message.response.StatusResponseFactory;
 import org.apache.james.imap.api.process.ImapProcessor;
@@ -62,10 +62,10 @@ public class RenameProcessor extends AbstractMailboxProcessor {
 
         } catch (MailboxExistsException e) {
             no(command, tag, responder,
-                    HumanReadableTextKey.FAILURE_MAILBOX_EXISTS);
+                    HumanReadableText.FAILURE_MAILBOX_EXISTS);
         } catch (MailboxNotFoundException e) {
             no(command, tag, responder,
-                    HumanReadableTextKey.FAILURE_NO_SUCH_MAILBOX);
+                    HumanReadableText.FAILURE_NO_SUCH_MAILBOX);
         } catch (MailboxException e) {
             no(command, tag, responder, e, session);
         }

@@ -23,7 +23,7 @@ import java.util.Iterator;
 
 import org.apache.james.imap.api.ImapCommand;
 import org.apache.james.imap.api.ImapMessage;
-import org.apache.james.imap.api.display.HumanReadableTextKey;
+import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.api.message.request.ImapRequest;
 import org.apache.james.imap.api.message.response.StatusResponseFactory;
 import org.apache.james.imap.api.process.ImapProcessor;
@@ -54,7 +54,7 @@ public class ExpungeProcessor extends AbstractMailboxProcessor {
             final Mailbox mailbox = getSelectedMailbox(session);
             if (!mailbox.isWriteable()) {
                 no(command, tag, responder,
-                        HumanReadableTextKey.MAILBOX_IS_READ_ONLY);
+                        HumanReadableText.MAILBOX_IS_READ_ONLY);
             } else {
                 final Iterator<Long> it = mailbox.expunge(MessageRangeImpl.all(),
                         ImapSessionUtils

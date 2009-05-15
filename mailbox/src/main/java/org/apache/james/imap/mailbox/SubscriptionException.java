@@ -19,7 +19,7 @@
 
 package org.apache.james.imap.mailbox;
 
-import org.apache.james.imap.api.display.HumanReadableTextKey;
+import org.apache.james.imap.api.display.HumanReadableText;
 
 /**
  * Indicates exception during subscription processing.
@@ -28,11 +28,11 @@ public class SubscriptionException extends MailboxException {
 
     private static final long serialVersionUID = -4512372322774311468L;
 
-    public SubscriptionException(final HumanReadableTextKey key) {
+    public SubscriptionException(final HumanReadableText key) {
         super(key);
     }
 
-    public SubscriptionException(final HumanReadableTextKey key, Throwable cause) {
+    public SubscriptionException(final HumanReadableText key, Throwable cause) {
         super(key, cause);
     }
 }

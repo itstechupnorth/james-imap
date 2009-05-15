@@ -27,7 +27,7 @@ import javax.mail.Flags.Flag;
 
 import org.apache.james.imap.api.ImapCommand;
 import org.apache.james.imap.api.ImapConstants;
-import org.apache.james.imap.api.display.HumanReadableTextKey;
+import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.api.message.IdRange;
 import org.apache.james.imap.api.message.request.DayMonthYear;
 import org.apache.james.imap.api.message.request.SearchKey;
@@ -433,7 +433,7 @@ public class SearchProcessorTest extends MockObjectTestCase {
             oneOf(serverResponseFactory).taggedOk(
                     with(equal(TAG)),
                     with(same(command)), 
-                    with(equal(HumanReadableTextKey.COMPLETED)));will(returnValue(statusResponse));    
+                    with(equal(HumanReadableText.COMPLETED)));will(returnValue(statusResponse));    
             oneOf(responder).respond(with(same(statusResponse)));
         }});
     }

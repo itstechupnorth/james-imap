@@ -37,7 +37,7 @@ import java.util.TreeSet;
 import javax.mail.Flags;
 import javax.mail.MessagingException;
 
-import org.apache.james.imap.api.display.HumanReadableTextKey;
+import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.MailboxListener;
 import org.apache.james.imap.mailbox.MailboxNotFoundException;
@@ -208,11 +208,11 @@ public abstract class StoreMailbox implements org.apache.james.imap.mailbox.Mail
                 tracker.found(uid, message.createFlags());
                 return uid;
             } catch (IOException e) {
-                throw new MailboxException(HumanReadableTextKey.FAILURE_MAIL_PARSE, e);
+                throw new MailboxException(HumanReadableText.FAILURE_MAIL_PARSE, e);
             } catch (MessagingException e) {
-                throw new MailboxException(HumanReadableTextKey.FAILURE_MAIL_PARSE, e);
+                throw new MailboxException(HumanReadableText.FAILURE_MAIL_PARSE, e);
             } catch (MimeException e) {
-                throw new MailboxException(HumanReadableTextKey.FAILURE_MAIL_PARSE, e);
+                throw new MailboxException(HumanReadableText.FAILURE_MAIL_PARSE, e);
             }
         }
     }
@@ -328,7 +328,7 @@ public abstract class StoreMailbox implements org.apache.james.imap.mailbox.Mail
             }
             return result;
         } catch (MessagingException e) {
-            throw new MailboxException(HumanReadableTextKey.FAILURE_MAIL_PARSE, e);
+            throw new MailboxException(HumanReadableText.FAILURE_MAIL_PARSE, e);
         }
     }
 
@@ -463,7 +463,7 @@ public abstract class StoreMailbox implements org.apache.james.imap.mailbox.Mail
             }
 
         } catch (MessagingException e) {
-            throw new MailboxException(HumanReadableTextKey.FAILURE_MAIL_PARSE, e);
+            throw new MailboxException(HumanReadableText.FAILURE_MAIL_PARSE, e);
         }
     }
     
