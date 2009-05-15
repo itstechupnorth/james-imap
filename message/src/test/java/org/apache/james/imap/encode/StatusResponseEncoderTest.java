@@ -27,6 +27,7 @@ import org.apache.james.imap.encode.ImapEncoder;
 import org.apache.james.imap.encode.ImapResponseComposer;
 import org.apache.james.imap.encode.StatusResponseEncoder;
 import org.apache.james.imap.encode.base.ImapResponseComposerImpl;
+import org.apache.james.imap.encode.main.DefaultLocalizer;
 import org.jmock.Expectations;
 import org.jmock.integration.junit3.MockObjectTestCase;
 
@@ -57,7 +58,7 @@ public class StatusResponseEncoderTest extends MockObjectTestCase {
         response = new ImapResponseComposerImpl(writer);
         mockNextEncoder = mock(ImapEncoder.class);
         mockStatusResponse = mock(StatusResponse.class);
-        encoder = new StatusResponseEncoder(mockNextEncoder);
+        encoder = new StatusResponseEncoder(mockNextEncoder, new DefaultLocalizer());
         stubCommand = ImapCommand.anyStateCommand(COMMAND);
     }
 

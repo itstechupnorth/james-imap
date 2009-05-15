@@ -21,10 +21,13 @@ package org.apache.james.imap.encode;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Collections;
 
 import org.apache.james.imap.api.ImapCommand;
 import org.apache.james.imap.api.ImapMessage;
 import org.apache.james.imap.api.display.HumanReadableText;
+import org.apache.james.imap.api.display.Locales;
+import org.apache.james.imap.api.display.Localizer;
 import org.apache.james.imap.api.message.response.StatusResponse;
 import org.apache.james.imap.api.message.response.StatusResponse.ResponseCode;
 import org.apache.james.imap.api.message.response.StatusResponse.Type;
@@ -33,8 +36,11 @@ import org.apache.james.imap.encode.base.AbstractChainedImapEncoder;
 
 public class StatusResponseEncoder extends AbstractChainedImapEncoder {
 
-    public StatusResponseEncoder(ImapEncoder next) {
+    private final Localizer localizer;
+    
+    public StatusResponseEncoder(ImapEncoder next, final Localizer localizer) {
         super(next);
+        this.localizer = localizer;
     }
 
     protected void doEncode(ImapMessage acceptableMessage,
@@ -47,7 +53,7 @@ public class StatusResponseEncoder extends AbstractChainedImapEncoder {
         final String tag = response.getTag();
         final ImapCommand command = response.getCommand();
         final HumanReadableText textKey = response.getTextKey();
-        final String text = asString(textKey);
+        final String text = asString(textKey, session);
         final Collection parameters;
         final long number;
         if (responseCode == null) {
@@ -61,14 +67,10 @@ public class StatusResponseEncoder extends AbstractChainedImapEncoder {
                 text);
     }
 
-    private String asString(HumanReadableText text) {
-        final String result;
-        if (text == null) {
-            result = null;
-        } else {
-            result = text.getDefaultValue();
-        }
-        return result;
+    @SuppressWarnings("unchecked")
+    private String asString(HumanReadableText text, ImapSession session) {
+        // TODO: calculate locales
+        return localizer.localize(text, new Locales(Collections.EMPTY_LIST, null));
     }
 
     private String asString(StatusResponse.ResponseCode code) {

@@ -19,6 +19,7 @@
 
 package org.apache.james.imap.encode.main;
 
+import org.apache.james.imap.api.display.Localizer;
 import org.apache.james.imap.encode.CapabilityResponseEncoder;
 import org.apache.james.imap.encode.ExistsResponseEncoder;
 import org.apache.james.imap.encode.ExpungeResponseEncoder;
@@ -40,11 +41,11 @@ import org.apache.james.imap.encode.base.EndImapEncoder;
  */
 public class DefaultImapEncoderFactory implements ImapEncoderFactory {
 
-    public static final ImapEncoder createDefaultEncoder() {
+    public static final ImapEncoder createDefaultEncoder(final Localizer localizer) {
         final EndImapEncoder endImapEncoder = new EndImapEncoder();
         final NamespaceResponseEncoder namespaceEncoder = new NamespaceResponseEncoder(endImapEncoder);
         final StatusResponseEncoder statusResponseEncoder = new StatusResponseEncoder(
-                namespaceEncoder);
+                namespaceEncoder, localizer);
         final RecentResponseEncoder recentResponseEncoder = new RecentResponseEncoder(
                 statusResponseEncoder);
         final FetchResponseEncoder fetchResponseEncoder = new FetchResponseEncoder(
@@ -68,8 +69,19 @@ public class DefaultImapEncoderFactory implements ImapEncoderFactory {
         return capabilityResponseEncoder;
     }
 
+    private final Localizer localizer;
+    
+    public DefaultImapEncoderFactory() {
+        this(new DefaultLocalizer());
+    }
+    
+    public DefaultImapEncoderFactory(final Localizer localizer) {
+        super();
+        this.localizer = localizer;
+    }
+
     public ImapEncoder buildImapEncoder() {
-        return createDefaultEncoder();
+        return createDefaultEncoder(localizer);
     }
 
 }
