@@ -21,6 +21,8 @@ package org.apache.james.imap.store;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
+import java.util.Locale;
 
 import org.apache.commons.logging.Log;
 import org.apache.james.imap.mailbox.MailboxSession;
@@ -46,7 +48,10 @@ public class SimpleMailboxSession implements MailboxSession, MailboxSession.User
     
     private boolean open;
 
-    public SimpleMailboxSession(final long sessionId, final String userName, final Log log, char deliminator) {
+    private final List<Locale> localePreferences;
+
+    public SimpleMailboxSession(final long sessionId, final String userName, final Log log, char deliminator,
+            final List<Locale> localePreferences) {
         super();
         this.sessionId = sessionId;
         this.log = log;
@@ -54,6 +59,7 @@ public class SimpleMailboxSession implements MailboxSession, MailboxSession.User
         sharedSpaces = new ArrayList<Namespace>();
         otherUsersSpace = null;
         personalSpace = new SimpleMailboxNamespace(deliminator, "");
+        this.localePreferences = localePreferences;
     }
 
     public Log getLog() {
@@ -103,24 +109,31 @@ public class SimpleMailboxSession implements MailboxSession, MailboxSession.User
 	}
 
     /**
-     * @see {@link MailboxSession#getOtherUsersSpace()}
+     * @see org.apache.james.imap.mailbox.MailboxSession#getOtherUsersSpace()
      */
     public Namespace getOtherUsersSpace() {
         return otherUsersSpace;
     }
 
     /**
-     * @see {@link MailboxSession#getPersonalSpace()}
+     * @see org.apache.james.imap.mailbox.MailboxSession#getPersonalSpace()
      */
     public Namespace getPersonalSpace() {
         return personalSpace;
     }
 
     /**
-     * @see {@link MailboxSession#getSharedSpace()}
+     * @see org.apache.james.imap.mailbox.MailboxSession#getSharedSpace()
      */
     public Collection<Namespace> getSharedSpaces() {
         return sharedSpaces;
+    }
+
+    /**
+     * @see org.apache.james.imap.mailbox.MailboxSession.User#getLocalePreferences()
+     */
+    public List<Locale> getLocalePreferences() {
+        return localePreferences;
     }
 
 }

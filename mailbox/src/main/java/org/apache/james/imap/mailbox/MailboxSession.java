@@ -20,6 +20,8 @@
 package org.apache.james.imap.mailbox;
 
 import java.util.Collection;
+import java.util.List;
+import java.util.Locale;
 
 import org.apache.commons.logging.Log;
 
@@ -69,6 +71,15 @@ public interface MailboxSession {
          * @return not null
          */
         public String getUserName();
+        
+        /**
+         * Gets acceptable localisation for this user in preference order.
+         * When localising a phrase, each <code>Locale</code> should be 
+         * tried in order until an appropriate translation is obtained.
+         * 
+         * @return not null, when empty the default local should be used
+         */
+        public List<Locale> getLocalePreferences();
     }
     
     /**

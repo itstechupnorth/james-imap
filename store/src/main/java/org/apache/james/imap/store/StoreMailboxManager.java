@@ -305,8 +305,9 @@ public abstract class StoreMailboxManager extends AbstractLogEnabled implements 
     }
 
 
+    @SuppressWarnings("unchecked")
     private SimpleMailboxSession createSession(String userName, Log log) {
-        return new SimpleMailboxSession(random.nextLong(), userName, log, delimiter);
+        return new SimpleMailboxSession(random.nextLong(), userName, log, delimiter, Collections.EMPTY_LIST);
     }
 
     public String resolve(final String userName, String mailboxPath) {

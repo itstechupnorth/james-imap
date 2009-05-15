@@ -355,8 +355,9 @@ public class TorqueMailboxManager implements MailboxManager {
         return createSession(userName, log);
     }
 
+    @SuppressWarnings("unchecked")
     private TorqueMailboxSession createSession(String userName, Log log) {
-        return new TorqueMailboxSession(random.nextLong(), log, userName, delimiter);
+        return new TorqueMailboxSession(random.nextLong(), log, userName, delimiter, Collections.EMPTY_LIST);
     }
 
     public String resolve(final String userName, String mailboxPath) {

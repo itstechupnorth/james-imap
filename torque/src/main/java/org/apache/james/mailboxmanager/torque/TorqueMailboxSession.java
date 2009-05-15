@@ -21,6 +21,8 @@ package org.apache.james.mailboxmanager.torque;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
+import java.util.Locale;
 
 import org.apache.commons.logging.Log;
 import org.apache.james.imap.mailbox.MailboxSession;
@@ -44,9 +46,11 @@ public class TorqueMailboxSession implements MailboxSession, MailboxSession.User
     private final String userName;
     
     private boolean open;
+    
+    private final List<Locale> localePreferences;
 
-
-    public TorqueMailboxSession(final long sessionId, final Log log, final String userName, char deliminator) {
+    public TorqueMailboxSession(final long sessionId, final Log log, final String userName, char deliminator,
+            final List<Locale> localePreferences) {
         super();
         this.sessionId = sessionId;
         this.log = log;
@@ -54,6 +58,7 @@ public class TorqueMailboxSession implements MailboxSession, MailboxSession.User
         sharedSpaces = new ArrayList<Namespace>();
         otherUsersSpace = null;
         personalSpace = new SimpleMailboxNamespace(deliminator, "");
+        this.localePreferences = localePreferences;
     }
     
     
@@ -124,5 +129,12 @@ public class TorqueMailboxSession implements MailboxSession, MailboxSession.User
      */
     public Collection<Namespace> getSharedSpaces() {
         return sharedSpaces;
+    }
+
+    /**
+     * @see org.apache.james.imap.mailbox.MailboxSession.User#getLocalePreferences()
+     */
+    public List<Locale> getLocalePreferences() {
+        return localePreferences;
     }
 }
