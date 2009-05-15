@@ -29,7 +29,6 @@ import org.apache.james.imap.api.process.ImapSession;
 import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.MailboxExistsException;
 import org.apache.james.imap.mailbox.MailboxManager;
-import org.apache.james.imap.mailbox.MailboxManagerProvider;
 import org.apache.james.imap.mailbox.MailboxNotFoundException;
 import org.apache.james.imap.message.request.RenameRequest;
 import org.apache.james.imap.processor.base.ImapSessionUtils;
@@ -37,9 +36,9 @@ import org.apache.james.imap.processor.base.ImapSessionUtils;
 public class RenameProcessor extends AbstractMailboxProcessor {
 
     public RenameProcessor(final ImapProcessor next,
-            final MailboxManagerProvider mailboxManagerProvider,
+            final MailboxManager mailboxManager,
             final StatusResponseFactory factory) {
-        super(next, mailboxManagerProvider, factory);
+        super(next, mailboxManager, factory);
     }
 
     protected boolean isAcceptable(ImapMessage message) {

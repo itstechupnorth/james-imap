@@ -25,7 +25,6 @@ import org.apache.james.imap.api.process.ImapProcessor;
 import org.apache.james.imap.api.process.ImapSession;
 import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.MailboxManager;
-import org.apache.james.imap.mailbox.MailboxManagerProvider;
 import org.apache.james.imap.mailbox.MailboxSession;
 import org.apache.james.imap.message.request.SystemMessage;
 import org.apache.james.imap.processor.base.AbstractChainedProcessor;
@@ -36,11 +35,11 @@ import org.apache.james.imap.processor.base.ImapSessionUtils;
  */
 public class SystemMessageProcessor extends AbstractChainedProcessor {
 
-    private final MailboxManagerProvider mailboxManagerProvider;
+    private final MailboxManager mailboxManager;
     
-    public SystemMessageProcessor(ImapProcessor next, final MailboxManagerProvider mailboxManagerProvider) {
+    public SystemMessageProcessor(ImapProcessor next, final MailboxManager mailboxManager) {
         super(next);
-        this.mailboxManagerProvider = mailboxManagerProvider;
+        this.mailboxManager = mailboxManager;
     }
 
     @Override
@@ -70,8 +69,7 @@ public class SystemMessageProcessor extends AbstractChainedProcessor {
             imapSession.getLog().trace("No mailbox session so no force logout needed");
         } else {
             session.close();
-            final MailboxManager manager = mailboxManagerProvider.getMailboxManager();
-            manager.logout(session, true);
+            mailboxManager.logout(session, true);
         }
     }
 

@@ -36,7 +36,6 @@ import org.apache.james.imap.api.process.SelectedMailbox;
 import org.apache.james.imap.mailbox.Mailbox;
 import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.MailboxManager;
-import org.apache.james.imap.mailbox.MailboxManagerProvider;
 import org.apache.james.imap.mailbox.MailboxNotFoundException;
 import org.apache.james.imap.mailbox.MailboxSession;
 import org.apache.james.imap.message.request.AppendRequest;
@@ -47,9 +46,9 @@ public class AppendProcessor extends AbstractMailboxProcessor {
     final StatusResponseFactory statusResponseFactory;
 
     public AppendProcessor(final ImapProcessor next,
-            final MailboxManagerProvider mailboxManagerProvider,
+            final MailboxManager mailboxManager,
             final StatusResponseFactory statusResponseFactory) {
-        super(next, mailboxManagerProvider, statusResponseFactory);
+        super(next, mailboxManager, statusResponseFactory);
         this.statusResponseFactory = statusResponseFactory;
     }
 

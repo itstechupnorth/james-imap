@@ -30,7 +30,6 @@ import org.apache.james.imap.api.process.ImapSession;
 import org.apache.james.imap.mailbox.Mailbox;
 import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.MailboxManager;
-import org.apache.james.imap.mailbox.MailboxManagerProvider;
 import org.apache.james.imap.mailbox.MailboxSession;
 import org.apache.james.imap.message.request.StatusRequest;
 import org.apache.james.imap.message.response.MailboxStatusResponse;
@@ -39,9 +38,9 @@ import org.apache.james.imap.processor.base.ImapSessionUtils;
 public class StatusProcessor extends AbstractMailboxProcessor {
 
     public StatusProcessor(final ImapProcessor next,
-            final MailboxManagerProvider mailboxManagerProvider,
+            final MailboxManager mailboxManager,
             final StatusResponseFactory factory) {
-        super(next, mailboxManagerProvider, factory);
+        super(next, mailboxManager, factory);
     }
 
     protected boolean isAcceptable(ImapMessage message) {

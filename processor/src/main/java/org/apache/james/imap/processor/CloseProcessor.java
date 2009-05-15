@@ -27,7 +27,7 @@ import org.apache.james.imap.api.process.ImapProcessor;
 import org.apache.james.imap.api.process.ImapSession;
 import org.apache.james.imap.mailbox.Mailbox;
 import org.apache.james.imap.mailbox.MailboxException;
-import org.apache.james.imap.mailbox.MailboxManagerProvider;
+import org.apache.james.imap.mailbox.MailboxManager;
 import org.apache.james.imap.mailbox.MailboxSession;
 import org.apache.james.imap.mailbox.util.MessageRangeImpl;
 import org.apache.james.imap.message.request.CloseRequest;
@@ -35,9 +35,9 @@ import org.apache.james.imap.processor.base.ImapSessionUtils;
 
 public class CloseProcessor extends AbstractMailboxProcessor {
 
-    public CloseProcessor(final ImapProcessor next, final MailboxManagerProvider mailboxManagerProvider,
+    public CloseProcessor(final ImapProcessor next, final MailboxManager mailboxManager,
             final StatusResponseFactory factory) {
-        super(next, mailboxManagerProvider, factory);
+        super(next, mailboxManager, factory);
     }
 
     protected boolean isAcceptable(ImapMessage message) {

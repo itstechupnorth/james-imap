@@ -38,13 +38,11 @@ import org.apache.james.imap.api.process.ImapSession;
 import org.apache.james.imap.api.process.SelectedMailbox;
 import org.apache.james.imap.mailbox.Mailbox;
 import org.apache.james.imap.mailbox.MailboxManager;
-import org.apache.james.imap.mailbox.MailboxManagerProvider;
 import org.apache.james.imap.mailbox.MailboxSession;
 import org.apache.james.imap.mailbox.SearchQuery;
 import org.apache.james.imap.mailbox.SearchQuery.Criterion;
 import org.apache.james.imap.message.request.SearchRequest;
 import org.apache.james.imap.message.response.SearchResponse;
-import org.apache.james.imap.processor.SearchProcessor;
 import org.apache.james.imap.processor.base.ImapSessionUtils;
 import org.jmock.Expectations;
 import org.jmock.integration.junit3.MockObjectTestCase;
@@ -93,8 +91,6 @@ public class SearchProcessorTest extends MockObjectTestCase {
     StatusResponse statusResponse;
 
     Mailbox mailbox;
-
-    MailboxManagerProvider mailboxManagerProvider;
     
     MailboxManager mailboxManager;
     
@@ -111,12 +107,11 @@ public class SearchProcessorTest extends MockObjectTestCase {
         responder = mock(ImapProcessor.Responder.class);
         statusResponse = mock(StatusResponse.class);
         mailbox = mock(Mailbox.class);
-        mailboxManagerProvider = mock(MailboxManagerProvider.class);
         mailboxManager = mock(MailboxManager.class);
         mailboxSession = mock(MailboxSession.class);
         selectedMailbox = mock(SelectedMailbox.class);
         
-        processor = new SearchProcessor(next,  mailboxManagerProvider, serverResponseFactory);
+        processor = new SearchProcessor(next,  mailboxManager, serverResponseFactory);
         expectOk();
     }
 
@@ -190,7 +185,6 @@ public class SearchProcessorTest extends MockObjectTestCase {
 
     private void expectsGetSelectedMailbox() throws Exception {
         checking(new Expectations() {{
-            atMost(1).of(mailboxManagerProvider).getMailboxManager();will(returnValue(mailboxManager));
             atMost(1).of(mailboxManager).resolve(with(equal("user")), with(equal("name")));will(returnValue("user"));
             atMost(1).of(mailboxManager).getMailbox(with(equal("user")),  with(same(mailboxSession)));will(returnValue(mailbox));
             atMost(1).of(mailboxManager).getMailbox(with(equal("MailboxName")), with(same(mailboxSession)));will(returnValue(mailbox));

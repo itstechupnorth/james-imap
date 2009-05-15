@@ -33,7 +33,7 @@ import org.apache.james.imap.api.process.ImapSession;
 import org.apache.james.imap.api.process.SelectedMailbox;
 import org.apache.james.imap.mailbox.Mailbox;
 import org.apache.james.imap.mailbox.MailboxException;
-import org.apache.james.imap.mailbox.MailboxManagerProvider;
+import org.apache.james.imap.mailbox.MailboxManager;
 import org.apache.james.imap.mailbox.MailboxSession;
 import org.apache.james.imap.mailbox.MessageRange;
 import org.apache.james.imap.mailbox.util.MessageRangeImpl;
@@ -43,9 +43,9 @@ import org.apache.james.imap.processor.base.ImapSessionUtils;
 
 public class StoreProcessor extends AbstractMailboxProcessor {
     
-    public StoreProcessor(final ImapProcessor next, final MailboxManagerProvider mailboxManagerProvider,
+    public StoreProcessor(final ImapProcessor next, final MailboxManager mailboxManager,
             final StatusResponseFactory factory) {
-        super(next, mailboxManagerProvider, factory);
+        super(next, mailboxManager, factory);
     }
 
     protected boolean isAcceptable(ImapMessage message) {

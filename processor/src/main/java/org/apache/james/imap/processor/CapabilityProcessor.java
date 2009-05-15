@@ -28,7 +28,7 @@ import org.apache.james.imap.api.message.response.ImapResponseMessage;
 import org.apache.james.imap.api.message.response.StatusResponseFactory;
 import org.apache.james.imap.api.process.ImapProcessor;
 import org.apache.james.imap.api.process.ImapSession;
-import org.apache.james.imap.mailbox.MailboxManagerProvider;
+import org.apache.james.imap.mailbox.MailboxManager;
 import org.apache.james.imap.message.request.CapabilityRequest;
 import org.apache.james.imap.message.response.CapabilityResponse;
 
@@ -36,9 +36,9 @@ public class CapabilityProcessor extends AbstractMailboxProcessor {
 
     private final List<String> capabilities;
 
-    public CapabilityProcessor(final ImapProcessor next, final MailboxManagerProvider mailboxManagerProvider,
+    public CapabilityProcessor(final ImapProcessor next, final MailboxManager mailboxManager,
             final StatusResponseFactory factory, final List<String> capabilities) {
-        super(next, mailboxManagerProvider, factory);
+        super(next, mailboxManager, factory);
         this.capabilities = capabilities;
     }
 

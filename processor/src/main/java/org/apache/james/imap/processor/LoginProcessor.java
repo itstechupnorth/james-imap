@@ -30,7 +30,6 @@ import org.apache.james.imap.mailbox.BadCredentialsException;
 import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.MailboxExistsException;
 import org.apache.james.imap.mailbox.MailboxManager;
-import org.apache.james.imap.mailbox.MailboxManagerProvider;
 import org.apache.james.imap.mailbox.MailboxSession;
 import org.apache.james.imap.message.request.LoginRequest;
 import org.apache.james.imap.processor.base.ImapSessionUtils;
@@ -48,9 +47,9 @@ public class LoginProcessor extends AbstractMailboxProcessor {
     private static final int MAX_FAILURES = 3;
 
     public LoginProcessor(final ImapProcessor next,
-            final MailboxManagerProvider mailboxManagerProvider,
+            final MailboxManager mailboxManager,
             final StatusResponseFactory factory) {
-        super(next, mailboxManagerProvider, factory);
+        super(next, mailboxManager, factory);
     }
 
     protected boolean isAcceptable(ImapMessage message) {

@@ -32,7 +32,7 @@ import org.apache.james.imap.api.message.response.StatusResponse.ResponseCode;
 import org.apache.james.imap.api.process.ImapProcessor;
 import org.apache.james.imap.api.process.ImapSession;
 import org.apache.james.imap.api.process.ImapProcessor.Responder;
-import org.apache.james.imap.mailbox.MailboxManagerProvider;
+import org.apache.james.imap.mailbox.MailboxManager;
 import org.apache.james.imap.mailbox.MailboxSession;
 import org.apache.james.imap.message.request.NamespaceRequest;
 import org.apache.james.imap.message.response.NamespaceResponse;
@@ -64,7 +64,7 @@ public class NamespaceProcessorTest extends MockObjectTestCase {
         super.setUp();
         sharedSpaces = new ArrayList<MailboxSession.Namespace>();
         statusResponseStub = mock(StatusResponseFactory.class);
-        final MailboxManagerProvider mailboxManagerStub = mock(MailboxManagerProvider.class);
+        final MailboxManager mailboxManagerStub = mock(MailboxManager.class);
         subject = new NamespaceProcessor(mock(ImapProcessor.class), mailboxManagerStub, statusResponseStub);
         imapSessionStub = mock(ImapSession.class);
         mailboxSessionStub = mock(MailboxSession.class);

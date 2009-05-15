@@ -30,12 +30,10 @@ import org.apache.james.imap.api.message.response.StatusResponseFactory;
 import org.apache.james.imap.api.process.ImapProcessor;
 import org.apache.james.imap.api.process.ImapSession;
 import org.apache.james.imap.mailbox.MailboxManager;
-import org.apache.james.imap.mailbox.MailboxManagerProvider;
 import org.apache.james.imap.mailbox.MailboxMetaData;
 import org.apache.james.imap.mailbox.MailboxSession;
 import org.apache.james.imap.message.request.LsubRequest;
 import org.apache.james.imap.message.response.LSubResponse;
-import org.apache.james.imap.processor.LSubProcessor;
 import org.apache.james.imap.processor.base.ImapSessionUtils;
 import org.jmock.Expectations;
 import org.jmock.integration.junit3.MockObjectTestCase;
@@ -59,15 +57,11 @@ public class LSubProcessorTest extends MockObjectTestCase {
 
     private static final String MAILBOX_A = "A.MAILBOX";
 
-    private static final String USER = "A User";
-
     private static final String TAG = "TAG";
 
     LSubProcessor processor;
 
     ImapProcessor next;
-
-    MailboxManagerProvider provider;
 
     MailboxManager manager;
 
@@ -97,15 +91,11 @@ public class LSubProcessorTest extends MockObjectTestCase {
         next = mock(ImapProcessor.class);
         responder = mock(ImapProcessor.Responder.class);
         result = mock(MailboxMetaData.class);
-        provider = mock(MailboxManagerProvider.class);
         statusResponse = mock(StatusResponse.class);
         responderImpl = responder;
         manager = mock(MailboxManager.class);
         mailboxSession = mock(MailboxSession.class);
-        processor = new LSubProcessor(next, provider, serverResponseFactory);
-        checking(new Expectations() {{
-            atMost(1).of(provider).getMailboxManager(); will(returnValue(manager));
-        }});
+        processor = new LSubProcessor(next, manager, serverResponseFactory);
     }
 
     protected void tearDown() throws Exception {

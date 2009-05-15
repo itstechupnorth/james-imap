@@ -47,7 +47,7 @@ public class TorqueHostSystemFactory {
         final DefaultImapProcessorFactory defaultImapProcessorFactory = new DefaultImapProcessorFactory();
         resetUserMetaData();
         defaultImapProcessorFactory.configure(TorqueMailboxManagerProviderSingleton
-                .getTorqueMailboxManagerProviderInstance());
+                .getTorqueMailboxManagerInstance());
         host.configure(new DefaultImapDecoderFactory().buildImapDecoder(),
                 new DefaultImapEncoderFactory().buildImapEncoder(),
                 defaultImapProcessorFactory.buildImapProcessor());

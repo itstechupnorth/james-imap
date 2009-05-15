@@ -35,7 +35,7 @@ import org.apache.james.imap.api.message.response.StatusResponseFactory;
 import org.apache.james.imap.api.process.ImapProcessor;
 import org.apache.james.imap.api.process.ImapSession;
 import org.apache.james.imap.mailbox.Mailbox;
-import org.apache.james.imap.mailbox.MailboxManagerProvider;
+import org.apache.james.imap.mailbox.MailboxManager;
 import org.apache.james.imap.mailbox.MailboxSession;
 import org.apache.james.imap.mailbox.MessageRange;
 import org.apache.james.imap.mailbox.MessageResult;
@@ -52,9 +52,9 @@ import org.apache.james.mime4j.field.address.parser.ParseException;
 
 public class FetchProcessor extends AbstractMailboxProcessor {
 
-    public FetchProcessor(final ImapProcessor next, final MailboxManagerProvider mailboxManagerProvider,
+    public FetchProcessor(final ImapProcessor next, final MailboxManager mailboxManager,
             final StatusResponseFactory factory) {
-        super(next, mailboxManagerProvider, factory);
+        super(next, mailboxManager, factory);
     }
 
     protected boolean isAcceptable(ImapMessage message) {

@@ -37,7 +37,6 @@ import org.apache.james.imap.api.process.SelectedMailbox;
 import org.apache.james.imap.mailbox.Mailbox;
 import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.MailboxManager;
-import org.apache.james.imap.mailbox.MailboxManagerProvider;
 import org.apache.james.imap.mailbox.MailboxNotFoundException;
 import org.apache.james.imap.mailbox.MailboxSession;
 import org.apache.james.imap.mailbox.MessageResult;
@@ -60,10 +59,10 @@ abstract class AbstractSelectionProcessor extends AbstractMailboxProcessor {
     private final boolean openReadOnly;
 
     public AbstractSelectionProcessor(final ImapProcessor next,
-            final MailboxManagerProvider mailboxManagerProvider,
+            final MailboxManager mailboxManager,
             final StatusResponseFactory statusResponseFactory,
             final boolean openReadOnly) {
-        super(next, mailboxManagerProvider, statusResponseFactory);
+        super(next, mailboxManager, statusResponseFactory);
         this.statusResponseFactory = statusResponseFactory;
         this.openReadOnly = openReadOnly;
         final Flags flags = new Flags();

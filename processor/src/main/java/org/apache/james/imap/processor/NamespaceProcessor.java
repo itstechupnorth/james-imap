@@ -30,7 +30,7 @@ import org.apache.james.imap.api.process.ImapProcessor;
 import org.apache.james.imap.api.process.ImapSession;
 import org.apache.james.imap.message.request.NamespaceRequest;
 import org.apache.james.imap.message.response.NamespaceResponse;
-import org.apache.james.imap.mailbox.MailboxManagerProvider;
+import org.apache.james.imap.mailbox.MailboxManager;
 import org.apache.james.imap.mailbox.MailboxSession;
 import org.apache.james.imap.mailbox.MailboxSession.Namespace;
 import org.apache.james.imap.processor.base.ImapSessionUtils;
@@ -41,9 +41,9 @@ import org.apache.james.imap.processor.base.ImapSessionUtils;
 public class NamespaceProcessor extends AbstractMailboxProcessor {
     
     public NamespaceProcessor(ImapProcessor next,
-            MailboxManagerProvider mailboxManagerProvider,
+            MailboxManager mailboxManager,
             StatusResponseFactory factory) {
-        super(next, mailboxManagerProvider, factory);
+        super(next, mailboxManager, factory);
     }
 
     @Override

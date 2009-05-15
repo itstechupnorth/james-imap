@@ -41,7 +41,6 @@ import org.apache.james.imap.mailbox.Mailbox;
 import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.MailboxExistsException;
 import org.apache.james.imap.mailbox.MailboxManager;
-import org.apache.james.imap.mailbox.MailboxManagerProvider;
 import org.apache.james.imap.mailbox.MailboxNotFoundException;
 import org.apache.james.imap.mailbox.MailboxSession;
 import org.apache.james.imap.mailbox.MessageRange;
@@ -57,15 +56,15 @@ import org.apache.james.imap.processor.base.ImapSessionUtils;
 
 abstract public class AbstractMailboxProcessor extends AbstractChainedProcessor {
 
-    private final MailboxManagerProvider mailboxManagerProvider;
+    private final MailboxManager mailboxManager;
 
     private final StatusResponseFactory factory;
 
     public AbstractMailboxProcessor(final ImapProcessor next,
-            final MailboxManagerProvider mailboxManagerProvider,
+            final MailboxManager mailboxManager,
             final StatusResponseFactory factory) {
         super(next);
-        this.mailboxManagerProvider = mailboxManagerProvider;
+        this.mailboxManager = mailboxManager;
         this.factory = factory;
     }
 
@@ -305,16 +304,13 @@ abstract public class AbstractMailboxProcessor extends AbstractChainedProcessor 
             throws MailboxException {
         final String user = ImapSessionUtils.getUserName(session);
         if (!mailboxName.startsWith(NAMESPACE_PREFIX)) {
-            mailboxName = mailboxManagerProvider.getMailboxManager().resolve(
-                    user, mailboxName);
+            mailboxName = getMailboxManager().resolve(user, mailboxName);
         }
         return mailboxName;
     }
     
     public MailboxManager getMailboxManager() throws MailboxException {
-        // TODO: consolidate API by deleting provider and supply manager direct
-        final MailboxManager result = mailboxManagerProvider.getMailboxManager();
-        return result;
+        return mailboxManager;
     }
 
     public Mailbox getSelectedMailbox(final ImapSession session) throws MailboxException {

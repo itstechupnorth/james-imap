@@ -22,7 +22,7 @@ package org.apache.james.imap.processor.main;
 import org.apache.james.imap.api.message.response.StatusResponseFactory;
 import org.apache.james.imap.api.process.ImapProcessor;
 import org.apache.james.imap.api.process.ImapProcessorFactory;
-import org.apache.james.imap.mailbox.MailboxManagerProvider;
+import org.apache.james.imap.mailbox.MailboxManager;
 import org.apache.james.imap.message.response.UnpooledStatusResponseFactory;
 import org.apache.james.imap.processor.DefaultProcessorChain;
 import org.apache.james.imap.processor.base.ImapResponseMessageProcessor;
@@ -33,35 +33,33 @@ import org.apache.james.imap.processor.base.UnknownRequestProcessor;
  */
 public class DefaultImapProcessorFactory implements ImapProcessorFactory {
 
-    public static final ImapProcessor createDefaultProcessor(
-            final MailboxManagerProvider mailboxManagerProvider) {
+    public static final ImapProcessor createDefaultProcessor(final MailboxManager mailboxManager) {
         final StatusResponseFactory statusResponseFactory = new UnpooledStatusResponseFactory();
         final UnknownRequestProcessor unknownRequestImapProcessor = new UnknownRequestProcessor(
                 statusResponseFactory);
         final ImapProcessor imap4rev1Chain = DefaultProcessorChain
                 .createDefaultChain(unknownRequestImapProcessor,
-                        mailboxManagerProvider, statusResponseFactory);
+                        mailboxManager, statusResponseFactory);
         final ImapProcessor result = new ImapResponseMessageProcessor(
                 imap4rev1Chain);
         return result;
     }
 
-    private MailboxManagerProvider mailboxManagerProvider;
+    private MailboxManager mailboxManager;
 
-    public final void configure(MailboxManagerProvider mailboxManagerProvider) {
-        setMailboxManagerProvider(mailboxManagerProvider);
+    public final void configure(MailboxManager mailboxManager) {
+        setMailboxManager(mailboxManager);
     }
 
-    public final MailboxManagerProvider getMailboxManagerProvider() {
-        return mailboxManagerProvider;
+    public final MailboxManager getMailboxManager() {
+        return mailboxManager;
     }
 
-    public final void setMailboxManagerProvider(
-            MailboxManagerProvider mailboxManagerProvider) {
-        this.mailboxManagerProvider = mailboxManagerProvider;
+    public final void setMailboxManager(MailboxManager mailboxManager) {
+        this.mailboxManager = mailboxManager;
     }
 
     public ImapProcessor buildImapProcessor() {
-        return createDefaultProcessor(mailboxManagerProvider);
+        return createDefaultProcessor(mailboxManager);
     }
 }

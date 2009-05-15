@@ -28,7 +28,7 @@ public class TorqueHostSystem extends ImapHostSystem {
         return true;
     }
 
-    //@Override
+    @Override
     protected void resetData() throws Exception {
         TorqueMailboxManagerProviderSingleton.reset();
         TorqueHostSystemFactory.resetUserMetaData(); 

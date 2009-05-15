@@ -23,10 +23,9 @@ import org.apache.james.imap.api.ImapCommand;
 import org.apache.james.imap.api.message.response.StatusResponseFactory;
 import org.apache.james.imap.api.process.ImapProcessor;
 import org.apache.james.imap.api.process.ImapSession;
-import org.apache.james.imap.mailbox.MailboxManagerProvider;
+import org.apache.james.imap.mailbox.MailboxManager;
 import org.apache.james.imap.mailbox.MailboxMetaData;
 import org.apache.james.imap.message.response.ListResponse;
-import org.apache.james.imap.processor.ListProcessor;
 import org.jmock.Expectations;
 import org.jmock.integration.junit3.MockObjectTestCase;
 
@@ -36,7 +35,7 @@ public class ListProcessorTest extends MockObjectTestCase {
 
     ImapProcessor next;
 
-    MailboxManagerProvider provider;
+    MailboxManager manager;
 
     ImapProcessor.Responder responder;
 
@@ -55,8 +54,8 @@ public class ListProcessorTest extends MockObjectTestCase {
         next = mock(ImapProcessor.class);
         responder = mock(ImapProcessor.Responder.class);
         result = mock(MailboxMetaData.class);
-        provider = mock(MailboxManagerProvider.class);
-        processor = createProcessor(next, provider, serverResponseFactory);
+        manager = mock(MailboxManager.class);
+        processor = createProcessor(next, manager, serverResponseFactory);
     }
 
     protected void tearDown() throws Exception {
@@ -64,8 +63,8 @@ public class ListProcessorTest extends MockObjectTestCase {
     }
 
     ListProcessor createProcessor(ImapProcessor next,
-            MailboxManagerProvider provider, StatusResponseFactory factory) {
-        return new ListProcessor(next, provider, factory);
+            MailboxManager manager, StatusResponseFactory factory) {
+        return new ListProcessor(next, manager, factory);
     }
 
     ListResponse createResponse(boolean noinferior, boolean noselect,

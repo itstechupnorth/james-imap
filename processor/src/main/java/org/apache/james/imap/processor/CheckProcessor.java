@@ -25,14 +25,14 @@ import org.apache.james.imap.api.message.request.ImapRequest;
 import org.apache.james.imap.api.message.response.StatusResponseFactory;
 import org.apache.james.imap.api.process.ImapProcessor;
 import org.apache.james.imap.api.process.ImapSession;
-import org.apache.james.imap.mailbox.MailboxManagerProvider;
+import org.apache.james.imap.mailbox.MailboxManager;
 import org.apache.james.imap.message.request.CheckRequest;
 
 public class CheckProcessor extends AbstractMailboxProcessor {
 
-    public CheckProcessor(final ImapProcessor next, final MailboxManagerProvider mailboxManagerProvider,
+    public CheckProcessor(final ImapProcessor next, final MailboxManager mailboxManager,
             final StatusResponseFactory factory) {
-        super(next, mailboxManagerProvider, factory);
+        super(next, mailboxManager, factory);
     }
 
     protected boolean isAcceptable(ImapMessage message) {

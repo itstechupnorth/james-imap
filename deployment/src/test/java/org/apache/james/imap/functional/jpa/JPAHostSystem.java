@@ -27,7 +27,6 @@ import javax.persistence.EntityManagerFactory;
 import org.apache.commons.io.FileUtils;
 import org.apache.james.imap.encode.main.DefaultImapEncoderFactory;
 import org.apache.james.imap.functional.ImapHostSystem;
-import org.apache.james.imap.functional.SimpleMailboxManagerProvider;
 import org.apache.james.imap.functional.jpa.user.InMemoryUserManager;
 import org.apache.james.imap.jpa.JPAMailboxManager;
 import org.apache.james.imap.jpa.JPASubscriptionManager;
@@ -67,11 +66,9 @@ public class JPAHostSystem extends ImapHostSystem {
         final EntityManagerFactory entityManagerFactory = OpenJPAPersistence.getEntityManagerFactory(properties);
         mailboxManager = new JPAMailboxManager(userManager, new JPASubscriptionManager(entityManagerFactory), entityManagerFactory);
         
-        SimpleMailboxManagerProvider provider = new SimpleMailboxManagerProvider();
         final DefaultImapProcessorFactory defaultImapProcessorFactory = new DefaultImapProcessorFactory();
-        provider.setMailboxManager(mailboxManager);
         resetUserMetaData();
-        defaultImapProcessorFactory.configure(provider);
+        defaultImapProcessorFactory.configure(mailboxManager);
         configure(new DefaultImapDecoderFactory().buildImapDecoder(),
                 new DefaultImapEncoderFactory().buildImapEncoder(),
                 defaultImapProcessorFactory.buildImapProcessor());
