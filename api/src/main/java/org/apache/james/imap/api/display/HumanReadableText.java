@@ -19,6 +19,8 @@
 
 package org.apache.james.imap.api.display;
 
+import java.util.Arrays;
+
 import org.apache.james.imap.api.ImapConstants;
 
 /**
@@ -186,11 +188,19 @@ public class HumanReadableText {
     private final String defaultValue;
 
     private final String key;
+    
+    private final Object[] parameters;
+
 
     public HumanReadableText(final String key, final String defaultValue) {
+        this(key, defaultValue, (Object[])null);
+    }
+    
+    public HumanReadableText(final String key, final String defaultValue, final Object... parameters) {
         super();
         this.defaultValue = defaultValue;
         this.key = key;
+        this.parameters = parameters;
     }
 
     /**
@@ -212,13 +222,25 @@ public class HumanReadableText {
         return key;
     }
 
+    /**
+     * Gets parameters that may be substituted into the text.
+     * @return substitution paramters, possibly null
+     */
+    public Object[] getParameters() {
+        return parameters;
+    }
+    
+    @Override
     public int hashCode() {
         final int PRIME = 31;
         int result = 1;
+        result = PRIME * result + ((defaultValue == null) ? 0 : defaultValue.hashCode());
         result = PRIME * result + ((key == null) ? 0 : key.hashCode());
+        result = PRIME * result + Arrays.hashCode(parameters);
         return result;
     }
 
+    @Override
     public boolean equals(Object obj) {
         if (this == obj)
             return true;
@@ -227,10 +249,17 @@ public class HumanReadableText {
         if (getClass() != obj.getClass())
             return false;
         final HumanReadableText other = (HumanReadableText) obj;
+        if (defaultValue == null) {
+            if (other.defaultValue != null)
+                return false;
+        } else if (!defaultValue.equals(other.defaultValue))
+            return false;
         if (key == null) {
             if (other.key != null)
                 return false;
         } else if (!key.equals(other.key))
+            return false;
+        if (!Arrays.equals(parameters, other.parameters))
             return false;
         return true;
     }
