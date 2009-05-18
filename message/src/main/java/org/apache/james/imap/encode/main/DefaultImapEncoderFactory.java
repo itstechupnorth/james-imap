@@ -41,7 +41,14 @@ import org.apache.james.imap.encode.base.EndImapEncoder;
  */
 public class DefaultImapEncoderFactory implements ImapEncoderFactory {
 
-    public static final ImapEncoder createDefaultEncoder(final Localizer localizer) {
+    /**
+     * Builds the default encoder
+     * @param localizer not null
+     * @param neverAddBodyStructureExtensions true to activate a workaround for broken clients who
+     * cannot parse BODYSTRUCTURE extensions, false to fully support RFC3501
+     * @return not null
+     */
+    public static final ImapEncoder createDefaultEncoder(final Localizer localizer, final boolean neverAddBodyStructureExtensions) {
         final EndImapEncoder endImapEncoder = new EndImapEncoder();
         final NamespaceResponseEncoder namespaceEncoder = new NamespaceResponseEncoder(endImapEncoder);
         final StatusResponseEncoder statusResponseEncoder = new StatusResponseEncoder(
@@ -49,7 +56,7 @@ public class DefaultImapEncoderFactory implements ImapEncoderFactory {
         final RecentResponseEncoder recentResponseEncoder = new RecentResponseEncoder(
                 statusResponseEncoder);
         final FetchResponseEncoder fetchResponseEncoder = new FetchResponseEncoder(
-                recentResponseEncoder);
+                recentResponseEncoder, neverAddBodyStructureExtensions);
         final ExpungeResponseEncoder expungeResponseEncoder = new ExpungeResponseEncoder(
                 fetchResponseEncoder);
         final ExistsResponseEncoder existsResponseEncoder = new ExistsResponseEncoder(
@@ -70,18 +77,26 @@ public class DefaultImapEncoderFactory implements ImapEncoderFactory {
     }
 
     private final Localizer localizer;
+    private final boolean neverAddBodyStructureExtensions;
     
     public DefaultImapEncoderFactory() {
-        this(new DefaultLocalizer());
+        this(new DefaultLocalizer(), false);
     }
     
-    public DefaultImapEncoderFactory(final Localizer localizer) {
+    /**
+     * Constructs the default factory for encoders
+     * @param localizer not null
+     * @param neverAddBodyStructureExtensions true to activate a workaround for broken clients who
+     * cannot parse BODYSTRUCTURE extensions, false to fully support RFC3501
+     */
+    public DefaultImapEncoderFactory(final Localizer localizer, boolean neverAddBodyStructureExtensions) {
         super();
         this.localizer = localizer;
+        this.neverAddBodyStructureExtensions = neverAddBodyStructureExtensions;
     }
 
     public ImapEncoder buildImapEncoder() {
-        return createDefaultEncoder(localizer);
+        return createDefaultEncoder(localizer, neverAddBodyStructureExtensions);
     }
 
 }

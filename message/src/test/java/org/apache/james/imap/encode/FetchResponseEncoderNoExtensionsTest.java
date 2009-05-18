@@ -19,6 +19,11 @@
 
 package org.apache.james.imap.encode;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import javax.mail.Flags;
 
 import org.apache.james.imap.api.ImapCommand;
@@ -31,12 +36,13 @@ import org.jmock.Expectations;
 import org.jmock.Sequence;
 import org.jmock.integration.junit3.MockObjectTestCase;
 
-public class FetchResponseEncoderTest extends MockObjectTestCase {
+public class FetchResponseEncoderNoExtensionsTest extends MockObjectTestCase {
 
     Flags flags;
 
     ImapResponseComposer composer;
 
+    FetchResponse.Structure stubStructure;
 
     ImapEncoder mockNextEncoder;
 
@@ -48,9 +54,10 @@ public class FetchResponseEncoderTest extends MockObjectTestCase {
         super.setUp();
         composer = mock(ImapResponseComposer.class);
         mockNextEncoder = mock(ImapEncoder.class);
-        encoder = new FetchResponseEncoder(mockNextEncoder, false);
+        encoder = new FetchResponseEncoder(mockNextEncoder, true);
         stubCommand = ImapCommand.anyStateCommand("COMMAND");
         flags = new Flags(Flags.Flag.DELETED);
+        stubStructure = mock(FetchResponse.Structure.class);
     }
 
     protected void tearDown() throws Exception {
@@ -103,5 +110,48 @@ public class FetchResponseEncoderTest extends MockObjectTestCase {
             oneOf(composer).closeFetchResponse(); inSequence(sequence);
         }});
         encoder.doEncode(message, composer, new FakeImapSession());
+    }
+    
+    public void testShouldNotAddExtensionsWithEncodingBodyStructure() throws Exception {
+        FetchResponse message = new FetchResponse(100, flags, new Long(72),
+                null, null, null, null, stubStructure, null);
+        final Map<String, String> parameters = new HashMap<String, String>();
+        parameters.put("CHARSET", "US-ASCII");
+        final List<String> parameterList= new ArrayList<String>();
+        parameterList.add("CHARSET");
+        parameterList.add("US-ASCII");
+        
+        checking(new Expectations() {{
+            final long octets = 2279L;
+            final long lines = 48L;
+            allowing(stubStructure).getMediaType(); will(returnValue("TEXT"));
+            allowing(stubStructure).getSubType(); will(returnValue("HTML"));
+            allowing(stubStructure).getOctets();will(returnValue(octets));
+            allowing(stubStructure).getLines();will(returnValue(lines));
+            allowing(stubStructure).getParameters(); will(returnValue(parameterList));
+            allowing(stubStructure).getEncoding(); will(returnValue("7BIT"));
+            ignoring(stubStructure);
+            
+            final Sequence sequence = sequence("composition");
+            oneOf(composer).openFetchResponse(with(equal(100L))); inSequence(sequence);
+            oneOf(composer).flags(with(equal(flags))); inSequence(sequence);
+            oneOf(composer).message(with(equal("BODYSTRUCTURE")));inSequence(sequence);
+            oneOf(composer).openParen();will(returnValue(composer));inSequence(sequence);
+            oneOf(composer).quoteUpperCaseAscii("TEXT");will(returnValue(composer));inSequence(sequence);
+            oneOf(composer).quoteUpperCaseAscii("HTML");will(returnValue(composer));inSequence(sequence);
+            oneOf(composer).nillableQuotes(parameterList);will(returnValue(composer));inSequence(sequence);
+            oneOf(composer).nillableQuote("");will(returnValue(composer));inSequence(sequence);
+            oneOf(composer).nillableQuote("");will(returnValue(composer));inSequence(sequence);
+            oneOf(composer).quoteUpperCaseAscii("7BIT");will(returnValue(composer));inSequence(sequence);
+            oneOf(composer).message(octets);inSequence(sequence);
+            oneOf(composer).message(lines);inSequence(sequence);
+            oneOf(composer).closeParen();inSequence(sequence);
+            oneOf(composer).message(with(equal("UID"))); inSequence(sequence);
+            oneOf(composer).message(with(equal(72L))); inSequence(sequence);
+            oneOf(composer).closeFetchResponse(); inSequence(sequence);
+           ;
+        }});
+        final FakeImapSession fakeImapSession = new FakeImapSession();
+        encoder.doEncode(message, composer, fakeImapSession);
     }
 }

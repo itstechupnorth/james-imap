@@ -40,8 +40,18 @@ import org.apache.james.imap.message.response.FetchResponse.Structure;
 
 public class FetchResponseEncoder extends AbstractChainedImapEncoder {
 
-    public FetchResponseEncoder(final ImapEncoder next) {
+    /** Disables all optional BODYSTRUCTURE extensions */
+    private final boolean neverAddBodyStructureExtensions;
+    
+    /**
+     * Constructs an encoder for FETCH messages.
+     * @param next not null
+     * @param neverAddBodyStructureExtensions true to activate a workaround for broken clients who
+     * cannot parse BODYSTRUCTURE extensions, false to fully support RFC3501
+     */
+    public FetchResponseEncoder(final ImapEncoder next, final boolean neverAddBodyStructureExtensions) {
         super(next);
+        this.neverAddBodyStructureExtensions = neverAddBodyStructureExtensions;
     }
 
     public boolean isAcceptable(final ImapMessage message) {
@@ -104,12 +114,17 @@ public class FetchResponseEncoder extends AbstractChainedImapEncoder {
             final Structure structure, final boolean includeExtensions,
             final String mediaType, final String subType, boolean isInnerPart, ImapSession session)
             throws IOException {
+        //
+        // Workaround for broken clients
+        // See IMAP-91
+        //
+        final boolean includeOptionalExtensions = includeExtensions && !neverAddBodyStructureExtensions;
         if (isInnerPart) {
             composer.skipNextSpace();
         }
         if (ImapConstants.MIME_TYPE_MULTIPART.equalsIgnoreCase(mediaType)) {
 
-            encodeMultipart(composer, structure, subType, includeExtensions, session);
+            encodeMultipart(composer, structure, subType, includeOptionalExtensions, session);
 
         } else {
             if (ImapConstants.MIME_TYPE_MESSAGE.equalsIgnoreCase(mediaType)
@@ -117,9 +132,9 @@ public class FetchResponseEncoder extends AbstractChainedImapEncoder {
                             .equalsIgnoreCase(subType)) {
 
                 encodeRfc822Message(composer, structure, mediaType, subType,
-                        includeExtensions, session);
+                        includeOptionalExtensions, session);
             } else {
-                encodeBasic(composer, structure, includeExtensions, mediaType,
+                encodeBasic(composer, structure, includeOptionalExtensions, mediaType,
                         subType, session);
             }
         }
