@@ -140,6 +140,10 @@ public class HumanReadableText {
     public static final HumanReadableText FAILURE_MAILBOX_EXISTS = new HumanReadableText(
             "org.apache.james.imap.FAILURE_NO_SUCH_MAILBOX",
             "failed. Mailbox already exists.");
+    
+    public static final HumanReadableText INIT_FAILED = new HumanReadableText(
+            "org.apache.james.imap.INIT_FAILED",
+            "failed. Cannot initialise.");
 
     public static final HumanReadableText SOCKET_IO_FAILURE = new HumanReadableText(
             "org.apache.james.imap.SOCKET_IO_FAILURE",
