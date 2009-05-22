@@ -61,6 +61,10 @@
       <groupId>org.apache.james</groupId>
       <artifactId>apache-james-imap-torque</artifactId>
     </dependency>
+   <dependency>
+      <groupId>org.apache.james</groupId>
+      <artifactId>apache-james-imap-jpa</artifactId>
+    </dependency>
     <dependency>
       <groupId>org.apache.james</groupId>
       <artifactId>apache-james-imap-seda</artifactId>
@@ -102,6 +106,22 @@
       <groupId>org.apache.db.torque</groupId>
       <artifactId>runtime</artifactId>
     </dependency>
+
+    <dependency>
+      <groupId>javax.persistence</groupId>
+      <artifactId>persistence-api</artifactId>
+    </dependency>
+    
+    <dependency>
+      <groupId>org.apache.openjpa</groupId>
+      <artifactId>openjpa</artifactId>
+    </dependency>
+    
+    <dependency>
+      <groupId>com.h2database</groupId>
+      <artifactId>h2</artifactId>
+      <scope>test</scope>
+    </dependency> 
 
     <dependency>
       <groupId>org.apache.james</groupId>

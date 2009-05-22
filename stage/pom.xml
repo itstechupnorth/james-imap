@@ -99,11 +99,11 @@
       <artifactId>junit</artifactId>
     </dependency>
     <dependency>
-      <groupId>jmock</groupId>
+      <groupId>org.jmock</groupId>
       <artifactId>jmock</artifactId>
     </dependency>
     <dependency>
-      <groupId>jmock</groupId>
+      <groupId>org.jmock</groupId>
       <artifactId>jmock-junit3</artifactId>
     </dependency>
     <dependency>
@@ -129,11 +129,6 @@
       <artifactId>commons-beanutils</artifactId>
     </dependency>
     <dependency>
-      <groupId>jmock</groupId>
-      <artifactId>jmock</artifactId>
-    </dependency>
-    
-    <dependency>
       <groupId>org.apache.db.torque</groupId>
       <artifactId>runtime</artifactId>
     </dependency>
@@ -141,6 +136,13 @@
       <groupId>org.apache.james</groupId>
       <artifactId>apache-mime4j</artifactId>
     </dependency>
+      
+    <dependency>
+      <groupId>com.h2database</groupId>
+      <artifactId>h2</artifactId>
+      <scope>test</scope>
+    </dependency>   
+    
   </dependencies>
   
   <build>
