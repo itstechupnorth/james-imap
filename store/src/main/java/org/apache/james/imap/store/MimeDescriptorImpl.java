@@ -94,7 +94,7 @@ public class MimeDescriptorImpl implements MimeDescriptor {
     private static MimeDescriptorImpl createDescriptor(
             final MimeTokenStream parser) throws IOException, MimeException {
         int next = parser.next();
-        final Collection<ResultHeader> headers = new ArrayList<ResultHeader>();
+        final Collection<MessageResult.Header> headers = new ArrayList<MessageResult.Header>();
         while (next != MimeTokenStream.T_BODY
                 && next != MimeTokenStream.T_END_OF_STREAM
                 && next != MimeTokenStream.T_START_MULTIPART) {
@@ -122,7 +122,7 @@ public class MimeDescriptorImpl implements MimeDescriptor {
     }
 
     private static MimeDescriptorImpl compositePartDescriptor(
-            final MimeTokenStream parser, final Collection headers)
+            final MimeTokenStream parser, final Collection<MessageResult.Header> headers)
             throws IOException, MimeException {
         MaximalBodyDescriptor descriptor = (MaximalBodyDescriptor) parser
                 .getBodyDescriptor();
@@ -140,7 +140,7 @@ public class MimeDescriptorImpl implements MimeDescriptor {
     }
 
     private static MimeDescriptorImpl simplePartDescriptor(
-            final MimeTokenStream parser, final Collection headers)
+            final MimeTokenStream parser, final Collection<MessageResult.Header> headers)
             throws IOException, MimeException {
         MaximalBodyDescriptor descriptor = (MaximalBodyDescriptor) parser
                 .getBodyDescriptor();
@@ -174,7 +174,7 @@ public class MimeDescriptorImpl implements MimeDescriptor {
 
     private static MimeDescriptorImpl createDescriptor(long bodyOctets,
             long lines, MaximalBodyDescriptor descriptor,
-            MimeDescriptor embeddedMessage, final Collection headers) {
+            MimeDescriptor embeddedMessage, final Collection<MessageResult.Header> headers) {
         final String contentDescription = descriptor.getContentDescription();
         final String contentId = descriptor.getContentId();
 
@@ -197,7 +197,7 @@ public class MimeDescriptorImpl implements MimeDescriptor {
         
         final List<String> languages = descriptor.getContentLanguage();
         final String disposition = descriptor.getContentDispositionType();
-        final Map dispositionParams = descriptor
+        final Map<String, String> dispositionParams = descriptor
                 .getContentDispositionParameters();
         final Collection<MimeDescriptor> parts = new ArrayList<MimeDescriptor>();
         final String location = descriptor.getContentLocation();
