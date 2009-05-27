@@ -48,7 +48,7 @@ public class SimpleMessage implements Document {
         final ByteArrayOutputStream baos = new ByteArrayOutputStream();
         final Writer writer = new OutputStreamWriter(baos, "us-ascii");
         for (SimpleHeader header:headers) {
-            writer.write(header.getField());
+            writer.write(header.getFieldName());
             writer.write(": ");
             writer.write(header.getValue());
             writer.write(NEW_LINE);

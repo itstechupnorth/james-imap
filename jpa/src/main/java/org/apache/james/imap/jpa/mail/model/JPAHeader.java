@@ -65,9 +65,9 @@ public class JPAHeader implements Comparable<Header>, Header {
     }
 
     /**
-     * @see org.apache.james.imap.store.mail.model.Header#getField()
+     * @see org.apache.james.imap.store.mail.model.Header#getFieldName()
      */
-    public String getField() {
+    public String getFieldName() {
         return field;
     }
 

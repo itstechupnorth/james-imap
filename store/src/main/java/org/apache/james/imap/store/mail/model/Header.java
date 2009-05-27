@@ -20,7 +20,7 @@ package org.apache.james.imap.store.mail.model;
 
 public interface Header extends Comparable<Header> {
 
-    public abstract String getField();
+    public abstract String getFieldName();
 
     public abstract int getLineNumber();
 

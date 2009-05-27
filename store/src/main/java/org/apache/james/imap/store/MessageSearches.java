@@ -298,7 +298,7 @@ class MessageSearches {
         boolean result = false;
         final List<Header> headers = message.getDocument().getHeaders();
         for (Header header:headers) {
-            final String name = header.getField();
+            final String name = header.getFieldName();
             if (headerName.equalsIgnoreCase(name)) {
                 result = true;
                 break;
@@ -313,7 +313,7 @@ class MessageSearches {
         boolean result = false;
         final List<Header> headers = message.getDocument().getHeaders();
         for (Header header:headers) {
-            final String name = header.getField();
+            final String name = header.getFieldName();
             if (headerName.equalsIgnoreCase(name)) {
                 final String value = header.getValue();
                 if (value != null) {
@@ -360,7 +360,7 @@ class MessageSearches {
         final List<Header> headers = message.getDocument().getHeaders();
         String value = null;
         for (Header header:headers) {
-            final String name = header.getField();
+            final String name = header.getFieldName();
             if (headerName.equalsIgnoreCase(name)) {
                 value = header.getValue();
                 break;

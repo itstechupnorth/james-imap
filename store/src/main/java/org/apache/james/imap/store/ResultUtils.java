@@ -212,7 +212,7 @@ public class ResultUtils {
         final List<Header> headers = getSortedHeaders(document);
         final StringBuffer headersToString = new StringBuffer(headers.size() * 50);
         for (Header header: headers) {
-            headersToString.append(header.getField());
+            headersToString.append(header.getFieldName());
             headersToString.append(": ");
             headersToString.append(header.getValue());
             headersToString.append("\r\n");

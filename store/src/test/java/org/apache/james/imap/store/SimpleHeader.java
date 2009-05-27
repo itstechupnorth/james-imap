@@ -41,7 +41,7 @@ public class SimpleHeader implements Header {
         this.value = value;
     }
 
-    public String getField() {
+    public String getFieldName() {
         return field;
     }
 

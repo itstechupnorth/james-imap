@@ -41,7 +41,7 @@ final class ResultHeader implements MessageResult.Header, Content {
     private final long size;
 
     public ResultHeader(final Header header) {
-        this(header.getField(), header.getValue());
+        this(header.getFieldName(), header.getValue());
     }
 
     public ResultHeader(String name, String value) {
