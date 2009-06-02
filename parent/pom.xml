@@ -133,6 +133,17 @@
     </plugins>
   </build>
   <repositories>
+    <repository>
+      <id>apache-m2-archived</id>
+      <name>Apache Main M2 Repository</name>
+      <url>http://people.apache.org/repo/m2-ibiblio-archived</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
 <!--
     <repository>
       <id>local-james-stage-m1</id>
@@ -482,6 +493,18 @@
     </dependency>
     <dependency>
       <groupId>org.jmock</groupId>
+      <artifactId>jmock-junit3</artifactId>
+      <version>2.5.1</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>jmock</groupId>
+      <artifactId>jmock</artifactId>
+      <version>2.5.1</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>jmock</groupId>
       <artifactId>jmock-junit3</artifactId>
       <version>2.5.1</version>
       <scope>test</scope>
