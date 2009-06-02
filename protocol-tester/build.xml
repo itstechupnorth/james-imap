@@ -21,4 +21,20 @@
   <description>Builds protocol tester module. This is an function module.</description>
   <property name="name.module" value="protocol-tester" />
   <import file="../build-tools/base-build.xml" optional="no" />
+
+  <target
+           name='set-classpath'
+           depends='check-environment, master-module-template.set-classpath'>
+           <path id='classpath.main'>
+               <path refid='classpath.base'/>
+               <path refid='classpath.base.test'/>
+           </path>
+           <path id='classpath.test'>
+               <path refid='classpath.main'/>
+           </path>
+           <path id='classpath.test.runtime'>
+               <path refid='classpath.test'/>
+           </path>
+   </target>
+
 </project>
