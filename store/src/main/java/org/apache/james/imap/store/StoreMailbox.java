@@ -48,7 +48,6 @@ import org.apache.james.imap.mailbox.SearchQuery;
 import org.apache.james.imap.mailbox.MessageResult.FetchGroup;
 import org.apache.james.imap.mailbox.util.UidChangeTracker;
 import org.apache.james.imap.mailbox.util.UidRange;
-import org.apache.james.imap.store.mail.MailboxMapper;
 import org.apache.james.imap.store.mail.MessageMapper;
 import org.apache.james.imap.store.mail.model.Header;
 import org.apache.james.imap.store.mail.model.Mailbox;
@@ -79,8 +78,6 @@ public abstract class StoreMailbox implements org.apache.james.imap.mailbox.Mail
     
     protected abstract Mailbox getMailboxRow() throws MailboxException;
 
-    protected abstract MailboxMapper createMailboxMapper();
-    
     public long getMailboxId() {
         return mailboxId;
     }
@@ -239,11 +236,7 @@ public abstract class StoreMailbox implements org.apache.james.imap.mailbox.Mail
     
     protected abstract Header createHeader(int lineNumber, String name, String value);
 
-    private Mailbox reserveNextUid() throws  MailboxException {
-        final MailboxMapper mapper = createMailboxMapper();
-        final Mailbox mailbox = mapper.consumeNextUid(mailboxId);
-        return mailbox;
-    }
+    protected abstract Mailbox reserveNextUid() throws  MailboxException;
 
     public Iterator<MessageResult> getMessages(final MessageRange set, FetchGroup fetchGroup,
             MailboxSession mailboxSession) throws MailboxException {

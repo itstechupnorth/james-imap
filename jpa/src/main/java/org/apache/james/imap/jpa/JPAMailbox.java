@@ -54,8 +54,7 @@ public class JPAMailbox extends StoreMailbox {
         return mapper.findMailboxById(mailboxId);
     }
 
-    @Override
-    protected MailboxMapper createMailboxMapper() {
+    private JPAMailboxMapper createMailboxMapper() {
         final JPAMailboxMapper mapper = new OpenJPAMailboxMapper(entityManagerFactory.createEntityManager());
         return mapper;
     }
@@ -88,5 +87,12 @@ public class JPAMailbox extends StoreMailbox {
     protected Header createHeader(int lineNumber, String name, String value) {
         final Header header = new JPAHeader(lineNumber, name, value);
         return header;
+    }
+
+    @Override
+    protected Mailbox reserveNextUid() throws MailboxException {
+        final JPAMailboxMapper mapper = createMailboxMapper();
+        final Mailbox mailbox = mapper.consumeNextUid(mailboxId);
+        return mailbox;
     }    
 }

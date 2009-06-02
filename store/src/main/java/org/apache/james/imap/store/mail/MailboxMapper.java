@@ -56,8 +56,4 @@ public interface MailboxMapper {
 
     public abstract Mailbox findMailboxById(long mailboxId)
             throws StorageException, MailboxNotFoundException;
-
-    public abstract Mailbox consumeNextUid(long mailboxId)
-            throws StorageException, MailboxNotFoundException;
-
 }

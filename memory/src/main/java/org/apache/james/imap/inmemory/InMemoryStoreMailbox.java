@@ -26,7 +26,6 @@ import javax.mail.Flags;
 
 import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.store.StoreMailbox;
-import org.apache.james.imap.store.mail.MailboxMapper;
 import org.apache.james.imap.store.mail.MessageMapper;
 import org.apache.james.imap.store.mail.model.Header;
 import org.apache.james.imap.store.mail.model.Mailbox;
@@ -52,12 +51,6 @@ public class InMemoryStoreMailbox extends StoreMailbox {
     }
 
     @Override
-    protected MailboxMapper createMailboxMapper() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
     protected MailboxMembership createMessage(Date internalDate, long uid, int size, int bodyStartOctet, byte[] document, Flags flags, List<Header> headers, PropertyBuilder propertyBuilder) {
         // TODO Auto-generated method stub
         return null;
@@ -72,6 +65,12 @@ public class InMemoryStoreMailbox extends StoreMailbox {
     @Override
     protected Mailbox getMailboxRow() throws MailboxException {
         // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    protected Mailbox reserveNextUid() throws MailboxException {
+        // TODO: implementation
         return null;
     }
 
