@@ -61,7 +61,7 @@ public class JPAMailbox extends StoreMailbox {
     
     @Override
     protected MessageMapper createMessageMapper() {
-        final MessageMapper mapper = new JPAMessageMapper(entityManagerFactory.createEntityManager());
+        final MessageMapper mapper = new JPAMessageMapper(entityManagerFactory.createEntityManager(), mailboxId);
         return mapper;
     }
     

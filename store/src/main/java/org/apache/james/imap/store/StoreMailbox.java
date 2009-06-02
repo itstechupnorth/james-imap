@@ -84,7 +84,7 @@ public abstract class StoreMailbox implements org.apache.james.imap.mailbox.Mail
 
     public int getMessageCount(MailboxSession mailboxSession) throws MailboxException {
         final MessageMapper messageMapper = createMessageMapper();
-        return (int) messageMapper.countMessagesInMailbox(mailboxId);
+        return (int) messageMapper.countMessagesInMailbox();
     }
 
     public long appendMessage(byte[] messageBytes, Date internalDate,
@@ -242,7 +242,7 @@ public abstract class StoreMailbox implements org.apache.james.imap.mailbox.Mail
             MailboxSession mailboxSession) throws MailboxException {
         UidRange range = uidRangeForMessageSet(set);
         final MessageMapper messageMapper = createMessageMapper();
-        final List<MailboxMembership> rows = new ArrayList<MailboxMembership>(messageMapper.findInMailbox(set, mailboxId));
+        final List<MailboxMembership> rows = new ArrayList<MailboxMembership>(messageMapper.findInMailbox(set));
         return getMessages(fetchGroup, range, rows);
     }
 
@@ -291,7 +291,7 @@ public abstract class StoreMailbox implements org.apache.james.imap.mailbox.Mail
     public long[] recent(boolean reset, MailboxSession mailboxSession) throws MailboxException {
         final MessageMapper mapper = createMessageMapper();
         mapper.begin();
-        final List<MailboxMembership> members = mapper.findRecentMessagesInMailbox(mailboxId);
+        final List<MailboxMembership> members = mapper.findRecentMessagesInMailbox();
         final long[] results = new long[members.size()];
 
         int count = 0;
@@ -309,7 +309,7 @@ public abstract class StoreMailbox implements org.apache.james.imap.mailbox.Mail
     public Long getFirstUnseen(MailboxSession mailboxSession) throws MailboxException {
         try {
             final MessageMapper messageMapper = createMessageMapper();
-            final List<MailboxMembership> members = messageMapper.findUnseenMessagesInMailboxOrderByUid(mailboxId);
+            final List<MailboxMembership> members = messageMapper.findUnseenMessagesInMailboxOrderByUid();
             final Iterator<MailboxMembership> it = members.iterator();
             final Long result;
             if (it.hasNext()) {
@@ -327,7 +327,7 @@ public abstract class StoreMailbox implements org.apache.james.imap.mailbox.Mail
 
     public int getUnseenCount(MailboxSession mailboxSession) throws MailboxException {
         final MessageMapper messageMapper = createMessageMapper();
-        final int count = (int) messageMapper.countUnseenMessagesInMailbox(mailboxId);
+        final int count = (int) messageMapper.countUnseenMessagesInMailbox();
         return count;
     }
 
@@ -339,7 +339,7 @@ public abstract class StoreMailbox implements org.apache.james.imap.mailbox.Mail
     throws MailboxException {
         final MessageMapper mapper = createMessageMapper();
         mapper.begin();
-        final List<MailboxMembership> members = mapper.findMarkedForDeletionInMailbox(set, mailboxId);
+        final List<MailboxMembership> members = mapper.findMarkedForDeletionInMailbox(set);
         final Collection<Long> uids = new TreeSet<Long>();
         for (MailboxMembership message:members) {
             uids.add(message.getUid());
@@ -361,7 +361,7 @@ public abstract class StoreMailbox implements org.apache.james.imap.mailbox.Mail
         final SortedMap<Long, Flags> newFlagsByUid = new TreeMap<Long, Flags>();
         final Map<Long, Flags> originalFlagsByUid = new HashMap<Long, Flags>(INITIAL_SIZE_FLAGS);
         mapper.begin();
-        final List<MailboxMembership> members = mapper.findInMailbox(set, mailboxId);
+        final List<MailboxMembership> members = mapper.findInMailbox(set);
         for (final MailboxMembership member:members) {
             originalFlagsByUid.put(member.getUid(), member.createFlags());
             if (replace) {
@@ -404,7 +404,7 @@ public abstract class StoreMailbox implements org.apache.james.imap.mailbox.Mail
 
     public Iterator<Long> search(SearchQuery query, MailboxSession mailboxSession) throws MailboxException {
         final MessageMapper messageMapper = createMessageMapper();
-        final List<MailboxMembership> members = messageMapper.searchMailbox(mailboxId, query);
+        final List<MailboxMembership> members = messageMapper.searchMailbox(query);
         final Set<Long> uids = new TreeSet<Long>();
         for (MailboxMembership member:members) {
             try {
@@ -436,7 +436,7 @@ public abstract class StoreMailbox implements org.apache.james.imap.mailbox.Mail
             mapper.begin();
 
             final List<MailboxMembership> copiedRows = new ArrayList<MailboxMembership>();
-            final List<MailboxMembership> originalRows = mapper.findInMailbox(set, mailboxId);
+            final List<MailboxMembership> originalRows = mapper.findInMailbox(set);
             for (MailboxMembership originalMessage:originalRows) {
 
                 final Mailbox mailbox = toMailbox.reserveNextUid();

@@ -25,38 +25,38 @@ import org.apache.james.imap.mailbox.SearchQuery;
 import org.apache.james.imap.mailbox.StorageException;
 import org.apache.james.imap.store.mail.model.MailboxMembership;
 
+/**
+ * Maps messages in a mailbox.
+ */
 public interface MessageMapper {
 
     public abstract void begin() throws StorageException;
     
     public abstract void commit() throws StorageException;
     
-    public abstract List<MailboxMembership> findInMailbox(MessageRange set, long mailboxId)
+    public abstract List<MailboxMembership> findInMailbox(MessageRange set)
             throws StorageException;
 
     public abstract List<MailboxMembership> findMarkedForDeletionInMailbox(
-            final MessageRange set, final long mailboxId)
+            final MessageRange set)
             throws StorageException;
 
-    public abstract long countMessagesInMailbox(long mailboxId)
+    public abstract long countMessagesInMailbox()
             throws StorageException;
 
-    public abstract long countUnseenMessagesInMailbox(long mailboxId)
+    public abstract long countUnseenMessagesInMailbox()
             throws StorageException;
 
     @SuppressWarnings("unchecked")
-    public abstract List<MailboxMembership> searchMailbox(long mailboxId,
-            SearchQuery query) throws StorageException;
+    public abstract List<MailboxMembership> searchMailbox(SearchQuery query) throws StorageException;
 
     public abstract void delete(MailboxMembership message) throws StorageException;
 
     @SuppressWarnings("unchecked")
-    public abstract List<MailboxMembership> findUnseenMessagesInMailboxOrderByUid(
-            final long mailboxId) throws StorageException;
+    public abstract List<MailboxMembership> findUnseenMessagesInMailboxOrderByUid() throws StorageException;
 
     @SuppressWarnings("unchecked")
-    public abstract List<MailboxMembership> findRecentMessagesInMailbox(
-            final long mailboxId) throws StorageException;
+    public abstract List<MailboxMembership> findRecentMessagesInMailbox() throws StorageException;
 
     public abstract void save(MailboxMembership message) throws StorageException;
 
