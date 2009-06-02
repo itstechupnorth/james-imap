@@ -78,8 +78,8 @@ public class JPAMailbox extends StoreMailbox {
     }
     
     @Override
-    protected MailboxMembership copyMessage(StoreMailbox toMailbox, MailboxMembership originalMessage, long uid) {
-        MailboxMembership newRow = new JPAMailboxMembership(toMailbox.getMailboxId(), uid, (JPAMailboxMembership) originalMessage);
+    protected MailboxMembership copyMessage(MailboxMembership originalMessage, long uid) {
+        MailboxMembership newRow = new JPAMailboxMembership(getMailboxId(), uid, (JPAMailboxMembership) originalMessage);
         return newRow;
     }
     

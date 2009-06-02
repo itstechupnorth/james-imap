@@ -72,7 +72,7 @@ public abstract class StoreMailbox implements org.apache.james.imap.mailbox.Mail
         this.tracker = new UidChangeTracker(mailbox.getLastUid());
     }
 
-    protected abstract MailboxMembership copyMessage(StoreMailbox toMailbox, MailboxMembership originalMessage, long uid);
+    protected abstract MailboxMembership copyMessage(MailboxMembership originalMessage, long uid);
     
     protected abstract MessageMapper createMessageMapper();
     
@@ -429,24 +429,41 @@ public abstract class StoreMailbox implements org.apache.james.imap.mailbox.Mail
     public boolean isWriteable() {
         return true;
     }
+    
+
+    public List<MailboxMembership> copy(List<MailboxMembership> originalRows, MailboxSession session) throws MailboxException {
+        try {
+            final MessageMapper mapper = createMessageMapper();
+            mapper.begin();
+
+            final List<MailboxMembership> copiedRows = new ArrayList<MailboxMembership>();
+            for (MailboxMembership originalMessage:originalRows) {
+
+                final Mailbox mailbox = reserveNextUid();
+                if (mailbox != null) {
+                    long uid = mailbox.getLastUid();
+                    final MailboxMembership newRow = copyMessage(originalMessage, uid);
+                    mapper.save(newRow);
+                    copiedRows.add(newRow);
+                }
+            }
+
+            mapper.commit();
+            
+            return copiedRows;
+            
+        } catch (MessagingException e) {
+            throw new MailboxException(HumanReadableText.FAILURE_MAIL_PARSE, e);
+        }
+    }
 
     public void copyTo(MessageRange set, StoreMailbox toMailbox, MailboxSession session) throws MailboxException {
         try {
             final MessageMapper mapper = createMessageMapper();
             mapper.begin();
 
-            final List<MailboxMembership> copiedRows = new ArrayList<MailboxMembership>();
             final List<MailboxMembership> originalRows = mapper.findInMailbox(set);
-            for (MailboxMembership originalMessage:originalRows) {
-
-                final Mailbox mailbox = toMailbox.reserveNextUid();
-                if (mailbox != null) {
-                    long uid = mailbox.getLastUid();
-                    final MailboxMembership newRow = copyMessage(toMailbox, originalMessage, uid);
-                    mapper.save(newRow);
-                    copiedRows.add(newRow);
-                }
-            }
+            final List<MailboxMembership> copiedRows = toMailbox.copy(originalRows, session);
 
             mapper.commit();
             

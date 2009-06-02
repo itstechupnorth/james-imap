@@ -30,11 +30,12 @@ public class InMemoryMailbox implements Mailbox {
 
     private final long id;    
     private final long uidValidity;
-    private AtomicLong nextUid;
+    private final AtomicLong nextUid;
     private String name;
     
     public InMemoryMailbox(final long id, final String name, final long uidValidity) {
         super();
+        this.nextUid = new AtomicLong(1);
         this.id = id;
         this.name = name;
         this.uidValidity = uidValidity;
