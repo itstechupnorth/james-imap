@@ -18,22 +18,43 @@
  ****************************************************************/
 package org.apache.james.imap.store.mail.model;
 
+/**
+ * Models long term mailbox data.
+ */
 public interface Mailbox {
 
+    /**
+     * Gets the last UID.
+     * @return uid
+     */
     public abstract long getLastUid();
 
+    /**
+     * Consumes the current UID.
+     */
+    public abstract void consumeUid();
+    
+    /**
+     * Gets the unique mailbox ID.
+     * @return mailbox id
+     */
     public abstract long getMailboxId();
 
-    public abstract int getMessageCount();
-
+    /**
+     * Gets the current name for this mailbox.
+     * @return not null
+     */
     public abstract String getName();
-
-    public abstract long getSize();
-
-    public abstract long getUidValidity();
-
-    public abstract void consumeUid();
-
+    
+    /**
+     * Sets the current name for this mailbox.
+     * @param name not null
+     */
     public abstract void setName(String name);
 
+    /**
+     * Gets the current UID VALIDITY for this mailbox.
+     * @return uid validity
+     */
+    public abstract long getUidValidity();
 }
