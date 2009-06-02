@@ -51,7 +51,7 @@ import org.apache.james.imap.store.mail.model.Mailbox;
 public abstract class StoreMailboxManager extends AbstractLogEnabled implements MailboxManager {
     public static final String USER_NAMESPACE_PREFIX = "#mail";
     
-    private static final char SQL_WILDCARD_CHAR = '%';
+    public static final char SQL_WILDCARD_CHAR = '%';
 
     protected final static Random random = new Random();
 
@@ -271,7 +271,7 @@ public abstract class StoreMailboxManager extends AbstractLogEnabled implements 
      * @throws TorqueException
      */
     private boolean hasChildren(String name, final MailboxMapper mapper) throws StorageException {
-        return mapper.hasChildren(name, delimiter);
+        return mapper.existsMailboxStartingWith(name + delimiter);
     }
 
     public boolean mailboxExists(String mailboxName, MailboxSession session) throws MailboxException {

@@ -37,11 +37,10 @@ public interface MailboxMapper {
     /**
      * Does the given mailbox have children?
      * @param mailboxName not null
-     * @param hierarchyDeliminator character used to separate individual mailboxes in the hierarchy
      * @return true when the mailbox has children, false otherwise
      * @throws StorageException
      */
-    public abstract boolean hasChildren(String mailboxName, char hierarchyDeliminator) throws StorageException;
+    public abstract boolean existsMailboxStartingWith(String mailboxName) throws StorageException;
     
     public abstract void delete(Mailbox mailbox) throws StorageException;
 

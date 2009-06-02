@@ -19,7 +19,10 @@
 
 package org.apache.james.imap.inmemory;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.james.imap.mailbox.MailboxNotFoundException;
 import org.apache.james.imap.mailbox.StorageException;
@@ -32,74 +35,92 @@ import org.apache.james.imap.store.mail.model.Mailbox;
 
 public class InMemoryMailboxManager extends StoreMailboxManager implements MailboxMapper {
 
+    private static final int INITIAL_SIZE = 128;
+    private Map<Long, InMemoryMailbox> mailboxesById;
+    
     public InMemoryMailboxManager(Authenticator authenticator, Subscriber subscriber) {
         super(authenticator, subscriber);
+        mailboxesById = new ConcurrentHashMap<Long, InMemoryMailbox>(INITIAL_SIZE);
     }
 
     @Override
     protected StoreMailbox createMailbox(Mailbox mailboxRow) {
-        return null;
+        final InMemoryStoreMailbox storeMailbox = new InMemoryStoreMailbox((InMemoryMailbox)mailboxRow);
+        return storeMailbox;
     }
 
     @Override
     protected MailboxMapper createMailboxMapper() {
-        // TODO Auto-generated method stub
-        return null;
+        return this;
     }
 
     @Override
-    protected void doCreate(String namespaceName) {
-        // TODO Auto-generated method stub
-
+    protected void doCreate(String namespaceName) throws StorageException {
+        InMemoryMailbox mailbox = new InMemoryMailbox(random.nextLong(), namespaceName, random.nextInt());
+        save(mailbox);
     }
 
     public void begin() throws StorageException {}
 
     public void commit() throws StorageException {}
 
-    public Mailbox consumeNextUid(long mailboxId) throws StorageException, MailboxNotFoundException {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
     public long countMailboxesWithName(String name) throws StorageException {
-        // TODO Auto-generated method stub
-        return 0;
+        int total = 0;
+        for (final InMemoryMailbox mailbox:mailboxesById.values()) {
+            if (mailbox.getName().equals(name)) {
+                total++;
+            }
+        }
+        return total;
     }
 
     public void delete(Mailbox mailbox) throws StorageException {
-        // TODO Auto-generated method stub
-        
+        mailboxesById.remove(mailbox.getMailboxId());
     }
 
     public void deleteAll() throws StorageException {
-        // TODO Auto-generated method stub
-        
+        mailboxesById.clear();
     }
 
     public Mailbox findMailboxById(long mailboxId) throws StorageException, MailboxNotFoundException {
-        // TODO Auto-generated method stub
-        return null;
+        return mailboxesById.get(mailboxesById);
     }
 
     public Mailbox findMailboxByName(String name) throws StorageException, MailboxNotFoundException {
-        // TODO Auto-generated method stub
-        return null;
+        Mailbox result = null;
+        for (final InMemoryMailbox mailbox:mailboxesById.values()) {
+            if (mailbox.getName().equals(name)) {
+                result = mailbox;
+                break;
+            }
+        }
+        return result;
     }
 
     public List<Mailbox> findMailboxWithNameLike(String name) throws StorageException {
-        // TODO Auto-generated method stub
-        return null;
+        final String regex = name.replace("%", ".*");
+        List<Mailbox> results = new ArrayList<Mailbox>();
+        for (final InMemoryMailbox mailbox:mailboxesById.values()) {
+            if (mailbox.getName().matches(regex)) {
+                results.add(mailbox);
+            }
+        }
+        return results;
     }
 
-    public boolean hasChildren(String mailboxName, char hierarchyDeliminator) throws StorageException {
-        // TODO Auto-generated method stub
-        return false;
+    public boolean existsMailboxStartingWith(String mailboxName) throws StorageException {
+        boolean result = false;
+        for (final InMemoryMailbox mailbox:mailboxesById.values()) {
+            if (mailbox.getName().startsWith(mailboxName)) {
+                result = true;
+                break;
+            }
+        }
+        return result;
     }
 
     public void save(Mailbox mailbox) throws StorageException {
-        // TODO Auto-generated method stub
-        
+        mailboxesById.put(mailbox.getMailboxId(), (InMemoryMailbox) mailbox);
     }
 
 }

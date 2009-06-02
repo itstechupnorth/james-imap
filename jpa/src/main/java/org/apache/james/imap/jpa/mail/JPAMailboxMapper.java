@@ -46,9 +46,9 @@ public abstract class JPAMailboxMapper extends Mapper implements MailboxMapper {
     /**
      * @see org.apache.james.imap.store.mail.MailboxMapper#hasChildren
      */
-    public boolean hasChildren(String mailboxName, char hierarchyDeliminator) throws StorageException {
+    public boolean existsMailboxStartingWith(String mailboxName) throws StorageException {
         
-        final String name = mailboxName + hierarchyDeliminator + SQL_WILDCARD_CHAR; 
+        final String name = mailboxName + SQL_WILDCARD_CHAR; 
         final Long numberOfChildMailboxes = (Long) entityManager.createNamedQuery("countMailboxesWithNameLike").setParameter("nameParam", name).getSingleResult();
         return numberOfChildMailboxes != null && numberOfChildMailboxes > 0;
     }

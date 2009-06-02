@@ -19,49 +19,42 @@
 
 package org.apache.james.imap.inmemory;
 
-import java.util.concurrent.atomic.AtomicLong;
+import org.apache.james.imap.store.mail.model.Header;
 
-import org.apache.james.imap.store.mail.model.Mailbox;
+public class SimpleHeader implements Header {
 
-/**
- * Mailbox data which is stored only in memory.
- */
-public class InMemoryMailbox implements Mailbox {
-
-    private final long id;    
-    private final long uidValidity;
-    private AtomicLong nextUid;
-    private String name;
+    public String field;
+    public int lineNumber;
+    public String value;
     
-    public InMemoryMailbox(final long id, final String name, final long uidValidity) {
+    public SimpleHeader() {}
+    
+    public SimpleHeader(SimpleHeader header) {
+        this.field = header.field;
+        this.lineNumber = header.lineNumber;
+        this.value = header.value;
+    }
+    
+    public SimpleHeader(String field, int lineNumber, String value) {
         super();
-        this.id = id;
-        this.name = name;
-        this.uidValidity = uidValidity;
+        this.field = field;
+        this.lineNumber = lineNumber;
+        this.value = value;
     }
 
-    public void consumeUid() {
-        nextUid.incrementAndGet();
+    public String getFieldName() {
+        return field;
     }
 
-    public long getLastUid() {
-        return nextUid.get();
+    public int getLineNumber() {
+        return lineNumber;
     }
 
-    public long getMailboxId() {
-        return id;
+    public String getValue() {
+        return value;
     }
 
-    public String getName() {
-        return name;
-    }
-
-
-    public long getUidValidity() {
-        return uidValidity;
-    }
-
-    public void setName(String name) {
-        this.name = name;
+    public int compareTo(Header o) {
+        return getLineNumber() - o.getLineNumber();
     }
 }

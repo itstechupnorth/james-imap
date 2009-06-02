@@ -33,9 +33,12 @@ import org.apache.james.imap.store.mail.model.MailboxMembership;
 import org.apache.james.imap.store.mail.model.PropertyBuilder;
 
 public class InMemoryStoreMailbox extends StoreMailbox {
+    
+    private InMemoryMailbox mailbox;
 
-    public InMemoryStoreMailbox(Mailbox mailbox) {
+    public InMemoryStoreMailbox(InMemoryMailbox mailbox) {
         super(mailbox);
+        this.mailbox = mailbox;
     }
 
     @Override
@@ -46,8 +49,7 @@ public class InMemoryStoreMailbox extends StoreMailbox {
 
     @Override
     protected Header createHeader(int lineNumber, String name, String value) {
-        // TODO Auto-generated method stub
-        return null;
+        return new SimpleHeader(name, lineNumber, value);
     }
 
     @Override
