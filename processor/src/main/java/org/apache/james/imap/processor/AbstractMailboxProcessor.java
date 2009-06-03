@@ -46,7 +46,6 @@ import org.apache.james.imap.mailbox.MailboxSession;
 import org.apache.james.imap.mailbox.MessageRange;
 import org.apache.james.imap.mailbox.MessageResult;
 import org.apache.james.imap.mailbox.util.FetchGroupImpl;
-import org.apache.james.imap.mailbox.util.MessageRangeImpl;
 import org.apache.james.imap.message.response.ExistsResponse;
 import org.apache.james.imap.message.response.ExpungeResponse;
 import org.apache.james.imap.message.response.FetchResponse;
@@ -189,7 +188,7 @@ abstract public class AbstractMailboxProcessor extends AbstractChainedProcessor 
                 final Mailbox mailbox = getMailbox(session, selected);
                 final MailboxSession mailboxSession = ImapSessionUtils.getMailboxSession(session);
                 for (final Long uid: flagUpdateUids) {
-                    MessageRange messageSet = MessageRangeImpl.oneUid(uid.longValue());
+                    MessageRange messageSet = MessageRange.one(uid.longValue());
                     addFlagsResponses(session, selected, responder, useUid, messageSet, mailbox, mailboxSession);
                 }
             }

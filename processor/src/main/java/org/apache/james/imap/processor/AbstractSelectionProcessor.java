@@ -39,10 +39,10 @@ import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.MailboxManager;
 import org.apache.james.imap.mailbox.MailboxNotFoundException;
 import org.apache.james.imap.mailbox.MailboxSession;
+import org.apache.james.imap.mailbox.MessageRange;
 import org.apache.james.imap.mailbox.MessageResult;
 import org.apache.james.imap.mailbox.Mailbox.MetaData;
 import org.apache.james.imap.mailbox.util.FetchGroupImpl;
-import org.apache.james.imap.mailbox.util.MessageRangeImpl;
 import org.apache.james.imap.message.request.AbstractMailboxSelectionRequest;
 import org.apache.james.imap.message.response.ExistsResponse;
 import org.apache.james.imap.message.response.FlagsResponse;
@@ -196,7 +196,7 @@ abstract class AbstractSelectionProcessor extends AbstractMailboxProcessor {
             final MailboxSession mailboxSession, ImapSession session, String name)
             throws MailboxException {
         final SelectedMailbox sessionMailbox;
-        final Iterator<MessageResult> it = mailbox.getMessages(MessageRangeImpl.all(),
+        final Iterator<MessageResult> it = mailbox.getMessages(MessageRange.all(),
                 FetchGroupImpl.MINIMAL, mailboxSession);
         final List<Long> uids = new ArrayList<Long>();
         while (it.hasNext()) {

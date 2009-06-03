@@ -43,7 +43,6 @@ import org.apache.james.imap.mailbox.UnsupportedCriteriaException;
 import org.apache.james.imap.mailbox.MessageResult.FetchGroup;
 import org.apache.james.imap.mailbox.MessageResult.MimePath;
 import org.apache.james.imap.mailbox.util.FetchGroupImpl;
-import org.apache.james.imap.mailbox.util.MessageRangeImpl;
 import org.apache.james.imap.message.request.FetchRequest;
 import org.apache.james.imap.message.response.FetchResponse;
 import org.apache.james.imap.processor.AbstractMailboxProcessor;
@@ -84,7 +83,7 @@ public class FetchProcessor extends AbstractMailboxProcessor {
                     lowVal = session.getSelected().uid(
                             (int) idSet[i].getLowVal());
                 }
-                MessageRange messageSet = MessageRangeImpl.uidRange(lowVal, highVal);
+                MessageRange messageSet = MessageRange.range(lowVal, highVal);
                 final MailboxSession mailboxSession = ImapSessionUtils
                         .getMailboxSession(session);
                 final Iterator<MessageResult> it = mailbox.getMessages(messageSet, resultToFetch, mailboxSession);

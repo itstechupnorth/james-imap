@@ -33,7 +33,6 @@ import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.MailboxManager;
 import org.apache.james.imap.mailbox.MailboxSession;
 import org.apache.james.imap.mailbox.MessageRange;
-import org.apache.james.imap.mailbox.util.MessageRangeImpl;
 import org.apache.james.imap.message.request.CopyRequest;
 import org.apache.james.imap.processor.base.ImapSessionUtils;
 
@@ -79,8 +78,7 @@ public class CopyProcessor extends AbstractMailboxProcessor {
                         lowVal = session.getSelected().uid(
                                 (int) idSet[i].getLowVal());
                     }
-                    MessageRange messageSet = MessageRangeImpl.uidRange(lowVal,
-                            highVal);
+                    MessageRange messageSet = MessageRange.range(lowVal, highVal);
                     mailboxManager.copyMessages(messageSet, currentMailbox
                             .getName(), fullMailboxName, mailboxSession);
                 }

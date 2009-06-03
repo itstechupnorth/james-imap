@@ -36,7 +36,6 @@ import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.MailboxManager;
 import org.apache.james.imap.mailbox.MailboxSession;
 import org.apache.james.imap.mailbox.MessageRange;
-import org.apache.james.imap.mailbox.util.MessageRangeImpl;
 import org.apache.james.imap.message.request.StoreRequest;
 import org.apache.james.imap.message.response.FetchResponse;
 import org.apache.james.imap.processor.base.ImapSessionUtils;
@@ -87,8 +86,7 @@ public class StoreProcessor extends AbstractMailboxProcessor {
                     lowVal = selected.uid((int) idSet[i].getLowVal());
                     highVal = selected.uid((int) idSet[i].getHighVal());
                 }
-                final MessageRange messageSet = MessageRangeImpl.uidRange(
-                        lowVal, highVal);
+                final MessageRange messageSet = MessageRange.range(lowVal, highVal);
                 final MailboxSession mailboxSession = ImapSessionUtils
                         .getMailboxSession(session);
                 final Map<Long, Flags> flagsByUid = mailbox.setFlags(flags, value, replace,

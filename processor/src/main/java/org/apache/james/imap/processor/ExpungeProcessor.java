@@ -32,7 +32,7 @@ import org.apache.james.imap.api.process.SelectedMailbox;
 import org.apache.james.imap.mailbox.Mailbox;
 import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.MailboxManager;
-import org.apache.james.imap.mailbox.util.MessageRangeImpl;
+import org.apache.james.imap.mailbox.MessageRange;
 import org.apache.james.imap.message.request.ExpungeRequest;
 import org.apache.james.imap.processor.base.ImapSessionUtils;
 
@@ -56,7 +56,7 @@ public class ExpungeProcessor extends AbstractMailboxProcessor {
                 no(command, tag, responder,
                         HumanReadableText.MAILBOX_IS_READ_ONLY);
             } else {
-                final Iterator<Long> it = mailbox.expunge(MessageRangeImpl.all(),
+                final Iterator<Long> it = mailbox.expunge(MessageRange.all(),
                         ImapSessionUtils
                         .getMailboxSession(session));
                 final SelectedMailbox mailboxSession = session

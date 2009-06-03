@@ -24,7 +24,7 @@ package org.apache.james.imap.mailbox;
  * key or message object.<br />
  * The type of the set should be defined by using an appropriate constructor.
  */
-public interface MessageRange {
+public class MessageRange {
     
     public enum Type {
         /** All messages */
@@ -37,9 +37,84 @@ public interface MessageRange {
         RANGE
     }
 
-    Type getType();
+    private static final int NOT_A_UID = -1;
+    
+    /**
+     * Constructs a range consisting of a single message only.
+     * @param uid UID of the message
+     * @return not null
+     */
+    public static MessageRange one(long uid) {
+        final MessageRange result = new MessageRange(Type.ONE, uid, uid);
+        return result;
+    }
 
-    long getUidFrom();
+    /**
+     * Constructs a range consisting of all messages.
+     * @return not null
+     */
+    public static MessageRange all() {
+        final MessageRange result = new MessageRange(Type.ALL, NOT_A_UID,
+                NOT_A_UID);
+        return result;
+    }
 
-    long getUidTo();
+    /**
+     * Constructs an inclusive ranges of messages.
+     * The parameters will be checked and {@link #from(long)}
+     * used where appropriate.
+     * @param from first message UID
+     * @param to last message UID
+     * @return not null
+     */
+    public static MessageRange range(long from, long to) {
+        final MessageRange result;
+        if (to == Long.MAX_VALUE || to < from) {
+            to = NOT_A_UID;
+            result = from(from);
+        } else {
+            result = new MessageRange(Type.RANGE, from, to);
+        }
+        return result;
+    }
+    
+    /**
+     * Constructs an inclusive, open ended range of messages.
+     * @param from first messege UID in range
+     * @return not null
+     */
+    public static MessageRange from(long from) {
+        final MessageRange result= new MessageRange(Type.FROM, from, NOT_A_UID);
+        return result;
+    }
+
+    private final Type type;
+
+    private final long uidFrom;
+
+    private final long uidTo;
+
+    private MessageRange(final Type type, final long uidFrom,
+            final long uidTo) {
+        super();
+        this.type = type;
+        this.uidFrom = uidFrom;
+        this.uidTo = uidTo;
+    }
+
+    public Type getType() {
+        return type;
+    }
+
+    public long getUidFrom() {
+        return uidFrom;
+    }
+
+    public long getUidTo() {
+        return uidTo;
+    }
+
+    public String toString() {
+        return "TYPE: " + type + " UID: " + uidFrom + ":" + uidTo;
+    }
 }
