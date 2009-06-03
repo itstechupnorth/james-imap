@@ -17,52 +17,13 @@
  * under the License.                                           *
  ****************************************************************/
 
-package org.apache.james.imap.inmemory;
+package org.apache.james.imap.functional.inmemory;
 
-import java.util.concurrent.atomic.AtomicLong;
+import org.apache.james.imap.functional.suite.AuthenticatedState;
 
-import org.apache.james.imap.store.mail.model.Mailbox;
-
-/**
- * Mailbox data which is stored only in memory.
- */
-public class InMemoryMailbox implements Mailbox {
-
-    private final long id;    
-    private final long uidValidity;
-    private final AtomicLong nextUid;
-    private String name;
-    
-    public InMemoryMailbox(final long id, final String name, final long uidValidity) {
-        super();
-        this.nextUid = new AtomicLong(0);
-        this.id = id;
-        this.name = name;
-        this.uidValidity = uidValidity;
-    }
-
-    public void consumeUid() {
-        nextUid.incrementAndGet();
-    }
-
-    public long getLastUid() {
-        return nextUid.get();
-    }
-
-    public long getMailboxId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-
-    public long getUidValidity() {
-        return uidValidity;
-    }
-
-    public void setName(String name) {
-        this.name = name;
+public class AuthenticatedStateTest extends
+        AuthenticatedState {
+    public AuthenticatedStateTest() throws Exception {
+        super(InMemoryHostSystem.build());
     }
 }

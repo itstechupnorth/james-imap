@@ -20,7 +20,10 @@
 package org.apache.james.imap.inmemory;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -40,6 +43,14 @@ import org.apache.james.imap.store.mail.model.PropertyBuilder;
 
 public class InMemoryStoreMailbox extends StoreMailbox implements MessageMapper {
     
+    private final class MailboxMembershipComparator implements Comparator<MailboxMembership> {
+        public int compare(MailboxMembership o1, MailboxMembership o2) {
+            final long uid = o1.getUid();
+            final long otherUid = o2.getUid();
+            return uid < otherUid ? -1 : uid == otherUid ? 0 : 1;
+        }
+    }
+
     private static final int INITIAL_SIZE = 256;
     private Map<Long, MailboxMembership> membershipByUid;
     private InMemoryMailbox mailbox;
@@ -106,13 +117,53 @@ public class InMemoryStoreMailbox extends StoreMailbox implements MessageMapper 
         membershipByUid.remove(message.getUid());
     }
 
+    @SuppressWarnings("unchecked")
     public List<MailboxMembership> findInMailbox(MessageRange set) throws StorageException {
-        return null;
+        final List<MailboxMembership> results;
+        final MessageRange.Type type = set.getType();
+        switch (type) {
+            case ALL:
+                results = new ArrayList<MailboxMembership>(membershipByUid.values());
+                break;
+            case FROM:
+                results = new ArrayList<MailboxMembership>(membershipByUid.values());
+                for (final Iterator<MailboxMembership> it=results.iterator();it.hasNext();) {
+                   if (it.next().getUid()< set.getUidFrom()) {
+                       it.remove(); 
+                   }
+                }
+                break;
+            case RANGE:
+                results = new ArrayList<MailboxMembership>(membershipByUid.values());
+                for (final Iterator<MailboxMembership> it=results.iterator();it.hasNext();) {
+                   final long uid = it.next().getUid();
+                if (uid<set.getUidFrom() || uid>set.getUidTo()) {
+                       it.remove(); 
+                   }
+                }
+                break;
+            case ONE:
+                results  = new ArrayList<MailboxMembership>(1);
+                final MailboxMembership member = membershipByUid.get(set.getUidFrom());
+                if (member != null) {
+                    results.add(member);
+                }
+                break;
+            default:
+                results = Collections.EMPTY_LIST;
+                break;
+        }
+        return results;
     }
 
     public List<MailboxMembership> findMarkedForDeletionInMailbox(MessageRange set) throws StorageException {
-        // TODO Auto-generated method stub
-        return null;
+        final List<MailboxMembership> results = findInMailbox(set);
+        for(final Iterator<MailboxMembership> it=results.iterator();it.hasNext();) {
+            if (!it.next().isDeleted()) {
+                it.remove();
+            }
+        }
+        return results;
     }
 
     public List<MailboxMembership> findRecentMessagesInMailbox() throws StorageException {
@@ -128,22 +179,19 @@ public class InMemoryStoreMailbox extends StoreMailbox implements MessageMapper 
     public List<MailboxMembership> findUnseenMessagesInMailboxOrderByUid() throws StorageException {
         final List<MailboxMembership> results = new ArrayList<MailboxMembership>();
         for(MailboxMembership member:membershipByUid.values()) {
-            if (member.isRecent()) {
+            if (!member.isSeen()) {
                 results.add(member);
             }
         }
+        Collections.sort(results, new MailboxMembershipComparator());
         return results;
     }
 
     public void save(MailboxMembership message) throws StorageException {
-        // TODO Auto-generated method stub
-        
+        membershipByUid.put(message.getUid(), message);
     }
 
     public List<MailboxMembership> searchMailbox(SearchQuery query) throws StorageException {
-        // TODO Auto-generated method stub
-        return null;
+        return new ArrayList<MailboxMembership>(membershipByUid.values());
     }
-
-
 }

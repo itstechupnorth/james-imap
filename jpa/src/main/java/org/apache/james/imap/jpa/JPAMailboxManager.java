@@ -55,7 +55,7 @@ public class JPAMailboxManager extends StoreMailboxManager {
     
     @Override
     protected void doCreate(String namespaceName) throws MailboxException {
-        Mailbox mailbox = new org.apache.james.imap.jpa.mail.model.JPAMailbox(namespaceName, Math.abs(random.nextInt()));
+        Mailbox mailbox = new org.apache.james.imap.jpa.mail.model.JPAMailbox(namespaceName, randomUidValidity());
         final MailboxMapper mapper = createMailboxMapper();
         mapper.begin();
         mapper.save(mailbox);

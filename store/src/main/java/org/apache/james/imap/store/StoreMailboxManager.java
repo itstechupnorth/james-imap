@@ -53,7 +53,7 @@ public abstract class StoreMailboxManager extends AbstractLogEnabled implements 
     
     public static final char SQL_WILDCARD_CHAR = '%';
 
-    protected final static Random random = new Random();
+    private final static Random random = new Random();
 
     private final Map<String, StoreMailbox> mailboxes;
 
@@ -204,6 +204,10 @@ public abstract class StoreMailboxManager extends AbstractLogEnabled implements 
         }
     }
 
+    protected int randomUidValidity() {
+        return Math.abs(random.nextInt());
+    }
+    
     /**
      * Changes the name of the mailbox instance in the cache.
      * @param from not null
@@ -307,7 +311,12 @@ public abstract class StoreMailboxManager extends AbstractLogEnabled implements 
 
     @SuppressWarnings("unchecked")
     private SimpleMailboxSession createSession(String userName, Log log) {
-        return new SimpleMailboxSession(random.nextLong(), userName, log, delimiter, Collections.EMPTY_LIST);
+        return new SimpleMailboxSession(randomId(), userName, log, delimiter, Collections.EMPTY_LIST);
+    }
+
+
+    protected long randomId() {
+        return random.nextLong();
     }
 
     public String resolve(final String userName, String mailboxPath) {

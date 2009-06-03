@@ -230,4 +230,30 @@ public class SimpleMailboxMembership implements MailboxMembership, Document, Com
         final long otherUid = getUid();
         return uid < otherUid ? -1 : uid == otherUid ? 0 : 1;
     }
+
+    /**
+     * Representation suitable for logging and debugging.
+     *
+     * @return a <code>String</code> representation 
+     * of this object.
+     */
+    public String toString()
+    {
+        return super.toString() + "["
+            + "uid = " + this.uid + " "
+            + "mailboxId = " + this.mailboxId + " "
+            + "size = " + this.size + " "
+            + "answered = " + this.answered + " "
+            + "deleted = " + this.deleted + " "
+            + "draft = " + this.draft + " "
+            + "flagged = " + this.flagged + " "
+            + "recent = " + this.recent + " "
+            + "seen = " + this.seen + " "
+            + "internalDate = " + this.internalDate + " "
+            + "subType = " + this.subType + " "
+            + "mediaType = " + this.mediaType + " "
+            + " ]";
+    }
+    
+    
 }

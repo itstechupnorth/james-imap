@@ -56,7 +56,7 @@ public class InMemoryMailboxManager extends StoreMailboxManager implements Mailb
 
     @Override
     protected void doCreate(String namespaceName) throws StorageException {
-        InMemoryMailbox mailbox = new InMemoryMailbox(random.nextLong(), namespaceName, random.nextInt());
+        InMemoryMailbox mailbox = new InMemoryMailbox(randomId(), namespaceName, randomUidValidity());
         save(mailbox);
     }
 
