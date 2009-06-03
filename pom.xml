@@ -34,7 +34,7 @@
   <inceptionYear>2002</inceptionYear>
   <packaging>pom</packaging>
   <modules>
-    <module>stage</module>
+    <!-- <module>stage</module> -->
     <module>protocol-tester</module>
     <module>api</module>
     <module>message</module>
