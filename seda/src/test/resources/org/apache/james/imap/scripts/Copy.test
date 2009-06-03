@@ -19,30 +19,30 @@
 C: a1 CREATE copied
 S: a1 OK CREATE completed.
 
-C: a1 STATUS copied (MESSAGES)
+C: a2 STATUS copied (MESSAGES)
 S: \* STATUS "copied" \(MESSAGES 0\)
-S: a1 OK STATUS completed.
+S: a2 OK STATUS completed.
 
 # mark one message as deleted before copying (to check that flags are copied)
-C: a1 STORE 3 FLAGS (\Deleted)
+C: a3 STORE 3 FLAGS (\Deleted)
 S: \* 3 FETCH \(FLAGS \(\\Deleted \\Recent\)\)
-S: a1 OK STORE completed.
+S: a3 OK STORE completed.
 
 # copy messages 2-4
-C: a1 COPY 2:4 copied
-S: a1 OK COPY completed.
+C: a4 COPY 2:4 copied
+S: a4 OK COPY completed.
 
 # Check there's 3 messages in the copied mailbox
-C: a1 STATUS copied (MESSAGES)
+C: a5 STATUS copied (MESSAGES)
 S: \* STATUS "copied" \(MESSAGES 3\)
-S: a1 OK STATUS completed.
+S: a5 OK STATUS completed.
 
 # Modify an original after copying, to ensure it's not the same message.
-C: a1 STORE 2 FLAGS (\Flagged)
+C: a6 STORE 2 FLAGS (\Flagged)
 S: \* 2 FETCH \(FLAGS \(\\Flagged \\Recent\)\)
-S: a1 OK STORE completed.
+S: a6 OK STORE completed.
 
-C: a1 SELECT copied
+C: a7 SELECT copied
 S: \* FLAGS \(\\Answered \\Deleted \\Draft \\Flagged \\Seen\)
 S: \* 3 EXISTS
 S: \* \d+ RECENT
@@ -50,13 +50,13 @@ S: \* OK \[UIDVALIDITY \d+\]
 S: \* OK \[UNSEEN \d+\]
 S: \* OK \[PERMANENTFLAGS \(\\Answered \\Deleted \\Draft \\Flagged \\Seen\)\]
 S: \* OK \[UIDNEXT 4\]
-S: a1 OK \[READ-WRITE\] SELECT completed.
+S: a7 OK \[READ-WRITE\] SELECT completed.
 
-C: a1 FETCH 1:4 (FLAGS)
+C: a8 FETCH 1:4 (FLAGS)
 S: \* 1 FETCH \(FLAGS \(\)\)
 S: \* 2 FETCH \(FLAGS \(\\Deleted\)\)
 S: \* 3 FETCH \(FLAGS \(\)\)
-S: a1 OK FETCH completed.
+S: a8 OK FETCH completed.
 
-C: a1 DELETE copied
-S: a1 OK DELETE completed.
+C: a9 DELETE copied
+S: a9 OK DELETE completed.

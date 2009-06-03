@@ -21,7 +21,6 @@ package org.apache.james.imap.inmemory;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -34,6 +33,7 @@ import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.MessageRange;
 import org.apache.james.imap.mailbox.SearchQuery;
 import org.apache.james.imap.mailbox.StorageException;
+import org.apache.james.imap.store.MailboxMembershipComparator;
 import org.apache.james.imap.store.StoreMailbox;
 import org.apache.james.imap.store.mail.MessageMapper;
 import org.apache.james.imap.store.mail.model.Header;
@@ -43,14 +43,6 @@ import org.apache.james.imap.store.mail.model.PropertyBuilder;
 
 public class InMemoryStoreMailbox extends StoreMailbox implements MessageMapper {
     
-    private final class MailboxMembershipComparator implements Comparator<MailboxMembership> {
-        public int compare(MailboxMembership o1, MailboxMembership o2) {
-            final long uid = o1.getUid();
-            final long otherUid = o2.getUid();
-            return uid < otherUid ? -1 : uid == otherUid ? 0 : 1;
-        }
-    }
-
     private static final int INITIAL_SIZE = 256;
     private Map<Long, MailboxMembership> membershipByUid;
     private InMemoryMailbox mailbox;
@@ -153,6 +145,7 @@ public class InMemoryStoreMailbox extends StoreMailbox implements MessageMapper 
                 results = Collections.EMPTY_LIST;
                 break;
         }
+        Collections.sort(results, MailboxMembershipComparator.INSTANCE);
         return results;
     }
 
@@ -183,7 +176,7 @@ public class InMemoryStoreMailbox extends StoreMailbox implements MessageMapper 
                 results.add(member);
             }
         }
-        Collections.sort(results, new MailboxMembershipComparator());
+        Collections.sort(results, MailboxMembershipComparator.INSTANCE);
         return results;
     }
 

@@ -428,7 +428,7 @@ public abstract class StoreMailbox implements org.apache.james.imap.mailbox.Mail
     }
     
 
-    public List<MailboxMembership> copy(List<MailboxMembership> originalRows, MailboxSession session) throws MailboxException {
+    public void copy(List<MailboxMembership> originalRows, MailboxSession session) throws MailboxException {
         try {
             final MessageMapper mapper = createMessageMapper();
             mapper.begin();
@@ -447,7 +447,10 @@ public abstract class StoreMailbox implements org.apache.james.imap.mailbox.Mail
 
             mapper.commit();
             
-            return copiedRows;
+            // Wait until commit before issuing events
+            for (MailboxMembership newMember:copiedRows) {
+                tracker.found(newMember.getUid(), newMember.createFlags());
+            }
             
         } catch (MessagingException e) {
             throw new MailboxException(HumanReadableText.FAILURE_MAIL_PARSE, e);
@@ -457,17 +460,9 @@ public abstract class StoreMailbox implements org.apache.james.imap.mailbox.Mail
     public void copyTo(MessageRange set, StoreMailbox toMailbox, MailboxSession session) throws MailboxException {
         try {
             final MessageMapper mapper = createMessageMapper();
-            mapper.begin();
-
-            final List<MailboxMembership> originalRows = mapper.findInMailbox(set);
-            final List<MailboxMembership> copiedRows = toMailbox.copy(originalRows, session);
-
-            mapper.commit();
             
-            // Wait until commit before issuing events
-            for (MailboxMembership newMember:copiedRows) {
-                toMailbox.tracker.found(newMember.getUid(), newMember.createFlags());
-            }
+            final List<MailboxMembership> originalRows = mapper.findInMailbox(set);
+            toMailbox.copy(originalRows, session);
 
         } catch (MessagingException e) {
             throw new MailboxException(HumanReadableText.FAILURE_MAIL_PARSE, e);

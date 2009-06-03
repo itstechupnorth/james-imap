@@ -169,7 +169,9 @@ public class SimpleMailboxMembership implements MailboxMembership, Document, Com
     }
 
     public ByteBuffer getBodyContent() {
-        return ByteBuffer.wrap(document, bodyStartOctet, document.length - bodyStartOctet);
+        final ByteBuffer contentBuffer = getFullContent();
+        contentBuffer.position(bodyStartOctet);
+        return contentBuffer.slice();
     }
 
     public long getBodyOctets() {
@@ -177,7 +179,7 @@ public class SimpleMailboxMembership implements MailboxMembership, Document, Com
     }
 
     public ByteBuffer getFullContent() {
-        return ByteBuffer.wrap(document);
+        return ByteBuffer.wrap(document).asReadOnlyBuffer();
     }
 
     public long getFullContentOctets() {
