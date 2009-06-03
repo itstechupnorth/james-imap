@@ -262,14 +262,11 @@ public abstract class StoreMailbox implements org.apache.james.imap.mailbox.Mail
         return results;
     }
 
-    private static UidRange uidRangeForMessageSet(MessageRange set)
-    throws MailboxException {
-        if (set.getType() == MessageRange.TYPE_UID) {
-            return new UidRange(set.getUidFrom(), set.getUidTo());
-        } else if (set.getType() == MessageRange.TYPE_ALL) {
+    private static UidRange uidRangeForMessageSet(MessageRange set) throws MailboxException {
+        if (set.getType().equals(MessageRange.Type.ALL)) {
             return new UidRange(1, -1);
         } else {
-            throw new UnsupportedOperationException("unsupported MessageSet: " + set.getType());
+            return new UidRange(set.getUidFrom(), set.getUidTo());
         }
     }
 

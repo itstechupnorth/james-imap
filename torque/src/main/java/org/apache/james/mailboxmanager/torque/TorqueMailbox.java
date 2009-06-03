@@ -49,7 +49,6 @@ import org.apache.james.imap.mailbox.MailboxSession;
 import org.apache.james.imap.mailbox.MessageRange;
 import org.apache.james.imap.mailbox.MessageResult;
 import org.apache.james.imap.mailbox.SearchQuery;
-import org.apache.james.imap.mailbox.UnsupportedOperationException;
 import org.apache.james.imap.mailbox.MessageResult.FetchGroup;
 import org.apache.james.imap.mailbox.SearchQuery.Criterion;
 import org.apache.james.imap.mailbox.SearchQuery.NumericRange;
@@ -261,13 +260,16 @@ public class TorqueMailbox implements Mailbox {
             throws MailboxException {
         Criteria criteria = new Criteria();
         criteria.addAscendingOrderByColumn(MessageRowPeer.UID);
-        if (set.getType() == MessageRange.TYPE_ALL) {
-            // empty Criteria = everything
-        } else if (set.getType() == MessageRange.TYPE_UID) {
-
-            if (set.getUidFrom() == set.getUidTo()) {
+        switch (set.getType()) {
+            default:
+            case ALL:
+//              empty Criteria = everythin
+                break;
+            case ONE:
                 criteria.add(MessageRowPeer.UID, set.getUidFrom());
-            } else {
+                break;
+            case FROM:
+            case RANGE:
                 Criteria.Criterion criterion1 = criteria.getNewCriterion(
                         MessageRowPeer.UID, new Long(set.getUidFrom()),
                         Criteria.GREATER_EQUAL);
@@ -277,10 +279,7 @@ public class TorqueMailbox implements Mailbox {
                             Criteria.LESS_EQUAL);
                     criterion1.and(criterion2);
                 }
-                criteria.add(criterion1);
-            }
-        } else {
-            throw new UnsupportedOperationException("Unsupported MessageSet: " + set.getType());
+                criteria.add(criterion1);                
         }
         return criteria;
     }
@@ -334,12 +333,10 @@ public class TorqueMailbox implements Mailbox {
 
     private static UidRange uidRangeForMessageSet(MessageRange set)
             throws MailboxException {
-        if (set.getType() == MessageRange.TYPE_UID) {
-            return new UidRange(set.getUidFrom(), set.getUidTo());
-        } else if (set.getType() == MessageRange.TYPE_ALL) {
+        if (set.getType().equals(MessageRange.Type.ALL)) {
             return new UidRange(1, -1);
         } else {
-            throw new UnsupportedOperationException("unsupported MessageSet: " + set.getType());
+            return new UidRange(set.getUidFrom(), set.getUidTo());
         }
     }
 

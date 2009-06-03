@@ -23,16 +23,21 @@ package org.apache.james.imap.mailbox;
  * Used to define a range of messages by uid or msn, or a individual message by
  * key or message object.<br />
  * The type of the set should be defined by using an appropriate constructor.
- * 
  */
-
 public interface MessageRange {
+    
+    public enum Type {
+        /** All messages */
+        ALL,
+        /** A sigle message */
+        ONE,
+        /** All messages with a uid equal or higher than */
+        FROM,
+        /** All messagse within the given range of uids (inclusive) */
+        RANGE
+    }
 
-    public static int TYPE_UID = 2;
-
-    public static int TYPE_ALL = 16;
-
-    int getType();
+    Type getType();
 
     long getUidFrom();
 

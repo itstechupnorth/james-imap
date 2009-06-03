@@ -27,6 +27,7 @@ import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.mailbox.MessageRange;
 import org.apache.james.imap.mailbox.SearchQuery;
 import org.apache.james.imap.mailbox.StorageException;
+import org.apache.james.imap.mailbox.MessageRange.Type;
 import org.apache.james.imap.mailbox.SearchQuery.Criterion;
 import org.apache.james.imap.mailbox.SearchQuery.NumericRange;
 import org.apache.james.imap.store.mail.MessageMapper;
@@ -47,23 +48,23 @@ public class JPAMessageMapper extends Mapper implements MessageMapper {
     public List<MailboxMembership> findInMailbox(MessageRange set) throws StorageException {
         try {
             final List<MailboxMembership> results;
-            switch (set.getType()) {
-                case MessageRange.TYPE_UID:
-                    final long from = set.getUidFrom();
-                    final long to = set.getUidTo();
-                    if (from == to) {
-                        results = findMessagesInMailboxWithUID(mailboxId, from);
-                    } else if (to > 0) {
-                        results = findMessagesInMailboxBetweenUIDs(mailboxId, from, to);
-                    } else {
-                        results = findMessagesInMailboxAfterUID(mailboxId, from);
-                    }
-                    break;
+            final long from = set.getUidFrom();
+            final long to = set.getUidTo();
+            final Type type = set.getType();
+            switch (type) {
                 default:
-                    //TODO: Log?
-                case MessageRange.TYPE_ALL:
+                case ALL:
                     results = findMessagesInMailbox(mailboxId);
                     break;
+                case FROM:
+                    results = findMessagesInMailboxAfterUID(mailboxId, from);
+                    break;
+                case ONE:
+                    results = findMessagesInMailboxWithUID(mailboxId, from);
+                    break;
+                case RANGE:
+                    results = findMessagesInMailboxBetweenUIDs(mailboxId, from, to);
+                    break;       
             }
             return results;
         } catch (PersistenceException e) {
@@ -104,21 +105,20 @@ public class JPAMessageMapper extends Mapper implements MessageMapper {
     public List<MailboxMembership> findMarkedForDeletionInMailbox(final MessageRange set) throws StorageException {
         try {
             final List<MailboxMembership> results;
+            final long from = set.getUidFrom();
+            final long to = set.getUidTo();
             switch (set.getType()) {
-                case MessageRange.TYPE_UID:
-                    final long from = set.getUidFrom();
-                    final long to = set.getUidTo();
-                    if (from == to) {
-                        results = findDeletedMessagesInMailboxWithUID(mailboxId, from);
-                    } else if (to > 0) {
-                        results = findDeletedMessagesInMailboxBetweenUIDs(mailboxId, from, to);
-                    } else {
-                        results = findDeletedMessagesInMailboxAfterUID(mailboxId, from);
-                    }
+                case ONE:
+                    results = findDeletedMessagesInMailboxWithUID(mailboxId, from);
+                    break;
+                case RANGE:
+                    results = findDeletedMessagesInMailboxBetweenUIDs(mailboxId, from, to);
+                    break;
+                case FROM:
+                    results = findDeletedMessagesInMailboxAfterUID(mailboxId, from);
                     break;
                 default:
-                    //TODO: Log?
-                case MessageRange.TYPE_ALL:
+                case ALL:
                     results = findDeletedMessagesInMailbox(mailboxId);
                     break;
             }

@@ -25,13 +25,13 @@ public class MessageRangeImpl implements MessageRange {
 
     private static final int NOT_A_UID = -1;
 
-    private final int type;
+    private final Type type;
 
     private final long uidFrom;
 
     private final long uidTo;
 
-    private MessageRangeImpl(final int type, final long uidFrom,
+    private MessageRangeImpl(final Type type, final long uidFrom,
             final long uidTo) {
         super();
         this.type = type;
@@ -39,7 +39,7 @@ public class MessageRangeImpl implements MessageRange {
         this.uidTo = uidTo;
     }
 
-    public int getType() {
+    public Type getType() {
         return type;
     }
 
@@ -52,21 +52,24 @@ public class MessageRangeImpl implements MessageRange {
     }
 
     public static MessageRange oneUid(long uid) {
-        MessageRangeImpl result = new MessageRangeImpl(TYPE_UID, uid, uid);
+        MessageRangeImpl result = new MessageRangeImpl(Type.ONE, uid, uid);
         return result;
     }
 
     public static MessageRange all() {
-        MessageRangeImpl result = new MessageRangeImpl(TYPE_ALL, NOT_A_UID,
+        MessageRangeImpl result = new MessageRangeImpl(Type.ALL, NOT_A_UID,
                 NOT_A_UID);
         return result;
     }
 
     public static MessageRange uidRange(long from, long to) {
-        if (to == Long.MAX_VALUE) {
+        MessageRangeImpl result;
+        if (to == Long.MAX_VALUE || to < from) {
             to = NOT_A_UID;
+            result = new MessageRangeImpl(Type.FROM, from, to);
+        } else {
+            result = new MessageRangeImpl(Type.RANGE, from, to);
         }
-        MessageRangeImpl result = new MessageRangeImpl(TYPE_UID, from, to);
         return result;
     }
 
