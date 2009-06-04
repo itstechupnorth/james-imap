@@ -579,6 +579,8 @@
 		    <javax.mail.artifactId>geronimo-javamail_1.4_mail</javax.mail.artifactId>
 		    <javax.activation.groupId>org.apache.geronimo.specs</javax.activation.groupId>
 		    <javax.activation.artifactId>geronimo-activation_1.1_spec</javax.activation.artifactId>
+            <version.javax.mail>1.6</version.javax.mail>
+            <version.activation>1.0.2</version.activation>
       </properties>
     </profile>
   </profiles>
