@@ -350,19 +350,19 @@
     <dependency>
       <groupId>org.apache.james</groupId>
       <artifactId>apache-mime4j</artifactId>
-      <version>0.6</version>
+      <version>${version.apache-mime4j}</version>
     </dependency>
     <!-- Declare javamail as provided to be able to easily switch -->
     <!-- to different implementations (Geronimo) -->
     <dependency>
       <groupId>javax.mail</groupId>
       <artifactId>mail</artifactId>
-      <version>1.4.1</version>
+      <version>${version.javax.mail}</version>
     </dependency>
     <dependency>
       <groupId>javax.activation</groupId>
       <artifactId>activation</artifactId>
-      <version>1.1.1</version>
+      <version>${version.activation}</version>
     </dependency>
     <dependency>
       <groupId>org.apache.geronimo.specs</groupId>
@@ -377,12 +377,12 @@
     <dependency>
       <groupId>commons-collections</groupId>
       <artifactId>commons-collections</artifactId>
-      <version>3.1</version>
+      <version>${version.commons-collections}</version>
     </dependency>
     <dependency>
       <groupId>commons-logging</groupId>
       <artifactId>commons-logging</artifactId>
-      <version>1.1</version>
+      <version>${version.commons-logging}</version>
       <exclusions>
         <exclusion>
           <artifactId>logkit</artifactId>
@@ -405,7 +405,7 @@
     <dependency>
       <groupId>commons-lang</groupId>
       <artifactId>commons-lang</artifactId>
-      <version>2.1</version>
+      <version>${version.commons-lang}</version>
     </dependency>
     <!-- used by torque -->
     <dependency>
@@ -561,12 +561,12 @@
     <dependency>
       <groupId>javax.persistence</groupId>
       <artifactId>persistence-api</artifactId>
-      <version>1.0.2</version>
+      <version>${version.javax.persistence}</version>
     </dependency>
     <dependency>
       <groupId>org.apache.openjpa</groupId>
       <artifactId>openjpa</artifactId>
-      <version>1.2.0</version>
+      <version>${version.openjpa}</version>
     </dependency>
     </dependencies>
   </dependencyManagement>
@@ -588,6 +588,14 @@
     <javax.mail.groupId>javax.mail</javax.mail.groupId>
     <javax.mail.artifactId>mail</javax.mail.artifactId>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <version.openjpa>1.2.0</version.openjpa>
+    <version.javax.persistence>1.0.2</version.javax.persistence>
+    <version.commons-lang>2.1</version.commons-lang>
+    <version.commons-collections>3.1</version.commons-collections>
+    <version.commons-logging>1.1</version.commons-logging>
+    <version.apache-mime4j>0.6</version.apache-mime4j>
+    <version.javax.mail>1.4.1</version.javax.mail>
+    <version.activation>1.1.1</version.activation>
   </properties>
 
 </project>

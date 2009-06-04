@@ -55,7 +55,7 @@
          
           <openjpac>
             <fileset dir="${dir.src.java}">
-              <include name="org/apache/james/imap/jpa/om/*.java" />
+              <include name="org/apache/james/imap/jpa/*/model/*.java" />
             </fileset>
             <classpath>
                 <path refid='classpath.main'/>
