@@ -32,47 +32,58 @@
     <dependency>
       <groupId>${javax.mail.groupId}</groupId>
       <artifactId>${javax.mail.artifactId}</artifactId>
+      <scope>test</scope>
     </dependency>
     
     <dependency>
       <groupId>org.apache.james</groupId>
       <artifactId>apache-james-imap-api</artifactId>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.james</groupId>
       <artifactId>apache-james-imap-message</artifactId>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.james</groupId>
       <artifactId>apache-james-imap-decode</artifactId>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.james</groupId>
       <artifactId>apache-james-imap-mailbox</artifactId>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.james</groupId>
       <artifactId>apache-james-imap-store</artifactId>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.james</groupId>
       <artifactId>apache-james-imap-processor</artifactId>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.james</groupId>
       <artifactId>apache-james-imap-torque</artifactId>
+      <scope>test</scope>
     </dependency>
    <dependency>
       <groupId>org.apache.james</groupId>
       <artifactId>apache-james-imap-jpa</artifactId>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.james</groupId>
       <artifactId>apache-james-imap-memory</artifactId>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.james</groupId>
       <artifactId>apache-james-imap-seda</artifactId>
+      <scope>test</scope>
     </dependency>
 	<dependency>
       <groupId>org.apache.james</groupId>
@@ -80,26 +91,25 @@
       <scope>test</scope>
     </dependency>
 
-
-    <dependency>
-      <groupId>concurrent</groupId>
-      <artifactId>concurrent</artifactId>
-    </dependency>
     <dependency>
       <groupId>commons-collections</groupId>
       <artifactId>commons-collections</artifactId>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>commons-logging</groupId>
       <artifactId>commons-logging</artifactId>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>commons-lang</groupId>
       <artifactId>commons-lang</artifactId>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>commons-configuration</groupId>
       <artifactId>commons-configuration</artifactId>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>commons-io</groupId>
@@ -110,16 +120,19 @@
     <dependency>
       <groupId>org.apache.torque</groupId>
       <artifactId>torque-runtime</artifactId>
+      <scope>test</scope>
     </dependency>
 
     <dependency>
       <groupId>javax.persistence</groupId>
       <artifactId>persistence-api</artifactId>
+      <scope>test</scope>
     </dependency>
     
     <dependency>
       <groupId>org.apache.openjpa</groupId>
       <artifactId>openjpa</artifactId>
+      <scope>test</scope>
     </dependency>
     
     <dependency>
