@@ -474,35 +474,14 @@
       <artifactId>commons-collections</artifactId>
       <version>3.1</version>
     </dependency>
-    <dependency>
-      <groupId>commons-io</groupId>
-      <artifactId>commons-io</artifactId>
-      <scope>test</scope>
-      <version>1.2</version>
-    </dependency>
+    
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
       <version>3.8.1</version>
     </dependency>
-    <dependency>
-      <groupId>org.jmock</groupId>
-      <artifactId>jmock</artifactId>
-      <version>2.5.1</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.jmock</groupId>
-      <artifactId>jmock-junit3</artifactId>
-      <version>2.5.1</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>com.h2database</groupId>
-      <artifactId>h2</artifactId>
-      <version>1.0.79</version>
-      <scope>test</scope>
-    </dependency> 
+
+
     <dependency>
       <groupId>concurrent</groupId>
       <artifactId>concurrent</artifactId>
@@ -514,12 +493,46 @@
       <version>1.7.0</version>
       <scope>runtime</scope>
     </dependency>
+
+
+    <!--
+    START Testing
+     -->  
+    <dependency>
+      <groupId>org.jmock</groupId>
+      <artifactId>jmock</artifactId>
+      <version>${version.jmock}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.jmock</groupId>
+      <artifactId>jmock-junit3</artifactId>
+      <version>${version.jmock}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.h2database</groupId>
+      <artifactId>h2</artifactId>
+      <version>1.0.79</version>
+      <scope>test</scope>
+    </dependency>   
     <dependency>
       <groupId>org.apache.derby</groupId>
       <artifactId>derby</artifactId>
       <version>10.2.2.0</version>
-      <scope>runtime</scope>
+      <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>commons-io</groupId>
+      <artifactId>commons-io</artifactId>
+      <scope>test</scope>
+      <version>1.2</version>
+    </dependency>
+     
+    <!--
+    END Testing
+     -->
+    
      
     <!--
     START Torque 
@@ -600,6 +613,7 @@
     <version.javax.mail>1.4.1</version.javax.mail>
     <version.activation>1.1.1</version.activation>
     <version.torque>3.3</version.torque>
+    <version.jmock>2.5.1</version.jmock>
   </properties>
 
 </project>
