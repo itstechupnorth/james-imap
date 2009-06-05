@@ -566,16 +566,23 @@
     END Torque 
      -->
     
-    <dependency>
-      <groupId>javax.persistence</groupId>
-      <artifactId>persistence-api</artifactId>
-      <version>${version.javax.persistence}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.openjpa</groupId>
-      <artifactId>openjpa</artifactId>
-      <version>${version.openjpa}</version>
-    </dependency>
+    <!-- 
+    START OpenJPA
+     -->
+      <dependency>
+        <groupId>javax.persistence</groupId>
+        <artifactId>persistence-api</artifactId>
+        <version>${version.javax.persistence}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.openjpa</groupId>
+        <artifactId>openjpa</artifactId>
+        <version>${version.openjpa}</version>
+      </dependency>
+    <!-- 
+    END OpenJPA
+     -->
+    
     </dependencies>
   </dependencyManagement>
 
