@@ -48,8 +48,8 @@
     </dependency>
     
     <dependency>
-      <groupId>org.apache.db.torque</groupId>
-      <artifactId>runtime</artifactId>
+      <groupId>org.apache.torque</groupId>
+      <artifactId>torque-runtime</artifactId>
     </dependency>
 
     <dependency>
@@ -61,7 +61,7 @@
       <artifactId>commons-lang</artifactId>
     </dependency>
     <dependency>
-      <groupId>village</groupId>
+      <groupId>org.apache.torque</groupId>
       <artifactId>village</artifactId>
     </dependency>
     <dependency>
