@@ -346,7 +346,9 @@
       <scope>test</scope>
     </dependency>
 
-    
+    <!--
+    START Mail
+    -->      
     <dependency>
       <groupId>org.apache.james</groupId>
       <artifactId>apache-mime4j</artifactId>
@@ -374,6 +376,13 @@
       <artifactId>geronimo-javamail_1.4_mail</artifactId>
       <version>1.6</version>
     </dependency>
+    <!--
+    END Mail
+    -->  
+    
+    <!--
+    Start Commons
+    -->  
     <dependency>
       <groupId>commons-collections</groupId>
       <artifactId>commons-collections</artifactId>
@@ -439,18 +448,9 @@
         </exclusion>
       </exclusions>
     </dependency>
-
-    <dependency>
-      <groupId>commons-collections</groupId>
-      <artifactId>commons-collections</artifactId>
-      <version>3.1</version>
-    </dependency>
-    
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>3.8.1</version>
-    </dependency>
+    <!-- 
+    END Commons
+    -->  
 
     <dependency>
       <groupId>concurrent</groupId>
@@ -461,6 +461,16 @@
     <!--
     START Testing
      -->  
+    <!--
+    Use to build protocol tester.
+    Convert this to testing once MPT has been released. 
+    -->
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>3.8.1</version>
+    </dependency>
+     
     <dependency>
       <groupId>org.jmock</groupId>
       <artifactId>jmock</artifactId>
