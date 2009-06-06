@@ -41,10 +41,7 @@
       <groupId>org.apache.james</groupId>
       <artifactId>apache-james-imap-decode</artifactId>
     </dependency>
-    <dependency>
-      <groupId>concurrent</groupId>
-      <artifactId>concurrent</artifactId>
-    </dependency>
+
     <dependency>
       <groupId>commons-lang</groupId>
       <artifactId>commons-lang</artifactId>

@@ -40,9 +40,8 @@ public class MailboxException extends MessagingException {
         this.key = key;
     }
 
-    public MailboxException(final HumanReadableText key, Throwable cause) {
-        super(key.getDefaultValue());
-        initCause(cause);
+    public MailboxException(final HumanReadableText key, Exception cause) {
+        super(key.getDefaultValue(), cause);
         this.key = key;
     }
 

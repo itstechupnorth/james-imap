@@ -32,7 +32,7 @@ public class SubscriptionException extends MailboxException {
         super(key);
     }
 
-    public SubscriptionException(final HumanReadableText key, Throwable cause) {
+    public SubscriptionException(final HumanReadableText key, Exception cause) {
         super(key, cause);
     }
 }

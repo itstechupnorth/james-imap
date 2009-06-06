@@ -27,6 +27,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -53,9 +54,6 @@ import org.apache.torque.TorqueException;
 import org.apache.torque.util.CountHelper;
 import org.apache.torque.util.Criteria;
 
-import EDU.oswego.cs.dl.util.concurrent.ReadWriteLock;
-import EDU.oswego.cs.dl.util.concurrent.ReentrantWriterPreferenceReadWriteLock;
-
 public class TorqueMailboxManager implements MailboxManager {
 
     public static final String USER_NAMESPACE_PREFIX = "#mail";
@@ -66,7 +64,7 @@ public class TorqueMailboxManager implements MailboxManager {
 
     protected Log log = LogFactory.getLog(TorqueMailboxManager.class);
 
-    private final ReadWriteLock lock;
+    private final ReentrantReadWriteLock lock;
 
     private final Map<String, TorqueMailbox> mailboxes;
 
@@ -79,7 +77,7 @@ public class TorqueMailboxManager implements MailboxManager {
     }
     
     public TorqueMailboxManager(final UserManager userManager, final char delimiter) {
-        this.lock = new ReentrantWriterPreferenceReadWriteLock();
+        this.lock = new ReentrantReadWriteLock();
         mailboxes = new HashMap<String, TorqueMailbox>();
         this.userManager = userManager;
         this.delimiter = delimiter;

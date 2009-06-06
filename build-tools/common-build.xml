@@ -179,7 +179,6 @@ JAMES requires Ant 1.7 or higher. Please install a more modern version of Ant.
                     <include name="${javax-activation.jar}"/>
                     <include name="${commons-logging.jar}"/>
                     <include name="${commons-lang.jar}"/>
-                    <include name="${concurrent.jar}"/>  
                     <include name="${mime4j.jar}"/>     
                     <include name="${log4j.jar}"/>       
                 </fileset> 

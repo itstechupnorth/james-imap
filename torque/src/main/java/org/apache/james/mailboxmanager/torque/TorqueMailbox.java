@@ -36,12 +36,14 @@ import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import javax.mail.Flags;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 
 import org.apache.james.imap.api.display.HumanReadableText;
+import org.apache.james.imap.mailbox.LockException;
 import org.apache.james.imap.mailbox.Mailbox;
 import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.MailboxListener;
@@ -69,11 +71,11 @@ import org.apache.torque.TooManyRowsException;
 import org.apache.torque.TorqueException;
 import org.apache.torque.util.Criteria;
 
-import EDU.oswego.cs.dl.util.concurrent.ReadWriteLock;
-
 import com.workingdogs.village.DataSetException;
 
 public class TorqueMailbox implements Mailbox {
+
+    private static final int LOCK_TIMEOUT = 10;
 
     private boolean open = true;
 
@@ -81,11 +83,11 @@ public class TorqueMailbox implements Mailbox {
 
     private final UidChangeTracker tracker;
 
-    private final ReadWriteLock lock;
+    private final ReentrantReadWriteLock lock;
 
     private final MessageSearches searches;
 
-    TorqueMailbox(final MailboxRow mailboxRow, final ReadWriteLock lock) {
+    TorqueMailbox(final MailboxRow mailboxRow, final ReentrantReadWriteLock lock) {
         this.searches = new MessageSearches();
         this.mailboxRow = mailboxRow;
         this.tracker = new UidChangeTracker(mailboxRow.getLastUid());
@@ -98,27 +100,33 @@ public class TorqueMailbox implements Mailbox {
     }
 
     public int getMessageCount(MailboxSession mailboxSession)
-            throws MailboxException {
+    throws MailboxException {
+        lockForReading();
         try {
-            lock.readLock().acquire();
+            checkAccess();
             try {
-                checkAccess();
-                try {
-                    return getMailboxRow().countMessages();
-                } catch (Exception e) {
-                    throw new MailboxException(HumanReadableText.COUNT_FAILED, e);
-                }
-            } finally {
-                lock.readLock().release();
+                return getMailboxRow().countMessages();
+            } catch (Exception e) {
+                throw new MailboxException(HumanReadableText.COUNT_FAILED, e);
             }
-        } catch (InterruptedException e) {
-            throw new MailboxException(HumanReadableText.LOCK_FAILED, e);
+        } finally {
+            unlockAfterReading();
         }
+    }
+
+    private void lockForWriting() throws LockException {
+        if (!lock.isWriteLockedByCurrentThread()) {
+            LockException.tryLock(this.lock.writeLock(), LOCK_TIMEOUT);
+        }
+    }
+
+    private void lockForReading() throws LockException {
+        LockException.tryLock(lock.readLock(), LOCK_TIMEOUT);
     }
 
     public long appendMessage(byte[] message, Date internalDate,
             MailboxSession mailboxSession, boolean isRecent, Flags flags)
-            throws MailboxException {
+    throws MailboxException {
 
         try {
             checkAccess();
@@ -178,20 +186,20 @@ public class TorqueMailbox implements Mailbox {
     }
 
     private void populateFlags(MimeMessage message, MessageRow messageRow)
-            throws MessagingException, TorqueException {
+    throws MessagingException, TorqueException {
         final Flags flags = message.getFlags();
         buildFlags(messageRow, flags);
     }
 
     private void buildFlags(MessageRow messageRow, final Flags flags)
-            throws TorqueException {
+    throws TorqueException {
         MessageFlags messageFlags = new MessageFlags();
         messageFlags.setFlags(flags);
         messageRow.addMessageFlags(messageFlags);
     }
 
     private MessageBody populateBody(MimeMessage message) throws IOException,
-            MessagingException {
+    MessagingException {
         MessageBody mb = new MessageBody();
 
         InputStream is = message.getInputStream();
@@ -202,11 +210,11 @@ public class TorqueMailbox implements Mailbox {
     }
 
     private void addHeaders(MimeMessage message, MessageRow messageRow)
-            throws MessagingException, TorqueException {
+    throws MessagingException, TorqueException {
         int line_number = 0;
 
         for (Enumeration lines = message.getAllHeaderLines(); lines
-                .hasMoreElements();) {
+        .hasMoreElements();) {
             String line = (String) lines.nextElement();
             int colon = line.indexOf(": ");
             if (colon > 0) {
@@ -222,7 +230,7 @@ public class TorqueMailbox implements Mailbox {
     }
 
     private int size(MimeMessage message) throws IOException,
-            MessagingException {
+    MessagingException {
         // TODO very ugly size mesurement
         ByteArrayOutputStream sizeBos = new ByteArrayOutputStream();
         message.writeTo(new CRLFOutputStream(sizeBos));
@@ -230,34 +238,39 @@ public class TorqueMailbox implements Mailbox {
         return size;
     }
 
-    private void save(MessageRow messageRow) throws TorqueException,
-            InterruptedException {
+    private void save(MessageRow messageRow) throws TorqueException, LockException {
         try {
-            lock.writeLock().acquire();
+            lockForWriting();
             messageRow.save();
         } finally {
-            lock.writeLock().release();
+            unlockAfterWriting();
         }
     }
 
     private MailboxRow reserveNextUid() throws InterruptedException,
-            MailboxException {
+    MailboxException {
         final MailboxRow myMailboxRow;
         try {
-            lock.writeLock().acquire();
+            lockForWriting();
             myMailboxRow = getMailboxRow().consumeNextUid();
         } catch (TorqueException e) {
             throw new MailboxException(HumanReadableText.COMSUME_UID_FAILED, e);
         } catch (SQLException e) {
             throw new MailboxException(HumanReadableText.COMSUME_UID_FAILED, e);
         } finally {
-            lock.writeLock().release();
+            unlockAfterWriting();
         }
         return myMailboxRow;
     }
 
+    private void unlockAfterWriting() {
+        if (lock.isWriteLockedByCurrentThread()) {
+            lock.writeLock().unlock();
+        }
+    }
+
     private Criteria criteriaForMessageSet(MessageRange set)
-            throws MailboxException {
+    throws MailboxException {
         Criteria criteria = new Criteria();
         criteria.addAscendingOrderByColumn(MessageRowPeer.UID);
         switch (set.getType()) {
@@ -286,26 +299,22 @@ public class TorqueMailbox implements Mailbox {
 
     public Iterator getMessages(final MessageRange set, FetchGroup fetchGroup,
             MailboxSession mailboxSession) throws MailboxException {
+        lockForReading();
         try {
-            lock.readLock().acquire();
+            checkAccess();
+            UidRange range = uidRangeForMessageSet(set);
             try {
-                checkAccess();
-                UidRange range = uidRangeForMessageSet(set);
-                try {
-                    Criteria c = criteriaForMessageSet(set);
-                    c.add(MessageFlagsPeer.MAILBOX_ID, getMailboxRow()
-                            .getMailboxId());
-                    return getMessages(fetchGroup, range, c);
-                } catch (TorqueException e) {
-                    throw new MailboxException(HumanReadableText.SEARCH_FAILED, e);
-                } catch (MessagingException e) {
-                    throw new MailboxException(HumanReadableText.FAILURE_MAIL_PARSE, e);
-                }
-            } finally {
-                lock.readLock().release();
+                Criteria c = criteriaForMessageSet(set);
+                c.add(MessageFlagsPeer.MAILBOX_ID, getMailboxRow()
+                        .getMailboxId());
+                return getMessages(fetchGroup, range, c);
+            } catch (TorqueException e) {
+                throw new MailboxException(HumanReadableText.SEARCH_FAILED, e);
+            } catch (MessagingException e) {
+                throw new MailboxException(HumanReadableText.FAILURE_MAIL_PARSE, e);
             }
-        } catch (InterruptedException e) {
-            throw new MailboxException(HumanReadableText.LOCK_FAILED, e);
+        } finally {
+            unlockAfterReading();
         }
     }
 
@@ -324,7 +333,7 @@ public class TorqueMailbox implements Mailbox {
     }
 
     private TorqueResultIterator getResults(FetchGroup result, List rows)
-            throws TorqueException {
+    throws TorqueException {
         Collections.sort(rows, MessageRowUtils.getUidComparator());
         final TorqueResultIterator results = new TorqueResultIterator(rows,
                 result);
@@ -332,7 +341,7 @@ public class TorqueMailbox implements Mailbox {
     }
 
     private static UidRange uidRangeForMessageSet(MessageRange set)
-            throws MailboxException {
+    throws MailboxException {
         if (set.getType().equals(MessageRange.Type.ALL)) {
             return new UidRange(1, -1);
         } else {
@@ -357,34 +366,29 @@ public class TorqueMailbox implements Mailbox {
     }
 
     public long[] recent(boolean reset, MailboxSession mailboxSession)
-            throws MailboxException {
+    throws MailboxException {
+        lockForReading();
         try {
-            lock.readLock().acquire();
-            try {
-                checkAccess();
-                final Criteria criterion = queryRecentFlagSet();
-                final List messageRows = getMailboxRow().getMessageRows(
-                        criterion);
-                final long[] results = new long[messageRows.size()];
-                int count = 0;
-                for (Iterator it = messageRows.iterator(); it.hasNext();) {
-                    final MessageRow row = (MessageRow) it.next();
-                    results[count++] = row.getUid();
-                }
-
-                if (reset) {
-                    getMailboxRow().resetRecent();
-                }
-                return results;
-            } catch (TorqueException e) {
-                throw new MailboxException(HumanReadableText.SEARCH_FAILED, e);
-            } finally {
-                lock.readLock().release();
+            checkAccess();
+            final Criteria criterion = queryRecentFlagSet();
+            final List messageRows = getMailboxRow().getMessageRows(
+                    criterion);
+            final long[] results = new long[messageRows.size()];
+            int count = 0;
+            for (Iterator it = messageRows.iterator(); it.hasNext();) {
+                final MessageRow row = (MessageRow) it.next();
+                results[count++] = row.getUid();
             }
-        } catch (InterruptedException e) {
-            throw new MailboxException(HumanReadableText.LOCK_FAILED, e);
-        }
 
+            if (reset) {
+                getMailboxRow().resetRecent();
+            }
+            return results;
+        } catch (TorqueException e) {
+            throw new MailboxException(HumanReadableText.SEARCH_FAILED, e);
+        } finally {
+            unlockAfterReading();
+        }
     }
 
     private Criteria queryRecentFlagSet() {
@@ -399,89 +403,76 @@ public class TorqueMailbox implements Mailbox {
     }
 
     public Long getFirstUnseen(MailboxSession mailboxSession) throws MailboxException {
+        lockForReading();
         try {
-            lock.readLock().acquire();
+            checkAccess();
+            Criteria c = new Criteria();
+            c.addAscendingOrderByColumn(MessageRowPeer.UID);
+            c.setLimit(1);
+            c.setSingleRecord(true);
+
+            c.addJoin(MessageFlagsPeer.MAILBOX_ID,
+                    MessageRowPeer.MAILBOX_ID);
+            c.addJoin(MessageRowPeer.UID, MessageFlagsPeer.UID);
+
+            MessageFlagsPeer.addFlagsToCriteria(new Flags(Flags.Flag.SEEN),
+                    false, c);
+
             try {
-                checkAccess();
-                Criteria c = new Criteria();
-                c.addAscendingOrderByColumn(MessageRowPeer.UID);
-                c.setLimit(1);
-                c.setSingleRecord(true);
-
-                c.addJoin(MessageFlagsPeer.MAILBOX_ID,
-                        MessageRowPeer.MAILBOX_ID);
-                c.addJoin(MessageRowPeer.UID, MessageFlagsPeer.UID);
-
-                MessageFlagsPeer.addFlagsToCriteria(new Flags(Flags.Flag.SEEN),
-                        false, c);
-
-                try {
-                    List messageRows = getMailboxRow().getMessageRows(c);
-                    if (messageRows.size() > 0) {
-                        MessageResult messageResult = fillMessageResult(
-                                (MessageRow) messageRows.get(0), FetchGroupImpl.MINIMAL);
-                        if (messageResult != null) {
-                            getUidChangeTracker().found(messageResult.getUid(), messageResult.getFlags());
-                        }
-
-                        return messageResult.getUid();
-                    } else {
-                        return null;
+                List messageRows = getMailboxRow().getMessageRows(c);
+                if (messageRows.size() > 0) {
+                    MessageResult messageResult = fillMessageResult(
+                            (MessageRow) messageRows.get(0), FetchGroupImpl.MINIMAL);
+                    if (messageResult != null) {
+                        getUidChangeTracker().found(messageResult.getUid(), messageResult.getFlags());
                     }
-                } catch (TorqueException e) {
-                    throw new MailboxException(HumanReadableText.SEARCH_FAILED, e);
-                } catch (MessagingException e) {
-                    throw new MailboxException(HumanReadableText.FAILURE_MAIL_PARSE, e);
-                } catch (MimeException e) {
-                    throw new MailboxException(HumanReadableText.FAILURE_MAIL_PARSE, e);
+
+                    return messageResult.getUid();
+                } else {
+                    return null;
                 }
-            } finally {
-                lock.readLock().release();
+            } catch (TorqueException e) {
+                throw new MailboxException(HumanReadableText.SEARCH_FAILED, e);
+            } catch (MessagingException e) {
+                throw new MailboxException(HumanReadableText.FAILURE_MAIL_PARSE, e);
+            } catch (MimeException e) {
+                throw new MailboxException(HumanReadableText.FAILURE_MAIL_PARSE, e);
             }
-        } catch (InterruptedException e) {
-            throw new MailboxException(HumanReadableText.LOCK_FAILED, e);
+        } finally {
+            unlockAfterReading();
         }
     }
 
     public int getUnseenCount(MailboxSession mailboxSession)
-            throws MailboxException {
+    throws MailboxException {
+        lockForReading();
         try {
-            lock.readLock().acquire();
+            checkAccess();
             try {
-                checkAccess();
-                try {
-                    final int count = getMailboxRow().countMessages(
-                            new Flags(Flags.Flag.SEEN), false);
-                    return count;
-                } catch (TorqueException e) {
-                    throw new MailboxException(HumanReadableText.COUNT_FAILED, e);
-                } catch (DataSetException e) {
-                    throw new MailboxException(HumanReadableText.COUNT_FAILED, e);
-                }
-            } finally {
-                lock.readLock().release();
+                final int count = getMailboxRow().countMessages(
+                        new Flags(Flags.Flag.SEEN), false);
+                return count;
+            } catch (TorqueException e) {
+                throw new MailboxException(HumanReadableText.COUNT_FAILED, e);
+            } catch (DataSetException e) {
+                throw new MailboxException(HumanReadableText.COUNT_FAILED, e);
             }
-        } catch (InterruptedException e) {
-            throw new MailboxException(HumanReadableText.LOCK_FAILED, e);
+        } finally {
+            unlockAfterReading();
         }
     }
 
     public Iterator<Long> expunge(MessageRange set, MailboxSession mailboxSession) throws MailboxException {
+        lockForWriting();
         try {
-            lock.writeLock().acquire();
-            try {
-                return doExpunge(set);
-            } finally {
-                lock.writeLock().release();
-            }
-
-        } catch (InterruptedException e) {
-            throw new MailboxException(HumanReadableText.LOCK_FAILED, e);
+            return doExpunge(set);
+        } finally {
+            unlockAfterWriting();
         }
     }
 
     private Iterator<Long> doExpunge(final MessageRange set)
-            throws MailboxException {
+    throws MailboxException {
         checkAccess();
         try {
             // TODO put this into a serializable transaction
@@ -499,8 +490,8 @@ public class TorqueMailbox implements Mailbox {
                 uids.add(messageRow.getUid());
                 Criteria todelc = new Criteria();
                 todelc
-                        .add(MessageRowPeer.MAILBOX_ID, messageRow
-                                .getMailboxId());
+                .add(MessageRowPeer.MAILBOX_ID, messageRow
+                        .getMailboxId());
                 todelc.add(MessageRowPeer.UID, messageRow.getUid());
                 MessageRowPeer.doDelete(todelc);
             }
@@ -513,16 +504,11 @@ public class TorqueMailbox implements Mailbox {
 
     public Map<Long, Flags> setFlags(Flags flags, boolean value, boolean replace,
             MessageRange set, MailboxSession mailboxSession) throws MailboxException {
+        lockForWriting();
         try {
-            lock.writeLock().acquire();
-            try {
-                return doSetFlags(flags, value, replace, set, mailboxSession);
-            } finally {
-                lock.writeLock().release();
-            }
-
-        } catch (InterruptedException e) {
-            throw new MailboxException(HumanReadableText.LOCK_FAILED, e);
+            return doSetFlags(flags, value, replace, set, mailboxSession);
+        } finally {
+            unlockAfterWriting();
         }
     }
 
@@ -562,58 +548,47 @@ public class TorqueMailbox implements Mailbox {
     }
 
     public void addListener(MailboxListener listener)
-            throws MailboxException {
+    throws MailboxException {
         checkAccess();
         tracker.addMailboxListener(listener);
     }
 
     public long getUidValidity(MailboxSession mailboxSession)
-            throws MailboxException {
+    throws MailboxException {
+        lockForReading();
         try {
-            lock.readLock().acquire();
-            try {
-                checkAccess();
-                final long result = getMailboxRow().getUidValidity();
-                return result;
-            } finally {
-                lock.readLock().release();
-            }
-
-        } catch (InterruptedException e) {
-            throw new MailboxException(HumanReadableText.LOCK_FAILED, e);
+            checkAccess();
+            final long result = getMailboxRow().getUidValidity();
+            return result;
+        } finally {
+            unlockAfterReading();
         }
-
     }
 
     public long getUidNext(MailboxSession mailboxSession)
-            throws MailboxException {
+    throws MailboxException {
+        lockForReading();
         try {
-            lock.readLock().acquire();
+            checkAccess();
             try {
-                checkAccess();
-                try {
-                    MailboxRow myMailboxRow = MailboxRowPeer
-                            .retrieveByPK(mailboxRow.getPrimaryKey());
-                    if (myMailboxRow != null) {
-                        mailboxRow = myMailboxRow;
-                        final long lastUid = mailboxRow.getLastUid();
-                        return lastUid + 1;
-                    } else {
-                        throw new MailboxException(HumanReadableText.MAILBOX_DELETED);
-                    }
-                } catch (NoRowsException e) {
-                    throw new MailboxException(HumanReadableText.COMSUME_UID_FAILED, e);
-                } catch (TooManyRowsException e) {
-                    throw new MailboxException(HumanReadableText.COMSUME_UID_FAILED, e);
-                } catch (TorqueException e) {
-                    throw new MailboxException(HumanReadableText.COMSUME_UID_FAILED, e);
+                MailboxRow myMailboxRow = MailboxRowPeer
+                .retrieveByPK(mailboxRow.getPrimaryKey());
+                if (myMailboxRow != null) {
+                    mailboxRow = myMailboxRow;
+                    final long lastUid = mailboxRow.getLastUid();
+                    return lastUid + 1;
+                } else {
+                    throw new MailboxException(HumanReadableText.MAILBOX_DELETED);
                 }
-            } finally {
-                lock.readLock().release();
+            } catch (NoRowsException e) {
+                throw new MailboxException(HumanReadableText.COMSUME_UID_FAILED, e);
+            } catch (TooManyRowsException e) {
+                throw new MailboxException(HumanReadableText.COMSUME_UID_FAILED, e);
+            } catch (TorqueException e) {
+                throw new MailboxException(HumanReadableText.COMSUME_UID_FAILED, e);
             }
-
-        } catch (InterruptedException e) {
-            throw new MailboxException(HumanReadableText.LOCK_FAILED, e);
+        } finally {
+            unlockAfterReading();
         }
     }
 
@@ -636,41 +611,37 @@ public class TorqueMailbox implements Mailbox {
     }
 
     public Iterator<Long> search(SearchQuery query, MailboxSession mailboxSession) throws MailboxException {
+        lockForReading();
         try {
-            lock.readLock().acquire();
-            try {
-                checkAccess();
+            checkAccess();
 
-                final Criteria criterion = preSelect(query);
-                final List rows = MessageRowPeer
-                        .doSelectJoinMessageFlags(criterion);
-                final Set<Long> uids = new TreeSet<Long>();
-                for (Iterator it = rows.iterator(); it.hasNext();) {
-                    final MessageRow row = (MessageRow) it.next();
-                    try {
-                        if (searches.isMatch(query, row)) {
-                            uids.add(row.getUid());
-                        }
-                    } catch (TorqueException e) {
-                        mailboxSession.getLog()
-                                .info(
-                                        "Cannot test message against search criteria. Will continue to test other messages.",
-                                        e);
-                        if (mailboxSession.getLog().isDebugEnabled())
-                            mailboxSession.getLog().debug("UID: " + row.getUid());
+            final Criteria criterion = preSelect(query);
+            final List rows = MessageRowPeer
+            .doSelectJoinMessageFlags(criterion);
+            final Set<Long> uids = new TreeSet<Long>();
+            for (Iterator it = rows.iterator(); it.hasNext();) {
+                final MessageRow row = (MessageRow) it.next();
+                try {
+                    if (searches.isMatch(query, row)) {
+                        uids.add(row.getUid());
                     }
+                } catch (TorqueException e) {
+                    mailboxSession.getLog()
+                    .info(
+                            "Cannot test message against search criteria. Will continue to test other messages.",
+                            e);
+                    if (mailboxSession.getLog().isDebugEnabled())
+                        mailboxSession.getLog().debug("UID: " + row.getUid());
                 }
-
-                return uids.iterator();
-            } catch (TorqueException e) {
-                throw new MailboxException(HumanReadableText.SEARCH_FAILED, e);
-            } catch (MimeException e) {
-                throw new MailboxException(HumanReadableText.FAILURE_MAIL_PARSE, e);
-            } finally {
-                lock.readLock().release();
             }
-        } catch (InterruptedException e) {
-            throw new MailboxException(HumanReadableText.LOCK_FAILED, e);
+
+            return uids.iterator();
+        } catch (TorqueException e) {
+            throw new MailboxException(HumanReadableText.SEARCH_FAILED, e);
+        } catch (MimeException e) {
+            throw new MailboxException(HumanReadableText.FAILURE_MAIL_PARSE, e);
+        } finally {
+            unlockAfterReading();
         }
     }
 
@@ -700,12 +671,12 @@ public class TorqueMailbox implements Mailbox {
                 results.add(MessageRowPeer.UID, low);
             } else {
                 final Criteria.Criterion fromCriterion = results
-                        .getNewCriterion(MessageRowPeer.UID, new Long(low),
-                                Criteria.GREATER_EQUAL);
+                .getNewCriterion(MessageRowPeer.UID, new Long(low),
+                        Criteria.GREATER_EQUAL);
                 if (high > 0 && high < Long.MAX_VALUE) {
                     final Criteria.Criterion toCriterion = results
-                            .getNewCriterion(MessageRowPeer.UID,
-                                    new Long(high), Criteria.LESS_EQUAL);
+                    .getNewCriterion(MessageRowPeer.UID,
+                            new Long(high), Criteria.LESS_EQUAL);
                     fromCriterion.and(toCriterion);
                 }
                 results.add(fromCriterion);
@@ -719,31 +690,38 @@ public class TorqueMailbox implements Mailbox {
 
     public void copyTo(MessageRange set, TorqueMailbox toMailbox,
             MailboxSession session) throws MailboxException {
+        final List rows;
+        lockForReading();
         try {
-            lock.readLock().acquire();
+            checkAccess();
             try {
-                checkAccess();
-                try {
-                    Criteria c = criteriaForMessageSet(set);
-                    c.add(MessageFlagsPeer.MAILBOX_ID, getMailboxRow()
-                            .getMailboxId());
-                    List rows = MessageRowPeer.doSelectJoinMessageFlags(c);
-                    toMailbox.copy(rows, session);
-                } catch (TorqueException e) {
-                    throw new MailboxException(HumanReadableText.SAVE_FAILED, e);
-                } catch (MessagingException e) {
-                    throw new MailboxException(HumanReadableText.FAILURE_MAIL_PARSE, e);
-                }
-            } finally {
-                lock.readLock().release();
+                final Criteria c = criteriaForMessageSet(set);
+                c.add(MessageFlagsPeer.MAILBOX_ID, getMailboxRow()
+                        .getMailboxId());
+                rows = MessageRowPeer.doSelectJoinMessageFlags(c);
+                
+            } catch (TorqueException e) {
+                throw new MailboxException(HumanReadableText.SAVE_FAILED, e);
+            } catch (MessagingException e) {
+                throw new MailboxException(HumanReadableText.FAILURE_MAIL_PARSE, e);
             }
-        } catch (InterruptedException e) {
-            throw new MailboxException(HumanReadableText.LOCK_FAILED, e);
+        } finally {
+            unlockAfterReading();
+        }
+        // Release read lock before copying
+        toMailbox.copy(rows, session);
+    }
+
+    private void unlockAfterReading() {
+        try {
+            lock.readLock().unlock();
+        } catch (RuntimeException e) {
+            // Swallow
         }
     }
 
     private void copy(List rows, MailboxSession session)
-            throws MailboxException {
+    throws MailboxException {
         try {
             for (Iterator iter = rows.iterator(); iter.hasNext();) {
                 MessageRow fromRow = (MessageRow) iter.next();
@@ -771,9 +749,9 @@ public class TorqueMailbox implements Mailbox {
 
                     final List headers = fromRow.getMessageHeaders();
                     for (Iterator iterator = headers.iterator(); iterator
-                            .hasNext();) {
+                    .hasNext();) {
                         final MessageHeader fromHeader = (MessageHeader) iterator
-                                .next();
+                        .next();
                         final MessageHeader newHeader = new MessageHeader(
                                 fromHeader.getField(), fromHeader.getValue(),
                                 fromHeader.getLineNumber());
@@ -831,10 +809,10 @@ public class TorqueMailbox implements Mailbox {
                 break;
             default:
                 firstUnseen = null;
-                unseenCount = 0;
-                break;
+            unseenCount = 0;
+            break;
         }
-            
+
         return new MailboxMetaData(recent, permanentFlags, uidValidity, uidNext, messageCount, unseenCount, firstUnseen, isWriteable());
     }
 }

@@ -16,19 +16,40 @@
  * specific language governing permissions and limitations      *
  * under the License.                                           *
  ****************************************************************/
+
 package org.apache.james.imap.mailbox;
+
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.Lock;
 
 import org.apache.james.imap.api.display.HumanReadableText;
 
 /**
- * Indicates a general problem in the underlying storage layer.
- * Used to wrap undiagnosed storage exceptions.
+ * Indicates that required locks cannot be acquired at this time.
  */
-public class StorageException extends MailboxException {
+public class LockException extends MailboxException {
 
-    private static final long serialVersionUID = 2708951014093934093L;
+    private static final long serialVersionUID = 698379731076300030L;
 
-    public StorageException(HumanReadableText key, Exception cause) {
+    public LockException(HumanReadableText key, String message) {
+        super(key, message);
+    }
+
+    public LockException(HumanReadableText key) {
+        super(key);}
+
+    public LockException(HumanReadableText key, Exception cause) {
         super(key, cause);
     }
+
+    public static void tryLock(final Lock lock, final int timeoutInSeconds) throws LockException {
+        try {
+            if (!lock.tryLock(timeoutInSeconds, TimeUnit.SECONDS)) {
+                throw new LockException(HumanReadableText.LOCK_FAILED);
+            }
+        } catch (InterruptedException e) {
+            throw new LockException(HumanReadableText.LOCK_FAILED, e);
+        }
+    }
+
 }

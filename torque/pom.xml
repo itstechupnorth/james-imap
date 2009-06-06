@@ -64,10 +64,7 @@
       <groupId>org.apache.torque</groupId>
       <artifactId>village</artifactId>
     </dependency>
-    <dependency>
-      <groupId>concurrent</groupId>
-      <artifactId>concurrent</artifactId>
-    </dependency>
+
     <dependency>
       <groupId>commons-collections</groupId>
       <artifactId>commons-collections</artifactId>
