@@ -48,6 +48,13 @@
     <module>deployment</module>
   </modules>
 
+  <distributionManagement>
+    <site>
+      <id>imap-website</id>
+      <url>scp://people.apache.org/www/james.apache.org/imap</url>
+    </site>
+  </distributionManagement>
+
   <profiles>
     <profile>
       <id>geronimo</id>

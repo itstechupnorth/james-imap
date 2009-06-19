@@ -38,6 +38,7 @@
     <developerConnection>scm:svn:https://${maven.username}@svn.apache.org/repos/asf/james/server/trunk</developerConnection>
     <url>http://svn.apache.org/viewcvs.cgi/james/server/trunk?root=Apache-SVN</url>
   </scm>
+  
   <build>
     <plugins>
       <plugin>
@@ -206,12 +207,14 @@
       </plugin>
     </plugins>
   </reporting>
+  
   <distributionManagement>
     <site>
-      <id>server-trunk-website</id>
-      <url>scp://people.apache.org/www/james.apache.org/server/trunk/</url>
+      <id>imap-website</id>
+      <url>scp://people.apache.org/www/james.apache.org/imap</url>
     </site>
   </distributionManagement>
+  
   <dependencyManagement>
     <dependencies>
       <!--
