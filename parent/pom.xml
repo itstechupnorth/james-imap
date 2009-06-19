@@ -34,9 +34,9 @@
   <packaging>pom</packaging>
 
   <scm>
-    <connection>scm:svn:http://svn.apache.org/repos/asf/james/server/trunk</connection>
-    <developerConnection>scm:svn:https://${maven.username}@svn.apache.org/repos/asf/james/server/trunk</developerConnection>
-    <url>http://svn.apache.org/viewcvs.cgi/james/server/trunk?root=Apache-SVN</url>
+    <connection>scm:svn:http://svn.apache.org/repos/asf/james/imap/trunk</connection>
+    <developerConnection>scm:svn:https://${maven.username}@svn.apache.org/repos/asf/james/imap/trunk</developerConnection>
+    <url>http://svn.apache.org/viewcvs.cgi/james/imap/trunk?root=Apache-SVN</url>
   </scm>
   
   <build>
