@@ -21,7 +21,7 @@
   <parent>
     <artifactId>james-project</artifactId>
     <groupId>org.apache.james</groupId>
-    <version>1.4-SNAPSHOT</version>
+    <version>1.4RC3-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.apache.james</groupId>
@@ -363,6 +363,22 @@
         <groupId>commons-lang</groupId>
         <artifactId>commons-lang</artifactId>
         <version>${version.commons-lang}</version>
+      </dependency>
+      <dependency>
+        <groupId>commons-pool</groupId>
+        <artifactId>commons-pool</artifactId>
+        <version>1.2</version>
+      </dependency>
+      <dependency>
+        <groupId>commons-dbcp</groupId>
+        <artifactId>commons-dbcp</artifactId>
+        <version>1.2.1</version> 
+      </dependency>
+      
+      <dependency>
+        <groupId>commons-beanutils</groupId>
+        <artifactId>commons-beanutils</artifactId>
+        <version>1.7.0</version>     
       </dependency>
       <!-- 
         END Commons

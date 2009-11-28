@@ -29,6 +29,7 @@
   <artifactId>apache-james-imap-repository</artifactId>
   <name>Local maven repository for Apache James Imap</name>
   <description>Local maven repository for Apache James Imap</description>
+  <version>0.1-SNAPSHOT</version>  
   <packaging>pom</packaging>
     <repositories>
         <repository>
@@ -84,8 +85,12 @@
       <artifactId>commons-configuration</artifactId>
     </dependency>
     <dependency>
-      <groupId>village</groupId>
+        <groupId>org.apache.torque</groupId>
       <artifactId>village</artifactId>
+    </dependency>
+    <dependency>
+        <groupId>org.apache.torque</groupId>
+      <artifactId>torque-runtime</artifactId>
     </dependency>
     <dependency>
       <groupId>commons-dbcp</groupId>
@@ -121,17 +126,15 @@
        <artifactId>derby</artifactId>
     </dependency>
 
+ <!--  
     <dependency>
       <groupId>concurrent</groupId>
       <artifactId>concurrent</artifactId>
     </dependency>
+    -->
     <dependency>
       <groupId>commons-beanutils</groupId>
       <artifactId>commons-beanutils</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.db.torque</groupId>
-      <artifactId>runtime</artifactId>
     </dependency>
     <dependency>
       <groupId>org.apache.james</groupId>
