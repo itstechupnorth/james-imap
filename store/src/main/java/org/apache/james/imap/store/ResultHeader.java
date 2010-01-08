@@ -33,7 +33,7 @@ import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.MessageResult;
 import org.apache.james.imap.store.mail.model.Header;
 
-final class ResultHeader implements MessageResult.Header, Content {
+public final class ResultHeader implements MessageResult.Header, Content {
     private final String name;
 
     private final String value;

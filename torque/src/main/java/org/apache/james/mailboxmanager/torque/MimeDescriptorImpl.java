@@ -30,6 +30,8 @@ import java.util.TreeMap;
 
 import org.apache.james.imap.mailbox.MessageResult;
 import org.apache.james.imap.mailbox.MimeDescriptor;
+import org.apache.james.imap.mailbox.MessageResult.Header;
+import org.apache.james.imap.store.ResultHeader;
 import org.apache.james.mime4j.MimeException;
 import org.apache.james.mime4j.descriptor.MaximalBodyDescriptor;
 import org.apache.james.mime4j.parser.MimeTokenStream;
@@ -54,7 +56,7 @@ public class MimeDescriptorImpl implements MimeDescriptor {
                 && next != MimeTokenStream.T_END_OF_STREAM
                 && next != MimeTokenStream.T_START_MULTIPART) {
             if (next == MimeTokenStream.T_FIELD) {
-                headers.add(new Header(parser.getField().getName(), parser
+                headers.add(new ResultHeader(parser.getField().getName(), parser
                         .getField().getBody().trim()));
             }
             next = parser.next();

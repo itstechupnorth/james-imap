@@ -36,7 +36,7 @@ import org.apache.james.mime4j.parser.MimeTokenStream;
  * Searches an email for content. This class should be safe for use by
  * concurrent threads.
  */
-class MessageSearcher {
+public class MessageSearcher {
 
     private Log logger;
 

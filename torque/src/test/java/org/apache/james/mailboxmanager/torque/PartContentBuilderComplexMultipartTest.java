@@ -26,7 +26,10 @@ import java.util.List;
 
 import junit.framework.TestCase;
 
-import org.apache.james.mailboxmanager.torque.PartContentBuilder.PartNotFoundException;
+import org.apache.james.imap.mailbox.MessageResult.Header;
+import org.apache.james.imap.store.PartContentBuilder;
+import org.apache.james.imap.store.StringBuilderChannel;
+import org.apache.james.imap.store.PartContentBuilder.PartNotFoundException;
 
 public class PartContentBuilderComplexMultipartTest extends TestCase {
 

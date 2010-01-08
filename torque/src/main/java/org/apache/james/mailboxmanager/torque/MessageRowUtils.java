@@ -39,6 +39,10 @@ import org.apache.james.imap.mailbox.MimeDescriptor;
 import org.apache.james.imap.mailbox.MessageResult.FetchGroup;
 import org.apache.james.imap.mailbox.MessageResult.MimePath;
 import org.apache.james.imap.mailbox.util.MessageResultImpl;
+import org.apache.james.imap.store.ByteContent;
+import org.apache.james.imap.store.FullContent;
+import org.apache.james.imap.store.PartContentBuilder;
+import org.apache.james.imap.store.ResultHeader;
 import org.apache.james.mailboxmanager.torque.om.MessageBody;
 import org.apache.james.mailboxmanager.torque.om.MessageHeader;
 import org.apache.james.mailboxmanager.torque.om.MessageRow;
@@ -81,7 +85,7 @@ public class MessageRowUtils {
         final List results = new ArrayList(headers.size());
         for (Iterator it = headers.iterator(); it.hasNext();) {
             final MessageHeader messageHeader = (MessageHeader) it.next();
-            final Header header = new Header(messageHeader);
+            final ResultHeader header = new ResultHeader(messageHeader);
             results.add(header);
         }
         return results;
@@ -106,7 +110,7 @@ public class MessageRowUtils {
         final MessageBody body = (MessageBody) messageRow.getMessageBodys()
                 .get(0);
         final byte[] bytes = body.getBody();
-        final ByteContent result = new ByteContent(bytes);
+        final ByteContent result = new ByteContent(ByteBuffer.wrap(bytes));
         return result;
     }
 
@@ -118,7 +122,7 @@ public class MessageRowUtils {
         final MessageBody body = (MessageBody) messageRow.getMessageBodys()
                 .get(0);
         final byte[] bytes = body.getBody();
-        final FullContent results = new FullContent(bytes, headers);
+        final FullContent results = new FullContent(ByteBuffer.wrap(bytes), headers);
         return results;
     }
 

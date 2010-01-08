@@ -31,7 +31,7 @@ import java.util.List;
 import org.apache.james.imap.mailbox.Content;
 import org.apache.james.imap.mailbox.MessageResult;
 
-final class FullContent implements Content {
+public final class FullContent implements Content {
     private final ByteBuffer contents;
 
     private final List headers;

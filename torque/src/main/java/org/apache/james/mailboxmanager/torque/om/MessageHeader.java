@@ -19,6 +19,7 @@
 
 package org.apache.james.mailboxmanager.torque.om;
 
+import org.apache.james.imap.store.mail.model.Header;
 import org.apache.torque.om.Persistent;
 
 /**
@@ -32,7 +33,7 @@ import org.apache.torque.om.Persistent;
  */
 public class MessageHeader extends
         org.apache.james.mailboxmanager.torque.om.BaseMessageHeader implements
-        Persistent {
+        Persistent,Header {
     private static final long serialVersionUID = -9191792349506771474L;
 
     public MessageHeader() {
@@ -50,5 +51,22 @@ public class MessageHeader extends
         setField(field);
         setValue(value);
         setLineNumber(position);
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.store.mail.model.Header#getFieldName()
+     */
+	public String getFieldName() {
+		return getField();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see java.lang.Comparable#compareTo(java.lang.Object)
+	 */
+	public int compareTo(Header header) {
+        final int result = getLineNumber() - header.getLineNumber();
+        return result;
     }
 }

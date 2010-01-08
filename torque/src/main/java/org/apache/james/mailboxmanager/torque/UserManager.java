@@ -22,10 +22,9 @@ package org.apache.james.mailboxmanager.torque;
 import java.util.Collection;
 
 import org.apache.james.imap.mailbox.SubscriptionException;
+import org.apache.james.imap.store.Authenticator;
 
-public interface UserManager {
-
-    public boolean isAuthentic(String userid, String passwd);
+public interface UserManager extends Authenticator {
 
     public void subscribe(String user, String mailbox)
             throws SubscriptionException;

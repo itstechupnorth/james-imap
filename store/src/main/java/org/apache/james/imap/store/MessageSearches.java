@@ -49,7 +49,7 @@ import org.apache.james.mime4j.field.datetime.parser.ParseException;
 /**
  * Uility methods to help perform search operations.
  */
-class MessageSearches {
+public class MessageSearches {
 
     private Log log;
 

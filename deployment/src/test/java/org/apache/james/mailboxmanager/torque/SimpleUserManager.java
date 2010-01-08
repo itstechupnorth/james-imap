@@ -32,18 +32,7 @@ public class SimpleUserManager implements UserManager {
     public SimpleUserManager() {
         this.users = new HashMap<String, UserDetails>();
     }
-
-    public boolean isAuthentic(String userid, String passwd) {
-        UserDetails user = (UserDetails) users.get(userid);
-        final boolean result;
-        if (user == null) {
-            result = false;
-        } else {
-            result = (passwd.equals(user.getPassword()));
-        }
-        return result;
-    }
-
+    
     public void subscribe(String userid, String mailbox)
             throws SubscriptionException {
         UserDetails user = (UserDetails) users.get(userid);
@@ -81,5 +70,16 @@ public class SimpleUserManager implements UserManager {
         }
         user.setPassword(password);
     }
+
+	public boolean isAuthentic(String userid, CharSequence passwd) {
+		 UserDetails user = (UserDetails) users.get(userid);
+	        final boolean result;
+		if (user == null) {
+			result = false;
+		} else {
+			result = (passwd.toString().equals(user.getPassword()));
+		}
+		return result;
+	}
 
 }

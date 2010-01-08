@@ -28,7 +28,7 @@ import java.nio.channels.WritableByteChannel;
 
 import org.apache.james.imap.mailbox.Content;
 
-final class ByteContent implements Content {
+public final class ByteContent implements Content {
 
     private final ByteBuffer contents;
 
