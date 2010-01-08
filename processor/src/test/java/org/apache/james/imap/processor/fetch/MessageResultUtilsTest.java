@@ -39,7 +39,7 @@ public class MessageResultUtilsTest extends TestCase {
 
     Header headerThree;
 
-    List headers;
+    List<MessageResult.Header> headers;
 
     private static class Header implements MessageResult.Header {
 
@@ -78,7 +78,7 @@ public class MessageResultUtilsTest extends TestCase {
         headerOne = new Header("One");
         headerTwo = new Header("Two");
         headerThree = new Header("Three");
-        headers = new ArrayList();
+        headers = new ArrayList<MessageResult.Header>();
         headers.add(headerOne);
         headers.add(headerTwo);
         headers.add(headerThree);
@@ -89,7 +89,7 @@ public class MessageResultUtilsTest extends TestCase {
     }
 
     public void testGetAllContent() throws Exception {
-        List results = MessageResultUtils.getAll(headers.iterator());
+        List<MessageResult.Header> results = MessageResultUtils.getAll(headers.iterator());
         assertEquals(3, results.size());
         assertEquals(headerOne, results.get(0));
         assertEquals(headerTwo, results.get(1));
@@ -98,7 +98,7 @@ public class MessageResultUtilsTest extends TestCase {
 
     public void testGetMatching() throws Exception {
 
-        List results = MessageResultUtils
+        List<MessageResult.Header> results = MessageResultUtils
                 .getMatching(NAMES, headers.iterator());
         assertEquals(2, results.size());
         assertEquals(headerOne, results.get(0));

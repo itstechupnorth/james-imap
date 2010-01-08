@@ -28,6 +28,7 @@ import java.util.List;
 
 import org.apache.james.imap.mailbox.Content;
 import org.apache.james.imap.mailbox.MessageResult;
+import org.apache.james.imap.mailbox.MessageResult.Header;
 import org.apache.james.mime4j.MimeException;
 import org.apache.james.mime4j.parser.MimeTokenStream;
 
@@ -118,7 +119,7 @@ public class PartContentBuilder {
     }
 
     public Content getFullContent() throws IOException, UnexpectedEOFException, MimeException {
-        final List headers = getMimeHeaders();
+        final List<Header> headers = getMimeHeaders();
         final byte[] content = mimeBodyContent();
         return new FullContent(ByteBuffer.wrap(content), headers);
     }

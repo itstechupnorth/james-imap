@@ -116,10 +116,10 @@ public class FetchProcessor extends AbstractMailboxProcessor {
             result.or(FetchGroup.MIME_DESCRIPTOR);
         }
 
-        Collection bodyElements = fetch.getBodyElements();
+        Collection<BodyFetchElement> bodyElements = fetch.getBodyElements();
         if (bodyElements != null) {
-            for (final Iterator it = bodyElements.iterator(); it.hasNext();) {
-                final BodyFetchElement element = (BodyFetchElement) it.next();
+            for (final Iterator<BodyFetchElement> it = bodyElements.iterator(); it.hasNext();) {
+                final BodyFetchElement element = it.next();
                 final int sectionType = element.getSectionType();
                 final int[] path = element.getPath();
                 final boolean isBase = (path == null || path.length == 0);

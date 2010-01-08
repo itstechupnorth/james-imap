@@ -59,7 +59,7 @@ public class ResultIterator implements Iterator<MessageResult> {
      * 
      * @return <code>Iterator</code> for message rows
      */
-    public final Iterator iterateRows() {
+    public final Iterator<MailboxMembership> iterateRows() {
         return messages.iterator();
     }
 

@@ -35,29 +35,34 @@ import org.apache.james.imap.message.response.FetchResponse.BodyElement;
 final class HeaderBodyElement implements BodyElement {
     private final String name;
 
-    private final List headers;
+    private final List<MessageResult.Header> headers;
 
     private final long size;
 
-    public HeaderBodyElement(final String name, final List headers) {
+    public HeaderBodyElement(final String name, final List<MessageResult.Header> headers) {
         super();
         this.name = name;
         this.headers = headers;
         size = calculateSize(headers);
     }
 
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.message.response.FetchResponse.BodyElement#getName()
+     */
     public String getName() {
         return name;
     }
 
-    private long calculateSize(List headers) {
+    
+    private long calculateSize(List<MessageResult.Header> headers) {
         final int result;
         if (headers.isEmpty()) {
             result = 0;
         } else {
             int count = 0;
-            for (final Iterator it = headers.iterator(); it.hasNext();) {
-                MessageResult.Header header = (MessageResult.Header) it.next();
+            for (final Iterator<MessageResult.Header> it = headers.iterator(); it.hasNext();) {
+                MessageResult.Header header = it.next();
                 count += header.size() + 2;
             }
             result = count + 2;
@@ -65,15 +70,23 @@ final class HeaderBodyElement implements BodyElement {
         return result;
     }
 
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.message.response.FetchResponse.BodyElement#size()
+     */
     public long size() {
         return size;
     }
 
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.message.response.FetchResponse.BodyElement#writeTo(java.nio.channels.WritableByteChannel)
+     */
     public void writeTo(WritableByteChannel channel) throws IOException {
         ByteBuffer endLine = ByteBuffer.wrap(ImapConstants.BYTES_LINE_END);
         endLine.rewind();
-        for (final Iterator it = headers.iterator(); it.hasNext();) {
-            MessageResult.Header header = (MessageResult.Header) it.next();
+        for (final Iterator<MessageResult.Header> it = headers.iterator(); it.hasNext();) {
+            MessageResult.Header header = it.next();
             header.writeTo(channel);
             while (channel.write(endLine) > 0) {
             }

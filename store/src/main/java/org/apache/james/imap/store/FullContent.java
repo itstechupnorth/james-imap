@@ -34,11 +34,11 @@ import org.apache.james.imap.mailbox.MessageResult;
 public final class FullContent implements Content {
     private final ByteBuffer contents;
 
-    private final List headers;
+    private final List<MessageResult.Header> headers;
 
     private final long size;
 
-    public FullContent(final ByteBuffer contents, final List headers) {
+    public FullContent(final ByteBuffer contents, final List<MessageResult.Header> headers) {
         this.contents = contents;
         this.headers = headers;
         this.size = caculateSize();
@@ -47,9 +47,8 @@ public final class FullContent implements Content {
     private long caculateSize() {
         long result = contents.limit();
         result += 2;
-        for (final Iterator it = headers.iterator(); it.hasNext();) {
-            final MessageResult.Header header = (MessageResult.Header) it
-                    .next();
+        for (final Iterator<MessageResult.Header> it = headers.iterator(); it.hasNext();) {
+            final MessageResult.Header header = it.next();
             if (header != null) {
                 result += header.size();
                 result += 2;
@@ -64,9 +63,8 @@ public final class FullContent implements Content {
 
     public void writeTo(WritableByteChannel channel) throws IOException {
         ByteBuffer newLine = ByteBuffer.wrap(ResultUtils.BYTES_NEW_LINE);
-        for (final Iterator it = headers.iterator(); it.hasNext();) {
-            final MessageResult.Header header = (MessageResult.Header) it
-                    .next();
+        for (final Iterator<MessageResult.Header> it = headers.iterator(); it.hasNext();) {
+            final MessageResult.Header header = it.next();
             if (header != null) {
                 header.writeTo(channel);
             }

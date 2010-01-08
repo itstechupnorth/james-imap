@@ -47,15 +47,12 @@ public interface MessageMapper {
     public abstract long countUnseenMessagesInMailbox()
             throws StorageException;
 
-    @SuppressWarnings("unchecked")
     public abstract List<MailboxMembership> searchMailbox(SearchQuery query) throws StorageException;
 
     public abstract void delete(MailboxMembership message) throws StorageException;
 
-    @SuppressWarnings("unchecked")
     public abstract List<MailboxMembership> findUnseenMessagesInMailboxOrderByUid() throws StorageException;
 
-    @SuppressWarnings("unchecked")
     public abstract List<MailboxMembership> findRecentMessagesInMailbox() throws StorageException;
 
     public abstract void save(MailboxMembership message) throws StorageException;

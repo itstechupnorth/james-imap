@@ -44,7 +44,6 @@ public interface MailboxMapper {
     
     public abstract void delete(Mailbox mailbox) throws StorageException;
 
-    @SuppressWarnings("unchecked")
     public abstract List<Mailbox> findMailboxWithNameLike(String name)
             throws StorageException;
 

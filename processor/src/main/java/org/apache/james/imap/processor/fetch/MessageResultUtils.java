@@ -63,13 +63,12 @@ public class MessageResultUtils {
      *         their natural order
      * @throws MessagingException
      */
-    public static List getMatching(final String[] names, final Iterator iterator)
+    public static List<MessageResult.Header> getMatching(final String[] names, final Iterator<MessageResult.Header> iterator)
             throws MessagingException {
         final List<MessageResult.Header> results = new ArrayList<MessageResult.Header>(20);
         if (iterator != null) {
             while (iterator.hasNext()) {
-                MessageResult.Header header = (MessageResult.Header) iterator
-                        .next();
+                MessageResult.Header header = iterator.next();
                 final String headerName = header.getName();
                 if (headerName != null) {
                     final int length = names.length;

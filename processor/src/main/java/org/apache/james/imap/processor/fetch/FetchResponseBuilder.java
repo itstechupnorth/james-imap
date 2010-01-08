@@ -166,10 +166,10 @@ final class FetchResponseBuilder {
         }
 
         // BODY part responses.
-        Collection elements = fetch.getBodyElements();
+        Collection<BodyFetchElement> elements = fetch.getBodyElements();
         this.elements = new ArrayList<FetchResponse.BodyElement>();
-        for (Iterator iterator = elements.iterator(); iterator.hasNext();) {
-            BodyFetchElement fetchElement = (BodyFetchElement) iterator.next();
+        for (Iterator<BodyFetchElement> iterator = elements.iterator(); iterator.hasNext();) {
+            BodyFetchElement fetchElement = iterator.next();
             final FetchResponse.BodyElement element = bodyFetch(result,
                     fetchElement);
             if (element != null) {

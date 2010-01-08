@@ -50,7 +50,6 @@ public interface SubscriptionMapper {
      * @param user not null
      * @return not null
      */
-    @SuppressWarnings("unchecked")
     public abstract List<Subscription> findSubscriptionsForUser(String user) throws SubscriptionException;
 
     /**
