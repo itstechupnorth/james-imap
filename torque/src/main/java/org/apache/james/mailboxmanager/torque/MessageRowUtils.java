@@ -41,6 +41,7 @@ import org.apache.james.imap.mailbox.MessageResult.MimePath;
 import org.apache.james.imap.mailbox.util.MessageResultImpl;
 import org.apache.james.imap.store.ByteContent;
 import org.apache.james.imap.store.FullContent;
+import org.apache.james.imap.store.MimeDescriptorImpl;
 import org.apache.james.imap.store.PartContentBuilder;
 import org.apache.james.imap.store.ResultHeader;
 import org.apache.james.mailboxmanager.torque.om.MessageBody;

@@ -177,7 +177,7 @@ public class TorqueMailboxManagerProviderSingleton {
         if (TORQUE_MAILBOX_MANAGER == null) {
             USER_MANAGER = new SimpleUserManager();
             initialize();
-            TORQUE_MAILBOX_MANAGER = new TorqueMailboxManager(USER_MANAGER);
+            TORQUE_MAILBOX_MANAGER = new TorqueMailboxManager(USER_MANAGER, USER_MANAGER);
         }
         return TORQUE_MAILBOX_MANAGER;
     }

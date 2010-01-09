@@ -48,6 +48,8 @@ import org.apache.james.imap.mailbox.StandardMailboxMetaDataComparator;
 import org.apache.james.imap.mailbox.SubscriptionException;
 import org.apache.james.imap.mailbox.MailboxMetaData.Selectability;
 import org.apache.james.imap.mailbox.util.SimpleMailboxMetaData;
+import org.apache.james.imap.store.Authenticator;
+import org.apache.james.imap.store.Subscriber;
 import org.apache.james.mailboxmanager.torque.om.MailboxRow;
 import org.apache.james.mailboxmanager.torque.om.MailboxRowPeer;
 import org.apache.torque.TorqueException;
@@ -68,18 +70,21 @@ public class TorqueMailboxManager implements MailboxManager {
 
     private final Map<String, TorqueMailbox> mailboxes;
 
-    private final UserManager userManager;
-
     private final char delimiter;
+
+	private final Authenticator authenticator;
+
+	private final Subscriber subscriper;
     
-    public TorqueMailboxManager(final UserManager userManager) {
-        this(userManager, '.');
+    public TorqueMailboxManager(final Authenticator authenticator, final Subscriber subscriper) {
+        this(authenticator, subscriper, '.');
     }
     
-    public TorqueMailboxManager(final UserManager userManager, final char delimiter) {
+    public TorqueMailboxManager(final Authenticator authenticator, final Subscriber subscriper, final char delimiter) {
         this.lock = new ReentrantReadWriteLock();
         mailboxes = new HashMap<String, TorqueMailbox>();
-        this.userManager = userManager;
+        this.authenticator = authenticator;
+        this.subscriper = subscriper;
         this.delimiter = delimiter;
     }
 
@@ -368,21 +373,21 @@ public class TorqueMailboxManager implements MailboxManager {
     }
 
     public boolean login(String userid, String passwd) {
-        return userManager.isAuthentic(userid, passwd);
+        return authenticator.isAuthentic(userid, passwd);
     }
 
     public void subscribe(MailboxSession session, String mailbox)
             throws SubscriptionException {
-        userManager.subscribe(session.getUser().getUserName(), mailbox);
+        subscriper.subscribe(session.getUser().getUserName(), mailbox);
     }
 
     public Collection<String> subscriptions(MailboxSession session) throws SubscriptionException {
-        return userManager.subscriptions(session.getUser().getUserName());
+        return subscriper.subscriptions(session.getUser().getUserName());
     }
 
     public void unsubscribe(MailboxSession session, String mailbox)
             throws SubscriptionException {
-        userManager.unsubscribe(session.getUser().getUserName(), mailbox);
+        subscriper.unsubscribe(session.getUser().getUserName(), mailbox);
     }
 
     public void addListener(String mailboxName, MailboxListener listener, MailboxSession session) throws MailboxException {

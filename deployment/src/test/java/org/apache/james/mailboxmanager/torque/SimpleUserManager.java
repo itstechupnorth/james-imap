@@ -24,8 +24,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.james.imap.mailbox.SubscriptionException;
+import org.apache.james.imap.store.Authenticator;
+import org.apache.james.imap.store.Subscriber;
 
-public class SimpleUserManager implements UserManager {
+public class SimpleUserManager implements Subscriber, Authenticator {
 
     private final Map<String, UserDetails> users;
 
