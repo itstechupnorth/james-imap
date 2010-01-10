@@ -20,11 +20,8 @@ package org.apache.james.imap.jpa;
 
 import javax.persistence.EntityManagerFactory;
 
-import org.apache.james.imap.jpa.mail.JPAMailboxMapper;
-import org.apache.james.imap.jpa.mail.openjpa.OpenJPAMailboxMapper;
 import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.store.Authenticator;
-import org.apache.james.imap.store.StoreMailbox;
 import org.apache.james.imap.store.StoreMailboxManager;
 import org.apache.james.imap.store.Subscriber;
 import org.apache.james.imap.store.mail.MailboxMapper;
@@ -40,13 +37,6 @@ public abstract class JPAMailboxManager extends StoreMailboxManager {
         this.entityManagerFactory = entityManagerFactory;
     }
     
-
-    @Override
-    protected StoreMailbox createMailbox(Mailbox mailboxRow) {
-        StoreMailbox result;
-        result = new JPAMailbox(mailboxRow, entityManagerFactory);
-        return result;
-    }
     
     @Override
     protected void doCreate(String namespaceName) throws MailboxException {

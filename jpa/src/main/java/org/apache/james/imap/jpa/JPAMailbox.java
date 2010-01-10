@@ -29,7 +29,6 @@ import org.apache.james.imap.jpa.mail.JPAMailboxMapper;
 import org.apache.james.imap.jpa.mail.JPAMessageMapper;
 import org.apache.james.imap.jpa.mail.model.JPAHeader;
 import org.apache.james.imap.jpa.mail.model.JPAMailboxMembership;
-import org.apache.james.imap.jpa.mail.openjpa.OpenJPAMailboxMapper;
 import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.store.StoreMailbox;
 import org.apache.james.imap.store.mail.MailboxMapper;
