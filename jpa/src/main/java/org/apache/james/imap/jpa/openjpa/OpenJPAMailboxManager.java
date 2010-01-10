@@ -16,45 +16,31 @@
  * specific language governing permissions and limitations      *
  * under the License.                                           *
  ****************************************************************/
-package org.apache.james.imap.jpa;
+
+package org.apache.james.imap.jpa.openjpa;
 
 import javax.persistence.EntityManagerFactory;
 
-import org.apache.james.imap.jpa.mail.JPAMailboxMapper;
+import org.apache.james.imap.jpa.JPAMailboxManager;
 import org.apache.james.imap.jpa.mail.openjpa.OpenJPAMailboxMapper;
-import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.store.Authenticator;
-import org.apache.james.imap.store.StoreMailbox;
-import org.apache.james.imap.store.StoreMailboxManager;
 import org.apache.james.imap.store.Subscriber;
 import org.apache.james.imap.store.mail.MailboxMapper;
-import org.apache.james.imap.store.mail.model.Mailbox;
 
-public abstract class JPAMailboxManager extends StoreMailboxManager {
+/**
+ * OpenJPA implementation of MailboxManager
+ *
+ */
+public class OpenJPAMailboxManager extends JPAMailboxManager{
 
-    protected final EntityManagerFactory entityManagerFactory;
+	public OpenJPAMailboxManager(Authenticator authenticator,
+			Subscriber subscriber, EntityManagerFactory entityManagerFactory) {
+		super(authenticator, subscriber, entityManagerFactory);
+	}
 
-    public JPAMailboxManager(final Authenticator authenticator, final Subscriber subscriber, 
-            final EntityManagerFactory entityManagerFactory) {
-        super(authenticator, subscriber);
-        this.entityManagerFactory = entityManagerFactory;
-    }
-    
+	@Override
+	protected MailboxMapper createMailboxMapper() {
+        return new OpenJPAMailboxMapper(entityManagerFactory.createEntityManager());
+	}
 
-    @Override
-    protected StoreMailbox createMailbox(Mailbox mailboxRow) {
-        StoreMailbox result;
-        result = new JPAMailbox(mailboxRow, entityManagerFactory);
-        return result;
-    }
-    
-    @Override
-    protected void doCreate(String namespaceName) throws MailboxException {
-        Mailbox mailbox = new org.apache.james.imap.jpa.mail.model.JPAMailbox(namespaceName, randomUidValidity());
-        final MailboxMapper mapper = createMailboxMapper();
-        mapper.begin();
-        mapper.save(mailbox);
-        mapper.commit();
-    }
-    
 }

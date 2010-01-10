@@ -17,7 +17,7 @@
  * under the License.                                           *
  ****************************************************************/
 
-package org.apache.james.imap.jpa.mail.map.openjpa;
+package org.apache.james.imap.jpa.mail.openjpa;
 
 import javax.persistence.EntityManager;
 
@@ -27,7 +27,7 @@ import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
 
 /**
- * Data access management for mailbox.
+ * OpenJPA implemetnation of MailboxMapper.
  */
 public class OpenJPAMailboxMapper extends JPAMailboxMapper {
     

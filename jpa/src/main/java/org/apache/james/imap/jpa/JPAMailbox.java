@@ -27,9 +27,9 @@ import javax.persistence.EntityManagerFactory;
 
 import org.apache.james.imap.jpa.mail.JPAMailboxMapper;
 import org.apache.james.imap.jpa.mail.JPAMessageMapper;
-import org.apache.james.imap.jpa.mail.map.openjpa.OpenJPAMailboxMapper;
 import org.apache.james.imap.jpa.mail.model.JPAHeader;
 import org.apache.james.imap.jpa.mail.model.JPAMailboxMembership;
+import org.apache.james.imap.jpa.mail.openjpa.OpenJPAMailboxMapper;
 import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.store.StoreMailbox;
 import org.apache.james.imap.store.mail.MailboxMapper;
@@ -39,14 +39,21 @@ import org.apache.james.imap.store.mail.model.Mailbox;
 import org.apache.james.imap.store.mail.model.MailboxMembership;
 import org.apache.james.imap.store.mail.model.PropertyBuilder;
 
-public class JPAMailbox extends StoreMailbox {
+public abstract class JPAMailbox extends StoreMailbox {
 
-    private final EntityManagerFactory entityManagerFactory;
+    protected final EntityManagerFactory entityManagerFactory;
 
     public JPAMailbox(final Mailbox mailbox, final EntityManagerFactory entityManagerfactory) {
         super(mailbox);
         this.entityManagerFactory = entityManagerfactory;
     }    
+
+    /**
+     * Create MailboxMapper 
+     * 
+     * @return mapper
+     */
+    protected abstract JPAMailboxMapper createMailboxMapper();
 
     @Override
     protected Mailbox getMailboxRow() throws MailboxException {
@@ -54,10 +61,6 @@ public class JPAMailbox extends StoreMailbox {
         return mapper.findMailboxById(mailboxId);
     }
 
-    private JPAMailboxMapper createMailboxMapper() {
-        final JPAMailboxMapper mapper = new OpenJPAMailboxMapper(entityManagerFactory.createEntityManager());
-        return mapper;
-    }
     
     @Override
     protected MessageMapper createMessageMapper() {
