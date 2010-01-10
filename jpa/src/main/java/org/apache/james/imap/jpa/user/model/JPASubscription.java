@@ -33,12 +33,12 @@ import org.apache.james.imap.store.user.model.Subscription;
  * A subscription to a mailbox by a user.
  */
 @Entity(name="Subscription")
-@Table(uniqueConstraints=@UniqueConstraint(columnNames={"USER", "MAILBOX"}))
+@Table(uniqueConstraints=@UniqueConstraint(columnNames={"USERNAME", "MAILBOX"}))
 @NamedQueries({
     @NamedQuery(name="findFindMailboxSubscriptionForUser",
-        query="SELECT subscription FROM Subscription subscription WHERE subscription.user = :userParam AND subscription.mailbox = :mailboxParam"),          
+        query="SELECT subscription FROM Subscription subscription WHERE subscription.username = :userParam AND subscription.mailbox = :mailboxParam"),          
     @NamedQuery(name="findSubscriptionsForUser",
-        query="SELECT subscription FROM Subscription subscription WHERE subscription.user = :userParam")                  
+        query="SELECT subscription FROM Subscription subscription WHERE subscription.username = :userParam")                  
 })
 public class JPASubscription implements Subscription {
 
@@ -47,7 +47,7 @@ public class JPASubscription implements Subscription {
     @GeneratedValue
     @Id private long id;
     /** Name of the subscribed user */
-    @Basic(optional=false) private String user;
+    @Basic(optional=false) private String username;
     /** Subscribed mailbox */
     @Basic(optional=false) private String mailbox;
     
@@ -59,12 +59,12 @@ public class JPASubscription implements Subscription {
     
     /**
      * Constructs a user subscription.
-     * @param user not null
+     * @param username not null
      * @param mailbox not null
      */
-    public JPASubscription(String user, String mailbox) {
+    public JPASubscription(String username, String mailbox) {
         super();
-        this.user = user;
+        this.username = username;
         this.mailbox = mailbox;
     }
 
@@ -79,7 +79,7 @@ public class JPASubscription implements Subscription {
      * @see org.apache.james.imap.store.user.model.Subscription#getUser()
      */
     public String getUser() {
-        return user;
+        return username;
     }
 
     @Override
@@ -113,7 +113,7 @@ public class JPASubscription implements Subscription {
     {
         final String result = "Subscription ( "
             + "id = " + this.id + TO_STRING_SEPARATOR
-            + "user = " + this.user + TO_STRING_SEPARATOR
+            + "user = " + this.username + TO_STRING_SEPARATOR
             + "mailbox = " + this.mailbox + TO_STRING_SEPARATOR
             + " )";
     
