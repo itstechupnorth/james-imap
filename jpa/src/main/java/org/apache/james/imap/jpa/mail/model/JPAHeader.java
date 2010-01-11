@@ -53,8 +53,8 @@ public class JPAHeader implements Comparable<Header>, Header {
      * Copies the content of an existing header.
      * @param header
      */
-    public JPAHeader(JPAHeader header) {
-        this(header.getLineNumber(), header.field, header.getValue());
+    public JPAHeader(Header header) {
+        this(header.getLineNumber(), header.getFieldName(), header.getValue());
     }
     
     public JPAHeader(int lineNumber, String field, String value) {

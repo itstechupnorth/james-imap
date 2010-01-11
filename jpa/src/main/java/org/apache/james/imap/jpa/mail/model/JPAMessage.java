@@ -80,8 +80,43 @@ public class JPAMessage implements Document {
         for (final Property property:properties) {
             this.properties.add(new JPAProperty(property, order++));
         }
+        
     }
 
+
+    /**
+     * Create a copy of the given message
+     * 
+     * @param message
+     */
+    public JPAMessage(JPAMessage message) {
+        ByteBuffer buf = message.getFullContent().duplicate();
+        int a = 0;
+        this.content = new byte[buf.capacity()];
+        while(buf.hasRemaining()) {
+            content[a] = buf.get();
+            a++;
+        }
+        this.contentOctets = content.length;
+        this.bodyStartOctet = (int) (message.getFullContentOctets() - message.getBodyOctets());
+        this.headers = new ArrayList<JPAHeader>();
+        
+        List<Header> originalHeaders = message.getHeaders();
+        for (int i = 0; i < originalHeaders.size(); i++) {
+            headers.add(new JPAHeader(originalHeaders.get(i)));
+        }
+
+        PropertyBuilder pBuilder = new PropertyBuilder(message.getProperties());
+        this.textualLineCount = pBuilder.getTextualLineCount();
+        this.mediaType = pBuilder.getMediaType();
+        this.subType = pBuilder.getSubType();
+        final List<Property> properties = pBuilder.toProperties();
+        this.properties = new ArrayList<JPAProperty>(properties.size());
+        int order = 0;
+        for (final Property property:properties) {
+            this.properties.add(new JPAProperty(property, order++));
+        }
+    }
     /**
      * @see org.apache.james.imap.store.mail.model.Document#getHeaders()
      */

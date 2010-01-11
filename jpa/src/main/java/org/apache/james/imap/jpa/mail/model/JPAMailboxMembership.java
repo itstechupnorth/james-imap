@@ -174,7 +174,7 @@ public class JPAMailboxMembership implements MailboxMembership {
         this.flagged = original.isFlagged();
         this.recent = original.isRecent();
         this.seen = original.isSeen();
-        this.message = (JPAMessage) original.getDocument();
+        this.message = new JPAMessage((JPAMessage) original.getDocument());
     }
 
     /**
