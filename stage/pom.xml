@@ -50,6 +50,12 @@
     <dependency>
       <groupId>org.apache.james</groupId>
       <artifactId>apache-mime4j</artifactId>
+      <exclusions>
+        <exclusion>
+          <groupId>commons-logging</groupId>
+          <artifactId>commons-logging</artifactId> 
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>${javax.mail.groupId}</groupId>
@@ -59,93 +65,11 @@
       <groupId>${javax.activation.groupId}</groupId>
       <artifactId>${javax.activation.artifactId}</artifactId>
     </dependency>
-    <dependency>
-      <groupId>commons-collections</groupId>
-      <artifactId>commons-collections</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>commons-logging</groupId>
-      <artifactId>commons-logging</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>commons-lang</groupId>
-      <artifactId>commons-lang</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>commons-io</groupId>
-      <artifactId>commons-io</artifactId>
-    </dependency>
-    <!-- used by torque -->
-    <dependency>
-      <groupId>commons-pool</groupId>
-      <artifactId>commons-pool</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>commons-configuration</groupId>
-      <artifactId>commons-configuration</artifactId>
-    </dependency>
-    <dependency>
-        <groupId>org.apache.torque</groupId>
-      <artifactId>village</artifactId>
-    </dependency>
-    <dependency>
-        <groupId>org.apache.torque</groupId>
-      <artifactId>torque-runtime</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>commons-dbcp</groupId>
-      <artifactId>commons-dbcp</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>commons-collections</groupId>
-      <artifactId>commons-collections</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.jmock</groupId>
-      <artifactId>jmock</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.jmock</groupId>
-      <artifactId>jmock-junit3</artifactId>
-    </dependency>
+   
     <dependency>
       <groupId>javax.persistence</groupId>
       <artifactId>persistence-api</artifactId>
     </dependency>
-    <dependency>
-      <groupId>org.apache.openjpa</groupId>
-      <artifactId>openjpa</artifactId>
-    </dependency>
-    
-    <dependency>
-       <groupId>org.apache.derby</groupId>
-       <artifactId>derby</artifactId>
-    </dependency>
-
- <!--  
-    <dependency>
-      <groupId>concurrent</groupId>
-      <artifactId>concurrent</artifactId>
-    </dependency>
-    -->
-    <dependency>
-      <groupId>commons-beanutils</groupId>
-      <artifactId>commons-beanutils</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.james</groupId>
-      <artifactId>apache-mime4j</artifactId>
-    </dependency>
-      
-    <dependency>
-      <groupId>com.h2database</groupId>
-      <artifactId>h2</artifactId>
-      <scope>test</scope>
-    </dependency>   
     
   </dependencies>
   
