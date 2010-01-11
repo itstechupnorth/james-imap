@@ -104,7 +104,7 @@ public interface MailboxListener {
          * 
          * @return <code>Flags.Flag</code> <code>Iterator</code>, not null
          */
-        public abstract Iterator flagsIterator();
+        public abstract Iterator<Flags.Flag> flagsIterator();
     }
 
     public abstract class Added implements MessageEvent {

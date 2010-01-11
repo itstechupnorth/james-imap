@@ -22,7 +22,7 @@ package org.apache.james.imap.mailbox.util;
 import org.apache.james.imap.mailbox.MailboxMetaData;
 import org.apache.james.imap.mailbox.StandardMailboxMetaDataComparator;
 
-public class SimpleMailboxMetaData implements MailboxMetaData, Comparable {
+public class SimpleMailboxMetaData implements MailboxMetaData, Comparable<MailboxMetaData> {
 
     public static MailboxMetaData createNoSelect(String name, String delimiter) {
         return new SimpleMailboxMetaData(name, delimiter, Children.CHILDREN_ALLOWED_BUT_UNKNOWN, Selectability.NOSELECT);
@@ -65,14 +65,26 @@ public class SimpleMailboxMetaData implements MailboxMetaData, Comparable {
         return selectability;
     }
 
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.mailbox.MailboxMetaData#getHierarchyDelimiter()
+     */
     public String getHierarchyDelimiter() {
         return delimiter;
     }
 
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.mailbox.MailboxMetaData#getName()
+     */
     public String getName() {
         return name;
     }
 
+    /*
+     * (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
     public String toString() {
         return "ListResult: " + name;
     }
@@ -106,8 +118,12 @@ public class SimpleMailboxMetaData implements MailboxMetaData, Comparable {
         return true;
     }
 
-    public int compareTo(Object o) {
-        return StandardMailboxMetaDataComparator.order(this, (MailboxMetaData) o);
+    /*
+     * (non-Javadoc)
+     * @see java.lang.Comparable#compareTo(java.lang.Object)
+     */
+    public int compareTo(MailboxMetaData o) {
+        return StandardMailboxMetaDataComparator.order(this, o);
     }
 
 }

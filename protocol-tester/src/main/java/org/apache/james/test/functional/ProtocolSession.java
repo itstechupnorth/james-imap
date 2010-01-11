@@ -43,9 +43,9 @@ public class ProtocolSession {
 
     private int maxSessionNumber;
 
-    protected List testElements = new ArrayList();
+    protected List<ProtocolElement> testElements = new ArrayList<ProtocolElement>();
 
-    private Iterator elementsIterator;
+    private Iterator<ProtocolElement> elementsIterator;
 
     private HostSystem.Session[] sessions;
 
@@ -138,7 +138,7 @@ public class ProtocolSession {
     /**
      * adds a new Server Unordered Block to the test elements.
      */
-    public void SUB(List serverLines, String location) {
+    public void SUB(List<String> serverLines, String location) {
         testElements
                 .add(new ServerUnorderedBlockResponse(serverLines, location));
     }
@@ -173,7 +173,7 @@ public class ProtocolSession {
     /**
      * adds a new Server Unordered Block to the test elements.
      */
-    public void SUB(int sessionNumber, List serverLines, String location,
+    public void SUB(int sessionNumber, List<String> serverLines, String location,
             String lastClientMessage) {
         this.maxSessionNumber = Math.max(this.maxSessionNumber, sessionNumber);
         testElements.add(new ServerUnorderedBlockResponse(sessionNumber,
@@ -364,7 +364,7 @@ public class ProtocolSession {
      * non-specified order.
      */
     private class ServerUnorderedBlockResponse extends ServerResponse {
-        private List expectedLines = new ArrayList();
+        private List<String> expectedLines = new ArrayList<String>();
 
         /**
          * Sets up a ServerUnorderedBlockResponse with the list of expected
@@ -376,7 +376,7 @@ public class ProtocolSession {
          * @param location
          *            A descriptive location string for error messages.
          */
-        public ServerUnorderedBlockResponse(List expectedLines, String location) {
+        public ServerUnorderedBlockResponse(List<String> expectedLines, String location) {
             this(-1, expectedLines, location, null);
         }
 
@@ -394,7 +394,7 @@ public class ProtocolSession {
          *            A descriptive location string for error messages.
          */
         public ServerUnorderedBlockResponse(int sessionNumber,
-                List expectedLines, String location, String lastClientMessage) {
+                List<String> expectedLines, String location, String lastClientMessage) {
             super(sessionNumber, "<Unordered Block>", location,
                     lastClientMessage);
             this.expectedLines = expectedLines;
@@ -413,7 +413,7 @@ public class ProtocolSession {
          */
         protected void checkResponse(HostSystem.Session session,
                 boolean continueAfterFailure) throws Exception {
-            List testLines = new ArrayList(expectedLines);
+            List<String> testLines = new ArrayList<String>(expectedLines);
             while (testLines.size() > 0) {
                 String actualLine = readLine(session);
 
@@ -431,7 +431,7 @@ public class ProtocolSession {
                     StringBuffer errMsg = new StringBuffer().append(
                             "\nLocation: ").append(location).append(
                             "\nExpected one of: ");
-                    Iterator iter = expectedLines.iterator();
+                    Iterator<String> iter = expectedLines.iterator();
                     while (iter.hasNext()) {
                         errMsg.append("\n    ");
                         errMsg.append(iter.next());
@@ -507,6 +507,7 @@ public class ProtocolSession {
      * An exception which is thrown when the actual response from a server is
      * different from that expected.
      */
+    @SuppressWarnings("serial")
     public class InvalidServerResponseException extends Exception {
         public InvalidServerResponseException(String message) {
             super(message);

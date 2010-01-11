@@ -264,11 +264,10 @@ public class FetchResponseEncoder extends AbstractChainedImapEncoder {
     }
 
     private void encodeBodyElements(final ImapResponseComposer composer,
-            final List elements) throws IOException {
+            final List<FetchResponse.BodyElement> elements) throws IOException {
         if (elements != null) {
-            for (final Iterator it = elements.iterator(); it.hasNext();) {
-                FetchResponse.BodyElement element = (FetchResponse.BodyElement) it
-                        .next();
+            for (final Iterator<FetchResponse.BodyElement> it = elements.iterator(); it.hasNext();) {
+                FetchResponse.BodyElement element = it.next();
                 final String name = element.getName();
                 composer.message(name);
                 composer.literal(element);

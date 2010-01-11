@@ -119,7 +119,7 @@ public class FileProtocolSessionBuilder {
                 }
                 session.SL(sessionNumber, serverMsg, location, lastClientMsg);
             } else if (next.startsWith(OPEN_UNORDERED_BLOCK_TAG)) {
-                List unorderedLines = new ArrayList(5);
+                List<String> unorderedLines = new ArrayList<String>(5);
                 next = reader.readLine();
 
                 while (!next.startsWith(CLOSE_UNORDERED_BLOCK_TAG)) {

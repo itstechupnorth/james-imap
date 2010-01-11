@@ -198,14 +198,14 @@ public class PartContentBuilderComplexMultipartTest extends TestCase {
 
     private void checkContentType(String contentType, int[] position)
             throws Exception {
-        List headers = headers(position);
+        List<Header> headers = headers(position);
         assertEquals(1, headers.size());
         Header header = (Header) headers.get(0);
         assertEquals(CONTENT_TYPE, header.getName());
         assertEquals(contentType, header.getValue());
     }
 
-    private List headers(int[] position) throws Exception {
+    private List<Header> headers(int[] position) throws Exception {
         to(position);
         return builder.getMimeHeaders();
     }

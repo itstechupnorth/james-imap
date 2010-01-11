@@ -68,10 +68,10 @@ public class BodyFetchElement {
 
     private final int[] path;
 
-    private final Collection fieldNames;
+    private final Collection<String> fieldNames;
 
     public BodyFetchElement(final String name, final int sectionType,
-            final int[] path, final Collection fieldNames, Long firstOctet,
+            final int[] path, final Collection<String> fieldNames, Long firstOctet,
             Long numberOfOctets) {
         this.name = name;
         this.sectionType = sectionType;
@@ -91,7 +91,7 @@ public class BodyFetchElement {
      * @return <code>String</code> collection, when {@link #HEADER_FIELDS} or
      *         {@link #HEADER_NOT_FIELDS} or null otherwise
      */
-    public final Collection getFieldNames() {
+    public final Collection<String> getFieldNames() {
         return fieldNames;
     }
 

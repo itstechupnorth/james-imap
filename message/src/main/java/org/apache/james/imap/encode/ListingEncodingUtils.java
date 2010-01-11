@@ -34,7 +34,7 @@ public class ListingEncodingUtils {
     public static void encodeListingResponse(final String responseTypeName,
             final ImapResponseComposer composer,
             final AbstractListingResponse response) throws IOException {
-        final List attributes = getNameAttributes(response);
+        final List<String> attributes = getNameAttributes(response);
 
         final String name = response.getName();
         final String hierarchyDelimiter = response.getHierarchyDelimiter();

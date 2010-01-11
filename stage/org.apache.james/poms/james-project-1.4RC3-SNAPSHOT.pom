@@ -28,10 +28,9 @@
   </description>
   
   <parent>
-    <artifactId>james-parent</artifactId>
     <groupId>org.apache.james</groupId>
+    <artifactId>james-parent</artifactId>
     <version>1.3RC3-SNAPSHOT</version>
-    <relativePath>../stage/org.apache.james/poms/james-parent-1.3RC3-SNAPSHOT.pom</relativePath>
   </parent>
 
   <modules>

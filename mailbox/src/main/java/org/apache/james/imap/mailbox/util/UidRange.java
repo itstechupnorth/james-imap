@@ -19,7 +19,7 @@
 
 package org.apache.james.imap.mailbox.util;
 
-public class UidRange implements Comparable {
+public class UidRange implements Comparable<UidRange> {
 
     private long fromUid;
 
@@ -42,13 +42,13 @@ public class UidRange implements Comparable {
         return fromUid + ":" + toUid;
     }
 
-    public int compareTo(Object o) {
-        if (!(o instanceof UidRange)) {
-            return 1;
-        } else {
-            UidRange that = (UidRange) o;
-            return new Long(fromUid).compareTo(new Long(that.fromUid));
-        }
+    /*
+     * (non-Javadoc)
+     * @see java.lang.Comparable#compareTo(java.lang.Object)
+     */
+    public int compareTo(UidRange that) {
+       return new Long(fromUid).compareTo(new Long(that.fromUid));
+        
     }
 
 }

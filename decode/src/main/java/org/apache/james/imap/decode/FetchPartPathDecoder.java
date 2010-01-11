@@ -498,7 +498,7 @@ public class FetchPartPathDecoder {
      *         {@link #HEADER_FIELDS} or {@link #HEADER_NOT_FIELDS}, null
      *         otherwise
      */
-    public final List getNames() {
+    public final List<String> getNames() {
         return names;
     }
 

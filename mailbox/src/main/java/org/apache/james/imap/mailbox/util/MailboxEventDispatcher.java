@@ -70,9 +70,13 @@ public class MailboxEventDispatcher implements MailboxListener {
         event(flags);
     }
 
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.mailbox.MailboxListener#event(org.apache.james.imap.mailbox.MailboxListener.Event)
+     */
     public void event(Event event) {
-        for (Iterator iter = listeners.iterator(); iter.hasNext();) {
-            MailboxListener mailboxListener = (MailboxListener) iter.next();
+        for (Iterator<MailboxListener> iter = listeners.iterator(); iter.hasNext();) {
+            MailboxListener mailboxListener = iter.next();
             mailboxListener.event(event);
         }
     }
@@ -179,23 +183,39 @@ public class MailboxEventDispatcher implements MailboxListener {
             this.newFlags = newFlags;
         }
 
+        /*
+         * (non-Javadoc)
+         * @see org.apache.james.imap.mailbox.MailboxListener.MessageEvent#getSubjectUid()
+         */
         public long getSubjectUid() {
             return subjectUid;
         }
 
+        /*
+         * (non-Javadoc)
+         * @see org.apache.james.imap.mailbox.MailboxListener.Event#getSessionId()
+         */
         public long getSessionId() {
             return sessionId;
         }
 
-        public Iterator flagsIterator() {
+        /*
+         * (non-Javadoc)
+         * @see org.apache.james.imap.mailbox.MailboxListener.FlagsUpdated#flagsIterator()
+         */
+        public Iterator<Flag> flagsIterator() {
             return new FlagsIterator();
         }
 
+        /*
+         * (non-Javadoc)
+         * @see org.apache.james.imap.mailbox.MailboxListener.FlagsUpdated#getNewFlags()
+         */
         public Flags getNewFlags() {
             return newFlags;
         }
 
-        private class FlagsIterator implements Iterator {
+        private class FlagsIterator implements Iterator<Flag> {
             private int position;
 
             public FlagsIterator() {
@@ -212,11 +232,19 @@ public class MailboxEventDispatcher implements MailboxListener {
                 }
             }
 
+            /*
+             * (non-Javadoc)
+             * @see java.util.Iterator#hasNext()
+             */
             public boolean hasNext() {
                 return position < NUMBER_OF_SYSTEM_FLAGS;
             }
 
-            public Object next() {
+            /*
+             * (non-Javadoc)
+             * @see java.util.Iterator#next()
+             */
+            public Flag next() {
                 if (!hasNext()) {
                     throw new NoSuchElementException();
                 }
@@ -225,6 +253,10 @@ public class MailboxEventDispatcher implements MailboxListener {
                 return result;
             }
 
+            /*
+             * (non-Javadoc)
+             * @see java.util.Iterator#remove()
+             */
             public void remove() {
                 throw new UnsupportedOperationException("Read only");
             }
@@ -246,6 +278,10 @@ public class MailboxEventDispatcher implements MailboxListener {
             this.sessionId = sessionId;
         }
 
+        /*
+         * (non-Javadoc)
+         * @see org.apache.james.imap.mailbox.MailboxListener.Event#getSessionId()
+         */
         public long getSessionId() {
             return sessionId;
         }
@@ -261,15 +297,27 @@ public class MailboxEventDispatcher implements MailboxListener {
             this.sessionId = sessionId;
         }
 
+        /*
+         * (non-Javadoc)
+         * @see org.apache.james.imap.mailbox.MailboxListener.MailboxRenamed#getNewName()
+         */
         public String getNewName() {
             return newName;
         }
 
+        /*
+         * (non-Javadoc)
+         * @see org.apache.james.imap.mailbox.MailboxListener.Event#getSessionId()
+         */
         public long getSessionId() {
             return sessionId;
         }
     }
 
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.mailbox.MailboxListener#isClosed()
+     */
     public boolean isClosed() {
         return false;
     }

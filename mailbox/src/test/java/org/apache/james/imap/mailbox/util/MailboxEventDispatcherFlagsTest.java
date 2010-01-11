@@ -60,7 +60,7 @@ public class MailboxEventDispatcherFlagsTest extends MockObjectTestCase {
         assertTrue(collector.events.get(0) instanceof MailboxListener.FlagsUpdated);
         MailboxListener.FlagsUpdated event = (MailboxListener.FlagsUpdated) collector.events
                 .get(0);
-        Iterator iterator = event.flagsIterator();
+        Iterator<Flags.Flag> iterator = event.flagsIterator();
         assertNotNull(iterator);
         assertFalse(iterator.hasNext());
     }
@@ -72,7 +72,7 @@ public class MailboxEventDispatcherFlagsTest extends MockObjectTestCase {
         assertTrue(collector.events.get(0) instanceof MailboxListener.FlagsUpdated);
         MailboxListener.FlagsUpdated event = (MailboxListener.FlagsUpdated) collector.events
                 .get(0);
-        Iterator iterator = event.flagsIterator();
+        Iterator<Flags.Flag> iterator = event.flagsIterator();
         assertNotNull(iterator);
         assertFalse(iterator.hasNext());
     }
@@ -84,7 +84,7 @@ public class MailboxEventDispatcherFlagsTest extends MockObjectTestCase {
         assertTrue(collector.events.get(0) instanceof MailboxListener.FlagsUpdated);
         MailboxListener.FlagsUpdated event = (MailboxListener.FlagsUpdated) collector.events
                 .get(0);
-        Iterator iterator = event.flagsIterator();
+        Iterator<Flags.Flag> iterator = event.flagsIterator();
         assertNotNull(iterator);
         assertTrue(iterator.hasNext());
         assertEquals(Flags.Flag.ANSWERED, iterator.next());
@@ -98,7 +98,7 @@ public class MailboxEventDispatcherFlagsTest extends MockObjectTestCase {
         assertTrue(collector.events.get(0) instanceof MailboxListener.FlagsUpdated);
         MailboxListener.FlagsUpdated event = (MailboxListener.FlagsUpdated) collector.events
                 .get(0);
-        Iterator iterator = event.flagsIterator();
+        Iterator<Flags.Flag> iterator = event.flagsIterator();
         assertNotNull(iterator);
         assertTrue(iterator.hasNext());
         assertEquals(Flags.Flag.ANSWERED, iterator.next());
@@ -112,7 +112,7 @@ public class MailboxEventDispatcherFlagsTest extends MockObjectTestCase {
         assertTrue(collector.events.get(0) instanceof MailboxListener.FlagsUpdated);
         MailboxListener.FlagsUpdated event = (MailboxListener.FlagsUpdated) collector.events
                 .get(0);
-        Iterator iterator = event.flagsIterator();
+        Iterator<Flags.Flag> iterator = event.flagsIterator();
         assertNotNull(iterator);
         assertTrue(iterator.hasNext());
         assertEquals(Flags.Flag.DELETED, iterator.next());
@@ -126,7 +126,7 @@ public class MailboxEventDispatcherFlagsTest extends MockObjectTestCase {
         assertTrue(collector.events.get(0) instanceof MailboxListener.FlagsUpdated);
         MailboxListener.FlagsUpdated event = (MailboxListener.FlagsUpdated) collector.events
                 .get(0);
-        Iterator iterator = event.flagsIterator();
+        Iterator<Flags.Flag> iterator = event.flagsIterator();
         assertNotNull(iterator);
         assertTrue(iterator.hasNext());
         assertEquals(Flags.Flag.DELETED, iterator.next());
@@ -140,7 +140,7 @@ public class MailboxEventDispatcherFlagsTest extends MockObjectTestCase {
         assertTrue(collector.events.get(0) instanceof MailboxListener.FlagsUpdated);
         MailboxListener.FlagsUpdated event = (MailboxListener.FlagsUpdated) collector.events
                 .get(0);
-        Iterator iterator = event.flagsIterator();
+        Iterator<Flags.Flag> iterator = event.flagsIterator();
         assertNotNull(iterator);
         assertTrue(iterator.hasNext());
         assertEquals(Flags.Flag.DRAFT, iterator.next());
@@ -154,7 +154,7 @@ public class MailboxEventDispatcherFlagsTest extends MockObjectTestCase {
         assertTrue(collector.events.get(0) instanceof MailboxListener.FlagsUpdated);
         MailboxListener.FlagsUpdated event = (MailboxListener.FlagsUpdated) collector.events
                 .get(0);
-        Iterator iterator = event.flagsIterator();
+        Iterator<Flags.Flag> iterator = event.flagsIterator();
         assertNotNull(iterator);
         assertTrue(iterator.hasNext());
         assertEquals(Flags.Flag.DRAFT, iterator.next());
@@ -168,7 +168,7 @@ public class MailboxEventDispatcherFlagsTest extends MockObjectTestCase {
         assertTrue(collector.events.get(0) instanceof MailboxListener.FlagsUpdated);
         MailboxListener.FlagsUpdated event = (MailboxListener.FlagsUpdated) collector.events
                 .get(0);
-        Iterator iterator = event.flagsIterator();
+        Iterator<Flags.Flag> iterator = event.flagsIterator();
         assertNotNull(iterator);
         assertTrue(iterator.hasNext());
         assertEquals(Flags.Flag.FLAGGED, iterator.next());
@@ -182,7 +182,7 @@ public class MailboxEventDispatcherFlagsTest extends MockObjectTestCase {
         assertTrue(collector.events.get(0) instanceof MailboxListener.FlagsUpdated);
         MailboxListener.FlagsUpdated event = (MailboxListener.FlagsUpdated) collector.events
                 .get(0);
-        Iterator iterator = event.flagsIterator();
+        Iterator<Flags.Flag> iterator = event.flagsIterator();
         assertNotNull(iterator);
         assertTrue(iterator.hasNext());
         assertEquals(Flags.Flag.FLAGGED, iterator.next());
@@ -196,7 +196,7 @@ public class MailboxEventDispatcherFlagsTest extends MockObjectTestCase {
         assertTrue(collector.events.get(0) instanceof MailboxListener.FlagsUpdated);
         MailboxListener.FlagsUpdated event = (MailboxListener.FlagsUpdated) collector.events
                 .get(0);
-        Iterator iterator = event.flagsIterator();
+        Iterator<Flags.Flag> iterator = event.flagsIterator();
         assertNotNull(iterator);
         assertTrue(iterator.hasNext());
         assertEquals(Flags.Flag.RECENT, iterator.next());
@@ -210,7 +210,7 @@ public class MailboxEventDispatcherFlagsTest extends MockObjectTestCase {
         assertTrue(collector.events.get(0) instanceof MailboxListener.FlagsUpdated);
         MailboxListener.FlagsUpdated event = (MailboxListener.FlagsUpdated) collector.events
                 .get(0);
-        Iterator iterator = event.flagsIterator();
+        Iterator<Flags.Flag> iterator = event.flagsIterator();
         assertNotNull(iterator);
         assertTrue(iterator.hasNext());
         assertEquals(Flags.Flag.RECENT, iterator.next());
@@ -224,7 +224,7 @@ public class MailboxEventDispatcherFlagsTest extends MockObjectTestCase {
         assertTrue(collector.events.get(0) instanceof MailboxListener.FlagsUpdated);
         MailboxListener.FlagsUpdated event = (MailboxListener.FlagsUpdated) collector.events
                 .get(0);
-        Iterator iterator = event.flagsIterator();
+        Iterator<Flags.Flag> iterator = event.flagsIterator();
         assertNotNull(iterator);
         assertTrue(iterator.hasNext());
         assertEquals(Flags.Flag.SEEN, iterator.next());
@@ -238,7 +238,7 @@ public class MailboxEventDispatcherFlagsTest extends MockObjectTestCase {
         assertTrue(collector.events.get(0) instanceof MailboxListener.FlagsUpdated);
         MailboxListener.FlagsUpdated event = (MailboxListener.FlagsUpdated) collector.events
                 .get(0);
-        Iterator iterator = event.flagsIterator();
+        Iterator<Flags.Flag> iterator = event.flagsIterator();
         assertNotNull(iterator);
         assertTrue(iterator.hasNext());
         assertEquals(Flags.Flag.SEEN, iterator.next());
@@ -259,7 +259,7 @@ public class MailboxEventDispatcherFlagsTest extends MockObjectTestCase {
         assertTrue(collector.events.get(0) instanceof MailboxListener.FlagsUpdated);
         MailboxListener.FlagsUpdated event = (MailboxListener.FlagsUpdated) collector.events
                 .get(0);
-        Iterator iterator = event.flagsIterator();
+        Iterator<Flags.Flag> iterator = event.flagsIterator();
         assertNotNull(iterator);
         assertTrue(iterator.hasNext());
         assertEquals(Flags.Flag.ANSWERED, iterator.next());

@@ -41,7 +41,7 @@ public final class FetchResponse implements ImapResponseMessage {
 
     private final Integer size;
 
-    private final List elements;
+    private final List<BodyElement> elements;
 
     private final Envelope envelope;
 
@@ -52,7 +52,7 @@ public final class FetchResponse implements ImapResponseMessage {
     public FetchResponse(final int messageNumber, final Flags flags,
             final Long uid, final Date internalDate, final Integer size,
             final Envelope envelope, final Structure body,
-            final Structure bodystructure, List elements) {
+            final Structure bodystructure, List<BodyElement> elements) {
         super();
         this.messageNumber = messageNumber;
         this.flags = flags;
@@ -150,7 +150,7 @@ public final class FetchResponse implements ImapResponseMessage {
      * @return <code>List</code> of <code>BodyElement</code>'s, or null if
      *         the <code>FETCH</code> did not include body elements
      */
-    public final List getElements() {
+    public final List<BodyElement> getElements() {
         return elements;
     }
 

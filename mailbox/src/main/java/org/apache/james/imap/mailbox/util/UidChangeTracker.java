@@ -94,7 +94,7 @@ public class UidChangeTracker implements Constants {
             found(uid, flags);
         }
 
-        for (Iterator iter = expectedSet.iterator(); iter.hasNext();) {
+        for (Iterator<Long> iter = expectedSet.iterator(); iter.hasNext();) {
             long uid = ((Long) iter.next()).longValue();
             eventDispatcher.expunged(uid, Mailbox.ANONYMOUS_SESSION);
         }

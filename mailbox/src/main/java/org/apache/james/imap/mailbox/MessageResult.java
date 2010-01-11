@@ -57,7 +57,7 @@ import javax.mail.MessagingException;
  * 
  */
 
-public interface MessageResult extends Comparable, Headers {
+public interface MessageResult extends Comparable<MessageResult>, Headers {
 
     /**
      * Indicates the results fetched.

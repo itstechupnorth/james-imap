@@ -98,11 +98,11 @@ public class FetchGroupImpl implements MessageResult.FetchGroup {
             partContentDescriptors = new HashSet<PartContentDescriptor>();
         }
         PartContentDescriptorImpl currentDescriptor = null;
-        for (Iterator it = partContentDescriptors.iterator(); it.hasNext();) {
-            PartContentDescriptorImpl descriptor = (PartContentDescriptorImpl) it
+        for (Iterator<PartContentDescriptor> it = partContentDescriptors.iterator(); it.hasNext();) {
+            PartContentDescriptor descriptor = (PartContentDescriptor) it
                     .next();
             if (path.equals(descriptor.path())) {
-                currentDescriptor = descriptor;
+                currentDescriptor = (PartContentDescriptorImpl) descriptor;
                 break;
             }
         }
