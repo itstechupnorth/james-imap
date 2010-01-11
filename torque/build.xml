@@ -29,11 +29,13 @@
                <path refid='classpath.base'/>
 			   <path refid='classpath.torque'/>
                <path refid='classpath.dependencies.libraries'/>   
+			   <path refid='depend.on.store'/>
            </path>
            <path id='classpath.test'>
                <path refid='classpath.main'/>   
                <path refid='classpath.base.test'/> 
                <path refid='classpath.test.dependencies.libraries'/> 
+			   <path refid='depend.on.store'/>
            </path>   
            <path id='classpath.test.runtime'>
                <path refid='classpath.test'/>
