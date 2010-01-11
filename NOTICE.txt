@@ -3,7 +3,7 @@
    =========================================================================
 
    Apache JAMES Server
-   Copyright 1999-2008 The Apache Software Foundation
+   Copyright 1999-2010 The Apache Software Foundation
 
    This product includes software developed at
    The Apache Software Foundation (http://www.apache.org/).
@@ -15,8 +15,6 @@
 
    This product may include software developed at
    aQute / Peter Kriens (http://www.aqute.biz/)
-   Package in stage\biz.aQute\jars\bnd-0.0.249.jar
-   License in stage\biz.aQute\jars\bnd-0.0.249.LICENSE
 
    This product includes software developed by 
    the Working-Dogs.com <http://www.Working-Dogs.com/>.
