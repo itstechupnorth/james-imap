@@ -35,7 +35,7 @@
         <repository>
             <id>module-imap-local</id>
             <name>Local Imap Repository</name>
-            <url>file://${pom.basedir}/</url>
+            <url>file://.</url>
             <layout>legacy</layout>
             <snapshots>
                 <enabled>true</enabled>
