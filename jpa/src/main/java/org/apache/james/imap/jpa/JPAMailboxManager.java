@@ -25,6 +25,7 @@ import org.apache.james.imap.store.Authenticator;
 import org.apache.james.imap.store.StoreMailboxManager;
 import org.apache.james.imap.store.Subscriber;
 import org.apache.james.imap.store.mail.MailboxMapper;
+import org.apache.james.imap.store.mail.TransactionalMapper;
 import org.apache.james.imap.store.mail.model.Mailbox;
 
 public abstract class JPAMailboxManager extends StoreMailboxManager {
@@ -40,11 +41,15 @@ public abstract class JPAMailboxManager extends StoreMailboxManager {
     
     @Override
     protected void doCreate(String namespaceName) throws MailboxException {
-        Mailbox mailbox = new org.apache.james.imap.jpa.mail.model.JPAMailbox(namespaceName, randomUidValidity());
+        final Mailbox mailbox = new org.apache.james.imap.jpa.mail.model.JPAMailbox(namespaceName, randomUidValidity());
         final MailboxMapper mapper = createMailboxMapper();
-        mapper.begin();
-        mapper.save(mailbox);
-        mapper.commit();
+        mapper.execute(new TransactionalMapper.Transaction(){
+
+            public void run() throws MailboxException {
+                mapper.save(mailbox);
+            }
+            
+        });
     }
     
 }

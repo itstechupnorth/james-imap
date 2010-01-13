@@ -35,7 +35,7 @@ import org.apache.james.imap.store.mail.model.Mailbox;
 /**
  * Data access management for mailbox.
  */
-public abstract class JPAMailboxMapper extends Mapper implements MailboxMapper {
+public abstract class JPAMailboxMapper extends JPATransactionalMapper implements MailboxMapper {
 
     private static final char SQL_WILDCARD_CHAR = '%';
     

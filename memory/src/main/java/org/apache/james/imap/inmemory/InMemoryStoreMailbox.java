@@ -85,12 +85,6 @@ public class InMemoryStoreMailbox extends StoreMailbox implements MessageMapper 
         return mailbox;
     }
 
-    public void begin() throws StorageException {
-    }
-
-    public void commit() throws StorageException {
-    }
-
     public long countMessagesInMailbox() throws StorageException {
         return membershipByUid.size();
     }
@@ -186,5 +180,13 @@ public class InMemoryStoreMailbox extends StoreMailbox implements MessageMapper 
 
     public List<MailboxMembership> searchMailbox(SearchQuery query) throws StorageException {
         return new ArrayList<MailboxMembership>(membershipByUid.values());
+    }
+
+
+    /**
+     * There is no really Transaction handling here.. Just run it 
+     */
+    public void execute(Transaction transaction) throws MailboxException {
+        transaction.run();
     }
 }

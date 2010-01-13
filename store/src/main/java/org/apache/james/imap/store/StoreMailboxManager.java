@@ -46,6 +46,7 @@ import org.apache.james.imap.mailbox.SubscriptionException;
 import org.apache.james.imap.mailbox.MailboxMetaData.Selectability;
 import org.apache.james.imap.mailbox.util.SimpleMailboxMetaData;
 import org.apache.james.imap.store.mail.MailboxMapper;
+import org.apache.james.imap.store.mail.TransactionalMapper;
 import org.apache.james.imap.store.mail.model.Mailbox;
 
 public abstract class StoreMailboxManager extends AbstractLogEnabled implements MailboxManager {
@@ -145,19 +146,24 @@ public abstract class StoreMailboxManager extends AbstractLogEnabled implements 
         }
     }
 
-    public void deleteMailbox(String mailboxName, MailboxSession session)
+    public void deleteMailbox(final String mailboxName, final MailboxSession session)
     throws MailboxException {
         session.getLog().info("deleteMailbox " + mailboxName);
         synchronized (mailboxes) {
             // TODO put this into a serilizable transaction
             final MailboxMapper mapper = createMailboxMapper();
-            mapper.begin();
-            Mailbox mailbox = mapper.findMailboxByName(mailboxName);
-            if (mailbox == null) {
-                throw new MailboxNotFoundException("Mailbox not found");
-            }
-            mapper.delete(mailbox);
-            mapper.commit();
+            mapper.execute(new TransactionalMapper.Transaction() {
+
+                public void run() throws MailboxException {
+                    Mailbox mailbox = mapper.findMailboxByName(mailboxName);
+                    if (mailbox == null) {
+                        throw new MailboxNotFoundException("Mailbox not found");
+                    }
+                    mapper.delete(mailbox);
+                }
+                
+            });
+            
             final StoreMailbox storeMailbox = mailboxes.remove(mailboxName);
             if (storeMailbox != null) {
                 storeMailbox.deleted(session);
@@ -165,7 +171,7 @@ public abstract class StoreMailboxManager extends AbstractLogEnabled implements 
         }
     }
 
-    public void renameMailbox(String from, String to, MailboxSession session)
+    public void renameMailbox(final String from, final String to, final MailboxSession session)
     throws MailboxException {
         final Log log = getLog();
         if (log.isDebugEnabled()) log.debug("renameMailbox " + from + " to " + to);
@@ -175,32 +181,37 @@ public abstract class StoreMailboxManager extends AbstractLogEnabled implements 
             }
 
             final MailboxMapper mapper = createMailboxMapper();                
-            mapper.begin();
-            // TODO put this into a serilizable transaction
-            final Mailbox mailbox = mapper.findMailboxByName(from);
+            mapper.execute(new TransactionalMapper.Transaction() {
 
-            if (mailbox == null) {
-                throw new MailboxNotFoundException(from);
-            }
-            mailbox.setName(to);
-            mapper.save(mailbox);
+                public void run() throws MailboxException {
+                    // TODO put this into a serilizable transaction
+                    final Mailbox mailbox = mapper.findMailboxByName(from);
 
-            changeMailboxName(from, to);
+                    if (mailbox == null) {
+                        throw new MailboxNotFoundException(from);
+                    }
+                    mailbox.setName(to);
+                    mapper.save(mailbox);
 
-            // rename submailbox
-            final List<Mailbox> subMailboxes = mapper.findMailboxWithNameLike(from + delimiter + "%");
-            for (Mailbox sub:subMailboxes) {
-                final String subOriginalName = sub.getName();
-                final String subNewName = to + subOriginalName.substring(from.length());
-                sub.setName(subNewName);
-                mapper.save(sub);
+                    changeMailboxName(from, to);
 
-                changeMailboxName(subOriginalName, subNewName);
+                    // rename submailbox
+                    final List<Mailbox> subMailboxes = mapper.findMailboxWithNameLike(from + delimiter + "%");
+                    for (Mailbox sub:subMailboxes) {
+                        final String subOriginalName = sub.getName();
+                        final String subNewName = to + subOriginalName.substring(from.length());
+                        sub.setName(subNewName);
+                        mapper.save(sub);
 
-                if (log.isDebugEnabled()) log.debug("Rename mailbox sub-mailbox " + subOriginalName + " to "
-                        + subNewName);
-            }
-            mapper.commit();
+                        changeMailboxName(subOriginalName, subNewName);
+
+                        if (log.isDebugEnabled()) log.debug("Rename mailbox sub-mailbox " + subOriginalName + " to "
+                                + subNewName);
+                    }
+                }
+                
+            });
+
         }
     }
 
@@ -298,10 +309,14 @@ public abstract class StoreMailboxManager extends AbstractLogEnabled implements 
 
     public void deleteEverything() throws MailboxException {
         final MailboxMapper mapper = createMailboxMapper();
-        mapper.begin();
-        mapper.deleteAll();
-        mapper.commit();
-        mailboxes.clear();
+        mapper.execute(new TransactionalMapper.Transaction() {
+
+            public void run() throws MailboxException {
+                mapper.deleteAll(); 
+                mailboxes.clear();
+            }
+            
+        });
     }
 
     public MailboxSession createSystemSession(String userName, Log log) {

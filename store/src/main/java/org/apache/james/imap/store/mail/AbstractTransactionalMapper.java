@@ -16,41 +16,56 @@
  * specific language governing permissions and limitations      *
  * under the License.                                           *
  ****************************************************************/
+
 package org.apache.james.imap.store.mail;
 
-import java.util.List;
-
-import org.apache.james.imap.mailbox.MessageRange;
-import org.apache.james.imap.mailbox.SearchQuery;
+import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.StorageException;
-import org.apache.james.imap.store.mail.model.MailboxMembership;
 
 /**
- * Maps messages in a mailbox.
+ *
+ * Run Transaction and handle begin, commit and rollback in the right order
+ *
  */
-public interface MessageMapper extends TransactionalMapper {
+public abstract class AbstractTransactionalMapper implements TransactionalMapper{
 
-    public abstract List<MailboxMembership> findInMailbox(MessageRange set)
-            throws StorageException;
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.store.mail.TransactionalMapper#execute(org.apache.james.imap.store.mail.TransactionalMapper.Transaction)
+     */
+    public final void execute(Transaction transaction) throws MailboxException {
+        begin();
+        try {
+            transaction.run();
+            commit();
+        } catch (MailboxException e) {
+            rollback();
+            throw e;
+        }
+        
+    }
+    
+    /**
+     * Begin transaction
+     * 
+     * @throws StorageException
+     */
+    protected abstract void begin() throws StorageException;
 
-    public abstract List<MailboxMembership> findMarkedForDeletionInMailbox(
-            final MessageRange set)
-            throws StorageException;
+    /**
+     * Commit transaction
+     * 
+     * @throws StorageException
+     */
+    protected abstract void commit() throws StorageException;
+    
+    
+    /**
+     * Rollback transaction
+     * 
+     * @throws StorageException
+     */
+    protected abstract void rollback() throws StorageException;
 
-    public abstract long countMessagesInMailbox()
-            throws StorageException;
-
-    public abstract long countUnseenMessagesInMailbox()
-            throws StorageException;
-
-    public abstract List<MailboxMembership> searchMailbox(SearchQuery query) throws StorageException;
-
-    public abstract void delete(MailboxMembership message) throws StorageException;
-
-    public abstract List<MailboxMembership> findUnseenMessagesInMailboxOrderByUid() throws StorageException;
-
-    public abstract List<MailboxMembership> findRecentMessagesInMailbox() throws StorageException;
-
-    public abstract void save(MailboxMembership message) throws StorageException;
 
 }

@@ -24,10 +24,7 @@ import org.apache.james.imap.mailbox.MailboxNotFoundException;
 import org.apache.james.imap.mailbox.StorageException;
 import org.apache.james.imap.store.mail.model.Mailbox;
 
-public interface MailboxMapper {
-    public abstract void begin() throws StorageException;
-    
-    public abstract void commit() throws StorageException;
+public interface MailboxMapper extends TransactionalMapper{
     
     public abstract void save(Mailbox mailbox) throws StorageException;
 

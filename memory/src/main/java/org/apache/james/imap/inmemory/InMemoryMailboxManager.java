@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.MailboxNotFoundException;
 import org.apache.james.imap.mailbox.StorageException;
 import org.apache.james.imap.store.Authenticator;
@@ -60,9 +61,6 @@ public class InMemoryMailboxManager extends StoreMailboxManager implements Mailb
         save(mailbox);
     }
 
-    public void begin() throws StorageException {}
-
-    public void commit() throws StorageException {}
 
     public long countMailboxesWithName(String name) throws StorageException {
         int total = 0;
@@ -121,6 +119,10 @@ public class InMemoryMailboxManager extends StoreMailboxManager implements Mailb
 
     public void save(Mailbox mailbox) throws StorageException {
         mailboxesById.put(mailbox.getMailboxId(), (InMemoryMailbox) mailbox);
+    }
+
+    public void execute(Transaction transaction) throws MailboxException {
+        transaction.run();
     }
 
 }

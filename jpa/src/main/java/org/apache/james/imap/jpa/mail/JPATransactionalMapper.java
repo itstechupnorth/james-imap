@@ -23,17 +23,25 @@ import javax.persistence.PersistenceException;
 
 import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.mailbox.StorageException;
+import org.apache.james.imap.store.mail.AbstractTransactionalMapper;
 
-abstract class Mapper {
+/**
+ * JPA implementation of TransactionMapper  
+ *
+ */
+public class JPATransactionalMapper extends AbstractTransactionalMapper {
 
     protected final EntityManager entityManager;
     
-    public Mapper(final EntityManager entityManager) {
-        super();
+    public JPATransactionalMapper(final EntityManager entityManager) {
         this.entityManager = entityManager;
     }
-    
-    public void begin() throws StorageException {
+
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.store.mail.AbstractTransactionalMapper#begin()
+     */
+    protected void begin() throws StorageException {
         try {
             entityManager.getTransaction().begin();
         } catch (PersistenceException e) {
@@ -41,13 +49,23 @@ abstract class Mapper {
         }
     }
     
-    public void commit() throws StorageException {
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.store.mail.AbstractTransactionalMapper#commit()
+     */
+    protected void commit() throws StorageException {
         try {
             entityManager.getTransaction().commit();
         } catch (PersistenceException e) {
-            // rollback on exception
-            entityManager.getTransaction().rollback();
             throw new StorageException(HumanReadableText.COMMIT_TRANSACTION_FAILED, e);
         }
+    }
+    
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.store.mail.AbstractTransactionalMapper#rollback()
+     */
+    protected void rollback() throws StorageException {
+        entityManager.getTransaction().rollback();
     }
 }

@@ -33,7 +33,7 @@ import org.apache.james.imap.mailbox.SearchQuery.NumericRange;
 import org.apache.james.imap.store.mail.MessageMapper;
 import org.apache.james.imap.store.mail.model.MailboxMembership;
 
-public class JPAMessageMapper extends Mapper implements MessageMapper {
+public class JPAMessageMapper extends JPATransactionalMapper implements MessageMapper {
 
     private final long mailboxId;
     
