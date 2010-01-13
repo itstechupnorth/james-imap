@@ -45,6 +45,8 @@ abstract class Mapper {
         try {
             entityManager.getTransaction().commit();
         } catch (PersistenceException e) {
+            // rollback on exception
+            entityManager.getTransaction().rollback();
             throw new StorageException(HumanReadableText.COMMIT_TRANSACTION_FAILED, e);
         }
     }
