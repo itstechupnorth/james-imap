@@ -39,7 +39,31 @@
     <developerConnection>scm:svn:https://${maven.username}@svn.apache.org/repos/asf/james/imap/trunk</developerConnection>
     <url>http://svn.apache.org/viewcvs.cgi/james/imap/trunk?root=Apache-SVN</url>
   </scm>
-  
+
+<repositories>
+    <!-- local repos -->
+    <repository>
+      <id>module-local</id>
+      <name>Local Repository</name>
+      <url>file://stage</url>
+      <layout>legacy</layout>
+      <snapshots>
+          <enabled>true</enabled>
+      </snapshots>
+      <releases>
+          <enabled>true</enabled>
+      </releases>
+    </repository>
+    
+    <!-- needed for javamail -->
+    <repository>
+      <id>maven2-repository.dev.java.net</id>
+      <name>Java.net Repository for Maven</name>
+      <url>http://download.java.net/maven/2/</url>
+      <layout>default</layout>
+    </repository>
+    
+  </repositories>
   <build>
     <plugins>
       <plugin>
@@ -546,7 +570,7 @@
     <version.commons-collections>3.2.1</version.commons-collections>
     <version.commons-logging>1.1</version.commons-logging>
     <version.apache-mime4j>0.6</version.apache-mime4j>
-    <version.javax.mail>1.4.1</version.javax.mail>
+    <version.javax.mail>1.4.3</version.javax.mail>
     <version.activation>1.1.1</version.activation>
     <version.torque>3.3</version.torque>
     <version.jmock>2.5.1</version.jmock>
