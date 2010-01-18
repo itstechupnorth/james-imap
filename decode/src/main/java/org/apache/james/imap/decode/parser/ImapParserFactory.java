@@ -38,7 +38,7 @@ import org.apache.james.imap.decode.MessagingImapCommandParser;
  */
 public class ImapParserFactory implements
         ImapCommandParserFactory {
-    private Map<String, Class> _imapCommands;
+    private Map<String, Class<?>> _imapCommands;
 
     private final ImapMessageFactory messageFactory;
 
@@ -50,7 +50,7 @@ public class ImapParserFactory implements
             final StatusResponseFactory statusResponseFactory) {
         this.messageFactory = messageFactory;
         this.statusResponseFactory = statusResponseFactory;
-        _imapCommands = new HashMap<String, Class>();
+        _imapCommands = new HashMap<String, Class<?>>();
 
         // Commands valid in any state
         // CAPABILITY, NOOP, and LOGOUT
@@ -128,7 +128,7 @@ public class ImapParserFactory implements
      * @see org.apache.james.imap.decode.parser.ImapCommandParserFactory#getParser(java.lang.String)
      */
     public ImapCommandParser getParser(String commandName) {
-        Class cmdClass = (Class) _imapCommands.get(commandName.toUpperCase());
+        Class<?> cmdClass = (Class<?>) _imapCommands.get(commandName.toUpperCase());
 
         if (cmdClass == null) {
             return null;
@@ -137,7 +137,7 @@ public class ImapParserFactory implements
         }
     }
 
-    private ImapCommandParser createCommand(Class commandClass) {
+    private ImapCommandParser createCommand(Class<?> commandClass) {
         try {
             ImapCommandParser cmd = (ImapCommandParser) commandClass
                     .newInstance();
@@ -151,7 +151,7 @@ public class ImapParserFactory implements
         }
     }
 
-    protected void initialiseParser(Class commandClass, ImapCommandParser cmd) {
+    protected void initialiseParser(Class<?> commandClass, ImapCommandParser cmd) {
         
         if (cmd instanceof DelegatingImapCommandParser) {
             ((DelegatingImapCommandParser) cmd).setParserFactory(this);

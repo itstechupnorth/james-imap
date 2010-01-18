@@ -44,7 +44,7 @@ public class ImapResponseComposerImplTest extends
         super.tearDown();
     }
 
-    protected byte[] encodeListResponse(String typeName, List attributes,
+    protected byte[] encodeListResponse(String typeName, List<String> attributes,
             String hierarchyDelimiter, String name) throws Exception {
         composer.listResponse(typeName, attributes, hierarchyDelimiter, name);
         return writer.getBytes();
@@ -73,7 +73,7 @@ public class ImapResponseComposerImplTest extends
     }
 
     protected byte[] encodeStatusResponse(String tag, ImapCommand command,
-            String type, String responseCode, Collection parameters,
+            String type, String responseCode, Collection<String> parameters,
             int number, String text) throws Exception {
         composer.statusResponse(tag, command, type, responseCode, parameters,
                 number, text);

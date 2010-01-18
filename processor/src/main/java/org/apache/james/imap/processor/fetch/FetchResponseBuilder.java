@@ -205,7 +205,7 @@ final class FetchResponseBuilder {
         final String name = fetchElement.getResponseName();
         final int specifier = fetchElement.getSectionType();
         final int[] path = fetchElement.getPath();
-        final Collection names = fetchElement.getFieldNames();
+        final Collection<String> names = fetchElement.getFieldNames();
         final boolean isBase = (path == null || path.length == 0);
         final FetchResponse.BodyElement fullResult = bodyContent(messageResult,
                 name, specifier, path, names, isBase);
@@ -217,7 +217,7 @@ final class FetchResponseBuilder {
 
     private FetchResponse.BodyElement bodyContent(
             final MessageResult messageResult, final String name,
-            final int specifier, final int[] path, final Collection names,
+            final int specifier, final int[] path, final Collection<String> names,
             final boolean isBase) throws MessagingException {
         final FetchResponse.BodyElement fullResult;
         switch (specifier) {
@@ -309,7 +309,7 @@ final class FetchResponseBuilder {
 
     private FetchResponse.BodyElement fieldsNot(
             final MessageResult messageResult, String name, final int[] path,
-            Collection names, final boolean isBase)
+            Collection<String> names, final boolean isBase)
             throws MailboxException, MessagingException {
         final FetchResponse.BodyElement result;
 
@@ -321,7 +321,7 @@ final class FetchResponseBuilder {
     }
 
     private FetchResponse.BodyElement fields(final MessageResult messageResult,
-            String name, final int[] path, Collection names,
+            String name, final int[] path, Collection<String> names,
             final boolean isBase) throws MailboxException,
             MessagingException {
         final FetchResponse.BodyElement result;

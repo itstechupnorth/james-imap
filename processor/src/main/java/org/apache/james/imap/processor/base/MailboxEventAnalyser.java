@@ -89,9 +89,9 @@ public class MailboxEventAnalyser implements MailboxListener {
 
     private boolean interestingFlags(FlagsUpdated updated) {
         final boolean result;
-        final Iterator it = updated.flagsIterator();
+        final Iterator<Flags.Flag> it = updated.flagsIterator();
         if (it.hasNext()) {
-            final Flags.Flag flag = (Flags.Flag) it.next();
+            final Flags.Flag flag = it.next();
             if (flag.equals(uninterestingFlag)) {
                 result = false;
             } else {

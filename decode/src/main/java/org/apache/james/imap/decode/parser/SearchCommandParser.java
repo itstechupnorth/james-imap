@@ -930,9 +930,9 @@ class SearchCommandParser extends AbstractUidCommandParser {
     private synchronized void loadCharsetNames() {
         if (charsetNames == null) {
             charsetNames = new HashSet<String>();
-            for (final Iterator it = Charset.availableCharsets().values()
+            for (final Iterator<Charset> it = Charset.availableCharsets().values()
                     .iterator(); it.hasNext();) {
-                final Charset charset = (Charset) it.next();
+                final Charset charset = it.next();
                 final Set<String> aliases = charset.aliases();
                 charsetNames.addAll(aliases);
             }

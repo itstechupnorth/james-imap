@@ -28,7 +28,7 @@ import org.apache.james.imap.message.response.Literal;
 
 public class MockImapResponseWriter implements ImapResponseWriter {
 
-    public final List operations = new ArrayList();
+    public final List<Object> operations = new ArrayList<Object>();
 
     public void commandName(String commandName) {
         operations.add(new CommandNameOperation(commandName));

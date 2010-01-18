@@ -24,6 +24,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import javax.mail.Flags;
+import javax.mail.Flags.Flag;
 
 import org.apache.james.imap.mailbox.MailboxListener.FlagsUpdated;
 
@@ -53,7 +54,7 @@ public class FakeMailboxListenerFlagsUpdate extends FlagsUpdated {
         return sessionId;
     }
 
-    public Iterator flagsIterator() {
+    public Iterator<Flag> flagsIterator() {
         return flags.iterator();
     }
 

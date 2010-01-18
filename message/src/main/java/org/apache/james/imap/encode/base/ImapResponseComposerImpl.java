@@ -258,7 +258,7 @@ public class ImapResponseComposerImpl implements ImapConstants, ImapResponseComp
      *      java.lang.String, Collection, long, java.lang.String)
      */
     public void statusResponse(String tag, ImapCommand command, String type,
-            String responseCode, Collection parameters, long number, String text)
+            String responseCode, Collection<String> parameters, long number, String text)
             throws IOException {
         if (tag == null) {
             untagged();
@@ -271,8 +271,8 @@ public class ImapResponseComposerImpl implements ImapConstants, ImapResponseComp
             message(responseCode);
             if (parameters != null && !parameters.isEmpty()) {
                 openParen();
-                for (Iterator it = parameters.iterator(); it.hasNext();) {
-                    final String parameter = (String) it.next();
+                for (Iterator<String> it = parameters.iterator(); it.hasNext();) {
+                    final String parameter = it.next();
                     message(parameter);
                 }
                 closeParen();
@@ -338,14 +338,14 @@ public class ImapResponseComposerImpl implements ImapConstants, ImapResponseComp
         end();
     }
 
-    public void listResponse(String typeName, List attributes,
+    public void listResponse(String typeName, List<String> attributes,
             String hierarchyDelimiter, String name) throws IOException {
         untagged();
         message(typeName);
         openParen();
         if (attributes != null) {
-            for (Iterator it = attributes.iterator(); it.hasNext();) {
-                final String attribute = (String) it.next();
+            for (Iterator<String> it = attributes.iterator(); it.hasNext();) {
+                final String attribute =  it.next();
                 message(attribute);
             }
         }

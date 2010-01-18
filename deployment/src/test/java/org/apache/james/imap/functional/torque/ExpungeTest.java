@@ -21,7 +21,6 @@ package org.apache.james.imap.functional.torque;
 
 import org.apache.james.imap.functional.suite.Expunge;
 import org.apache.james.mailboxmanager.torque.TorqueHostSystemFactory;
-import org.apache.james.test.functional.HostSystem;
 
 public class ExpungeTest extends Expunge {
 

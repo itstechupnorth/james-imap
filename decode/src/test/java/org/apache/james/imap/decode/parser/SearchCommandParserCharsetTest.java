@@ -88,9 +88,9 @@ public class SearchCommandParserCharsetTest extends MockObjectTestCase {
 
     public void testBadCharset() throws Exception {
         final Collection<String> charsetNames = new HashSet<String>();
-        for (final Iterator it = Charset.availableCharsets().values()
+        for (final Iterator<Charset> it = Charset.availableCharsets().values()
                 .iterator(); it.hasNext();) {
-            final Charset charset = (Charset) it.next();
+            final Charset charset = it.next();
             final Set<String> aliases = charset.aliases();
             charsetNames.addAll(aliases);
         }

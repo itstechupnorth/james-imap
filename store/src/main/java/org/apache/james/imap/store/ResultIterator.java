@@ -27,7 +27,6 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 import javax.mail.Flags;
-import javax.mail.internet.MimeMessage;
 
 import org.apache.james.imap.mailbox.Content;
 import org.apache.james.imap.mailbox.MailboxException;
@@ -123,28 +122,16 @@ public class ResultIterator implements Iterator<MessageResult> {
             throw exception;
         }
 
-        public FetchGroup getIncludedResults() {
+        @SuppressWarnings("unused")
+		public FetchGroup getIncludedResults() {
             return FETCH_GROUP;
         }
 
         public Date getInternalDate() {
             return internalDate;
         }
-
-        public String getKey() {
-            return null;
-        }
-
         public Content getBody() throws MailboxException {
             throw exception;
-        }
-
-        public MimeMessage getMimeMessage() throws MailboxException {
-            throw exception;
-        }
-
-        public int getMsn() {
-            return 0;
         }
 
         public int getSize() {
@@ -167,11 +154,6 @@ public class ResultIterator implements Iterator<MessageResult> {
             // Java 1.5 return (int) Math.signum(uid - that.getUid());
             long diff = uid - that.getUid();
             return (int) diff == 0 ? 0 : diff > 0 ? 1 : -1;
-        }
-
-        public Content getMessageBody(MimePath path)
-                throws MailboxException {
-            throw exception;
         }
 
         public Content getFullContent(MimePath path)

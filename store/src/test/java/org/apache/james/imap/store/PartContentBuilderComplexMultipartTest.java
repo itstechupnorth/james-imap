@@ -26,6 +26,7 @@ import java.util.List;
 
 import junit.framework.TestCase;
 
+import org.apache.james.imap.mailbox.MessageResult.Header;
 import org.apache.james.imap.store.PartContentBuilder.PartNotFoundException;
 
 public class PartContentBuilderComplexMultipartTest extends TestCase {
@@ -195,14 +196,14 @@ public class PartContentBuilderComplexMultipartTest extends TestCase {
 
     private void checkContentType(String contentType, int[] position)
             throws Exception {
-        List headers = headers(position);
+        List<Header> headers = headers(position);
         assertEquals(1, headers.size());
         ResultHeader header = (ResultHeader) headers.get(0);
         assertEquals(CONTENT_TYPE, header.getName());
         assertEquals(contentType, header.getValue());
     }
 
-    private List headers(int[] position) throws Exception {
+    private List<Header> headers(int[] position) throws Exception {
         to(position);
         return builder.getMimeHeaders();
     }

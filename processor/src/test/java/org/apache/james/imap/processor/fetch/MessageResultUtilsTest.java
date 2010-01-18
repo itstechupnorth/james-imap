@@ -56,9 +56,6 @@ public class MessageResultUtilsTest extends TestCase {
             return 0;
         }
 
-        public void writeTo(StringBuffer buffer) {
-        }
-
         public String getName() {
             return name;
         }

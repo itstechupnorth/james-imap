@@ -160,7 +160,7 @@ public interface ImapResponseComposer {
      * @param name
      *            mailbox name
      */
-    public abstract void listResponse(String typeName, List attributes,
+    public abstract void listResponse(String typeName, List<String> attributes,
             String hierarchyDelimiter, String name) throws IOException;
 
     /**
@@ -200,7 +200,7 @@ public interface ImapResponseComposer {
     public abstract void tag(String tag) throws IOException;
 
     public abstract void statusResponse(String tag, ImapCommand command,
-            String type, String responseCode, Collection parameters,
+            String type, String responseCode, Collection<String> parameters,
             long number, String text) throws IOException;
 
     public abstract void statusResponse(Long messages, Long recent,

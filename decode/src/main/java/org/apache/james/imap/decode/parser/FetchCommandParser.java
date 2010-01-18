@@ -157,7 +157,7 @@ class FetchCommandParser extends AbstractUidCommandParser {
         decoder.decode(parameter);
         final int sectionType = getSectionType(decoder);
 
-        final List names = decoder.getNames();
+        final List<String> names = decoder.getNames();
         final int[] path = decoder.getPath();
         final BodyFetchElement bodyFetchElement = new BodyFetchElement(
                 responseName, sectionType, path, names, firstOctet,

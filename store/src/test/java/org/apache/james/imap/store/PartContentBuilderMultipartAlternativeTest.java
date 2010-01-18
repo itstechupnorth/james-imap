@@ -24,6 +24,8 @@ import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.util.List;
 
+import org.apache.james.imap.mailbox.MessageResult.Header;
+
 import junit.framework.TestCase;
 
 public class PartContentBuilderMultipartAlternativeTest extends TestCase {
@@ -116,14 +118,14 @@ public class PartContentBuilderMultipartAlternativeTest extends TestCase {
 
     private void checkContentType(String contentType, String mail, int position)
             throws Exception {
-        List headers = headers(mail, position);
+        List<Header> headers = headers(mail, position);
         assertEquals(1, headers.size());
         ResultHeader header = (ResultHeader) headers.get(0);
         assertEquals(CONTENT_TYPE, header.getName());
         assertEquals(contentType, header.getValue());
     }
 
-    private List headers(String mail, int position) throws Exception {
+    private List<Header> headers(String mail, int position) throws Exception {
         InputStream in = new ByteArrayInputStream(Charset.forName("us-ascii")
                 .encode(mail).array());
         builder.parse(in);

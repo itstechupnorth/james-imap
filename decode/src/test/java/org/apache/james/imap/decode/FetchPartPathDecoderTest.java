@@ -172,9 +172,9 @@ public class FetchPartPathDecoderTest extends TestCase {
         }
         base = base + ')';
         decoder.decode(base);
-        Collection results = decoder.getNames();
+        Collection<String> results = decoder.getNames();
         assertNotNull(results);
-        Iterator it = results.iterator();
+        Iterator<String> it = results.iterator();
         for (int i = 0; i < names.length; i++) {
             assertEquals(names[i], it.next());
         }

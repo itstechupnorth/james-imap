@@ -68,7 +68,7 @@ public class SearchProcessor extends AbstractMailboxProcessor {
 
             final SearchQuery query = toQuery(searchKey, session);
 
-            final Collection results = findIds(useUids, session, mailbox, query);
+            final Collection<Long> results = findIds(useUids, session, mailbox, query);
             final long[] ids = toArray(results);
 
             final SearchResponse response = new SearchResponse(ids);
@@ -81,8 +81,8 @@ public class SearchProcessor extends AbstractMailboxProcessor {
         }
     }
 
-    private long[] toArray(final Collection results) {
-        final Iterator it = results.iterator();
+    private long[] toArray(final Collection<Long> results) {
+        final Iterator<Long> it = results.iterator();
         final int length = results.size();
         long[] ids = new long[length];
         for (int i = 0; i < length; i++) {
@@ -91,7 +91,7 @@ public class SearchProcessor extends AbstractMailboxProcessor {
         return ids;
     }
 
-    private Collection findIds(final boolean useUids,
+    private Collection<Long> findIds(final boolean useUids,
             final ImapSession session, Mailbox mailbox, final SearchQuery query)
             throws MailboxException {
         final Iterator<Long> it = mailbox.search(query, ImapSessionUtils

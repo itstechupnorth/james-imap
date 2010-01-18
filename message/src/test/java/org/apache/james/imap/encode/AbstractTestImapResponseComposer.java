@@ -21,7 +21,6 @@ package org.apache.james.imap.encode;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 import javax.mail.Flags;
@@ -153,11 +152,11 @@ public abstract class AbstractTestImapResponseComposer extends MockObjectTestCas
 
     public void testShouldEncodeUnparameterisedStatus() throws Exception {
         checkStatusResponseEncode("A1 NO [ALERT] APPEND failed\r\n", "A1",
-                command("APPEND"), "NO", "ALERT", Collections.EMPTY_LIST, 0,
+                command("APPEND"), "NO", "ALERT", new ArrayList<String>(), 0,
                 "failed");
         checkStatusResponseEncode("A1 BAD [TRYCREATE] SELECT whatever\r\n",
                 "A1", command("SELECT"), "BAD", "TRYCREATE",
-                Collections.EMPTY_LIST, 0, "whatever");
+                new ArrayList<String>(), 0, "whatever");
     }
 
     public void testShouldEncodeListParameterStatus() throws Exception {
@@ -202,7 +201,7 @@ public abstract class AbstractTestImapResponseComposer extends MockObjectTestCas
     protected abstract byte[] encodeSearchResponse(long[] ids) throws Exception;
 
     private void checkListResponseEncode(String expected, String typeName,
-            List attributes, String hierarchyDelimiter, String name)
+            List<String> attributes, String hierarchyDelimiter, String name)
             throws Exception {
         StringBuffer buffer = new StringBuffer();
         byte[] output = encodeListResponse(typeName, attributes,
@@ -215,7 +214,7 @@ public abstract class AbstractTestImapResponseComposer extends MockObjectTestCas
     }
 
     protected abstract byte[] encodeListResponse(String typeName,
-            List attributes, String hierarchyDelimiter, String name)
+            List<String> attributes, String hierarchyDelimiter, String name)
             throws Exception;
 
     private void checkStatusResponseEncode(String expected, Long messages,
@@ -239,11 +238,11 @@ public abstract class AbstractTestImapResponseComposer extends MockObjectTestCas
 
     protected abstract byte[] encodeStatusResponse(String tag,
             ImapCommand command, String type, String responseCode,
-            Collection parameters, int number, String text) throws Exception;
+            Collection<String> parameters, int number, String text) throws Exception;
 
     private void checkStatusResponseEncode(String expected, String tag,
             ImapCommand command, String type, String responseCode,
-            Collection parameters, int number, String text) throws Exception {
+            Collection<String> parameters, int number, String text) throws Exception {
         StringBuffer buffer = new StringBuffer();
         byte[] output = encodeStatusResponse(tag, command, type, responseCode,
                 parameters, number, text);
