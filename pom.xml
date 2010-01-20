@@ -46,6 +46,7 @@
     <module>memory</module>
     <module>seda</module>
     <module>deployment</module>
+    <module>parent</module>
   </modules>
 
   <distributionManagement>
