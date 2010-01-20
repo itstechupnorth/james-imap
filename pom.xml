@@ -47,6 +47,8 @@
     <module>seda</module>
     <module>deployment</module>
     <module>parent</module>
+    <module>maildir</module>
+    
   </modules>
 
   <distributionManagement>
