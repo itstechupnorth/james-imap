@@ -97,7 +97,7 @@ public abstract class JPAMailboxMapper extends JPATransactionalMapper implements
     @SuppressWarnings("unchecked")
     public List<Mailbox> findMailboxWithNameLike(String name) throws StorageException {
         try {
-            return entityManager.createNamedQuery("findMailboxWithNameLike").setParameter("nameParam", name).getResultList();
+            return entityManager.createNamedQuery("findMailboxWithNameLike").setParameter("nameParam", SQL_WILDCARD_CHAR + name + SQL_WILDCARD_CHAR).getResultList();
         } catch (PersistenceException e) {
             throw new StorageException(HumanReadableText.SEARCH_FAILED, e);
         } 
