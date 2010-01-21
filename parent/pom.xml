@@ -502,6 +502,17 @@
         END OpenJPA
       -->
 
+      <!-- 
+        START Maildir
+      -->
+      <dependency>
+        <groupId>commons-transaction</groupId>
+        <artifactId>commons-transaction</artifactId>
+        <version>2.0-SNAPSHOT</version>
+      </dependency>
+      <!-- 
+        END Maildir
+      -->
     </dependencies>
   </dependencyManagement>
 
