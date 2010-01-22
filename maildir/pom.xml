@@ -28,6 +28,23 @@
   <groupId>org.apache.james</groupId>
   <artifactId>apache-james-imap-maildir</artifactId>
   <name>Apache James IMAP Maildir Mailbox Manager</name>
+  
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>2.1</version>
+        <!-- commons-transaction 2 needs java6 -->
+        <configuration>
+          <source>1.6</source>
+          <target>1.6</target>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+  
+  
   <dependencies>
     <dependency>
       <groupId>${javax.mail.groupId}</groupId>
@@ -69,7 +86,13 @@
       <groupId>commons-transaction</groupId>
       <artifactId>commons-transaction</artifactId>
     </dependency>
-      
+    
+    <dependency>
+      <groupId>com.thoughtworks.xstream</groupId>
+      <artifactId>xstream</artifactId>
+    </dependency>
+    
+    
     <dependency>
       <groupId>commons-collections</groupId>
       <artifactId>commons-collections</artifactId>
