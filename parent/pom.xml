@@ -505,6 +505,7 @@
       <!-- 
         START Maildir
       -->
+      <!-- 
       <dependency>
         <groupId>commons-transaction</groupId>
         <artifactId>commons-transaction</artifactId>
@@ -515,7 +516,7 @@
         <artifactId>xstream</artifactId>
         <version>1.3.1</version>
       </dependency>
- 
+      -->
 
       
       <!-- 
