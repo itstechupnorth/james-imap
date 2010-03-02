@@ -24,6 +24,7 @@ import java.util.List;
 
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -43,7 +44,8 @@ public class JPAMessage implements Document {
     @Id@GeneratedValue private long id;
 
     /** The value for the body field. Lazy loaded */
-    @Basic(optional=false, fetch=FetchType.LAZY) @Lob private byte[] content;
+    /** We use a max length to represent 1gb data. Thats prolly overkill, but who knows */
+    @Basic(optional=false, fetch=FetchType.LAZY) @Column(length=1048576000) @Lob private byte[] content;
     /** Headers for this message */
     @OneToMany(cascade = CascadeType.ALL, fetch=FetchType.LAZY) private List<JPAHeader> headers;
     /** The first body octet */
