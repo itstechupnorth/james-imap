@@ -19,6 +19,7 @@
 package org.apache.james.imap.jpa.mail;
 
 import javax.persistence.EntityManager;
+import javax.persistence.EntityTransaction;
 import javax.persistence.PersistenceException;
 
 import org.apache.james.imap.api.display.HumanReadableText;
@@ -66,6 +67,10 @@ public class JPATransactionalMapper extends AbstractTransactionalMapper {
      * @see org.apache.james.imap.store.mail.AbstractTransactionalMapper#rollback()
      */
     protected void rollback() throws StorageException {
-        entityManager.getTransaction().rollback();
+        EntityTransaction transaction = entityManager.getTransaction();
+        // check if we have a transaction to rollback
+        if (transaction.isActive()) {
+            entityManager.getTransaction().rollback();
+        }
     }
 }
