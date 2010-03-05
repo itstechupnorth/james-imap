@@ -40,7 +40,9 @@ public class JPAHeader implements Comparable<Header>, Header {
     @Basic(optional=false) private String field;
 
     /** The value for the value field */
-    @Column(length=512)
+    /** We use a 1024 as length because the max line length is 998 and 1024 is not so strict. The limit usual count for the whole line but 
+     ** giving a few extra chars can't harm to much. See RFC2822 2.1.1 **/
+    @Column(length=1024)
     @Basic(optional=false) private String value;
     
     /**
