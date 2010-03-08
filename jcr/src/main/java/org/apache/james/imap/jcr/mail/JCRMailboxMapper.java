@@ -45,7 +45,8 @@ public class JCRMailboxMapper extends NonTransactionalMapper implements MailboxM
 	public JCRMailboxMapper(Session session) {
 		this.session = session;
 	}
-	@Override
+	
+	
 	public long countMailboxesWithName(String name) throws StorageException {
 		// TODO Auto-generated method stub
 		return 0;
@@ -94,28 +95,24 @@ public class JCRMailboxMapper extends NonTransactionalMapper implements MailboxM
 		}
 	}
 
-	@Override
 	public Mailbox findMailboxById(long mailboxId) throws StorageException,
 			MailboxNotFoundException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
-	@Override
 	public Mailbox findMailboxByName(String name) throws StorageException,
 			MailboxNotFoundException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
-	@Override
 	public List<Mailbox> findMailboxWithNameLike(String name)
 			throws StorageException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
-	@Override
 	public void save(Mailbox mailbox) throws StorageException {
 		// TODO Auto-generated method stub
 		

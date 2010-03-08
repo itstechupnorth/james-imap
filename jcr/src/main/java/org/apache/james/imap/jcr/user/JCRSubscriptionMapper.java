@@ -29,10 +29,7 @@ import javax.jcr.Session;
 
 import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.jcr.user.model.JCRSubscription;
-import org.apache.james.imap.mailbox.MailboxException;
-import org.apache.james.imap.mailbox.StorageException;
 import org.apache.james.imap.mailbox.SubscriptionException;
-import org.apache.james.imap.store.transaction.AbstractTransactionalMapper;
 import org.apache.james.imap.store.transaction.NonTransactionalMapper;
 import org.apache.james.imap.store.user.SubscriptionMapper;
 import org.apache.james.imap.store.user.model.Subscription;
