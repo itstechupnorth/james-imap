@@ -522,6 +522,25 @@
       <!-- 
         END Maildir
       -->
+      
+      <!-- 
+        START JCR
+      -->
+      <dependency>
+        <groupId>javax.jcr</groupId>
+        <artifactId>jcr</artifactId>
+        <version>1.0</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.jackrabbit</groupId>
+        <artifactId>jackrabbit-jcr-commons</artifactId>
+        <version>2.0.0</version>
+      </dependency>
+      
+      <!-- 
+        END JCR
+      -->
+      
     </dependencies>
   </dependencyManagement>
 

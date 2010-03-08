@@ -43,6 +43,7 @@
     <module>processor</module>
     <module>torque</module>
     <module>jpa</module>
+    <module>jcr</module>
     <module>memory</module>
     <module>seda</module>
     <module>deployment</module>

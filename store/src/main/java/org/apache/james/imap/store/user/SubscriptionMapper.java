@@ -23,10 +23,24 @@ import java.util.List;
 import org.apache.james.imap.mailbox.SubscriptionException;
 import org.apache.james.imap.store.user.model.Subscription;
 
+/**
+ * 
+ *
+ */
 public interface SubscriptionMapper {
 
+	/**
+	 * Begin transaction 
+	 * 
+	 * @throws SubscriptionException
+	 */
     public abstract void begin() throws SubscriptionException;
 
+    /**
+     * Commit transaction
+     * 
+     * @throws SubscriptionException
+     */
     public abstract void commit() throws SubscriptionException;
 
     /**
