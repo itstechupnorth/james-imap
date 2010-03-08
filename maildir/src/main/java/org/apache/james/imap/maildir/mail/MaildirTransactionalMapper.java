@@ -23,7 +23,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.transaction.file.TxFileResourceManager;
 import org.apache.james.imap.mailbox.StorageException;
-import org.apache.james.imap.store.mail.AbstractTransactionalMapper;
+import org.apache.james.imap.store.transaction.AbstractTransactionalMapper;
 
 /**
  * TransactionManager which supports Transactions for Maildir

@@ -21,28 +21,16 @@ package org.apache.james.imap.store.user;
 import java.util.List;
 
 import org.apache.james.imap.mailbox.SubscriptionException;
+import org.apache.james.imap.store.transaction.TransactionalMapper;
 import org.apache.james.imap.store.user.model.Subscription;
 
 /**
  * 
  *
  */
-public interface SubscriptionMapper {
+public interface SubscriptionMapper extends TransactionalMapper{
 
-	/**
-	 * Begin transaction 
-	 * 
-	 * @throws SubscriptionException
-	 */
-    public abstract void begin() throws SubscriptionException;
-
-    /**
-     * Commit transaction
-     * 
-     * @throws SubscriptionException
-     */
-    public abstract void commit() throws SubscriptionException;
-
+	
     /**
      * Finds any subscriptions for a given user to the given mailbox.
      * @param user not null

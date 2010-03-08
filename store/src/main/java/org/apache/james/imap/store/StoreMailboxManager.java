@@ -46,8 +46,8 @@ import org.apache.james.imap.mailbox.SubscriptionException;
 import org.apache.james.imap.mailbox.MailboxMetaData.Selectability;
 import org.apache.james.imap.mailbox.util.SimpleMailboxMetaData;
 import org.apache.james.imap.store.mail.MailboxMapper;
-import org.apache.james.imap.store.mail.TransactionalMapper;
 import org.apache.james.imap.store.mail.model.Mailbox;
+import org.apache.james.imap.store.transaction.TransactionalMapper;
 
 public abstract class StoreMailboxManager extends AbstractLogEnabled implements MailboxManager {
     public static final String USER_NAMESPACE_PREFIX = "#mail";

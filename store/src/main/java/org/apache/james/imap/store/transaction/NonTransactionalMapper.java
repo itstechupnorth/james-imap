@@ -16,56 +16,44 @@
  * specific language governing permissions and limitations      *
  * under the License.                                           *
  ****************************************************************/
-
-package org.apache.james.imap.store.mail;
+package org.apache.james.imap.store.transaction;
 
 import org.apache.james.imap.mailbox.MailboxException;
-import org.apache.james.imap.mailbox.StorageException;
 
 /**
- *
- * Run Transaction and handle begin, commit and rollback in the right order
+ * Mapper which not do any real transaction handling. It just execute the execute() method
+ * of the Transaction object without any special handling.
+ *  
+ * This class is mostly useful for Mapper implementations which not support Transactions
  *
  */
-public abstract class AbstractTransactionalMapper implements TransactionalMapper{
+public class NonTransactionalMapper extends AbstractTransactionalMapper {
 
-    /*
-     * (non-Javadoc)
-     * @see org.apache.james.imap.store.mail.TransactionalMapper#execute(org.apache.james.imap.store.mail.TransactionalMapper.Transaction)
+
+    /**
+     * Do nothing because we don't support transaction
      */
-    public final void execute(Transaction transaction) throws MailboxException {
-        begin();
-        try {
-            transaction.run();
-            commit();
-        } catch (MailboxException e) {
-            rollback();
-            throw e;
-        }
+    protected void begin() throws MailboxException {
+        // do nothing
         
     }
-    
-    /**
-     * Begin transaction
-     * 
-     * @throws StorageException
-     */
-    protected abstract void begin() throws StorageException;
+
 
     /**
-     * Commit transaction
-     * 
-     * @throws StorageException
+     * Do nothing because we don't support transaction
      */
-    protected abstract void commit() throws StorageException;
-    
-    
-    /**
-     * Rollback transaction
-     * 
-     * @throws StorageException
-     */
-    protected abstract void rollback() throws StorageException;
+    protected void commit() throws MailboxException {
+        // do nothing
+        
+    }
 
+
+    /**
+     * Do nothing because we don't support transaction
+     */
+    protected void rollback() throws MailboxException {
+        // do nothing
+        
+    }
 
 }

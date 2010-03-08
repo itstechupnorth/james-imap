@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.store.StoreSubscriptionManager;
 import org.apache.james.imap.store.user.SubscriptionMapper;
 import org.apache.james.imap.store.user.model.Subscription;
@@ -50,12 +51,6 @@ public class InMemorySubscriptionManager extends StoreSubscriptionManager implem
     @Override
     protected Subscription createSubscription(String user, String mailbox) {
         return new InMemorySubscription(mailbox, user);
-    }
-
-    public void begin() {
-    }
-
-    public void commit() {
     }
 
     public synchronized void delete(Subscription subscription) {
@@ -168,5 +163,9 @@ public class InMemorySubscriptionManager extends StoreSubscriptionManager implem
                 + " ]";
         }
         
+    }
+
+    public void execute(Transaction transaction) throws MailboxException {
+        transaction.run();
     }
 }

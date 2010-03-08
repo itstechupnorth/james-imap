@@ -16,24 +16,33 @@
  * specific language governing permissions and limitations      *
  * under the License.                                           *
  ****************************************************************/
-package org.apache.james.imap.store.mail;
+
+package org.apache.james.imap.store.transaction;
 
 import org.apache.james.imap.mailbox.MailboxException;
 
-/**
- * Mapper which not do any real transaction handling. It just execute the execute() method
- *  of the Transaction object without any special handling.
- *  
- *  This class is mostly usefull for Mapper implementations which not support Transactions
- *
- */
-public class NonTransactionalMapper implements TransactionalMapper {
-
-	/**
-	 * Just execute the Transaction object without any transaction support.
-	 */
-	public void execute(Transaction transaction) throws MailboxException {
-		transaction.run();
-	}
+public interface TransactionalMapper {
+    
+    /**
+     * Execute the given Transaction
+     * 
+     * @param transaction 
+     * @throws MailboxException
+     */
+    public void execute(Transaction transaction) throws MailboxException;
+    
+    /**
+     * Transaction 
+     *
+     */
+    public interface Transaction {
+        
+        /**
+         * Run code in a Transaction
+         * 
+         * @throws MailboxException
+         */
+        public void run() throws MailboxException;
+    }
 
 }

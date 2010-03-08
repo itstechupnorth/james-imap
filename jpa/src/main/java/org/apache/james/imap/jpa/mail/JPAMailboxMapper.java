@@ -26,6 +26,7 @@ import javax.persistence.NoResultException;
 import javax.persistence.PersistenceException;
 
 import org.apache.james.imap.api.display.HumanReadableText;
+import org.apache.james.imap.jpa.JPATransactionalMapper;
 import org.apache.james.imap.jpa.mail.model.JPAMailbox;
 import org.apache.james.imap.mailbox.MailboxNotFoundException;
 import org.apache.james.imap.mailbox.StorageException;

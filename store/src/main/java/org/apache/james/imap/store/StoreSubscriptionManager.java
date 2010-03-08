@@ -22,7 +22,9 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 
+import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.SubscriptionException;
+import org.apache.james.imap.store.transaction.TransactionalMapper;
 import org.apache.james.imap.store.user.SubscriptionMapper;
 import org.apache.james.imap.store.user.model.Subscription;
 
@@ -41,14 +43,23 @@ public abstract class StoreSubscriptionManager implements Subscriber {
     
     public void subscribe(final String user, final String mailbox) throws SubscriptionException {
         final SubscriptionMapper mapper = createMapper();
-        mapper.begin();
+        try {
+            mapper.execute(new TransactionalMapper.Transaction() {
 
-        final Subscription subscription = mapper.findFindMailboxSubscriptionForUser(user, mailbox);
-        if (subscription == null) {
-            final Subscription newSubscription = createSubscription(user, mailbox);
-            mapper.save(newSubscription);
-            mapper.commit();
+                public void run() throws MailboxException {
+                    final Subscription subscription = mapper.findFindMailboxSubscriptionForUser(user, mailbox);
+                    if (subscription == null) {
+                        final Subscription newSubscription = createSubscription(user, mailbox);
+                        mapper.save(newSubscription);
+                    }
+                }
+                
+            });
+        } catch (MailboxException e) {
+            throw (SubscriptionException) e;
         }
+
+
     }
 
     protected abstract Subscription createSubscription(final String user, final String mailbox);
@@ -65,12 +76,21 @@ public abstract class StoreSubscriptionManager implements Subscriber {
 
     public void unsubscribe(final String user, final String mailbox) throws SubscriptionException {
         final SubscriptionMapper mapper = createMapper();
-        mapper.begin();
+        try {
+            mapper.execute(new TransactionalMapper.Transaction() {
 
-        final Subscription subscription = mapper.findFindMailboxSubscriptionForUser(user, mailbox);
-        if (subscription != null) {
-            mapper.delete(subscription);
-            mapper.commit();
+                public void run() throws MailboxException {
+                    final Subscription subscription = mapper.findFindMailboxSubscriptionForUser(user, mailbox);
+                    if (subscription != null) {
+                        mapper.delete(subscription);
+                    }
+                }
+
+            });
+        } catch (MailboxException e) {
+            throw (SubscriptionException) e;
         }
+
+        
     }
 }

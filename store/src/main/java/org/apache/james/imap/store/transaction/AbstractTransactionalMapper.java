@@ -17,32 +17,54 @@
  * under the License.                                           *
  ****************************************************************/
 
-package org.apache.james.imap.store.mail;
+package org.apache.james.imap.store.transaction;
 
 import org.apache.james.imap.mailbox.MailboxException;
 
-public interface TransactionalMapper {
-    
-    /**
-     * Execute the given Transaction
-     * 
-     * @param transaction 
-     * @throws MailboxException
+/**
+ *
+ * Run Transaction and handle begin, commit and rollback in the right order
+ *
+ */
+public abstract class AbstractTransactionalMapper implements TransactionalMapper{
+
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.store.transaction.TransactionalMapper#execute(org.apache.james.imap.store.transaction.TransactionalMapper.Transaction)
      */
-    public void execute(Transaction transaction) throws MailboxException;
-    
-    /**
-     * Transaction 
-     *
-     */
-    public interface Transaction {
+    public final void execute(Transaction transaction) throws MailboxException {
+        begin();
+        try {
+            transaction.run();
+            commit();
+        } catch (MailboxException e) {
+            rollback();
+            throw e;
+        }
         
-        /**
-         * Run code in a Transaction
-         * 
-         * @throws MailboxException
-         */
-        public void run() throws MailboxException;
     }
+    
+    /**
+     * Begin transaction
+     * 
+     * @throws StorageException
+     */
+    protected abstract void begin() throws MailboxException;
+
+    /**
+     * Commit transaction
+     * 
+     * @throws StorageException
+     */
+    protected abstract void commit() throws MailboxException;
+    
+    
+    /**
+     * Rollback transaction
+     * 
+     * @throws StorageException
+     */
+    protected abstract void rollback() throws MailboxException;
+
 
 }

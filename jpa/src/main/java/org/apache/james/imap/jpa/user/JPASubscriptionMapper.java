@@ -25,6 +25,7 @@ import javax.persistence.NoResultException;
 import javax.persistence.PersistenceException;
 
 import org.apache.james.imap.api.display.HumanReadableText;
+import org.apache.james.imap.jpa.JPATransactionalMapper;
 import org.apache.james.imap.mailbox.SubscriptionException;
 import org.apache.james.imap.store.user.SubscriptionMapper;
 import org.apache.james.imap.store.user.model.Subscription;
@@ -32,36 +33,12 @@ import org.apache.james.imap.store.user.model.Subscription;
 /**
  * Maps data access logic to JPA operations.
  */
-public class JPASubscriptionMapper implements SubscriptionMapper {
-    private final EntityManager entityManager;
+public class JPASubscriptionMapper extends JPATransactionalMapper implements SubscriptionMapper {
 
     public JPASubscriptionMapper(final EntityManager entityManager) {
-        super();
-        this.entityManager = entityManager;
+        super(entityManager);
     }
 
-    /**
-     * @throws SubscriptionException 
-     * @see org.apache.james.imap.store.user.SubscriptionMapper#begin()
-     */
-    public void begin() throws SubscriptionException {
-        try {
-            entityManager.getTransaction().begin();
-        } catch (PersistenceException e) {
-            throw new SubscriptionException(HumanReadableText.START_TRANSACTION_FAILED, e);
-        }
-    }
-
-    /**
-     * @throws SubscriptionException
-     */
-    public void commit() throws SubscriptionException {
-        try {
-            entityManager.getTransaction().commit();
-        } catch (PersistenceException e) {
-            throw new SubscriptionException(HumanReadableText.COMMIT_TRANSACTION_FAILED, e);
-        }
-    }
 
     /**
      * @throws SubscriptionException 

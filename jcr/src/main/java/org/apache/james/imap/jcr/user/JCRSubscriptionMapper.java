@@ -29,7 +29,11 @@ import javax.jcr.Session;
 
 import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.jcr.user.model.JCRSubscription;
+import org.apache.james.imap.mailbox.MailboxException;
+import org.apache.james.imap.mailbox.StorageException;
 import org.apache.james.imap.mailbox.SubscriptionException;
+import org.apache.james.imap.store.transaction.AbstractTransactionalMapper;
+import org.apache.james.imap.store.transaction.NonTransactionalMapper;
 import org.apache.james.imap.store.user.SubscriptionMapper;
 import org.apache.james.imap.store.user.model.Subscription;
 
@@ -38,7 +42,7 @@ import org.apache.james.imap.store.user.model.Subscription;
  * support transactions. So very call on a method ends in a "real" action
   *
  */
-public class JCRSubscriptionMapper implements SubscriptionMapper{
+public class JCRSubscriptionMapper extends NonTransactionalMapper implements SubscriptionMapper{
 
 	private final Session session;
 	private final static String PATH = "subscriptions";
@@ -47,20 +51,6 @@ public class JCRSubscriptionMapper implements SubscriptionMapper{
 		this.session = session;
 	}
 	
-	/**
-	 * Transactions are not supported by most JCR implementations. So do nothing
-	 */
-	public void begin() throws SubscriptionException {
-		// Nothing todo
-		
-	}
-
-	/**
-	 * Transactions are not supported by most JCR implementations. So do nothing
-	 */
-	public void commit() throws SubscriptionException {
-		// Nothing todo
-	}
 
 	/*
 	 * (non-Javadoc)
@@ -139,5 +129,6 @@ public class JCRSubscriptionMapper implements SubscriptionMapper{
             throw new SubscriptionException(HumanReadableText.SAVE_FAILED, e);
 		}		
 	}
+
 
 }

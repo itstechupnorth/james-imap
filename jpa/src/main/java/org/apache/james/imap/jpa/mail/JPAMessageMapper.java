@@ -24,6 +24,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceException;
 
 import org.apache.james.imap.api.display.HumanReadableText;
+import org.apache.james.imap.jpa.JPATransactionalMapper;
 import org.apache.james.imap.mailbox.MessageRange;
 import org.apache.james.imap.mailbox.SearchQuery;
 import org.apache.james.imap.mailbox.StorageException;

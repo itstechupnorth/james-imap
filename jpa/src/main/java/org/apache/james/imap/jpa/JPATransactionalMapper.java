@@ -16,15 +16,16 @@
  * specific language governing permissions and limitations      *
  * under the License.                                           *
  ****************************************************************/
-package org.apache.james.imap.jpa.mail;
+package org.apache.james.imap.jpa;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
 import javax.persistence.PersistenceException;
 
 import org.apache.james.imap.api.display.HumanReadableText;
+import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.StorageException;
-import org.apache.james.imap.store.mail.AbstractTransactionalMapper;
+import org.apache.james.imap.store.transaction.AbstractTransactionalMapper;
 
 /**
  * JPA implementation of TransactionMapper  
@@ -38,11 +39,12 @@ public class JPATransactionalMapper extends AbstractTransactionalMapper {
         this.entityManager = entityManager;
     }
 
+
     /*
      * (non-Javadoc)
-     * @see org.apache.james.imap.store.mail.AbstractTransactionalMapper#begin()
+     * @see org.apache.james.imap.store.transaction.AbstractTransactionalMapper#begin()
      */
-    protected void begin() throws StorageException {
+    protected void begin() throws MailboxException {
         try {
             entityManager.getTransaction().begin();
         } catch (PersistenceException e) {
@@ -50,23 +52,24 @@ public class JPATransactionalMapper extends AbstractTransactionalMapper {
         }
     }
     
+
     /*
      * (non-Javadoc)
-     * @see org.apache.james.imap.store.mail.AbstractTransactionalMapper#commit()
+     * @see org.apache.james.imap.store.transaction.AbstractTransactionalMapper#commit()
      */
-    protected void commit() throws StorageException {
+    protected void commit() throws MailboxException {
         try {
             entityManager.getTransaction().commit();
         } catch (PersistenceException e) {
             throw new StorageException(HumanReadableText.COMMIT_TRANSACTION_FAILED, e);
         }
     }
-    
+
     /*
      * (non-Javadoc)
-     * @see org.apache.james.imap.store.mail.AbstractTransactionalMapper#rollback()
+     * @see org.apache.james.imap.store.transaction.AbstractTransactionalMapper#rollback()
      */
-    protected void rollback() throws StorageException {
+    protected void rollback() throws MailboxException {
         EntityTransaction transaction = entityManager.getTransaction();
         // check if we have a transaction to rollback
         if (transaction.isActive()) {

@@ -23,6 +23,7 @@ import java.util.List;
 import org.apache.james.imap.mailbox.MailboxNotFoundException;
 import org.apache.james.imap.mailbox.StorageException;
 import org.apache.james.imap.store.mail.model.Mailbox;
+import org.apache.james.imap.store.transaction.TransactionalMapper;
 
 public interface MailboxMapper extends TransactionalMapper{
     

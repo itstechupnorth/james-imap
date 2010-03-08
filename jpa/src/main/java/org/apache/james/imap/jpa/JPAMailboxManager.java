@@ -25,8 +25,8 @@ import org.apache.james.imap.store.Authenticator;
 import org.apache.james.imap.store.StoreMailboxManager;
 import org.apache.james.imap.store.Subscriber;
 import org.apache.james.imap.store.mail.MailboxMapper;
-import org.apache.james.imap.store.mail.TransactionalMapper;
 import org.apache.james.imap.store.mail.model.Mailbox;
+import org.apache.james.imap.store.transaction.TransactionalMapper;
 
 public abstract class JPAMailboxManager extends StoreMailboxManager {
 

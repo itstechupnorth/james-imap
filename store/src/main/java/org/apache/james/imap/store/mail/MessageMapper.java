@@ -24,6 +24,7 @@ import org.apache.james.imap.mailbox.MessageRange;
 import org.apache.james.imap.mailbox.SearchQuery;
 import org.apache.james.imap.mailbox.StorageException;
 import org.apache.james.imap.store.mail.model.MailboxMembership;
+import org.apache.james.imap.store.transaction.TransactionalMapper;
 
 /**
  * Maps messages in a mailbox.
