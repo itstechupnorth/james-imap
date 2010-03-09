@@ -23,10 +23,11 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 
+import org.apache.james.imap.store.mail.model.AbstractComparableProperty;
 import org.apache.james.imap.store.mail.model.Property;
 
 @Entity(name="Property")
-public class JPAProperty implements Property, Comparable<JPAProperty> {
+public class JPAProperty extends AbstractComparableProperty<JPAProperty> {
 
     @Id @GeneratedValue private long id;
     
@@ -147,9 +148,5 @@ public class JPAProperty implements Property, Comparable<JPAProperty> {
             + " )";
     
         return result;
-    }
-
-    public int compareTo(JPAProperty o) {
-        return this.line - o.line;
     }
 }

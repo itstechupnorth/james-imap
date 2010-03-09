@@ -24,10 +24,11 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 
+import org.apache.james.imap.store.mail.model.AbstractComparableHeader;
 import org.apache.james.imap.store.mail.model.Header;
 
 @Entity(name="Header")
-public class JPAHeader implements Comparable<Header>, Header {
+public class JPAHeader extends AbstractComparableHeader {
     
     private static final String TOSTRING_SEP = " ";
 
@@ -120,11 +121,4 @@ public class JPAHeader implements Comparable<Header>, Header {
         return retValue;
     }
 
-    /**
-     * Natural sort is mailbox, (message) UID then line number
-     */
-    public int compareTo(final Header header) {
-        final int result = lineNumber - header.getLineNumber();
-        return result;
-    }
 }

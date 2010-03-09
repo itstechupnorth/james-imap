@@ -18,12 +18,32 @@
  ****************************************************************/
 package org.apache.james.imap.store.mail.model;
 
+/**
+ * 
+ * Email Header 
+ *
+ */
 public interface Header extends Comparable<Header> {
 
+    /**
+     * Return the name of the Header field
+     * 
+     * @return fieldName
+     */
     public abstract String getFieldName();
 
+    /**
+     * Return the line number of the Header
+     * 
+     * @return lineNumber
+     */
     public abstract int getLineNumber();
 
+    /**
+     * Return the value of the Header
+     * 
+     * @return value
+     */
     public abstract String getValue();
 
 }

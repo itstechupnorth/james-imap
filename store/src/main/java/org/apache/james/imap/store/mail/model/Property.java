@@ -18,6 +18,7 @@
  ****************************************************************/
 package org.apache.james.imap.store.mail.model;
 
+
 /**
  * <p>Values a namespaced property.</p>
  * <p>
@@ -55,4 +56,6 @@ public interface Property {
      * @return not null
      */
     public String getValue();
+
+
 }

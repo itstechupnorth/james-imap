@@ -19,9 +19,9 @@
 
 package org.apache.james.imap.inmemory;
 
-import org.apache.james.imap.store.mail.model.Header;
+import org.apache.james.imap.store.mail.model.AbstractComparableHeader;
 
-public class SimpleHeader implements Header {
+public class SimpleHeader extends AbstractComparableHeader {
 
     public String field;
     public int lineNumber;
@@ -52,9 +52,5 @@ public class SimpleHeader implements Header {
 
     public String getValue() {
         return value;
-    }
-
-    public int compareTo(Header o) {
-        return getLineNumber() - o.getLineNumber();
     }
 }

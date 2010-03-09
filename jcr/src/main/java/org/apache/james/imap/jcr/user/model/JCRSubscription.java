@@ -27,6 +27,7 @@ import javax.jcr.lock.LockException;
 import javax.jcr.nodetype.ConstraintViolationException;
 import javax.jcr.version.VersionException;
 
+import org.apache.james.imap.jcr.JCRImapConstants;
 import org.apache.james.imap.store.user.model.Subscription;
 
 
@@ -40,8 +41,8 @@ public class JCRSubscription implements Subscription{
 
 	private final String username;
 
-	public final static String USERNAME_PROPERTY = "username";
-	public final static String MAILBOX_PROPERTY = "mailbox";
+	public final static String USERNAME_PROPERTY = JCRImapConstants.PROPERTY_PREFIX + "username";
+	public final static String MAILBOX_PROPERTY = JCRImapConstants.PROPERTY_PREFIX  + "mailbox";
 
 	public JCRSubscription(String username, String mailbox) {
 		this.username = username;

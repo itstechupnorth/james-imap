@@ -39,8 +39,17 @@ public abstract class StoreSubscriptionManager implements Subscriber {
         super();
     }
 
+    /**
+     * Create the SubscriptionMapper to use
+     * 
+     * @return mapper
+     */
     protected abstract SubscriptionMapper createMapper();
     
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.store.Subscriber#subscribe(java.lang.String, java.lang.String)
+     */
     public void subscribe(final String user, final String mailbox) throws SubscriptionException {
         final SubscriptionMapper mapper = createMapper();
         try {
@@ -62,8 +71,19 @@ public abstract class StoreSubscriptionManager implements Subscriber {
 
     }
 
+    /**
+     * Create Subscription for the given user and mailbox
+     * 
+     * @param user
+     * @param mailbox
+     * @return subscription 
+     */
     protected abstract Subscription createSubscription(final String user, final String mailbox);
 
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.store.Subscriber#subscriptions(java.lang.String)
+     */
     public Collection<String> subscriptions(final String user) throws SubscriptionException {
         final SubscriptionMapper mapper = createMapper();
         final List<Subscription> subscriptions = mapper.findSubscriptionsForUser(user);
@@ -74,6 +94,10 @@ public abstract class StoreSubscriptionManager implements Subscriber {
         return results;
     }
 
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.store.Subscriber#unsubscribe(java.lang.String, java.lang.String)
+     */
     public void unsubscribe(final String user, final String mailbox) throws SubscriptionException {
         final SubscriptionMapper mapper = createMapper();
         try {
@@ -90,7 +114,5 @@ public abstract class StoreSubscriptionManager implements Subscriber {
         } catch (MailboxException e) {
             throw (SubscriptionException) e;
         }
-
-        
     }
 }
