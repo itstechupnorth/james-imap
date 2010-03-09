@@ -25,13 +25,14 @@ import java.util.List;
 
 import javax.mail.Flags;
 
+import org.apache.james.imap.store.mail.model.AbstractMailboxMembership;
 import org.apache.james.imap.store.mail.model.Document;
 import org.apache.james.imap.store.mail.model.Header;
 import org.apache.james.imap.store.mail.model.MailboxMembership;
 import org.apache.james.imap.store.mail.model.Property;
 import org.apache.james.imap.store.mail.model.PropertyBuilder;
 
-public class SimpleMailboxMembership implements MailboxMembership, Document, Comparable<MailboxMembership> {
+public class SimpleMailboxMembership extends AbstractMailboxMembership implements Document, Comparable<MailboxMembership> {
 
     private final long uid;
     private final long mailboxId;
@@ -87,29 +88,6 @@ public class SimpleMailboxMembership implements MailboxMembership, Document, Com
         this.subType = propertyBuilder.getSubType();
     }
 
-
-    public synchronized Flags createFlags() {
-        final Flags flags = new Flags();
-        if (answered) {
-            flags.add(Flags.Flag.ANSWERED);
-        }
-        if (deleted) {
-            flags.add(Flags.Flag.DELETED);
-        }
-        if (draft) {
-            flags.add(Flags.Flag.DRAFT);
-        }
-        if (flagged) {
-            flags.add(Flags.Flag.FLAGGED);
-        }
-        if (recent) {
-            flags.add(Flags.Flag.RECENT);
-        }
-        if (seen) {
-            flags.add(Flags.Flag.SEEN);
-        }
-        return flags;
-    }
 
     public Document getDocument() {
         return this;

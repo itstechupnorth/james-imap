@@ -20,6 +20,7 @@ package org.apache.james.imap.jcr;
 
 import javax.jcr.Session;
 
+import org.apache.james.imap.jcr.mail.JCRMailboxMapper;
 import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.store.Authenticator;
 import org.apache.james.imap.store.StoreMailbox;
@@ -51,8 +52,7 @@ public class JCRMailboxManager extends StoreMailboxManager{
 
     @Override
     protected MailboxMapper createMailboxMapper() {
-        // TODO Auto-generated method stub
-        return null;
+        return new JCRMailboxMapper(session);
     }
 
     @Override

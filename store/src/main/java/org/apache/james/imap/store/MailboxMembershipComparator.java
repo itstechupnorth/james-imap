@@ -32,6 +32,10 @@ public final class MailboxMembershipComparator implements Comparator<MailboxMemb
     
     private MailboxMembershipComparator() {}
     
+    /*
+     * (non-Javadoc)
+     * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
+     */
     public int compare(MailboxMembership o1, MailboxMembership o2) {
         final long uid = o1.getUid();
         final long otherUid = o2.getUid();

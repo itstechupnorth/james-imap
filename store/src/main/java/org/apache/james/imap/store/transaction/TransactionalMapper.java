@@ -21,6 +21,11 @@ package org.apache.james.imap.store.transaction;
 
 import org.apache.james.imap.mailbox.MailboxException;
 
+/**
+ * Mapper which execute units of work in a {@link Transaction}
+ * @author norman
+ *
+ */
 public interface TransactionalMapper {
     
     /**
@@ -32,13 +37,13 @@ public interface TransactionalMapper {
     public void execute(Transaction transaction) throws MailboxException;
     
     /**
-     * Transaction 
+     * Unit of work executed in a Transaction
      *
      */
     public interface Transaction {
         
         /**
-         * Run code in a Transaction
+         * Run unit of work in a Transaction
          * 
          * @throws MailboxException
          */

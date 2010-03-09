@@ -33,8 +33,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 
+import org.apache.james.imap.store.mail.model.AbstractMailboxMembership;
 import org.apache.james.imap.store.mail.model.Document;
-import org.apache.james.imap.store.mail.model.MailboxMembership;
 import org.apache.james.imap.store.mail.model.PropertyBuilder;
 
 @Entity(name="Membership")
@@ -65,7 +65,7 @@ import org.apache.james.imap.store.mail.model.PropertyBuilder;
     @NamedQuery(name="countMessagesInMailbox",
             query="SELECT COUNT(membership) FROM Membership membership WHERE membership.mailboxId = :idParam")                     
 })
-public class JPAMailboxMembership implements MailboxMembership {
+public class JPAMailboxMembership extends AbstractMailboxMembership {
 
     private static final String TOSTRING_SEPARATOR = " ";
 
@@ -274,32 +274,7 @@ public class JPAMailboxMembership implements MailboxMembership {
         seen = flags.contains(Flags.Flag.SEEN);
     }
 
-    /**
-     * @see org.apache.james.imap.store.mail.model.MailboxMembership#createFlags()
-     */
-    public Flags createFlags() {
-        final Flags flags = new Flags();
-
-        if (isAnswered()) {
-            flags.add(Flags.Flag.ANSWERED);
-        }
-        if (isDeleted()) {
-            flags.add(Flags.Flag.DELETED);
-        }
-        if (isDraft()) {
-            flags.add(Flags.Flag.DRAFT);
-        }
-        if (isFlagged()) {
-            flags.add(Flags.Flag.FLAGGED);
-        }
-        if (isRecent()) {
-            flags.add(Flags.Flag.RECENT);
-        }
-        if (isSeen()) {
-            flags.add(Flags.Flag.SEEN);
-        }
-        return flags;
-    }
+  
 
     @Override
     public int hashCode() {

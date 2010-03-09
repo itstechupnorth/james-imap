@@ -38,6 +38,11 @@ import org.apache.james.imap.store.mail.model.Mailbox;
 import org.apache.james.imap.store.mail.model.MailboxMembership;
 import org.apache.james.imap.store.mail.model.PropertyBuilder;
 
+/**
+ * Abstract base class which should be used from JPA implementations
+ * 
+ *
+ */
 public abstract class JPAMailbox extends StoreMailbox {
 
     protected final EntityManagerFactory entityManagerFactory;

@@ -37,6 +37,10 @@ final class CountingInputStream extends InputStream {
         this.in = in;
     }
 
+    /*
+     * (non-Javadoc)
+     * @see java.io.InputStream#read()
+     */
     public int read() throws IOException {
         int next = in.read();
         if (next > 0) {

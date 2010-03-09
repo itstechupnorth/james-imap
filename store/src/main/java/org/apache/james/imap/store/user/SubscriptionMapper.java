@@ -25,7 +25,7 @@ import org.apache.james.imap.store.transaction.TransactionalMapper;
 import org.apache.james.imap.store.user.model.Subscription;
 
 /**
- * 
+ * Mapper for {@link Subscription}
  *
  */
 public interface SubscriptionMapper extends TransactionalMapper{

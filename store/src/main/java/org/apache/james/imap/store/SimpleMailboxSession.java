@@ -62,18 +62,34 @@ public class SimpleMailboxSession implements MailboxSession, MailboxSession.User
         this.localePreferences = localePreferences;
     }
 
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.mailbox.MailboxSession#getLog()
+     */
     public Log getLog() {
         return log;
     }
 
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.mailbox.MailboxSession#close()
+     */
     public void close() {
         open = false;
     }
 
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.mailbox.MailboxSession#getSessionId()
+     */
     public long getSessionId() {
         return sessionId;
     }
 
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.mailbox.MailboxSession#isOpen()
+     */
     public boolean isOpen() {
         return open;
     }

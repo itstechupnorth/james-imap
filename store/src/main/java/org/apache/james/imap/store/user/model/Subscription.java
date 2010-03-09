@@ -18,6 +18,10 @@
  ****************************************************************/
 package org.apache.james.imap.store.user.model;
 
+/**
+ * 
+ * Subscription of a mailbox to a user
+ */
 public interface Subscription {
 
     /**
@@ -26,12 +30,14 @@ public interface Subscription {
      * Note that subscriptions must be maintained
      * beyond the lifetime of a particular instance
      * of a mailbox.
+     * 
      * @return not null
      */
     public abstract String getMailbox();
 
     /**
      * Gets the name of the subscribed user.
+     * 
      * @return not null
      */
     public abstract String getUser();

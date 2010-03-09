@@ -74,21 +74,47 @@ public abstract class StoreMailbox implements org.apache.james.imap.mailbox.Mail
         this.tracker = new UidChangeTracker(mailbox.getLastUid());
     }
 
+    /**
+     * Copy the given {@link MailboxMembership} to a new instance with the given uid
+     * 
+     * @param originalMessage
+     * @param uid
+     * @return membershipCopy
+     */
     protected abstract MailboxMembership copyMessage(MailboxMembership originalMessage, long uid);
     
+    /**
+     * Create a new {@link MessageMapper} to use
+     * 
+     * @return mapper
+     */
     protected abstract MessageMapper createMessageMapper();
+    
     
     protected abstract Mailbox getMailboxRow() throws MailboxException;
 
+    /**
+     * Return the Id of the wrapped {@link Mailbox}
+     * 
+     * @return id
+     */
     public long getMailboxId() {
         return mailboxId;
     }
 
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.mailbox.Mailbox#getMessageCount(org.apache.james.imap.mailbox.MailboxSession)
+     */
     public int getMessageCount(MailboxSession mailboxSession) throws MailboxException {
         final MessageMapper messageMapper = createMessageMapper();
         return (int) messageMapper.countMessagesInMailbox();
     }
 
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.mailbox.Mailbox#appendMessage(byte[], java.util.Date, org.apache.james.imap.mailbox.MailboxSession, boolean, javax.mail.Flags)
+     */
     public long appendMessage(byte[] messageBytes, Date internalDate,
             MailboxSession mailboxSession, boolean isRecent, Flags flagsToBeSet)
     throws MailboxException {
@@ -236,13 +262,39 @@ public abstract class StoreMailbox implements org.apache.james.imap.mailbox.Mail
         return bodyStartOctet;
     }
 
+    /**
+     * Create a new {@link MailboxMembership} for the given data
+     * 
+     * @param internalDate
+     * @param uid
+     * @param size
+     * @param bodyStartOctet
+     * @param document
+     * @param flags
+     * @param headers
+     * @param propertyBuilder
+     * @return membership
+     */
     protected abstract MailboxMembership createMessage(Date internalDate, final long uid, final int size, int bodyStartOctet, 
             final byte[] document, final Flags flags, final List<Header> headers, PropertyBuilder propertyBuilder);
     
+    /**
+     * Create a new {@link Header} for the given data
+     * 
+     * @param lineNumber
+     * @param name
+     * @param value
+     * @return header
+     */
     protected abstract Header createHeader(int lineNumber, String name, String value);
+
 
     protected abstract Mailbox reserveNextUid() throws  MailboxException;
 
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.mailbox.Mailbox#getMessages(org.apache.james.imap.mailbox.MessageRange, org.apache.james.imap.mailbox.MessageResult.FetchGroup, org.apache.james.imap.mailbox.MailboxSession)
+     */
     public Iterator<MessageResult> getMessages(final MessageRange set, FetchGroup fetchGroup,
             MailboxSession mailboxSession) throws MailboxException {
         UidRange range = uidRangeForMessageSet(set);
@@ -275,12 +327,7 @@ public abstract class StoreMailbox implements org.apache.james.imap.mailbox.Mail
         }
     }
 
-    public MessageResult fillMessageResult(MailboxMembership message, FetchGroup result) throws MessagingException,
-    MailboxException {
-        return ResultUtils.loadMessageResult(message, result);
-    }
-
-    public synchronized Flags getPermanentFlags() {
+    public Flags getPermanentFlags() {
         Flags permanentFlags = new Flags();
         permanentFlags.add(Flags.Flag.ANSWERED);
         permanentFlags.add(Flags.Flag.DELETED);
@@ -337,6 +384,10 @@ public abstract class StoreMailbox implements org.apache.james.imap.mailbox.Mail
         return count;
     }
 
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.mailbox.Mailbox#expunge(org.apache.james.imap.mailbox.MessageRange, org.apache.james.imap.mailbox.MailboxSession)
+     */
     public Iterator<Long> expunge(MessageRange set, MailboxSession mailboxSession) throws MailboxException {
         return doExpunge(set);
     }
@@ -362,6 +413,10 @@ public abstract class StoreMailbox implements org.apache.james.imap.mailbox.Mail
         return uids.iterator();
     }
 
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.mailbox.Mailbox#setFlags(javax.mail.Flags, boolean, boolean, org.apache.james.imap.mailbox.MessageRange, org.apache.james.imap.mailbox.MailboxSession)
+     */
     public Map<Long, Flags> setFlags(Flags flags, boolean value, boolean replace,
             MessageRange set, MailboxSession mailboxSession) throws MailboxException {
         return doSetFlags(flags, value, replace, set, mailboxSession);
@@ -419,6 +474,10 @@ public abstract class StoreMailbox implements org.apache.james.imap.mailbox.Mail
         }
     }
 
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.mailbox.Mailbox#search(org.apache.james.imap.mailbox.SearchQuery, org.apache.james.imap.mailbox.MailboxSession)
+     */
     public Iterator<Long> search(SearchQuery query, MailboxSession mailboxSession) throws MailboxException {
         final MessageMapper messageMapper = createMessageMapper();
         final List<MailboxMembership> members = messageMapper.searchMailbox(query);
@@ -443,6 +502,10 @@ public abstract class StoreMailbox implements org.apache.james.imap.mailbox.Mail
         return uids.iterator();
     }
 
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.mailbox.Mailbox#isWriteable()
+     */
     public boolean isWriteable() {
         return true;
     }

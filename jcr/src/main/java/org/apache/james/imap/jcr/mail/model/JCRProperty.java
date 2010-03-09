@@ -98,6 +98,7 @@ public class JCRProperty extends AbstractComparableProperty<JCRProperty>{
         int order = new Long(node.getProperty(ORDER_PROPERTY).getLong()).intValue();
         String localname = node.getProperty(LOCALNAME_PROPERTY).getString();
         String value = node.getProperty(VALUE_PROPERTY).getString();
+
         return new JCRProperty(namespace, localname, value, order);
     }
     

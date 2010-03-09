@@ -18,15 +18,21 @@
  ****************************************************************/
 package org.apache.james.imap.jcr.mail;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import javax.jcr.Node;
+import javax.jcr.NodeIterator;
 import javax.jcr.PathNotFoundException;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
+import javax.jcr.query.Query;
+import javax.jcr.query.QueryManager;
 
 import org.apache.jackrabbit.util.Text;
 import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.jcr.JCRImapConstants;
+import org.apache.james.imap.jcr.mail.model.JCRMailbox;
 import org.apache.james.imap.mailbox.MailboxNotFoundException;
 import org.apache.james.imap.mailbox.StorageException;
 import org.apache.james.imap.store.mail.MailboxMapper;
@@ -50,7 +56,10 @@ public class JCRMailboxMapper extends NonTransactionalMapper implements MailboxM
 
     /*
      * (non-Javadoc)
-     * @see org.apache.james.imap.store.mail.MailboxMapper#countMailboxesWithName(java.lang.String)
+     * 
+     * @see
+     * org.apache.james.imap.store.mail.MailboxMapper#countMailboxesWithName
+     * (java.lang.String)
      */
     public long countMailboxesWithName(String name) throws StorageException {
         String nodeName = Text.unescapeIllegalJcrChars(name);
@@ -118,24 +127,91 @@ public class JCRMailboxMapper extends NonTransactionalMapper implements MailboxM
         }
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.apache.james.imap.store.mail.MailboxMapper#findMailboxById(long)
+     */
     public Mailbox findMailboxById(long mailboxId) throws StorageException, MailboxNotFoundException {
-        // TODO Auto-generated method stub
-        return null;
+        try {
+            QueryManager manager = session.getWorkspace().getQueryManager();
+            String queryString = session.getRootNode().getPath() + JCRImapConstants.NODE_DELIMITER + PATH + "//element(" + mailboxId + ")," + JCRMailbox.ID_PROPERTY + ")";
+            Query query = manager.createQuery(queryString, Query.XPATH);
+
+            NodeIterator nodes = query.execute().getNodes();
+            if (nodes.hasNext() == false) {
+                throw new MailboxNotFoundException(mailboxId);
+            } else {
+                return JCRMailbox.from(nodes.nextNode());
+            }
+        } catch (PathNotFoundException e) {
+            throw new MailboxNotFoundException(mailboxId);
+        } catch (RepositoryException e) {
+            throw new StorageException(HumanReadableText.SEARCH_FAILED, e);
+        }
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * org.apache.james.imap.store.mail.MailboxMapper#findMailboxByName(java
+     * .lang.String)
+     */
     public Mailbox findMailboxByName(String name) throws StorageException, MailboxNotFoundException {
-        // TODO Auto-generated method stub
-        return null;
+        try {
+            Node node = session.getRootNode().getNode(PATH + JCRImapConstants.NODE_DELIMITER + name);
+            return JCRMailbox.from(node);
+        } catch (PathNotFoundException e) {
+            throw new MailboxNotFoundException(name);
+        } catch (RepositoryException e) {
+            throw new StorageException(HumanReadableText.SEARCH_FAILED, e);
+        }
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * org.apache.james.imap.store.mail.MailboxMapper#findMailboxWithNameLike
+     * (java.lang.String)
+     */
     public List<Mailbox> findMailboxWithNameLike(String name) throws StorageException {
-        // TODO Auto-generated method stub
-        return null;
+        List<Mailbox> mailboxList = new ArrayList<Mailbox>();
+        try {
+            NodeIterator it = session.getRootNode().getNodes(PATH + JCRImapConstants.NODE_DELIMITER + WILDCARD + name + WILDCARD);
+            while (it.hasNext()) {
+                mailboxList.add(JCRMailbox.from(it.nextNode()));
+            }
+        } catch (PathNotFoundException e) {
+            // nothing todo
+        } catch (RepositoryException e) {
+            throw new StorageException(HumanReadableText.SEARCH_FAILED, e);
+        }
+        return mailboxList;
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * org.apache.james.imap.store.mail.MailboxMapper#save(org.apache.james.
+     * imap.store.mail.model.Mailbox)
+     */
     public void save(Mailbox mailbox) throws StorageException {
-        // TODO Auto-generated method stub
-
+        String nodePath = PATH + JCRImapConstants.NODE_DELIMITER + Text.unescapeIllegalJcrChars(mailbox.getName());
+        try {
+            Node node;
+            if (session.getRootNode().hasNode(nodePath)) {
+                node = session.getRootNode().getNode(PATH);
+            } else {
+                node = session.getRootNode().addNode(PATH);
+            }
+            JCRMailbox.copy(node, mailbox);
+            session.save();
+        } catch (RepositoryException e) {
+            throw new StorageException(HumanReadableText.SAVE_FAILED, e);
+        }
     }
 
 }

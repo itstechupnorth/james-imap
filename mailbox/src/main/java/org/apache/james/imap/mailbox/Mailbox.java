@@ -28,12 +28,28 @@ import javax.mail.Flags;
 import org.apache.james.imap.mailbox.MessageResult.FetchGroup;
 
 
+/**
+ * Interface which represent a Mailbox
+ *
+ */
 public interface Mailbox {
 
     public static final long ANONYMOUS_SESSION = 0;
 
+    /**
+     * Return the count 
+     * 
+     * @param mailboxSession
+     * @return count
+     * @throws MailboxException
+     */
     int getMessageCount(MailboxSession mailboxSession) throws MailboxException;
 
+    /**
+     * Return if the Mailbox is writable
+     * 
+     * @return writable
+     */
     boolean isWriteable();
 
     /**

@@ -43,6 +43,9 @@ import org.apache.james.imap.store.mail.model.Header;
 import org.apache.james.imap.store.mail.model.MailboxMembership;
 import org.apache.james.mime4j.MimeException;
 
+/**
+ *
+ */
 public class ResultUtils {
 
     public static final byte[] BYTES_NEW_LINE = { 0x0D, 0x0A };
@@ -73,18 +76,38 @@ public class ResultUtils {
         return headers;
     }
 
+    /**
+     * Return the {@link Content} which holds only the Body for the given {@link MailboxMembership}
+     * 
+     * @param membership
+     * @return bodyContent
+     */
     public static Content createBodyContent(MailboxMembership membership) {
         final ByteBuffer bytes = membership.getDocument().getBodyContent();
         final ByteContent result = new ByteContent(bytes);
         return result;
     }
 
+    /**
+     * Return the {@link Content} which holds the full data for the given {@link MailboxMembership}
+     * 
+     * @param membership
+     * @return content
+     */
     public static Content createFullContent(final MailboxMembership membership) {
         final ByteBuffer bytes = membership.getDocument().getFullContent();
         final ByteContent results = new ByteContent(bytes);
         return results;
     }
 
+    /**
+     * Return the {@link MessageResult} for the given {@link MailboxMembership} and {@link FetchGroup}
+     * 
+     * @param message
+     * @param fetchGroup
+     * @return result
+     * @throws MailboxException
+     */
     public static MessageResult loadMessageResult(final MailboxMembership message, final FetchGroup fetchGroup) 
                 throws MailboxException {
 
@@ -203,11 +226,23 @@ public class ResultUtils {
         return result;
     }
 
+    /**
+     * Return an {@link InputStream} which holds the content of the {@link org.apache.james.imap.store.mail.model.Document} which is linked in the {@link MailboxMembership}
+     * 
+     * @param membership
+     * @return stream
+     */
     public static InputStream toInput(final MailboxMembership membership) {
         final org.apache.james.imap.store.mail.model.Document document = membership.getDocument();
         return toInput(document);
     }
 
+    /**
+     * Return an {@link InputStream} which holds the content of the given {@link org.apache.james.imap.store.mail.model.Document}
+     * 
+     * @param document
+     * @return stream
+     */
     public static InputStream toInput(final org.apache.james.imap.store.mail.model.Document document) {
         final List<Header> headers = getSortedHeaders(document);
         final StringBuffer headersToString = new StringBuffer(headers.size() * 50);

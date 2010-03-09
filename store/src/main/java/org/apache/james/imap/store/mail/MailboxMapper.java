@@ -25,31 +25,83 @@ import org.apache.james.imap.mailbox.StorageException;
 import org.apache.james.imap.store.mail.model.Mailbox;
 import org.apache.james.imap.store.transaction.TransactionalMapper;
 
+/**
+ * Mapper for {@link Mailbox}
+ *
+ */
 public interface MailboxMapper extends TransactionalMapper{
     
+    /**
+     * Save the give {@link Mailbox} to the underlying storage
+     * 
+     * @param mailbox
+     * @throws StorageException
+     */
     public abstract void save(Mailbox mailbox) throws StorageException;
 
+    /**
+     * Return the {@link Mailbox} for the given name
+     * 
+     * @param name 
+     * @return mailbox
+     * @throws StorageException
+     * @throws MailboxNotFoundException
+     */
     public abstract Mailbox findMailboxByName(String name)
             throws StorageException, MailboxNotFoundException;
 
     /**
-     * Does the given mailbox have children?
+     * Return if the given {@link Mailbox} has children
+     * 
      * @param mailboxName not null
      * @return true when the mailbox has children, false otherwise
      * @throws StorageException
      */
     public abstract boolean existsMailboxStartingWith(String mailboxName) throws StorageException;
     
+    /**
+     * Delete the given {@link Mailbox} from the underlying storage
+     * 
+     * @param mailbox
+     * @throws StorageException
+     */
     public abstract void delete(Mailbox mailbox) throws StorageException;
 
+    /**
+     * Return a List of {@link Mailbox} which name is like the given name
+     * 
+     * @param name
+     * @return mailboxList
+     * @throws StorageException
+     */
     public abstract List<Mailbox> findMailboxWithNameLike(String name)
             throws StorageException;
 
+    /**
+     * Delete all {@link Mailbox} objects from the underlying storage
+     * 
+     * @throws StorageException
+     */
     public abstract void deleteAll() throws StorageException;
 
+    /**
+     * Return the count of {@link Mailbox} objects with the given name
+     * 
+     * @param name
+     * @return count
+     * @throws StorageException
+     */
     public abstract long countMailboxesWithName(String name)
             throws StorageException;
 
+    /**
+     * Return the {@link Mailbox} for the given id
+     * 
+     * @param mailboxId
+     * @return mailbox
+     * @throws StorageException
+     * @throws MailboxNotFoundException
+     */
     public abstract Mailbox findMailboxById(long mailboxId)
             throws StorageException, MailboxNotFoundException;
 }

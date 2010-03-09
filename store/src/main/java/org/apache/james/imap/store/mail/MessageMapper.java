@@ -20,38 +20,95 @@ package org.apache.james.imap.store.mail;
 
 import java.util.List;
 
+import org.apache.james.imap.mailbox.Mailbox;
 import org.apache.james.imap.mailbox.MessageRange;
 import org.apache.james.imap.mailbox.SearchQuery;
 import org.apache.james.imap.mailbox.StorageException;
+import org.apache.james.imap.store.mail.model.Document;
 import org.apache.james.imap.store.mail.model.MailboxMembership;
 import org.apache.james.imap.store.transaction.TransactionalMapper;
 
 /**
- * Maps messages in a mailbox.
+ * Maps {@link Document} in a {@link Mailbox}.
  */
 public interface MessageMapper extends TransactionalMapper {
 
+    /**
+     * Return a List of {@link MailboxMembership} which represent the given {@link MessageRange}
+     * @param set
+     * @return list
+     * @throws StorageException
+     */
     public abstract List<MailboxMembership> findInMailbox(MessageRange set)
             throws StorageException;
 
+    /**
+     * Return a List of {@link MailboxMembership} for the given {@link MessageRange} which are marked for deletion 
+     * @param set 
+     * @return list
+     * @throws StorageException
+     */
     public abstract List<MailboxMembership> findMarkedForDeletionInMailbox(
             final MessageRange set)
             throws StorageException;
 
+    /**
+     * Return the count of messages in the mailbox
+     * 
+     * @return count
+     * @throws StorageException
+     */
     public abstract long countMessagesInMailbox()
             throws StorageException;
 
+    /**
+     * Return the count of unseen messages in the mailbox
+     * 
+     * @return unseenCount
+     * @throws StorageException
+     */
     public abstract long countUnseenMessagesInMailbox()
             throws StorageException;
 
+    /**
+     * Return a List of {@link MailboxMembership} which matched the {@link SearchQuery}
+     * @param query
+     * @return
+     * @throws StorageException
+     */
     public abstract List<MailboxMembership> searchMailbox(SearchQuery query) throws StorageException;
 
+    /**
+     * Delete the given {@link MailboxMembership}
+     * 
+     * @param message
+     * @throws StorageException
+     */
     public abstract void delete(MailboxMembership message) throws StorageException;
 
+    /**
+     * Return a List of {@link MailboxMembership} which are unseen. The list is ordered by uid
+     * 
+     * @return list
+     * @throws StorageException
+     */
     public abstract List<MailboxMembership> findUnseenMessagesInMailboxOrderByUid() throws StorageException;
 
+    /**
+     * Return a List of {@link MailboxMembership} which are recent
+     * 
+     * @return recentList
+     * @throws StorageException
+     */
     public abstract List<MailboxMembership> findRecentMessagesInMailbox() throws StorageException;
 
+
+    /**
+     * Save the given {@link MailboxMembership} to the underlying storage
+     * 
+     * @param message
+     * @throws StorageException
+     */
     public abstract void save(MailboxMembership message) throws StorageException;
 
 }

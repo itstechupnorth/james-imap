@@ -94,6 +94,13 @@ public interface MailboxManager {
      */
     void createMailbox(String mailboxName, MailboxSession mailboxSession) throws MailboxException;
 
+    /**
+     * Delete the mailbox with the name
+     * 
+     * @param mailboxName
+     * @param session
+     * @throws MailboxException
+     */
     void deleteMailbox(String mailboxName, MailboxSession session) throws MailboxException;
 
     /**

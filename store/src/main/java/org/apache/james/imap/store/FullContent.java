@@ -31,6 +31,10 @@ import java.util.List;
 import org.apache.james.imap.mailbox.Content;
 import org.apache.james.imap.mailbox.MessageResult;
 
+/**
+ * Content which holds the full content, including {@link Header} objets
+ *
+ */
 public final class FullContent implements Content {
     private final ByteBuffer contents;
 
@@ -57,10 +61,18 @@ public final class FullContent implements Content {
         return result;
     }
 
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.mailbox.Content#size()
+     */
     public long size() {
         return size;
     }
 
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.mailbox.Content#writeTo(java.nio.channels.WritableByteChannel)
+     */
     public void writeTo(WritableByteChannel channel) throws IOException {
         ByteBuffer newLine = ByteBuffer.wrap(ResultUtils.BYTES_NEW_LINE);
         for (final Iterator<MessageResult.Header> it = headers.iterator(); it.hasNext();) {
@@ -77,6 +89,13 @@ public final class FullContent implements Content {
         writeAll(channel, contents);
     }
 
+    /**
+     * Write all 
+     * 
+     * @param channel
+     * @param buffer
+     * @throws IOException
+     */
     private void writeAll(WritableByteChannel channel, ByteBuffer buffer)
             throws IOException {
         while (channel.write(buffer) > 0) {

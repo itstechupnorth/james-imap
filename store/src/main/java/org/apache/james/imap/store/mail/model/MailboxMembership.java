@@ -29,24 +29,74 @@ public interface MailboxMembership {
 
     public abstract Date getInternalDate();
 
+    /**
+     * Return the mailbox id of the linked mailbox
+     * 
+     * @return mailboxId
+     */
     public abstract long getMailboxId();
 
+    /**
+     * Return the size
+     * 
+     * @return size
+     */
     public abstract int getSize();
 
+    /**
+     * Return the uid
+     * 
+     * @return uid
+     */
     public abstract long getUid();
     
+    /**
+     * Return the linked Document
+     * 
+     * @return document
+     */
     public abstract Document getDocument();
 
+    /**
+     * Return if it was marked as answered
+     * 
+     * @return answered
+     */
     public abstract boolean isAnswered();
 
+    /**
+     * Return if it was mark as deleted
+     * 
+     * @return deleted
+     */
     public abstract boolean isDeleted();
 
+    /**
+     * Return if it was mark as draft
+     * 
+     * @return draft
+     */
     public abstract boolean isDraft();
 
+    /**
+     * Return if it was flagged
+     * 
+     * @return flagged
+     */
     public abstract boolean isFlagged();
 
+    /**
+     * Return if it was marked as recent
+     * 
+     * @return recent
+     */
     public abstract boolean isRecent();
 
+    /**
+     * Return if it was marked as seen
+     * 
+     * @return seen
+     */
     public abstract boolean isSeen();
 
     /**
@@ -55,11 +105,17 @@ public interface MailboxMembership {
      */
     public abstract void unsetRecent();
 
+    /**
+     * Set the Flags 
+     * 
+     * @param flags
+     */
     public abstract void setFlags(Flags flags);
 
     /**
      * Creates a new flags instance populated
      * with the current flag data.
+     * 
      * @return new instance, not null
      */
     public abstract Flags createFlags();

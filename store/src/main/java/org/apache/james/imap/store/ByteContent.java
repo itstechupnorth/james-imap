@@ -39,10 +39,18 @@ public final class ByteContent implements Content {
         size = contents.limit();
     }
 
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.mailbox.Content#size()
+     */
     public long size() {
         return size;
     }
 
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.mailbox.Content#writeTo(java.nio.channels.WritableByteChannel)
+     */
     public void writeTo(WritableByteChannel channel) throws IOException {
         contents.rewind();
         while (channel.write(contents) > 0) {
