@@ -3,11 +3,14 @@ package org.apache.james.imap.jcr;
 import java.util.Date;
 import java.util.List;
 
+import javax.jcr.Repository;
 import javax.jcr.Session;
 import javax.mail.Flags;
+import javax.swing.RepaintManager;
 
 import org.apache.james.imap.jcr.mail.model.JCRHeader;
 import org.apache.james.imap.mailbox.MailboxException;
+import org.apache.james.imap.mailbox.MailboxSession;
 import org.apache.james.imap.store.StoreMailbox;
 import org.apache.james.imap.store.mail.MessageMapper;
 import org.apache.james.imap.store.mail.model.Header;
@@ -17,11 +20,11 @@ import org.apache.james.imap.store.mail.model.PropertyBuilder;
 
 public class JCRMailbox extends StoreMailbox{
 
-    private final Session session;
+    private final Repository repos;
 
-    public JCRMailbox(Mailbox mailbox, Session session) {
-        super(mailbox);
-        this.session = session;
+    public JCRMailbox(final Mailbox mailbox, final MailboxSession session, final Repository repos) {
+        super(mailbox, session );
+        this.repos = repos;
     }
 
     @Override
@@ -42,7 +45,7 @@ public class JCRMailbox extends StoreMailbox{
     }
 
     @Override
-    protected MessageMapper createMessageMapper() {
+    protected MessageMapper createMessageMapper(MailboxSession session) {
         
         return null;
     }

@@ -26,6 +26,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.james.imap.mailbox.MailboxException;
+import org.apache.james.imap.mailbox.MailboxSession.User;
 import org.apache.james.imap.store.StoreSubscriptionManager;
 import org.apache.james.imap.store.user.SubscriptionMapper;
 import org.apache.james.imap.store.user.model.Subscription;
@@ -44,12 +45,12 @@ public class InMemorySubscriptionManager extends StoreSubscriptionManager implem
     }
 
     @Override
-    protected SubscriptionMapper createMapper() {
+    protected SubscriptionMapper createMapper(User user) {
         return this;
     }
 
     @Override
-    protected Subscription createSubscription(String user, String mailbox) {
+    protected Subscription createSubscription(User user, String mailbox) {
         return new InMemorySubscription(mailbox, user);
     }
 
@@ -105,10 +106,10 @@ public class InMemorySubscriptionManager extends StoreSubscriptionManager implem
         private final String mailbox;
         private final String user;
         
-        public InMemorySubscription(final String mailbox, final String user) {
+        public InMemorySubscription(final String mailbox, final User user) {
             super();
             this.mailbox = mailbox;
-            this.user = user;
+            this.user = user.getUserName();
         }
 
         public String getMailbox() {

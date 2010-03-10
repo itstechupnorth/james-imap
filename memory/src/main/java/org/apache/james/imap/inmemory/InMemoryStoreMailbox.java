@@ -30,6 +30,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import javax.mail.Flags;
 
 import org.apache.james.imap.mailbox.MailboxException;
+import org.apache.james.imap.mailbox.MailboxSession;
 import org.apache.james.imap.mailbox.MessageRange;
 import org.apache.james.imap.mailbox.SearchQuery;
 import org.apache.james.imap.mailbox.StorageException;
@@ -47,8 +48,8 @@ public class InMemoryStoreMailbox extends StoreMailbox implements MessageMapper 
     private Map<Long, MailboxMembership> membershipByUid;
     private InMemoryMailbox mailbox;
 
-    public InMemoryStoreMailbox(InMemoryMailbox mailbox) {
-        super(mailbox);
+    public InMemoryStoreMailbox(InMemoryMailbox mailbox, MailboxSession session) {
+        super(mailbox,session);
         this.mailbox = mailbox;
         this.membershipByUid = new ConcurrentHashMap<Long, MailboxMembership>(INITIAL_SIZE);
     }
@@ -70,7 +71,7 @@ public class InMemoryStoreMailbox extends StoreMailbox implements MessageMapper 
     }
 
     @Override
-    protected MessageMapper createMessageMapper() {
+    protected MessageMapper createMessageMapper(MailboxSession session) {
         return this;
     }
 

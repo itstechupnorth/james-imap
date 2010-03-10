@@ -66,6 +66,7 @@ public abstract class ImapHostSystem implements HostSystem {
 
     public final void reset() throws Exception {
         users.clear();
+        
         resetData();
     }
     

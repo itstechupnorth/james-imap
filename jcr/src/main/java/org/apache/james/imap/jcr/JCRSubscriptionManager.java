@@ -18,10 +18,17 @@
  ****************************************************************/
 package org.apache.james.imap.jcr;
 
-import javax.jcr.Session;
+import javax.jcr.LoginException;
+import javax.jcr.Repository;
+import javax.jcr.RepositoryException;
+import javax.jcr.SimpleCredentials;
 
+import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.jcr.user.JCRSubscriptionMapper;
 import org.apache.james.imap.jcr.user.model.JCRSubscription;
+import org.apache.james.imap.mailbox.SubscriptionException;
+import org.apache.james.imap.mailbox.MailboxSession.User;
+import org.apache.james.imap.store.PasswordAwareUser;
 import org.apache.james.imap.store.StoreSubscriptionManager;
 import org.apache.james.imap.store.user.SubscriptionMapper;
 import org.apache.james.imap.store.user.model.Subscription;
@@ -33,23 +40,33 @@ import org.apache.james.imap.store.user.model.Subscription;
  */
 public class JCRSubscriptionManager extends StoreSubscriptionManager{
 
-    private final Session session;
+    private final Repository repos;
 
-    public JCRSubscriptionManager(final Session session) {
+    public JCRSubscriptionManager(final Repository repos) {
         super();
 
-        this.session = session;
+        this.repos = repos;
     }
     
     @Override
-    protected SubscriptionMapper createMapper() {
-        JCRSubscriptionMapper mapper = new JCRSubscriptionMapper(session);
-        return mapper;
+    protected SubscriptionMapper createMapper(User user) throws SubscriptionException{
+    	PasswordAwareUser pUser = (PasswordAwareUser) user;
+    	
+		try {
+			JCRSubscriptionMapper mapper = new JCRSubscriptionMapper(repos.login(new SimpleCredentials(pUser.getUserName(), pUser.getPassword().toCharArray())));
+	        return mapper;
+
+		} catch (LoginException e) {
+			throw new SubscriptionException(HumanReadableText.INVALID_LOGIN, e);
+		} catch (RepositoryException e) {
+			throw new SubscriptionException(HumanReadableText.GENERIC_FAILURE_DURING_PROCESSING, e);
+
+		}
     }
 
     @Override
-    protected Subscription createSubscription(String user, String mailbox) {
-        return new JCRSubscription(user, mailbox);
+    protected Subscription createSubscription(User user, String mailbox) {
+        return new JCRSubscription(user.getUserName(), mailbox);
     }
 
 }

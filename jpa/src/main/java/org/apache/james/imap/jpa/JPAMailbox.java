@@ -30,6 +30,7 @@ import org.apache.james.imap.jpa.mail.JPAMessageMapper;
 import org.apache.james.imap.jpa.mail.model.JPAHeader;
 import org.apache.james.imap.jpa.mail.model.JPAMailboxMembership;
 import org.apache.james.imap.mailbox.MailboxException;
+import org.apache.james.imap.mailbox.MailboxSession;
 import org.apache.james.imap.store.StoreMailbox;
 import org.apache.james.imap.store.mail.MailboxMapper;
 import org.apache.james.imap.store.mail.MessageMapper;
@@ -47,8 +48,8 @@ public abstract class JPAMailbox extends StoreMailbox {
 
     protected final EntityManagerFactory entityManagerFactory;
 
-    public JPAMailbox(final Mailbox mailbox, final EntityManagerFactory entityManagerfactory) {
-        super(mailbox);
+    public JPAMailbox(final Mailbox mailbox, MailboxSession session, final EntityManagerFactory entityManagerfactory) {
+        super(mailbox, session);
         this.entityManagerFactory = entityManagerfactory;
     }    
 
@@ -67,7 +68,7 @@ public abstract class JPAMailbox extends StoreMailbox {
 
     
     @Override
-    protected MessageMapper createMessageMapper() {
+    protected MessageMapper createMessageMapper(MailboxSession session) {
         final MessageMapper mapper = new JPAMessageMapper(entityManagerFactory.createEntityManager(), mailboxId);
         return mapper;
     }

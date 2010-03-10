@@ -21,6 +21,7 @@ package org.apache.james.imap.jpa;
 import javax.persistence.EntityManagerFactory;
 
 import org.apache.james.imap.mailbox.MailboxException;
+import org.apache.james.imap.mailbox.MailboxSession;
 import org.apache.james.imap.store.Authenticator;
 import org.apache.james.imap.store.StoreMailboxManager;
 import org.apache.james.imap.store.Subscriber;
@@ -40,13 +41,31 @@ public abstract class JPAMailboxManager extends StoreMailboxManager {
     
     
     @Override
-    protected void doCreate(String namespaceName) throws MailboxException {
+    protected void doCreate(String namespaceName, MailboxSession session) throws MailboxException {
         final Mailbox mailbox = new org.apache.james.imap.jpa.mail.model.JPAMailbox(namespaceName, randomUidValidity());
-        final MailboxMapper mapper = createMailboxMapper();
+        final MailboxMapper mapper = createMailboxMapper(session);
         mapper.execute(new TransactionalMapper.Transaction(){
 
             public void run() throws MailboxException {
                 mapper.save(mailbox);
+            }
+            
+        });
+    }
+    
+    /**
+     * Delete every Mailbox which exists
+     * 
+     * @throws MailboxException
+     */
+
+    public void deleteEverything() throws MailboxException {
+        final MailboxMapper mapper = createMailboxMapper(null);
+        mapper.execute(new TransactionalMapper.Transaction() {
+
+            public void run() throws MailboxException {
+                mapper.deleteAll(); 
+                mailboxes.clear();
             }
             
         });

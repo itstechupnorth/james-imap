@@ -22,6 +22,7 @@ import javax.persistence.EntityManagerFactory;
 
 import org.apache.james.imap.jpa.user.JPASubscriptionMapper;
 import org.apache.james.imap.jpa.user.model.JPASubscription;
+import org.apache.james.imap.mailbox.MailboxSession.User;
 import org.apache.james.imap.store.StoreSubscriptionManager;
 import org.apache.james.imap.store.user.SubscriptionMapper;
 import org.apache.james.imap.store.user.model.Subscription;
@@ -34,13 +35,13 @@ public class JPASubscriptionManager extends StoreSubscriptionManager {
         this.factory = factory;
     }
 
-    protected SubscriptionMapper createMapper() {
+    protected SubscriptionMapper createMapper(User user) {
         final JPASubscriptionMapper mapper = new JPASubscriptionMapper(factory.createEntityManager());
         return mapper;
     }
     
-    protected Subscription createSubscription(final String user, final String mailbox) {
-        final Subscription newSubscription = new JPASubscription(user, mailbox);
+    protected Subscription createSubscription(final User user, final String mailbox) {
+        final Subscription newSubscription = new JPASubscription(user.getUserName(), mailbox);
         return newSubscription;
     }
 }

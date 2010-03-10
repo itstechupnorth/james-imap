@@ -24,6 +24,7 @@ import java.util.List;
 
 import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.SubscriptionException;
+import org.apache.james.imap.mailbox.MailboxSession.User;
 import org.apache.james.imap.store.transaction.TransactionalMapper;
 import org.apache.james.imap.store.user.SubscriptionMapper;
 import org.apache.james.imap.store.user.model.Subscription;
@@ -44,19 +45,20 @@ public abstract class StoreSubscriptionManager implements Subscriber {
      * 
      * @return mapper
      */
-    protected abstract SubscriptionMapper createMapper();
+    protected abstract SubscriptionMapper createMapper(User user) throws SubscriptionException;
     
+
     /*
      * (non-Javadoc)
-     * @see org.apache.james.imap.store.Subscriber#subscribe(java.lang.String, java.lang.String)
+     * @see org.apache.james.imap.store.Subscriber#subscribe(org.apache.james.imap.mailbox.MailboxSession.User, java.lang.String)
      */
-    public void subscribe(final String user, final String mailbox) throws SubscriptionException {
-        final SubscriptionMapper mapper = createMapper();
+    public void subscribe(final User user, final String mailbox) throws SubscriptionException {
+        final SubscriptionMapper mapper = createMapper(user);
         try {
             mapper.execute(new TransactionalMapper.Transaction() {
 
                 public void run() throws MailboxException {
-                    final Subscription subscription = mapper.findFindMailboxSubscriptionForUser(user, mailbox);
+                    final Subscription subscription = mapper.findFindMailboxSubscriptionForUser(user.getUserName(), mailbox);
                     if (subscription == null) {
                         final Subscription newSubscription = createSubscription(user, mailbox);
                         mapper.save(newSubscription);
@@ -78,15 +80,15 @@ public abstract class StoreSubscriptionManager implements Subscriber {
      * @param mailbox
      * @return subscription 
      */
-    protected abstract Subscription createSubscription(final String user, final String mailbox);
+    protected abstract Subscription createSubscription(final User user, final String mailbox);
 
     /*
      * (non-Javadoc)
      * @see org.apache.james.imap.store.Subscriber#subscriptions(java.lang.String)
      */
-    public Collection<String> subscriptions(final String user) throws SubscriptionException {
-        final SubscriptionMapper mapper = createMapper();
-        final List<Subscription> subscriptions = mapper.findSubscriptionsForUser(user);
+    public Collection<String> subscriptions(final User user) throws SubscriptionException {
+        final SubscriptionMapper mapper = createMapper(user);
+        final List<Subscription> subscriptions = mapper.findSubscriptionsForUser(user.getUserName());
         final Collection<String> results = new HashSet<String>(INITIAL_SIZE);
         for (Subscription subscription:subscriptions) {
             results.add(subscription.getMailbox());
@@ -98,13 +100,13 @@ public abstract class StoreSubscriptionManager implements Subscriber {
      * (non-Javadoc)
      * @see org.apache.james.imap.store.Subscriber#unsubscribe(java.lang.String, java.lang.String)
      */
-    public void unsubscribe(final String user, final String mailbox) throws SubscriptionException {
-        final SubscriptionMapper mapper = createMapper();
+    public void unsubscribe(final User user, final String mailbox) throws SubscriptionException {
+        final SubscriptionMapper mapper = createMapper(user);
         try {
             mapper.execute(new TransactionalMapper.Transaction() {
 
                 public void run() throws MailboxException {
-                    final Subscription subscription = mapper.findFindMailboxSubscriptionForUser(user, mailbox);
+                    final Subscription subscription = mapper.findFindMailboxSubscriptionForUser(user.getUserName(), mailbox);
                     if (subscription != null) {
                         mapper.delete(subscription);
                     }

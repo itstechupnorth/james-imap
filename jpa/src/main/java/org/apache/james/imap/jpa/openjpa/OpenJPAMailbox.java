@@ -24,6 +24,7 @@ import javax.persistence.EntityManagerFactory;
 import org.apache.james.imap.jpa.JPAMailbox;
 import org.apache.james.imap.jpa.mail.JPAMailboxMapper;
 import org.apache.james.imap.jpa.mail.openjpa.OpenJPAMailboxMapper;
+import org.apache.james.imap.mailbox.MailboxSession;
 import org.apache.james.imap.store.mail.model.Mailbox;
 
 /**
@@ -33,8 +34,8 @@ import org.apache.james.imap.store.mail.model.Mailbox;
 public class OpenJPAMailbox extends JPAMailbox{
 
     public OpenJPAMailbox(Mailbox mailbox,
-			EntityManagerFactory entityManagerfactory) {
-		super(mailbox, entityManagerfactory);
+    		MailboxSession session, EntityManagerFactory entityManagerfactory) {
+		super(mailbox, session, entityManagerfactory);
 	}
 
     /*

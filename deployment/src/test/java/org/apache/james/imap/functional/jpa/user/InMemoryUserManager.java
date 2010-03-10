@@ -49,31 +49,31 @@ public class InMemoryUserManager implements Authenticator, Subscriber {
         return result;
     }
 
-    public void subscribe(String userid, String mailbox)
+    public void subscribe(org.apache.james.imap.mailbox.MailboxSession.User userid, String mailbox)
             throws SubscriptionException {
         User user = (User) users.get(userid);
         if (user == null) {
-            user = new User(userid);
-            users.put(userid, user);
+            user = new User(userid.getUserName());
+            users.put(userid.getUserName(), user);
         }
         user.addSubscription(mailbox);
     }
 
-    public Collection<String> subscriptions(String userid) throws SubscriptionException {
-        User user = (User) users.get(userid);
+    public Collection<String> subscriptions(org.apache.james.imap.mailbox.MailboxSession.User userid) throws SubscriptionException {
+        User user = (User) users.get(userid.getUserName());
         if (user == null) {
-            user = new User(userid);
-            users.put(userid, user);
+            user = new User(userid.getUserName());
+            users.put(userid.getUserName(), user);
         }
         return user.getSubscriptions();
     }
 
-    public void unsubscribe(String userid, String mailbox)
+    public void unsubscribe(org.apache.james.imap.mailbox.MailboxSession.User userid, String mailbox)
             throws SubscriptionException {
-        User user = (User) users.get(userid);
+        User user = (User) users.get(userid.getUserName());
         if (user == null) {
-            user = new User(userid);
-            users.put(userid, user);
+            user = new User(userid.getUserName());
+            users.put(userid.getUserName(), user);
         }
         user.removeSubscription(mailbox);
     }

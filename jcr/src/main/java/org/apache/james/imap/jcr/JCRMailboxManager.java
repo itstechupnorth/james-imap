@@ -18,11 +18,23 @@
  ****************************************************************/
 package org.apache.james.imap.jcr;
 
-import javax.jcr.Session;
+import java.util.ArrayList;
+import java.util.Locale;
 
+import javax.jcr.LoginException;
+import javax.jcr.Repository;
+import javax.jcr.RepositoryException;
+import javax.jcr.SimpleCredentials;
+
+import org.apache.commons.logging.Log;
+import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.jcr.mail.JCRMailboxMapper;
+import org.apache.james.imap.mailbox.BadCredentialsException;
 import org.apache.james.imap.mailbox.MailboxException;
+import org.apache.james.imap.mailbox.MailboxSession;
 import org.apache.james.imap.store.Authenticator;
+import org.apache.james.imap.store.PasswordAwareMailboxSession;
+import org.apache.james.imap.store.PasswordAwareUser;
 import org.apache.james.imap.store.StoreMailbox;
 import org.apache.james.imap.store.StoreMailboxManager;
 import org.apache.james.imap.store.Subscriber;
@@ -37,28 +49,35 @@ import org.apache.james.imap.store.transaction.TransactionalMapper;
  */
 public class JCRMailboxManager extends StoreMailboxManager{
 
-    private final Session session;
+	private final Repository repository;
 
-    public JCRMailboxManager(final Authenticator authenticator, final Subscriber subscriber, final Session session) {
+    public JCRMailboxManager(final Authenticator authenticator, final Subscriber subscriber, final Repository repository) {
         super(authenticator, subscriber);
-        this.session = session;
+        this.repository = repository;
     }
 
     @Override
-    protected StoreMailbox createMailbox(Mailbox mailboxRow) {
+    protected StoreMailbox createMailbox(Mailbox mailboxRow, MailboxSession session) {
         // TODO Auto-generated method stub
         return null;
     }
 
     @Override
-    protected MailboxMapper createMailboxMapper() {
-        return new JCRMailboxMapper(session);
+    protected MailboxMapper createMailboxMapper(MailboxSession session) throws MailboxException{
+    	PasswordAwareUser s = (PasswordAwareUser) session.getUser();
+        try {
+			return new JCRMailboxMapper(repository.login(new SimpleCredentials(s.getUserName(), s.getPassword().toCharArray())));
+		} catch (LoginException e) {
+			throw new MailboxException(HumanReadableText.INVALID_LOGIN, e);
+		} catch (RepositoryException e) {
+			throw new MailboxException(HumanReadableText.GENERIC_FAILURE_DURING_PROCESSING, e);
+		}
     }
 
     @Override
-    protected void doCreate(String namespaceName) throws MailboxException {
+    protected void doCreate(String namespaceName, MailboxSession session) throws MailboxException {
         final Mailbox mailbox = new org.apache.james.imap.jcr.mail.model.JCRMailbox(namespaceName, randomUidValidity());
-        final MailboxMapper mapper = createMailboxMapper();
+        final MailboxMapper mapper = createMailboxMapper(session);
         mapper.execute(new TransactionalMapper.Transaction(){
 
             public void run() throws MailboxException {
@@ -66,6 +85,19 @@ public class JCRMailboxManager extends StoreMailboxManager{
             }
             
         });
+    }
+    
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.mailbox.MailboxManager#login(java.lang.String, java.lang.String, org.apache.commons.logging.Log)
+     */
+    public MailboxSession login(String userid, String passwd, Log log) throws BadCredentialsException, MailboxException {
+        if (login(userid, passwd)) {
+        	
+            return new PasswordAwareMailboxSession(randomId(), userid, passwd, log, getDelimiter(), new ArrayList<Locale>());
+        } else {
+            throw new BadCredentialsException();
+        }
     }
 
 }

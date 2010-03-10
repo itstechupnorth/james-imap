@@ -57,7 +57,7 @@ public class InMemoryHostSystem extends ImapHostSystem {
 
     @Override
     protected void resetData() throws Exception {
-        mailboxManager.deleteEverything();
+        //mailboxManager.deleteEverything();
     }
 
 }

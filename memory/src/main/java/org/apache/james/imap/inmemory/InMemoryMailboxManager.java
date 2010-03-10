@@ -26,6 +26,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.MailboxNotFoundException;
+import org.apache.james.imap.mailbox.MailboxSession;
 import org.apache.james.imap.mailbox.StorageException;
 import org.apache.james.imap.store.Authenticator;
 import org.apache.james.imap.store.StoreMailbox;
@@ -33,6 +34,7 @@ import org.apache.james.imap.store.StoreMailboxManager;
 import org.apache.james.imap.store.Subscriber;
 import org.apache.james.imap.store.mail.MailboxMapper;
 import org.apache.james.imap.store.mail.model.Mailbox;
+import org.apache.james.imap.store.transaction.TransactionalMapper;
 
 public class InMemoryMailboxManager extends StoreMailboxManager implements MailboxMapper {
 
@@ -45,18 +47,18 @@ public class InMemoryMailboxManager extends StoreMailboxManager implements Mailb
     }
 
     @Override
-    protected StoreMailbox createMailbox(Mailbox mailboxRow) {
-        final InMemoryStoreMailbox storeMailbox = new InMemoryStoreMailbox((InMemoryMailbox)mailboxRow);
+    protected StoreMailbox createMailbox(Mailbox mailboxRow, MailboxSession session) {
+        final InMemoryStoreMailbox storeMailbox = new InMemoryStoreMailbox((InMemoryMailbox)mailboxRow, session);
         return storeMailbox;
     }
 
     @Override
-    protected MailboxMapper createMailboxMapper() {
+    protected MailboxMapper createMailboxMapper(MailboxSession session) {
         return this;
     }
 
     @Override
-    protected void doCreate(String namespaceName) throws StorageException {
+    protected void doCreate(String namespaceName, MailboxSession session) throws StorageException {
         InMemoryMailbox mailbox = new InMemoryMailbox(randomId(), namespaceName, randomUidValidity());
         save(mailbox);
     }
@@ -125,4 +127,22 @@ public class InMemoryMailboxManager extends StoreMailboxManager implements Mailb
         transaction.run();
     }
 
+    /**
+     * Delete every Mailbox which exists
+     * 
+     * @throws MailboxException
+     */
+
+    public void deleteEverything() throws MailboxException {
+        final MailboxMapper mapper = createMailboxMapper(null);
+        mapper.execute(new TransactionalMapper.Transaction() {
+
+            public void run() throws MailboxException {
+                mapper.deleteAll(); 
+                mailboxes.clear();
+            }
+            
+        });
+    }
+    
 }

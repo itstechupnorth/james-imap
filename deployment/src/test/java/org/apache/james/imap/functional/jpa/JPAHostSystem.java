@@ -32,7 +32,6 @@ import org.apache.james.imap.jpa.JPASubscriptionManager;
 import org.apache.james.imap.jpa.openjpa.OpenJPAMailboxManager;
 import org.apache.james.imap.main.DefaultImapDecoderFactory;
 import org.apache.james.imap.processor.main.DefaultImapProcessorFactory;
-import org.apache.james.imap.store.StoreMailboxManager;
 import org.apache.james.test.functional.HostSystem;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
 
@@ -45,7 +44,7 @@ public class JPAHostSystem extends ImapHostSystem {
         return host;
     }
     
-    private final StoreMailboxManager mailboxManager;
+    private final OpenJPAMailboxManager mailboxManager;
     private final InMemoryUserManager userManager; 
 
     public JPAHostSystem() throws Exception {
