@@ -19,36 +19,42 @@
 package org.apache.james.imap.jcr.mail.model;
 
 import javax.jcr.Node;
-import javax.jcr.PathNotFoundException;
 import javax.jcr.RepositoryException;
-import javax.jcr.ValueFormatException;
-import javax.jcr.lock.LockException;
-import javax.jcr.nodetype.ConstraintViolationException;
-import javax.jcr.version.VersionException;
 
+import org.apache.commons.logging.Log;
+import org.apache.james.imap.jcr.IsPersistent;
 import org.apache.james.imap.jcr.JCRImapConstants;
 import org.apache.james.imap.store.mail.model.AbstractComparableHeader;
-import org.apache.james.imap.store.mail.model.Header;
 
 /**
  * JCR implementation of a Header
  * 
  *
  */
-public class JCRHeader extends AbstractComparableHeader{
+public class JCRHeader extends AbstractComparableHeader implements JCRImapConstants, IsPersistent{
 
-    public final static String FIELDNAME_PROPERTY = JCRImapConstants.PROPERTY_PREFIX + "fieldName";
-    public final static String VALUE_PROPERTY = JCRImapConstants.PROPERTY_PREFIX + "value";
-    public final static String LINENUMBER_PROPERTY = JCRImapConstants.PROPERTY_PREFIX + "lineNumber";
+    public final static String FIELDNAME_PROPERTY = PROPERTY_PREFIX + "fieldName";
+    public final static String VALUE_PROPERTY = PROPERTY_PREFIX + "value";
+    public final static String LINENUMBER_PROPERTY = PROPERTY_PREFIX + "lineNumber";
 
-    private final String fieldName;
-    private final String value;
-    private final int lineNumber;
+    private String fieldName;
+    private String value;
+    private int lineNumber;
+    private Log logger;
+    private Node node;
     
-    public JCRHeader(final String fieldName, final String value, final int lineNumber) {
+    public JCRHeader(Node node, Log logger) {
+        this.node = node;
+        this.logger = logger;
+    }
+    
+    
+    
+    public JCRHeader(final String fieldName, final String value, final int lineNumber, Log logger) {
         this.fieldName = fieldName;
         this.value = value;
         this.lineNumber = lineNumber;
+        this.logger = logger;
     }
     
     /*
@@ -56,6 +62,13 @@ public class JCRHeader extends AbstractComparableHeader{
      * @see org.apache.james.imap.store.mail.model.Header#getFieldName()
      */
     public String getFieldName() {
+        if (isPersistent()) {
+            try {
+                return  node.getProperty(FIELDNAME_PROPERTY).getString();
+            } catch (RepositoryException e) {
+                logger.error("Unable to access property " + FIELDNAME_PROPERTY, e);
+            }
+        }
         return fieldName;
     }
 
@@ -64,6 +77,13 @@ public class JCRHeader extends AbstractComparableHeader{
      * @see org.apache.james.imap.store.mail.model.Header#getLineNumber()
      */
     public int getLineNumber() {
+        if (isPersistent()) {
+            try {
+                return  new Long(node.getProperty(LINENUMBER_PROPERTY).getLong()).intValue();
+            } catch (RepositoryException e) {
+                logger.error("Unable to access property " + FIELDNAME_PROPERTY, e);
+            }
+        }
         return lineNumber;
     }
 
@@ -72,41 +92,41 @@ public class JCRHeader extends AbstractComparableHeader{
      * @see org.apache.james.imap.store.mail.model.Header#getValue()
      */
     public String getValue() {
+        if (isPersistent()) {
+            try {
+                return node.getProperty(VALUE_PROPERTY).getString();
+            } catch (RepositoryException e) {
+                logger.error("Unable to access property " + FIELDNAME_PROPERTY, e);
+            }
+        }
         return value;
     }
 
 
-    /**
-     * Create a JCRHeader from the given Node
-     * 
-     * @param node
-     * @return jcrHeader
-     * @throws PathNotFoundException
-     * @throws RepositoryException
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.jcr.IsPersistent#getNode()
      */
-    public static JCRHeader from(Node node) throws PathNotFoundException, RepositoryException {
-        String name = node.getProperty(FIELDNAME_PROPERTY).getString();
-        String value = node.getProperty(VALUE_PROPERTY).getString();
-        int number = new Long(node.getProperty(LINENUMBER_PROPERTY).getLong()).intValue();
-        return new JCRHeader(name, value, number);
-    }
-    
-    /**
-     * Copy all value of the given Header to the node
-     * 
-     * @param node
-     * @param header
-     * @return node
-     * @throws ValueFormatException
-     * @throws VersionException
-     * @throws LockException
-     * @throws ConstraintViolationException
-     * @throws RepositoryException
-     */
-    public static Node copy(Node node, Header header) throws ValueFormatException, VersionException, LockException, ConstraintViolationException, RepositoryException {
-        node.setProperty(FIELDNAME_PROPERTY, header.getFieldName());
-        node.setProperty(VALUE_PROPERTY, header.getValue());
-        node.setProperty(LINENUMBER_PROPERTY, header.getLineNumber());
+    public Node getNode() {
         return node;
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.jcr.IsPersistent#isPersistent()
+     */
+    public boolean isPersistent() {
+        return node != null;
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.jcr.IsPersistent#merge(javax.jcr.Node)
+     */
+    public void merge(Node node) throws RepositoryException {
+        this.node = node;
+        this.fieldName = null;
+        this.lineNumber = 0;
+        this.value = null;
     }
 }

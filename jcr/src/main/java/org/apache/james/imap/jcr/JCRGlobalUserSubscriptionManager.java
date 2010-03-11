@@ -25,59 +25,31 @@ import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.SimpleCredentials;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.james.imap.api.display.HumanReadableText;
-import org.apache.james.imap.jcr.user.JCRSubscriptionMapper;
-import org.apache.james.imap.jcr.user.model.JCRSubscription;
-import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.SubscriptionException;
-import org.apache.james.imap.mailbox.MailboxSession.User;
 import org.apache.james.imap.store.PasswordAwareUser;
-import org.apache.james.imap.store.StoreSubscriptionManager;
-import org.apache.james.imap.store.user.SubscriptionMapper;
-import org.apache.james.imap.store.user.model.Subscription;
 
 /**
- * JCR implementation of a SubscriptionManager
+ * JCR based SubscriptionManager which use the same username and password to
+ * obtain a JCR Session for every MailboxSession
  * 
  * 
  */
-public class JCRSubscriptionManager extends StoreSubscriptionManager {
-    private Log logger = LogFactory.getLog(JCRSubscriptionManager.class);
+public class JCRGlobalUserSubscriptionManager extends JCRSubscriptionManager {
 
-    private final Repository repository;
-    private String workspace;
+    private String username;
+    private String password;
 
-    public JCRSubscriptionManager(final Repository repository, final String workspace) {
-        super();
-        this.workspace = workspace;
-        this.repository = repository;
+    public JCRGlobalUserSubscriptionManager(final Repository repository, final String workspace, final String username, final String password) {
+        super(repository, workspace);
+        this.username = username;
+        this.password = password;
     }
 
     @Override
-    protected SubscriptionMapper createMapper(User user) throws SubscriptionException {
-        PasswordAwareUser pUser = (PasswordAwareUser) user;
-
-        JCRSubscriptionMapper mapper = new JCRSubscriptionMapper(getSession(pUser), logger);
-        return mapper;
-    }
-
-    @Override
-    protected Subscription createSubscription(User user, String mailbox) {
-        return new JCRSubscription(user.getUserName(), mailbox, logger);
-    }
-
-    /**
-     * Return a new JCR Session for the given MailboxSession
-     * 
-     * @param s
-     * @return session
-     * @throws MailboxException
-     */
     protected Session getSession(PasswordAwareUser user) throws SubscriptionException {
         try {
-            return repository.login(new SimpleCredentials(user.getUserName(), user.getPassword().toCharArray()), getWorkspace());
+            return getRepository().login(new SimpleCredentials(username, password.toCharArray()), getWorkspace());
         } catch (LoginException e) {
             throw new SubscriptionException(HumanReadableText.INVALID_LOGIN, e);
         } catch (NoSuchWorkspaceException e) {
@@ -88,16 +60,4 @@ public class JCRSubscriptionManager extends StoreSubscriptionManager {
         }
     }
 
-    /**
-     * Return the JCR workspace
-     * 
-     * @return workspace
-     */
-    protected String getWorkspace() {
-        return workspace;
-    }
-
-    protected Repository getRepository() {
-        return repository;
-    }
 }

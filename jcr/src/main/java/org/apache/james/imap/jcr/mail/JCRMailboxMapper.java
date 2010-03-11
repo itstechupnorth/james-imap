@@ -29,6 +29,7 @@ import javax.jcr.Session;
 import javax.jcr.query.Query;
 import javax.jcr.query.QueryManager;
 
+import org.apache.commons.logging.Log;
 import org.apache.jackrabbit.util.Text;
 import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.jcr.JCRImapConstants;
@@ -49,9 +50,11 @@ public class JCRMailboxMapper extends NonTransactionalMapper implements MailboxM
     private final static String WILDCARD = "*";
     private final Session session;
     private final String PATH = "mailboxes";
+    private Log logger;
 
-    public JCRMailboxMapper(Session session) {
+    public JCRMailboxMapper(final Session session, final Log logger) {
         this.session = session;
+        this.logger = logger;
     }
 
     /*

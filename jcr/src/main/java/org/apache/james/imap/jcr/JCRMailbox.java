@@ -4,10 +4,9 @@ import java.util.Date;
 import java.util.List;
 
 import javax.jcr.Repository;
-import javax.jcr.Session;
 import javax.mail.Flags;
-import javax.swing.RepaintManager;
 
+import org.apache.commons.logging.Log;
 import org.apache.james.imap.jcr.mail.model.JCRHeader;
 import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.MailboxSession;
@@ -21,10 +20,13 @@ import org.apache.james.imap.store.mail.model.PropertyBuilder;
 public class JCRMailbox extends StoreMailbox{
 
     private final Repository repos;
-
-    public JCRMailbox(final Mailbox mailbox, final MailboxSession session, final Repository repos) {
+    private final String workspace;
+    private final Log log;
+    public JCRMailbox(final Mailbox mailbox, final MailboxSession session, final Repository repos, final String workspace, final Log log) {
         super(mailbox, session );
         this.repos = repos;
+        this.workspace = workspace;
+        this.log = log;
     }
 
     @Override
@@ -35,7 +37,7 @@ public class JCRMailbox extends StoreMailbox{
 
     @Override
     protected Header createHeader(int lineNumber, String name, String value) {
-        return new JCRHeader(name, value, lineNumber);
+        return new JCRHeader(name, value, lineNumber, log);
     }
 
     @Override

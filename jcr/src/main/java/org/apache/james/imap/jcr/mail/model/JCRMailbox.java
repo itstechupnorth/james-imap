@@ -81,7 +81,11 @@ public class JCRMailbox implements Mailbox{
         return id;
     }
 
-    @Override
+   
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.store.mail.model.Mailbox#getName()
+     */
     public String getName() {
         return name;
     }

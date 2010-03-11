@@ -27,8 +27,10 @@ import javax.jcr.PathNotFoundException;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 
+import org.apache.commons.logging.Log;
 import org.apache.jackrabbit.util.Text;
 import org.apache.james.imap.api.display.HumanReadableText;
+import org.apache.james.imap.jcr.IsPersistent;
 import org.apache.james.imap.jcr.JCRImapConstants;
 import org.apache.james.imap.jcr.user.model.JCRSubscription;
 import org.apache.james.imap.mailbox.SubscriptionException;
@@ -37,101 +39,119 @@ import org.apache.james.imap.store.user.SubscriptionMapper;
 import org.apache.james.imap.store.user.model.Subscription;
 
 /**
- * JCR implementation of a SubscriptionManager. Just be aware, this SubscriptionManager doesn't
- * support transactions. So very call on a method ends in a "real" action
-  *
+ * JCR implementation of a SubscriptionManager. Just be aware, this
+ * SubscriptionManager doesn't support transactions. So very call on a method
+ * ends in a "real" action
+ * 
  */
-public class JCRSubscriptionMapper extends NonTransactionalMapper implements SubscriptionMapper{
+public class JCRSubscriptionMapper extends NonTransactionalMapper implements SubscriptionMapper {
 
-	private final Session session;
-	private final static String PATH = "subscriptions";
-	
-	public JCRSubscriptionMapper(Session session) {
-		this.session = session;
-	}
-	
+    private final Session session;
+    private final Log log;
+    private final static String PATH = "subscriptions";
 
-	/*
-	 * (non-Javadoc)
-	 * @see org.apache.james.imap.store.user.SubscriptionMapper#delete(org.apache.james.imap.store.user.model.Subscription)
-	 */
-	public void delete(Subscription subscription) throws SubscriptionException {
-		try {
-			Node node = session.getRootNode().getNode(PATH + JCRImapConstants.NODE_DELIMITER + getPath(subscription.getUser(), subscription.getMailbox()));
-			node.remove();
-			session.save();
-		} catch (PathNotFoundException e) {
-			// do nothing
-		} catch (RepositoryException e) {
-			throw new SubscriptionException(HumanReadableText.DELETED_FAILED,e);
-		}
+    public JCRSubscriptionMapper(final Session session, final Log log) {
+        this.session = session;
+        this.log = log;
+    }
 
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * org.apache.james.imap.store.user.SubscriptionMapper#delete(org.apache
+     * .james.imap.store.user.model.Subscription)
+     */
+    public void delete(Subscription subscription) throws SubscriptionException {
+        // Check if the subscription was persistent in JCR if not don't do
+        // anything
+        if (subscription instanceof IsPersistent) {
+            try {
 
-	/*
-	 * (non-Javadoc)
-	 * @see org.apache.james.imap.store.user.SubscriptionMapper#findFindMailboxSubscriptionForUser(java.lang.String, java.lang.String)
-	 */
-	public Subscription findFindMailboxSubscriptionForUser(String user,
-			String mailbox) throws SubscriptionException {
-		try {
-			Node node = session.getRootNode().getNode(PATH + JCRImapConstants.NODE_DELIMITER + getPath(user, mailbox));
-			return JCRSubscription.from(node);
-		} catch (PathNotFoundException e) {
-			return null;
-		} catch (RepositoryException e) {
+                Node node = ((IsPersistent) subscription).getNode();
+                node.remove();
+                session.save();
+            } catch (PathNotFoundException e) {
+                // do nothing
+            } catch (RepositoryException e) {
+                throw new SubscriptionException(HumanReadableText.DELETED_FAILED, e);
+            }
+        }
+
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @seeorg.apache.james.imap.store.user.SubscriptionMapper#
+     * findFindMailboxSubscriptionForUser(java.lang.String, java.lang.String)
+     */
+    public Subscription findFindMailboxSubscriptionForUser(String user, String mailbox) throws SubscriptionException {
+        try {
+            Node node = session.getRootNode().getNode(PATH + JCRImapConstants.NODE_DELIMITER + getPath(user, mailbox));
+            return new JCRSubscription(node, log);
+        } catch (PathNotFoundException e) {
+            return null;
+        } catch (RepositoryException e) {
             throw new SubscriptionException(HumanReadableText.SEARCH_FAILED, e);
-		}
-	}
+        }
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * @see org.apache.james.imap.store.user.SubscriptionMapper#findSubscriptionsForUser(java.lang.String)
-	 */
-	public List<Subscription> findSubscriptionsForUser(String user)
-			throws SubscriptionException {
-		List<Subscription> subList = new ArrayList<Subscription>();
-		try {
-			Node node = session.getRootNode().getNode(PATH + JCRImapConstants.NODE_DELIMITER + Text.escapeIllegalJcrChars(user));
-			NodeIterator nodeIt = node.getNodes("*");
-			while(nodeIt.hasNext()) {
-				subList.add(JCRSubscription.from(nodeIt.nextNode()));
-			}
-		} catch (PathNotFoundException e) {
-			// Do nothing just return the empty list later
-		} catch (RepositoryException e) {
-			throw new SubscriptionException(HumanReadableText.SEARCH_FAILED,e);
-		}
-		return subList;
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * org.apache.james.imap.store.user.SubscriptionMapper#findSubscriptionsForUser
+     * (java.lang.String)
+     */
+    public List<Subscription> findSubscriptionsForUser(String user) throws SubscriptionException {
+        List<Subscription> subList = new ArrayList<Subscription>();
+        try {
+            Node node = session.getRootNode().getNode(PATH + JCRImapConstants.NODE_DELIMITER + Text.escapeIllegalJcrChars(user));
+            NodeIterator nodeIt = node.getNodes("*");
+            while (nodeIt.hasNext()) {
+                subList.add(new JCRSubscription(nodeIt.nextNode(), log));
+            }
+        } catch (PathNotFoundException e) {
+            // Do nothing just return the empty list later
+        } catch (RepositoryException e) {
+            throw new SubscriptionException(HumanReadableText.SEARCH_FAILED, e);
+        }
+        return subList;
 
-	}
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * @see org.apache.james.imap.store.user.SubscriptionMapper#save(org.apache.james.imap.store.user.model.Subscription)
-	 */
-	public void save(Subscription subscription) throws SubscriptionException {
-		String username = subscription.getUser();
-		String mailbox = subscription.getMailbox();
-		String nodename = getPath(username,mailbox);
-		try {
-			Node node = session.getRootNode().getNode(PATH);
-			Node subNode;
-			if (node.hasNode(nodename )) {
-				subNode = node.getNode(nodename);
-			} else {
-				subNode = node.addNode(nodename);
-			}
-			JCRSubscription.copy(subscription, subNode);
-			session.save();
-		} catch (RepositoryException e) {
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * org.apache.james.imap.store.user.SubscriptionMapper#save(org.apache.james
+     * .imap.store.user.model.Subscription)
+     */
+    public void save(Subscription subscription) throws SubscriptionException {
+        String username = subscription.getUser();
+        String mailbox = subscription.getMailbox();
+        String nodename = getPath(username, mailbox);
+        try {
+            Node node = session.getRootNode().getNode(PATH);
+            Node subNode;
+            if (node.hasNode(nodename)) {
+                subNode = node.getNode(nodename);
+            } else {
+                subNode = node.addNode(nodename);
+            }
+
+            // Copy new properties to the node
+            ((JCRSubscription)subscription).merge(subNode);
+
+            session.save();
+        } catch (RepositoryException e) {
             throw new SubscriptionException(HumanReadableText.SAVE_FAILED, e);
-		}		
-	}
-	
-	private String getPath(String username, String mailbox) {
-		return Text.escapeIllegalJcrChars(username) + JCRImapConstants.NODE_DELIMITER + Text.escapeIllegalJcrChars(mailbox);
-	}
+        }
+    }
 
+    private String getPath(String username, String mailbox) {
+        return Text.escapeIllegalJcrChars(username) + JCRImapConstants.NODE_DELIMITER + Text.escapeIllegalJcrChars(mailbox);
+    }
 
 }

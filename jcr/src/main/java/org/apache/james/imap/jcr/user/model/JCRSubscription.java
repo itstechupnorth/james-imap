@@ -20,84 +20,101 @@
 package org.apache.james.imap.jcr.user.model;
 
 import javax.jcr.Node;
-import javax.jcr.PathNotFoundException;
 import javax.jcr.RepositoryException;
-import javax.jcr.ValueFormatException;
-import javax.jcr.lock.LockException;
-import javax.jcr.nodetype.ConstraintViolationException;
-import javax.jcr.version.VersionException;
 
+import org.apache.commons.logging.Log;
+import org.apache.james.imap.jcr.IsPersistent;
 import org.apache.james.imap.jcr.JCRImapConstants;
 import org.apache.james.imap.store.user.model.Subscription;
 
-
 /**
  * JCR implementation of a Subscription
- *
+ * 
  */
-public class JCRSubscription implements Subscription{
+public class JCRSubscription implements Subscription, IsPersistent, JCRImapConstants {
+    public final static String USERNAME_PROPERTY = PROPERTY_PREFIX + "username";
+    public final static String MAILBOX_PROPERTY = PROPERTY_PREFIX  + "mailbox";
+    
+    private Node node;
+    private final Log log;
+    private String mailbox;
+    private String username;
 
-	private final String mailbox;
+    
+    public JCRSubscription(Node node, Log log) {
+        this.node = node;
+        this.log = log;
+    }
 
-	private final String username;
+    public JCRSubscription(String username, String mailbox, Log log) {
+        this.username = username;
+        this.mailbox = mailbox;
+        this.log = log;
+    }
 
-	public final static String USERNAME_PROPERTY = JCRImapConstants.PROPERTY_PREFIX + "username";
-	public final static String MAILBOX_PROPERTY = JCRImapConstants.PROPERTY_PREFIX  + "mailbox";
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.apache.james.imap.store.user.model.Subscription#getMailbox()
+     */
+    public String getMailbox() {
+        if (isPersistent()) {
+            try {
+                return node.getProperty(MAILBOX_PROPERTY).getString();
+            } catch (RepositoryException e) {
+                log.error("Unable to access Property " + MAILBOX_PROPERTY, e);
+            }
+            return null;
+        }
+        return mailbox;
+    }
 
-	public JCRSubscription(String username, String mailbox) {
-		this.username = username;
-		this.mailbox = mailbox;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.apache.james.imap.store.user.model.Subscription#getUser()
+     */
+    public String getUser() {
+        if (isPersistent()) {
+            try {
+                return node.getProperty(USERNAME_PROPERTY).getString();
+            } catch (RepositoryException e) {
+                log.error("Unable to access Property " + USERNAME_PROPERTY, e);
+            }
+            return null;
+        }
+        return username;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * @see org.apache.james.imap.store.user.model.Subscription#getMailbox()
-	 */
-	public String getMailbox() {
-		return mailbox;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.apache.james.imap.jcr.NodeAware#getNode()
+     */
+    public Node getNode() {
+        return node;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * @see org.apache.james.imap.store.user.model.Subscription#getUser()
-	 */
-	public String getUser() {
-		return username;
-	}
-	
-	/**
-	 * Return the JCRSubscription for the given node
-	 * 
-	 * @param node 
-	 * @return subscription
-	 * @throws ValueFormatException
-	 * @throws PathNotFoundException
-	 * @throws RepositoryException
-	 */
-	public static JCRSubscription from(Node node) throws ValueFormatException, PathNotFoundException, RepositoryException {
-		String username = node.getProperty(USERNAME_PROPERTY).getString();;
-		String mailbox = node.getProperty(MAILBOX_PROPERTY).getString();
-		
-		return new JCRSubscription(username, mailbox);
-	}
-	
-	
-	/**
-	 * Copy all needed properties to the given node for the given subscription
-	 * 
-	 * @param subscription
-	 * @param node
-	 * @return node
-	 * @throws ValueFormatException
-	 * @throws VersionException
-	 * @throws LockException
-	 * @throws ConstraintViolationException
-	 * @throws RepositoryException
-	 */
-	public static Node copy(Subscription subscription, Node node) throws ValueFormatException, VersionException, LockException, ConstraintViolationException, RepositoryException {
-		node.setProperty(USERNAME_PROPERTY, subscription.getUser());
-		node.setProperty(MAILBOX_PROPERTY, subscription.getMailbox());
-		return node;
-		
-	}
+
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.jcr.IsPersistent#isPersistent()
+     */
+    public boolean isPersistent() {
+        return node != null;
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.jcr.IsPersistent#merge(javax.jcr.Node)
+     */
+    public void merge(Node node) throws RepositoryException{
+        this.node = node;
+        node.setProperty(USERNAME_PROPERTY, username);
+        node.setProperty(MAILBOX_PROPERTY, mailbox);
+
+        mailbox = null;
+        username = null;
+    }
+
 }
