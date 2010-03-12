@@ -26,7 +26,12 @@ import org.apache.james.imap.jcr.IsPersistent;
 import org.apache.james.imap.jcr.JCRImapConstants;
 
 import org.apache.james.imap.store.mail.model.AbstractComparableProperty;
+import org.apache.james.imap.store.mail.model.Property;
 
+/**
+ * JCR implementation of {@link Property}
+ *
+ */
 public class JCRProperty extends AbstractComparableProperty<JCRProperty> implements JCRImapConstants, IsPersistent {
 
     private Node node;

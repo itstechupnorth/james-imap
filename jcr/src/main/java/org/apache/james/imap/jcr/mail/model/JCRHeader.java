@@ -20,6 +20,7 @@ package org.apache.james.imap.jcr.mail.model;
 
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
+import javax.mail.Header;
 
 import org.apache.commons.logging.Log;
 import org.apache.james.imap.jcr.IsPersistent;
@@ -27,15 +28,15 @@ import org.apache.james.imap.jcr.JCRImapConstants;
 import org.apache.james.imap.store.mail.model.AbstractComparableHeader;
 
 /**
- * JCR implementation of a Header
+ * JCR implementation of a {@link Header}
  * 
  *
  */
 public class JCRHeader extends AbstractComparableHeader implements JCRImapConstants, IsPersistent{
 
-    public final static String FIELDNAME_PROPERTY = PROPERTY_PREFIX + "fieldName";
-    public final static String VALUE_PROPERTY = PROPERTY_PREFIX + "value";
-    public final static String LINENUMBER_PROPERTY = PROPERTY_PREFIX + "lineNumber";
+    public final static String FIELDNAME_PROPERTY = PROPERTY_PREFIX + "headerFieldName";
+    public final static String VALUE_PROPERTY = PROPERTY_PREFIX + "headerFalue";
+    public final static String LINENUMBER_PROPERTY = PROPERTY_PREFIX + "headerLineNumber";
 
     private String fieldName;
     private String value;

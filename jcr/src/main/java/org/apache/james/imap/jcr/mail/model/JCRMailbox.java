@@ -31,14 +31,14 @@ import org.apache.james.imap.store.mail.model.Mailbox;
 
 
 /**
- * JCR implementation of a Mailbox
+ * JCR implementation of a {@link Mailbox}
  */
 public class JCRMailbox implements Mailbox{
 
-    public final static String ID_PROPERTY = JCRImapConstants.PROPERTY_PREFIX + "id";
-    public final static String NAME_PROPERTY = JCRImapConstants.PROPERTY_PREFIX + "name";
-    public final static String UIDVALIDITY_PROPERTY = JCRImapConstants.PROPERTY_PREFIX + "uidValidity";
-    public final static String LASTUID_PROPERTY = JCRImapConstants.PROPERTY_PREFIX + "lastUid";
+    public final static String ID_PROPERTY = JCRImapConstants.PROPERTY_PREFIX + "mailboxId";
+    public final static String NAME_PROPERTY = JCRImapConstants.PROPERTY_PREFIX + "mailboxName";
+    public final static String UIDVALIDITY_PROPERTY = JCRImapConstants.PROPERTY_PREFIX + "mailboxUidValidity";
+    public final static String LASTUID_PROPERTY = JCRImapConstants.PROPERTY_PREFIX + "mailboxLastUid";
 
     private long id = -1;
     private String name;

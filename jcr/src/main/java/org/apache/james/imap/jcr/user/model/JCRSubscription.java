@@ -28,12 +28,12 @@ import org.apache.james.imap.jcr.JCRImapConstants;
 import org.apache.james.imap.store.user.model.Subscription;
 
 /**
- * JCR implementation of a Subscription
+ * JCR implementation of a {@link Subscription}
  * 
  */
 public class JCRSubscription implements Subscription, IsPersistent, JCRImapConstants {
-    public final static String USERNAME_PROPERTY = PROPERTY_PREFIX + "username";
-    public final static String MAILBOX_PROPERTY = PROPERTY_PREFIX  + "mailbox";
+    public final static String USERNAME_PROPERTY = PROPERTY_PREFIX + "subscriptionUsername";
+    public final static String MAILBOX_PROPERTY = PROPERTY_PREFIX  + "subscriptionMailbox";
     
     private Node node;
     private final Log log;
