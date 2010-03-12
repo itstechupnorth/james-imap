@@ -22,7 +22,7 @@ import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 
 import org.apache.commons.logging.Log;
-import org.apache.james.imap.jcr.IsPersistent;
+import org.apache.james.imap.jcr.Persistent;
 import org.apache.james.imap.jcr.JCRImapConstants;
 
 import org.apache.james.imap.store.mail.model.AbstractComparableProperty;
@@ -32,7 +32,7 @@ import org.apache.james.imap.store.mail.model.Property;
  * JCR implementation of {@link Property}
  *
  */
-public class JCRProperty extends AbstractComparableProperty<JCRProperty> implements JCRImapConstants, IsPersistent {
+public class JCRProperty extends AbstractComparableProperty<JCRProperty> implements JCRImapConstants, Persistent {
 
     private Node node;
     private final Log logger;
@@ -59,6 +59,9 @@ public class JCRProperty extends AbstractComparableProperty<JCRProperty> impleme
         this.logger = logger;
     }
 
+    public JCRProperty(Property property, int order, Log logger) {
+        this(property.getNamespace(), property.getLocalName(), property.getValue(), order, logger);
+    }
     /*
      * (non-Javadoc)
      * 
@@ -158,6 +161,8 @@ public class JCRProperty extends AbstractComparableProperty<JCRProperty> impleme
         node.setProperty(LOCALNAME_PROPERTY, localName);
         node.setProperty(VALUE_PROPERTY, value);
 
+        this.node = node;
+        
         namespace = null;
         order = 0;
         localName = null;

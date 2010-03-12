@@ -76,6 +76,9 @@ public abstract class StoreMailbox implements org.apache.james.imap.mailbox.Mail
         this.session = session;
     }
 
+    protected MailboxSession getMailboxSession() {
+        return session;
+    }
     /**
      * Copy the given {@link MailboxMembership} to a new instance with the given uid
      * 
@@ -90,7 +93,7 @@ public abstract class StoreMailbox implements org.apache.james.imap.mailbox.Mail
      * 
      * @return mapper
      */
-    protected abstract MessageMapper createMessageMapper(MailboxSession session);
+    protected abstract MessageMapper createMessageMapper(MailboxSession session) throws MailboxException;
     
     
     protected abstract Mailbox getMailboxRow() throws MailboxException;

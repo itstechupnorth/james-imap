@@ -16,33 +16,39 @@
  * specific language governing permissions and limitations      *
  * under the License.                                           *
  ****************************************************************/
-package org.apache.james.imap.jcr;
+package org.apache.james.imap.store.mail.model;
 
-import javax.jcr.Node;
-import javax.jcr.RepositoryException;
+import java.nio.ByteBuffer;
 
-public interface IsPersistent {
-
+/**
+ * Abstract base class for {@link Document}
+ *
+ */
+public abstract class AbstractDocument implements Document{
 
     /**
-     * Merge the object with the node
-     * 
-     * @param node
-     */
-    public void merge(Node node) throws RepositoryException;
+     * @see org.apache.james.imap.store.mail.model.Document#getBodyContent()
+     */    
+    public ByteBuffer getBodyContent() {
+        final ByteBuffer contentBuffer = getFullContent();
+        contentBuffer.position(getBodyStartOctet());
+        return contentBuffer.slice();
+    }
     
-	/**
-	 * Return underlying Node
-	 * 
-	 * @return node
-	 */
-	public Node getNode();
-	
-	/**
-	 * Return if the object is persistent
-	 * 
-	 * @return
-	 */
-	public boolean isPersistent();
-	
+    /**
+     * The number of octets contained in the body of this part.
+     * 
+     * @return number of octets
+     */
+    public long getBodyOctets() {
+        return getFullContentOctets() - getBodyStartOctet();
+    }
+    
+    /**
+     * Return the start octet of the body
+     * 
+     * @return startOctet
+     */
+    protected abstract int getBodyStartOctet();
+    
 }

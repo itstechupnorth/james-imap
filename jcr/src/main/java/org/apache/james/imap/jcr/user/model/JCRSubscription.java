@@ -23,7 +23,7 @@ import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 
 import org.apache.commons.logging.Log;
-import org.apache.james.imap.jcr.IsPersistent;
+import org.apache.james.imap.jcr.Persistent;
 import org.apache.james.imap.jcr.JCRImapConstants;
 import org.apache.james.imap.store.user.model.Subscription;
 
@@ -31,7 +31,7 @@ import org.apache.james.imap.store.user.model.Subscription;
  * JCR implementation of a {@link Subscription}
  * 
  */
-public class JCRSubscription implements Subscription, IsPersistent, JCRImapConstants {
+public class JCRSubscription implements Subscription, Persistent, JCRImapConstants {
     public final static String USERNAME_PROPERTY = PROPERTY_PREFIX + "subscriptionUsername";
     public final static String MAILBOX_PROPERTY = PROPERTY_PREFIX  + "subscriptionMailbox";
     

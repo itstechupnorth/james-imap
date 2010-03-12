@@ -26,10 +26,9 @@ import javax.jcr.NodeIterator;
 import javax.jcr.PathNotFoundException;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
-import javax.jcr.query.Query;
-import javax.jcr.query.QueryManager;
 
 import org.apache.commons.logging.Log;
+import org.apache.jackrabbit.JcrConstants;
 import org.apache.jackrabbit.util.Text;
 import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.jcr.JCRImapConstants;
@@ -137,6 +136,7 @@ public class JCRMailboxMapper extends NonTransactionalMapper implements MailboxM
      * @see org.apache.james.imap.store.mail.MailboxMapper#findMailboxById(long)
      */
     public Mailbox findMailboxById(long mailboxId) throws StorageException, MailboxNotFoundException {
+        /*
         try {
             QueryManager manager = session.getWorkspace().getQueryManager();
             String queryString = JCRUtils.createPath(session.getRootNode().getPath(), PATH) + "//element(" + mailboxId + ")," + JCRMailbox.ID_PROPERTY + ")";
@@ -146,15 +146,27 @@ public class JCRMailboxMapper extends NonTransactionalMapper implements MailboxM
             if (nodes.hasNext() == false) {
                 throw new MailboxNotFoundException(mailboxId);
             } else {
-                return JCRMailbox.from(nodes.nextNode());
+                return new JCRMailbox(nodes.nextNode(),logger);
             }
         } catch (PathNotFoundException e) {
             throw new MailboxNotFoundException(mailboxId);
         } catch (RepositoryException e) {
             throw new StorageException(HumanReadableText.SEARCH_FAILED, e);
         }
+        */
+        throw new StorageException(HumanReadableText.UNSUPPORTED,null);
     }
 
+    public Mailbox findMailboxByUUID(String uuid) throws StorageException, MailboxNotFoundException {
+        try {
+            return new JCRMailbox(session.getNodeByUUID(uuid),logger);
+        } catch (PathNotFoundException e) {
+            throw new MailboxNotFoundException(uuid);
+        } catch (RepositoryException e) {
+            throw new StorageException(HumanReadableText.SEARCH_FAILED, e);
+        }
+    }
+    
     /*
      * (non-Javadoc)
      * 
@@ -165,7 +177,7 @@ public class JCRMailboxMapper extends NonTransactionalMapper implements MailboxM
     public Mailbox findMailboxByName(String name) throws StorageException, MailboxNotFoundException {
         try {
             Node node = session.getRootNode().getNode(JCRUtils.createPath(PATH, name));
-            return JCRMailbox.from(node);
+            return new JCRMailbox(node, logger);
         } catch (PathNotFoundException e) {
             throw new MailboxNotFoundException(name);
         } catch (RepositoryException e) {
@@ -185,7 +197,7 @@ public class JCRMailboxMapper extends NonTransactionalMapper implements MailboxM
         try {
             NodeIterator it = session.getRootNode().getNodes(PATH + NODE_DELIMITER + WILDCARD + name + WILDCARD);
             while (it.hasNext()) {
-                mailboxList.add(JCRMailbox.from(it.nextNode()));
+                mailboxList.add(new JCRMailbox(it.nextNode(), logger));
             }
         } catch (PathNotFoundException e) {
             // nothing todo
@@ -209,13 +221,28 @@ public class JCRMailboxMapper extends NonTransactionalMapper implements MailboxM
             if (session.getRootNode().hasNode(nodePath)) {
                 node = session.getRootNode().getNode(PATH);
             } else {
-                node = session.getRootNode().addNode(PATH);
+                node = session.getRootNode().addNode(PATH, JcrConstants.MIX_REFERENCEABLE);
             }
-            JCRMailbox.copy(node, mailbox);
+            ((JCRMailbox)mailbox).merge(node);
             session.save();
         } catch (RepositoryException e) {
             throw new StorageException(HumanReadableText.SAVE_FAILED, e);
         }
+    }
+    
+    public Mailbox consumeNextUid(String uuid) throws StorageException, MailboxNotFoundException {
+
+        JCRMailbox mailbox = (JCRMailbox) findMailboxByUUID(uuid);
+        mailbox.consumeUid();
+        try {
+            session.save();
+        } catch (PathNotFoundException e) {
+            throw new MailboxNotFoundException(uuid);
+        } catch (RepositoryException e) {
+            throw new StorageException(HumanReadableText.SAVE_FAILED, e);
+        }
+        return mailbox;
+
     }
 
 }

@@ -33,13 +33,13 @@ import javax.persistence.Lob;
 import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
 
-import org.apache.james.imap.store.mail.model.Document;
+import org.apache.james.imap.store.mail.model.AbstractDocument;
 import org.apache.james.imap.store.mail.model.Header;
 import org.apache.james.imap.store.mail.model.Property;
 import org.apache.james.imap.store.mail.model.PropertyBuilder;
 
 @Entity(name="Message")
-public class JPAMessage implements Document {
+public class JPAMessage extends AbstractDocument {
     /** Primary key */
     @Id@GeneratedValue private long id;
 
@@ -125,15 +125,7 @@ public class JPAMessage implements Document {
     public List<Header> getHeaders() {
         return new ArrayList<Header>(headers);
     }
-    
-    /**
-     * @see org.apache.james.imap.store.mail.model.Document#getBodyContent()
-     */    
-    public ByteBuffer getBodyContent() {
-        final ByteBuffer contentBuffer = getFullContent();
-        contentBuffer.position(bodyStartOctet);
-        return contentBuffer.slice();
-    }
+
 
     @Override
     public int hashCode() {
@@ -164,15 +156,6 @@ public class JPAMessage implements Document {
             + "id = " + id
             + " )";
         return retValue;
-    }
-
-    /**
-     * The number of octets contained in the body of this part.
-     * 
-     * @return number of octets
-     */
-    public long getBodyOctets() {
-        return contentOctets - bodyStartOctet;
     }
 
     /**
@@ -218,5 +201,10 @@ public class JPAMessage implements Document {
 
     public long getFullContentOctets() {
         return contentOctets;
+    }
+
+    @Override
+    protected int getBodyStartOctet() {
+        return bodyStartOctet;
     }
 }

@@ -35,6 +35,7 @@ import org.apache.james.imap.jcr.mail.JCRMailboxMapper;
 import org.apache.james.imap.mailbox.BadCredentialsException;
 import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.MailboxSession;
+import org.apache.james.imap.mailbox.StorageException;
 import org.apache.james.imap.store.Authenticator;
 import org.apache.james.imap.store.PasswordAwareMailboxSession;
 import org.apache.james.imap.store.PasswordAwareUser;
@@ -97,7 +98,7 @@ public class JCRMailboxManager extends StoreMailboxManager {
 
     @Override
     protected void doCreate(String namespaceName, MailboxSession session) throws MailboxException {
-        final Mailbox mailbox = new org.apache.james.imap.jcr.mail.model.JCRMailbox(namespaceName, randomUidValidity());
+        final Mailbox mailbox = new org.apache.james.imap.jcr.mail.model.JCRMailbox(namespaceName, randomUidValidity(), logger);
         final MailboxMapper mapper = createMailboxMapper(session);
         mapper.execute(new TransactionalMapper.Transaction() {
 
@@ -120,6 +121,14 @@ public class JCRMailboxManager extends StoreMailboxManager {
             return new PasswordAwareMailboxSession(randomId(), userid, passwd, log, getDelimiter(), new ArrayList<Locale>());
         } else {
             throw new BadCredentialsException();
+        }
+    }
+    
+    public void deleteEverything() throws StorageException {
+        try {
+            repository.login().getRootNode().remove();
+        } catch (RepositoryException e) {
+            throw new StorageException(HumanReadableText.DELETED_FAILED, e);
         }
     }
 

@@ -29,7 +29,7 @@ import javax.jcr.Session;
 
 import org.apache.commons.logging.Log;
 import org.apache.james.imap.api.display.HumanReadableText;
-import org.apache.james.imap.jcr.IsPersistent;
+import org.apache.james.imap.jcr.Persistent;
 import org.apache.james.imap.jcr.JCRImapConstants;
 import org.apache.james.imap.jcr.JCRUtils;
 import org.apache.james.imap.jcr.user.model.JCRSubscription;
@@ -65,10 +65,10 @@ public class JCRSubscriptionMapper extends NonTransactionalMapper implements Sub
     public void delete(Subscription subscription) throws SubscriptionException {
         // Check if the subscription was persistent in JCR if not don't do
         // anything
-        if (subscription instanceof IsPersistent) {
+        if (subscription instanceof Persistent) {
             try {
 
-                Node node = ((IsPersistent) subscription).getNode();
+                Node node = ((Persistent) subscription).getNode();
                 node.remove();
                 session.save();
             } catch (PathNotFoundException e) {

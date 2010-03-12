@@ -20,19 +20,19 @@ package org.apache.james.imap.jcr.mail.model;
 
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
-import javax.mail.Header;
 
 import org.apache.commons.logging.Log;
-import org.apache.james.imap.jcr.IsPersistent;
+import org.apache.james.imap.jcr.Persistent;
 import org.apache.james.imap.jcr.JCRImapConstants;
 import org.apache.james.imap.store.mail.model.AbstractComparableHeader;
+import org.apache.james.imap.store.mail.model.Header;
 
 /**
  * JCR implementation of a {@link Header}
  * 
  *
  */
-public class JCRHeader extends AbstractComparableHeader implements JCRImapConstants, IsPersistent{
+public class JCRHeader extends AbstractComparableHeader implements JCRImapConstants, Persistent{
 
     public final static String FIELDNAME_PROPERTY = PROPERTY_PREFIX + "headerFieldName";
     public final static String VALUE_PROPERTY = PROPERTY_PREFIX + "headerFalue";
@@ -44,6 +44,14 @@ public class JCRHeader extends AbstractComparableHeader implements JCRImapConsta
     private Log logger;
     private Node node;
     
+    /**
+     * Copies the content of an existing header.
+     * @param header
+     */
+    public JCRHeader(Header header, Log logger) {
+        this(header.getLineNumber(), header.getFieldName(), header.getValue(), logger);
+    }
+    
     public JCRHeader(Node node, Log logger) {
         this.node = node;
         this.logger = logger;
@@ -51,7 +59,7 @@ public class JCRHeader extends AbstractComparableHeader implements JCRImapConsta
     
     
     
-    public JCRHeader(final String fieldName, final String value, final int lineNumber, Log logger) {
+    public JCRHeader(final int lineNumber, final String fieldName, final String value, Log logger) {
         this.fieldName = fieldName;
         this.value = value;
         this.lineNumber = lineNumber;
@@ -125,7 +133,12 @@ public class JCRHeader extends AbstractComparableHeader implements JCRImapConsta
      * @see org.apache.james.imap.jcr.IsPersistent#merge(javax.jcr.Node)
      */
     public void merge(Node node) throws RepositoryException {
+        node.setProperty(FIELDNAME_PROPERTY, fieldName);
+        node.setProperty(LINENUMBER_PROPERTY, lineNumber);
+        node.setProperty(VALUE_PROPERTY, value);
+        
         this.node = node;
+        
         this.fieldName = null;
         this.lineNumber = 0;
         this.value = null;
