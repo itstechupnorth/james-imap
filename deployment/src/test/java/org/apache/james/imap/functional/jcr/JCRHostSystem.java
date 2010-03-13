@@ -20,6 +20,9 @@ package org.apache.james.imap.functional.jcr;
 
 import java.io.File;
 
+import javax.jcr.Session;
+import javax.jcr.SimpleCredentials;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.jackrabbit.core.RepositoryImpl;
 import org.apache.jackrabbit.core.config.RepositoryConfig;
@@ -37,9 +40,9 @@ public class JCRHostSystem extends ImapHostSystem{
 
 
     public static final String META_DATA_DIRECTORY = "target/user-meta-data";
-
-    public static HostSystem build() throws Exception {        
-        JCRHostSystem host =  new JCRHostSystem();
+    private static JCRHostSystem host;
+    public static HostSystem build() throws Exception { 
+    	if (host == null) host =  new JCRHostSystem();
         return host;
     }
     
@@ -61,7 +64,8 @@ public class JCRHostSystem extends ImapHostSystem{
         
         RepositoryConfig config = RepositoryConfig.create(new InputSource(this.getClass().getClassLoader().getResourceAsStream("test-repository.xml")), JACKRABBIT_HOME);
         repository = RepositoryImpl.create(config);
-        mailboxManager = new JCRGlobalUserMailboxManager(userManager, new JCRGlobalUserSubscriptionManager(repository, null, null, null), repository, null, null, null);
+        
+        mailboxManager = new JCRGlobalUserMailboxManager(userManager, new JCRGlobalUserSubscriptionManager(repository, "default", "user", "pass"), repository, "default", "user", "pass");
         
         final DefaultImapProcessorFactory defaultImapProcessorFactory = new DefaultImapProcessorFactory();
         resetUserMetaData();
@@ -87,7 +91,14 @@ public class JCRHostSystem extends ImapHostSystem{
 
     public void resetData() throws Exception {
         resetUserMetaData();
-        mailboxManager.deleteEverything();
+
+    	Session session = repository.login(new SimpleCredentials("user", new char[0]), "default");
+        javax.jcr.Node root = session.getRootNode();
+        if (root.hasNode("mailboxes")) {
+        	root.getNode("mailboxes").remove();
+        }
+        session.save();
+        //repository.shutdown();
     }
     
     public void resetUserMetaData() throws Exception {
@@ -97,5 +108,13 @@ public class JCRHostSystem extends ImapHostSystem{
         }
         dir.mkdirs();
     }
+
+	@Override
+	protected void stop() throws Exception {
+		//repository.shutdown();
+		System.out.println("HERE");
+	}
+    
+    
 
 }
