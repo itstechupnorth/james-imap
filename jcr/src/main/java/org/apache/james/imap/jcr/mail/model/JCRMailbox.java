@@ -188,7 +188,7 @@ public class JCRMailbox implements Mailbox, JCRImapConstants, Persistent{
     public String getUUID() {
         if (isPersistent()) {
             try {
-                return node.getProperty(JcrConstants.JCR_UUID).getString();
+                return node.getUUID();
             } catch (RepositoryException e) {
                 logger.error("Unable to access property " + JcrConstants.JCR_UUID, e);
             }

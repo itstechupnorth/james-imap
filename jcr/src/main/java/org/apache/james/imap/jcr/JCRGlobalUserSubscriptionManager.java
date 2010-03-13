@@ -37,19 +37,23 @@ import org.apache.james.imap.store.PasswordAwareUser;
  */
 public class JCRGlobalUserSubscriptionManager extends JCRSubscriptionManager {
 
-    private String username;
-    private String password;
+    private final String username;
+    private final char[] password;
 
     public JCRGlobalUserSubscriptionManager(final Repository repository, final String workspace, final String username, final String password) {
         super(repository, workspace);
         this.username = username;
-        this.password = password;
+        if (password != null) {
+        	this.password = password.toCharArray();
+        } else {
+        	this.password = new char[0];
+        }    
     }
 
     @Override
     protected Session getSession(PasswordAwareUser user) throws SubscriptionException {
         try {
-            return getRepository().login(new SimpleCredentials(username, password.toCharArray()), getWorkspace());
+            return getRepository().login(new SimpleCredentials(username, password), getWorkspace());
         } catch (LoginException e) {
             throw new SubscriptionException(HumanReadableText.INVALID_LOGIN, e);
         } catch (NoSuchWorkspaceException e) {

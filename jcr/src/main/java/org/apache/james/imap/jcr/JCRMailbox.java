@@ -52,7 +52,7 @@ public class JCRMailbox extends StoreMailbox{
     private final Repository repository;
     private final String workspace;
     private final Log log;
-    private String uuid;
+    private final String uuid;
     
     public JCRMailbox(final org.apache.james.imap.jcr.mail.model.JCRMailbox mailbox, final MailboxSession session, final Repository repository, final String workspace, final Log log) {
         super(mailbox, session );

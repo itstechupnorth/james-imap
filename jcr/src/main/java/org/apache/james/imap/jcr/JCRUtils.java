@@ -27,9 +27,11 @@ public class JCRUtils implements JCRImapConstants{
 		
 		for (int i = 0; i < subNodes.length; i++ ) {
 			String path = subNodes[i];
+			/*
 			if (path.startsWith(PROPERTY_PREFIX) == false) {
 				pathBuf.append(PROPERTY_PREFIX);
 			}
+			*/
 			pathBuf.append(Text.escapeIllegalJcrChars(path));
 			
 			if (i +1 != subNodes.length) {

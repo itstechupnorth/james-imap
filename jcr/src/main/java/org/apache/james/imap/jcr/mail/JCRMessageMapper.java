@@ -66,7 +66,7 @@ public class JCRMessageMapper extends NonTransactionalMapper implements MessageM
     public long countMessagesInMailbox() throws StorageException {
        
         try {
-            String queryString = "//" + PATH + "//element(*)[@" + JCRMailboxMembership.MAILBOX_UUID_PROPERTY +"==" + uuid +"]";
+            String queryString = "//" + PATH + "//element(*)[@" + JCRMailboxMembership.MAILBOX_UUID_PROPERTY +"='" + uuid +"']";
             QueryManager manager = session.getWorkspace().getQueryManager();
             QueryResult result = manager.createQuery(queryString, Query.XPATH).execute();
             return result.getNodes().getSize();
@@ -323,6 +323,13 @@ public class JCRMessageMapper extends NonTransactionalMapper implements MessageM
         }
     }
 
+    /**
+     * Generate the XPath query for the SearchQuery
+     * 
+     * @param uuid
+     * @param query
+     * @return xpathQuery
+     */
     private String formulateXPath(String uuid, SearchQuery query) {
         final StringBuilder queryBuilder = new StringBuilder(50);
         queryBuilder.append("//" + PATH + "//element(*)[@" + JCRMailboxMembership.MAILBOX_UUID_PROPERTY +"='" + uuid +"'] ");

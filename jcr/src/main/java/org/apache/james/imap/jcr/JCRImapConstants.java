@@ -32,5 +32,5 @@ public interface JCRImapConstants {
 	/**
 	 * Prefix for all imap related properties
 	 */
-	public static final String PROPERTY_PREFIX ="imap:";
+	public static final String PROPERTY_PREFIX ="";//"imap:";
 }

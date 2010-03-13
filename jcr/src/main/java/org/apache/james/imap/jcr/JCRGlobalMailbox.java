@@ -16,6 +16,7 @@
  * specific language governing permissions and limitations      *
  * under the License.                                           *
  ****************************************************************/
+
 package org.apache.james.imap.jcr;
 
 import javax.jcr.LoginException;
@@ -25,55 +26,35 @@ import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.SimpleCredentials;
 
+import org.apache.commons.logging.Log;
 import org.apache.james.imap.api.display.HumanReadableText;
-import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.MailboxSession;
-import org.apache.james.imap.store.Authenticator;
-import org.apache.james.imap.store.StoreMailbox;
-import org.apache.james.imap.store.Subscriber;
-import org.apache.james.imap.store.mail.model.Mailbox;
+import org.apache.james.imap.mailbox.SubscriptionException;
+import org.apache.james.imap.store.PasswordAwareUser;
 
-/**
- * JCR based MailboxManager which use the same username and password to obtain a
- * JCR Session for every MailboxSession
- * 
- * 
- */
-public class JCRGlobalUserMailboxManager extends JCRMailboxManager {
+public class JCRGlobalMailbox extends JCRMailbox{
 
-    private final String username;
-    private final char[] password; 
+	private final String username;
+	private final char[] password;
+	
+	public JCRGlobalMailbox(final org.apache.james.imap.jcr.mail.model.JCRMailbox mailbox, MailboxSession session,
+			Repository repository, String workspace, String username, char[] password,Log log) {
+		super(mailbox, session, repository, workspace, log);
+		this.username = username;
+		this.password = password;
+	}
 
-    public JCRGlobalUserMailboxManager(final Authenticator authenticator, final Subscriber subscriber, final Repository repository, final String workspace, final String username, final String password) {
-        super(authenticator, subscriber, repository, workspace);
-
-        this.username = username;
-        if (password != null) {
-        	this.password = password.toCharArray();
-        } else {
-        	this.password = new char[0];
-        }
-    }
-
-
-    @Override
-    protected StoreMailbox createMailbox(Mailbox mailboxRow, MailboxSession session) {
-        JCRMailbox mailbox = new JCRGlobalMailbox((org.apache.james.imap.jcr.mail.model.JCRMailbox) mailboxRow, session, getRepository(), getWorkspace(), username, password, getLog());
-        return mailbox;
-    }
-    
-    @Override
-    protected Session getSession(MailboxSession s) throws MailboxException {
+	@Override
+	  protected Session getSession(PasswordAwareUser user) throws SubscriptionException {
         try {
             return getRepository().login(new SimpleCredentials(username, password), getWorkspace());
         } catch (LoginException e) {
-            throw new MailboxException(HumanReadableText.INVALID_LOGIN, e);
+            throw new SubscriptionException(HumanReadableText.INVALID_LOGIN, e);
         } catch (NoSuchWorkspaceException e) {
-            throw new MailboxException(HumanReadableText.GENERIC_FAILURE_DURING_PROCESSING, e);
+            throw new SubscriptionException(HumanReadableText.GENERIC_FAILURE_DURING_PROCESSING, e);
         } catch (RepositoryException e) {
-            throw new MailboxException(HumanReadableText.GENERIC_FAILURE_DURING_PROCESSING, e);
+            throw new SubscriptionException(HumanReadableText.GENERIC_FAILURE_DURING_PROCESSING, e);
 
         }
     }
-
 }
