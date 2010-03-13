@@ -72,9 +72,8 @@
                         <param name="schemaObjectPrefix" value="default_"/>
         </PersistenceManager>
         
-        <SearchIndex
-                class="org.apache.jackrabbit.core.query.lucene.SearchIndex">
-            <param name="path" value="${wsp.home}/index" />
+        <SearchIndex class="org.apache.jackrabbit.core.query.lucene.SearchIndex">
+            <param name="path" value="default/index" />
         </SearchIndex>
         
     </Workspace>
@@ -95,10 +94,6 @@
           				<param name="schemaObjectPrefix" value="version_"/>
         </PersistenceManager>
         
-        <SearchIndex
-                class="org.apache.jackrabbit.core.query.lucene.SearchIndex">
-            <param name="path" value="${wsp.home}/index" />
-        </SearchIndex>
     </Versioning>
 
 </Repository>
