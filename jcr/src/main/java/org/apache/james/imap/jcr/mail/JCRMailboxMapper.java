@@ -234,7 +234,6 @@ public class JCRMailboxMapper extends JCRMapper implements MailboxMapper {
                 node.addMixin(JcrConstants.MIX_REFERENCEABLE);
             }
             ((JCRMailbox)mailbox).merge(node);
-            System.out.println("MAILBOX" + mailbox.getName());
             getSession().save();
         } catch (RepositoryException e) {
         	e.printStackTrace();

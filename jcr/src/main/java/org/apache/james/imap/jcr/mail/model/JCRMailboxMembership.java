@@ -53,6 +53,8 @@ public class JCRMailboxMembership extends AbstractMailboxMembership implements
 	public final static String INTERNAL_DATE_PROPERTY = PROPERTY_PREFIX
 			+ "internalDate";
 
+	public final static String MESSAGE_NODE = "message";
+	
 	private String mailboxUUID;
 	private long uid;
 	private Date internalDate;
@@ -240,8 +242,7 @@ public class JCRMailboxMembership extends AbstractMailboxMembership implements
 				return node.getProperty(DELETED_PROPERTY).getBoolean();
 
 			} catch (RepositoryException e) {
-				logger
-						.error("Unable to access property " + DELETED_PROPERTY,
+				logger.error("Unable to access property " + DELETED_PROPERTY,
 								e);
 			}
 			return false;
@@ -278,8 +279,7 @@ public class JCRMailboxMembership extends AbstractMailboxMembership implements
 				return node.getProperty(FLAGGED_PROPERTY).getBoolean();
 
 			} catch (RepositoryException e) {
-				logger
-						.error("Unable to access property " + FLAGGED_PROPERTY,
+				logger.error("Unable to access property " + FLAGGED_PROPERTY,
 								e);
 			}
 			return false;
@@ -333,19 +333,18 @@ public class JCRMailboxMembership extends AbstractMailboxMembership implements
 	public void setFlags(Flags flags) {
 		if (isPersistent()) {
 			try {
-				node.getProperty(ANSWERED_PROPERTY).setValue(
+				node.setProperty(ANSWERED_PROPERTY,
 						flags.contains(Flags.Flag.ANSWERED));
-				node.getProperty(DELETED_PROPERTY).setValue(
+				node.setProperty(DELETED_PROPERTY,
 						flags.contains(Flags.Flag.DELETED));
-				node.getProperty(DRAFT_PROPERTY).setValue(
+				node.setProperty(DRAFT_PROPERTY,
 						flags.contains(Flags.Flag.DRAFT));
-				node.getProperty(FLAGGED_PROPERTY).setValue(
+				node.setProperty(FLAGGED_PROPERTY,
 						flags.contains(Flags.Flag.FLAGGED));
-				node.getProperty(RECENT_PROPERTY).setValue(
+				node.setProperty(RECENT_PROPERTY,
 						flags.contains(Flags.Flag.RECENT));
-				node.getProperty(SEEN_PROPERTY).setValue(
+				node.setProperty(SEEN_PROPERTY,
 						flags.contains(Flags.Flag.SEEN));
-
 			} catch (RepositoryException e) {
 				logger.error("Unable to set flags", e);
 			}
@@ -381,7 +380,7 @@ public class JCRMailboxMembership extends AbstractMailboxMembership implements
 	public String getUUID() {
 		if (isPersistent()) {
 			try {
-				return node.getProperty(JcrConstants.JCR_UUID).getString();
+				return node.getUUID();
 			} catch (RepositoryException e) {
 				logger.error("Unable to access property "
 						+ JcrConstants.JCR_UUID, e);
@@ -429,8 +428,13 @@ public class JCRMailboxMembership extends AbstractMailboxMembership implements
 		cal.setTime(internalDate);
 		node.setProperty(INTERNAL_DATE_PROPERTY, cal);
 
-		Node messageNode = node.addNode("message");
-		messageNode.addMixin(JcrConstants.MIX_REFERENCEABLE);
+		Node messageNode;
+		if (node.hasNode(MESSAGE_NODE)) {
+		    messageNode = node.getNode(MESSAGE_NODE);
+		} else {
+	        messageNode = node.addNode("message");
+	        messageNode.addMixin(JcrConstants.MIX_REFERENCEABLE);
+		}
 		message.merge(messageNode);
 
 		this.node = node;

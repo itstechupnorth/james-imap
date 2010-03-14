@@ -130,6 +130,7 @@ public class JCRMessageMapper extends JCRMapper implements MessageMapper {
         if (membership.isPersistent()) {
             try {
                 getSession().getNodeByUUID(membership.getUUID()).remove();
+                getSession().save();
             } catch (RepositoryException e) {
                 e.printStackTrace();
                 throw new StorageException(HumanReadableText.DELETED_FAILED, e);
@@ -212,8 +213,9 @@ public class JCRMessageMapper extends JCRMapper implements MessageMapper {
     }
 
     private List<MailboxMembership> findMessagesInMailbox(String uuid) throws RepositoryException {
+        
         List<MailboxMembership> list = new ArrayList<MailboxMembership>();
-        String queryString = "//" + PATH + "//element(*)[@" + JCRMailboxMembership.MAILBOX_UUID_PROPERTY + "='" + uuid + "']";
+        String queryString = "//" + PATH + "//element(*)[@" + JCRMailboxMembership.MAILBOX_UUID_PROPERTY +"='" + uuid +"']";
         QueryManager manager = getSession().getWorkspace().getQueryManager();
         QueryResult result = manager.createQuery(queryString, Query.XPATH).execute();
 
@@ -313,9 +315,7 @@ public class JCRMessageMapper extends JCRMapper implements MessageMapper {
             createPathIfNotExists();
             
             if (membership.isPersistent()) {
-
                 messageNode = getSession().getNodeByUUID(membership.getUUID());
-
             } else {
                 messageNode = getSession().getRootNode().addNode(JCRUtils.createPath(PATH, String.valueOf(membership.getUid())));
                 messageNode.addMixin(JcrConstants.MIX_REFERENCEABLE);
