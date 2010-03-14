@@ -53,7 +53,9 @@ public class JCRMailbox extends StoreMailbox{
     private final String workspace;
     private final Log log;
     private final String uuid;
-    public final static String MAPPER = "MESSAGE_MAPPER";
+    public final static String MESSAGE_MAPPER = "MESSAGE_MAPPER";
+    public final static String MAILBOX_MAPPER = "MAILBOX_MAPPER";
+
     public JCRMailbox(final org.apache.james.imap.jcr.mail.model.JCRMailbox mailbox, final MailboxSession session, final Repository repository, final String workspace, final Log log) {
         super(mailbox, session );
         this.repository = repository;
@@ -98,25 +100,33 @@ public class JCRMailbox extends StoreMailbox{
     @Override
     protected MessageMapper createMessageMapper(MailboxSession session) throws MailboxException {
         PasswordAwareUser user = (PasswordAwareUser)getMailboxSession().getUser();
-        JCRMessageMapper messageMapper = (JCRMessageMapper) session.getAttributes().get(MAPPER);
+        JCRMessageMapper messageMapper = (JCRMessageMapper) session.getAttributes().get(MESSAGE_MAPPER);
         if (messageMapper == null) {
             messageMapper = new JCRMessageMapper(getSession(user), getMailboxUUID(), log);
-            session.getAttributes().put(MAPPER, messageMapper);
+            session.getAttributes().put(MESSAGE_MAPPER, messageMapper);
         }
         return messageMapper;
     }
 
+    protected JCRMailboxMapper createMailboxMapper(MailboxSession session) throws MailboxException {
+        JCRMailboxMapper mapper = (JCRMailboxMapper) session.getAttributes().get(MAILBOX_MAPPER);
+        if (mapper == null) {
+            PasswordAwareUser user = (PasswordAwareUser)getMailboxSession().getUser();
+            mapper = new JCRMailboxMapper(getSession(user), log);
+            session.getAttributes().put(MAILBOX_MAPPER, mapper);
+        }
+        return mapper;
+    }
+    
     @Override
     protected Mailbox getMailboxRow() throws MailboxException {
-        PasswordAwareUser user = (PasswordAwareUser)getMailboxSession().getUser();
-        final JCRMailboxMapper mapper = new JCRMailboxMapper(getSession(user), log);
+        final JCRMailboxMapper mapper = createMailboxMapper(getMailboxSession());
         return mapper.findMailboxByUUID(getMailboxUUID());
     }
 
     @Override
     protected Mailbox reserveNextUid() throws MailboxException {
-        PasswordAwareUser user = (PasswordAwareUser)getMailboxSession().getUser();
-        final JCRMailboxMapper mapper = new JCRMailboxMapper(getSession(user), log);
+        final JCRMailboxMapper mapper = createMailboxMapper(getMailboxSession());
         return mapper.consumeNextUid(getMailboxUUID());
     }
 
@@ -156,9 +166,13 @@ public class JCRMailbox extends StoreMailbox{
 
     @Override
     protected void onLogout(MailboxSession session) {
-        JCRMessageMapper mapper =  (JCRMessageMapper) session.getAttributes().get(MAPPER);
+        JCRMessageMapper mapper =  (JCRMessageMapper) session.getAttributes().get(MESSAGE_MAPPER);
         if (mapper != null) {
             mapper.destroy();
+        }
+        JCRMailboxMapper mailboxMapper = (JCRMailboxMapper) session.getAttributes().get(MAILBOX_MAPPER);
+        if (mailboxMapper != null) {
+            mailboxMapper.destroy();
         }
     }
 }
