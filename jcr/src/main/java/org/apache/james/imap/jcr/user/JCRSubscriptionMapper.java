@@ -26,16 +26,17 @@ import javax.jcr.NodeIterator;
 import javax.jcr.PathNotFoundException;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
+import javax.jcr.query.Query;
+import javax.jcr.query.QueryManager;
+import javax.jcr.query.QueryResult;
 
 import org.apache.commons.logging.Log;
 import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.jcr.JCRMapper;
-import org.apache.james.imap.jcr.Persistent;
-import org.apache.james.imap.jcr.JCRImapConstants;
 import org.apache.james.imap.jcr.JCRUtils;
+import org.apache.james.imap.jcr.Persistent;
 import org.apache.james.imap.jcr.user.model.JCRSubscription;
 import org.apache.james.imap.mailbox.SubscriptionException;
-import org.apache.james.imap.store.transaction.NonTransactionalMapper;
 import org.apache.james.imap.store.user.SubscriptionMapper;
 import org.apache.james.imap.store.user.model.Subscription;
 
@@ -83,7 +84,7 @@ public class JCRSubscriptionMapper extends JCRMapper implements SubscriptionMapp
     /*
      * (non-Javadoc)
      * 
-     * @seeorg.apache.james.imap.store.user.SubscriptionMapper#
+     * @see org.apache.james.imap.store.user.SubscriptionMapper#
      * findFindMailboxSubscriptionForUser(java.lang.String, java.lang.String)
      */
     public Subscription findFindMailboxSubscriptionForUser(String user, String mailbox) throws SubscriptionException {
@@ -107,8 +108,12 @@ public class JCRSubscriptionMapper extends JCRMapper implements SubscriptionMapp
     public List<Subscription> findSubscriptionsForUser(String user) throws SubscriptionException {
         List<Subscription> subList = new ArrayList<Subscription>();
         try {
-            Node node = getSession().getRootNode().getNode(JCRUtils.createPath(PATH , user));
-            NodeIterator nodeIt = node.getNodes("*");
+            String queryString = "//" + PATH + "//element(*)[@" + JCRSubscription.USERNAME_PROPERTY + "='" + user + "']";
+
+            QueryManager manager = getSession().getWorkspace().getQueryManager();
+            QueryResult result = manager.createQuery(queryString, Query.XPATH).execute();
+            
+            NodeIterator nodeIt = result.getNodes();
             while (nodeIt.hasNext()) {
                 subList.add(new JCRSubscription(nodeIt.nextNode(), log));
             }

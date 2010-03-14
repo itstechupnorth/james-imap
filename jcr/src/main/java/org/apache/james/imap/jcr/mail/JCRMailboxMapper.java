@@ -125,7 +125,6 @@ public class JCRMailboxMapper extends JCRMapper implements MailboxMapper {
     }
 
     /*
-     * TODO: This is not really efficient..
      * 
      * (non-Javadoc)
      * 
@@ -136,18 +135,10 @@ public class JCRMailboxMapper extends JCRMapper implements MailboxMapper {
     public boolean existsMailboxStartingWith(String mailboxName) throws StorageException {
         try {
         	QueryManager manager = getSession().getWorkspace().getQueryManager();
-        	String queryString = "//" + PATH + "//element(*)[jcr:contains(@" + JCRMailbox.NAME_PROPERTY + ",'" + mailboxName + "')]";
+        	String queryString = "//" + PATH + "//element(*)[jcr:like(@" + JCRMailbox.NAME_PROPERTY + ",'" +mailboxName+"%')]";
         	QueryResult result = manager.createQuery(queryString, Query.XPATH).execute();
         	NodeIterator it = result.getNodes();
-        	while (it.hasNext()) {
-        	    Node nextNode = it.nextNode();
-        	    String name = nextNode.getProperty(JCRMailbox.NAME_PROPERTY).getString();
-        	    System.out.println("NAME=" + name);
-        	    if (name.startsWith(mailboxName)) {
-        	        return true;
-        	    }
-        	}
-        	return false;
+        	return it.hasNext();
         } catch (RepositoryException e) {
             throw new StorageException(HumanReadableText.SEARCH_FAILED, e);
         }
@@ -208,7 +199,7 @@ public class JCRMailboxMapper extends JCRMapper implements MailboxMapper {
         List<Mailbox> mailboxList = new ArrayList<Mailbox>();
         try {        	
         	QueryManager manager = getSession().getWorkspace().getQueryManager();
-        	String queryString = "//" + PATH + "//element(*)[jcr:contains(@" + JCRMailbox.NAME_PROPERTY + ",'" + name + "')]";
+        	String queryString = "//" + PATH + "//element(*)[jcr:like(@" + JCRMailbox.NAME_PROPERTY + ",'%" + name + "%')]";
         	QueryResult result = manager.createQuery(queryString, Query.XPATH).execute();
         	NodeIterator it = result.getNodes();
         	while (it.hasNext()) {
@@ -243,6 +234,7 @@ public class JCRMailboxMapper extends JCRMapper implements MailboxMapper {
                 node.addMixin(JcrConstants.MIX_REFERENCEABLE);
             }
             ((JCRMailbox)mailbox).merge(node);
+            System.out.println("MAILBOX" + mailbox.getName());
             getSession().save();
         } catch (RepositoryException e) {
         	e.printStackTrace();
