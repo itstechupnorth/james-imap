@@ -27,6 +27,7 @@ import java.util.Locale;
 
 import org.apache.commons.configuration.BaseConfiguration;
 import org.apache.james.imap.functional.ImapHostSystem;
+import org.apache.james.imap.functional.InMemoryUserManager;
 import org.apache.james.imap.mailbox.MailboxManager;
 import org.apache.james.mailboxmanager.torque.om.MailboxRowPeer;
 import org.apache.james.mailboxmanager.torque.om.MessageBodyPeer;
@@ -159,7 +160,7 @@ public class TorqueMailboxManagerProviderSingleton {
 
     private static TorqueMailboxManager TORQUE_MAILBOX_MANAGER;
 
-    private static SimpleUserManager USER_MANAGER;
+    private static InMemoryUserManager USER_MANAGER;
 
 
     public static final ImapHostSystem HOST = new TorqueHostSystem();
@@ -175,7 +176,7 @@ public class TorqueMailboxManagerProviderSingleton {
 
     private static TorqueMailboxManager getMailboxManager() throws Exception {
         if (TORQUE_MAILBOX_MANAGER == null) {
-            USER_MANAGER = new SimpleUserManager();
+            USER_MANAGER = new InMemoryUserManager();
             initialize();
             TORQUE_MAILBOX_MANAGER = new TorqueMailboxManager(USER_MANAGER, USER_MANAGER);
         }

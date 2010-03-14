@@ -26,6 +26,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.james.imap.mailbox.MailboxException;
+import org.apache.james.imap.mailbox.MailboxSession;
 import org.apache.james.imap.mailbox.MailboxSession.User;
 import org.apache.james.imap.store.StoreSubscriptionManager;
 import org.apache.james.imap.store.user.SubscriptionMapper;
@@ -45,13 +46,13 @@ public class InMemorySubscriptionManager extends StoreSubscriptionManager implem
     }
 
     @Override
-    protected SubscriptionMapper createMapper(User user) {
+    protected SubscriptionMapper createMapper(MailboxSession session) {
         return this;
     }
 
     @Override
-    protected Subscription createSubscription(User user, String mailbox) {
-        return new InMemorySubscription(mailbox, user);
+    protected Subscription createSubscription(MailboxSession session, String mailbox) {
+        return new InMemorySubscription(mailbox, session.getUser());
     }
 
     public synchronized void delete(Subscription subscription) {
@@ -168,5 +169,15 @@ public class InMemorySubscriptionManager extends StoreSubscriptionManager implem
 
     public void execute(Transaction transaction) throws MailboxException {
         transaction.run();
+    }
+
+    public void destroy() {
+        // Nothing todo
+    }
+
+    @Override
+    protected void onLogout(MailboxSession session) {
+        // Nothing todo
+        
     }
 }

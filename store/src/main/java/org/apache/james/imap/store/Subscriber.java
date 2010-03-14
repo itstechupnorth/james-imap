@@ -21,8 +21,8 @@ package org.apache.james.imap.store;
 
 import java.util.Collection;
 
+import org.apache.james.imap.mailbox.MailboxSession;
 import org.apache.james.imap.mailbox.SubscriptionException;
-import org.apache.james.imap.mailbox.MailboxSession.User;
 
 /**
  * Subscribes users.
@@ -30,28 +30,28 @@ import org.apache.james.imap.mailbox.MailboxSession.User;
 public interface Subscriber {
     
     /**
-     * Subscribes the named user to the given mailbox.
-     * @param user not null
+     * Subscribes the user in the session to the given mailbox.
+     * @param session not null
      * @param mailbox not null
      * @throws SubscriptionException when subscription fails
      */
-    public void subscribe(User user, String mailbox)
+    public void subscribe(MailboxSession session, String mailbox)
             throws SubscriptionException;
 
     /**
-     * Finds all subscriptions for the given user.
+     * Finds all subscriptions for the user in the session.
      * @param user not null
      * @return not null
      * @throws SubscriptionException when subscriptions cannot be read
      */
-    public Collection<String> subscriptions(User user) throws SubscriptionException;
+    public Collection<String> subscriptions(MailboxSession session) throws SubscriptionException;
 
     /**
-     * Unsubscribes the given user from the given mailbox.
-     * @param user not null
+     * Unsubscribes the user in the session from the given mailbox.
+     * @param session not null
      * @param mailbox not null
      * @throws SubscriptionException when subscriptions cannot be read
      */
-    public void unsubscribe(User user, String mailbox)
+    public void unsubscribe(MailboxSession session, String mailbox)
             throws SubscriptionException;
 }

@@ -33,17 +33,21 @@ import org.apache.james.imap.store.mail.model.Mailbox;
  */
 public class OpenJPAMailbox extends JPAMailbox{
 
+    public final static String MAILBOX_MAPPER = "MAILBOX_MAPPER";
     public OpenJPAMailbox(Mailbox mailbox,
     		MailboxSession session, EntityManagerFactory entityManagerfactory) {
 		super(mailbox, session, entityManagerfactory);
 	}
 
+
     /*
      * (non-Javadoc)
-     * @see org.apache.james.imap.jpa.JPAMailbox#createMailboxMapper()
+     * @see org.apache.james.imap.jpa.JPAMailbox#createMailboxMapper(org.apache.james.imap.mailbox.MailboxSession)
      */
-	protected JPAMailboxMapper createMailboxMapper() {
-        final JPAMailboxMapper mapper = new OpenJPAMailboxMapper(entityManagerFactory.createEntityManager());
+	protected JPAMailboxMapper createMailboxMapper(MailboxSession session) {
+        JPAMailboxMapper mapper = new OpenJPAMailboxMapper(entityManagerFactory.createEntityManager());
+
         return mapper;
     }
+
 }

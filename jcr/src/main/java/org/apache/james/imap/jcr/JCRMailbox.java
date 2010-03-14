@@ -53,7 +53,7 @@ public class JCRMailbox extends StoreMailbox{
     private final String workspace;
     private final Log log;
     private final String uuid;
-    
+    public final static String MAPPER = "MESSAGE_MAPPER";
     public JCRMailbox(final org.apache.james.imap.jcr.mail.model.JCRMailbox mailbox, final MailboxSession session, final Repository repository, final String workspace, final Log log) {
         super(mailbox, session );
         this.repository = repository;
@@ -98,8 +98,11 @@ public class JCRMailbox extends StoreMailbox{
     @Override
     protected MessageMapper createMessageMapper(MailboxSession session) throws MailboxException {
         PasswordAwareUser user = (PasswordAwareUser)getMailboxSession().getUser();
-
-        JCRMessageMapper messageMapper = new JCRMessageMapper(getSession(user), getMailboxUUID(), log);
+        JCRMessageMapper messageMapper = (JCRMessageMapper) session.getAttributes().get(MAPPER);
+        if (messageMapper == null) {
+            messageMapper = new JCRMessageMapper(getSession(user), getMailboxUUID(), log);
+            session.getAttributes().put(MAPPER, messageMapper);
+        }
         return messageMapper;
     }
 
@@ -148,5 +151,14 @@ public class JCRMailbox extends StoreMailbox{
 
     protected Repository getRepository() {
         return repository;
+    }
+
+
+    @Override
+    protected void onLogout(MailboxSession session) {
+        JCRMessageMapper mapper =  (JCRMessageMapper) session.getAttributes().get(MAPPER);
+        if (mapper != null) {
+            mapper.destroy();
+        }
     }
 }

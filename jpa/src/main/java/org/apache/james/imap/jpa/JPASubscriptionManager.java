@@ -22,26 +22,45 @@ import javax.persistence.EntityManagerFactory;
 
 import org.apache.james.imap.jpa.user.JPASubscriptionMapper;
 import org.apache.james.imap.jpa.user.model.JPASubscription;
-import org.apache.james.imap.mailbox.MailboxSession.User;
+import org.apache.james.imap.mailbox.MailboxSession;
 import org.apache.james.imap.store.StoreSubscriptionManager;
 import org.apache.james.imap.store.user.SubscriptionMapper;
 import org.apache.james.imap.store.user.model.Subscription;
 
 public class JPASubscriptionManager extends StoreSubscriptionManager {
     private final EntityManagerFactory factory;
+    public final static String MAPPER = "SUBSCRIPTION_MAPPER";
     
     public JPASubscriptionManager(final EntityManagerFactory factory) {
         super();
         this.factory = factory;
     }
 
-    protected SubscriptionMapper createMapper(User user) {
-        final JPASubscriptionMapper mapper = new JPASubscriptionMapper(factory.createEntityManager());
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.store.StoreSubscriptionManager#createMapper(org.apache.james.imap.mailbox.MailboxSession)
+     */
+    protected SubscriptionMapper createMapper(MailboxSession session) {
+        
+        JPASubscriptionMapper  mapper = new JPASubscriptionMapper(factory.createEntityManager());
+        
         return mapper;
     }
     
-    protected Subscription createSubscription(final User user, final String mailbox) {
-        final Subscription newSubscription = new JPASubscription(user.getUserName(), mailbox);
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.store.StoreSubscriptionManager#createSubscription(org.apache.james.imap.mailbox.MailboxSession, java.lang.String)
+     */
+    protected Subscription createSubscription(final MailboxSession session, final String mailbox) {
+        final Subscription newSubscription = new JPASubscription(session.getUser().getUserName(), mailbox);
         return newSubscription;
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.store.StoreSubscriptionManager#onLogout(org.apache.james.imap.mailbox.MailboxSession)
+     */
+    protected void onLogout(MailboxSession session) {
+        
     }
 }

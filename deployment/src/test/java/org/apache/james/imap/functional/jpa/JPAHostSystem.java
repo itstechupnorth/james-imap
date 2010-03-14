@@ -27,7 +27,7 @@ import javax.persistence.EntityManagerFactory;
 import org.apache.commons.io.FileUtils;
 import org.apache.james.imap.encode.main.DefaultImapEncoderFactory;
 import org.apache.james.imap.functional.ImapHostSystem;
-import org.apache.james.imap.functional.jpa.user.InMemoryUserManager;
+import org.apache.james.imap.functional.InMemoryUserManager;
 import org.apache.james.imap.jpa.JPASubscriptionManager;
 import org.apache.james.imap.jpa.openjpa.OpenJPAMailboxManager;
 import org.apache.james.imap.main.DefaultImapDecoderFactory;

@@ -55,7 +55,7 @@ public class JCRMailboxManager extends StoreMailboxManager {
     private final Repository repository;
     private final String workspace;
     private final Log logger = LogFactory.getLog(JCRMailboxManager.class);
-    
+    public final static String MAPPER = "MAILBOX_MAPPER";
     public JCRMailboxManager(final Authenticator authenticator, final Subscriber subscriber, final Repository repository, final String workspace) {
         super(authenticator, subscriber);
         this.repository = repository;
@@ -70,8 +70,12 @@ public class JCRMailboxManager extends StoreMailboxManager {
 
     @Override
     protected MailboxMapper createMailboxMapper(MailboxSession session) throws MailboxException {
-        Session jcrSession = getSession(session);
-        return new JCRMailboxMapper(jcrSession, logger);
+        JCRMailboxMapper mapper = (JCRMailboxMapper) session.getAttributes().get(MAPPER);
+        if (mapper == null) {
+            mapper = new JCRMailboxMapper(getSession(session), logger);
+            session.getAttributes().put(MAPPER, mapper);
+        }
+        return mapper;
 
     }
 
@@ -136,5 +140,13 @@ public class JCRMailboxManager extends StoreMailboxManager {
 
     protected Repository getRepository() {
         return repository;
+    }
+
+    @Override
+    protected void onLogout(MailboxSession session) {
+        JCRMailboxMapper mapper = (JCRMailboxMapper) session.getAttributes().get(MAPPER);
+        if (mapper != null) {
+            mapper.destroy();
+        }
     }
 }

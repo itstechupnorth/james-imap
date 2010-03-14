@@ -21,7 +21,7 @@ package org.apache.james.imap.functional.inmemory;
 
 import org.apache.james.imap.encode.main.DefaultImapEncoderFactory;
 import org.apache.james.imap.functional.ImapHostSystem;
-import org.apache.james.imap.functional.jpa.user.InMemoryUserManager;
+import org.apache.james.imap.functional.InMemoryUserManager;
 import org.apache.james.imap.inmemory.InMemoryMailboxManager;
 import org.apache.james.imap.inmemory.InMemorySubscriptionManager;
 import org.apache.james.imap.main.DefaultImapDecoderFactory;

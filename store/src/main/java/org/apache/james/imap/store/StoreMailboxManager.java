@@ -64,6 +64,8 @@ public abstract class StoreMailboxManager extends AbstractLogEnabled implements 
     
     private final char delimiter;
 
+    public final static String MAILBOX = "MAILBOX";
+    
     public StoreMailboxManager(final Authenticator authenticator, final Subscriber subscriber) {
         this(authenticator, subscriber, '.');
     }
@@ -132,6 +134,9 @@ public abstract class StoreMailboxManager extends AbstractLogEnabled implements 
                 if (result == null) {
                     result = createMailbox(mailboxRow, session);
                     mailboxes.put(mailboxName, result);
+                    
+                    // store the mailbox in the session so we can cleanup things later
+                    session.getAttributes().put(MAILBOX, result);
                 }
                 return result;
             }
@@ -427,7 +432,7 @@ public abstract class StoreMailboxManager extends AbstractLogEnabled implements 
      */
     public void subscribe(MailboxSession session, String mailbox)
     throws SubscriptionException {
-        subscriber.subscribe(session.getUser(), mailbox);
+        subscriber.subscribe(session, mailbox);
     }
 
     /*
@@ -435,7 +440,7 @@ public abstract class StoreMailboxManager extends AbstractLogEnabled implements 
      * @see org.apache.james.imap.mailbox.MailboxManager#subscriptions(org.apache.james.imap.mailbox.MailboxSession)
      */
     public Collection<String> subscriptions(MailboxSession session) throws SubscriptionException {
-        return subscriber.subscriptions(session.getUser());
+        return subscriber.subscriptions(session);
     }
 
     /*
@@ -444,7 +449,7 @@ public abstract class StoreMailboxManager extends AbstractLogEnabled implements 
      */
     public void unsubscribe(MailboxSession session, String mailbox)
     throws SubscriptionException {
-        subscriber.unsubscribe(session.getUser(), mailbox);
+        subscriber.unsubscribe(session, mailbox);
     }
 
     /*
@@ -474,8 +479,24 @@ public abstract class StoreMailboxManager extends AbstractLogEnabled implements 
      * @see org.apache.james.imap.mailbox.MailboxManager#logout(org.apache.james.imap.mailbox.MailboxSession, boolean)
      */
     public void logout(MailboxSession session, boolean force) throws MailboxException {
-        // fine
+        if (session != null) {
+            if (subscriber instanceof StoreSubscriptionManager) {
+                ((StoreSubscriptionManager) subscriber).onLogout(session);
+            }
+            StoreMailbox mailbox = (StoreMailbox) session.getAttributes().get(MAILBOX);
+            if (mailbox != null) {
+                mailbox.onLogout(session);
+            }
+            onLogout(session);
+        }
     }
+    
+    /**
+     * Get called on logout if the session is not null
+     * 
+     * @param session
+     */
+    protected abstract void onLogout(MailboxSession session);
     
     /**
      * Return the delemiter to use

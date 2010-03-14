@@ -17,12 +17,13 @@
  * under the License.                                           *
  ****************************************************************/
 
-package org.apache.james.imap.functional.jpa.user;
+package org.apache.james.imap.functional;
 
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.james.imap.mailbox.MailboxSession;
 import org.apache.james.imap.mailbox.SubscriptionException;
 import org.apache.james.imap.store.Authenticator;
 import org.apache.james.imap.store.Subscriber;
@@ -49,31 +50,34 @@ public class InMemoryUserManager implements Authenticator, Subscriber {
         return result;
     }
 
-    public void subscribe(org.apache.james.imap.mailbox.MailboxSession.User userid, String mailbox)
+    public void subscribe(MailboxSession session, String mailbox)
             throws SubscriptionException {
-        User user = (User) users.get(userid);
+        MailboxSession.User u = session.getUser();
+        User user = (User) users.get(u.getUserName());
         if (user == null) {
-            user = new User(userid.getUserName());
-            users.put(userid.getUserName(), user);
+            user = new User(u.getUserName());
+            users.put(u.getUserName(), user);
         }
         user.addSubscription(mailbox);
     }
 
-    public Collection<String> subscriptions(org.apache.james.imap.mailbox.MailboxSession.User userid) throws SubscriptionException {
-        User user = (User) users.get(userid.getUserName());
+    public Collection<String> subscriptions(org.apache.james.imap.mailbox.MailboxSession session) throws SubscriptionException {
+        MailboxSession.User u = session.getUser();
+        User user = (User) users.get(u.getUserName());
         if (user == null) {
-            user = new User(userid.getUserName());
-            users.put(userid.getUserName(), user);
+            user = new User(u.getUserName());
+            users.put(u.getUserName(), user);
         }
         return user.getSubscriptions();
     }
 
-    public void unsubscribe(org.apache.james.imap.mailbox.MailboxSession.User userid, String mailbox)
+    public void unsubscribe(org.apache.james.imap.mailbox.MailboxSession session, String mailbox)
             throws SubscriptionException {
-        User user = (User) users.get(userid.getUserName());
+        MailboxSession.User u = session.getUser();
+        User user = (User) users.get(u.getUserName());
         if (user == null) {
-            user = new User(userid.getUserName());
-            users.put(userid.getUserName(), user);
+            user = new User(u.getUserName());
+            users.put(u.getUserName(), user);
         }
         user.removeSubscription(mailbox);
     }

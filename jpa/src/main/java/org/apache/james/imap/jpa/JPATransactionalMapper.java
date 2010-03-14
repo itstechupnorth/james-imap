@@ -77,4 +77,12 @@ public class JPATransactionalMapper extends AbstractTransactionalMapper {
         }
     }
 
+
+    /**
+     * Close the underlying EntityManager if its still open
+     */
+    public void destroy() {
+
+    }
+
 }

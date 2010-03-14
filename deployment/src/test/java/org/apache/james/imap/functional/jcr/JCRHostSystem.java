@@ -28,7 +28,7 @@ import org.apache.jackrabbit.core.RepositoryImpl;
 import org.apache.jackrabbit.core.config.RepositoryConfig;
 import org.apache.james.imap.encode.main.DefaultImapEncoderFactory;
 import org.apache.james.imap.functional.ImapHostSystem;
-import org.apache.james.imap.functional.jpa.user.InMemoryUserManager;
+import org.apache.james.imap.functional.InMemoryUserManager;
 import org.apache.james.imap.jcr.JCRGlobalUserMailboxManager;
 import org.apache.james.imap.jcr.JCRGlobalUserSubscriptionManager;
 import org.apache.james.imap.main.DefaultImapDecoderFactory;

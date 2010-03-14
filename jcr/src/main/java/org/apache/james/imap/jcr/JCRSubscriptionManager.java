@@ -31,8 +31,8 @@ import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.jcr.user.JCRSubscriptionMapper;
 import org.apache.james.imap.jcr.user.model.JCRSubscription;
 import org.apache.james.imap.mailbox.MailboxException;
+import org.apache.james.imap.mailbox.MailboxSession;
 import org.apache.james.imap.mailbox.SubscriptionException;
-import org.apache.james.imap.mailbox.MailboxSession.User;
 import org.apache.james.imap.store.PasswordAwareUser;
 import org.apache.james.imap.store.StoreSubscriptionManager;
 import org.apache.james.imap.store.user.SubscriptionMapper;
@@ -46,6 +46,7 @@ import org.apache.james.imap.store.user.model.Subscription;
 public class JCRSubscriptionManager extends StoreSubscriptionManager {
     private Log logger = LogFactory.getLog(JCRSubscriptionManager.class);
 
+    public final static String MAPPER = "SUBSCRIPTION_MAPPER";
     private final Repository repository;
     private String workspace;
 
@@ -56,16 +57,22 @@ public class JCRSubscriptionManager extends StoreSubscriptionManager {
     }
 
     @Override
-    protected SubscriptionMapper createMapper(User user) throws SubscriptionException {
-        PasswordAwareUser pUser = (PasswordAwareUser) user;
-
-        JCRSubscriptionMapper mapper = new JCRSubscriptionMapper(getSession(pUser), logger);
+    protected SubscriptionMapper createMapper(MailboxSession session) throws SubscriptionException {
+        PasswordAwareUser pUser = (PasswordAwareUser) session.getUser();
+        
+        // check if we have already a mapper for the session
+        JCRSubscriptionMapper mapper = (JCRSubscriptionMapper) session.getAttributes().get(MAPPER);
+        if (mapper == null) {
+            // no mapper found so create one an store it
+            mapper = new JCRSubscriptionMapper(getSession(pUser), logger);
+            session.getAttributes().put(MAPPER, mapper);
+        }
         return mapper;
     }
 
     @Override
-    protected Subscription createSubscription(User user, String mailbox) {
-        return new JCRSubscription(user.getUserName(), mailbox, logger);
+    protected Subscription createSubscription(MailboxSession session, String mailbox) {
+        return new JCRSubscription(session.getUser().getUserName(), mailbox, logger);
     }
 
     /**
@@ -99,5 +106,13 @@ public class JCRSubscriptionManager extends StoreSubscriptionManager {
 
     protected Repository getRepository() {
         return repository;
+    }
+
+    @Override
+    protected void onLogout(MailboxSession session) {
+        JCRSubscriptionMapper mapper = (JCRSubscriptionMapper) session.getAttributes().get(MAPPER);
+        if (mapper != null) {
+            mapper.destroy();
+        }
     }
 }

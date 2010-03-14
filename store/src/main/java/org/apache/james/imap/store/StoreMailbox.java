@@ -600,4 +600,6 @@ public abstract class StoreMailbox implements org.apache.james.imap.mailbox.Mail
             
         return new MailboxMetaData(recent, permanentFlags, uidValidity, uidNext, messageCount, unseenCount, firstUnseen, isWriteable());
     }
+    
+    protected abstract void onLogout(MailboxSession session);
 }

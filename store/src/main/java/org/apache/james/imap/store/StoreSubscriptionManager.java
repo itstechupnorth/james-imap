@@ -23,8 +23,8 @@ import java.util.HashSet;
 import java.util.List;
 
 import org.apache.james.imap.mailbox.MailboxException;
+import org.apache.james.imap.mailbox.MailboxSession;
 import org.apache.james.imap.mailbox.SubscriptionException;
-import org.apache.james.imap.mailbox.MailboxSession.User;
 import org.apache.james.imap.store.transaction.TransactionalMapper;
 import org.apache.james.imap.store.user.SubscriptionMapper;
 import org.apache.james.imap.store.user.model.Subscription;
@@ -45,22 +45,22 @@ public abstract class StoreSubscriptionManager implements Subscriber {
      * 
      * @return mapper
      */
-    protected abstract SubscriptionMapper createMapper(User user) throws SubscriptionException;
+    protected abstract SubscriptionMapper createMapper(MailboxSession session) throws SubscriptionException;
     
 
     /*
      * (non-Javadoc)
-     * @see org.apache.james.imap.store.Subscriber#subscribe(org.apache.james.imap.mailbox.MailboxSession.User, java.lang.String)
+     * @see org.apache.james.imap.store.Subscriber#subscribe(org.apache.james.imap.mailbox.MailboxSession, java.lang.String)
      */
-    public void subscribe(final User user, final String mailbox) throws SubscriptionException {
-        final SubscriptionMapper mapper = createMapper(user);
+    public void subscribe(final MailboxSession session, final String mailbox) throws SubscriptionException {
+        final SubscriptionMapper mapper = createMapper(session);
         try {
             mapper.execute(new TransactionalMapper.Transaction() {
 
                 public void run() throws MailboxException {
-                    final Subscription subscription = mapper.findFindMailboxSubscriptionForUser(user.getUserName(), mailbox);
+                    final Subscription subscription = mapper.findFindMailboxSubscriptionForUser(session.getUser().getUserName(), mailbox);
                     if (subscription == null) {
-                        final Subscription newSubscription = createSubscription(user, mailbox);
+                        final Subscription newSubscription = createSubscription(session, mailbox);
                         mapper.save(newSubscription);
                     }
                 }
@@ -76,19 +76,19 @@ public abstract class StoreSubscriptionManager implements Subscriber {
     /**
      * Create Subscription for the given user and mailbox
      * 
-     * @param user
+     * @param session
      * @param mailbox
      * @return subscription 
      */
-    protected abstract Subscription createSubscription(final User user, final String mailbox);
+    protected abstract Subscription createSubscription(final MailboxSession sonessi, final String mailbox);
 
     /*
      * (non-Javadoc)
-     * @see org.apache.james.imap.store.Subscriber#subscriptions(java.lang.String)
+     * @see org.apache.james.imap.store.Subscriber#subscriptions(org.apache.james.imap.mailbox.MailboxSession)
      */
-    public Collection<String> subscriptions(final User user) throws SubscriptionException {
-        final SubscriptionMapper mapper = createMapper(user);
-        final List<Subscription> subscriptions = mapper.findSubscriptionsForUser(user.getUserName());
+    public Collection<String> subscriptions(final MailboxSession session) throws SubscriptionException {
+        final SubscriptionMapper mapper = createMapper(session);
+        final List<Subscription> subscriptions = mapper.findSubscriptionsForUser(session.getUser().getUserName());
         final Collection<String> results = new HashSet<String>(INITIAL_SIZE);
         for (Subscription subscription:subscriptions) {
             results.add(subscription.getMailbox());
@@ -100,13 +100,13 @@ public abstract class StoreSubscriptionManager implements Subscriber {
      * (non-Javadoc)
      * @see org.apache.james.imap.store.Subscriber#unsubscribe(java.lang.String, java.lang.String)
      */
-    public void unsubscribe(final User user, final String mailbox) throws SubscriptionException {
-        final SubscriptionMapper mapper = createMapper(user);
+    public void unsubscribe(final MailboxSession session, final String mailbox) throws SubscriptionException {
+        final SubscriptionMapper mapper = createMapper(session);
         try {
             mapper.execute(new TransactionalMapper.Transaction() {
 
                 public void run() throws MailboxException {
-                    final Subscription subscription = mapper.findFindMailboxSubscriptionForUser(user.getUserName(), mailbox);
+                    final Subscription subscription = mapper.findFindMailboxSubscriptionForUser(session.getUser().getUserName(), mailbox);
                     if (subscription != null) {
                         mapper.delete(subscription);
                     }
@@ -117,4 +117,6 @@ public abstract class StoreSubscriptionManager implements Subscriber {
             throw (SubscriptionException) e;
         }
     }
+    
+    protected abstract void onLogout(MailboxSession session);
 }

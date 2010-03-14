@@ -144,5 +144,18 @@ public class InMemoryMailboxManager extends StoreMailboxManager implements Mailb
             
         });
     }
+
+    /**
+     * 
+     */
+    public void destroy() {
+        // Nothing todo
+    }
+
+    @Override
+    protected void onLogout(MailboxSession session) {
+        // Nothing todo
+        
+    }
     
 }

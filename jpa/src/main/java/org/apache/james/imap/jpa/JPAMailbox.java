@@ -48,6 +48,7 @@ public abstract class JPAMailbox extends StoreMailbox {
 
     protected final EntityManagerFactory entityManagerFactory;
 
+    public final static String MESSAGE_MAPPER = "MESSAGE_MAPPER";
     public JPAMailbox(final Mailbox mailbox, MailboxSession session, final EntityManagerFactory entityManagerfactory) {
         super(mailbox, session);
         this.entityManagerFactory = entityManagerfactory;
@@ -58,18 +59,19 @@ public abstract class JPAMailbox extends StoreMailbox {
      * 
      * @return mapper
      */
-    protected abstract JPAMailboxMapper createMailboxMapper();
+    protected abstract JPAMailboxMapper createMailboxMapper(MailboxSession session);
 
     @Override
     protected Mailbox getMailboxRow() throws MailboxException {
-        final MailboxMapper mapper = createMailboxMapper();
+        final MailboxMapper mapper = createMailboxMapper(getMailboxSession());
         return mapper.findMailboxById(mailboxId);
     }
 
     
     @Override
     protected MessageMapper createMessageMapper(MailboxSession session) {
-        final MessageMapper mapper = new JPAMessageMapper(entityManagerFactory.createEntityManager(), mailboxId);
+        JPAMessageMapper mapper = new JPAMessageMapper(entityManagerFactory.createEntityManager(), mailboxId);
+       
         return mapper;
     }
     
@@ -99,8 +101,15 @@ public abstract class JPAMailbox extends StoreMailbox {
 
     @Override
     protected Mailbox reserveNextUid() throws MailboxException {
-        final JPAMailboxMapper mapper = createMailboxMapper();
+        final JPAMailboxMapper mapper = createMailboxMapper(getMailboxSession());
         final Mailbox mailbox = mapper.consumeNextUid(mailboxId);
         return mailbox;
+    }
+
+    @Override
+    protected void onLogout(MailboxSession session) {
+        
     }    
+    
+    
 }

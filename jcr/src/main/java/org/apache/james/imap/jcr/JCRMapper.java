@@ -33,5 +33,12 @@ public abstract class JCRMapper extends NonTransactionalMapper implements JCRIma
     protected Session getSession() {
         return session;
     }
+
+    /**
+     * Logout form the session
+     */
+    public void destroy() {
+        session.logout();
+    }
     
 }
