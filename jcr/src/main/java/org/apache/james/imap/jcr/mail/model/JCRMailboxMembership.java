@@ -42,14 +42,14 @@ public class JCRMailboxMembership extends AbstractMailboxMembership implements
 	public final static String UID_PROPERTY = PROPERTY_PREFIX + "uid";
 	public final static String SIZE_PROPERTY = PROPERTY_PREFIX + "size";
 	public final static String ANSWERED_PROPERTY = PROPERTY_PREFIX
-			+ "flags:answered";
+			+ "answered";
 	public final static String DELETED_PROPERTY = PROPERTY_PREFIX
-			+ "flags:deleted";
-	public final static String DRAFT_PROPERTY = PROPERTY_PREFIX + "flags:draft";
+			+ "deleted";
+	public final static String DRAFT_PROPERTY = PROPERTY_PREFIX + "draft";
 	public final static String FLAGGED_PROPERTY = PROPERTY_PREFIX + "flagged";
 	public final static String RECENT_PROPERTY = PROPERTY_PREFIX
-			+ "flags:recent";
-	public final static String SEEN_PROPERTY = PROPERTY_PREFIX + "flags:seen";
+			+ "recent";
+	public final static String SEEN_PROPERTY = PROPERTY_PREFIX + "seen";
 	public final static String INTERNAL_DATE_PROPERTY = PROPERTY_PREFIX
 			+ "internalDate";
 
@@ -58,7 +58,6 @@ public class JCRMailboxMembership extends AbstractMailboxMembership implements
 	private Date internalDate;
 	private int size;
 	private JCRMessage message;
-	private String messageUUID;
 	private boolean answered;
 	private boolean deleted;
 	private boolean draft;
@@ -123,17 +122,6 @@ public class JCRMailboxMembership extends AbstractMailboxMembership implements
 	 * org.apache.james.imap.store.mail.model.MailboxMembership#getDocument()
 	 */
 	public Document getDocument() {
-		if (isPersistent()) {
-			try {
-				return new JCRMessage(node.getNode(messageUUID), logger);
-
-			} catch (RepositoryException e) {
-				logger
-						.error("Unable to access property " + FLAGGED_PROPERTY,
-								e);
-			}
-			return null;
-		}
 		return message;
 	}
 
@@ -434,19 +422,19 @@ public class JCRMailboxMembership extends AbstractMailboxMembership implements
 		node.setProperty(DRAFT_PROPERTY, draft);
 		node.setProperty(FLAGGED_PROPERTY, flagged);
 		node.setProperty(RECENT_PROPERTY, recent);
-		;
+		
 		node.setProperty(SEEN_PROPERTY, seen);
-		;
+		
 		Calendar cal = Calendar.getInstance();
 		cal.setTime(internalDate);
 		node.setProperty(INTERNAL_DATE_PROPERTY, cal);
 
-		Node messageNode = node.addNode(messageUUID);
+		Node messageNode = node.addNode("message");
+		messageNode.addMixin(JcrConstants.MIX_REFERENCEABLE);
 		message.merge(messageNode);
 
 		this.node = node;
 
-		mailboxUUID = null;
 		answered = false;
 		deleted = false;
 		draft = false;
@@ -454,7 +442,6 @@ public class JCRMailboxMembership extends AbstractMailboxMembership implements
 		internalDate = null;
 		mailboxUUID = null;
 		message = null;
-		messageUUID = null;
 		recent = false;
 		seen = false;
 		size = 0;

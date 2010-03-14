@@ -73,7 +73,7 @@ public class JCRMessage extends AbstractDocument implements JCRImapConstants, Pe
         this.fullContentOctets = content.length;
         this.bodyStartOctet = bodyStartOctet;
         this.headers = new ArrayList<JCRHeader>(headers);
-        textualLineCount = propertyBuilder.getTextualLineCount();
+        this.textualLineCount = propertyBuilder.getTextualLineCount();
         this.mediaType = propertyBuilder.getMediaType();
         this.subType = propertyBuilder.getSubType();
         final List<Property> properties = propertyBuilder.toProperties();
@@ -156,7 +156,7 @@ public class JCRMessage extends AbstractDocument implements JCRImapConstants, Pe
     public long getFullContentOctets() {
         if (isPersistent()) {
             try {
-                return node.getNode(JcrConstants.JCR_CONTENT).getProperty(FULL_CONTENT_OCTETS_PROPERTY).getLong();
+                return node.getProperty(FULL_CONTENT_OCTETS_PROPERTY).getLong();
             } catch (RepositoryException e) {
                 logger.error("Unable to retrieve property " + FULL_CONTENT_OCTETS_PROPERTY, e);
 
@@ -229,9 +229,9 @@ public class JCRMessage extends AbstractDocument implements JCRImapConstants, Pe
     public String getSubType() {
         if (isPersistent()) {
             try {
-                return node.getNode(JcrConstants.JCR_CONTENT).getProperty(SUBTYPE_PROPERTY).getString();
+                return node.getProperty(SUBTYPE_PROPERTY).getString();
             } catch (RepositoryException e) {
-                logger.error("Unable to retrieve node " + JcrConstants.JCR_MIMETYPE, e);
+                logger.error("Unable to retrieve node " + SUBTYPE_PROPERTY, e);
             }
             return null;
         }
@@ -245,7 +245,7 @@ public class JCRMessage extends AbstractDocument implements JCRImapConstants, Pe
     public Long getTextualLineCount() {
         if (isPersistent()) {
             try {
-                return node.getNode(JcrConstants.JCR_CONTENT).getProperty(TEXTUAL_LINE_COUNT_PROPERTY).getLong();
+                return node.getProperty(TEXTUAL_LINE_COUNT_PROPERTY).getLong();
             } catch (RepositoryException e) {
                 logger.error("Unable to retrieve property " + TEXTUAL_LINE_COUNT_PROPERTY, e);
 
@@ -271,6 +271,16 @@ public class JCRMessage extends AbstractDocument implements JCRImapConstants, Pe
         return node != null;
     }
 
+    public String getUUID() {
+        if (isPersistent()) {
+            try {
+                return node.getUUID();
+            } catch (RepositoryException e) {
+                logger.error("Unable to access UUID", e);
+            }
+        }
+        return null;
+    }
     /*
      * (non-Javadoc)
      * @see org.apache.james.imap.jcr.Persistent#merge(javax.jcr.Node)
@@ -285,22 +295,34 @@ public class JCRMessage extends AbstractDocument implements JCRImapConstants, Pe
         contentNode.setProperty(JcrConstants.JCR_DATA, new ByteArrayInputStream(content));
         contentNode.setProperty(JcrConstants.JCR_MIMETYPE, mediaType);
 
-        contentNode.setProperty(BODY_START_OCTET_PROPERTY, bodyStartOctet);
-        contentNode.setProperty(FULL_CONTENT_OCTETS_PROPERTY, fullContentOctets);
-        contentNode.setProperty(FULL_CONTENT_OCTETS_PROPERTY, fullContentOctets);
-        contentNode.setProperty(TEXTUAL_LINE_COUNT_PROPERTY, textualLineCount);
-        contentNode.setProperty(SUBTYPE_PROPERTY, subType);
+        node.setProperty(FULL_CONTENT_OCTETS_PROPERTY, fullContentOctets);
+        node.setProperty(TEXTUAL_LINE_COUNT_PROPERTY, textualLineCount);
+        node.setProperty(SUBTYPE_PROPERTY, subType);
+        node.setProperty(BODY_START_OCTET_PROPERTY, new Long(bodyStartOctet));
+
+        Node headersNode;
+        if (node.hasNode(HEADERS_NODE)) {
+            headersNode = node.getNode(HEADERS_NODE);
+            headersNode.remove();
+        } else {
+            headersNode = node.addNode(HEADERS_NODE);
+        }
         
-        Node headersNode = contentNode.getNode(HEADERS_NODE);
-        headersNode.remove();
         for (int i = 0; i < headers.size(); i++) {
             JCRHeader header = (JCRHeader) headers.get(i);
             Node headerNode = headersNode.addNode(header.getFieldName());
             header.merge(headerNode);
         }
       
-        Node propertiesNode = contentNode.getNode(PROPERTIES_NODE);
-        propertiesNode.remove();
+        Node propertiesNode;
+        
+        if (node.hasNode(PROPERTIES_NODE)) {
+            propertiesNode = node.getNode(PROPERTIES_NODE);
+            propertiesNode.remove();
+        } else {
+            propertiesNode = node.addNode(PROPERTIES_NODE);
+        }
+        
         for (int i = 0; i < properties.size(); i++) {
             JCRProperty prop = (JCRProperty) properties.get(i);
             Node propNode = propertiesNode.addNode(JCRUtils.createPath(prop.getNamespace()+ "." + prop.getLocalName()));
@@ -324,7 +346,7 @@ public class JCRMessage extends AbstractDocument implements JCRImapConstants, Pe
     protected int getBodyStartOctet() {
         if (isPersistent()) {
             try {
-                return new Long(node.getNode(JcrConstants.JCR_CONTENT).getProperty(BODY_START_OCTET_PROPERTY).getLong()).intValue();
+                return new Long(node.getProperty(BODY_START_OCTET_PROPERTY).getLong()).intValue();
             } catch (RepositoryException e) {
                 logger.error("Unable to retrieve property " + TEXTUAL_LINE_COUNT_PROPERTY, e);
 

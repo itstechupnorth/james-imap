@@ -173,10 +173,10 @@ public class JCRMailbox implements Mailbox, JCRImapConstants, Persistent{
      * @see org.apache.james.imap.jcr.Persistent#merge(javax.jcr.Node)
      */
     public void  merge(Node node) throws RepositoryException {
-        node.setProperty(ID_PROPERTY,  getMailboxId());
-        node.setProperty(NAME_PROPERTY, getName());
-        node.setProperty(UIDVALIDITY_PROPERTY, getUidValidity());
-        node.setProperty(LASTUID_PROPERTY, getLastUid());   
+        node.setProperty(ID_PROPERTY,  id);
+        node.setProperty(NAME_PROPERTY, name);
+        node.setProperty(UIDVALIDITY_PROPERTY, uidValidity);
+        node.setProperty(LASTUID_PROPERTY, lastUid);   
         
         this.node = node;
         id = 0;

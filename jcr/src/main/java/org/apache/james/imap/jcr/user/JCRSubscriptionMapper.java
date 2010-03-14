@@ -121,6 +121,12 @@ public class JCRSubscriptionMapper extends JCRMapper implements SubscriptionMapp
 
     }
 
+    protected void createPathIfNotExists(String path) throws RepositoryException, PathNotFoundException {
+        if (getSession().getRootNode().hasNode(JCRUtils.createPath(path)) == false) {
+            getSession().getRootNode().addNode(JCRUtils.createPath(path));
+        }
+    }
+    
     /*
      * (non-Javadoc)
      * 
@@ -133,11 +139,15 @@ public class JCRSubscriptionMapper extends JCRMapper implements SubscriptionMapp
         String mailbox = subscription.getMailbox();
         String nodename = JCRUtils.createPath(username, mailbox);
         try {
+            createPathIfNotExists(PATH);
             Node node = getSession().getRootNode().getNode(PATH);
             Node subNode;
             if (node.hasNode(nodename)) {
                 subNode = node.getNode(nodename);
             } else {
+                if (node.hasNode(username) == false) {
+                    node.addNode(username);
+                }
                 subNode = node.addNode(nodename);
             }
 
@@ -146,6 +156,7 @@ public class JCRSubscriptionMapper extends JCRMapper implements SubscriptionMapp
 
             getSession().save();
         } catch (RepositoryException e) {
+            e.printStackTrace();
             throw new SubscriptionException(HumanReadableText.SAVE_FAILED, e);
         }
     }

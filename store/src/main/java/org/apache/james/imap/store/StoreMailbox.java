@@ -241,10 +241,13 @@ public abstract class StoreMailbox implements org.apache.james.imap.mailbox.Mail
                 tracker.found(uid, message.createFlags());
                 return uid;
             } catch (IOException e) {
+                e.printStackTrace();
                 throw new MailboxException(HumanReadableText.FAILURE_MAIL_PARSE, e);
             } catch (MessagingException e) {
+                e.printStackTrace();
                 throw new MailboxException(HumanReadableText.FAILURE_MAIL_PARSE, e);
             } catch (MimeException e) {
+                e.printStackTrace();
                 throw new MailboxException(HumanReadableText.FAILURE_MAIL_PARSE, e);
             }
         }

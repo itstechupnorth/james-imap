@@ -23,6 +23,7 @@ import java.util.List;
 
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
+import javax.jcr.PathNotFoundException;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.query.Query;
@@ -30,6 +31,7 @@ import javax.jcr.query.QueryManager;
 import javax.jcr.query.QueryResult;
 
 import org.apache.commons.logging.Log;
+import org.apache.jackrabbit.JcrConstants;
 import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.jcr.JCRMapper;
 import org.apache.james.imap.jcr.JCRUtils;
@@ -67,8 +69,19 @@ public class JCRMessageMapper extends JCRMapper implements MessageMapper {
             String queryString = "//" + PATH + "//element(*)[@" + JCRMailboxMembership.MAILBOX_UUID_PROPERTY +"='" + uuid +"']";
             QueryManager manager = getSession().getWorkspace().getQueryManager();
             QueryResult result = manager.createQuery(queryString, Query.XPATH).execute();
-            return result.getNodes().getSize();
+            NodeIterator nodes = result.getNodes();
+            long count = nodes.getSize();
+            
+            if (count == -1) {
+                count = 0;
+                while(nodes.hasNext()) {
+                    nodes.nextNode();
+                    count++;
+                }
+            } 
+            return count;
         } catch (RepositoryException e) {
+            e.printStackTrace();
             throw new StorageException(HumanReadableText.COUNT_FAILED, e);
         }
        
@@ -84,11 +97,23 @@ public class JCRMessageMapper extends JCRMapper implements MessageMapper {
     public long countUnseenMessagesInMailbox() throws StorageException {
         
         try {
-            String queryString = "//" + PATH + "//element(*)[@" + JCRMailboxMembership.MAILBOX_UUID_PROPERTY +"='" + uuid +"'] && [@" + JCRMailboxMembership.SEEN_PROPERTY +"='" + false +"']";
+            String queryString = "//" + PATH + "//element(*)[@" + JCRMailboxMembership.MAILBOX_UUID_PROPERTY +"='" + uuid +"'] AND [@" + JCRMailboxMembership.SEEN_PROPERTY +"='false']";
             QueryManager manager = getSession().getWorkspace().getQueryManager();
             QueryResult result = manager.createQuery(queryString, Query.XPATH).execute();
-            return result.getNodes().getSize();
+            NodeIterator nodes = result.getNodes();
+            long count = nodes.getSize();
+            
+            if (count == -1) {
+                count = 0;
+                while(nodes.hasNext()) {
+                    nodes.nextNode();
+                    
+                    count++;
+                }
+            } 
+            return count;
         } catch (RepositoryException e) {
+            e.printStackTrace();
             throw new StorageException(HumanReadableText.COUNT_FAILED, e);
         }
     }
@@ -106,6 +131,7 @@ public class JCRMessageMapper extends JCRMapper implements MessageMapper {
             try {
                 getSession().getNodeByUUID(membership.getUUID()).remove();
             } catch (RepositoryException e) {
+                e.printStackTrace();
                 throw new StorageException(HumanReadableText.DELETED_FAILED, e);
             }
         }
@@ -141,6 +167,7 @@ public class JCRMessageMapper extends JCRMapper implements MessageMapper {
             }
             return results;
         } catch (RepositoryException e) {
+            e.printStackTrace();
             throw new StorageException(HumanReadableText.SEARCH_FAILED, e);
         }
     }
@@ -173,7 +200,7 @@ public class JCRMessageMapper extends JCRMapper implements MessageMapper {
 
     private List<MailboxMembership> findMessagesInMailboxBetweenUIDs(String uuid, long from, long to) throws RepositoryException {
         List<MailboxMembership> list = new ArrayList<MailboxMembership>();
-        String queryString = "//" + PATH + "//element(*)[@" + JCRMailboxMembership.MAILBOX_UUID_PROPERTY + "='" + uuid + "'] && [@" + JCRMailboxMembership.UID_PROPERTY + ">" + from + "] && [@" + JCRMailboxMembership.UID_PROPERTY + "<" + to + "]";
+        String queryString = "//" + PATH + "//element(*)[@" + JCRMailboxMembership.MAILBOX_UUID_PROPERTY + "='" + uuid + "'] AND [@" + JCRMailboxMembership.UID_PROPERTY + ">" + from + "] AND [@" + JCRMailboxMembership.UID_PROPERTY + "<" + to + "]";
         QueryManager manager = getSession().getWorkspace().getQueryManager();
         QueryResult result = manager.createQuery(queryString, Query.XPATH).execute();
 
@@ -207,7 +234,7 @@ public class JCRMessageMapper extends JCRMapper implements MessageMapper {
     public List<MailboxMembership> findMarkedForDeletionInMailbox(MessageRange set) throws StorageException {
         try {
             List<MailboxMembership> list = new ArrayList<MailboxMembership>();
-            String queryString = "//" + PATH + "//element(*)[@" + JCRMailboxMembership.MAILBOX_UUID_PROPERTY +"='" + uuid +"'] && [@" + JCRMailboxMembership.DELETED_PROPERTY +"=" + true +"]";
+            String queryString = "//" + PATH + "//element(*)[@" + JCRMailboxMembership.MAILBOX_UUID_PROPERTY +"='" + uuid +"'] AND [@" + JCRMailboxMembership.DELETED_PROPERTY +"='true']";
             QueryManager manager = getSession().getWorkspace().getQueryManager();
             QueryResult result = manager.createQuery(queryString, Query.XPATH).execute();
             
@@ -217,6 +244,7 @@ public class JCRMessageMapper extends JCRMapper implements MessageMapper {
             }
             return list;
         } catch (RepositoryException e) {
+            e.printStackTrace();
             throw new StorageException(HumanReadableText.SEARCH_FAILED, e);
         }
     }
@@ -232,7 +260,7 @@ public class JCRMessageMapper extends JCRMapper implements MessageMapper {
         
         try {
             List<MailboxMembership> list = new ArrayList<MailboxMembership>();
-            String queryString = "//" + PATH + "//element(*)[@" + JCRMailboxMembership.MAILBOX_UUID_PROPERTY +"='" + uuid +"'] && [@" + JCRMailboxMembership.RECENT_PROPERTY +"=" + true +"]";
+            String queryString = "//" + PATH + "//element(*)[@" + JCRMailboxMembership.MAILBOX_UUID_PROPERTY +"='" + uuid +"'] AND [@" + JCRMailboxMembership.RECENT_PROPERTY +"='true']";
             QueryManager manager = getSession().getWorkspace().getQueryManager();
             QueryResult result = manager.createQuery(queryString, Query.XPATH).execute();
             
@@ -242,6 +270,7 @@ public class JCRMessageMapper extends JCRMapper implements MessageMapper {
             }
             return list;
         } catch (RepositoryException e) {
+            e.printStackTrace();
             throw new StorageException(HumanReadableText.SEARCH_FAILED, e);
         }
     }
@@ -255,7 +284,7 @@ public class JCRMessageMapper extends JCRMapper implements MessageMapper {
     public List<MailboxMembership> findUnseenMessagesInMailboxOrderByUid() throws StorageException {
         try {
             List<MailboxMembership> list = new ArrayList<MailboxMembership>();
-            String queryString = "//" + PATH + "//element(*)[@" + JCRMailboxMembership.MAILBOX_UUID_PROPERTY +"='" + uuid +"'] && [@" + JCRMailboxMembership.SEEN_PROPERTY +"=" + false +"] order by @" + JCRMailboxMembership.UID_PROPERTY;
+            String queryString = "//" + PATH + "//element(*)[@" + JCRMailboxMembership.MAILBOX_UUID_PROPERTY +"='" + uuid +"'] AND [@" + JCRMailboxMembership.SEEN_PROPERTY +"='false'] order by @" + JCRMailboxMembership.UID_PROPERTY;
             QueryManager manager = getSession().getWorkspace().getQueryManager();
             QueryResult result = manager.createQuery(queryString, Query.XPATH).execute();
             
@@ -265,6 +294,7 @@ public class JCRMessageMapper extends JCRMapper implements MessageMapper {
             }
             return list;
         } catch (RepositoryException e) {
+            e.printStackTrace();
             throw new StorageException(HumanReadableText.SEARCH_FAILED, e);
         }
     }
@@ -280,18 +310,22 @@ public class JCRMessageMapper extends JCRMapper implements MessageMapper {
         Node messageNode;
         JCRMailboxMembership membership = (JCRMailboxMembership) message;
         try {
+            createPathIfNotExists();
+            
             if (membership.isPersistent()) {
 
                 messageNode = getSession().getNodeByUUID(membership.getUUID());
 
             } else {
                 messageNode = getSession().getRootNode().addNode(JCRUtils.createPath(PATH, String.valueOf(membership.getUid())));
+                messageNode.addMixin(JcrConstants.MIX_REFERENCEABLE);
             }
             membership.merge(messageNode);
             getSession().save();
 
        
         } catch (RepositoryException e) {
+            e.printStackTrace();
             throw new StorageException(HumanReadableText.SAVE_FAILED, e);
         }
 
@@ -317,6 +351,7 @@ public class JCRMessageMapper extends JCRMapper implements MessageMapper {
             }
             return list;
         } catch (RepositoryException e) {
+            e.printStackTrace();
             throw new StorageException(HumanReadableText.SEARCH_FAILED, e);
         }
     }
@@ -342,16 +377,23 @@ public class JCRMessageMapper extends JCRMapper implements MessageMapper {
                     final long high = ranges[i].getHighValue();
 
                     if (low == Long.MAX_VALUE) {
-                        queryBuilder.append(" and [@" + JCRMailboxMembership.UID_PROPERTY +"<=").append(high).append("]");
+                        queryBuilder.append(" AND [@" + JCRMailboxMembership.UID_PROPERTY +"<=").append(high).append("]");
                     } else if (low == high) {
-                        queryBuilder.append(" and [@" + JCRMailboxMembership.UID_PROPERTY +"=").append(low).append("]");
+                        queryBuilder.append(" AND [@" + JCRMailboxMembership.UID_PROPERTY +"=").append(low).append("]");
                     } else {
-                        queryBuilder.append(" and [@" + JCRMailboxMembership.UID_PROPERTY +"<").append(low).append("] and [@" + JCRMailboxMembership.UID_PROPERTY + ">").append(high).append("]");
+                        queryBuilder.append(" AND [@" + JCRMailboxMembership.UID_PROPERTY +"<").append(low).append("] AND [@" + JCRMailboxMembership.UID_PROPERTY + ">").append(high).append("]");
                     }
                 }
             }
         }
         final String jql = queryBuilder.toString();
         return jql;
+    }
+    
+
+    protected void createPathIfNotExists() throws RepositoryException, PathNotFoundException {
+        if (getSession().getRootNode().hasNode(JCRUtils.createPath(PATH)) == false) {
+            getSession().getRootNode().addNode(JCRUtils.createPath(PATH));
+        }
     }
 }
