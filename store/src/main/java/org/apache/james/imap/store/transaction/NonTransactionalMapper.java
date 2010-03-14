@@ -27,7 +27,7 @@ import org.apache.james.imap.mailbox.MailboxException;
  * This class is mostly useful for Mapper implementations which not support Transactions
  *
  */
-public class NonTransactionalMapper extends AbstractTransactionalMapper {
+public abstract class NonTransactionalMapper extends AbstractTransactionalMapper {
 
 
     /**

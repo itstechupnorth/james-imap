@@ -55,7 +55,7 @@ public class JCRMailboxManager extends StoreMailboxManager {
     private final Repository repository;
     private final String workspace;
     private final Log logger = LogFactory.getLog(JCRMailboxManager.class);
-
+    
     public JCRMailboxManager(final Authenticator authenticator, final Subscriber subscriber, final Repository repository, final String workspace) {
         super(authenticator, subscriber);
         this.repository = repository;
@@ -70,7 +70,8 @@ public class JCRMailboxManager extends StoreMailboxManager {
 
     @Override
     protected MailboxMapper createMailboxMapper(MailboxSession session) throws MailboxException {
-        return new JCRMailboxMapper(getSession(session), logger);
+        Session jcrSession = getSession(session);
+        return new JCRMailboxMapper(jcrSession, logger);
 
     }
 
@@ -98,7 +99,7 @@ public class JCRMailboxManager extends StoreMailboxManager {
     @Override
     protected void doCreate(String namespaceName, MailboxSession session) throws MailboxException {
         final Mailbox mailbox = new org.apache.james.imap.jcr.mail.model.JCRMailbox(namespaceName, randomUidValidity(), logger);
-        final MailboxMapper mapper = createMailboxMapper(session);
+        final JCRMailboxMapper mapper = (JCRMailboxMapper)createMailboxMapper(session);
         mapper.execute(new TransactionalMapper.Transaction() {
 
             public void run() throws MailboxException {
@@ -122,7 +123,8 @@ public class JCRMailboxManager extends StoreMailboxManager {
         }
     }
     
-
+    
+    
     /**
      * Return the JCR workspace
      * 

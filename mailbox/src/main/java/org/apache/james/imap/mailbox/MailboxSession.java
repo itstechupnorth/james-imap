@@ -22,6 +22,7 @@ package org.apache.james.imap.mailbox;
 import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import org.apache.commons.logging.Log;
 
@@ -110,6 +111,9 @@ public interface MailboxSession {
      */
     public Collection<Namespace> getSharedSpaces();
     
+    
+    public Map<Object,Object> getAttributes();
+    
     /**
      * Describes a <a href='http://www.isi.edu/in-notes/rfc2342.txt' rel='tag'>RFC 2342</a> namespace.
      */
@@ -128,4 +132,6 @@ public interface MailboxSession {
          */
         public String getPrefix();
     }
+    
+    
 }

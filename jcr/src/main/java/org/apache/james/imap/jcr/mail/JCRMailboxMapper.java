@@ -33,28 +33,26 @@ import javax.jcr.query.QueryResult;
 import org.apache.commons.logging.Log;
 import org.apache.jackrabbit.JcrConstants;
 import org.apache.james.imap.api.display.HumanReadableText;
-import org.apache.james.imap.jcr.JCRImapConstants;
+import org.apache.james.imap.jcr.JCRMapper;
 import org.apache.james.imap.jcr.JCRUtils;
 import org.apache.james.imap.jcr.mail.model.JCRMailbox;
 import org.apache.james.imap.mailbox.MailboxNotFoundException;
 import org.apache.james.imap.mailbox.StorageException;
 import org.apache.james.imap.store.mail.MailboxMapper;
 import org.apache.james.imap.store.mail.model.Mailbox;
-import org.apache.james.imap.store.transaction.NonTransactionalMapper;
 
 /**
  * JCR implementation of a MailboxMapper
  * 
  * 
  */
-public class JCRMailboxMapper extends NonTransactionalMapper implements MailboxMapper,JCRImapConstants {
+public class JCRMailboxMapper extends JCRMapper implements MailboxMapper {
 
-    private final Session session;
     public final String PATH = PROPERTY_PREFIX + "mailboxes";
     private Log logger;
 
     public JCRMailboxMapper(final Session session, final Log logger) {
-        this.session = session;
+        super(session);
         this.logger = logger;
     }
 
@@ -66,16 +64,24 @@ public class JCRMailboxMapper extends NonTransactionalMapper implements MailboxM
      * (java.lang.String)
      */
     public long countMailboxesWithName(String name) throws StorageException {
+       
         try {
-        	QueryManager manager = session.getWorkspace().getQueryManager();
-        	String queryString = "//" + PATH + "//element(*)[@" + JCRMailbox.NAME_PROPERTY + "='" + name + "']";
+        	QueryManager manager = getSession().getWorkspace().getQueryManager();
+        	String queryString =  "//" + PATH + "//element(*)[@" + JCRMailbox.NAME_PROPERTY + "='" + name + "']";
         	QueryResult result = manager.createQuery(queryString, Query.XPATH).execute();
         	NodeIterator it = result.getNodes();
-        	return it.getSize();
+        	long resultSize = it.getSize();
+        	if (resultSize == -1) {
+        	    resultSize = 0;
+        	    while (it.hasNext()) {
+        	        it.nextNode();
+        	        resultSize++;
+        	    }
+        	}
+        	return resultSize;
         } catch (PathNotFoundException e) {
             // not found
         } catch (RepositoryException e) {
-        	e.printStackTrace();
             throw new StorageException(HumanReadableText.COUNT_FAILED, e);
         }
         return 0;
@@ -90,8 +96,8 @@ public class JCRMailboxMapper extends NonTransactionalMapper implements MailboxM
      */
     public void delete(Mailbox mailbox) throws StorageException {
         try {
-        	session.getNodeByUUID(((JCRMailbox) mailbox).getUUID()).remove();
-            session.save();
+        	getSession().getNodeByUUID(((JCRMailbox) mailbox).getUUID()).remove();
+            getSession().save();
         } catch (PathNotFoundException e) {
             // mailbox does not exists..
         } catch (RepositoryException e) {
@@ -106,8 +112,8 @@ public class JCRMailboxMapper extends NonTransactionalMapper implements MailboxM
      */
     public void deleteAll() throws StorageException {
         try {
-            session.getRootNode().getNode(PATH).remove();
-            session.save();
+            getSession().getRootNode().getNode(PATH).remove();
+            getSession().save();
 
         } catch (PathNotFoundException e) {
             // nothing todo
@@ -126,7 +132,7 @@ public class JCRMailboxMapper extends NonTransactionalMapper implements MailboxM
      */
     public boolean existsMailboxStartingWith(String mailboxName) throws StorageException {
         try {
-        	QueryManager manager = session.getWorkspace().getQueryManager();
+        	QueryManager manager = getSession().getWorkspace().getQueryManager();
         	String queryString = "//" + PATH + "//element(*)[jcr:contains(@" + JCRMailbox.NAME_PROPERTY + ",'" + mailboxName + "*')]";
         	QueryResult result = manager.createQuery(queryString, Query.XPATH).execute();
         	NodeIterator it = result.getNodes();
@@ -142,31 +148,13 @@ public class JCRMailboxMapper extends NonTransactionalMapper implements MailboxM
      * @see org.apache.james.imap.store.mail.MailboxMapper#findMailboxById(long)
      */
     public Mailbox findMailboxById(long mailboxId) throws StorageException, MailboxNotFoundException {
-        /*
-        try {
-            QueryManager manager = session.getWorkspace().getQueryManager();
-            String queryString = JCRUtils.createPath(session.getRootNode().getPath(), PATH) + "//element(" + mailboxId + ")," + JCRMailbox.ID_PROPERTY + ")";
-            Query query = manager.createQuery(queryString, Query.XPATH);
-
-            NodeIterator nodes = query.execute().getNodes();
-            if (nodes.hasNext() == false) {
-                throw new MailboxNotFoundException(mailboxId);
-            } else {
-                return new JCRMailbox(nodes.nextNode(),logger);
-            }
-        } catch (PathNotFoundException e) {
-            throw new MailboxNotFoundException(mailboxId);
-        } catch (RepositoryException e) {
-            throw new StorageException(HumanReadableText.SEARCH_FAILED, e);
-        }
-        */
         throw new StorageException(HumanReadableText.UNSUPPORTED,null);
     }
 
     public Mailbox findMailboxByUUID(String uuid) throws StorageException, MailboxNotFoundException {
         System.out.println("UUID="+uuid);
     	try {
-            return new JCRMailbox(session.getNodeByUUID(uuid),logger);
+            return new JCRMailbox(getSession().getNodeByUUID(uuid),logger);
         } catch (PathNotFoundException e) {
             throw new MailboxNotFoundException(uuid);
         } catch (RepositoryException e) {
@@ -183,7 +171,7 @@ public class JCRMailboxMapper extends NonTransactionalMapper implements MailboxM
      */
     public Mailbox findMailboxByName(String name) throws StorageException, MailboxNotFoundException {
         try {
-        	QueryManager manager = session.getWorkspace().getQueryManager();
+        	QueryManager manager = getSession().getWorkspace().getQueryManager();
         	String queryString = "//" + PATH + "//element(*)[@" + JCRMailbox.NAME_PROPERTY + "='" + name + "']";
         	QueryResult result = manager.createQuery(queryString, Query.XPATH).execute();
         	NodeIterator it = result.getNodes();
@@ -209,7 +197,7 @@ public class JCRMailboxMapper extends NonTransactionalMapper implements MailboxM
     public List<Mailbox> findMailboxWithNameLike(String name) throws StorageException {
         List<Mailbox> mailboxList = new ArrayList<Mailbox>();
         try {        	
-        	QueryManager manager = session.getWorkspace().getQueryManager();
+        	QueryManager manager = getSession().getWorkspace().getQueryManager();
         	String queryString = "//" + PATH + "//element(*)[jcr:contains(@" + JCRMailbox.NAME_PROPERTY + ",'*" + name + "*')]";
         	QueryResult result = manager.createQuery(queryString, Query.XPATH).execute();
         	NodeIterator it = result.getNodes();
@@ -232,16 +220,20 @@ public class JCRMailboxMapper extends NonTransactionalMapper implements MailboxM
      * imap.store.mail.model.Mailbox)
      */
     public void save(Mailbox mailbox) throws StorageException {
+        
         String nodePath = JCRUtils.createPath(PATH,mailbox.getName());
         try {
+            createPathIfNotExists();
+
             Node node;
-            if (session.getRootNode().hasNode(nodePath)) {
-                node = session.getRootNode().getNode(nodePath);
+            if (getSession().getRootNode().hasNode(nodePath)) {
+                node = getSession().getRootNode().getNode(nodePath);
             } else {
-                node = session.getRootNode().addNode(nodePath, JcrConstants.MIX_REFERENCEABLE);
+                node = getSession().getRootNode().addNode(nodePath);
+                node.addMixin(JcrConstants.MIX_REFERENCEABLE);
             }
             ((JCRMailbox)mailbox).merge(node);
-            session.save();
+            getSession().save();
             System.out.println("U="+node.getUUID());
         } catch (RepositoryException e) {
         	e.printStackTrace();
@@ -254,7 +246,7 @@ public class JCRMailboxMapper extends NonTransactionalMapper implements MailboxM
         JCRMailbox mailbox = (JCRMailbox) findMailboxByUUID(uuid);
         mailbox.consumeUid();
         try {
-            session.save();
+            getSession().save();
         } catch (PathNotFoundException e) {
             throw new MailboxNotFoundException(uuid);
         } catch (RepositoryException e) {
@@ -262,6 +254,12 @@ public class JCRMailboxMapper extends NonTransactionalMapper implements MailboxM
         }
         return mailbox;
 
+    }
+    
+    protected void createPathIfNotExists() throws RepositoryException, PathNotFoundException {
+        if (getSession().getRootNode().hasNode(JCRUtils.createPath(PATH)) == false) {
+            getSession().getRootNode().addNode(JCRUtils.createPath(PATH));
+        }
     }
 
 }

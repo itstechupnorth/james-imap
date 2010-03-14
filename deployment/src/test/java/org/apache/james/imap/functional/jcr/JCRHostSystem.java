@@ -65,7 +65,7 @@ public class JCRHostSystem extends ImapHostSystem{
         RepositoryConfig config = RepositoryConfig.create(new InputSource(this.getClass().getClassLoader().getResourceAsStream("test-repository.xml")), JACKRABBIT_HOME);
         repository = RepositoryImpl.create(config);
         
-        mailboxManager = new JCRGlobalUserMailboxManager(userManager, new JCRGlobalUserSubscriptionManager(repository, "default", "user", "pass"), repository, "default", "user", "pass");
+        mailboxManager = new JCRGlobalUserMailboxManager(userManager, new JCRGlobalUserSubscriptionManager(repository, null, "user", "pass"), repository, null, "user", "pass");
         
         final DefaultImapProcessorFactory defaultImapProcessorFactory = new DefaultImapProcessorFactory();
         resetUserMetaData();
@@ -109,7 +109,6 @@ public class JCRHostSystem extends ImapHostSystem{
         dir.mkdirs();
     }
 
-	@Override
 	protected void stop() throws Exception {
 		//repository.shutdown();
 		System.out.println("HERE");

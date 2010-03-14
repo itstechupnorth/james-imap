@@ -92,7 +92,7 @@ public abstract class StoreSubscriptionManager implements Subscriber {
         final Collection<String> results = new HashSet<String>(INITIAL_SIZE);
         for (Subscription subscription:subscriptions) {
             results.add(subscription.getMailbox());
-        }
+        }        
         return results;
     }
 

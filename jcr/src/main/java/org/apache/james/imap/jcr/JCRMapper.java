@@ -16,38 +16,22 @@
  * specific language governing permissions and limitations      *
  * under the License.                                           *
  ****************************************************************/
+package org.apache.james.imap.jcr;
 
-package org.apache.james.imap.store.transaction;
+import javax.jcr.Session;
 
-import org.apache.james.imap.mailbox.MailboxException;
+import org.apache.james.imap.store.transaction.NonTransactionalMapper;
 
-/**
- * Mapper which execute units of work in a {@link Transaction}
- * @author norman
- *
- */
-public interface TransactionalMapper {
-    
-    /**
-     * Execute the given Transaction
-     * 
-     * @param transaction 
-     * @throws MailboxException
-     */
-    public void execute(Transaction transaction) throws MailboxException;
-        
-    /**
-     * Unit of work executed in a Transaction
-     *
-     */
-    public interface Transaction {
-        
-        /**
-         * Run unit of work in a Transaction
-         * 
-         * @throws MailboxException
-         */
-        public void run() throws MailboxException;
+public abstract class JCRMapper extends NonTransactionalMapper implements JCRImapConstants{
+
+    private final Session session;
+
+    public JCRMapper(final Session session) {
+        this.session = session;
     }
-
+    
+    protected Session getSession() {
+        return session;
+    }
+    
 }

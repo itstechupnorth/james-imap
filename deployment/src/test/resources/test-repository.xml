@@ -28,7 +28,7 @@
         (e.g. registered namespaces, custom node types, etc.)
     -->
     <FileSystem class="org.apache.jackrabbit.core.fs.local.LocalFileSystem">
-        <param name="path" value="target/repository"/>
+        <param name='path' value='${rep.home}/repository'/>
     </FileSystem>
 
     <!--
@@ -45,21 +45,11 @@
            <param name="adminId" value="admin"/>
         </LoginModule>
     </Security>
-    <!--
-        location of workspaces root directory and name of default workspace
-    -->
-    <Workspaces rootPath="target/repository/workspaces" defaultWorkspace="default"/>
-    <!--
-        workspace configuration template:
-        used to create the initial workspace if there's no workspace yet
-    -->
-    <Workspace name="default">
-        <!--
-            virtual file system of the workspace:
-            class: FQN of class implementing the FileSystem interface
-        -->
-        <FileSystem class="org.apache.jackrabbit.core.fs.local.LocalFileSystem">
-            <param name="path" value="default"/>
+
+    <Workspaces rootPath='${rep.home}/workspaces' defaultWorkspace='default'/>
+    
+    <Workspace name='${wsp.name}'>
+        <FileSystem class='org.apache.jackrabbit.core.fs.mem.MemoryFileSystem'>
         </FileSystem>
         <!--
             persistence manager of the workspace:
@@ -69,11 +59,14 @@
                         <param name="url" value="jdbc:h2:target/wsp_name/db"/>
                         <param name="driver" value="org.h2.Driver"/>
                         <param name="schema" value="h2"/>
-                        <param name="schemaObjectPrefix" value="default_"/>
+                        <param name='schemaObjectPrefix' value='${wsp.name}_'/>
         </PersistenceManager>
         
-        <SearchIndex class="org.apache.jackrabbit.core.query.lucene.SearchIndex">
-            <param name="path" value="default/index" />
+        <SearchIndex class='org.apache.jackrabbit.core.query.lucene.SearchIndex'>
+            <param name='path' value='${wsp.home}/index'/>
+            <param name='textFilterClasses' value='org.apache.jackrabbit.extractor.HTMLTextExtractor,org.apache.jackrabbit.extractor.XMLTextExtractor'/>
+            <param name='extractorPoolSize' value='2'/>
+            <param name='supportHighlighting' value='true'/>
         </SearchIndex>
         
     </Workspace>
@@ -81,19 +74,30 @@
     <!--
         Configures the versioning
     -->
-    <Versioning rootPath="target/repository/version">
-
-        <FileSystem class="org.apache.jackrabbit.core.fs.local.LocalFileSystem">
-            <param name="path" value="target/repository/version" />
+    <Versioning rootPath='${rep.home}/version'>
+        <FileSystem class='org.apache.jackrabbit.core.fs.mem.MemoryFileSystem'>
+        <!--  
+            <param name='path' value='${rep.home}/version' />
+            -->
         </FileSystem>
 
         <PersistenceManager  class="org.apache.jackrabbit.core.persistence.db.SimpleDbPersistenceManager">
-                        <param name="url" value="jdbc:h2:target/wsp_name/db"/>
+                        <param name='url' value='jdbc:h2:${rep.home}/version/db'/>
                         <param name="driver" value="org.h2.Driver"/>
                         <param name="schema" value="h2"/>
           				<param name="schemaObjectPrefix" value="version_"/>
         </PersistenceManager>
         
     </Versioning>
+    <!--
+        Search index for content that is shared repository wide
+        (/jcr:system tree, contains mainly versions)
+    -->
+    <SearchIndex class='org.apache.jackrabbit.core.query.lucene.SearchIndex'>
+        <param name='path' value='${rep.home}/repository/index'/>
+        <param name='textFilterClasses' value='org.apache.jackrabbit.extractor.HTMLTextExtractor,org.apache.jackrabbit.extractor.XMLTextExtractor'/>
+        <param name='extractorPoolSize' value='2'/>
+        <param name='supportHighlighting' value='true'/>
+    </SearchIndex>
 
 </Repository>

@@ -21,8 +21,10 @@ package org.apache.james.imap.store;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.james.imap.mailbox.MailboxSession;
@@ -50,6 +52,8 @@ public class SimpleMailboxSession implements MailboxSession, MailboxSession.User
 
     private final List<Locale> localePreferences;
 
+    private final Map<Object, Object> attributes;
+
     public SimpleMailboxSession(final long sessionId, final String userName, final Log log, char deliminator,
             final List<Locale> localePreferences) {
         super();
@@ -60,6 +64,7 @@ public class SimpleMailboxSession implements MailboxSession, MailboxSession.User
         otherUsersSpace = null;
         personalSpace = new SimpleMailboxNamespace(deliminator, "");
         this.localePreferences = localePreferences;
+        attributes = new HashMap<Object, Object>();
     }
 
     /*
@@ -150,6 +155,14 @@ public class SimpleMailboxSession implements MailboxSession, MailboxSession.User
      */
     public List<Locale> getLocalePreferences() {
         return localePreferences;
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.mailbox.MailboxSession#getAttributes()
+     */
+    public Map<Object, Object> getAttributes() {
+        return attributes;
     }
 
 }

@@ -76,4 +76,5 @@ public class JPATransactionalMapper extends AbstractTransactionalMapper {
             entityManager.getTransaction().rollback();
         }
     }
+
 }

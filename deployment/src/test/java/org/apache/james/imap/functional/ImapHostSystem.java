@@ -134,7 +134,7 @@ public abstract class ImapHostSystem implements HostSystem {
         }
 
         public void stop() throws Exception {
-
+        	ImapHostSystem.this.stop();
         }
 
         public void writeLine(String line) throws Exception {
@@ -250,4 +250,8 @@ public abstract class ImapHostSystem implements HostSystem {
     }
 
     public abstract boolean addUser(String user, String password) throws Exception;
+    
+    protected void stop() throws Exception {
+    	
+    }
 }

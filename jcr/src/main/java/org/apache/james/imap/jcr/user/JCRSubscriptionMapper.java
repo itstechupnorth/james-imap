@@ -29,6 +29,7 @@ import javax.jcr.Session;
 
 import org.apache.commons.logging.Log;
 import org.apache.james.imap.api.display.HumanReadableText;
+import org.apache.james.imap.jcr.JCRMapper;
 import org.apache.james.imap.jcr.Persistent;
 import org.apache.james.imap.jcr.JCRImapConstants;
 import org.apache.james.imap.jcr.JCRUtils;
@@ -44,14 +45,13 @@ import org.apache.james.imap.store.user.model.Subscription;
  * ends in a "real" action
  * 
  */
-public class JCRSubscriptionMapper extends NonTransactionalMapper implements SubscriptionMapper, JCRImapConstants {
+public class JCRSubscriptionMapper extends JCRMapper implements SubscriptionMapper {
 
-    private final Session session;
     private final Log log;
     private final static String PATH = PROPERTY_PREFIX + "subscriptions";
 
     public JCRSubscriptionMapper(final Session session, final Log log) {
-        this.session = session;
+        super(session);
         this.log = log;
     }
 
@@ -70,7 +70,7 @@ public class JCRSubscriptionMapper extends NonTransactionalMapper implements Sub
 
                 Node node = ((Persistent) subscription).getNode();
                 node.remove();
-                session.save();
+                getSession().save();
             } catch (PathNotFoundException e) {
                 // do nothing
             } catch (RepositoryException e) {
@@ -88,7 +88,7 @@ public class JCRSubscriptionMapper extends NonTransactionalMapper implements Sub
      */
     public Subscription findFindMailboxSubscriptionForUser(String user, String mailbox) throws SubscriptionException {
         try {
-            Node node = session.getRootNode().getNode(JCRUtils.createPath(PATH, user, mailbox));
+            Node node = getSession().getRootNode().getNode(JCRUtils.createPath(PATH, user, mailbox));
             return new JCRSubscription(node, log);
         } catch (PathNotFoundException e) {
             return null;
@@ -107,7 +107,7 @@ public class JCRSubscriptionMapper extends NonTransactionalMapper implements Sub
     public List<Subscription> findSubscriptionsForUser(String user) throws SubscriptionException {
         List<Subscription> subList = new ArrayList<Subscription>();
         try {
-            Node node = session.getRootNode().getNode(JCRUtils.createPath(PATH , user));
+            Node node = getSession().getRootNode().getNode(JCRUtils.createPath(PATH , user));
             NodeIterator nodeIt = node.getNodes("*");
             while (nodeIt.hasNext()) {
                 subList.add(new JCRSubscription(nodeIt.nextNode(), log));
@@ -133,7 +133,7 @@ public class JCRSubscriptionMapper extends NonTransactionalMapper implements Sub
         String mailbox = subscription.getMailbox();
         String nodename = JCRUtils.createPath(username, mailbox);
         try {
-            Node node = session.getRootNode().getNode(PATH);
+            Node node = getSession().getRootNode().getNode(PATH);
             Node subNode;
             if (node.hasNode(nodename)) {
                 subNode = node.getNode(nodename);
@@ -144,7 +144,7 @@ public class JCRSubscriptionMapper extends NonTransactionalMapper implements Sub
             // Copy new properties to the node
             ((JCRSubscription)subscription).merge(subNode);
 
-            session.save();
+            getSession().save();
         } catch (RepositoryException e) {
             throw new SubscriptionException(HumanReadableText.SAVE_FAILED, e);
         }

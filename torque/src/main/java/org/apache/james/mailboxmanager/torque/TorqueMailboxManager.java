@@ -25,6 +25,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -49,6 +50,7 @@ import org.apache.james.imap.mailbox.SubscriptionException;
 import org.apache.james.imap.mailbox.MailboxMetaData.Selectability;
 import org.apache.james.imap.mailbox.util.SimpleMailboxMetaData;
 import org.apache.james.imap.store.Authenticator;
+import org.apache.james.imap.store.SimpleMailboxSession;
 import org.apache.james.imap.store.Subscriber;
 import org.apache.james.mailboxmanager.torque.om.MailboxRow;
 import org.apache.james.mailboxmanager.torque.om.MailboxRowPeer;
@@ -193,6 +195,7 @@ public class TorqueMailboxManager implements MailboxManager {
         }
     }
 
+    @SuppressWarnings("unchecked")
     public void renameMailbox(String from, String to, MailboxSession session)
             throws MailboxException {
         getLog().debug("renameMailbox " + from + " to " + to);
@@ -252,6 +255,7 @@ public class TorqueMailboxManager implements MailboxManager {
         fromMailbox.copyTo(set, toMailbox, session);
     }
 
+    @SuppressWarnings("unchecked")
     public List<MailboxMetaData> search(final MailboxQuery mailboxExpression, MailboxSession session)
             throws MailboxException {
         final char localWildcard = mailboxExpression.getLocalWildcard();
@@ -303,6 +307,7 @@ public class TorqueMailboxManager implements MailboxManager {
      * @return true when the mailbox has children, false otherwise
      * @throws TorqueException
      */
+    @SuppressWarnings("unchecked")
     private boolean hasChildren(String name) throws TorqueException {
         final Criteria criteria = new Criteria();
         criteria.add(MailboxRowPeer.NAME, (Object)(name + delimiter + SQL_WILDCARD_CHAR), Criteria.LIKE);
@@ -358,9 +363,8 @@ public class TorqueMailboxManager implements MailboxManager {
         return createSession(userName, log);
     }
 
-    @SuppressWarnings("unchecked")
-    private TorqueMailboxSession createSession(String userName, Log log) {
-        return new TorqueMailboxSession(random.nextLong(), log, userName, delimiter, Collections.EMPTY_LIST);
+    private MailboxSession createSession(String userName, Log log) {
+        return new SimpleMailboxSession(random.nextLong(), userName, log, delimiter, new ArrayList<Locale>());
     }
 
     public String resolve(final String userName, String mailboxPath) {

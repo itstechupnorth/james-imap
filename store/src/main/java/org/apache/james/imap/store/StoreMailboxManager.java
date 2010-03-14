@@ -120,7 +120,7 @@ public abstract class StoreMailboxManager extends AbstractLogEnabled implements 
         synchronized (mailboxes) {
             final MailboxMapper mapper = createMailboxMapper(session);
             Mailbox mailboxRow = mapper.findMailboxByName(mailboxName);
-
+            
             if (mailboxRow == null) {
                 getLog().info("Mailbox '" + mailboxName + "' not found.");
                 throw new MailboxNotFoundException(mailboxName);
@@ -253,7 +253,6 @@ public abstract class StoreMailboxManager extends AbstractLogEnabled implements 
                 }
                 
             });
-
         }
     }
 
