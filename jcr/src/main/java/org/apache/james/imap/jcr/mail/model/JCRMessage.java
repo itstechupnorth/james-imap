@@ -247,7 +247,7 @@ public class JCRMessage extends AbstractDocument implements JCRImapConstants, Pe
             try {
                 return node.getProperty(TEXTUAL_LINE_COUNT_PROPERTY).getLong();
             } catch (RepositoryException e) {
-                logger.error("Unable to retrieve property " + TEXTUAL_LINE_COUNT_PROPERTY, e);
+                //logger.error("Unable to retrieve property " + TEXTUAL_LINE_COUNT_PROPERTY, e);
 
             }
             return null;
@@ -296,7 +296,9 @@ public class JCRMessage extends AbstractDocument implements JCRImapConstants, Pe
         contentNode.setProperty(JcrConstants.JCR_MIMETYPE, mediaType);
 
         node.setProperty(FULL_CONTENT_OCTETS_PROPERTY, fullContentOctets);
-        node.setProperty(TEXTUAL_LINE_COUNT_PROPERTY, textualLineCount);
+        if (textualLineCount != null) {
+            node.setProperty(TEXTUAL_LINE_COUNT_PROPERTY, textualLineCount);
+        }
         node.setProperty(SUBTYPE_PROPERTY, subType);
         node.setProperty(BODY_START_OCTET_PROPERTY, new Long(bodyStartOctet));
 
