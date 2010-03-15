@@ -156,16 +156,17 @@ public class JCRProperty extends AbstractComparableProperty<JCRProperty> impleme
      * @see org.apache.james.imap.jcr.IsPersistent#merge(javax.jcr.Node)
      */
     public void merge(Node node) throws RepositoryException {
-        node.setProperty(NAMESPACE_PROPERTY, namespace);
-        node.setProperty(ORDER_PROPERTY, order);
-        node.setProperty(LOCALNAME_PROPERTY, localName);
-        node.setProperty(VALUE_PROPERTY, value);
+        node.setProperty(NAMESPACE_PROPERTY, getNamespace());
+        node.setProperty(ORDER_PROPERTY, getOrder());
+        node.setProperty(LOCALNAME_PROPERTY, getLocalName());
+        node.setProperty(VALUE_PROPERTY, getValue());
 
         this.node = node;
-        
+        /*
         namespace = null;
         order = 0;
         localName = null;
         value = null;
+        */
     }
 }

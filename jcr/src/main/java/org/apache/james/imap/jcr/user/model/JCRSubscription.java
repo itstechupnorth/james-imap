@@ -109,12 +109,14 @@ public class JCRSubscription implements Subscription, Persistent, JCRImapConstan
      * @see org.apache.james.imap.jcr.IsPersistent#merge(javax.jcr.Node)
      */
     public void merge(Node node) throws RepositoryException{
+        node.setProperty(USERNAME_PROPERTY, getUser());
+        node.setProperty(MAILBOX_PROPERTY, getMailbox());
         this.node = node;
-        node.setProperty(USERNAME_PROPERTY, username);
-        node.setProperty(MAILBOX_PROPERTY, mailbox);
 
+        /*
         mailbox = null;
         username = null;
+        */
     }
 
 }

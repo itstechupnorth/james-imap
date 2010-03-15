@@ -124,6 +124,14 @@ public class JCRMailboxMembership extends AbstractMailboxMembership implements
 	 * org.apache.james.imap.store.mail.model.MailboxMembership#getDocument()
 	 */
 	public Document getDocument() {
+	    if (isPersistent()) {
+	        try {
+	            return new JCRMessage(node.getNode(MESSAGE_NODE), logger);
+	        } catch (RepositoryException e) {
+                logger.error("Unable to access node " + MESSAGE_NODE,
+                                e);
+            }
+	    }
 		return message;
 	}
 
@@ -137,12 +145,10 @@ public class JCRMailboxMembership extends AbstractMailboxMembership implements
 	public Date getInternalDate() {
 		if (isPersistent()) {
 			try {
-				return node.getProperty(INTERNAL_DATE_PROPERTY).getDate()
-						.getTime();
+				return node.getProperty(INTERNAL_DATE_PROPERTY).getDate().getTime();
 
 			} catch (RepositoryException e) {
-				logger
-						.error("Unable to access property " + FLAGGED_PROPERTY,
+				logger.error("Unable to access property " + FLAGGED_PROPERTY,
 								e);
 			}
 			return null;
@@ -413,32 +419,38 @@ public class JCRMailboxMembership extends AbstractMailboxMembership implements
 	 * @see org.apache.james.imap.jcr.Persistent#merge(javax.jcr.Node)
 	 */
 	public void merge(Node node) throws RepositoryException {
-		node.setProperty(MAILBOX_UUID_PROPERTY, mailboxUUID);
-		node.setProperty(UID_PROPERTY, uid);
-		node.setProperty(SIZE_PROPERTY, size);
-		node.setProperty(ANSWERED_PROPERTY, answered);
-		node.setProperty(DELETED_PROPERTY, deleted);
-		node.setProperty(DRAFT_PROPERTY, draft);
-		node.setProperty(FLAGGED_PROPERTY, flagged);
-		node.setProperty(RECENT_PROPERTY, recent);
+		node.setProperty(MAILBOX_UUID_PROPERTY, getMailboxUUID());
+		node.setProperty(UID_PROPERTY, getUid());
+		node.setProperty(SIZE_PROPERTY, getSize());
+		node.setProperty(ANSWERED_PROPERTY, isAnswered());
+		node.setProperty(DELETED_PROPERTY, isDeleted());
+		node.setProperty(DRAFT_PROPERTY, isDraft());
+		node.setProperty(FLAGGED_PROPERTY, isFlagged());
+		node.setProperty(RECENT_PROPERTY, isRecent());
 		
-		node.setProperty(SEEN_PROPERTY, seen);
+		node.setProperty(SEEN_PROPERTY, isSeen());
+		
+		if (getInternalDate() == null) {
+		    internalDate = new Date();
+		}
 		
 		Calendar cal = Calendar.getInstance();
-		cal.setTime(internalDate);
+		
+		cal.setTime(getInternalDate());
 		node.setProperty(INTERNAL_DATE_PROPERTY, cal);
 
 		Node messageNode;
 		if (node.hasNode(MESSAGE_NODE)) {
 		    messageNode = node.getNode(MESSAGE_NODE);
 		} else {
-	        messageNode = node.addNode("message");
+	        messageNode = node.addNode(MESSAGE_NODE);
 	        messageNode.addMixin(JcrConstants.MIX_REFERENCEABLE);
 		}
-		message.merge(messageNode);
+		((JCRMessage)getDocument()).merge(messageNode);
 
 		this.node = node;
 
+		/*
 		answered = false;
 		deleted = false;
 		draft = false;
@@ -450,6 +462,7 @@ public class JCRMailboxMembership extends AbstractMailboxMembership implements
 		seen = false;
 		size = 0;
 		uid = 0;
+		*/
 	}
 
 }

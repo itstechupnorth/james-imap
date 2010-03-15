@@ -26,12 +26,15 @@ import javax.jcr.Session;
 import javax.jcr.SimpleCredentials;
 
 import org.apache.james.imap.api.display.HumanReadableText;
+import org.apache.james.imap.jcr.mail.JCRMailboxMapper;
 import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.MailboxSession;
 import org.apache.james.imap.store.Authenticator;
 import org.apache.james.imap.store.StoreMailbox;
 import org.apache.james.imap.store.Subscriber;
+import org.apache.james.imap.store.mail.MailboxMapper;
 import org.apache.james.imap.store.mail.model.Mailbox;
+import org.apache.james.imap.store.transaction.TransactionalMapper;
 
 /**
  * JCR based MailboxManager which use the same username and password to obtain a
@@ -56,6 +59,20 @@ public class JCRGlobalUserMailboxManager extends JCRMailboxManager {
     }
 
 
+    public void deleteEverything() throws MailboxException {
+        Session session = getSession(null);
+        final MailboxMapper mapper = new JCRMailboxMapper(session,getLog());
+        mapper.execute(new TransactionalMapper.Transaction() {
+
+            public void run() throws MailboxException {
+                mapper.deleteAll(); 
+                mailboxes.clear();
+            }
+            
+        });
+        session.logout();
+    }
+    
     @Override
     protected StoreMailbox createMailbox(Mailbox mailboxRow, MailboxSession session) {
         JCRMailbox mailbox = new JCRGlobalMailbox((org.apache.james.imap.jcr.mail.model.JCRMailbox) mailboxRow, session, getRepository(), getWorkspace(), username, password, getLog());

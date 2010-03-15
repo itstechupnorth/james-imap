@@ -136,7 +136,7 @@ public abstract class StoreMailboxManager extends AbstractLogEnabled implements 
                     mailboxes.put(mailboxName, result);
                     
                     // store the mailbox in the session so we can cleanup things later
-                    session.getAttributes().put(MAILBOX, result);
+                    //session.getAttributes().put(MAILBOX, result);
                 }
                 return result;
             }

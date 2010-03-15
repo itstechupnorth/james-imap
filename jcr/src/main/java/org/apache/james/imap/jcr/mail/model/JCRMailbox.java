@@ -91,7 +91,7 @@ public class JCRMailbox implements Mailbox, JCRImapConstants, Persistent{
             try {
                 return node.getProperty(LASTUID_PROPERTY).getLong();
             } catch (RepositoryException e) {
-                logger.error("Unable to access property " + ID_PROPERTY, e);
+                logger.error("Unable to access property " + LASTUID_PROPERTY, e);
             }
         }
         return lastUid;
@@ -173,16 +173,18 @@ public class JCRMailbox implements Mailbox, JCRImapConstants, Persistent{
      * @see org.apache.james.imap.jcr.Persistent#merge(javax.jcr.Node)
      */
     public void  merge(Node node) throws RepositoryException {
-        node.setProperty(ID_PROPERTY,  id);
-        node.setProperty(NAME_PROPERTY, name);
-        node.setProperty(UIDVALIDITY_PROPERTY, uidValidity);
-        node.setProperty(LASTUID_PROPERTY, lastUid);   
+        node.setProperty(ID_PROPERTY,  getMailboxId());
+        node.setProperty(NAME_PROPERTY, getName());
+        node.setProperty(UIDVALIDITY_PROPERTY, getUidValidity());
+        node.setProperty(LASTUID_PROPERTY, getLastUid());   
         
         this.node = node;
+        /*
         id = 0;
         lastUid = 0;
         name = null;
         uidValidity = 0;
+        */
     }
     
     public String getUUID() {

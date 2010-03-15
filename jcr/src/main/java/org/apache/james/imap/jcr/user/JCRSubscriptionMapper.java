@@ -142,22 +142,19 @@ public class JCRSubscriptionMapper extends JCRMapper implements SubscriptionMapp
     public void save(Subscription subscription) throws SubscriptionException {
         String username = subscription.getUser();
         String mailbox = subscription.getMailbox();
-        String nodename = JCRUtils.createPath(username, mailbox);
+        String nodename = JCRUtils.createPath(PATH, username, mailbox);
         try {
             createPathIfNotExists(PATH);
-            Node node = getSession().getRootNode().getNode(PATH);
-            Node subNode;
-            if (node.hasNode(nodename)) {
-                subNode = node.getNode(nodename);
+            Node node;
+            JCRSubscription sub = (JCRSubscription) subscription;
+            if (sub.isPersistent() == false) {
+                 node = getSession().getRootNode().getNode(nodename);
+               
             } else {
-                if (node.hasNode(username) == false) {
-                    node.addNode(username);
-                }
-                subNode = node.addNode(nodename);
+                node = sub.getNode();
             }
-
             // Copy new properties to the node
-            ((JCRSubscription)subscription).merge(subNode);
+            sub.merge(node);
 
             getSession().save();
         } catch (RepositoryException e) {

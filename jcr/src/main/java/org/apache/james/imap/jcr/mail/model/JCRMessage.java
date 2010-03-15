@@ -292,15 +292,15 @@ public class JCRMessage extends AbstractDocument implements JCRImapConstants, Pe
         } else {
             contentNode = node.getNode(JcrConstants.JCR_CONTENT);
         }
-        contentNode.setProperty(JcrConstants.JCR_DATA, new ByteArrayInputStream(content));
-        contentNode.setProperty(JcrConstants.JCR_MIMETYPE, mediaType);
+        contentNode.setProperty(JcrConstants.JCR_DATA, new ByteArrayInputStream(getFullContent().array()));
+        contentNode.setProperty(JcrConstants.JCR_MIMETYPE, getMediaType());
 
-        node.setProperty(FULL_CONTENT_OCTETS_PROPERTY, fullContentOctets);
-        if (textualLineCount != null) {
-            node.setProperty(TEXTUAL_LINE_COUNT_PROPERTY, textualLineCount);
+        node.setProperty(FULL_CONTENT_OCTETS_PROPERTY, getFullContentOctets());
+        if (getTextualLineCount() != null) {
+            node.setProperty(TEXTUAL_LINE_COUNT_PROPERTY, getTextualLineCount());
         }
-        node.setProperty(SUBTYPE_PROPERTY, subType);
-        node.setProperty(BODY_START_OCTET_PROPERTY, new Long(bodyStartOctet));
+        node.setProperty(SUBTYPE_PROPERTY, getSubType());
+        node.setProperty(BODY_START_OCTET_PROPERTY, getBodyStartOctet());
 
         Node headersNode;
         if (node.hasNode(HEADERS_NODE)) {
@@ -310,8 +310,8 @@ public class JCRMessage extends AbstractDocument implements JCRImapConstants, Pe
             headersNode = node.addNode(HEADERS_NODE);
         }
         
-        for (int i = 0; i < headers.size(); i++) {
-            JCRHeader header = (JCRHeader) headers.get(i);
+        for (int i = 0; i < getHeaders().size(); i++) {
+            JCRHeader header = (JCRHeader) getHeaders().get(i);
             Node headerNode = headersNode.addNode(header.getFieldName());
             header.merge(headerNode);
         }
@@ -325,22 +325,24 @@ public class JCRMessage extends AbstractDocument implements JCRImapConstants, Pe
             propertiesNode = node.addNode(PROPERTIES_NODE);
         }
         
-        for (int i = 0; i < properties.size(); i++) {
-            JCRProperty prop = (JCRProperty) properties.get(i);
+        for (int i = 0; i < getProperties().size(); i++) {
+            JCRProperty prop = (JCRProperty) getProperties().get(i);
             Node propNode = propertiesNode.addNode(JCRUtils.createPath(prop.getNamespace()+ "." + prop.getLocalName()));
             prop.merge(propNode);
         }
       
         this.node = node;
 
+        /*
         content = null;
-        headers = null;
+        headers = new ArrayList<JCRHeader>();
         fullContentOctets = 0;
         mediaType = null;
         textualLineCount = null;
         subType = null;
         properties = null;
         bodyStartOctet = 0;
+        */
 
     }
     

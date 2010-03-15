@@ -133,14 +133,16 @@ public class JCRHeader extends AbstractComparableHeader implements JCRImapConsta
      * @see org.apache.james.imap.jcr.IsPersistent#merge(javax.jcr.Node)
      */
     public void merge(Node node) throws RepositoryException {
-        node.setProperty(FIELDNAME_PROPERTY, fieldName);
-        node.setProperty(LINENUMBER_PROPERTY, lineNumber);
-        node.setProperty(VALUE_PROPERTY, value);
+        node.setProperty(FIELDNAME_PROPERTY, getFieldName());
+        node.setProperty(LINENUMBER_PROPERTY, getLineNumber());
+        node.setProperty(VALUE_PROPERTY, getValue());
         
+        /*
         this.node = node;
         
         this.fieldName = null;
         this.lineNumber = 0;
         this.value = null;
+        */
     }
 }

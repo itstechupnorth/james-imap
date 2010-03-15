@@ -92,12 +92,7 @@ public class JCRHostSystem extends ImapHostSystem{
     public void resetData() throws Exception {
         resetUserMetaData();
 
-    	Session session = repository.login(new SimpleCredentials("user", new char[0]), "default");
-        javax.jcr.Node root = session.getRootNode();
-        if (root.hasNode("mailboxes")) {
-        	root.getNode("mailboxes").remove();
-        }
-        session.save();
+        mailboxManager.deleteEverything();
         //repository.shutdown();
     }
     

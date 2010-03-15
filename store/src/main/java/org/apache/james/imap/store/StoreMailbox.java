@@ -358,6 +358,9 @@ public abstract class StoreMailbox implements org.apache.james.imap.mailbox.Mail
                     results.add(member.getUid());
                     if (reset) {
                         member.unsetRecent();
+                        
+                        // persist this to db
+                        mapper.save(member);
                     }
                 }
             }
@@ -439,6 +442,7 @@ public abstract class StoreMailbox implements org.apache.james.imap.mailbox.Mail
 
             public void run() throws MailboxException {
                 final List<MailboxMembership> members = mapper.findInMailbox(set);
+                System.out.println("FOUND=" + members.size());
                 for (final MailboxMembership member:members) {
                     originalFlagsByUid.put(member.getUid(), member.createFlags());
                     if (replace) {
