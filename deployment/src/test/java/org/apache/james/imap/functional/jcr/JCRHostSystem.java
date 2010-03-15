@@ -111,7 +111,6 @@ public class JCRHostSystem extends ImapHostSystem{
 
 	protected void stop() throws Exception {
 		//repository.shutdown();
-		System.out.println("HERE");
 	}
     
     
