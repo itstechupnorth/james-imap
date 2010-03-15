@@ -147,8 +147,16 @@ public class JCRMailbox implements Mailbox, JCRImapConstants, Persistent{
      * (non-Javadoc)
      * @see org.apache.james.imap.store.mail.model.Mailbox#setName(java.lang.String)
      */
-    public void setName(String name) {     
-        this.name = name;
+    public void setName(String name) {  
+        if (isPersistent()) {
+            try {
+                node.setProperty(NAME_PROPERTY, name);
+            } catch (RepositoryException e) {
+                logger.error("Unable to access property " + NAME_PROPERTY, e);
+            }
+        } else {
+            this.name = name;
+        }
     }
 
 
