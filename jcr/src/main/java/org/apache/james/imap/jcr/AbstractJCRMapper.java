@@ -18,15 +18,25 @@
  ****************************************************************/
 package org.apache.james.imap.jcr;
 
+import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 
-import org.apache.james.imap.store.transaction.NonTransactionalMapper;
+import org.apache.james.imap.api.display.HumanReadableText;
+import org.apache.james.imap.mailbox.MailboxException;
+import org.apache.james.imap.store.transaction.AbstractTransactionalMapper;
 
-public abstract class JCRMapper extends NonTransactionalMapper implements JCRImapConstants{
+
+
+/**
+ * Abstract Mapper base class for Level 1 Implementations of JCR. So no real transaction management is used. 
+ * 
+ *
+ */
+public abstract class AbstractJCRMapper extends AbstractTransactionalMapper implements JCRImapConstants{
 
     private final Session session;
 
-    public JCRMapper(final Session session) {
+    public AbstractJCRMapper(final Session session) {
         this.session = session;
     }
     
@@ -34,11 +44,35 @@ public abstract class JCRMapper extends NonTransactionalMapper implements JCRIma
         return session;
     }
 
-    /**
-     * Logout form the session
-     */
     public void destroy() {
-        session.logout();
     }
+
+    /**
+     * Begin is not supported by level 1 JCR implementations, so just do nothing
+     */
+    protected void begin() throws MailboxException {        
+    }
+
+    /**
+     * Just call save on the underlying JCR Session, because level 1 JCR implementation does not offer Transactions
+     */
+    protected void commit() throws MailboxException {
+        try {
+            if (session.hasPendingChanges()) {
+                session.save();
+            }
+        } catch (RepositoryException e) {
+            throw new MailboxException(HumanReadableText.SAVE_FAILED, e);
+        }
+
+    }
+
+    /**
+     * Rollback is not supported by level 1 JCR implementations, so just do nothing
+     */
+    protected void rollback() throws MailboxException {
+        // no rollback supported by level 1 jcr
+    }
+    
     
 }

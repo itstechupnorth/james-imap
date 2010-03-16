@@ -32,7 +32,7 @@ import javax.jcr.query.QueryResult;
 
 import org.apache.commons.logging.Log;
 import org.apache.james.imap.api.display.HumanReadableText;
-import org.apache.james.imap.jcr.JCRMapper;
+import org.apache.james.imap.jcr.AbstractJCRMapper;
 import org.apache.james.imap.jcr.JCRUtils;
 import org.apache.james.imap.jcr.Persistent;
 import org.apache.james.imap.jcr.user.model.JCRSubscription;
@@ -46,7 +46,7 @@ import org.apache.james.imap.store.user.model.Subscription;
  * ends in a "real" action
  * 
  */
-public class JCRSubscriptionMapper extends JCRMapper implements SubscriptionMapper {
+public class JCRSubscriptionMapper extends AbstractJCRMapper implements SubscriptionMapper {
 
     private final Log log;
     private final static String PATH = PROPERTY_PREFIX + "subscriptions";
@@ -71,7 +71,6 @@ public class JCRSubscriptionMapper extends JCRMapper implements SubscriptionMapp
 
                 Node node = ((Persistent) subscription).getNode();
                 node.remove();
-                getSession().save();
             } catch (PathNotFoundException e) {
                 // do nothing
             } catch (RepositoryException e) {
@@ -145,18 +144,22 @@ public class JCRSubscriptionMapper extends JCRMapper implements SubscriptionMapp
         String nodename = JCRUtils.createPath(PATH, username, mailbox);
         try {
             createPathIfNotExists(PATH);
+            
+            // just a hack for now
+            createPathIfNotExists(JCRUtils.createPath(PATH,username));
+            
             Node node;
-            JCRSubscription sub = (JCRSubscription) subscription;
-            if (sub.isPersistent() == false) {
-                 node = getSession().getRootNode().getNode(nodename);
-               
+            JCRSubscription sub = (JCRSubscription) findFindMailboxSubscriptionForUser(username, mailbox);
+            
+            // its a new subscription
+            if (sub == null) {
+                node = getSession().getRootNode().addNode(nodename);
             } else {
                 node = sub.getNode();
             }
             // Copy new properties to the node
-            sub.merge(node);
+            ((JCRSubscription)subscription).merge(node);
 
-            getSession().save();
         } catch (RepositoryException e) {
             e.printStackTrace();
             throw new SubscriptionException(HumanReadableText.SAVE_FAILED, e);

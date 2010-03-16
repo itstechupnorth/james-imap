@@ -71,11 +71,7 @@ public class JCRMailboxManager extends StoreMailboxManager {
     @Override
     protected MailboxMapper createMailboxMapper(MailboxSession session) throws MailboxException {
 
-        JCRMailboxMapper mapper = (JCRMailboxMapper) session.getAttributes().get(JCRMailbox.MAILBOX_MAPPER);
-        if (mapper == null) {
-            mapper = new JCRMailboxMapper(getSession(session), logger);
-            session.getAttributes().put(JCRMailbox.MAILBOX_MAPPER, mapper);
-        }
+        JCRMailboxMapper mapper = new JCRMailboxMapper(getSession(session), getLog());
         return mapper;
 
     }
@@ -145,9 +141,6 @@ public class JCRMailboxManager extends StoreMailboxManager {
 
     @Override
     protected void onLogout(MailboxSession session) {
-        JCRMailboxMapper mapper = (JCRMailboxMapper) session.getAttributes().get(JCRMailbox.MAILBOX_MAPPER);
-        if (mapper != null) {
-            mapper.destroy();
-        }
+        
     }
 }

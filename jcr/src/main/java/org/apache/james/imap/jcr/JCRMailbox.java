@@ -100,24 +100,17 @@ public class JCRMailbox extends StoreMailbox{
     @Override
     protected MessageMapper createMessageMapper(MailboxSession session) throws MailboxException {
         PasswordAwareUser user = (PasswordAwareUser)getMailboxSession().getUser();
-       
+
+        JCRMessageMapper messageMapper = new JCRMessageMapper(getSession(user), getMailboxUUID(), log);
         
-        JCRMessageMapper messageMapper = (JCRMessageMapper) session.getAttributes().get(MESSAGE_MAPPER);
-        if (messageMapper == null) {
-            messageMapper = new JCRMessageMapper(getSession(user), getMailboxUUID(), log);
-            session.getAttributes().put(MESSAGE_MAPPER, messageMapper);
-        }
         return messageMapper;
-     
+
     }
 
     protected JCRMailboxMapper createMailboxMapper(MailboxSession session) throws MailboxException {
-        JCRMailboxMapper mapper = (JCRMailboxMapper) session.getAttributes().get(MAILBOX_MAPPER);
-        if (mapper == null) {
-            PasswordAwareUser user = (PasswordAwareUser)getMailboxSession().getUser();
-            mapper = new JCRMailboxMapper(getSession(user), log);
-            session.getAttributes().put(MAILBOX_MAPPER, mapper);
-        }
+
+        PasswordAwareUser user = (PasswordAwareUser) getMailboxSession().getUser();
+        JCRMailboxMapper mapper = new JCRMailboxMapper(getSession(user), log);
         return mapper;
 
     }
@@ -170,10 +163,6 @@ public class JCRMailbox extends StoreMailbox{
 
     @Override
     protected void onLogout(MailboxSession session) {
-        
-        JCRMessageMapper mapper =  (JCRMessageMapper) session.getAttributes().get(MESSAGE_MAPPER);
-        if (mapper != null) {
-            mapper.destroy();
-        }
+     
     }
 }

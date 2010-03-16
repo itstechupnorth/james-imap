@@ -33,7 +33,7 @@ import javax.jcr.query.QueryResult;
 import org.apache.commons.logging.Log;
 import org.apache.jackrabbit.JcrConstants;
 import org.apache.james.imap.api.display.HumanReadableText;
-import org.apache.james.imap.jcr.JCRMapper;
+import org.apache.james.imap.jcr.AbstractJCRMapper;
 import org.apache.james.imap.jcr.JCRUtils;
 import org.apache.james.imap.jcr.mail.model.JCRMailboxMembership;
 import org.apache.james.imap.mailbox.MessageRange;
@@ -45,7 +45,7 @@ import org.apache.james.imap.mailbox.SearchQuery.NumericRange;
 import org.apache.james.imap.store.mail.MessageMapper;
 import org.apache.james.imap.store.mail.model.MailboxMembership;
 
-public class JCRMessageMapper extends JCRMapper implements MessageMapper {
+public class JCRMessageMapper extends AbstractJCRMapper implements MessageMapper {
 
     private final static String PATH = PROPERTY_PREFIX + "mailboxMemberships";
     private final Log logger;
@@ -66,8 +66,6 @@ public class JCRMessageMapper extends JCRMapper implements MessageMapper {
     public long countMessagesInMailbox() throws StorageException {
         
         try {
-            getSession().refresh(true);
-
             String queryString = "//" + PATH + "//element(*)[@" + JCRMailboxMembership.MAILBOX_UUID_PROPERTY +"='" + uuid +"']";
             QueryManager manager = getSession().getWorkspace().getQueryManager();
             QueryResult result = manager.createQuery(queryString, Query.XPATH).execute();
@@ -99,8 +97,6 @@ public class JCRMessageMapper extends JCRMapper implements MessageMapper {
     public long countUnseenMessagesInMailbox() throws StorageException {
         
         try {
-            getSession().refresh(true);
-
             String queryString = "//" + PATH + "//element(*)[@" + JCRMailboxMembership.MAILBOX_UUID_PROPERTY +"='" + uuid +"'] AND [@" + JCRMailboxMembership.SEEN_PROPERTY +"='false']";
             QueryManager manager = getSession().getWorkspace().getQueryManager();
             QueryResult result = manager.createQuery(queryString, Query.XPATH).execute();
@@ -133,10 +129,8 @@ public class JCRMessageMapper extends JCRMapper implements MessageMapper {
         JCRMailboxMembership membership = (JCRMailboxMembership) message;
         if (membership.isPersistent()) {
             try {
-                getSession().refresh(true);
 
                 getSession().getNodeByUUID(membership.getUUID()).remove();
-                getSession().save();
             } catch (RepositoryException e) {
                 e.printStackTrace();
                 throw new StorageException(HumanReadableText.DELETED_FAILED, e);
@@ -183,8 +177,6 @@ public class JCRMessageMapper extends JCRMapper implements MessageMapper {
         List<MailboxMembership> list = new ArrayList<MailboxMembership>();
         String queryString = "//" + PATH + "//element(*)[@" + JCRMailboxMembership.MAILBOX_UUID_PROPERTY + "='" + uuid + "'] AND [@" + JCRMailboxMembership.UID_PROPERTY + ">=" + uid + "]";
 
-        getSession().refresh(true);
-
         QueryManager manager = getSession().getWorkspace().getQueryManager();
         QueryResult result = manager.createQuery(queryString, Query.XPATH).execute();
 
@@ -199,8 +191,6 @@ public class JCRMessageMapper extends JCRMapper implements MessageMapper {
         List<MailboxMembership> list = new ArrayList<MailboxMembership>();
         String queryString = "//" + PATH + "//element(*)[@" + JCRMailboxMembership.MAILBOX_UUID_PROPERTY + "='" + uuid + "'] AND [@" + JCRMailboxMembership.UID_PROPERTY + "=" + uid + "]";
 
-        getSession().refresh(true);
-
         QueryManager manager = getSession().getWorkspace().getQueryManager();
         QueryResult result = manager.createQuery(queryString, Query.XPATH).execute();
 
@@ -214,9 +204,6 @@ public class JCRMessageMapper extends JCRMapper implements MessageMapper {
     private List<MailboxMembership> findMessagesInMailboxBetweenUIDs(String uuid, long from, long to) throws RepositoryException {
         List<MailboxMembership> list = new ArrayList<MailboxMembership>();
         String queryString = "//" + PATH + "//element(*)[@" + JCRMailboxMembership.MAILBOX_UUID_PROPERTY + "='" + uuid + "'] AND [@" + JCRMailboxMembership.UID_PROPERTY + ">=" + from + "] AND [@" + JCRMailboxMembership.UID_PROPERTY + "<=" + to + "]";
-       
-        getSession().refresh(true);
-
         
         QueryManager manager = getSession().getWorkspace().getQueryManager();
         QueryResult result = manager.createQuery(queryString, Query.XPATH).execute();
@@ -232,10 +219,7 @@ public class JCRMessageMapper extends JCRMapper implements MessageMapper {
         List<MailboxMembership> list = new ArrayList<MailboxMembership>();
         
         String queryString = "//" + PATH + "//element(*)[@" + JCRMailboxMembership.MAILBOX_UUID_PROPERTY +"='" + uuid +"']";
-        
-        getSession().refresh(true);
-
-        
+ 
         QueryManager manager = getSession().getWorkspace().getQueryManager();
         QueryResult result = manager.createQuery(queryString, Query.XPATH).execute();
 
@@ -251,10 +235,7 @@ public class JCRMessageMapper extends JCRMapper implements MessageMapper {
     private List<MailboxMembership> findDeletedMessagesInMailboxAfterUID(String uuid, long uid) throws RepositoryException {
         List<MailboxMembership> list = new ArrayList<MailboxMembership>();
         String queryString = "//" + PATH + "//element(*)[@" + JCRMailboxMembership.MAILBOX_UUID_PROPERTY + "='" + uuid + "'] AND [@" + JCRMailboxMembership.UID_PROPERTY + ">=" + uid + "] AND [@" + JCRMailboxMembership.DELETED_PROPERTY+ "='true']";
-        
-        getSession().refresh(true);
-
-        
+ 
         QueryManager manager = getSession().getWorkspace().getQueryManager();
         QueryResult result = manager.createQuery(queryString, Query.XPATH).execute();
 
@@ -268,9 +249,6 @@ public class JCRMessageMapper extends JCRMapper implements MessageMapper {
     private List<MailboxMembership> findDeletedMessagesInMailboxWithUID(String uuid, long uid) throws RepositoryException  {
         List<MailboxMembership> list = new ArrayList<MailboxMembership>();
         String queryString = "//" + PATH + "//element(*)[@" + JCRMailboxMembership.MAILBOX_UUID_PROPERTY + "='" + uuid + "'] AND [@" + JCRMailboxMembership.UID_PROPERTY + "=" + uid + "] AND [@" + JCRMailboxMembership.DELETED_PROPERTY+ "='true']";
-
-        getSession().refresh(true);
-
         QueryManager manager = getSession().getWorkspace().getQueryManager();
         QueryResult result = manager.createQuery(queryString, Query.XPATH).execute();
 
@@ -286,8 +264,6 @@ public class JCRMessageMapper extends JCRMapper implements MessageMapper {
         List<MailboxMembership> list = new ArrayList<MailboxMembership>();
         String queryString = "//" + PATH + "//element(*)[@" + JCRMailboxMembership.MAILBOX_UUID_PROPERTY + "='" + uuid + "'] AND [@" + JCRMailboxMembership.UID_PROPERTY + ">=" + from + "] AND [@" + JCRMailboxMembership.UID_PROPERTY + "<=" + to + "] AND [@" + JCRMailboxMembership.DELETED_PROPERTY+ "='true']";
        
-        getSession().refresh(true);
-
         QueryManager manager = getSession().getWorkspace().getQueryManager();
         QueryResult result = manager.createQuery(queryString, Query.XPATH).execute();
 
@@ -303,8 +279,6 @@ public class JCRMessageMapper extends JCRMapper implements MessageMapper {
         List<MailboxMembership> list = new ArrayList<MailboxMembership>();
         String queryString = "//" + PATH + "//element(*)[@" + JCRMailboxMembership.MAILBOX_UUID_PROPERTY +"='" + uuid +"'] AND [@" + JCRMailboxMembership.DELETED_PROPERTY+ "='true']";
         
-        getSession().refresh(true);
-
         QueryManager manager = getSession().getWorkspace().getQueryManager();
         QueryResult result = manager.createQuery(queryString, Query.XPATH).execute();
 
@@ -364,8 +338,6 @@ public class JCRMessageMapper extends JCRMapper implements MessageMapper {
             List<MailboxMembership> list = new ArrayList<MailboxMembership>();
             String queryString = "//" + PATH + "//element(*)[@" + JCRMailboxMembership.MAILBOX_UUID_PROPERTY +"='" + uuid +"'] AND [@" + JCRMailboxMembership.RECENT_PROPERTY +"='true']";
             
-            getSession().refresh(true);
-
             QueryManager manager = getSession().getWorkspace().getQueryManager();
             QueryResult result = manager.createQuery(queryString, Query.XPATH).execute();
             
@@ -391,8 +363,6 @@ public class JCRMessageMapper extends JCRMapper implements MessageMapper {
             List<MailboxMembership> list = new ArrayList<MailboxMembership>();
             String queryString = "//" + PATH + "//element(*)[@" + JCRMailboxMembership.MAILBOX_UUID_PROPERTY +"='" + uuid +"'] AND [@" + JCRMailboxMembership.SEEN_PROPERTY +"='false'] order by @" + JCRMailboxMembership.UID_PROPERTY + " ASC";
           
-            getSession().refresh(true);
-
             QueryManager manager = getSession().getWorkspace().getQueryManager();
             QueryResult result = manager.createQuery(queryString, Query.XPATH).execute();
             
@@ -417,8 +387,6 @@ public class JCRMessageMapper extends JCRMapper implements MessageMapper {
     public void save(MailboxMembership message) throws StorageException {
         JCRMailboxMembership membership = (JCRMailboxMembership) message;
         try {
-            getSession().refresh(true);
-
             createPathIfNotExists();
             Node messageNode;
 
@@ -431,9 +399,6 @@ public class JCRMessageMapper extends JCRMapper implements MessageMapper {
             }
             
             membership.merge(messageNode);
-
-            getSession().save();
-
        
         } catch (RepositoryException e) {
             e.printStackTrace();
@@ -453,9 +418,6 @@ public class JCRMessageMapper extends JCRMapper implements MessageMapper {
         try {
             List<MailboxMembership> list = new ArrayList<MailboxMembership>();
             final String xpathQuery = formulateXPath(uuid, query);
-           
-            getSession().refresh(true);
-
             
             QueryManager manager = getSession().getWorkspace().getQueryManager();
             QueryResult result = manager.createQuery(xpathQuery, Query.XPATH).execute();
@@ -507,8 +469,6 @@ public class JCRMessageMapper extends JCRMapper implements MessageMapper {
     
 
     protected void createPathIfNotExists() throws RepositoryException, PathNotFoundException {
-        getSession().refresh(true);
-
         if (getSession().getRootNode().hasNode(JCRUtils.createPath(PATH)) == false) {
             getSession().getRootNode().addNode(JCRUtils.createPath(PATH));
         }

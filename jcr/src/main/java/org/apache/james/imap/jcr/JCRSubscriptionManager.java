@@ -60,13 +60,8 @@ public class JCRSubscriptionManager extends StoreSubscriptionManager {
     protected SubscriptionMapper createMapper(MailboxSession session) throws SubscriptionException {
         PasswordAwareUser pUser = (PasswordAwareUser) session.getUser();
         
-        // check if we have already a mapper for the session
-        JCRSubscriptionMapper mapper = (JCRSubscriptionMapper) session.getAttributes().get(MAPPER);
-        if (mapper == null) {
-            // no mapper found so create one an store it
-            mapper = new JCRSubscriptionMapper(getSession(pUser), logger);
-            session.getAttributes().put(MAPPER, mapper);
-        }
+        JCRSubscriptionMapper mapper = new JCRSubscriptionMapper(getSession(pUser), logger);
+
         return mapper;
     }
 
@@ -110,9 +105,6 @@ public class JCRSubscriptionManager extends StoreSubscriptionManager {
 
     @Override
     protected void onLogout(MailboxSession session) {
-        JCRSubscriptionMapper mapper = (JCRSubscriptionMapper) session.getAttributes().get(MAPPER);
-        if (mapper != null) {
-            mapper.destroy();
-        }
+        
     }
 }
