@@ -156,7 +156,7 @@ public class SearchCommandParserAndParenthesesTest {
     ImapMessage message;
 
     @Before
-    protected void setUp() throws Exception {
+    public void setUp() throws Exception {
         parser = new SearchCommandParser();
         mockMessageFactory = context.mock(ImapMessageFactory.class);
         command = ImapCommand.anyStateCommand("Command");

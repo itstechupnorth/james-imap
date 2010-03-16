@@ -19,20 +19,15 @@
 
 package org.apache.james.mailboxmanager.torque;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.*;
 
 import org.apache.james.mailboxmanager.torque.om.MessageRow;
+import org.junit.Test;
 
-public class MessageRowUtilsTest extends TestCase {
+public class MessageRowUtilsTest  {
 
-    protected void setUp() throws Exception {
-        super.setUp();
-    }
 
-    protected void tearDown() throws Exception {
-        super.tearDown();
-    }
-
+    @Test
     public void testShouldReturnPositiveWhenFirstGreaterThanSecond()
             throws Exception {
         MessageRow one = new MessageRow();
@@ -42,6 +37,7 @@ public class MessageRowUtilsTest extends TestCase {
         assertTrue(MessageRowUtils.getUidComparator().compare(one, two) > 0);
     }
 
+    @Test
     public void testShouldReturnNegativeWhenFirstLessThanSecond()
             throws Exception {
         MessageRow one = new MessageRow();
@@ -51,6 +47,7 @@ public class MessageRowUtilsTest extends TestCase {
         assertTrue(MessageRowUtils.getUidComparator().compare(one, two) < 0);
     }
 
+    @Test
     public void testShouldReturnZeroWhenFirstEqualsSecond() throws Exception {
         MessageRow one = new MessageRow();
         one.setUid(90);

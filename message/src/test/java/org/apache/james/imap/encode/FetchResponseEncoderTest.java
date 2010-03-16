@@ -54,7 +54,7 @@ public class FetchResponseEncoderTest  {
     private Mockery context = new JUnit4Mockery();
 
     @Before
-    protected void setUp() throws Exception {
+    public void setUp() throws Exception {
         composer = context.mock(ImapResponseComposer.class);
         mockNextEncoder = context.mock(ImapEncoder.class);
         encoder = new FetchResponseEncoder(mockNextEncoder, false);

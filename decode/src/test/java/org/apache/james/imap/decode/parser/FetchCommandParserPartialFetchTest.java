@@ -52,7 +52,7 @@ public class FetchCommandParserPartialFetchTest  {
     ImapMessage message;
 
     @Before
-    protected void setUp() throws Exception {
+    public void setUp() throws Exception {
         parser = new FetchCommandParser();
         mockMessageFactory = context.mock(ImapMessageFactory.class);
         command = ImapCommand.anyStateCommand("Command");

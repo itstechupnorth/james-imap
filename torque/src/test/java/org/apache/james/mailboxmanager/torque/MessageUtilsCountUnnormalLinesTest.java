@@ -19,32 +19,32 @@
 
 package org.apache.james.mailboxmanager.torque;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.*;
 
-public class MessageUtilsCountUnnormalLinesTest extends TestCase {
+import org.junit.Test;
 
-    protected void setUp() throws Exception {
-    }
+public class MessageUtilsCountUnnormalLinesTest {
 
-    protected void tearDown() throws Exception {
-    }
-
+    @Test
     public void testEmpty() throws Exception {
         assertEquals("Check processing of empty array", 0, MessageUtils
                 .countUnnormalLines("".getBytes()));
     }
 
+    @Test
     public void testNormal() throws Exception {
         assertEquals("Check processing of normal data", 0, MessageUtils
                 .countUnnormalLines("One\r\nTwo\r\nThree\r\n".getBytes()));
     }
 
+    @Test
     public void testMissing() throws Exception {
         assertEquals("Check processing simple data containing unnormal lines",
                 2, MessageUtils.countUnnormalLines("One\rTwo\nThree\r\n"
                         .getBytes()));
     }
 
+    @Test
     public void testBoundaries() throws Exception {
         assertEquals("CR at end", 1, MessageUtils
                 .countUnnormalLines("One\r\nTwo\r\nThree\r".getBytes()));
@@ -56,6 +56,7 @@ public class MessageUtilsCountUnnormalLinesTest extends TestCase {
                 .countUnnormalLines("\nOne\r\nTwo\r\nThree".getBytes()));
     }
 
+    @Test
     public void testSwitchOrder() throws Exception {
         assertEquals("Check processing simple data containing unnormal lines",
                 8, MessageUtils

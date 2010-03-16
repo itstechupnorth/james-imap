@@ -94,7 +94,7 @@ public class FetchResponseEncoderEnvelopeTest {
     Address[] to;
 
     @Before
-    protected void setUp() throws Exception {
+    public void setUp() throws Exception {
         envelope = context.mock(FetchResponse.Envelope.class);
 
         bcc = null;

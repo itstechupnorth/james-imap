@@ -19,6 +19,8 @@
 
 package org.apache.james.mailboxmanager.torque;
 
+import static org.junit.Assert.*;
+
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -30,8 +32,10 @@ import org.apache.james.imap.mailbox.SearchQuery;
 import org.apache.james.mailboxmanager.torque.om.MessageBody;
 import org.apache.james.mailboxmanager.torque.om.MessageHeader;
 import org.apache.james.mailboxmanager.torque.om.MessageRow;
+import org.junit.Before;
+import org.junit.Test;
 
-public class SearchUtilsMultipartMixedTest extends TestCase {
+public class SearchUtilsMultipartMixedTest {
 
     private static final String SAMPLE_INNER_MAIL_BODY_ONE = "far a modern quill doth come too";
 
@@ -111,8 +115,8 @@ public class SearchUtilsMultipartMixedTest extends TestCase {
 
     Collection recent;
 
-    protected void setUp() throws Exception {
-        super.setUp();
+    @Before
+    public void setUp() throws Exception {
         row = new MessageRow();
         row.addMessageHeader(new MessageHeader(ImapConstants.RFC822_FROM,
                 "Alex <alex@example.org"));
@@ -130,10 +134,7 @@ public class SearchUtilsMultipartMixedTest extends TestCase {
         recent = new ArrayList();
     }
 
-    protected void tearDown() throws Exception {
-        super.tearDown();
-    }
-
+    @Test
     public void testShouldNotFindWhatIsNotThere() throws Exception {
         assertFalse(searches.isMatch(SearchQuery.bodyContains("BOGUS"), row,
                 recent));
@@ -141,6 +142,7 @@ public class SearchUtilsMultipartMixedTest extends TestCase {
                 recent));
     }
 
+    @Test
     public void testBodyShouldFindTextInBody() throws Exception {
         assertTrue(searches.isMatch(SearchQuery
                 .bodyContains(SAMPLE_INNER_MAIL_BODY_ONE), row, recent));
@@ -150,6 +152,7 @@ public class SearchUtilsMultipartMixedTest extends TestCase {
                 row, recent));
     }
 
+    @Test
     public void testBodyShouldFindTextInBodyCaseInsensitive() throws Exception {
         assertTrue(searches.isMatch(SearchQuery
                 .bodyContains(SAMPLE_INNER_MAIL_BODY_ONE), row, recent));
@@ -173,6 +176,7 @@ public class SearchUtilsMultipartMixedTest extends TestCase {
                 .toUpperCase()), row, recent));
     }
 
+    @Test
     public void testBodyShouldNotFindTextInHeaders() throws Exception {
         assertFalse(searches.isMatch(SearchQuery
                 .bodyContains(SAMPLE_INNER_MAIL_FIELD), row, recent));
@@ -180,6 +184,7 @@ public class SearchUtilsMultipartMixedTest extends TestCase {
                 .bodyContains(SAMPLE_PART_TWO_FIELD), row, recent));
     }
 
+    @Test
     public void testTextShouldFindTextInBody() throws Exception {
         assertTrue(searches.isMatch(SearchQuery
                 .mailContains(SAMPLE_INNER_MAIL_BODY_ONE), row, recent));
@@ -189,6 +194,7 @@ public class SearchUtilsMultipartMixedTest extends TestCase {
                 row, recent));
     }
 
+    @Test
     public void testTextShouldFindTextInBodyCaseInsensitive() throws Exception {
         assertTrue(searches.isMatch(SearchQuery
                 .mailContains(SAMPLE_INNER_MAIL_BODY_ONE), row, recent));
@@ -212,6 +218,7 @@ public class SearchUtilsMultipartMixedTest extends TestCase {
                 .toUpperCase()), row, recent));
     }
 
+    @Test
     public void testTextShouldFindTextInHeaders() throws Exception {
         assertTrue(searches.isMatch(SearchQuery
                 .mailContains(SAMPLE_INNER_MAIL_FIELD), row, recent));

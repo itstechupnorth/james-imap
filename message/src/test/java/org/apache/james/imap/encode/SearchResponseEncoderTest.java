@@ -51,7 +51,7 @@ public class SearchResponseEncoderTest {
     private Mockery context = new JUnit4Mockery();
     
     @Before
-    protected void setUp() throws Exception {
+    public void setUp() throws Exception {
         mockNextEncoder = context.mock(ImapEncoder.class);
         composer = context.mock(ImapResponseComposer.class);
         encoder = new ListResponseEncoder(mockNextEncoder);

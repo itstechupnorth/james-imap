@@ -38,6 +38,7 @@ import org.apache.james.imap.decode.DecodingException;
 import org.jmock.Mockery;
 import org.jmock.integration.junit4.JMock;
 import org.jmock.integration.junit4.JUnit4Mockery;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -140,7 +141,8 @@ public class SearchCommandParserTopLevelAndTest {
 
     private Mockery mockery = new JUnit4Mockery();
     
-    protected void setUp() throws Exception {
+    @Before
+    public void setUp() throws Exception {
         parser = new SearchCommandParser();
         mockMessageFactory = mockery.mock(ImapMessageFactory.class);
         command = ImapCommand.anyStateCommand("Command");

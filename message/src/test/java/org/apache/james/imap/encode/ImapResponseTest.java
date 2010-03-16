@@ -24,6 +24,7 @@ import static org.junit.Assert.*;
 import javax.mail.Flags;
 
 import org.apache.james.imap.encode.base.ImapResponseComposerImpl;
+import org.junit.Before;
 import org.junit.Test;
 
 public class ImapResponseTest  {
@@ -34,7 +35,8 @@ public class ImapResponseTest  {
 
     MockImapResponseWriter writer;
 
-    protected void setUp() throws Exception {
+    @Before
+    public void setUp() throws Exception {
         writer = new MockImapResponseWriter();
         response = new ImapResponseComposerImpl(writer);
     }

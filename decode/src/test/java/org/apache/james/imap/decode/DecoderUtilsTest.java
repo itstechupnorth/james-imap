@@ -19,6 +19,8 @@
 
 package org.apache.james.imap.decode;
 
+import static org.junit.Assert.*;
+
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
@@ -26,11 +28,10 @@ import java.util.TimeZone;
 
 import javax.mail.Flags;
 
-import junit.framework.TestCase;
-
 import org.apache.commons.lang.time.FastDateFormat;
+import org.junit.Test;
 
-public class DecoderUtilsTest extends TestCase {
+public class DecoderUtilsTest {
 
     private static final String EXTENSION_FLAG = "\\Extension";
 
@@ -38,14 +39,9 @@ public class DecoderUtilsTest extends TestCase {
 
     private static final String FLAG_MESSAGE = "RFC3501 specifies that \\Recent flag cannot be set by the client but accept liberally for better compatibility.";
 
-    protected void setUp() throws Exception {
-        super.setUp();
-    }
 
-    protected void tearDown() throws Exception {
-        super.tearDown();
-    }
-
+    
+    @Test
     public void testSetRecentFlag() throws Exception {
         Flags flags = new Flags();
         DecoderUtils.setFlag("\\Recent", flags);
@@ -53,6 +49,7 @@ public class DecoderUtilsTest extends TestCase {
         assertFalse(FLAG_MESSAGE, flags.contains(Flags.Flag.RECENT));
     }
 
+    @Test
     public void testSetOtherFlag() throws Exception {
         Flags flags = new Flags();
         DecoderUtils.setFlag(A_CUSTOM_FLAG, flags);
@@ -60,6 +57,7 @@ public class DecoderUtilsTest extends TestCase {
                 .contains(A_CUSTOM_FLAG));
     }
 
+    @Test
     public void testExtensionFlag() throws Exception {
         Flags flags = new Flags();
         DecoderUtils.setFlag(EXTENSION_FLAG, flags);
@@ -67,6 +65,7 @@ public class DecoderUtilsTest extends TestCase {
                 .contains(EXTENSION_FLAG));
     }
 
+    @Test
     public void testBadDateTime() throws Exception {
         checkDateTime(null);
         checkDateTime("");
@@ -109,6 +108,7 @@ public class DecoderUtilsTest extends TestCase {
         }
     }
 
+    @Test
     @SuppressWarnings("deprecation")
 	public void testSimpleDecodeDateTime() throws Exception {
         assertEquals("21 Oct 1972 20:00:00 GMT", DecoderUtils.decodeDateTime(
@@ -174,12 +174,14 @@ public class DecoderUtilsTest extends TestCase {
                 "21-Oct-1972 06:00:00 -1000").toGMTString());
     }
 
+    @Test
     @SuppressWarnings("deprecation")
 	public void testAppleMailPrependsZeroNotSpace() throws Exception {
         assertEquals("9 Apr 2008 13:17:51 GMT", DecoderUtils.decodeDateTime(
                 "09-Apr-2008 15:17:51 +0200").toGMTString());
     }
 
+    @Test
     public void testDecodeDateTime() throws Exception {
         runTimeZoneTest(TimeZone.getTimeZone("GMT+0"));
         runTimeZoneTest(TimeZone.getTimeZone("GMT+1"));
@@ -258,6 +260,7 @@ public class DecoderUtilsTest extends TestCase {
         return out;
     }
 
+    @Test
     public void testDecodeDigit() throws Exception {
         assertEquals(0, DecoderUtils.decodeDigit('0'));
         assertEquals(1, DecoderUtils.decodeDigit('1'));
@@ -285,6 +288,7 @@ public class DecoderUtilsTest extends TestCase {
         }
     }
 
+    @Test
     public void testDecodeMonth() throws Exception {
         assertEquals(Calendar.JANUARY, DecoderUtils.decodeMonth('J', 'A', 'N'));
         assertEquals(Calendar.JANUARY, DecoderUtils.decodeMonth('j', 'a', 'n'));
@@ -314,6 +318,7 @@ public class DecoderUtilsTest extends TestCase {
         assertEquals(Calendar.DECEMBER, DecoderUtils.decodeMonth('d', 'e', 'c'));
     }
 
+    @Test
     public void testRejectBogusMonths() throws Exception {
         checkReject('N', 'O', 'C');
         checkReject('A', 'N', 'T');
@@ -331,6 +336,7 @@ public class DecoderUtilsTest extends TestCase {
         }
     }
 
+    @Test
     public void testDecodeYear() throws Exception {
         assertEquals(1999, DecoderUtils.decodeYear('1', '9', '9', '9'));
         assertEquals(747, DecoderUtils.decodeYear('0', '7', '4', '7'));
@@ -344,6 +350,7 @@ public class DecoderUtilsTest extends TestCase {
         assertEquals(2020, DecoderUtils.decodeYear('2', '0', '2', '0'));
     }
 
+    @Test
     public void testRejectBogusYear() throws Exception {
         checkRejectYear('D', '0', '2', '3');
         checkRejectYear('1', 'A', '2', '3');
@@ -361,6 +368,7 @@ public class DecoderUtilsTest extends TestCase {
         }
     }
 
+    @Test
     public void testDecodeZone() throws Exception {
         assertEquals(0, DecoderUtils.decodeZone('+', '0', '0', '0', '0'));
         assertEquals(100, DecoderUtils.decodeZone('+', '0', '1', '0', '0'));
@@ -417,6 +425,7 @@ public class DecoderUtilsTest extends TestCase {
 
     }
 
+    @Test
     public void testBogusZones() throws Exception {
         checkRejectZone(" 0000");
         checkRejectZone(" GMT ");
@@ -441,6 +450,7 @@ public class DecoderUtilsTest extends TestCase {
         }
     }
 
+    @Test
     public void testIsSimpleDigit() throws Exception {
         assertTrue(DecoderUtils.isSimpleDigit('0'));
         assertTrue(DecoderUtils.isSimpleDigit('1'));
@@ -468,6 +478,7 @@ public class DecoderUtilsTest extends TestCase {
         assertFalse(DecoderUtils.isSimpleDigit('B'));
     }
 
+    @Test
     public void testDecodeNumber() throws Exception {
         assertEquals(1, DecoderUtils.decodeNumber('0', '1'));
         assertEquals(2, DecoderUtils.decodeNumber('0', '2'));
@@ -489,6 +500,7 @@ public class DecoderUtilsTest extends TestCase {
         assertEquals(91, DecoderUtils.decodeNumber('9', '1'));
     }
 
+    @Test
     public void testRejectNumber() throws Exception {
         checkRejectNumber("A1");
         checkRejectNumber("1A");

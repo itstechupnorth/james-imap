@@ -55,7 +55,7 @@ public class ImapRequestHandlerAdandonConnectionTest {
     
     
     @Before
-    protected void setUp() throws Exception {
+    public void setUp() throws Exception {
         // Fakes
         fakeOutput = new ByteArrayOutputStream();
         // Stubs

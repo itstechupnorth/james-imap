@@ -25,7 +25,6 @@ import java.util.Date;
 
 import org.junit.Test;
 
-import junit.framework.TestCase;
 
 public class EncoderUtilsTest {
 

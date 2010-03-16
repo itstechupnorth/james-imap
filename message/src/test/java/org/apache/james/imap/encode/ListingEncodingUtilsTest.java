@@ -44,7 +44,7 @@ public class ListingEncodingUtilsTest  {
     private Mockery context = new JUnit4Mockery();
     
     @Before
-    protected void setUp() throws Exception {
+    public void setUp() throws Exception {
         mock = context.mock(ImapResponseComposer.class);
         attributesOutput = new ArrayList<String>();
         

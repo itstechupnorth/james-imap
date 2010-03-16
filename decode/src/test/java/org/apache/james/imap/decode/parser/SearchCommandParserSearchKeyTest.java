@@ -55,7 +55,7 @@ public class SearchCommandParserSearchKeyTest {
     private Mockery mockery = new JUnit4Mockery();
 
     @Before
-    protected void setUp() throws Exception {
+    public void setUp() throws Exception {
         parser = new SearchCommandParser();
         mockMessageFactory = mockery.mock(ImapMessageFactory.class);
         command = ImapCommand.anyStateCommand("Command");
@@ -384,7 +384,7 @@ public class SearchCommandParserSearchKeyTest {
         checkInvalid("header field \r\n", key);
     }
 
-    @Test
+   
     private void checkValid(String input, final SearchKey key) throws Exception {
         ImapRequestLineReader reader = new ImapRequestLineReader(
                 new ByteArrayInputStream(input.getBytes("US-ASCII")),

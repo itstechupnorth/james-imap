@@ -19,12 +19,13 @@
 
 package org.apache.james.imap.main;
 
+import static org.junit.Assert.*;
+
 import java.io.ByteArrayOutputStream;
 
-import junit.framework.TestCase;
+import org.junit.Before;
 
-public abstract class AbstractTestOutputStreamImapResponseWriter extends
-        TestCase {
+public abstract class AbstractTestOutputStreamImapResponseWriter {
 
     OutputStreamImapResponseWriter writer;
 
@@ -34,7 +35,8 @@ public abstract class AbstractTestOutputStreamImapResponseWriter extends
         super();
     }
 
-    protected void setUp() throws Exception {
+    @Before
+    public void setUp() throws Exception {
         out = new ByteArrayOutputStream();
         writer = new OutputStreamImapResponseWriter(out);
     }

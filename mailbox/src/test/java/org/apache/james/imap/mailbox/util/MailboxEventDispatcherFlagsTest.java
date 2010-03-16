@@ -49,7 +49,7 @@ public class MailboxEventDispatcherFlagsTest {
     private Mockery mockery = new JUnit4Mockery();
 
     @Before
-    protected void setUp() throws Exception {
+    public void setUp() throws Exception {
         dispatcher = new MailboxEventDispatcher();
         collector = new EventCollector();
         dispatcher.addMailboxListener(collector);

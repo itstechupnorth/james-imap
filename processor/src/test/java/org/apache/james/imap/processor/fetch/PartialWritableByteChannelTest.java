@@ -19,30 +19,31 @@
 
 package org.apache.james.imap.processor.fetch;
 
+import static org.junit.Assert.*;
+
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.WritableByteChannel;
 
 import org.apache.james.imap.processor.fetch.PartialWritableByteChannel;
+import org.junit.Before;
+import org.junit.Test;
 
-import junit.framework.TestCase;
 
-public class PartialWritableByteChannelTest extends TestCase implements
+public class PartialWritableByteChannelTest implements
         WritableByteChannel {
 
     private static final int CAPACITY = 2048;
 
     ByteBuffer sink;
 
-    protected void setUp() throws Exception {
-        super.setUp();
+    @Before
+    public void setUp() throws Exception {
         sink = ByteBuffer.allocate(CAPACITY);
     }
 
-    protected void tearDown() throws Exception {
-        super.tearDown();
-    }
-
+ 
+    @Test
     public void testShouldPassFullBufferWhenStartZeroSizeLimit()
             throws Exception {
         byte[] bytes = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
@@ -57,6 +58,7 @@ public class PartialWritableByteChannelTest extends TestCase implements
         }
     }
 
+    @Test
     public void testShouldIgnoreBytesAfterLimit() throws Exception {
         byte[] bytes = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
         ByteBuffer src = ByteBuffer.wrap(bytes);
@@ -70,6 +72,7 @@ public class PartialWritableByteChannelTest extends TestCase implements
         }
     }
 
+    @Test
     public void testShouldIgnoreBytesBeforeStart() throws Exception {
         byte[] bytes = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
         ByteBuffer src = ByteBuffer.wrap(bytes);
@@ -83,6 +86,7 @@ public class PartialWritableByteChannelTest extends TestCase implements
         }
     }
 
+    @Test
     public void testShouldIgnoreBytesBeforeStartAndAfterLimit()
             throws Exception {
         byte[] bytes = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
@@ -97,6 +101,7 @@ public class PartialWritableByteChannelTest extends TestCase implements
         }
     }
 
+    @Test
     public void testMultiBufferShouldPassFullBufferWhenStartZeroSizeLimit()
             throws Exception {
         byte[] bytes = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
@@ -116,6 +121,7 @@ public class PartialWritableByteChannelTest extends TestCase implements
         }
     }
 
+    @Test
     public void testMultiBufferOnBoundaryShouldIgnoreBytesAfterLimit()
             throws Exception {
         byte[] bytes = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
@@ -135,6 +141,7 @@ public class PartialWritableByteChannelTest extends TestCase implements
         }
     }
 
+    @Test
     public void testMultiBufferBeforeBoundaryShouldIgnoreBytesAfterLimit()
             throws Exception {
         byte[] bytes = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
@@ -157,6 +164,7 @@ public class PartialWritableByteChannelTest extends TestCase implements
         }
     }
 
+    @Test
     public void testMultiBufferAfterBoundaryShouldIgnoreBytesAfterLimit()
             throws Exception {
         byte[] bytes = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
@@ -177,6 +185,7 @@ public class PartialWritableByteChannelTest extends TestCase implements
         assertEquals(0, sink.get());
     }
 
+    @Test
     public void testMultiBufferOnBoundaryOctetsOverBufferShouldIgnoreBytesBeforeStart()
             throws Exception {
         byte[] bytes = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
@@ -197,6 +206,7 @@ public class PartialWritableByteChannelTest extends TestCase implements
         assertEquals(0, sink.get());
     }
 
+    @Test
     public void testMultiBufferAfterBoundaryOctetsOverBufferShouldIgnoreBytesBeforeStart()
             throws Exception {
         byte[] bytes = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
@@ -217,6 +227,7 @@ public class PartialWritableByteChannelTest extends TestCase implements
         assertEquals(1, sink.get());
     }
 
+    @Test
     public void testMultiBufferBeforeBoundaryOctetsOverBufferShouldIgnoreBytesBeforeStart()
             throws Exception {
         byte[] bytes = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
@@ -237,6 +248,7 @@ public class PartialWritableByteChannelTest extends TestCase implements
         assertEquals(9, sink.get());
     }
 
+    @Test
     public void testMultiBufferOnBoundaryOctetsOnBufferShouldIgnoreBytesBeforeStart()
             throws Exception {
         byte[] bytes = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
@@ -256,6 +268,7 @@ public class PartialWritableByteChannelTest extends TestCase implements
         }
     }
 
+    @Test
     public void testMultiBufferAfterBoundaryOctetsObBufferShouldIgnoreBytesBeforeStart()
             throws Exception {
         byte[] bytes = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
@@ -275,6 +288,7 @@ public class PartialWritableByteChannelTest extends TestCase implements
         }
     }
 
+    @Test
     public void testMultiBufferBeforeBoundaryOctetsOnBufferShouldIgnoreBytesBeforeStart()
             throws Exception {
         byte[] bytes = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
@@ -294,6 +308,7 @@ public class PartialWritableByteChannelTest extends TestCase implements
         }
     }
 
+    @Test
     public void testMultiBufferOnBoundaryOctetsUnderBufferShouldIgnoreBytesBeforeStart()
             throws Exception {
         byte[] bytes = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
@@ -315,6 +330,7 @@ public class PartialWritableByteChannelTest extends TestCase implements
         }
     }
 
+    @Test
     public void testMultiBufferAfterBoundaryOctetsUnderBufferShouldIgnoreBytesBeforeStart()
             throws Exception {
         byte[] bytes = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
@@ -336,6 +352,7 @@ public class PartialWritableByteChannelTest extends TestCase implements
         }
     }
 
+    @Test
     public void testMultiBufferBeforeBoundaryOctetsUnderBufferShouldIgnoreBytesBeforeStart()
             throws Exception {
         byte[] bytes = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
@@ -357,6 +374,7 @@ public class PartialWritableByteChannelTest extends TestCase implements
         }
     }
 
+    @Test
     public void testMultiBufferShouldIgnoreBytesBeforeStartAndAfterLimit()
             throws Exception {
         byte[] bytes = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
@@ -371,6 +389,7 @@ public class PartialWritableByteChannelTest extends TestCase implements
         }
     }
 
+    @Test
     public void testMultiBufferOnBoundaryOnBufferShouldIgnoreBytesBeforeStartAndAfterLimit()
             throws Exception {
         byte[] bytes = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
@@ -388,6 +407,7 @@ public class PartialWritableByteChannelTest extends TestCase implements
         }
     }
 
+    @Test
     public void testMultiBufferBeforeBoundaryOnBufferShouldIgnoreBytesBeforeStartAndAfterLimit()
             throws Exception {
         byte[] bytes = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
@@ -405,6 +425,7 @@ public class PartialWritableByteChannelTest extends TestCase implements
         }
     }
 
+    @Test
     public void testMultiBufferAfterBoundaryOnBufferShouldIgnoreBytesBeforeStartAndAfterLimit()
             throws Exception {
         byte[] bytes = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
@@ -422,6 +443,7 @@ public class PartialWritableByteChannelTest extends TestCase implements
         }
     }
 
+    @Test
     public void testMultiBufferOnBoundaryAfterBufferShouldIgnoreBytesBeforeStartAndAfterLimit()
             throws Exception {
         byte[] bytes = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
@@ -439,6 +461,7 @@ public class PartialWritableByteChannelTest extends TestCase implements
         }
     }
 
+    @Test
     public void testMultiBufferBeforeBoundaryAfterBufferShouldIgnoreBytesBeforeStartAndAfterLimit()
             throws Exception {
         byte[] bytes = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
@@ -473,6 +496,7 @@ public class PartialWritableByteChannelTest extends TestCase implements
         }
     }
 
+    @Test
     public void testMultiBufferOnBoundaryBeforeBufferShouldIgnoreBytesBeforeStartAndAfterLimit()
             throws Exception {
         byte[] bytes = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
@@ -490,6 +514,7 @@ public class PartialWritableByteChannelTest extends TestCase implements
         }
     }
 
+    @Test
     public void testMultiBufferBeforeBoundaryBeforeBufferShouldIgnoreBytesBeforeStartAndAfterLimit()
             throws Exception {
         byte[] bytes = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
@@ -507,6 +532,7 @@ public class PartialWritableByteChannelTest extends TestCase implements
         }
     }
 
+    @Test
     public void testMultiBufferAfterBoundaryBeforeBufferShouldIgnoreBytesBeforeStartAndAfterLimit()
             throws Exception {
         byte[] bytes = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };

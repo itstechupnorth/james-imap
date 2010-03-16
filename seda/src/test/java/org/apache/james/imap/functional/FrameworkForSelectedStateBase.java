@@ -20,6 +20,7 @@
 package org.apache.james.imap.functional;
 
 import org.apache.james.test.functional.HostSystem;
+import org.junit.Before;
 
 /**
  * <p>
@@ -54,6 +55,7 @@ public abstract class FrameworkForSelectedStateBase extends FrameworkForAuthenti
      * 
      * @throws Exception
      */
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         addTestFile("SelectedStateSetup.test", preElements);

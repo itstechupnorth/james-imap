@@ -19,19 +19,20 @@
 
 package org.apache.james.mailboxmanager.torque;
 
+import static org.junit.Assert.*;
+
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.util.List;
 
-import junit.framework.TestCase;
-
 import org.apache.james.imap.mailbox.MessageResult.Header;
 import org.apache.james.imap.store.PartContentBuilder;
 import org.apache.james.imap.store.StringBuilderChannel;
 import org.apache.james.imap.store.PartContentBuilder.PartNotFoundException;
+import org.junit.Before;
 
-public class PartContentBuilderComplexMultipartTest extends TestCase {
+public class PartContentBuilderComplexMultipartTest {
 
     private static final String PREAMBLE = "This is the preamble";
 
@@ -109,15 +110,12 @@ public class PartContentBuilderComplexMultipartTest extends TestCase {
 
     PartContentBuilder builder;
 
-    protected void setUp() throws Exception {
-        super.setUp();
+    @Before
+    public void setUp() throws Exception {
         builder = new PartContentBuilder();
     }
-
-    protected void tearDown() throws Exception {
-        super.tearDown();
-    }
-
+    
+    @Before
     public void testShouldNotFoundSubPartOfNonMultiPartTopLevel()
             throws Exception {
         int[] path = { 1, 1 };
@@ -127,6 +125,7 @@ public class PartContentBuilderComplexMultipartTest extends TestCase {
         }
     }
 
+    @Before
     public void testShouldNotFoundSubPartOfNonMultiInnerPart() throws Exception {
         int[] path = { 2, 2, 1 };
         for (int i = 1; i < 10; i++) {
@@ -135,32 +134,38 @@ public class PartContentBuilderComplexMultipartTest extends TestCase {
         }
     }
 
+    @Before
     public void testShouldLocateOuterHtml() throws Exception {
         int[] path = { 1 };
         check(FULL_OUTER_HTML, OUTER_HTML_BODY, CONTENT_TYPE_HTML, path);
     }
 
+    @Before
     public void testShouldLocateOuterMail() throws Exception {
         int[] path = { 2 };
         check(FULL_INNER_MAIL, INNER_MAIL, CONTENT_TYPE_RFC822, path);
     }
 
+    @Before
     public void testShouldLocateOuterPlain() throws Exception {
         int[] path = { 3 };
         check(FULL_OUTER_PLAIN, OUTER_PLAIN_BODY, CONTENT_TYPE_PLAIN, path);
     }
 
+    @Before
     public void testShouldLocateInnerHtml() throws Exception {
         int[] path = { 2, 2 };
         check(FULL_INNER_HTML, INNER_HTML_BODY, CONTENT_TYPE_HTML, path);
     }
 
+    @Before
     public void testShouldLocateInnerMail() throws Exception {
         int[] path = { 2, 3 };
         check(FULL_INNERMOST_EMAIL, RFC822_PLAIN_MAIL, CONTENT_TYPE_RFC822,
                 path);
     }
 
+    @Before
     public void testShouldLocateInnerPlain() throws Exception {
         int[] path = { 2, 1 };
         check(FULL_INNER_TXT, INNER_PLAIN_BODY, CONTENT_TYPE_PLAIN, path);

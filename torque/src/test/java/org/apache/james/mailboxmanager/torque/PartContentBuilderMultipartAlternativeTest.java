@@ -19,6 +19,8 @@
 
 package org.apache.james.mailboxmanager.torque;
 
+import static org.junit.Assert.*;
+
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.nio.charset.Charset;
@@ -27,10 +29,12 @@ import java.util.List;
 import org.apache.james.imap.mailbox.MessageResult.Header;
 import org.apache.james.imap.store.PartContentBuilder;
 import org.apache.james.imap.store.StringBuilderChannel;
+import org.junit.Before;
+import org.junit.Test;
 
 import junit.framework.TestCase;
 
-public class PartContentBuilderMultipartAlternativeTest extends TestCase {
+public class PartContentBuilderMultipartAlternativeTest {
 
     private static final String CONTENT_TYPE_PLAIN = "text/plain;charset=us-ascii";
 
@@ -70,27 +74,27 @@ public class PartContentBuilderMultipartAlternativeTest extends TestCase {
 
     PartContentBuilder builder;
 
-    protected void setUp() throws Exception {
-        super.setUp();
+    @Before
+    public void setUp() throws Exception {
         builder = new PartContentBuilder();
     }
 
-    protected void tearDown() throws Exception {
-        super.tearDown();
-    }
-
+  
+    @Test
     public void testShouldLocatePartsOfMultipartAlterative() throws Exception {
         assertEquals(ALT_PLAIN_BODY, bodyContent(MULTIPART_ALTERNATIVE, 1));
         assertEquals(ALT_HTML_BODY, bodyContent(MULTIPART_ALTERNATIVE, 2));
         assertEquals(ALT_XHTML_BODY, bodyContent(MULTIPART_ALTERNATIVE, 3));
     }
 
+    @Test
     public void testShouldLocateHeadersOfMultipartAlterative() throws Exception {
         checkContentType(CONTENT_TYPE_PLAIN, MULTIPART_ALTERNATIVE, 1);
         checkContentType(CONTENT_TYPE_HTML, MULTIPART_ALTERNATIVE, 2);
         checkContentType(CONTENT_TYPE_XHTML, MULTIPART_ALTERNATIVE, 3);
     }
 
+    @Test
     public void testShouldLocateFullContentOfMultipartAlterative()
             throws Exception {
         assertEquals(ALT_PART_PLAIN, fullContent(MULTIPART_ALTERNATIVE, 1));

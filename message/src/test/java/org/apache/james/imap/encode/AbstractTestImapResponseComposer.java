@@ -26,12 +26,9 @@ import java.util.List;
 import javax.mail.Flags;
 
 import org.apache.james.imap.api.ImapCommand;
-import org.jmock.integration.junit4.JMock;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import static org.junit.Assert.assertEquals;
 
-@RunWith(JMock.class)
 public abstract class AbstractTestImapResponseComposer {
 
     private static final long[] ONE_TWO_THREE = { 1, 2, 3 };

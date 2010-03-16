@@ -19,20 +19,14 @@
 
 package org.apache.james.imap.store;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.*;
 
 import org.apache.james.imap.store.mail.model.MailboxMembership;
+import org.junit.Test;
 
-public class MessageRowUtilsTest extends TestCase {    
+public class MessageRowUtilsTest {    
     
-    protected void setUp() throws Exception {
-        super.setUp();
-    }
-
-    protected void tearDown() throws Exception {
-        super.tearDown();
-    }
-
+    @Test
     public void testShouldReturnPositiveWhenFirstGreaterThanSecond()
             throws Exception {
         MailboxMembership one = buildMessage(100);
@@ -46,6 +40,7 @@ public class MessageRowUtilsTest extends TestCase {
         return builder.build();
     }
 
+    @Test
     public void testShouldReturnNegativeWhenFirstLessThanSecond()
             throws Exception {
         MailboxMembership one = buildMessage(98);
@@ -53,6 +48,7 @@ public class MessageRowUtilsTest extends TestCase {
         assertTrue(ResultUtils.getUidComparator().compare(one, two) < 0);
     }
 
+    @Test
     public void testShouldReturnZeroWhenFirstEqualsSecond() throws Exception {
         MailboxMembership one = buildMessage(90);
         MailboxMembership two = buildMessage(90);

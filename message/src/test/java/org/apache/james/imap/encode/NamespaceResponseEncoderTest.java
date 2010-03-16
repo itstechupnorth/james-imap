@@ -48,7 +48,7 @@ public class NamespaceResponseEncoderTest {
     private Mockery context = new JUnit4Mockery();
     
     @Before
-    protected void setUp() throws Exception {
+    public void setUp() throws Exception {
         dummySession = context.mock(ImapSession.class);
         final ImapEncoder stubNextEncoderInChain = context.mock(ImapEncoder.class);
         subject = new NamespaceResponseEncoder(stubNextEncoderInChain);

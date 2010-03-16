@@ -19,6 +19,8 @@
 
 package org.apache.james.imap.processor.fetch;
 
+import static org.junit.Assert.*;
+
 import java.io.IOException;
 import java.nio.channels.WritableByteChannel;
 import java.util.ArrayList;
@@ -28,8 +30,10 @@ import junit.framework.TestCase;
 
 import org.apache.james.imap.mailbox.MessageResult;
 import org.apache.james.imap.processor.fetch.MessageResultUtils;
+import org.junit.Before;
+import org.junit.Test;
 
-public class MessageResultUtilsTest extends TestCase {
+public class MessageResultUtilsTest {
 
     private static final String[] NAMES = { "One", "Three" };
 
@@ -70,8 +74,8 @@ public class MessageResultUtilsTest extends TestCase {
 
     }
 
-    protected void setUp() throws Exception {
-        super.setUp();
+    @Before
+    public void setUp() throws Exception {
         headerOne = new Header("One");
         headerTwo = new Header("Two");
         headerThree = new Header("Three");
@@ -81,10 +85,7 @@ public class MessageResultUtilsTest extends TestCase {
         headers.add(headerThree);
     }
 
-    protected void tearDown() throws Exception {
-        super.tearDown();
-    }
-
+    @Test
     public void testGetAllContent() throws Exception {
         List<MessageResult.Header> results = MessageResultUtils.getAll(headers.iterator());
         assertEquals(3, results.size());
@@ -93,6 +94,7 @@ public class MessageResultUtilsTest extends TestCase {
         assertEquals(headerThree, results.get(2));
     }
 
+    @Test
     public void testGetMatching() throws Exception {
 
         List<MessageResult.Header> results = MessageResultUtils
@@ -102,6 +104,7 @@ public class MessageResultUtilsTest extends TestCase {
         assertEquals(headerThree, results.get(1));
     }
 
+    @Test
     public void testGetNotMatching() throws Exception {
 
         List results = MessageResultUtils.getNotMatching(NAMES, headers
@@ -110,6 +113,7 @@ public class MessageResultUtilsTest extends TestCase {
         assertEquals(headerTwo, results.get(0));
     }
 
+    @Test
     public void testGetMatchingSingle() throws Exception {
         assertEquals(headerOne, MessageResultUtils.getMatching("One", headers
                 .iterator()));

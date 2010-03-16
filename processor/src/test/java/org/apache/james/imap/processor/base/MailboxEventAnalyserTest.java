@@ -44,7 +44,7 @@ public class MailboxEventAnalyserTest {
     private Mockery mockery = new JUnit4Mockery();
     
     @Before
-    protected void setUp() throws Exception {
+    public void setUp() throws Exception {
         analyser = new MailboxEventAnalyser(BASE_SESSION_ID, "Mailbox Name");
     }
 

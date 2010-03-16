@@ -63,7 +63,7 @@ public class StatusResponseEncoderTest {
     private Mockery context = new JUnit4Mockery();
 
     @Before
-    protected void setUp() throws Exception {
+    public void setUp() throws Exception {
         writer = new MockImapResponseWriter();
         response = new ImapResponseComposerImpl(writer);
         mockNextEncoder = context.mock(ImapEncoder.class);

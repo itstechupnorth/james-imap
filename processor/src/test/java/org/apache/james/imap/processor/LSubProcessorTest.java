@@ -92,7 +92,7 @@ public class LSubProcessorTest {
     private Mockery mockery = new JUnit4Mockery();
     
     @Before
-    protected void setUp() throws Exception {
+    public void setUp() throws Exception {
         subscriptions = new ArrayList<String>();
         serverResponseFactory = mockery.mock(StatusResponseFactory.class);
         session = mockery.mock(ImapSession.class);

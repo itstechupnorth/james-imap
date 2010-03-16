@@ -19,24 +19,25 @@
 
 package org.apache.james.imap.decode;
 
+import static org.junit.Assert.*;
+
 import java.util.Collection;
 import java.util.Iterator;
 
-import junit.framework.TestCase;
+import org.junit.Before;
+import org.junit.Test;
 
-public class FetchPartPathDecoderTest extends TestCase {
+
+public class FetchPartPathDecoderTest {
 
     FetchPartPathDecoder decoder;
 
-    protected void setUp() throws Exception {
-        super.setUp();
+    @Before
+    public void setUp() throws Exception {
         decoder = new FetchPartPathDecoder();
     }
 
-    protected void tearDown() throws Exception {
-        super.tearDown();
-    }
-
+    @Test
     public void testShouldDetectText() throws Exception {
         assertEquals(FetchPartPathDecoder.TEXT, decoder.decode("TEXT"));
         assertEquals(FetchPartPathDecoder.TEXT, decoder.decode("3.TEXT"));
@@ -45,6 +46,7 @@ public class FetchPartPathDecoderTest extends TestCase {
                 .decode("3.2.5.7.8.TEXT"));
     }
 
+    @Test
     public void testShouldDetectHeader() throws Exception {
         assertEquals(FetchPartPathDecoder.HEADER, decoder.decode("HEADER"));
         assertEquals(FetchPartPathDecoder.HEADER, decoder.decode("4.HEADER"));
@@ -53,6 +55,7 @@ public class FetchPartPathDecoderTest extends TestCase {
                 .decode("8.3.5.11.HEADER"));
     }
 
+    @Test
     public void testShouldDetectHeaderFields() throws Exception {
         assertEquals(FetchPartPathDecoder.HEADER_FIELDS, decoder
                 .decode("HEADER.FIELDS ()"));
@@ -64,6 +67,7 @@ public class FetchPartPathDecoderTest extends TestCase {
                 .decode("8.3.5.11.HEADER.FIELDS ()"));
     }
 
+    @Test
     public void testShouldDetectHeaderFieldsNot() throws Exception {
         assertEquals(FetchPartPathDecoder.HEADER_NOT_FIELDS, decoder
                 .decode("HEADER.FIELDS.NOT ()"));
@@ -75,6 +79,7 @@ public class FetchPartPathDecoderTest extends TestCase {
                 .decode("8.3.5.11.HEADER.FIELDS.NOT ()"));
     }
 
+    @Test
     public void testShouldDetectMime() throws Exception {
         assertEquals(FetchPartPathDecoder.MIME, decoder.decode("MIME"));
         assertEquals(FetchPartPathDecoder.MIME, decoder.decode("6.MIME"));
@@ -83,6 +88,7 @@ public class FetchPartPathDecoderTest extends TestCase {
                 .decode("32.3.15.11.MIME"));
     }
 
+    @Test
     public void testShouldDetectContent() throws Exception {
         assertEquals(FetchPartPathDecoder.CONTENT, decoder.decode("34"));
         assertEquals(FetchPartPathDecoder.CONTENT, decoder.decode("6"));
@@ -90,6 +96,7 @@ public class FetchPartPathDecoderTest extends TestCase {
         assertEquals(FetchPartPathDecoder.CONTENT, decoder.decode("17.3.15.11"));
     }
 
+    @Test
     public void testShouldIgnoreCase() throws Exception {
         assertEquals(FetchPartPathDecoder.MIME, decoder.decode("6.MIME"));
         assertEquals(FetchPartPathDecoder.MIME, decoder.decode("6.mime"));
@@ -105,16 +112,19 @@ public class FetchPartPathDecoderTest extends TestCase {
         assertEquals(FetchPartPathDecoder.TEXT, decoder.decode("6.teXT"));
     }
 
+    @Test
     public void testMimimalPath() throws Exception {
         int[] values = { 6 };
         checkEndingPermutations(values);
     }
 
+    @Test
     public void testLongPath() throws Exception {
         int[] values = { 3, 11, 345, 231, 11, 3, 1, 1, 1, 3, 8, 8 };
         checkEndingPermutations(values);
     }
 
+    @Test
     public void testShouldThrowProtocolExceptionWhenSpecifierBogus()
             throws Exception {
         try {
@@ -125,6 +135,7 @@ public class FetchPartPathDecoderTest extends TestCase {
         }
     }
 
+    @Test
     public void testShouldThrowProtocolExceptionWhenPathBogus()
             throws Exception {
         try {
@@ -135,31 +146,37 @@ public class FetchPartPathDecoderTest extends TestCase {
         }
     }
 
+    @Test
     public void testShouldReadShortFieldNames() throws Exception {
         String[] names = { "A", "B", "C", "D", "E", "F" };
         checkReadNames("1.8.HEADER.FIELDS", names);
     }
 
+    @Test
     public void testShouldReadShortFieldNotNames() throws Exception {
         String[] names = { "A", "B", "C", "D", "E", "F" };
         checkReadNames("1.8.9.HEADER.FIELDS.NOT", names);
     }
 
+    @Test
     public void testShouldReadOneFieldNames() throws Exception {
         String[] names = { "AFieldName" };
         checkReadNames("1.8.HEADER.FIELDS", names);
     }
 
+    @Test
     public void testShouldReadOneFieldNotNames() throws Exception {
         String[] names = { "AFieldName" };
         checkReadNames("1.8.9.HEADER.FIELDS.NOT", names);
     }
 
+    @Test
     public void testShouldReadManyFieldNames() throws Exception {
         String[] names = { "ONE", "TWO", "THREE", "FOUR", "FIVE", "345345" };
         checkReadNames("1.8.HEADER.FIELDS", names);
     }
 
+    @Test
     public void testShouldReadManyFieldNotNames() throws Exception {
         String[] names = { "ONE", "TWO", "THREE", "FOUR", "FIVE", "345345" };
         checkReadNames("1.8.HEADER.FIELDS.NOT", names);

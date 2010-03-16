@@ -20,62 +20,72 @@
 package org.apache.james.imap.decode;
 
 import java.util.Locale;
+import static org.junit.Assert.*;
 
-import junit.framework.TestCase;
+import org.junit.After;
+import org.junit.Test;
 
-public class DecoderUtilsLocaleDateTest extends TestCase {
+public class DecoderUtilsLocaleDateTest  {
 
     private static final Locale BASE_DEFAULT_LOCALE = Locale.getDefault();
 
-    protected void setUp() throws Exception {
-        super.setUp();
-    }
 
-    protected void tearDown() throws Exception {
+    @After
+    public void tearDown() throws Exception {
         Locale.setDefault(BASE_DEFAULT_LOCALE);
-        super.tearDown();
     }
 
+    @Test
     public void testUS() throws Exception {
         runTests(Locale.US);
     }
 
+    @Test
     public void testITALY() throws Exception {
         runTests(Locale.ITALY);
     }
 
+    @Test
     public void testTAIWAN() throws Exception {
         runTests(Locale.TAIWAN);
     }
 
+    @Test
     public void testCHINA() throws Exception {
         runTests(Locale.CHINA);
     }
 
+    @Test
     public void testKOREA() throws Exception {
         runTests(Locale.KOREA);
     }
 
+    @Test
     public void testJAPAN() throws Exception {
         runTests(Locale.JAPAN);
     }
 
+    @Test
     public void testUK() throws Exception {
         runTests(Locale.UK);
     }
 
+    @Test
     public void testCANADA() throws Exception {
         runTests(Locale.CANADA);
     }
 
+    @Test
     public void testGERMANY() throws Exception {
         runTests(Locale.GERMANY);
     }
 
+    @Test
     public void testFRANCH() throws Exception {
         runTests(Locale.FRANCE);
     }
 
+    
     private void runTests(Locale locale) throws Exception {
         Locale.setDefault(locale);
         decodeDateTime();

@@ -19,38 +19,43 @@
 
 package org.apache.james.imap.main;
 
+import org.junit.Test;
+
 public class OutputStreamImapResponseWriterQuoteTest extends
         AbstractTestOutputStreamImapResponseWriter {
 
-    protected void tearDown() throws Exception {
-        super.tearDown();
-    }
 
+    @Test
     public void testEmpty() throws Exception {
         writer.quote("");
         checkExpected(" \"\"");
     }
 
+    @Test
     public void testStartSlash() throws Exception {
         writer.quote("\\");
         checkExpected(" \"\\\\\"");
     }
 
+    @Test
     public void testSimpleQuote() throws Exception {
         writer.quote("Simple");
         checkExpected(" \"Simple\"");
     }
 
+    @Test
     public void testComplexQuote() throws Exception {
         writer.quote("Complex Quote With Spaces");
         checkExpected(" \"Complex Quote With Spaces\"");
     }
 
+    @Test
     public void testDQuoteQuote() throws Exception {
         writer.quote("Complex\"Quote With Spaces");
         checkExpected(" \"Complex\\\"Quote With Spaces\"");
     }
 
+    @Test
     public void testFSlashQuote() throws Exception {
         writer.quote("Complex Quote \\With Spaces");
         checkExpected(" \"Complex Quote \\\\With Spaces\"");

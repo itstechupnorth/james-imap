@@ -71,7 +71,7 @@ public class NamespaceProcessorTest {
     Mockery mockery = new JUnit4Mockery();
     
     @Before
-    protected void setUp() throws Exception {
+    public void setUp() throws Exception {
         sharedSpaces = new ArrayList<MailboxSession.Namespace>();
         statusResponseStub = mockery.mock(StatusResponseFactory.class);
         final MailboxManager mailboxManagerStub = mockery.mock(MailboxManager.class);

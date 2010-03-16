@@ -32,7 +32,7 @@ public class EncoderUtilsDateTimeLocaleTest  {
     private static final Locale BASE_DEFAULT_LOCALE = Locale.getDefault();
 
     @After
-    protected void tearDown() throws Exception {
+    public void tearDown() throws Exception {
         Locale.setDefault(BASE_DEFAULT_LOCALE);
     }
 
@@ -86,13 +86,13 @@ public class EncoderUtilsDateTimeLocaleTest  {
         runTests(Locale.TAIWAN);
     }
 
-    @Test
+    
     private void runTests(Locale locale) {
         Locale.setDefault(locale);
         runEncodeDateTime();
     }
 
-    @Test
+    
     private void runEncodeDateTime() {
         assertEquals("03-Sep-2004 05:08:43 +0000", EncoderUtils
                 .encodeDateTime(new Date(1094188123661L)));

@@ -19,19 +19,21 @@
 
 package org.apache.james.imap.store;
 
+import static org.junit.Assert.*;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 
 import javax.mail.Flags;
 
-import junit.framework.TestCase;
-
 import org.apache.james.imap.api.ImapConstants;
 import org.apache.james.imap.mailbox.SearchQuery;
 import org.apache.james.imap.store.mail.model.MailboxMembership;
+import org.junit.Before;
+import org.junit.Test;
 
-public class SearchUtilsTest extends TestCase {
+public class SearchUtilsTest {
 
     private static final String RHUBARD = "Rhubard";
 
@@ -55,18 +57,15 @@ public class SearchUtilsTest extends TestCase {
 
     Collection<Long> recent;
 
-    protected void setUp() throws Exception {
-        super.setUp();
+    @Before
+    public void setUp() throws Exception {
         recent = new ArrayList<Long>();
         builder = new MessageBuilder();
         builder.uid = 1009;
         searches = new MessageSearches();
     }
-
-    protected void tearDown() throws Exception {
-        super.tearDown();
-    }
-
+    
+    @Test
     public void testMatchSizeLessThan() throws Exception {
         builder.size = SIZE;
         MailboxMembership row = builder.build();
@@ -80,6 +79,7 @@ public class SearchUtilsTest extends TestCase {
                 SearchQuery.sizeLessThan(Integer.MAX_VALUE), row, recent));
     }
 
+    @Test
     public void testMatchSizeMoreThan() throws Exception {
         builder.size = SIZE;
         MailboxMembership row = builder.build();
@@ -93,6 +93,7 @@ public class SearchUtilsTest extends TestCase {
                 .sizeGreaterThan(Integer.MAX_VALUE), row, recent));
     }
 
+    @Test
     public void testMatchSizeEquals() throws Exception {
         builder.size = SIZE;
         MailboxMembership row = builder.build();
@@ -105,6 +106,7 @@ public class SearchUtilsTest extends TestCase {
                 row, recent));
     }
 
+    @Test
     public void testMatchInternalDateEquals() throws Exception {
         builder.internalDate = SUN_SEP_9TH_2001;
         MailboxMembership row = builder.build();
@@ -120,6 +122,7 @@ public class SearchUtilsTest extends TestCase {
                 row, recent));
     }
 
+    @Test
     public void testMatchInternalDateBefore() throws Exception {
         builder.internalDate = SUN_SEP_9TH_2001;
         MailboxMembership row = builder.build();
@@ -135,6 +138,7 @@ public class SearchUtilsTest extends TestCase {
                 row, recent));
     }
 
+    @Test
     public void testMatchInternalDateAfter() throws Exception {
         builder.internalDate = SUN_SEP_9TH_2001;
         MailboxMembership row = builder.build();
@@ -150,6 +154,7 @@ public class SearchUtilsTest extends TestCase {
                 row, recent));
     }
 
+    @Test
     public void testMatchHeaderDateAfter() throws Exception {
         builder.header(DATE_FIELD, RFC822_SUN_SEP_9TH_2001);
         MailboxMembership row = builder.build();
@@ -167,6 +172,7 @@ public class SearchUtilsTest extends TestCase {
                 2001), row, recent));
     }
 
+    @Test
     public void testShouldMatchCapsHeaderDateAfter() throws Exception {
         builder.header(DATE_FIELD.toUpperCase(), RFC822_SUN_SEP_9TH_2001);
         MailboxMembership row = builder.build();
@@ -184,6 +190,7 @@ public class SearchUtilsTest extends TestCase {
                 2001), row, recent));
     }
 
+    @Test
     public void testShouldMatchLowersHeaderDateAfter() throws Exception {
         builder.header(DATE_FIELD.toLowerCase(), RFC822_SUN_SEP_9TH_2001);
         MailboxMembership row = builder.build();
@@ -201,6 +208,7 @@ public class SearchUtilsTest extends TestCase {
                 2001), row, recent));
     }
 
+    @Test
     public void testMatchHeaderDateOn() throws Exception {
         builder.header(DATE_FIELD, RFC822_SUN_SEP_9TH_2001);
         MailboxMembership row = builder.build();
@@ -218,6 +226,7 @@ public class SearchUtilsTest extends TestCase {
                 2001), row, recent));
     }
 
+    @Test
     public void testShouldMatchCapsHeaderDateOn() throws Exception {
         builder.header(DATE_FIELD.toUpperCase(), RFC822_SUN_SEP_9TH_2001);
         MailboxMembership row = builder.build();
@@ -235,6 +244,7 @@ public class SearchUtilsTest extends TestCase {
                 2001), row, recent));
     }
 
+    @Test
     public void testShouldMatchLowersHeaderDateOn() throws Exception {
         builder.header(DATE_FIELD.toLowerCase(), RFC822_SUN_SEP_9TH_2001);
         MailboxMembership row = builder.build();
@@ -252,6 +262,7 @@ public class SearchUtilsTest extends TestCase {
                 2001), row, recent));
     }
 
+    @Test
     public void testMatchHeaderDateBefore() throws Exception {
         builder.header(DATE_FIELD.toLowerCase(), RFC822_SUN_SEP_9TH_2001);
         MailboxMembership row = builder.build();
@@ -269,6 +280,7 @@ public class SearchUtilsTest extends TestCase {
                 9, 2001), row, recent));
     }
 
+    @Test
     public void testShouldMatchCapsHeaderDateBefore() throws Exception {
         builder.header(DATE_FIELD.toLowerCase(), RFC822_SUN_SEP_9TH_2001);
         MailboxMembership row = builder.build();
@@ -286,6 +298,7 @@ public class SearchUtilsTest extends TestCase {
                 9, 2001), row, recent));
     }
 
+    @Test
     public void testShouldMatchLowersHeaderDateBefore() throws Exception {
         builder.header(DATE_FIELD.toLowerCase(), RFC822_SUN_SEP_9TH_2001);
         MailboxMembership row = builder.build();
@@ -303,6 +316,7 @@ public class SearchUtilsTest extends TestCase {
                 9, 2001), row, recent));
     }
 
+    @Test
     public void testMatchHeaderContainsCaps() throws Exception {
         builder.header(SUBJECT_FIELD, TEXT.toUpperCase());
         MailboxMembership row = builder.build();
@@ -318,6 +332,7 @@ public class SearchUtilsTest extends TestCase {
                 CUSTARD), row, recent));
     }
 
+    @Test
     public void testMatchHeaderContainsLowers() throws Exception {
         builder.header(SUBJECT_FIELD, TEXT.toUpperCase());
         MailboxMembership row = builder.build();
@@ -333,6 +348,7 @@ public class SearchUtilsTest extends TestCase {
                 CUSTARD), row, recent));
     }
 
+    @Test
     public void testMatchHeaderContains() throws Exception {
         builder.header(SUBJECT_FIELD, TEXT.toUpperCase());
         MailboxMembership row = builder.build();
@@ -348,6 +364,7 @@ public class SearchUtilsTest extends TestCase {
                 CUSTARD), row, recent));
     }
 
+    @Test
     public void testShouldMatchLowerHeaderContains() throws Exception {
         builder.header(SUBJECT_FIELD.toLowerCase(), TEXT);
         MailboxMembership row = builder.build();
@@ -363,6 +380,7 @@ public class SearchUtilsTest extends TestCase {
                 CUSTARD), row, recent));
     }
 
+    @Test
     public void testShouldMatchCapsHeaderContains() throws Exception {
         builder.header(SUBJECT_FIELD.toUpperCase(), TEXT);
         MailboxMembership row = builder.build();
@@ -378,6 +396,7 @@ public class SearchUtilsTest extends TestCase {
                 CUSTARD), row, recent));
     }
 
+    @Test
     public void testMatchHeaderExists() throws Exception {
         builder.header(SUBJECT_FIELD, TEXT);
         MailboxMembership row = builder.build();
@@ -387,6 +406,7 @@ public class SearchUtilsTest extends TestCase {
                 row, recent));
     }
 
+    @Test
     public void testShouldMatchLowersHeaderExists() throws Exception {
         builder.header(SUBJECT_FIELD.toLowerCase(), TEXT);
         MailboxMembership row = builder.build();
@@ -396,6 +416,7 @@ public class SearchUtilsTest extends TestCase {
                 row, recent));
     }
 
+    @Test
     public void testShouldMatchUppersHeaderExists() throws Exception {
         builder.header(SUBJECT_FIELD.toLowerCase(), TEXT);
         MailboxMembership row = builder.build();
@@ -405,6 +426,7 @@ public class SearchUtilsTest extends TestCase {
                 row, recent));
     }
 
+    @Test
     public void testShouldMatchUidRange() throws Exception {
         builder.setKey(1, 1729);
         MailboxMembership row = builder.build();
@@ -435,6 +457,7 @@ public class SearchUtilsTest extends TestCase {
                 row, recent));
     }
 
+    @Test
     public void testShouldMatchSeenFlagSet() throws Exception {
         builder.setFlags(true, false, false, false, false, false);
         MailboxMembership row = builder.build();
@@ -452,6 +475,7 @@ public class SearchUtilsTest extends TestCase {
                 row, recent));
     }
 
+    @Test
     public void testShouldMatchAnsweredFlagSet() throws Exception {
         builder.setFlags(false, false, true, false, false, false);
         MailboxMembership row = builder.build();
@@ -469,6 +493,7 @@ public class SearchUtilsTest extends TestCase {
                 row, recent));
     }
 
+    @Test
     public void testShouldMatchFlaggedFlagSet() throws Exception {
         builder.setFlags(false, true, false, false, false, false);
         MailboxMembership row = builder.build();
@@ -486,6 +511,7 @@ public class SearchUtilsTest extends TestCase {
                 row, recent));
     }
 
+    @Test
     public void testShouldMatchDraftFlagSet() throws Exception {
         builder.setFlags(false, false, false, true, false, false);
         MailboxMembership row = builder.build();
@@ -503,6 +529,8 @@ public class SearchUtilsTest extends TestCase {
                 row, recent));
     }
 
+    
+    @Test
     public void testShouldMatchDeletedFlagSet() throws Exception {
         builder.setFlags(false, false, false, false, true, false);
         MailboxMembership row = builder.build();
@@ -520,6 +548,7 @@ public class SearchUtilsTest extends TestCase {
                 row, recent));
     }
 
+    @Test
     public void testShouldMatchSeenRecentSet() throws Exception {
         builder.setFlags(false, false, false, false, false, false);
         MailboxMembership row = builder.build();
@@ -538,6 +567,7 @@ public class SearchUtilsTest extends TestCase {
                 row, recent));
     }
 
+    @Test
     public void testShouldMatchSeenFlagUnSet() throws Exception {
         builder.setFlags(false, true, true, true, true, true);
         MailboxMembership row = builder.build();
@@ -556,6 +586,7 @@ public class SearchUtilsTest extends TestCase {
                 SearchQuery.flagIsUnSet(Flags.Flag.RECENT), row, recent));
     }
 
+    @Test
     public void testShouldMatchAnsweredFlagUnSet() throws Exception {
         builder.setFlags(true, true, false, true, true, true);
         MailboxMembership row = builder.build();
@@ -574,6 +605,7 @@ public class SearchUtilsTest extends TestCase {
                 SearchQuery.flagIsUnSet(Flags.Flag.RECENT), row, recent));
     }
 
+    @Test
     public void testShouldMatchFlaggedFlagUnSet() throws Exception {
         builder.setFlags(true, false, true, true, true, true);
         MailboxMembership row = builder.build();
@@ -592,6 +624,7 @@ public class SearchUtilsTest extends TestCase {
                 SearchQuery.flagIsUnSet(Flags.Flag.RECENT), row, recent));
     }
 
+    @Test
     public void testShouldMatchDraftFlagUnSet() throws Exception {
         builder.setFlags(true, true, true, false, true, true);
         MailboxMembership row = builder.build();
@@ -610,6 +643,7 @@ public class SearchUtilsTest extends TestCase {
                 SearchQuery.flagIsUnSet(Flags.Flag.RECENT), row, recent));
     }
 
+    @Test
     public void testShouldMatchDeletedFlagUnSet() throws Exception {
         builder.setFlags(true, true, true, true, false, true);
         MailboxMembership row = builder.build();
@@ -628,6 +662,7 @@ public class SearchUtilsTest extends TestCase {
                 SearchQuery.flagIsUnSet(Flags.Flag.RECENT), row, recent));
     }
 
+    @Test
     public void testShouldMatchSeenRecentUnSet() throws Exception {
         builder.setFlags(true, true, true, true, true, true);
         MailboxMembership row = builder.build();
@@ -646,11 +681,13 @@ public class SearchUtilsTest extends TestCase {
                 row, recent));
     }
 
+    @Test
     public void testShouldMatchAll() throws Exception {
         MailboxMembership row = builder.build();
         assertTrue(searches.isMatch(SearchQuery.all(), row, recent));
     }
 
+    @Test
     public void testShouldMatchNot() throws Exception {
         MailboxMembership row = builder.build();
         assertFalse(searches.isMatch(SearchQuery.not(SearchQuery.all()), row,
@@ -659,6 +696,7 @@ public class SearchUtilsTest extends TestCase {
                 .headerExists(DATE_FIELD)), row, recent));
     }
 
+    @Test
     public void testShouldMatchOr() throws Exception {
         MailboxMembership row = builder.build();
         assertTrue(searches.isMatch(SearchQuery.or(SearchQuery.all(),
@@ -672,6 +710,7 @@ public class SearchUtilsTest extends TestCase {
                 SearchQuery.all()), row, recent));
     }
 
+    @Test
     public void testShouldMatchAnd() throws Exception {
         MailboxMembership row = builder.build();
         assertFalse(searches.isMatch(SearchQuery.and(SearchQuery.all(),

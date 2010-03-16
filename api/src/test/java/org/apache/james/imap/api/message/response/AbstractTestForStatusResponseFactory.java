@@ -27,12 +27,9 @@ import org.apache.james.imap.api.ImapCommand;
 import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.api.message.response.StatusResponse;
 import org.apache.james.imap.api.message.response.StatusResponseFactory;
-import org.jmock.integration.junit4.JMock;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 
-@RunWith(JMock.class)
 abstract public class AbstractTestForStatusResponseFactory  {
 
     private static final String TAG = "ATAG";
@@ -50,7 +47,7 @@ abstract public class AbstractTestForStatusResponseFactory  {
     abstract protected StatusResponseFactory createInstance();
 
     @Before
-    protected void setUp() throws Exception {
+    public void setUp() throws Exception {
         factory = createInstance();
         command = ImapCommand.anyStateCommand("Command");
     }

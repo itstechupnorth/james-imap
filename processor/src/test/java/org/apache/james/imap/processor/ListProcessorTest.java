@@ -56,7 +56,7 @@ public class ListProcessorTest  {
     private Mockery mockery = new JUnit4Mockery();
     
     @Before
-    protected void setUp() throws Exception {
+    public void setUp() throws Exception {
         serverResponseFactory = mockery.mock(StatusResponseFactory.class);
         session = mockery.mock(ImapSession.class);
         command = ImapCommand.anyStateCommand("Command");

@@ -19,13 +19,13 @@
 
 package org.apache.james.mailboxmanager.torque;
 
+import static org.junit.Assert.*;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 
 import javax.mail.Flags;
-
-import junit.framework.TestCase;
 
 import org.apache.james.imap.api.ImapConstants;
 import org.apache.james.imap.mailbox.SearchQuery;
@@ -33,8 +33,10 @@ import org.apache.james.mailboxmanager.torque.om.MessageFlags;
 import org.apache.james.mailboxmanager.torque.om.MessageHeader;
 import org.apache.james.mailboxmanager.torque.om.MessageRow;
 import org.apache.torque.TorqueException;
+import org.junit.Before;
+import org.junit.Test;
 
-public class SearchUtilsTest extends TestCase {
+public class SearchUtilsTest {
 
     private static final String RHUBARD = "Rhubard";
 
@@ -58,18 +60,15 @@ public class SearchUtilsTest extends TestCase {
 
     Collection recent;
 
-    protected void setUp() throws Exception {
-        super.setUp();
+    @Before
+    public void setUp() throws Exception {
         recent = new ArrayList();
         row = new MessageRow();
         row.setUid(1009);
         searches = new MessageSearches();
     }
 
-    protected void tearDown() throws Exception {
-        super.tearDown();
-    }
-
+    @Test
     public void testMatchSizeLessThan() throws Exception {
         row.setSize(SIZE);
         assertFalse(searches.isMatch(SearchQuery.sizeLessThan(SIZE - 1), row,
@@ -82,6 +81,7 @@ public class SearchUtilsTest extends TestCase {
                 SearchQuery.sizeLessThan(Integer.MAX_VALUE), row, recent));
     }
 
+    @Test
     public void testMatchSizeMoreThan() throws Exception {
         row.setSize(SIZE);
         assertTrue(searches.isMatch(SearchQuery.sizeGreaterThan(SIZE - 1), row,
@@ -94,6 +94,7 @@ public class SearchUtilsTest extends TestCase {
                 .sizeGreaterThan(Integer.MAX_VALUE), row, recent));
     }
 
+    @Test
     public void testMatchSizeEquals() throws Exception {
         row.setSize(SIZE);
         assertFalse(searches.isMatch(SearchQuery.sizeEquals(SIZE - 1), row,
@@ -105,6 +106,7 @@ public class SearchUtilsTest extends TestCase {
                 row, recent));
     }
 
+    @Test
     public void testMatchInternalDateEquals() throws Exception {
         row.setInternalDate(SUN_SEP_9TH_2001);
         assertFalse(searches.isMatch(SearchQuery.internalDateOn(9, 9, 2000),
@@ -119,6 +121,7 @@ public class SearchUtilsTest extends TestCase {
                 row, recent));
     }
 
+    @Test
     public void testMatchInternalDateBefore() throws Exception {
         row.setInternalDate(SUN_SEP_9TH_2001);
         assertFalse(searches.isMatch(
@@ -133,6 +136,7 @@ public class SearchUtilsTest extends TestCase {
                 row, recent));
     }
 
+    @Test
     public void testMatchInternalDateAfter() throws Exception {
         row.setInternalDate(SUN_SEP_9TH_2001);
         assertTrue(searches.isMatch(SearchQuery.internalDateAfter(9, 9, 2000),
@@ -147,6 +151,7 @@ public class SearchUtilsTest extends TestCase {
                 row, recent));
     }
 
+    @Test
     public void testMatchHeaderDateAfter() throws Exception {
         addHeader(DATE_FIELD, RFC822_SUN_SEP_9TH_2001);
         assertTrue(searches.isMatch(SearchQuery.headerDateAfter(DATE_FIELD, 9,
@@ -163,6 +168,7 @@ public class SearchUtilsTest extends TestCase {
                 2001), row, recent));
     }
 
+    @Test
     public void testShouldMatchCapsHeaderDateAfter() throws Exception {
         addHeader(DATE_FIELD.toUpperCase(), RFC822_SUN_SEP_9TH_2001);
         assertTrue(searches.isMatch(SearchQuery.headerDateAfter(DATE_FIELD, 9,
@@ -179,6 +185,7 @@ public class SearchUtilsTest extends TestCase {
                 2001), row, recent));
     }
 
+    @Test
     public void testShouldMatchLowersHeaderDateAfter() throws Exception {
         addHeader(DATE_FIELD.toLowerCase(), RFC822_SUN_SEP_9TH_2001);
         assertTrue(searches.isMatch(SearchQuery.headerDateAfter(DATE_FIELD, 9,
@@ -195,6 +202,7 @@ public class SearchUtilsTest extends TestCase {
                 2001), row, recent));
     }
 
+    @Test
     public void testMatchHeaderDateOn() throws Exception {
         addHeader(DATE_FIELD, RFC822_SUN_SEP_9TH_2001);
         assertFalse(searches.isMatch(SearchQuery.headerDateOn(DATE_FIELD, 9, 9,
@@ -211,6 +219,7 @@ public class SearchUtilsTest extends TestCase {
                 2001), row, recent));
     }
 
+    @Test
     public void testShouldMatchCapsHeaderDateOn() throws Exception {
         addHeader(DATE_FIELD.toUpperCase(), RFC822_SUN_SEP_9TH_2001);
         assertFalse(searches.isMatch(SearchQuery.headerDateOn(DATE_FIELD, 9, 9,
@@ -227,6 +236,7 @@ public class SearchUtilsTest extends TestCase {
                 2001), row, recent));
     }
 
+    @Test
     public void testShouldMatchLowersHeaderDateOn() throws Exception {
         addHeader(DATE_FIELD.toLowerCase(), RFC822_SUN_SEP_9TH_2001);
         assertFalse(searches.isMatch(SearchQuery.headerDateOn(DATE_FIELD, 9, 9,
@@ -243,6 +253,7 @@ public class SearchUtilsTest extends TestCase {
                 2001), row, recent));
     }
 
+    @Test
     public void testMatchHeaderDateBefore() throws Exception {
         addHeader(DATE_FIELD, RFC822_SUN_SEP_9TH_2001);
         assertFalse(searches.isMatch(SearchQuery.headerDateBefore(DATE_FIELD,
@@ -259,6 +270,7 @@ public class SearchUtilsTest extends TestCase {
                 9, 2001), row, recent));
     }
 
+    @Test
     public void testShouldMatchCapsHeaderDateBefore() throws Exception {
         addHeader(DATE_FIELD.toUpperCase(), RFC822_SUN_SEP_9TH_2001);
         assertFalse(searches.isMatch(SearchQuery.headerDateBefore(DATE_FIELD,
@@ -275,6 +287,7 @@ public class SearchUtilsTest extends TestCase {
                 9, 2001), row, recent));
     }
 
+    @Test
     public void testShouldMatchLowersHeaderDateBefore() throws Exception {
         addHeader(DATE_FIELD.toLowerCase(), RFC822_SUN_SEP_9TH_2001);
         assertFalse(searches.isMatch(SearchQuery.headerDateBefore(DATE_FIELD,
@@ -291,6 +304,7 @@ public class SearchUtilsTest extends TestCase {
                 9, 2001), row, recent));
     }
 
+    @Test
     public void testMatchHeaderContainsCaps() throws Exception {
         addHeader(SUBJECT_FIELD, TEXT.toUpperCase());
         assertFalse(searches.isMatch(SearchQuery.headerContains(DATE_FIELD,
@@ -305,6 +319,7 @@ public class SearchUtilsTest extends TestCase {
                 CUSTARD), row, recent));
     }
 
+    @Test
     public void testMatchHeaderContainsLowers() throws Exception {
         addHeader(SUBJECT_FIELD, TEXT.toLowerCase());
         assertFalse(searches.isMatch(SearchQuery.headerContains(DATE_FIELD,
@@ -319,6 +334,7 @@ public class SearchUtilsTest extends TestCase {
                 CUSTARD), row, recent));
     }
 
+    @Test
     public void testMatchHeaderContains() throws Exception {
         addHeader(SUBJECT_FIELD, TEXT);
         assertFalse(searches.isMatch(SearchQuery.headerContains(DATE_FIELD,
@@ -333,6 +349,7 @@ public class SearchUtilsTest extends TestCase {
                 CUSTARD), row, recent));
     }
 
+    @Test
     public void testShouldMatchLowerHeaderContains() throws Exception {
         addHeader(SUBJECT_FIELD.toLowerCase(), TEXT);
         assertFalse(searches.isMatch(SearchQuery.headerContains(DATE_FIELD,
@@ -347,6 +364,7 @@ public class SearchUtilsTest extends TestCase {
                 CUSTARD), row, recent));
     }
 
+    @Test
     public void testShouldMatchCapsHeaderContains() throws Exception {
         addHeader(SUBJECT_FIELD.toUpperCase(), TEXT);
         assertFalse(searches.isMatch(SearchQuery.headerContains(DATE_FIELD,
@@ -361,6 +379,7 @@ public class SearchUtilsTest extends TestCase {
                 CUSTARD), row, recent));
     }
 
+    @Test
     public void testMatchHeaderExists() throws Exception {
         addHeader(SUBJECT_FIELD, TEXT);
         assertFalse(searches.isMatch(SearchQuery.headerExists(DATE_FIELD), row,
@@ -369,6 +388,7 @@ public class SearchUtilsTest extends TestCase {
                 row, recent));
     }
 
+    @Test
     public void testShouldMatchLowersHeaderExists() throws Exception {
         addHeader(SUBJECT_FIELD.toLowerCase(), TEXT);
         assertFalse(searches.isMatch(SearchQuery.headerExists(DATE_FIELD), row,
@@ -377,6 +397,7 @@ public class SearchUtilsTest extends TestCase {
                 row, recent));
     }
 
+    @Test
     public void testShouldMatchUppersHeaderExists() throws Exception {
         addHeader(SUBJECT_FIELD.toUpperCase(), TEXT);
         assertFalse(searches.isMatch(SearchQuery.headerExists(DATE_FIELD), row,
@@ -385,6 +406,7 @@ public class SearchUtilsTest extends TestCase {
                 row, recent));
     }
 
+    @Test
     public void testShouldMatchUidRange() throws Exception {
         row.setPrimaryKey(1, 1729);
         assertFalse(searches.isMatch(SearchQuery.uid(range(1, 1)), row, recent));
@@ -414,6 +436,7 @@ public class SearchUtilsTest extends TestCase {
                 row, recent));
     }
 
+    @Test
     public void testShouldMatchSeenFlagSet() throws Exception {
         setFlags(true, false, false, false, false, false);
         assertTrue(searches.isMatch(SearchQuery.flagIsSet(Flags.Flag.SEEN),
@@ -430,6 +453,7 @@ public class SearchUtilsTest extends TestCase {
                 row, recent));
     }
 
+    @Test
     public void testShouldMatchAnsweredFlagSet() throws Exception {
         setFlags(false, false, true, false, false, false);
         assertFalse(searches.isMatch(SearchQuery.flagIsSet(Flags.Flag.SEEN),
@@ -446,6 +470,7 @@ public class SearchUtilsTest extends TestCase {
                 row, recent));
     }
 
+    @Test
     public void testShouldMatchFlaggedFlagSet() throws Exception {
         setFlags(false, true, false, false, false, false);
         assertFalse(searches.isMatch(SearchQuery.flagIsSet(Flags.Flag.SEEN),
@@ -462,6 +487,7 @@ public class SearchUtilsTest extends TestCase {
                 row, recent));
     }
 
+    @Test
     public void testShouldMatchDraftFlagSet() throws Exception {
         setFlags(false, false, false, true, false, false);
         assertFalse(searches.isMatch(SearchQuery.flagIsSet(Flags.Flag.SEEN),
@@ -478,6 +504,7 @@ public class SearchUtilsTest extends TestCase {
                 row, recent));
     }
 
+    @Test
     public void testShouldMatchDeletedFlagSet() throws Exception {
         setFlags(false, false, false, false, true, false);
         assertFalse(searches.isMatch(SearchQuery.flagIsSet(Flags.Flag.SEEN),
@@ -494,6 +521,7 @@ public class SearchUtilsTest extends TestCase {
                 row, recent));
     }
 
+    @Test
     public void testShouldMatchSeenRecentSet() throws Exception {
         setFlags(false, false, false, false, false, false);
         recent.add(new Long(row.getUid()));
@@ -511,6 +539,7 @@ public class SearchUtilsTest extends TestCase {
                 row, recent));
     }
 
+    @Test
     public void testShouldMatchSeenFlagUnSet() throws Exception {
         setFlags(false, true, true, true, true, true);
         recent.add(new Long(row.getUid()));
@@ -528,6 +557,7 @@ public class SearchUtilsTest extends TestCase {
                 SearchQuery.flagIsUnSet(Flags.Flag.RECENT), row, recent));
     }
 
+    @Test
     public void testShouldMatchAnsweredFlagUnSet() throws Exception {
         setFlags(true, true, false, true, true, true);
         recent.add(new Long(row.getUid()));
@@ -545,6 +575,7 @@ public class SearchUtilsTest extends TestCase {
                 SearchQuery.flagIsUnSet(Flags.Flag.RECENT), row, recent));
     }
 
+    @Test
     public void testShouldMatchFlaggedFlagUnSet() throws Exception {
         setFlags(true, false, true, true, true, true);
         recent.add(new Long(row.getUid()));
@@ -562,6 +593,7 @@ public class SearchUtilsTest extends TestCase {
                 SearchQuery.flagIsUnSet(Flags.Flag.RECENT), row, recent));
     }
 
+    @Test
     public void testShouldMatchDraftFlagUnSet() throws Exception {
         setFlags(true, true, true, false, true, true);
         recent.add(new Long(row.getUid()));
@@ -579,6 +611,7 @@ public class SearchUtilsTest extends TestCase {
                 SearchQuery.flagIsUnSet(Flags.Flag.RECENT), row, recent));
     }
 
+    @Test
     public void testShouldMatchDeletedFlagUnSet() throws Exception {
         setFlags(true, true, true, true, false, true);
         recent.add(new Long(row.getUid()));
@@ -596,6 +629,7 @@ public class SearchUtilsTest extends TestCase {
                 SearchQuery.flagIsUnSet(Flags.Flag.RECENT), row, recent));
     }
 
+    @Test
     public void testShouldMatchSeenRecentUnSet() throws Exception {
         setFlags(true, true, true, true, true, true);
         recent.add(new Long(row.getUid() + 1));
@@ -613,10 +647,12 @@ public class SearchUtilsTest extends TestCase {
                 row, recent));
     }
 
+    @Test
     public void testShouldMatchAll() throws Exception {
         assertTrue(searches.isMatch(SearchQuery.all(), row, recent));
     }
 
+    @Test
     public void testShouldMatchNot() throws Exception {
         assertFalse(searches.isMatch(SearchQuery.not(SearchQuery.all()), row,
                 recent));
@@ -624,6 +660,7 @@ public class SearchUtilsTest extends TestCase {
                 .headerExists(DATE_FIELD)), row, recent));
     }
 
+    @Test
     public void testShouldMatchOr() throws Exception {
         assertTrue(searches.isMatch(SearchQuery.or(SearchQuery.all(),
                 SearchQuery.headerExists(DATE_FIELD)), row, recent));
@@ -636,6 +673,7 @@ public class SearchUtilsTest extends TestCase {
                 SearchQuery.all()), row, recent));
     }
 
+    @Test
     public void testShouldMatchAnd() throws Exception {
         assertFalse(searches.isMatch(SearchQuery.and(SearchQuery.all(),
                 SearchQuery.headerExists(DATE_FIELD)), row, recent));

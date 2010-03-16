@@ -19,9 +19,11 @@
 
 package org.apache.james.imap.mailbox;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.*;
 
-public class MailboxExpressionTest extends TestCase {
+import org.junit.Test;
+
+public class MailboxExpressionTest {
 
     private static final String PART = "mailbox";
 
@@ -29,18 +31,12 @@ public class MailboxExpressionTest extends TestCase {
 
     private static final String BASE = "BASE";
 
-    protected void setUp() throws Exception {
-        super.setUp();
-    }
-
-    protected void tearDown() throws Exception {
-        super.tearDown();
-    }
 
     private MailboxQuery create(String expression) {
         return new MailboxQuery(BASE, expression, '*', '%');
     }
 
+    @Test
     public void testIsWild() throws Exception {
         assertTrue(create("*").isWild());
         assertTrue(create("%").isWild());
@@ -55,12 +51,14 @@ public class MailboxExpressionTest extends TestCase {
         assertFalse(create("ONE").isWild());
     }
 
+    @Test
     public void testCombinedNameEmptyPart() throws Exception {
         MailboxQuery expression = new MailboxQuery(BASE, "", '*', '%');
         assertEquals(BASE, expression.getCombinedName('.'));
 
     }
 
+    @Test
     public void testNullCombinedName() throws Exception {
         MailboxQuery expression = new MailboxQuery(null, null, '*',
                 '%');
@@ -68,18 +66,21 @@ public class MailboxExpressionTest extends TestCase {
 
     }
 
+    @Test
     public void testSimpleCombinedName() throws Exception {
         MailboxQuery expression = create(PART);
         assertEquals(BASE + "." + PART, expression.getCombinedName('.'));
         assertEquals(BASE + "/" + PART, expression.getCombinedName('/'));
     }
 
+    @Test
     public void testCombinedNamePartStartsWithDelimiter() throws Exception {
         MailboxQuery expression = create("." + PART);
         assertEquals(BASE + "." + PART, expression.getCombinedName('.'));
         assertEquals(BASE + "/." + PART, expression.getCombinedName('/'));
     }
 
+    @Test
     public void testCombinedNameBaseEndsWithDelimiter() throws Exception {
         MailboxQuery expression = new MailboxQuery(BASE + '.', PART,
                 '*', '%');
@@ -87,6 +88,7 @@ public class MailboxExpressionTest extends TestCase {
         assertEquals(BASE + "./" + PART, expression.getCombinedName('/'));
     }
 
+    @Test
     public void testCombinedNameBaseEndsWithDelimiterPartStarts()
             throws Exception {
         MailboxQuery expression = new MailboxQuery(BASE + '.',
@@ -95,6 +97,7 @@ public class MailboxExpressionTest extends TestCase {
         assertEquals(BASE + "./." + PART, expression.getCombinedName('/'));
     }
 
+    @Test
     public void testSimpleExpression() throws Exception {
         MailboxQuery expression = create(PART);
         assertTrue(expression.isExpressionMatch(PART, '.'));
@@ -104,6 +107,7 @@ public class MailboxExpressionTest extends TestCase {
         assertFalse(expression.isExpressionMatch(SECOND_PART, '.'));
     }
 
+    @Test
     public void testEmptyExpression() throws Exception {
         MailboxQuery expression = create("");
         assertTrue(expression.isExpressionMatch("", '.'));
@@ -113,6 +117,7 @@ public class MailboxExpressionTest extends TestCase {
         assertFalse(expression.isExpressionMatch(BASE + "whatever", '.'));
     }
 
+    @Test
     public void testOnlyLocalWildcard() throws Exception {
         MailboxQuery expression = create("%");
         assertTrue(expression.isExpressionMatch("", '.'));
@@ -123,6 +128,7 @@ public class MailboxExpressionTest extends TestCase {
         assertTrue(expression.isExpressionMatch(PART + '/' + SECOND_PART, '.'));
     }
 
+    @Test
     public void testOnlyFreeWildcard() throws Exception {
         MailboxQuery expression = create("*");
         assertTrue(expression.isExpressionMatch("", '.'));
@@ -134,6 +140,7 @@ public class MailboxExpressionTest extends TestCase {
         assertTrue(expression.isExpressionMatch(PART + '.' + SECOND_PART, '.'));
     }
 
+    @Test
     public void testEndsWithLocalWildcard() throws Exception {
         MailboxQuery expression = create(PART + '%');
         assertFalse(expression.isExpressionMatch("", '.'));
@@ -145,6 +152,7 @@ public class MailboxExpressionTest extends TestCase {
         assertFalse(expression.isExpressionMatch(PART + '.' + SECOND_PART, '.'));
     }
 
+    @Test
     public void testStartsWithLocalWildcard() throws Exception {
         MailboxQuery expression = create('%' + PART);
         assertFalse(expression.isExpressionMatch("", '.'));
@@ -157,6 +165,7 @@ public class MailboxExpressionTest extends TestCase {
         assertFalse(expression.isExpressionMatch(SECOND_PART, '.'));
     }
 
+    @Test
     public void testContainsLocalWildcard() throws Exception {
         MailboxQuery expression = create(SECOND_PART + '%' + PART);
         assertFalse(expression.isExpressionMatch("", '.'));
@@ -169,6 +178,7 @@ public class MailboxExpressionTest extends TestCase {
                 + PART, '.'));
     }
 
+    @Test
     public void testEndsWithFreeWildcard() throws Exception {
         MailboxQuery expression = create(PART + '*');
         assertFalse(expression.isExpressionMatch("", '.'));
@@ -180,6 +190,7 @@ public class MailboxExpressionTest extends TestCase {
         assertTrue(expression.isExpressionMatch(PART + '.' + SECOND_PART, '.'));
     }
 
+    @Test
     public void testStartsWithFreeWildcard() throws Exception {
         MailboxQuery expression = create('*' + PART);
         assertFalse(expression.isExpressionMatch("", '.'));
@@ -190,6 +201,7 @@ public class MailboxExpressionTest extends TestCase {
         assertFalse(expression.isExpressionMatch(SECOND_PART, '.'));
     }
 
+    @Test
     public void testContainsFreeWildcard() throws Exception {
         MailboxQuery expression = create(SECOND_PART + '*' + PART);
         assertFalse(expression.isExpressionMatch("", '.'));
@@ -202,6 +214,7 @@ public class MailboxExpressionTest extends TestCase {
                 + PART, '.'));
     }
 
+    @Test
     public void testDoubleFreeWildcard() throws Exception {
         MailboxQuery expression = create(SECOND_PART + "**" + PART);
         assertFalse(expression.isExpressionMatch("", '.'));
@@ -214,6 +227,7 @@ public class MailboxExpressionTest extends TestCase {
                 + PART, '.'));
     }
 
+    @Test
     public void testFreeLocalWildcard() throws Exception {
         MailboxQuery expression = create(SECOND_PART + "*%" + PART);
         assertFalse(expression.isExpressionMatch("", '.'));
@@ -226,6 +240,7 @@ public class MailboxExpressionTest extends TestCase {
                 + PART, '.'));
     }
 
+    @Test
     public void testLocalFreeWildcard() throws Exception {
         MailboxQuery expression = create(SECOND_PART + "%*" + PART);
         assertFalse(expression.isExpressionMatch("", '.'));
@@ -238,6 +253,7 @@ public class MailboxExpressionTest extends TestCase {
                 + PART, '.'));
     }
 
+    @Test
     public void testMultipleFreeWildcards() throws Exception {
         MailboxQuery expression = create(SECOND_PART + '*' + PART + '*'
                 + SECOND_PART + "**");
@@ -264,6 +280,7 @@ public class MailboxExpressionTest extends TestCase {
                 + SECOND_PART.substring(1), '.'));
     }
 
+    @Test
     public void testSimpleMixedWildcards() throws Exception {
         MailboxQuery expression = create(SECOND_PART + '%' + PART + '*'
                 + SECOND_PART);
@@ -279,6 +296,7 @@ public class MailboxExpressionTest extends TestCase {
                 + SECOND_PART + ".Whatever.", '.'));
     }
 
+    @Test
     public void testFreeLocalMixedWildcards() throws Exception {
         MailboxQuery expression = create(SECOND_PART + '*' + PART + '%'
                 + SECOND_PART);
@@ -300,6 +318,7 @@ public class MailboxExpressionTest extends TestCase {
                 + SECOND_PART + PART + SECOND_PART, '.'));
     }
     
+    @Test
     public void testTwoLocalWildcardsShouldMatchMailboxs() throws Exception {
         MailboxQuery expression = create("%.%");
         assertFalse(expression.isExpressionMatch(PART, '.'));

@@ -50,7 +50,7 @@ public class ListResponseEncoderTest {
     private Mockery context = new JUnit4Mockery();
     
     @Before
-    protected void setUp() throws Exception {
+    public void setUp() throws Exception {
         mockNextEncoder = context.mock(ImapEncoder.class);
         composer = context.mock(ImapResponseComposer.class);
         response = new SearchResponse(IDS);

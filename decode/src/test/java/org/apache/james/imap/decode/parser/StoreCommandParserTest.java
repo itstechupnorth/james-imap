@@ -52,7 +52,7 @@ public class StoreCommandParserTest {
     private Mockery mockery = new JUnit4Mockery();
 
     @Before
-    protected void setUp() throws Exception {
+    public void setUp() throws Exception {
         parser = new StoreCommandParser();
         mockMessageFactory = mockery.mock(ImapMessageFactory.class);
         command = ImapCommand.anyStateCommand("Command");

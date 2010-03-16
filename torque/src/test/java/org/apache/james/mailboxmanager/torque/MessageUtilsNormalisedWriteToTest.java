@@ -19,26 +19,22 @@
 
 package org.apache.james.mailboxmanager.torque;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.*;
 
-public class MessageUtilsNormalisedWriteToTest extends TestCase {
+import org.junit.Test;
+
+public class MessageUtilsNormalisedWriteToTest {
 
     StringBuffer buffer;
 
-    protected void setUp() throws Exception {
-        super.setUp();
-        buffer = new StringBuffer();
-    }
-
-    protected void tearDown() throws Exception {
-        super.tearDown();
-    }
-
+ 
+    @Test
     public void testEmpty() throws Exception {
         MessageUtils.normalisedWriteTo("".getBytes(), buffer);
         assertEquals("Check processing of empty array", "", buffer.toString());
     }
 
+    @Test
     public void testNormal() throws Exception {
         MessageUtils.normalisedWriteTo("One\r\nTwo\r\nThree\r\n".getBytes(),
                 buffer);
@@ -46,6 +42,7 @@ public class MessageUtilsNormalisedWriteToTest extends TestCase {
                 "One\r\nTwo\r\nThree\r\n", buffer.toString());
     }
 
+    @Test
     public void testMissing() throws Exception {
         MessageUtils
                 .normalisedWriteTo("One\rTwo\nThree\r\n".getBytes(), buffer);
@@ -53,18 +50,21 @@ public class MessageUtilsNormalisedWriteToTest extends TestCase {
                 "One\r\nTwo\r\nThree\r\n", buffer.toString());
     }
 
+    @Test
     public void testCRAtEnd() throws Exception {
         MessageUtils.normalisedWriteTo("One\r\nTwo\r\nThree\r".getBytes(),
                 buffer);
         assertEquals("CR at end", "One\r\nTwo\r\nThree\r\n", buffer.toString());
     }
 
+    @Test
     public void testLFAtEnd() throws Exception {
         MessageUtils.normalisedWriteTo("One\r\nTwo\r\nThree\n".getBytes(),
                 buffer);
         assertEquals("LF at end", "One\r\nTwo\r\nThree\r\n", buffer.toString());
     }
 
+    @Test
     public void testCRAtStart() throws Exception {
         MessageUtils.normalisedWriteTo("\rOne\r\nTwo\r\nThree\r".getBytes(),
                 buffer);
@@ -72,6 +72,7 @@ public class MessageUtilsNormalisedWriteToTest extends TestCase {
                 .toString());
     }
 
+    @Test
     public void testLFAtStart() throws Exception {
         MessageUtils.normalisedWriteTo("\nOne\r\nTwo\r\nThree".getBytes(),
                 buffer);
@@ -79,6 +80,7 @@ public class MessageUtilsNormalisedWriteToTest extends TestCase {
                 .toString());
     }
 
+    @Test
     public void testSwitchOrder() throws Exception {
         MessageUtils.normalisedWriteTo(
                 "\n\rOne\n\rTwo\n\rThree\n\r".getBytes(), buffer);

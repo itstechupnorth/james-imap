@@ -41,7 +41,7 @@ public class PartialFetchBodyElementTest {
     private Mockery mockery = new JUnit4Mockery();
     
     @Before
-    protected void setUp() throws Exception {
+    public void setUp() throws Exception {
         mockBodyElement = mockery.mock(BodyElement.class);
         mockery.checking(new Expectations() {{
             oneOf(mockBodyElement).getName();will(returnValue("Name"));

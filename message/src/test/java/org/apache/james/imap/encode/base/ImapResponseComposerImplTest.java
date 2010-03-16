@@ -36,7 +36,7 @@ public class ImapResponseComposerImplTest extends
     ByteImapResponseWriter writer;
 
     @Before
-    protected void setUp() throws Exception {
+    public void setUp() throws Exception {
         writer = new ByteImapResponseWriter();
         composer = new ImapResponseComposerImpl(writer);
     }
