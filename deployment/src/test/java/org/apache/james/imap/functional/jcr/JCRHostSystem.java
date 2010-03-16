@@ -44,23 +44,21 @@ public class JCRHostSystem extends ImapHostSystem{
 
     private static final String JACKRABBIT_HOME = "deployment/target/jackrabbit";
     public static final String META_DATA_DIRECTORY = "target/user-meta-data";
-    private static TransientRepository repository;
+    private TransientRepository repository;
 
     private javax.jcr.Session session;
     
     public JCRHostSystem() throws Exception {
         
-        if (repository == null) {
-            File home = new File(JACKRABBIT_HOME);
-            if (home.exists()) {
-                FileUtils.deleteDirectory(home);
-            }       
-            
-            RepositoryConfig config = RepositoryConfig.create(new InputSource(this.getClass().getClassLoader().getResourceAsStream("test-repository.xml")), JACKRABBIT_HOME);  
-            repository = new TransientRepository(config);
-            session  = repository.login();
+        File home = new File(JACKRABBIT_HOME);
+        if (home.exists()) {
+            FileUtils.deleteDirectory(home);
         }
-        
+
+        RepositoryConfig config = RepositoryConfig.create(new InputSource(this.getClass().getClassLoader().getResourceAsStream("test-repository.xml")), JACKRABBIT_HOME);
+        repository = new TransientRepository(config);
+        session = repository.login();
+
         userManager = new InMemoryUserManager();
           
 
@@ -85,14 +83,7 @@ public class JCRHostSystem extends ImapHostSystem{
 
     public void resetData() throws Exception {
         resetUserMetaData();
-        /*
-        if (session != null && session.isLive()) {
-            session.logout();
-        }
-        */
-        repository.shutdown();
-        
-        //FileUtils.deleteDirectory(new File(JACKRABBIT_HOME));
+      
     }
     
     public void resetUserMetaData() throws Exception {
@@ -107,6 +98,8 @@ public class JCRHostSystem extends ImapHostSystem{
     @Override
     public void afterTests() throws Exception {
         session.logout();
+        repository.shutdown();
+        repository = null;
     }
 
 
