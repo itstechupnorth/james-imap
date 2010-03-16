@@ -27,7 +27,7 @@ import org.junit.Test;
 
 public class PartialFetch extends FrameworkForSelectedStateBase {
 
-    public PartialFetch(HostSystem system) {
+    public PartialFetch(HostSystem system) throws Exception {
         super(system);
     }
 

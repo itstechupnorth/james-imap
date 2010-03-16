@@ -27,7 +27,7 @@ import org.junit.Test;
 
 public class Events extends FrameworkForSelectedStateBase {
 
-    public Events(HostSystem system) {
+    public Events(HostSystem system) throws Exception {
         super(system);
     }
 

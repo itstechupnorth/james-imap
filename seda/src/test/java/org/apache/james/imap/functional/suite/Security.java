@@ -27,7 +27,7 @@ import org.junit.Test;
 
 public class Security extends ImapProtocolFramework {
 
-    public Security(HostSystem system) {
+    public Security(HostSystem system) throws Exception {
         super(system);
     }
 

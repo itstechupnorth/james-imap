@@ -21,12 +21,17 @@ package org.apache.james.mailboxmanager.torque;
 
 import static org.junit.Assert.*;
 
+import org.junit.Before;
 import org.junit.Test;
 
 public class MessageUtilsNormalisedWriteToTest {
 
     StringBuffer buffer;
 
+    @Before
+    public void setUp() {
+        buffer = new StringBuffer();
+    }
  
     @Test
     public void testEmpty() throws Exception {

@@ -27,7 +27,7 @@ import org.apache.james.test.functional.HostSystem;
 public abstract class ImapProtocolFramework extends
         AbstractSimpleScriptedTestProtocol implements ImapTestConstants {
 
-    public ImapProtocolFramework(final HostSystem hostSystem) {
+    public ImapProtocolFramework(final HostSystem hostSystem) throws Exception {
         super(hostSystem, USER, PASSWORD, "/org/apache/james/imap/scripts/");
     }
 

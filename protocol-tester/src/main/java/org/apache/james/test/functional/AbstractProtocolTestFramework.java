@@ -21,7 +21,6 @@ package org.apache.james.test.functional;
 
 import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.BeforeClass;
 
 /**
  * Abstract Protocol Test is the root of all of the James Imap Server test
@@ -43,15 +42,17 @@ public abstract class AbstractProtocolTestFramework {
     /** The Protocol session which is run after the testElements. */
     protected ProtocolSession postElements = new ProtocolSession();
 
-    private final HostSystem hostSystem;
+    private static HostSystem hostSystem;
     
     private final String userName;
     private final String password;
 
-    public AbstractProtocolTestFramework(HostSystem hostSystem, String userName, String password) {
-        this.hostSystem = hostSystem;
+    public AbstractProtocolTestFramework(HostSystem hostSystem, String userName, String password) throws Exception {
+        AbstractProtocolTestFramework.hostSystem = hostSystem;
         this.userName = userName;
         this.password = password;
+        hostSystem.beforeTests();
+
     }
 
 
@@ -118,12 +119,7 @@ public abstract class AbstractProtocolTestFramework {
     
     
     @AfterClass
-    public void afterTests() throws Exception {
+    public static void afterTests() throws Exception {
         hostSystem.afterTests();
-    }
-    
-    @BeforeClass
-    public void beforeTests() throws Exception {
-        hostSystem.beforeTests();
     }
 }

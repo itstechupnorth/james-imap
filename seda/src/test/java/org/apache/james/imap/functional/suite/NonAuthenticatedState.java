@@ -27,7 +27,7 @@ import org.junit.Test;
 
 public class NonAuthenticatedState extends FrameworkForNonAuthenticatedState {
 
-    public NonAuthenticatedState(HostSystem system) {
+    public NonAuthenticatedState(HostSystem system) throws Exception {
         super(system);
     }
 

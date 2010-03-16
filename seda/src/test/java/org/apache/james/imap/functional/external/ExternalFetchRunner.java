@@ -27,7 +27,7 @@ import org.apache.james.imap.functional.suite.Fetch;
  */
 public class ExternalFetchRunner extends Fetch {
 
-    public ExternalFetchRunner() {
+    public ExternalFetchRunner() throws Exception {
         super(ExternalHostSystem.createLocalImap());
         continueAfterFailure();
     }

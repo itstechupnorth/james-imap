@@ -59,7 +59,7 @@ import org.junit.Before;
  */
 public abstract class FrameworkForAuthenticatedState extends
         ImapProtocolFramework implements ImapTestConstants {
-    public FrameworkForAuthenticatedState(HostSystem hostSystem) {
+    public FrameworkForAuthenticatedState(HostSystem hostSystem) throws Exception {
         super(hostSystem);
     }
 

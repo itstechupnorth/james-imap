@@ -27,7 +27,7 @@ import org.junit.Test;
 
 public class FetchBodySection extends FrameworkForSelectedStateBase {
 
-    public FetchBodySection(HostSystem system) {
+    public FetchBodySection(HostSystem system) throws Exception {
         super(system);
     }
 

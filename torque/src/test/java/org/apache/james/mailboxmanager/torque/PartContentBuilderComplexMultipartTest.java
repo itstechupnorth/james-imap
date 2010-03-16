@@ -31,6 +31,7 @@ import org.apache.james.imap.store.PartContentBuilder;
 import org.apache.james.imap.store.StringBuilderChannel;
 import org.apache.james.imap.store.PartContentBuilder.PartNotFoundException;
 import org.junit.Before;
+import org.junit.Test;
 
 public class PartContentBuilderComplexMultipartTest {
 
@@ -115,7 +116,7 @@ public class PartContentBuilderComplexMultipartTest {
         builder = new PartContentBuilder();
     }
     
-    @Before
+    @Test
     public void testShouldNotFoundSubPartOfNonMultiPartTopLevel()
             throws Exception {
         int[] path = { 1, 1 };
@@ -125,7 +126,7 @@ public class PartContentBuilderComplexMultipartTest {
         }
     }
 
-    @Before
+    @Test
     public void testShouldNotFoundSubPartOfNonMultiInnerPart() throws Exception {
         int[] path = { 2, 2, 1 };
         for (int i = 1; i < 10; i++) {
@@ -134,38 +135,38 @@ public class PartContentBuilderComplexMultipartTest {
         }
     }
 
-    @Before
+    @Test
     public void testShouldLocateOuterHtml() throws Exception {
         int[] path = { 1 };
         check(FULL_OUTER_HTML, OUTER_HTML_BODY, CONTENT_TYPE_HTML, path);
     }
 
-    @Before
+    @Test
     public void testShouldLocateOuterMail() throws Exception {
         int[] path = { 2 };
         check(FULL_INNER_MAIL, INNER_MAIL, CONTENT_TYPE_RFC822, path);
     }
 
-    @Before
+    @Test
     public void testShouldLocateOuterPlain() throws Exception {
         int[] path = { 3 };
         check(FULL_OUTER_PLAIN, OUTER_PLAIN_BODY, CONTENT_TYPE_PLAIN, path);
     }
 
-    @Before
+    @Test
     public void testShouldLocateInnerHtml() throws Exception {
         int[] path = { 2, 2 };
         check(FULL_INNER_HTML, INNER_HTML_BODY, CONTENT_TYPE_HTML, path);
     }
 
-    @Before
+    @Test
     public void testShouldLocateInnerMail() throws Exception {
         int[] path = { 2, 3 };
         check(FULL_INNERMOST_EMAIL, RFC822_PLAIN_MAIL, CONTENT_TYPE_RFC822,
                 path);
     }
 
-    @Before
+    @Test
     public void testShouldLocateInnerPlain() throws Exception {
         int[] path = { 2, 1 };
         check(FULL_INNER_TXT, INNER_PLAIN_BODY, CONTENT_TYPE_PLAIN, path);

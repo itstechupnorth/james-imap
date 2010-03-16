@@ -27,7 +27,7 @@ import org.junit.Test;
 
 public class ConcurrentSessions extends FrameworkForAuthenticatedState {
 
-    public ConcurrentSessions(HostSystem system) {
+    public ConcurrentSessions(HostSystem system) throws Exception {
         super(system);
     }
     

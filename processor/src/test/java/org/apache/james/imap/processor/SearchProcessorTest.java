@@ -444,7 +444,7 @@ public class SearchProcessorTest {
         check(SearchKey.buildUnseen(), SearchQuery.flagIsUnSet(Flag.SEEN));
     }
 
-    @Test
+   
     private void check(SearchKey key, SearchQuery.Criterion criterion)
             throws Exception {
         SearchQuery query = new SearchQuery();

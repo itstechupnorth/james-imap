@@ -44,7 +44,7 @@ import org.junit.Before;
  */
 public abstract class FrameworkForSelectedStateBase extends FrameworkForAuthenticatedState {
     
-    public FrameworkForSelectedStateBase(HostSystem system) {
+    public FrameworkForSelectedStateBase(HostSystem system) throws Exception {
         super(system);
     }
 

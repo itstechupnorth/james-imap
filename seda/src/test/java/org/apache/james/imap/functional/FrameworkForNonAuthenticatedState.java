@@ -41,7 +41,7 @@ import org.junit.Before;
  * </ul>
  */
 public abstract class FrameworkForNonAuthenticatedState extends ImapProtocolFramework {
-    public FrameworkForNonAuthenticatedState(HostSystem system) {
+    public FrameworkForNonAuthenticatedState(HostSystem system) throws Exception {
         super(system);
     }
 

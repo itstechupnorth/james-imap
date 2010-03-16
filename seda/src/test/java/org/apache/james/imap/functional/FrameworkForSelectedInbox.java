@@ -52,7 +52,7 @@ import org.apache.james.test.functional.HostSystem;
  * @version $Revision: 560719 $
  */
 public abstract class FrameworkForSelectedInbox extends FrameworkForAuthenticatedState {
-    public FrameworkForSelectedInbox(HostSystem system) {
+    public FrameworkForSelectedInbox(HostSystem system) throws Exception {
         super(system);
     }
 

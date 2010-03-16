@@ -27,7 +27,7 @@ import org.junit.Test;
 
 public class SelectedInbox extends FrameworkForSelectedInbox {
 
-    public SelectedInbox(HostSystem system) {
+    public SelectedInbox(HostSystem system) throws Exception {
         super(system);
     }
 

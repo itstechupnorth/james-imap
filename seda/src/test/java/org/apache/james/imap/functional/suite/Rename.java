@@ -27,7 +27,7 @@ import org.junit.Test;
 
 public class Rename extends FrameworkForSelectedStateBase {
 
-    public Rename(HostSystem system) {
+    public Rename(HostSystem system) throws Exception {
         super(system);
     }
 

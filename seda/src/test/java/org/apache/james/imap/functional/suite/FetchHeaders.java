@@ -27,7 +27,7 @@ import org.junit.Test;
 
 public class FetchHeaders extends FrameworkForSelectedStateBase {
 
-    public FetchHeaders(HostSystem system) {
+    public FetchHeaders(HostSystem system) throws Exception {
         super(system);
     }
 

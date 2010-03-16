@@ -27,7 +27,7 @@ import org.junit.Test;
 
 public class SelectedState extends FrameworkForSelectedStateBase {
 
-    public SelectedState(HostSystem system) {
+    public SelectedState(HostSystem system) throws Exception {
         super(system);
     }
 

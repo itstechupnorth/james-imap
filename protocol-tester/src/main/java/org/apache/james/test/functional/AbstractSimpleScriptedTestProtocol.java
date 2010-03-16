@@ -47,14 +47,15 @@ public abstract class AbstractSimpleScriptedTestProtocol extends
      * @param scriptDirectory name of the directory containing the scripts to be run
      * @param fileName
      *            The name of the file to read protocol elements from.
+     * @throws Exception 
      */
-    public AbstractSimpleScriptedTestProtocol(HostSystem hostSystem, String userName, String password, String scriptDirectory) {
+    public AbstractSimpleScriptedTestProtocol(HostSystem hostSystem, String userName, String password, String scriptDirectory) throws Exception {
         super(hostSystem, userName, password);
         this.scriptDirectory = scriptDirectory;
     }
 
     @After
-    protected void tearDown() throws Exception {
+    public void tearDown() throws Exception {
         Locale.setDefault(BASE_DEFAULT_LOCALE);
     }
 

@@ -27,7 +27,7 @@ import org.junit.Test;
 
 public class Expunge extends FrameworkForSelectedStateBase {
 
-    public Expunge(HostSystem system) {
+    public Expunge(HostSystem system) throws Exception {
         super(system);
     }
     
