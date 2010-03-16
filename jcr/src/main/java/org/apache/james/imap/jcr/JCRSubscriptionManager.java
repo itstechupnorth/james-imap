@@ -58,9 +58,11 @@ public class JCRSubscriptionManager extends StoreSubscriptionManager {
 
     @Override
     protected SubscriptionMapper createMapper(MailboxSession session) throws SubscriptionException {
-        PasswordAwareUser pUser = (PasswordAwareUser) session.getUser();
+        Session jcrSession = getSession(session);
+        JCRUtils.addJCRSession(session, jcrSession);
         
-        JCRSubscriptionMapper mapper = new JCRSubscriptionMapper(getSession(pUser), logger);
+        
+        JCRSubscriptionMapper mapper = new JCRSubscriptionMapper(jcrSession, logger);
 
         return mapper;
     }
@@ -77,7 +79,9 @@ public class JCRSubscriptionManager extends StoreSubscriptionManager {
      * @return session
      * @throws MailboxException
      */
-    protected Session getSession(PasswordAwareUser user) throws SubscriptionException {
+    protected Session getSession(MailboxSession session) throws SubscriptionException {
+        PasswordAwareUser user = (PasswordAwareUser) session.getUser();
+
         try {
             return repository.login(new SimpleCredentials(user.getUserName(), user.getPassword().toCharArray()), getWorkspace());
         } catch (LoginException e) {

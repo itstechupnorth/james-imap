@@ -303,12 +303,14 @@ public class JCRMessage extends AbstractDocument implements JCRImapConstants, Pe
         node.setProperty(BODY_START_OCTET_PROPERTY, getBodyStartOctet());
 
         Node headersNode;
+        // check if some headers are already stored on this.
+        // if so remove the node just to be sure we get fresh data
         if (node.hasNode(HEADERS_NODE)) {
             headersNode = node.getNode(HEADERS_NODE);
             headersNode.remove();
-        } else {
-            headersNode = node.addNode(HEADERS_NODE);
         }
+        
+        headersNode = node.addNode(HEADERS_NODE);
         
         for (int i = 0; i < getHeaders().size(); i++) {
             JCRHeader header = (JCRHeader) getHeaders().get(i);
@@ -318,12 +320,15 @@ public class JCRMessage extends AbstractDocument implements JCRImapConstants, Pe
       
         Node propertiesNode;
         
+        // check if some properties are already stored on this.
+        // if so remove the node just to be sure we get fresh data
         if (node.hasNode(PROPERTIES_NODE)) {
             propertiesNode = node.getNode(PROPERTIES_NODE);
             propertiesNode.remove();
-        } else {
-            propertiesNode = node.addNode(PROPERTIES_NODE);
-        }
+        } 
+        
+        propertiesNode = node.addNode(PROPERTIES_NODE);
+
         
         for (int i = 0; i < getProperties().size(); i++) {
             JCRProperty prop = (JCRProperty) getProperties().get(i);

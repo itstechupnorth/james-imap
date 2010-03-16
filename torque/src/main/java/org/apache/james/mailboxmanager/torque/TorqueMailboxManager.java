@@ -411,4 +411,18 @@ public class TorqueMailboxManager implements MailboxManager {
         // fine
     }
 
+    /**
+     * Do nothing
+     */
+    public void endProcessingRequest(MailboxSession session) {
+        // Do nothing 
+    }
+
+    /**
+     * Do nothing
+     */
+    public void startProcessingRequest(MailboxSession session) {
+        // Do nothing        
+    }
+
 }

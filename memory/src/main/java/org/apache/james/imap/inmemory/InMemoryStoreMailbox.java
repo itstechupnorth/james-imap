@@ -190,18 +190,4 @@ public class InMemoryStoreMailbox extends StoreMailbox implements MessageMapper 
     public void execute(Transaction transaction) throws MailboxException {
         transaction.run();
     }
-
-    /*
-     * (non-Javadoc)
-     * @see org.apache.james.imap.store.transaction.TransactionalMapper#destroy()
-     */
-    public void destroy() {
-        // nothing todo
-    }
-
-    @Override
-    protected void onLogout(MailboxSession session) {
-        // Nothing todo
-        
-    }
 }

@@ -18,10 +18,31 @@
  ****************************************************************/
 package org.apache.james.imap.jcr;
 
-import org.apache.jackrabbit.util.Text;
+import java.util.ArrayList;
+import java.util.List;
 
+import javax.jcr.Session;
+
+import org.apache.jackrabbit.util.Text;
+import org.apache.james.imap.mailbox.MailboxSession;
+
+/**
+ * Utilities used for JCR 
+ *
+ */
 public class JCRUtils implements JCRImapConstants{
 
+    /**
+     * Identifier of stored JCR Session 
+     */
+    public final static String JCR_SESSIONS = "JCR_SESSIONS";
+    
+    /**
+     * Create a path which can be used for nodes. It handles the escaping etc
+     * 
+     * @param subNodes
+     * @return completePath
+     */
 	public static String createPath(String... subNodes) {
 		StringBuffer pathBuf = new StringBuffer();
 		
@@ -41,4 +62,39 @@ public class JCRUtils implements JCRImapConstants{
         return pathBuf.toString();
 		
 	}
+	
+	/**
+	 * Return a List of JCR Sessions for the given MailboxSession
+	 * 
+	 * @param session
+	 * @return jcrSessionList
+	 */
+	@SuppressWarnings("unchecked")
+    public static List<Session> getJCRSessions(MailboxSession session) {
+	    List<Session> sessions = null;
+	    if (session != null) {
+	        sessions = (List<Session>) session.getAttributes().get(JCR_SESSIONS);
+	    }
+	    if (sessions == null) {
+	        sessions = new ArrayList<Session>();
+	    }
+	    return sessions;
+	}
+	
+	/**
+	 * Add the JCR Session to the MailboxSession
+	 * @param session
+	 * @param jcrSession
+	 */
+    @SuppressWarnings("unchecked")
+    public static void addJCRSession(MailboxSession session, Session jcrSession) {
+        if (session != null) {
+            List<Session> sessions = (List<Session>) session.getAttributes().get(JCR_SESSIONS); 
+            if (sessions == null) {
+                sessions = new ArrayList<Session>();
+            }
+            sessions.add(jcrSession);
+            session.getAttributes().put(JCR_SESSIONS, sessions); 
+        }
+    }
 }

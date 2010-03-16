@@ -53,10 +53,4 @@ public class OpenJPAMailboxManager extends JPAMailboxManager{
         result = new OpenJPAMailbox(mailboxRow, session, entityManagerFactory);
         return result;
     }
-
-    @Override
-    protected void onLogout(MailboxSession session) {
-        // TODO Auto-generated method stub
-        
-    }
 }

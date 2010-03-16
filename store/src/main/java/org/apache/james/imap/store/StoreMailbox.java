@@ -124,10 +124,10 @@ public abstract class StoreMailbox implements org.apache.james.imap.mailbox.Mail
             MailboxSession mailboxSession, boolean isRecent, Flags flagsToBeSet)
     throws MailboxException {
         final Mailbox mailbox = reserveNextUid();
-
         if (mailbox == null) {
             throw new MailboxNotFoundException("Mailbox has been deleted");
         } else {
+            
             try {
                 // To be thread safe, we first get our own copy and the
                 // exclusive
@@ -358,10 +358,8 @@ public abstract class StoreMailbox implements org.apache.james.imap.mailbox.Mail
                     results.add(member.getUid());
                     if (reset) {
                         member.unsetRecent();
-                        
-                        // persist this to db
-                        mapper.save(member);
                     }
+                    mapper.save(member);
                 }
             }
             
@@ -605,5 +603,4 @@ public abstract class StoreMailbox implements org.apache.james.imap.mailbox.Mail
         return new MailboxMetaData(recent, permanentFlags, uidValidity, uidNext, messageCount, unseenCount, firstUnseen, isWriteable());
     }
     
-    protected abstract void onLogout(MailboxSession session);
 }

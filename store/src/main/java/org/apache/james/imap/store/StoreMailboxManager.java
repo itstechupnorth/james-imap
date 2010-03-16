@@ -474,30 +474,13 @@ public abstract class StoreMailboxManager extends AbstractLogEnabled implements 
         }
     }
     
-    /*
-     * (non-Javadoc)
-     * @see org.apache.james.imap.mailbox.MailboxManager#logout(org.apache.james.imap.mailbox.MailboxSession, boolean)
+    /**
+     * Default do nothing. Should be overriden by subclass if needed
      */
     public void logout(MailboxSession session, boolean force) throws MailboxException {
-        if (session != null) {
-            if (subscriber instanceof StoreSubscriptionManager) {
-                ((StoreSubscriptionManager) subscriber).onLogout(session);
-            }
-            StoreMailbox mailbox = (StoreMailbox) session.getAttributes().get(MAILBOX);
-            if (mailbox != null) {
-                mailbox.onLogout(session);
-            }
-            onLogout(session);
-        }
+        // Do nothing by default
     }
-    
-    /**
-     * Get called on logout if the session is not null
-     * 
-     * @param session
-     */
-    protected abstract void onLogout(MailboxSession session);
-    
+
     /**
      * Return the delemiter to use
      * 
@@ -506,4 +489,26 @@ public abstract class StoreMailboxManager extends AbstractLogEnabled implements 
     protected char getDelimiter() {
     	return delimiter;
     }
+
+
+    /**
+     * End processing of Request for session. Default is to do nothing.
+     * 
+     * Implementations should override this if they need todo anything special
+     */
+    public void endProcessingRequest(MailboxSession session) {
+        // Default do nothing
+        
+    }
+
+
+    /**
+     * Start processing of Request for session. Default is to do nothing.
+     * Implementations should override this if they need todo anything special
+     */
+    public void startProcessingRequest(MailboxSession session) {
+        // Default do nothing
+    }
+    
+    
 }

@@ -219,7 +219,7 @@ public class JCRMessageMapper extends AbstractJCRMapper implements MessageMapper
         List<MailboxMembership> list = new ArrayList<MailboxMembership>();
         
         String queryString = "//" + PATH + "//element(*)[@" + JCRMailboxMembership.MAILBOX_UUID_PROPERTY +"='" + uuid +"']";
- 
+        getSession().refresh(true);
         QueryManager manager = getSession().getWorkspace().getQueryManager();
         QueryResult result = manager.createQuery(queryString, Query.XPATH).execute();
 
@@ -306,7 +306,7 @@ public class JCRMessageMapper extends AbstractJCRMapper implements MessageMapper
             switch (type) {
                 default:
                 case ALL:
-                    results = findDeletedMessagesInMailbox(uuid);
+                    results = findMessagesInMailbox(uuid);
                     break;
                 case FROM:
                     results = findDeletedMessagesInMailboxAfterUID(uuid, from);
@@ -318,6 +318,11 @@ public class JCRMessageMapper extends AbstractJCRMapper implements MessageMapper
                     results = findDeletedMessagesInMailboxBetweenUIDs(uuid, from, to);
                     break;       
             }
+            for (int i = 0; i < results.size();i++) {
+                MailboxMembership membership = results.get(i);
+                System.out.println("UID= " + membership.getUid() + " DELETED=" + membership.isDeleted());
+            }
+            //System.out.println("DELETE FOUND=" + results.size() + " TYPE="+ type.toString());
             return results;
         } catch (RepositoryException e) {
             e.printStackTrace();
@@ -387,19 +392,17 @@ public class JCRMessageMapper extends AbstractJCRMapper implements MessageMapper
     public void save(MailboxMembership message) throws StorageException {
         JCRMailboxMembership membership = (JCRMailboxMembership) message;
         try {
-            createPathIfNotExists();
+            createNodeIfNotExists(PATH);
+            String path = JCRUtils.createPath(PATH, String.valueOf(membership.getUid()));
             Node messageNode;
-
-            if (membership.isPersistent() == false) {
-                messageNode = getSession().getRootNode().addNode(JCRUtils.createPath(PATH, String.valueOf(membership.getUid())));
-                messageNode.addMixin(JcrConstants.MIX_REFERENCEABLE);
-
-            } else {
-                messageNode = membership.getNode();
-            }
             
+            if (getSession().getRootNode().hasNode(path)) {
+                messageNode = getSession().getRootNode().getNode(path);
+            } else {
+                messageNode = getSession().getRootNode().addNode(path);
+                messageNode.addMixin(JcrConstants.MIX_REFERENCEABLE);
+            }
             membership.merge(messageNode);
-       
         } catch (RepositoryException e) {
             e.printStackTrace();
             throw new StorageException(HumanReadableText.SAVE_FAILED, e);
@@ -465,12 +468,5 @@ public class JCRMessageMapper extends AbstractJCRMapper implements MessageMapper
         }
         final String jql = queryBuilder.toString();
         return jql;
-    }
-    
-
-    protected void createPathIfNotExists() throws RepositoryException, PathNotFoundException {
-        if (getSession().getRootNode().hasNode(JCRUtils.createPath(PATH)) == false) {
-            getSession().getRootNode().addNode(JCRUtils.createPath(PATH));
-        }
     }
 }

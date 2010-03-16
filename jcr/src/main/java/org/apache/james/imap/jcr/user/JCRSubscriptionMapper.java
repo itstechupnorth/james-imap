@@ -34,7 +34,6 @@ import org.apache.commons.logging.Log;
 import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.jcr.AbstractJCRMapper;
 import org.apache.james.imap.jcr.JCRUtils;
-import org.apache.james.imap.jcr.Persistent;
 import org.apache.james.imap.jcr.user.model.JCRSubscription;
 import org.apache.james.imap.mailbox.SubscriptionException;
 import org.apache.james.imap.store.user.SubscriptionMapper;
@@ -64,18 +63,18 @@ public class JCRSubscriptionMapper extends AbstractJCRMapper implements Subscrip
      * .james.imap.store.user.model.Subscription)
      */
     public void delete(Subscription subscription) throws SubscriptionException {
-        // Check if the subscription was persistent in JCR if not don't do
-        // anything
-        if (subscription instanceof Persistent) {
-            try {
 
-                Node node = ((Persistent) subscription).getNode();
+        JCRSubscription sub = (JCRSubscription) subscription;
+        try {
+
+            Node node = sub.getNode();
+            if (node != null) {
                 node.remove();
-            } catch (PathNotFoundException e) {
-                // do nothing
-            } catch (RepositoryException e) {
-                throw new SubscriptionException(HumanReadableText.DELETED_FAILED, e);
             }
+        } catch (PathNotFoundException e) {
+            // do nothing
+        } catch (RepositoryException e) {
+            throw new SubscriptionException(HumanReadableText.DELETED_FAILED, e);
         }
 
     }
@@ -125,11 +124,7 @@ public class JCRSubscriptionMapper extends AbstractJCRMapper implements Subscrip
 
     }
 
-    protected void createPathIfNotExists(String path) throws RepositoryException, PathNotFoundException {
-        if (getSession().getRootNode().hasNode(JCRUtils.createPath(path)) == false) {
-            getSession().getRootNode().addNode(JCRUtils.createPath(path));
-        }
-    }
+
     
     /*
      * (non-Javadoc)
@@ -143,16 +138,17 @@ public class JCRSubscriptionMapper extends AbstractJCRMapper implements Subscrip
         String mailbox = subscription.getMailbox();
         String nodename = JCRUtils.createPath(PATH, username, mailbox);
         try {
-            createPathIfNotExists(PATH);
-            
-            // just a hack for now
-            createPathIfNotExists(JCRUtils.createPath(PATH,username));
+
             
             Node node;
             JCRSubscription sub = (JCRSubscription) findFindMailboxSubscriptionForUser(username, mailbox);
             
             // its a new subscription
             if (sub == null) {
+                createNodeIfNotExists(PATH);
+                // just a hack for now
+                createNodeIfNotExists(JCRUtils.createPath(PATH,username));
+                
                 node = getSession().getRootNode().addNode(nodename);
             } else {
                 node = sub.getNode();

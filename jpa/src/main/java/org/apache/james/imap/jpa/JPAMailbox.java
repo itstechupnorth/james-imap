@@ -48,7 +48,6 @@ public abstract class JPAMailbox extends StoreMailbox {
 
     protected final EntityManagerFactory entityManagerFactory;
 
-    public final static String MESSAGE_MAPPER = "MESSAGE_MAPPER";
     public JPAMailbox(final Mailbox mailbox, MailboxSession session, final EntityManagerFactory entityManagerfactory) {
         super(mailbox, session);
         this.entityManagerFactory = entityManagerfactory;
@@ -104,12 +103,5 @@ public abstract class JPAMailbox extends StoreMailbox {
         final JPAMailboxMapper mapper = createMailboxMapper(getMailboxSession());
         final Mailbox mailbox = mapper.consumeNextUid(mailboxId);
         return mailbox;
-    }
-
-    @Override
-    protected void onLogout(MailboxSession session) {
-        
-    }    
-    
-    
+    } 
 }

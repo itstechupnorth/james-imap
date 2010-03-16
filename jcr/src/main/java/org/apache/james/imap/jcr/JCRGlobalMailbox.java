@@ -30,8 +30,12 @@ import org.apache.commons.logging.Log;
 import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.mailbox.MailboxSession;
 import org.apache.james.imap.mailbox.SubscriptionException;
-import org.apache.james.imap.store.PasswordAwareUser;
 
+/**
+ * JCR based Mailbox which use the same username and password to obtain a
+ * JCR Session for every MailboxSession
+ *
+ */
 public class JCRGlobalMailbox extends JCRMailbox{
 
 	private final String username;
@@ -45,7 +49,7 @@ public class JCRGlobalMailbox extends JCRMailbox{
 	}
 
 	@Override
-	  protected Session getSession(PasswordAwareUser user) throws SubscriptionException {
+	  protected Session getSession(MailboxSession session) throws SubscriptionException {
         try {
             return getRepository().login(new SimpleCredentials(username, password), getWorkspace());
         } catch (LoginException e) {

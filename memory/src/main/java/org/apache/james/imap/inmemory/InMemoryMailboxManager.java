@@ -64,6 +64,10 @@ public class InMemoryMailboxManager extends StoreMailboxManager implements Mailb
     }
 
 
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.store.mail.MailboxMapper#countMailboxesWithName(java.lang.String)
+     */
     public long countMailboxesWithName(String name) throws StorageException {
         int total = 0;
         for (final InMemoryMailbox mailbox:mailboxesById.values()) {
@@ -74,18 +78,34 @@ public class InMemoryMailboxManager extends StoreMailboxManager implements Mailb
         return total;
     }
 
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.store.mail.MailboxMapper#delete(org.apache.james.imap.store.mail.model.Mailbox)
+     */
     public void delete(Mailbox mailbox) throws StorageException {
         mailboxesById.remove(mailbox.getMailboxId());
     }
 
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.store.mail.MailboxMapper#deleteAll()
+     */
     public void deleteAll() throws StorageException {
         mailboxesById.clear();
     }
 
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.store.mail.MailboxMapper#findMailboxById(long)
+     */
     public Mailbox findMailboxById(long mailboxId) throws StorageException, MailboxNotFoundException {
         return mailboxesById.get(mailboxesById);
     }
 
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.store.mail.MailboxMapper#findMailboxByName(java.lang.String)
+     */
     public Mailbox findMailboxByName(String name) throws StorageException, MailboxNotFoundException {
         Mailbox result = null;
         for (final InMemoryMailbox mailbox:mailboxesById.values()) {
@@ -97,6 +117,10 @@ public class InMemoryMailboxManager extends StoreMailboxManager implements Mailb
         return result;
     }
 
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.store.mail.MailboxMapper#findMailboxWithNameLike(java.lang.String)
+     */
     public List<Mailbox> findMailboxWithNameLike(String name) throws StorageException {
         final String regex = name.replace("%", ".*");
         List<Mailbox> results = new ArrayList<Mailbox>();
@@ -108,6 +132,10 @@ public class InMemoryMailboxManager extends StoreMailboxManager implements Mailb
         return results;
     }
 
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.store.mail.MailboxMapper#existsMailboxStartingWith(java.lang.String)
+     */
     public boolean existsMailboxStartingWith(String mailboxName) throws StorageException {
         boolean result = false;
         for (final InMemoryMailbox mailbox:mailboxesById.values()) {
@@ -119,10 +147,18 @@ public class InMemoryMailboxManager extends StoreMailboxManager implements Mailb
         return result;
     }
 
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.store.mail.MailboxMapper#save(org.apache.james.imap.store.mail.model.Mailbox)
+     */
     public void save(Mailbox mailbox) throws StorageException {
         mailboxesById.put(mailbox.getMailboxId(), (InMemoryMailbox) mailbox);
     }
 
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.store.transaction.TransactionalMapper#execute(org.apache.james.imap.store.transaction.TransactionalMapper.Transaction)
+     */
     public void execute(Transaction transaction) throws MailboxException {
         transaction.run();
     }
@@ -143,19 +179,6 @@ public class InMemoryMailboxManager extends StoreMailboxManager implements Mailb
             }
             
         });
-    }
-
-    /**
-     * 
-     */
-    public void destroy() {
-        // Nothing todo
-    }
-
-    @Override
-    protected void onLogout(MailboxSession session) {
-        // Nothing todo
-        
     }
     
 }

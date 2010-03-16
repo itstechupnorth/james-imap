@@ -120,7 +120,12 @@ abstract public class AbstractMailboxProcessor extends AbstractChainedProcessor 
             responder.respond(response);
 
         } else {
+            getMailboxManager().startProcessingRequest(ImapSessionUtils.getMailboxSession(session));
+           
             doProcess(message, session, tag, command, responder);
+            
+            getMailboxManager().endProcessingRequest(ImapSessionUtils.getMailboxSession(session));
+
         }
     }
 
@@ -308,7 +313,7 @@ abstract public class AbstractMailboxProcessor extends AbstractChainedProcessor 
         return mailboxName;
     }
     
-    public MailboxManager getMailboxManager() throws MailboxException {
+    public MailboxManager getMailboxManager() {
         return mailboxManager;
     }
 

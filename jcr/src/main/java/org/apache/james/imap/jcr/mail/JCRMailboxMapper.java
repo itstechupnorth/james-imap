@@ -36,6 +36,7 @@ import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.jcr.AbstractJCRMapper;
 import org.apache.james.imap.jcr.JCRUtils;
 import org.apache.james.imap.jcr.mail.model.JCRMailbox;
+import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.MailboxNotFoundException;
 import org.apache.james.imap.mailbox.StorageException;
 import org.apache.james.imap.store.mail.MailboxMapper;
@@ -220,41 +221,48 @@ public class JCRMailboxMapper extends AbstractJCRMapper implements MailboxMapper
      */
     public void save(Mailbox mailbox) throws StorageException {
         
-        String nodePath = JCRUtils.createPath(PATH,mailbox.getName());
+        String nodePath = JCRUtils.createPath(PATH, mailbox.getName());
         try {
-            createPathIfNotExists();
+            createNodeIfNotExists(PATH);
             JCRMailbox jcrMailbox = (JCRMailbox)mailbox;
-            
+            JCRMailbox savedMailbox = null;
 
+            try {
+                savedMailbox = (JCRMailbox) findMailboxByName(mailbox.getName());
+            } catch (MailboxNotFoundException e) {
+                // no mailbox with this name..
+            }
+            
             Node node;
-            if (jcrMailbox.isPersistent() == false) {
+            if (savedMailbox == null) {
                 node = getSession().getRootNode().addNode(nodePath);
                 node.addMixin(JcrConstants.MIX_REFERENCEABLE);
             } else {
-                node = jcrMailbox.getNode();
+                node = savedMailbox.getNode();
             }
             
             jcrMailbox.merge(node);
 
         } catch (RepositoryException e) {
-        	e.printStackTrace();
+            e.printStackTrace();
             throw new StorageException(HumanReadableText.SAVE_FAILED, e);
         }
     }
     
     public Mailbox consumeNextUid(String uuid) throws StorageException, MailboxNotFoundException {
 
-        JCRMailbox mailbox = (JCRMailbox) findMailboxByUUID(uuid);
-        mailbox.consumeUid();
+        final JCRMailbox mailbox = (JCRMailbox) findMailboxByUUID(uuid);
+        try {
+            execute(new Transaction() {
+                
+                public void run() throws MailboxException {
+                    mailbox.consumeUid();
+                }
+            });
+        } catch (MailboxException e) {
+            throw (StorageException)e;
+        }
         return mailbox;
 
     }
-    
-    protected void createPathIfNotExists() throws RepositoryException, PathNotFoundException {
-
-        if (getSession().getRootNode().hasNode(JCRUtils.createPath(PATH)) == false) {
-            getSession().getRootNode().addNode(JCRUtils.createPath(PATH));
-        }
-    }
-
 }

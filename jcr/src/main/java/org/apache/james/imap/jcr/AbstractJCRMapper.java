@@ -18,6 +18,7 @@
  ****************************************************************/
 package org.apache.james.imap.jcr;
 
+import javax.jcr.PathNotFoundException;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 
@@ -30,6 +31,7 @@ import org.apache.james.imap.store.transaction.AbstractTransactionalMapper;
 /**
  * Abstract Mapper base class for Level 1 Implementations of JCR. So no real transaction management is used. 
  * 
+ * The Session.save() will get called on commit() method
  *
  */
 public abstract class AbstractJCRMapper extends AbstractTransactionalMapper implements JCRImapConstants{
@@ -40,17 +42,28 @@ public abstract class AbstractJCRMapper extends AbstractTransactionalMapper impl
         this.session = session;
     }
     
+    /**
+     * Return the JCR Session
+     * 
+     * @return session
+     */
     protected Session getSession() {
         return session;
     }
 
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.store.transaction.TransactionalMapper#destroy()
+     */
     public void destroy() {
+        // Do nothing
     }
 
     /**
      * Begin is not supported by level 1 JCR implementations, so just do nothing
      */
-    protected void begin() throws MailboxException {        
+    protected void begin() throws MailboxException {    
+        // Do nothing
     }
 
     /**
@@ -74,5 +87,11 @@ public abstract class AbstractJCRMapper extends AbstractTransactionalMapper impl
         // no rollback supported by level 1 jcr
     }
     
+    protected void createNodeIfNotExists(String path) throws RepositoryException, PathNotFoundException {
+        
+        if (session.getRootNode().hasNode(path) == false) {
+           session.getRootNode().addNode(path);
+        }
+    }
     
 }

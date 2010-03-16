@@ -373,7 +373,7 @@ public class JCRMailboxMembership extends AbstractMailboxMembership implements
 	public void unsetRecent() {
 		if (isPersistent()) {
 			try {
-				node.getProperty(RECENT_PROPERTY).setValue(false);
+				node.setProperty(RECENT_PROPERTY, false);
 
 			} catch (RepositoryException e) {
 				logger.error("Unable to access property " + RECENT_PROPERTY, e);

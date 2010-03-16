@@ -26,8 +26,8 @@ import javax.jcr.Session;
 import javax.jcr.SimpleCredentials;
 
 import org.apache.james.imap.api.display.HumanReadableText;
+import org.apache.james.imap.mailbox.MailboxSession;
 import org.apache.james.imap.mailbox.SubscriptionException;
-import org.apache.james.imap.store.PasswordAwareUser;
 
 /**
  * JCR based SubscriptionManager which use the same username and password to
@@ -51,7 +51,7 @@ public class JCRGlobalUserSubscriptionManager extends JCRSubscriptionManager {
     }
 
     @Override
-    protected Session getSession(PasswordAwareUser user) throws SubscriptionException {
+    protected Session getSession(MailboxSession session) throws SubscriptionException {
         try {
             return getRepository().login(new SimpleCredentials(username, password), getWorkspace());
         } catch (LoginException e) {

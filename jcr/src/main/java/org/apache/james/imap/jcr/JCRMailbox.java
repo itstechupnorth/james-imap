@@ -47,15 +47,17 @@ import org.apache.james.imap.store.mail.model.Mailbox;
 import org.apache.james.imap.store.mail.model.MailboxMembership;
 import org.apache.james.imap.store.mail.model.PropertyBuilder;
 
+/**
+ * JCR implementation of a {@link StoreMailbox}
+ *
+ */
 public class JCRMailbox extends StoreMailbox{
 
     private final Repository repository;
     private final String workspace;
     private final Log log;
     private final String uuid;
-    public final static String MESSAGE_MAPPER = "MESSAGE_MAPPER";
-    public final static String MAILBOX_MAPPER = "MAILBOX_MAPPER";
-
+    
     public JCRMailbox(final org.apache.james.imap.jcr.mail.model.JCRMailbox mailbox, final MailboxSession session, final Repository repository, final String workspace, final Log log) {
         super(mailbox, session );
         this.repository = repository;
@@ -99,18 +101,20 @@ public class JCRMailbox extends StoreMailbox{
 
     @Override
     protected MessageMapper createMessageMapper(MailboxSession session) throws MailboxException {
-        PasswordAwareUser user = (PasswordAwareUser)getMailboxSession().getUser();
-
-        JCRMessageMapper messageMapper = new JCRMessageMapper(getSession(user), getMailboxUUID(), log);
+        Session jcrSession = getSession(session);
+        JCRUtils.addJCRSession(session, jcrSession);
+        
+        JCRMessageMapper messageMapper = new JCRMessageMapper(jcrSession, getMailboxUUID(), log);
         
         return messageMapper;
 
     }
 
     protected JCRMailboxMapper createMailboxMapper(MailboxSession session) throws MailboxException {
-
-        PasswordAwareUser user = (PasswordAwareUser) getMailboxSession().getUser();
-        JCRMailboxMapper mapper = new JCRMailboxMapper(getSession(user), log);
+        Session jcrSession = getSession(session);
+        JCRUtils.addJCRSession(session, jcrSession);
+        
+        JCRMailboxMapper mapper = new JCRMailboxMapper(jcrSession, log);
         return mapper;
 
     }
@@ -134,7 +138,9 @@ public class JCRMailbox extends StoreMailbox{
      * @return session
      * @throws MailboxException
      */
-    protected Session getSession(PasswordAwareUser user) throws SubscriptionException {
+    protected Session getSession(MailboxSession session) throws SubscriptionException {
+        PasswordAwareUser user = (PasswordAwareUser) getMailboxSession().getUser();
+
         try {
             return repository.login(new SimpleCredentials(user.getUserName(), user.getPassword().toCharArray()), getWorkspace());
         } catch (LoginException e) {
@@ -156,13 +162,13 @@ public class JCRMailbox extends StoreMailbox{
         return workspace;
     }
 
+    /**
+     * Return JCR Repository
+     * 
+     * @return repository
+     */
     protected Repository getRepository() {
         return repository;
     }
 
-
-    @Override
-    protected void onLogout(MailboxSession session) {
-     
-    }
 }

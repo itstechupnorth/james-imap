@@ -49,10 +49,5 @@ public interface TransactionalMapper {
          */
         public void run() throws MailboxException;
     }
-    
-    /**
-     * Destroy the mapper
-     */
-    public void destroy();
 
 }

@@ -19,6 +19,7 @@
 package org.apache.james.imap.jcr;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 import javax.jcr.LoginException;
@@ -71,7 +72,11 @@ public class JCRMailboxManager extends StoreMailboxManager {
     @Override
     protected MailboxMapper createMailboxMapper(MailboxSession session) throws MailboxException {
 
-        JCRMailboxMapper mapper = new JCRMailboxMapper(getSession(session), getLog());
+        Session jcrSession = getSession(session);
+
+        JCRUtils.addJCRSession(session, jcrSession);
+        
+        JCRMailboxMapper mapper = new JCRMailboxMapper(jcrSession, getLog());
         return mapper;
 
     }
@@ -86,7 +91,8 @@ public class JCRMailboxManager extends StoreMailboxManager {
     protected Session getSession(MailboxSession s) throws MailboxException {
         PasswordAwareUser user = (PasswordAwareUser) s.getUser();
         try {
-            return repository.login(new SimpleCredentials(user.getUserName(), user.getPassword().toCharArray()), getWorkspace());
+            Session session =  repository.login(new SimpleCredentials(user.getUserName(), user.getPassword().toCharArray()), getWorkspace());
+            return session;
         } catch (LoginException e) {
             throw new MailboxException(HumanReadableText.INVALID_LOGIN, e);
         } catch (NoSuchWorkspaceException e) {
@@ -135,12 +141,32 @@ public class JCRMailboxManager extends StoreMailboxManager {
         return workspace;
     }
 
+    /**
+     * Get the JCR Repository
+     * 
+     * @return repository
+     */
     protected Repository getRepository() {
         return repository;
     }
 
-    @Override
-    protected void onLogout(MailboxSession session) {
-        
+
+    /**
+     * Logout from all openen JCR Sessions
+     */
+    public void endProcessingRequest(MailboxSession session) {
+        List<Session> sessions = JCRUtils.getJCRSessions(session);
+        for (int i = 0 ; i < sessions.size(); i++) {
+            Session jcrSession = sessions.get(i);
+            if (jcrSession.isLive()) {
+                try {
+                    jcrSession.logout();
+                } catch (Exception e) {
+                    // just catch exceptions on logout
+                }
+            }
+        }
     }
+    
+    
 }
