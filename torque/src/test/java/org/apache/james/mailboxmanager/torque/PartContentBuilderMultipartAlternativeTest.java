@@ -32,8 +32,6 @@ import org.apache.james.imap.store.StringBuilderChannel;
 import org.junit.Before;
 import org.junit.Test;
 
-import junit.framework.TestCase;
-
 public class PartContentBuilderMultipartAlternativeTest {
 
     private static final String CONTENT_TYPE_PLAIN = "text/plain;charset=us-ascii";

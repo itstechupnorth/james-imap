@@ -27,8 +27,6 @@ import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.util.List;
 
-import junit.framework.TestCase;
-
 import org.apache.james.imap.mailbox.MessageResult.Header;
 import org.apache.james.imap.store.PartContentBuilder.PartNotFoundException;
 import org.junit.Before;
