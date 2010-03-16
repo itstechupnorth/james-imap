@@ -19,6 +19,8 @@
 
 package org.apache.james.imap.encode;
 
+import static org.junit.Assert.*;
+
 import org.apache.james.imap.api.ImapCommand;
 import org.apache.james.imap.api.ImapConstants;
 import org.apache.james.imap.api.display.HumanReadableText;
@@ -29,9 +31,15 @@ import org.apache.james.imap.encode.StatusResponseEncoder;
 import org.apache.james.imap.encode.base.ImapResponseComposerImpl;
 import org.apache.james.imap.encode.main.DefaultLocalizer;
 import org.jmock.Expectations;
-import org.jmock.integration.junit3.MockObjectTestCase;
+import org.jmock.Mockery;
+import org.jmock.integration.junit4.JMock;
+import org.jmock.integration.junit4.JUnit4Mockery;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
-public class StatusResponseEncoderTest extends MockObjectTestCase {
+@RunWith(JMock.class)
+public class StatusResponseEncoderTest {
 
     private static final String COMMAND = "COMMAND";
 
@@ -52,20 +60,20 @@ public class StatusResponseEncoderTest extends MockObjectTestCase {
 
     ImapCommand stubCommand;
 
+    private Mockery context = new JUnit4Mockery();
+
+    @Before
     protected void setUp() throws Exception {
-        super.setUp();
         writer = new MockImapResponseWriter();
         response = new ImapResponseComposerImpl(writer);
-        mockNextEncoder = mock(ImapEncoder.class);
-        mockStatusResponse = mock(StatusResponse.class);
+        mockNextEncoder = context.mock(ImapEncoder.class);
+        mockStatusResponse = context.mock(StatusResponse.class);
         encoder = new StatusResponseEncoder(mockNextEncoder, new DefaultLocalizer());
         stubCommand = ImapCommand.anyStateCommand(COMMAND);
     }
 
-    protected void tearDown() throws Exception {
-        super.tearDown();
-    }
 
+    @Test
     public void testTaggedOkCode() throws Exception {
         execute(StatusResponse.Type.OK, StatusResponse.ResponseCode.alert(),
                 KEY, TAG);
@@ -89,6 +97,7 @@ public class StatusResponseEncoderTest extends MockObjectTestCase {
                 writer.operations.get(7));
     }
 
+    @Test
     public void testTaggedOkNoCode() throws Exception {
         execute(StatusResponse.Type.OK, null, KEY, TAG);
         assertEquals(5, this.writer.operations.size());
@@ -104,6 +113,7 @@ public class StatusResponseEncoderTest extends MockObjectTestCase {
                 writer.operations.get(4));
     }
 
+    @Test
     public void testTaggedBadCode() throws Exception {
         execute(StatusResponse.Type.BAD, StatusResponse.ResponseCode.alert(),
                 KEY, TAG);
@@ -127,6 +137,7 @@ public class StatusResponseEncoderTest extends MockObjectTestCase {
                 writer.operations.get(7));
     }
 
+    @Test
     public void testTaggedBadNoCode() throws Exception {
         execute(StatusResponse.Type.BAD, null, KEY, TAG);
         assertEquals(5, this.writer.operations.size());
@@ -142,6 +153,7 @@ public class StatusResponseEncoderTest extends MockObjectTestCase {
                 writer.operations.get(4));
     }
 
+    @Test
     public void testTaggedNoCode() throws Exception {
         execute(StatusResponse.Type.NO, StatusResponse.ResponseCode.alert(),
                 KEY, TAG);
@@ -165,6 +177,7 @@ public class StatusResponseEncoderTest extends MockObjectTestCase {
                 writer.operations.get(7));
     }
 
+    @Test
     public void testTaggedNoNoCode() throws Exception {
         execute(StatusResponse.Type.NO, null, KEY, TAG);
         assertEquals(5, this.writer.operations.size());
@@ -180,6 +193,7 @@ public class StatusResponseEncoderTest extends MockObjectTestCase {
                 writer.operations.get(4));
     }
 
+    @Test
     public void testUntaggedOkCode() throws Exception {
         execute(StatusResponse.Type.OK, StatusResponse.ResponseCode.alert(),
                 KEY, null);
@@ -201,6 +215,7 @@ public class StatusResponseEncoderTest extends MockObjectTestCase {
                 writer.operations.get(6));
     }
 
+    @Test
     public void testUntaggedOkNoCode() throws Exception {
         execute(StatusResponse.Type.OK, null, KEY, null);
         assertEquals(4, this.writer.operations.size());
@@ -214,6 +229,7 @@ public class StatusResponseEncoderTest extends MockObjectTestCase {
                 writer.operations.get(3));
     }
 
+    @Test
     public void testUntaggedBadCode() throws Exception {
         execute(StatusResponse.Type.BAD, StatusResponse.ResponseCode.alert(),
                 KEY, null);
@@ -235,6 +251,7 @@ public class StatusResponseEncoderTest extends MockObjectTestCase {
                 writer.operations.get(6));
     }
 
+    @Test
     public void testUntaggedBadNoCode() throws Exception {
         execute(StatusResponse.Type.BAD, null, KEY, null);
         assertEquals(4, this.writer.operations.size());
@@ -248,6 +265,7 @@ public class StatusResponseEncoderTest extends MockObjectTestCase {
                 writer.operations.get(3));
     }
 
+    @Test
     public void testUntaggedNoCode() throws Exception {
         execute(StatusResponse.Type.NO, StatusResponse.ResponseCode.alert(),
                 KEY, null);
@@ -269,6 +287,7 @@ public class StatusResponseEncoderTest extends MockObjectTestCase {
                 writer.operations.get(6));
     }
 
+    @Test
     public void testUntaggedNoNoCode() throws Exception {
         execute(StatusResponse.Type.NO, null, KEY, null);
         assertEquals(4, this.writer.operations.size());
@@ -289,6 +308,7 @@ public class StatusResponseEncoderTest extends MockObjectTestCase {
         compose();
     }
 
+    
     private void compose() throws Exception {
         encoder.doEncode(mockStatusResponse, response, new FakeImapSession());
     }
@@ -296,7 +316,7 @@ public class StatusResponseEncoderTest extends MockObjectTestCase {
     private void configure(final StatusResponse.Type type,
             final StatusResponse.ResponseCode code, final HumanReadableText key,
             final String tag) {
-        checking(new Expectations() {{
+        context.checking(new Expectations() {{
             oneOf(mockStatusResponse).getServerResponseType();will(returnValue(type));
             oneOf(mockStatusResponse).getTag();will(returnValue(tag));
             oneOf(mockStatusResponse).getTextKey();will(returnValue(key));

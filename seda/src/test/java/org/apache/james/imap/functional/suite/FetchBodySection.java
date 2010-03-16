@@ -23,6 +23,7 @@ import java.util.Locale;
 
 import org.apache.james.imap.functional.FrameworkForSelectedStateBase;
 import org.apache.james.test.functional.HostSystem;
+import org.junit.Test;
 
 public class FetchBodySection extends FrameworkForSelectedStateBase {
 
@@ -30,38 +31,47 @@ public class FetchBodySection extends FrameworkForSelectedStateBase {
         super(system);
     }
 
+    @Test
     public void testFetchMultipartAlternativeUS() throws Exception {
         scriptTest("FetchMultipartAlternative", Locale.US);
     }
 
+    @Test
     public void testFetchMultipartAlternativeITALY() throws Exception {
         scriptTest("FetchMultipartAlternative", Locale.ITALY);
     }
 
+    @Test
     public void testFetchMultipartAlternativeKOREA() throws Exception {
         scriptTest("FetchMultipartAlternative", Locale.KOREA);
     }
 
+    @Test
     public void testFetchMultipartMixedUS() throws Exception {
         scriptTest("FetchMultipartMixed", Locale.US);
     }
 
+    @Test
     public void testFetchMultipartMixedITALY() throws Exception {
         scriptTest("FetchMultipartMixed", Locale.ITALY);
     }
 
+    @Test
     public void testFetchMultipartMixedKOREA() throws Exception {
         scriptTest("FetchMultipartMixed", Locale.KOREA);
     }
 
+    @Test
     public void testFetchMultipartMixedComplexUS() throws Exception {
         scriptTest("FetchMultipartMixedComplex", Locale.US);
     }
 
+    @Test
     public void testFetchMultipartMixedComplexITALY() throws Exception {
         scriptTest("FetchMultipartMixedComplex", Locale.ITALY);
     }
 
+    @Test
     public void testFetchMultipartMixedComplexKOREA() throws Exception {
         scriptTest("FetchMultipartMixedComplex", Locale.KOREA);
     }

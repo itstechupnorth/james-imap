@@ -23,6 +23,7 @@ import java.util.Locale;
 
 import org.apache.james.imap.functional.FrameworkForSelectedStateBase;
 import org.apache.james.test.functional.HostSystem;
+import org.junit.Test;
 
 public class Events extends FrameworkForSelectedStateBase {
 
@@ -30,14 +31,17 @@ public class Events extends FrameworkForSelectedStateBase {
         super(system);
     }
 
+    @Test
     public void testAppendToSelectedUS() throws Exception {
         scriptTest("AppendToSelected", Locale.US);
     }
 
+    @Test
     public void testAppendToSelectedKOREA() throws Exception {
         scriptTest("AppendToSelected", Locale.KOREA);
     }
 
+    @Test
     public void testAppendToSelectedITALY() throws Exception {
         scriptTest("AppendToSelected", Locale.ITALY);
     }

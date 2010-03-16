@@ -23,6 +23,7 @@ import java.util.Locale;
 
 import org.apache.james.imap.functional.FrameworkForSelectedStateBase;
 import org.apache.james.test.functional.HostSystem;
+import org.junit.Test;
 
 public class Rename extends FrameworkForSelectedStateBase {
 
@@ -30,38 +31,47 @@ public class Rename extends FrameworkForSelectedStateBase {
         super(system);
     }
 
+    @Test
     public void testRenameUS() throws Exception {
         scriptTest("Rename", Locale.US);
     }
-
+    
+    @Test
     public void testRenameKOREA() throws Exception {
         scriptTest("Rename", Locale.KOREA);
     }
 
+    @Test
     public void testRenameITALY() throws Exception {
         scriptTest("Rename", Locale.ITALY);
     }
 
+    @Test
     public void testRenameHierarchyUS() throws Exception {
         scriptTest("RenameHierarchy", Locale.US);
     }
 
+    @Test
     public void testRenameHierarchyKO() throws Exception {
         scriptTest("RenameHierarchy", Locale.KOREA);
     }
 
+    @Test
     public void testRenameHierarchyIT() throws Exception {
         scriptTest("RenameHierarchy", Locale.ITALY);
     }
 
+    @Test
     public void testRenameSelectedUS() throws Exception {
         scriptTest("RenameSelected", Locale.US);
     }
 
+    @Test
     public void testRenameSelectedIT() throws Exception {
         scriptTest("RenameSelected", Locale.ITALY);
     }
 
+    @Test
     public void testRenameSelectedKO() throws Exception {
         scriptTest("RenameSelected", Locale.KOREA);
     }

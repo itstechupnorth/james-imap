@@ -22,6 +22,8 @@ package org.apache.james.test.functional;
 import java.io.InputStream;
 import java.util.Locale;
 
+import org.junit.After;
+
 
 /**
  * A Protocol test which reads the test protocol session from a file. The file
@@ -51,9 +53,9 @@ public abstract class AbstractSimpleScriptedTestProtocol extends
         this.scriptDirectory = scriptDirectory;
     }
 
+    @After
     protected void tearDown() throws Exception {
         Locale.setDefault(BASE_DEFAULT_LOCALE);
-        super.tearDown();
     }
 
     /**

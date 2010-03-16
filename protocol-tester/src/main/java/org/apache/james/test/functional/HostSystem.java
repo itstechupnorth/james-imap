@@ -74,4 +74,9 @@ public interface HostSystem {
     public interface Continuation {
         public void doContinue();
     }
+    
+    public void beforeTests() throws Exception;
+
+    
+    public void afterTests() throws Exception;
 }

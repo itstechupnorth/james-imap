@@ -19,20 +19,18 @@
 
 package org.apache.james.imap.encode;
 
+import static org.junit.Assert.*;
+
 import java.util.Date;
+
+import org.junit.Test;
 
 import junit.framework.TestCase;
 
-public class EncoderUtilsTest extends TestCase {
+public class EncoderUtilsTest {
 
-    protected void setUp() throws Exception {
-        super.setUp();
-    }
 
-    protected void tearDown() throws Exception {
-        super.tearDown();
-    }
-
+    @Test
     public void testSimpleEncodeDateTime() {
         assertEquals("03-Sep-2004 05:08:43 +0000", EncoderUtils
                 .encodeDateTime(new Date(1094188123661L)));

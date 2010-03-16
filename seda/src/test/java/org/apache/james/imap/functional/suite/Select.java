@@ -23,6 +23,7 @@ import java.util.Locale;
 
 import org.apache.james.imap.functional.FrameworkForAuthenticatedState;
 import org.apache.james.test.functional.HostSystem;
+import org.junit.Test;
 
 public class Select extends FrameworkForAuthenticatedState {
 
@@ -30,14 +31,17 @@ public class Select extends FrameworkForAuthenticatedState {
         super(system);
     }
 
+    @Test
     public void testSelectUnseenUS() throws Exception {
         scriptTest("SelectUnseen", Locale.US);
     }
 
+    @Test
     public void testSelectUnseenKOREA() throws Exception {
         scriptTest("SelectUnseen", Locale.KOREA);
     }
 
+    @Test
     public void testSelectUnseenITALY() throws Exception {
         scriptTest("SelectUnseen", Locale.ITALY);
     }

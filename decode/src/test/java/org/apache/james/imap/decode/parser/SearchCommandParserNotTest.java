@@ -19,6 +19,8 @@
 
 package org.apache.james.imap.decode.parser;
 
+import static org.junit.Assert.assertEquals;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 
@@ -29,9 +31,15 @@ import org.apache.james.imap.api.message.IdRange;
 import org.apache.james.imap.api.message.request.DayMonthYear;
 import org.apache.james.imap.api.message.request.SearchKey;
 import org.apache.james.imap.decode.ImapRequestLineReader;
-import org.jmock.integration.junit3.MockObjectTestCase;
+import org.jmock.Mockery;
+import org.jmock.integration.junit4.JMock;
+import org.jmock.integration.junit4.JUnit4Mockery;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
-public class SearchCommandParserNotTest extends MockObjectTestCase {
+@RunWith(JMock.class)
+public class SearchCommandParserNotTest {
 
     SearchCommandParser parser;
 
@@ -40,19 +48,18 @@ public class SearchCommandParserNotTest extends MockObjectTestCase {
 
     ImapMessage message;
 
+    private Mockery context = new JUnit4Mockery();
+    
+    @Before
     protected void setUp() throws Exception {
-        super.setUp();
         parser = new SearchCommandParser();
-        mockMessageFactory = mock(ImapMessageFactory.class);
+        mockMessageFactory = context.mock(ImapMessageFactory.class);
         command = ImapCommand.anyStateCommand("Command");
-        message = mock(ImapMessage.class);
+        message = context.mock(ImapMessage.class);
         parser.setMessageFactory(mockMessageFactory);
     }
 
-    protected void tearDown() throws Exception {
-        super.tearDown();
-    }
-
+    @Test
     public void testShouldParseNotSequence() throws Exception {
         IdRange[] range = { new IdRange(Long.MAX_VALUE, 100), new IdRange(110),
                 new IdRange(200, 201), new IdRange(400, Long.MAX_VALUE) };
@@ -61,6 +68,7 @@ public class SearchCommandParserNotTest extends MockObjectTestCase {
         checkValid("NOT *:100,110,200:201,400:*\r\n", key);
     }
 
+    @Test
     public void testShouldParseNotUid() throws Exception {
         IdRange[] range = { new IdRange(Long.MAX_VALUE, 100), new IdRange(110),
                 new IdRange(200, 201), new IdRange(400, Long.MAX_VALUE) };
@@ -69,6 +77,7 @@ public class SearchCommandParserNotTest extends MockObjectTestCase {
         checkValid("NOT UID *:100,110,200:201,400:*\r\n", key);
     }
 
+    @Test
     public void testShouldParseNotHeaderKey() throws Exception {
         SearchKey notdKey = SearchKey.buildHeader("FROM", "Smith");
         SearchKey key = SearchKey.buildNot(notdKey);
@@ -76,6 +85,7 @@ public class SearchCommandParserNotTest extends MockObjectTestCase {
         checkValid("NOT header FROM Smith\r\n", key);
     }
 
+    @Test
     public void testShouldParseNotDateParameterKey() throws Exception {
         SearchKey notdKey = SearchKey.buildSince(new DayMonthYear(11, 1, 2001));
         SearchKey key = SearchKey.buildNot(notdKey);
@@ -83,6 +93,7 @@ public class SearchCommandParserNotTest extends MockObjectTestCase {
         checkValid("NOT SINCE 11-Jan-2001\r\n", key);
     }
 
+    @Test
     public void testShouldParseNotStringParameterKey() throws Exception {
         SearchKey notdKey = SearchKey.buildFrom("Smith");
         SearchKey key = SearchKey.buildNot(notdKey);
@@ -90,12 +101,14 @@ public class SearchCommandParserNotTest extends MockObjectTestCase {
         checkValid("NOT FROM \"Smith\"\r\n", key);
     }
 
+    @Test
     public void testShouldParseNotStringQuotedParameterKey() throws Exception {
         SearchKey notdKey = SearchKey.buildFrom("Smith And Jones");
         SearchKey key = SearchKey.buildNot(notdKey);
         checkValid("NOT FROM \"Smith And Jones\"\r\n", key);
     }
 
+    @Test
     public void testShouldParseNotNoParameterKey() throws Exception {
         SearchKey notdKey = SearchKey.buildNew();
         SearchKey key = SearchKey.buildNot(notdKey);

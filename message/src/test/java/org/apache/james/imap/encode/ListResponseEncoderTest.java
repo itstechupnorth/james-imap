@@ -19,15 +19,23 @@
 
 package org.apache.james.imap.encode;
 
+import static org.junit.Assert.*;
+
 import org.apache.james.imap.api.ImapMessage;
 import org.apache.james.imap.encode.ImapEncoder;
 import org.apache.james.imap.encode.ImapResponseComposer;
 import org.apache.james.imap.encode.SearchResponseEncoder;
 import org.apache.james.imap.message.response.SearchResponse;
 import org.jmock.Expectations;
-import org.jmock.integration.junit3.MockObjectTestCase;
+import org.jmock.Mockery;
+import org.jmock.integration.junit4.JMock;
+import org.jmock.integration.junit4.JUnit4Mockery;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
-public class ListResponseEncoderTest extends MockObjectTestCase {
+@RunWith(JMock.class)
+public class ListResponseEncoderTest {
 
     private static final long[] IDS = { 1, 4, 9, 16 };
 
@@ -39,26 +47,26 @@ public class ListResponseEncoderTest extends MockObjectTestCase {
 
     ImapResponseComposer composer;
 
+    private Mockery context = new JUnit4Mockery();
+    
+    @Before
     protected void setUp() throws Exception {
-        super.setUp();
-        mockNextEncoder = mock(ImapEncoder.class);
-        composer = mock(ImapResponseComposer.class);
+        mockNextEncoder = context.mock(ImapEncoder.class);
+        composer = context.mock(ImapResponseComposer.class);
         response = new SearchResponse(IDS);
         encoder = new SearchResponseEncoder(mockNextEncoder);
     }
 
-    protected void tearDown() throws Exception {
-        super.tearDown();
-    }
-
+    @Test
     public void testIsAcceptable() {
         assertTrue(encoder.isAcceptable(response));
-        assertFalse(encoder.isAcceptable(mock(ImapMessage.class)));
+        assertFalse(encoder.isAcceptable(context.mock(ImapMessage.class)));
         assertFalse(encoder.isAcceptable(null));
     }
 
+    @Test
     public void testEncode() throws Exception {
-        checking(new Expectations() {{
+        context.checking(new Expectations() {{
             oneOf(composer).searchResponse(with(same(IDS)));
         }});
         encoder.encode(response, composer, new FakeImapSession());

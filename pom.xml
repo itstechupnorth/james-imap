@@ -52,6 +52,13 @@
     <module>maildir</module>
     -->
   </modules>
+  <dependencies>
+  	<dependency>
+  		<groupId>org.jmock</groupId>
+  		<artifactId>jmock-junit4</artifactId>
+  		<version>2.5.1</version>
+  	</dependency>
+  </dependencies>
 
   <distributionManagement>
     <site>

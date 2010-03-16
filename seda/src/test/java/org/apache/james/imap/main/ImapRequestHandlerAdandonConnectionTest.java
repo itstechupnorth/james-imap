@@ -18,6 +18,8 @@
  ****************************************************************/
 package org.apache.james.imap.main;
 
+import static org.junit.Assert.*;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 
@@ -26,9 +28,15 @@ import org.apache.james.imap.api.process.ImapSession;
 import org.apache.james.imap.decode.ImapDecoder;
 import org.apache.james.imap.encode.ImapEncoder;
 import org.jmock.Expectations;
-import org.jmock.integration.junit3.MockObjectTestCase;
+import org.jmock.Mockery;
+import org.jmock.integration.junit4.JMock;
+import org.jmock.integration.junit4.JUnit4Mockery;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
-public class ImapRequestHandlerAdandonConnectionTest extends MockObjectTestCase {
+@RunWith(JMock.class)
+public class ImapRequestHandlerAdandonConnectionTest {
 
     /** System under test */
     ImapRequestHandler subject;
@@ -43,27 +51,30 @@ public class ImapRequestHandlerAdandonConnectionTest extends MockObjectTestCase 
     ImapEncoder encoderStub;
     ImapSession sessionStub;    
 
-    @Override
+    private Mockery mockery = new JUnit4Mockery();
+    
+    
+    @Before
     protected void setUp() throws Exception {
         // Fakes
         fakeOutput = new ByteArrayOutputStream();
         // Stubs
-        decoderStub = mock(ImapDecoder.class);
-        processorStub = mock(ImapProcessor.class);
-        encoderStub = mock(ImapEncoder.class);
-        sessionStub = mock(ImapSession.class);
+        decoderStub = mockery.mock(ImapDecoder.class);
+        processorStub = mockery.mock(ImapProcessor.class);
+        encoderStub = mockery.mock(ImapEncoder.class);
+        sessionStub = mockery.mock(ImapSession.class);
         // System under test
         subject = new ImapRequestHandler(decoderStub, processorStub, encoderStub);
-        super.setUp();
     }
     
+    @Test
     public void testWhenConsumeLineFailsShouldAbandonConnection() throws Exception {        
         //
         // Setup
         //
         
         // Setup stubs
-        checking(new Expectations() {{
+        mockery.checking(new Expectations() {{
             ignoring(decoderStub);
             ignoring(processorStub);
             ignoring(encoderStub);

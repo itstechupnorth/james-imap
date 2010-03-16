@@ -23,9 +23,15 @@ import java.util.List;
 
 import org.apache.james.imap.message.response.ListResponse;
 import org.jmock.Expectations;
-import org.jmock.integration.junit3.MockObjectTestCase;
+import org.jmock.Mockery;
+import org.jmock.integration.junit4.JMock;
+import org.jmock.integration.junit4.JUnit4Mockery;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
-public class ListingEncodingUtilsTest extends MockObjectTestCase {
+@RunWith(JMock.class)
+public class ListingEncodingUtilsTest  {
 
     final String deliminatorParameter = ".";
     final String nameParameter = "LIST";
@@ -35,21 +41,20 @@ public class ListingEncodingUtilsTest extends MockObjectTestCase {
     
     ImapResponseComposer mock;
     
+    private Mockery context = new JUnit4Mockery();
+    
+    @Before
     protected void setUp() throws Exception {
-        super.setUp();
-        mock = mock(ImapResponseComposer.class);
+        mock = context.mock(ImapResponseComposer.class);
         attributesOutput = new ArrayList<String>();
         
-        checking (new Expectations() {{
+        context.checking (new Expectations() {{
             oneOf(mock).listResponse(with(equal(typeNameParameters)), with(equal(attributesOutput)), 
                     with(equal(deliminatorParameter)), with(equal(nameParameter)));
         }});
     }
 
-    protected void tearDown() throws Exception {
-        super.tearDown();
-    }
-
+    @Test
     public void testShouldAddHasChildrenToAttributes() throws Exception {
         // Setup 
         attributesOutput.add("\\HasChildren");
@@ -59,6 +64,7 @@ public class ListingEncodingUtilsTest extends MockObjectTestCase {
         ListingEncodingUtils.encodeListingResponse(typeNameParameters, mock, input);
     }
     
+    @Test
     public void testShouldAddHasNoChildrenToAttributes() throws Exception {
         // Setup 
         attributesOutput.add("\\HasNoChildren");

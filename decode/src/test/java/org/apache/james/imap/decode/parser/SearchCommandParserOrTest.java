@@ -19,6 +19,8 @@
 
 package org.apache.james.imap.decode.parser;
 
+import static org.junit.Assert.assertEquals;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 
@@ -29,9 +31,15 @@ import org.apache.james.imap.api.message.IdRange;
 import org.apache.james.imap.api.message.request.DayMonthYear;
 import org.apache.james.imap.api.message.request.SearchKey;
 import org.apache.james.imap.decode.ImapRequestLineReader;
-import org.jmock.integration.junit3.MockObjectTestCase;
+import org.jmock.Mockery;
+import org.jmock.integration.junit4.JMock;
+import org.jmock.integration.junit4.JUnit4Mockery;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
-public class SearchCommandParserOrTest extends MockObjectTestCase {
+@RunWith(JMock.class)
+public class SearchCommandParserOrTest {
     SearchCommandParser parser;
 
     ImapMessageFactory mockMessageFactory;
@@ -40,19 +48,17 @@ public class SearchCommandParserOrTest extends MockObjectTestCase {
 
     ImapMessage message;
 
+    private Mockery context = new JUnit4Mockery();
+    
+    @Before
     protected void setUp() throws Exception {
-        super.setUp();
         parser = new SearchCommandParser();
-        mockMessageFactory = mock(ImapMessageFactory.class);
+        mockMessageFactory = context.mock(ImapMessageFactory.class);
         command = ImapCommand.anyStateCommand("Command");
-        message = mock(ImapMessage.class);
+        message = context.mock(ImapMessage.class);
         parser.setMessageFactory(mockMessageFactory);
     }
-
-    protected void tearDown() throws Exception {
-        super.tearDown();
-    }
-
+    
     public Input sequence() {
         IdRange[] range = { new IdRange(Long.MAX_VALUE, 100), new IdRange(110),
                 new IdRange(200, 201), new IdRange(400, Long.MAX_VALUE) };
@@ -92,6 +98,7 @@ public class SearchCommandParserOrTest extends MockObjectTestCase {
         return new Input("DRAFT", key);
     }
 
+    @Test
     public void testDraftPermutations() throws Exception {
         checkValid(draft(), draft());
         checkValid(draft(), stringQuoted());
@@ -102,6 +109,7 @@ public class SearchCommandParserOrTest extends MockObjectTestCase {
         checkValid(draft(), uid());
     }
 
+    @Test
     public void testDatePermutations() throws Exception {
         checkValid(date(), draft());
         checkValid(date(), stringQuoted());
@@ -112,6 +120,7 @@ public class SearchCommandParserOrTest extends MockObjectTestCase {
         checkValid(date(), uid());
     }
 
+    @Test
     public void testHeaderPermutations() throws Exception {
         checkValid(header(), draft());
         checkValid(header(), stringQuoted());
@@ -122,6 +131,7 @@ public class SearchCommandParserOrTest extends MockObjectTestCase {
         checkValid(header(), uid());
     }
 
+    @Test
     public void testSequencePermutations() throws Exception {
         checkValid(sequence(), draft());
         checkValid(sequence(), stringQuoted());
@@ -132,6 +142,7 @@ public class SearchCommandParserOrTest extends MockObjectTestCase {
         checkValid(sequence(), uid());
     }
 
+    @Test
     public void testStringQuotedPermutations() throws Exception {
         checkValid(stringQuoted(), draft());
         checkValid(stringQuoted(), stringQuoted());
@@ -142,6 +153,7 @@ public class SearchCommandParserOrTest extends MockObjectTestCase {
         checkValid(stringQuoted(), uid());
     }
 
+    @Test
     public void testStringUnquotedPermutations() throws Exception {
         checkValid(stringUnquoted(), draft());
         checkValid(stringUnquoted(), stringQuoted());
@@ -152,6 +164,7 @@ public class SearchCommandParserOrTest extends MockObjectTestCase {
         checkValid(stringUnquoted(), uid());
     }
 
+    @Test
     public void testUidPermutations() throws Exception {
         checkValid(uid(), draft());
         checkValid(uid(), stringQuoted());
@@ -162,6 +175,7 @@ public class SearchCommandParserOrTest extends MockObjectTestCase {
         checkValid(uid(), uid());
     }
 
+    
     private void checkValid(Input one, Input two) throws Exception {
         String input = "OR " + one.input + " " + two.input + "\r\n";
         SearchKey key = SearchKey.buildOr(one.key, two.key);

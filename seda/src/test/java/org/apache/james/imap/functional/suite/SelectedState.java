@@ -23,6 +23,7 @@ import java.util.Locale;
 
 import org.apache.james.imap.functional.FrameworkForSelectedStateBase;
 import org.apache.james.test.functional.HostSystem;
+import org.junit.Test;
 
 public class SelectedState extends FrameworkForSelectedStateBase {
 
@@ -30,122 +31,152 @@ public class SelectedState extends FrameworkForSelectedStateBase {
         super(system);
     }
 
+    @Test
     public void testCheckUS() throws Exception {
         scriptTest("Check", Locale.US);
     }
 
+    @Test
     public void testExpungeUS() throws Exception {
         scriptTest("Expunge", Locale.US);
     }
 
+    @Test
     public void testSearchUS() throws Exception {
         scriptTest("Search", Locale.US);
     }
 
+    @Test
     public void testFetchSingleMessageUS() throws Exception {
         scriptTest("FetchSingleMessage", Locale.US);
     }
 
+    @Test
     public void testFetchMultipleMessagesUS() throws Exception {
         scriptTest("FetchMultipleMessages", Locale.US);
     }
 
+    @Test
     public void testFetchPeekUS() throws Exception {
         scriptTest("FetchPeek", Locale.US);
     }
 
+    @Test
     public void testStoreUS() throws Exception {
         scriptTest("Store", Locale.US);
     }
 
+    @Test
     public void testCopyUS() throws Exception {
         scriptTest("Copy", Locale.US);
     }
 
+    @Test
     public void testUidUS() throws Exception {
         scriptTest("Uid", Locale.US);
     }
 
+    @Test
     public void testCheckITALY() throws Exception {
         scriptTest("Check", Locale.ITALY);
     }
 
+    @Test
     public void testExpungeITALY() throws Exception {
         scriptTest("Expunge", Locale.ITALY);
     }
 
+    @Test
     public void testSearchITALY() throws Exception {
         scriptTest("Search", Locale.ITALY);
     }
 
+    @Test
     public void testFetchSingleMessageITALY() throws Exception {
         scriptTest("FetchSingleMessage", Locale.ITALY);
     }
 
+    @Test
     public void testFetchMultipleMessagesITALY() throws Exception {
         scriptTest("FetchMultipleMessages", Locale.ITALY);
     }
 
+    @Test
     public void testFetchPeekITALY() throws Exception {
         scriptTest("FetchPeek", Locale.ITALY);
     }
 
+    @Test
     public void testStoreITALY() throws Exception {
         scriptTest("Store", Locale.ITALY);
     }
 
+    @Test
     public void testCopyITALY() throws Exception {
         scriptTest("Copy", Locale.ITALY);
     }
 
+    @Test
     public void testUidITALY() throws Exception {
         scriptTest("Uid", Locale.ITALY);
     }
 
+    @Test
     public void testCheckKOREA() throws Exception {
         scriptTest("Check", Locale.KOREA);
     }
 
+    @Test
     public void testExpungeKOREA() throws Exception {
         scriptTest("Expunge", Locale.KOREA);
     }
 
+    @Test
     public void testSearchKOREA() throws Exception {
         scriptTest("Search", Locale.KOREA);
     }
 
+    @Test
     public void testFetchSingleMessageKOREA() throws Exception {
         scriptTest("FetchSingleMessage", Locale.KOREA);
     }
 
+    @Test
     public void testFetchMultipleMessagesKOREA() throws Exception {
         scriptTest("FetchMultipleMessages", Locale.KOREA);
     }
 
+    @Test
     public void testFetchPeekKOREA() throws Exception {
         scriptTest("FetchPeek", Locale.KOREA);
     }
 
+    @Test
     public void testStoreKOREA() throws Exception {
         scriptTest("Store", Locale.KOREA);
     }
 
+    @Test
     public void testCopyKOREA() throws Exception {
         scriptTest("Copy", Locale.KOREA);
     }
 
+    @Test
     public void testUidKOREA() throws Exception {
         scriptTest("Uid", Locale.KOREA);
     }
     
+    @Test
     public void testNamespaceUS() throws Exception {
         scriptTest("Namespace", Locale.US);
     }
 
+    @Test
     public void testNamespaceITALY() throws Exception {
         scriptTest("Namespace", Locale.ITALY);
     }
     
+    @Test
     public void testNamespaceKOREA() throws Exception {
         scriptTest("Namespace", Locale.KOREA);
     }

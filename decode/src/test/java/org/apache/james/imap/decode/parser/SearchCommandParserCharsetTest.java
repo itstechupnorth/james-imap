@@ -19,6 +19,8 @@
 
 package org.apache.james.imap.decode.parser;
 
+import static org.junit.Assert.assertEquals;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.nio.charset.Charset;
@@ -36,9 +38,15 @@ import org.apache.james.imap.api.message.response.StatusResponse;
 import org.apache.james.imap.api.message.response.StatusResponseFactory;
 import org.apache.james.imap.decode.ImapRequestLineReader;
 import org.jmock.Expectations;
-import org.jmock.integration.junit3.MockObjectTestCase;
+import org.jmock.Mockery;
+import org.jmock.integration.junit4.JMock;
+import org.jmock.integration.junit4.JUnit4Mockery;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
-public class SearchCommandParserCharsetTest extends MockObjectTestCase {
+@RunWith(JMock.class)
+public class SearchCommandParserCharsetTest {
 
     private static final Charset UTF8 = Charset.forName("UTF-8");
 
@@ -64,6 +72,7 @@ public class SearchCommandParserCharsetTest extends MockObjectTestCase {
 
     StatusResponseFactory mockStatusResponseFactory;
 
+    private Mockery context = new JUnit4Mockery();
 
     ImapMessageFactory mockMessageFactory;
     
@@ -71,21 +80,19 @@ public class SearchCommandParserCharsetTest extends MockObjectTestCase {
 
     ImapMessage message;
 
+    @Before
     protected void setUp() throws Exception {
-        super.setUp();
         parser = new SearchCommandParser();
-        mockMessageFactory = mock(ImapMessageFactory.class);
+        mockMessageFactory = context.mock(ImapMessageFactory.class);
         command = ImapCommand.anyStateCommand("Command");
-        message = mock(ImapMessage.class);
-        mockStatusResponseFactory = mock(StatusResponseFactory.class);
+        message = context.mock(ImapMessage.class);
+        mockStatusResponseFactory = context.mock(StatusResponseFactory.class);
         parser.setMessageFactory(mockMessageFactory);
         parser.setStatusResponseFactory(mockStatusResponseFactory);
     }
 
-    protected void tearDown() throws Exception {
-        super.tearDown();
-    }
 
+    @Test
     public void testBadCharset() throws Exception {
         final Collection<String> charsetNames = new HashSet<String>();
         for (final Iterator<Charset> it = Charset.availableCharsets().values()
@@ -94,7 +101,7 @@ public class SearchCommandParserCharsetTest extends MockObjectTestCase {
             final Set<String> aliases = charset.aliases();
             charsetNames.addAll(aliases);
         }
-        checking(new Expectations() {{
+        context.checking(new Expectations() {{
             oneOf (mockStatusResponseFactory).taggedNo(
                     with(equal(TAG)), 
                     with(same(command)), 
@@ -107,53 +114,63 @@ public class SearchCommandParserCharsetTest extends MockObjectTestCase {
         parser.decode(command, reader, TAG, false, new MockLogger());
     }
 
+    @Test
     public void testBCCShouldConvertCharset() throws Exception {
         SearchKey key = SearchKey.buildBcc(NON_ASCII_SEARCH_TERM);
         checkUTF8Valid("BCC".getBytes("US-ASCII"), key);
     }
 
+    @Test
     public void testBODYShouldConvertCharset() throws Exception {
         SearchKey key = SearchKey.buildBody(NON_ASCII_SEARCH_TERM);
         checkUTF8Valid("BODY".getBytes("US-ASCII"), key);
     }
 
+    @Test
     public void testCCShouldConvertCharset() throws Exception {
         SearchKey key = SearchKey.buildCc(NON_ASCII_SEARCH_TERM);
         checkUTF8Valid("CC".getBytes("US-ASCII"), key);
     }
 
+    @Test
     public void testFROMShouldConvertCharset() throws Exception {
         SearchKey key = SearchKey.buildFrom(NON_ASCII_SEARCH_TERM);
         checkUTF8Valid("FROM".getBytes("US-ASCII"), key);
     }
 
+    @Test
     public void testHEADERShouldConvertCharset() throws Exception {
         SearchKey key = SearchKey
                 .buildHeader("whatever", NON_ASCII_SEARCH_TERM);
         checkUTF8Valid("HEADER whatever".getBytes("US-ASCII"), key);
     }
 
+    @Test
     public void testSUBJECTShouldConvertCharset() throws Exception {
         SearchKey key = SearchKey.buildSubject(NON_ASCII_SEARCH_TERM);
         checkUTF8Valid("SUBJECT".getBytes("US-ASCII"), key);
     }
 
+    @Test
     public void testTEXTShouldConvertCharset() throws Exception {
         SearchKey key = SearchKey.buildText(NON_ASCII_SEARCH_TERM);
         checkUTF8Valid("TEXT".getBytes("US-ASCII"), key);
     }
 
+    @Test
     public void testTOShouldConvertCharset() throws Exception {
         SearchKey key = SearchKey.buildTo(NON_ASCII_SEARCH_TERM);
         checkUTF8Valid("TO".getBytes("US-ASCII"), key);
     }
 
+    @Test
     public void testASCIICharset() throws Exception {
         SearchKey key = SearchKey.buildBcc(ASCII_SEARCH_TERM);
         checkValid("CHARSET US-ASCII BCC \"" + ASCII_SEARCH_TERM + "\"", key,
                 true, "US-ASCII");
     }
 
+    @Test
     public void testSimpleUTF8Charset() throws Exception {
         SearchKey key = SearchKey.buildBcc(ASCII_SEARCH_TERM);
         checkValid("CHARSET UTF-8 BCC \"" + ASCII_SEARCH_TERM + "\"", key,

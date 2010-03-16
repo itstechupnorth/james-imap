@@ -19,69 +19,80 @@
 
 package org.apache.james.imap.encode;
 
+import static org.junit.Assert.*;
+
 import java.util.Date;
 import java.util.Locale;
 
-import junit.framework.TestCase;
+import org.junit.After;
+import org.junit.Test;
 
-public class EncoderUtilsDateTimeLocaleTest extends TestCase {
+public class EncoderUtilsDateTimeLocaleTest  {
 
     private static final Locale BASE_DEFAULT_LOCALE = Locale.getDefault();
 
-    protected void setUp() throws Exception {
-        super.setUp();
-    }
-
+    @After
     protected void tearDown() throws Exception {
-        super.tearDown();
         Locale.setDefault(BASE_DEFAULT_LOCALE);
     }
 
+    @Test
     public void testUS() throws Exception {
         runTests(Locale.US);
     }
-
+    
+    @Test
     public void testUK() throws Exception {
         runTests(Locale.UK);
     }
 
+    @Test
     public void testITALY() throws Exception {
         runTests(Locale.ITALY);
     }
 
+    @Test
     public void testGERMANY() throws Exception {
         runTests(Locale.GERMANY);
     }
 
+    @Test
     public void testFRANCE() throws Exception {
         runTests(Locale.FRANCE);
     }
 
+    @Test
     public void testCANADA() throws Exception {
         runTests(Locale.CANADA);
     }
 
+    @Test
     public void testCHINA() throws Exception {
         runTests(Locale.CHINA);
     }
 
+    @Test
     public void testJAPAN() throws Exception {
         runTests(Locale.JAPAN);
     }
 
+    @Test
     public void testKOREA() throws Exception {
         runTests(Locale.KOREA);
     }
 
+    @Test
     public void testTAIWAN() throws Exception {
         runTests(Locale.TAIWAN);
     }
 
+    @Test
     private void runTests(Locale locale) {
         Locale.setDefault(locale);
         runEncodeDateTime();
     }
 
+    @Test
     private void runEncodeDateTime() {
         assertEquals("03-Sep-2004 05:08:43 +0000", EncoderUtils
                 .encodeDateTime(new Date(1094188123661L)));

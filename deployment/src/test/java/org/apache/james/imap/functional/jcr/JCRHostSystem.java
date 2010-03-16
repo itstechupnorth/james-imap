@@ -20,11 +20,8 @@ package org.apache.james.imap.functional.jcr;
 
 import java.io.File;
 
-import javax.jcr.Session;
-import javax.jcr.SimpleCredentials;
-
 import org.apache.commons.io.FileUtils;
-import org.apache.jackrabbit.core.RepositoryImpl;
+import org.apache.jackrabbit.core.TransientRepository;
 import org.apache.jackrabbit.core.config.RepositoryConfig;
 import org.apache.james.imap.encode.main.DefaultImapEncoderFactory;
 import org.apache.james.imap.functional.ImapHostSystem;
@@ -38,52 +35,49 @@ import org.xml.sax.InputSource;
 
 public class JCRHostSystem extends ImapHostSystem{
 
-
-    public static final String META_DATA_DIRECTORY = "target/user-meta-data";
-    private static JCRHostSystem host;
     public static HostSystem build() throws Exception { 
-    	if (host == null) host =  new JCRHostSystem();
-        return host;
+        return new JCRHostSystem();
     }
     
     private final JCRGlobalUserMailboxManager mailboxManager;
     private final InMemoryUserManager userManager; 
 
- private static final String JACKRABBIT_HOME = "target/jackrabbit";
-    
-    private RepositoryImpl repository;
+    private static final String JACKRABBIT_HOME = "deployment/target/jackrabbit";
+    public static final String META_DATA_DIRECTORY = "target/user-meta-data";
+    private static TransientRepository repository;
+
+    private javax.jcr.Session session;
     
     public JCRHostSystem() throws Exception {
         
-        userManager = new InMemoryUserManager();
-        File home = new File(JACKRABBIT_HOME);
-        if (home.exists()) {
-            delete(home);
-        } 
-        home.mkdir();
+        if (repository == null) {
+            File home = new File(JACKRABBIT_HOME);
+            if (home.exists()) {
+                FileUtils.deleteDirectory(home);
+            }       
+            
+            RepositoryConfig config = RepositoryConfig.create(new InputSource(this.getClass().getClassLoader().getResourceAsStream("test-repository.xml")), JACKRABBIT_HOME);  
+            repository = new TransientRepository(config);
+            session  = repository.login();
+        }
         
-        RepositoryConfig config = RepositoryConfig.create(new InputSource(this.getClass().getClassLoader().getResourceAsStream("test-repository.xml")), JACKRABBIT_HOME);
-        repository = RepositoryImpl.create(config);
+        userManager = new InMemoryUserManager();
+          
+
         
         mailboxManager = new JCRGlobalUserMailboxManager(userManager, new JCRGlobalUserSubscriptionManager(repository, null, "user", "pass"), repository, null, "user", "pass");
         
         final DefaultImapProcessorFactory defaultImapProcessorFactory = new DefaultImapProcessorFactory();
         resetUserMetaData();
+        mailboxManager.deleteEverything();
+        
         defaultImapProcessorFactory.configure(mailboxManager);
         configure(new DefaultImapDecoderFactory().buildImapDecoder(),
                 new DefaultImapEncoderFactory().buildImapEncoder(),
                 defaultImapProcessorFactory.buildImapProcessor());
     }
 
-    private void delete(File file) {
-        if (file.isDirectory()) {
-            File[] contents = file.listFiles();
-            for (int i = 0; i < contents.length; i++) {
-                delete(contents[i]);
-            }
-        } 
-        file.delete();
-    }
+   
     public boolean addUser(String user, String password) {
         userManager.addUser(user, password);
         return true;
@@ -91,9 +85,14 @@ public class JCRHostSystem extends ImapHostSystem{
 
     public void resetData() throws Exception {
         resetUserMetaData();
-
-        mailboxManager.deleteEverything();
-        //repository.shutdown();
+        /*
+        if (session != null && session.isLive()) {
+            session.logout();
+        }
+        */
+        repository.shutdown();
+        
+        //FileUtils.deleteDirectory(new File(JACKRABBIT_HOME));
     }
     
     public void resetUserMetaData() throws Exception {
@@ -104,10 +103,12 @@ public class JCRHostSystem extends ImapHostSystem{
         dir.mkdirs();
     }
 
-	protected void stop() throws Exception {
-		//repository.shutdown();
-	}
-    
-    
 
+    @Override
+    public void afterTests() throws Exception {
+        session.logout();
+    }
+
+
+    
 }

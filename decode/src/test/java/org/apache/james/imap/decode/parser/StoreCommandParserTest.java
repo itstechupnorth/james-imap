@@ -30,9 +30,15 @@ import org.apache.james.imap.api.ImapMessage;
 import org.apache.james.imap.api.message.IdRange;
 import org.apache.james.imap.decode.ImapRequestLineReader;
 import org.jmock.Expectations;
-import org.jmock.integration.junit3.MockObjectTestCase;
+import org.jmock.Mockery;
+import org.jmock.integration.junit4.JMock;
+import org.jmock.integration.junit4.JUnit4Mockery;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
-public class StoreCommandParserTest extends MockObjectTestCase {
+@RunWith(JMock.class)
+public class StoreCommandParserTest {
 
     StoreCommandParser parser;
 
@@ -43,19 +49,18 @@ public class StoreCommandParserTest extends MockObjectTestCase {
 
     ImapMessage message;
 
+    private Mockery mockery = new JUnit4Mockery();
+
+    @Before
     protected void setUp() throws Exception {
-        super.setUp();
         parser = new StoreCommandParser();
-        mockMessageFactory = mock(ImapMessageFactory.class);
+        mockMessageFactory = mockery.mock(ImapMessageFactory.class);
         command = ImapCommand.anyStateCommand("Command");
-        message = mock(ImapMessage.class);
+        message = mockery.mock(ImapMessage.class);
         parser.setMessageFactory(mockMessageFactory);
     }
 
-    protected void tearDown() throws Exception {
-        super.tearDown();
-    }
-
+    @Test
     public void testShouldParseSilentDraftFlagged() throws Exception {
         IdRange[] ranges = { new IdRange(1) };
         Flags flags = new Flags();
@@ -72,7 +77,7 @@ public class StoreCommandParserTest extends MockObjectTestCase {
                 new ByteArrayInputStream(input.getBytes("US-ASCII")),
                 new ByteArrayOutputStream());
 
-        checking(new Expectations() {{
+        mockery.checking(new Expectations() {{
             oneOf (mockMessageFactory).createStoreMessage(
                     with(equal(command)), 
                     with(equal(idSet)), 

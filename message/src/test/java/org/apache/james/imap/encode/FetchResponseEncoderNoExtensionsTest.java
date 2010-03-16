@@ -19,6 +19,8 @@
 
 package org.apache.james.imap.encode;
 
+import static org.junit.Assert.*;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -33,10 +35,16 @@ import org.apache.james.imap.encode.ImapEncoder;
 import org.apache.james.imap.encode.ImapResponseComposer;
 import org.apache.james.imap.message.response.FetchResponse;
 import org.jmock.Expectations;
+import org.jmock.Mockery;
 import org.jmock.Sequence;
-import org.jmock.integration.junit3.MockObjectTestCase;
+import org.jmock.integration.junit4.JMock;
+import org.jmock.integration.junit4.JUnit4Mockery;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
-public class FetchResponseEncoderNoExtensionsTest extends MockObjectTestCase {
+@RunWith(JMock.class)
+public class FetchResponseEncoderNoExtensionsTest  {
 
     Flags flags;
 
@@ -50,34 +58,36 @@ public class FetchResponseEncoderNoExtensionsTest extends MockObjectTestCase {
 
     ImapCommand stubCommand;
 
+    private Mockery context = new JUnit4Mockery();
+    
+    @Before
     protected void setUp() throws Exception {
-        super.setUp();
-        composer = mock(ImapResponseComposer.class);
-        mockNextEncoder = mock(ImapEncoder.class);
+        composer = context.mock(ImapResponseComposer.class);
+        mockNextEncoder = context.mock(ImapEncoder.class);
         encoder = new FetchResponseEncoder(mockNextEncoder, true);
         stubCommand = ImapCommand.anyStateCommand("COMMAND");
         flags = new Flags(Flags.Flag.DELETED);
-        stubStructure = mock(FetchResponse.Structure.class);
+        stubStructure = context.mock(FetchResponse.Structure.class);
     }
 
-    protected void tearDown() throws Exception {
-        super.tearDown();
-    }
 
+    @Test
     public void testShouldNotAcceptUnknownResponse() throws Exception {
-        assertFalse(encoder.isAcceptable(mock(ImapMessage.class)));
+        assertFalse(encoder.isAcceptable(context.mock(ImapMessage.class)));
     }
 
+    @Test
     public void testShouldAcceptFetchResponse() throws Exception {
         assertTrue(encoder.isAcceptable(new FetchResponse(11, null, null, null,
                 null, null, null, null, null)));
     }
 
+    @Test
     public void testShouldEncodeFlagsResponse() throws Exception {
         FetchResponse message = new FetchResponse(100, flags, null, null, null,
                 null, null, null, null);
-        checking(new Expectations() {{
-            final Sequence sequence = sequence("composition");
+        context.checking(new Expectations() {{
+            final Sequence sequence = context.sequence("composition");
             oneOf(composer).openFetchResponse(with(equal(100L))); inSequence(sequence);
             oneOf(composer).flags(with(equal(flags))); inSequence(sequence);
             oneOf(composer).closeFetchResponse(); inSequence(sequence);
@@ -85,11 +95,12 @@ public class FetchResponseEncoderNoExtensionsTest extends MockObjectTestCase {
         encoder.doEncode(message, composer, new FakeImapSession());
     }
 
+    @Test
     public void testShouldEncodeUidResponse() throws Exception {
         FetchResponse message = new FetchResponse(100, null, new Long(72),
                 null, null, null, null, null, null);
-        checking(new Expectations() {{
-            final Sequence sequence = sequence("composition");
+        context.checking(new Expectations() {{
+            final Sequence sequence = context.sequence("composition");
             oneOf(composer).openFetchResponse(with(equal(100L))); inSequence(sequence);
             oneOf(composer).message(with(equal("UID"))); inSequence(sequence);
             oneOf(composer).message(with(equal(72L))); inSequence(sequence);
@@ -98,11 +109,12 @@ public class FetchResponseEncoderNoExtensionsTest extends MockObjectTestCase {
         encoder.doEncode(message, composer, new FakeImapSession());
     }
 
+    @Test
     public void testShouldEncodeAllResponse() throws Exception {
         FetchResponse message = new FetchResponse(100, flags, new Long(72),
                 null, null, null, null, null, null);
-        checking(new Expectations() {{
-            final Sequence sequence = sequence("composition");
+        context.checking(new Expectations() {{
+            final Sequence sequence = context.sequence("composition");
             oneOf(composer).openFetchResponse(with(equal(100L))); inSequence(sequence);
             oneOf(composer).flags(with(equal(flags))); inSequence(sequence);
             oneOf(composer).message(with(equal("UID"))); inSequence(sequence);
@@ -112,6 +124,7 @@ public class FetchResponseEncoderNoExtensionsTest extends MockObjectTestCase {
         encoder.doEncode(message, composer, new FakeImapSession());
     }
     
+    @Test
     public void testShouldNotAddExtensionsWithEncodingBodyStructure() throws Exception {
         FetchResponse message = new FetchResponse(100, flags, new Long(72),
                 null, null, null, null, stubStructure, null);
@@ -121,7 +134,7 @@ public class FetchResponseEncoderNoExtensionsTest extends MockObjectTestCase {
         parameterList.add("CHARSET");
         parameterList.add("US-ASCII");
         
-        checking(new Expectations() {{
+        context.checking(new Expectations() {{
             final long octets = 2279L;
             final long lines = 48L;
             allowing(stubStructure).getMediaType(); will(returnValue("TEXT"));
@@ -132,7 +145,7 @@ public class FetchResponseEncoderNoExtensionsTest extends MockObjectTestCase {
             allowing(stubStructure).getEncoding(); will(returnValue("7BIT"));
             ignoring(stubStructure);
             
-            final Sequence sequence = sequence("composition");
+            final Sequence sequence = context.sequence("composition");
             oneOf(composer).openFetchResponse(with(equal(100L))); inSequence(sequence);
             oneOf(composer).flags(with(equal(flags))); inSequence(sequence);
             oneOf(composer).message(with(equal("BODYSTRUCTURE")));inSequence(sequence);

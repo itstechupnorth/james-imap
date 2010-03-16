@@ -18,6 +18,8 @@
  ****************************************************************/
 package org.apache.james.imap.processor;
 
+import static org.junit.Assert.*;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -38,9 +40,15 @@ import org.apache.james.imap.message.request.NamespaceRequest;
 import org.apache.james.imap.message.response.NamespaceResponse;
 import org.apache.james.imap.processor.base.ImapSessionUtils;
 import org.jmock.Expectations;
-import org.jmock.integration.junit3.MockObjectTestCase;
+import org.jmock.Mockery;
+import org.jmock.integration.junit4.JMock;
+import org.jmock.integration.junit4.JUnit4Mockery;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
-public class NamespaceProcessorTest extends MockObjectTestCase {
+@RunWith(JMock.class)
+public class NamespaceProcessorTest {
 
     private static final char SHARED_SPACE_DELIMINATOR = '&';
     private static final String SHARED_PREFIX = "SharedPrefix";
@@ -60,21 +68,23 @@ public class NamespaceProcessorTest extends MockObjectTestCase {
     NamespaceRequest namespaceRequest;
     Collection<MailboxSession.Namespace> sharedSpaces;
     
+    Mockery mockery = new JUnit4Mockery();
+    
+    @Before
     protected void setUp() throws Exception {
-        super.setUp();
         sharedSpaces = new ArrayList<MailboxSession.Namespace>();
-        statusResponseStub = mock(StatusResponseFactory.class);
-        final MailboxManager mailboxManagerStub = mock(MailboxManager.class);
-        subject = new NamespaceProcessor(mock(ImapProcessor.class), mailboxManagerStub, statusResponseStub);
-        imapSessionStub = mock(ImapSession.class);
-        mailboxSessionStub = mock(MailboxSession.class);
-        personalSpaceStub = mock(MailboxSession.Namespace.class, "PersonalNamespace");
-        usersSpaceStub = mock(MailboxSession.Namespace.class, "UsersNamespace");
-        sharedSpaceStub = mock(MailboxSession.Namespace.class, "SharedNamespace");
+        statusResponseStub = mockery.mock(StatusResponseFactory.class);
+        final MailboxManager mailboxManagerStub = mockery.mock(MailboxManager.class);
+        subject = new NamespaceProcessor(mockery.mock(ImapProcessor.class), mailboxManagerStub, statusResponseStub);
+        imapSessionStub = mockery.mock(ImapSession.class);
+        mailboxSessionStub = mockery.mock(MailboxSession.class);
+        personalSpaceStub = mockery.mock(MailboxSession.Namespace.class, "PersonalNamespace");
+        usersSpaceStub = mockery.mock(MailboxSession.Namespace.class, "UsersNamespace");
+        sharedSpaceStub = mockery.mock(MailboxSession.Namespace.class, "SharedNamespace");
      
         namespaceRequest = new NamespaceRequest(ImapCommand.anyStateCommand("Name"), "TAG");
         
-        checking (new Expectations() {{
+        mockery.checking (new Expectations() {{
             allowing(imapSessionStub).getAttribute(ImapSessionUtils.MAILBOX_SESSION_ATTRIBUTE_SESSION_KEY); will(returnValue(mailboxSessionStub));
             allowing(personalSpaceStub).getDeliminator(); will(returnValue(PERSONAL_DELIMINATOR));
             allowing(personalSpaceStub).getPrefix(); will(returnValue(PERSONAL_PREFIX));
@@ -88,23 +98,21 @@ public class NamespaceProcessorTest extends MockObjectTestCase {
             allowing(imapSessionStub).getState();will(returnValue(ImapSessionState.AUTHENTICATED));
             allowing(statusResponseStub).taggedOk(
                     with(any(String.class)), with(any(ImapCommand.class)), 
-                    with(any(HumanReadableText.class)), with(any(ResponseCode.class))); will(returnValue(mock(StatusResponse.class)));
+                    with(any(HumanReadableText.class)), with(any(ResponseCode.class))); will(returnValue(mockery.mock(StatusResponse.class)));
             ignoring(imapSessionStub);
             ignoring(mailboxSessionStub);
             ignoring(mailboxManagerStub);
             ignoring(statusResponseStub);
         }});
     }
-
-    protected void tearDown() throws Exception {
-        super.tearDown();
-    }
     
+    @Test
     public void testShouldAcceptNamespaceRequests() throws Exception {
-        assertFalse(subject.isAcceptable(mock(ImapMessage.class)));
+        assertFalse(subject.isAcceptable(mockery.mock(ImapMessage.class)));
         assertTrue(subject.isAcceptable(namespaceRequest));
     }
     
+    @Test
     public void testNamespaceResponseShouldContainPersonalAndUserSpaces() throws Exception {
         final NamespaceResponse response = buildResponse(null);
         
@@ -113,6 +121,7 @@ public class NamespaceProcessorTest extends MockObjectTestCase {
         subject.doProcess(namespaceRequest, responderMock, imapSessionStub);
     }
     
+    @Test
     public void testNamespaceResponseShouldContainSharedSpaces() throws Exception {
         this.sharedSpaces.add(sharedSpaceStub);
         
@@ -137,8 +146,8 @@ public class NamespaceProcessorTest extends MockObjectTestCase {
     }
 
     private Responder expectResponse(final NamespaceResponse response) {
-        final Responder responderMock = mock(Responder.class);
-        checking(new Expectations(){{
+        final Responder responderMock = mockery.mock(Responder.class);
+        mockery.checking(new Expectations(){{
             oneOf(responderMock).respond(with(equal(response)));
             oneOf(responderMock).respond(with(any(StatusResponse.class)));
         }});

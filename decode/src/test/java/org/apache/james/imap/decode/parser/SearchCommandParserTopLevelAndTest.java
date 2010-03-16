@@ -19,6 +19,8 @@
 
 package org.apache.james.imap.decode.parser;
 
+import static org.junit.Assert.*;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.UnsupportedEncodingException;
@@ -33,9 +35,14 @@ import org.apache.james.imap.api.message.request.DayMonthYear;
 import org.apache.james.imap.api.message.request.SearchKey;
 import org.apache.james.imap.decode.ImapRequestLineReader;
 import org.apache.james.imap.decode.DecodingException;
-import org.jmock.integration.junit3.MockObjectTestCase;
+import org.jmock.Mockery;
+import org.jmock.integration.junit4.JMock;
+import org.jmock.integration.junit4.JUnit4Mockery;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
-public class SearchCommandParserTopLevelAndTest extends MockObjectTestCase {
+@RunWith(JMock.class)
+public class SearchCommandParserTopLevelAndTest {
 
     Input[] one = { sequence() };
 
@@ -131,24 +138,23 @@ public class SearchCommandParserTopLevelAndTest extends MockObjectTestCase {
 
     ImapMessage message;
 
+    private Mockery mockery = new JUnit4Mockery();
+    
     protected void setUp() throws Exception {
-        super.setUp();
         parser = new SearchCommandParser();
-        mockMessageFactory = mock(ImapMessageFactory.class);
+        mockMessageFactory = mockery.mock(ImapMessageFactory.class);
         command = ImapCommand.anyStateCommand("Command");
-        message = mock(ImapMessage.class);
+        message = mockery.mock(ImapMessage.class);
         parser.setMessageFactory(mockMessageFactory);
     }
 
-    protected void tearDown() throws Exception {
-        super.tearDown();
-    }
-
+    @Test
     public void testLargePermutations() throws Exception {
         permute(16, one);
         permute(32, one);
     }
 
+    @Test
     public void testBasePermutations() throws Exception {
         permute(2, base);
         permute(3, base);
@@ -156,6 +162,7 @@ public class SearchCommandParserTopLevelAndTest extends MockObjectTestCase {
         permute(5, base);
     }
 
+    @Test
     public void testVarietyPermutations() throws Exception {
         permute(5, variety);
     }

@@ -19,14 +19,21 @@
 
 package org.apache.james.imap.api.message.response;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+
 import org.apache.james.imap.api.ImapCommand;
 import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.api.message.response.StatusResponse;
 import org.apache.james.imap.api.message.response.StatusResponseFactory;
-import org.jmock.integration.junit3.MockObjectTestCase;
+import org.jmock.integration.junit4.JMock;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
-abstract public class AbstractTestForStatusResponseFactory extends
-        MockObjectTestCase {
+@RunWith(JMock.class)
+abstract public class AbstractTestForStatusResponseFactory  {
 
     private static final String TAG = "ATAG";
 
@@ -42,16 +49,13 @@ abstract public class AbstractTestForStatusResponseFactory extends
 
     abstract protected StatusResponseFactory createInstance();
 
+    @Before
     protected void setUp() throws Exception {
-        super.setUp();
         factory = createInstance();
         command = ImapCommand.anyStateCommand("Command");
     }
 
-    protected void tearDown() throws Exception {
-        super.tearDown();
-    }
-
+    @Test
     public void testTaggedOk() {
         StatusResponse response = factory.taggedOk(TAG, command, KEY);
         assertNotNull(response);
@@ -69,6 +73,7 @@ abstract public class AbstractTestForStatusResponseFactory extends
         assertEquals(command, response.getCommand());
     }
 
+    @Test
     public void testTaggedNo() {
         StatusResponse response = factory.taggedNo(TAG, command, KEY);
         assertNotNull(response);
@@ -85,7 +90,8 @@ abstract public class AbstractTestForStatusResponseFactory extends
         assertEquals(CODE, response.getResponseCode());
         assertEquals(command, response.getCommand());
     }
-
+    
+    @Test
     public void testTaggedBad() {
         StatusResponse response = factory.taggedBad(TAG, command, KEY);
         assertNotNull(response);
@@ -103,6 +109,7 @@ abstract public class AbstractTestForStatusResponseFactory extends
         assertEquals(command, response.getCommand());
     }
 
+    @Test
     public void testUntaggedOk() {
         StatusResponse response = factory.untaggedOk(KEY);
         assertNotNull(response);
@@ -120,6 +127,8 @@ abstract public class AbstractTestForStatusResponseFactory extends
         assertNull(response.getCommand());
     }
 
+
+    @Test
     public void testUntaggedNo() {
         StatusResponse response = factory.untaggedNo(KEY);
         assertNotNull(response);
@@ -137,6 +146,7 @@ abstract public class AbstractTestForStatusResponseFactory extends
         assertNull(response.getCommand());
     }
 
+    @Test
     public void testUntaggedBad() {
         StatusResponse response = factory.untaggedBad(KEY);
         assertNotNull(response);
@@ -154,6 +164,7 @@ abstract public class AbstractTestForStatusResponseFactory extends
         assertNull(response.getCommand());
     }
 
+    @Test
     public void testPreauth() {
         StatusResponse response = factory.preauth(KEY);
         assertNotNull(response);
@@ -173,6 +184,7 @@ abstract public class AbstractTestForStatusResponseFactory extends
         assertNull(response.getCommand());
     }
 
+    @Test
     public void testBye() {
         StatusResponse response = factory.bye(KEY);
         assertNotNull(response);

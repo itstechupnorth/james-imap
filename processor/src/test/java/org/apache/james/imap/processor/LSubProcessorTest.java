@@ -36,9 +36,15 @@ import org.apache.james.imap.message.request.LsubRequest;
 import org.apache.james.imap.message.response.LSubResponse;
 import org.apache.james.imap.processor.base.ImapSessionUtils;
 import org.jmock.Expectations;
-import org.jmock.integration.junit3.MockObjectTestCase;
+import org.jmock.Mockery;
+import org.jmock.integration.junit4.JMock;
+import org.jmock.integration.junit4.JUnit4Mockery;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
-public class LSubProcessorTest extends MockObjectTestCase {
+@RunWith(JMock.class)
+public class LSubProcessorTest {
 
     private static final String ROOT = "ROOT";
 
@@ -83,30 +89,30 @@ public class LSubProcessorTest extends MockObjectTestCase {
 
     private ImapProcessor.Responder responderImpl;
 
+    private Mockery mockery = new JUnit4Mockery();
+    
+    @Before
     protected void setUp() throws Exception {
         subscriptions = new ArrayList<String>();
-        serverResponseFactory = mock(StatusResponseFactory.class);
-        session = mock(ImapSession.class);
+        serverResponseFactory = mockery.mock(StatusResponseFactory.class);
+        session = mockery.mock(ImapSession.class);
         command = ImapCommand.anyStateCommand("Command");
-        next = mock(ImapProcessor.class);
-        responder = mock(ImapProcessor.Responder.class);
-        result = mock(MailboxMetaData.class);
-        statusResponse = mock(StatusResponse.class);
+        next = mockery.mock(ImapProcessor.class);
+        responder = mockery.mock(ImapProcessor.Responder.class);
+        result = mockery.mock(MailboxMetaData.class);
+        statusResponse = mockery.mock(StatusResponse.class);
         responderImpl = responder;
-        manager = mock(MailboxManager.class);
-        mailboxSession = mock(MailboxSession.class);
+        manager = mockery. mock(MailboxManager.class);
+        mailboxSession = mockery.mock(MailboxSession.class);
         processor = new LSubProcessor(next, manager, serverResponseFactory);
     }
 
-    protected void tearDown() throws Exception {
-        super.tearDown();
-    }
-
+    @Test
     public void testHierarchy() throws Exception {
         subscriptions.add(MAILBOX_A);
         subscriptions.add(MAILBOX_B);
         subscriptions.add(MAILBOX_C);
-        checking(new Expectations() {{
+        mockery.checking(new Expectations() {{
             oneOf(responder).respond(with(
                     equal(new LSubResponse("",
                             ImapConstants.HIERARCHY_DELIMITER, true))));
@@ -119,6 +125,7 @@ public class LSubProcessorTest extends MockObjectTestCase {
 
     }
 
+    @Test
     public void testShouldRespondToRegexWithSubscribedMailboxes()
             throws Exception {
         subscriptions.add(MAILBOX_A);
@@ -127,7 +134,7 @@ public class LSubProcessorTest extends MockObjectTestCase {
         subscriptions.add(CHILD_ONE);
         subscriptions.add(CHILD_TWO);
 
-        checking(new Expectations() {{
+        mockery.checking(new Expectations() {{
             oneOf(responder).respond(with(
                     equal(new LSubResponse(CHILD_ONE,
                             ImapConstants.HIERARCHY_DELIMITER, false))));
@@ -145,6 +152,7 @@ public class LSubProcessorTest extends MockObjectTestCase {
 
     }
 
+    @Test
     public void testShouldRespondNoSelectToRegexWithParentsOfSubscribedMailboxes()
             throws Exception {
         subscriptions.add(MAILBOX_A);
@@ -153,7 +161,7 @@ public class LSubProcessorTest extends MockObjectTestCase {
         subscriptions.add(CHILD_ONE);
         subscriptions.add(CHILD_TWO);
 
-        checking(new Expectations() {{
+        mockery.checking(new Expectations() {{
             oneOf(responder).respond(with(
                     equal(new LSubResponse(PARENT, ImapConstants.HIERARCHY_DELIMITER, true))));
         }});
@@ -167,6 +175,7 @@ public class LSubProcessorTest extends MockObjectTestCase {
 
     }
 
+    @Test
     public void testShouldRespondSelectToRegexWithParentOfSubscribedMailboxesWhenParentSubscribed()
             throws Exception {
         subscriptions.add(MAILBOX_A);
@@ -176,7 +185,7 @@ public class LSubProcessorTest extends MockObjectTestCase {
         subscriptions.add(CHILD_ONE);
         subscriptions.add(CHILD_TWO);
 
-        checking(new Expectations() {{
+        mockery.checking(new Expectations() {{
             oneOf(responder).respond(with(
                     equal(new LSubResponse(PARENT, ImapConstants.HIERARCHY_DELIMITER,
                             false))));
@@ -191,8 +200,9 @@ public class LSubProcessorTest extends MockObjectTestCase {
 
     }
 
+    @Test
     public void testSelectAll() throws Exception {
-        checking(new Expectations() {{
+        mockery.checking(new Expectations() {{
             oneOf(responder).respond(with(equal(
                     new LSubResponse(MAILBOX_A, ImapConstants.HIERARCHY_DELIMITER, false))));
             oneOf(responder).respond(with(equal(
@@ -214,8 +224,9 @@ public class LSubProcessorTest extends MockObjectTestCase {
 
     }
 
+    
     private void expectOk() {
-        checking(new Expectations() {{
+        mockery.checking(new Expectations() {{
             oneOf(serverResponseFactory).taggedOk(
                     with(equal(TAG)),
                     with(same(command)),
@@ -225,7 +236,7 @@ public class LSubProcessorTest extends MockObjectTestCase {
     }
 
     private void expectSubscriptions() throws Exception {
-        checking(new Expectations() {{
+        mockery.checking(new Expectations() {{
             oneOf(session).getAttribute(ImapSessionUtils.MAILBOX_SESSION_ATTRIBUTE_SESSION_KEY);
                     will(returnValue(mailboxSession));
             oneOf(manager).subscriptions(with(same(mailboxSession)));will(returnValue(subscriptions));     

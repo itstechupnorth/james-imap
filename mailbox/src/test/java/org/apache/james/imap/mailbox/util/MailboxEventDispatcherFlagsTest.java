@@ -19,6 +19,8 @@
 
 package org.apache.james.imap.mailbox.util;
 
+import static org.junit.Assert.*;
+
 import java.util.Iterator;
 
 import javax.mail.Flags;
@@ -26,9 +28,15 @@ import javax.mail.Flags;
 import org.apache.james.imap.mailbox.MailboxListener;
 import org.apache.james.imap.mailbox.MessageResult;
 import org.jmock.Expectations;
-import org.jmock.integration.junit3.MockObjectTestCase;
+import org.jmock.Mockery;
+import org.jmock.integration.junit4.JMock;
+import org.jmock.integration.junit4.JUnit4Mockery;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
-public class MailboxEventDispatcherFlagsTest extends MockObjectTestCase {
+@RunWith(JMock.class)
+public class MailboxEventDispatcherFlagsTest {
 
     MailboxEventDispatcher dispatcher;
 
@@ -38,21 +46,21 @@ public class MailboxEventDispatcherFlagsTest extends MockObjectTestCase {
 
     int sessionId = 10;
 
+    private Mockery mockery = new JUnit4Mockery();
+
+    @Before
     protected void setUp() throws Exception {
-        super.setUp();
         dispatcher = new MailboxEventDispatcher();
         collector = new EventCollector();
         dispatcher.addMailboxListener(collector);
-        result = mock(MessageResult.class);
-        checking(new Expectations() {{
+        result = mockery.mock(MessageResult.class);
+        mockery.checking(new Expectations() {{
             oneOf (result).getUid();will(returnValue(23L));
         }});
     }
 
-    protected void tearDown() throws Exception {
-        super.tearDown();
-    }
-
+   
+    @Test
     public void testShouldReturnNoChangesWhenOriginalNull() throws Exception {
         dispatcher.flagsUpdated(result.getUid(), sessionId, null, new Flags(
                 Flags.Flag.DELETED));
@@ -65,6 +73,7 @@ public class MailboxEventDispatcherFlagsTest extends MockObjectTestCase {
         assertFalse(iterator.hasNext());
     }
 
+    @Test
     public void testShouldReturnNoChangesWhenSystemFlagsUnchanged() {
         dispatcher.flagsUpdated(result.getUid(), sessionId, new Flags(
                 Flags.Flag.DELETED), new Flags(Flags.Flag.DELETED));
@@ -77,6 +86,7 @@ public class MailboxEventDispatcherFlagsTest extends MockObjectTestCase {
         assertFalse(iterator.hasNext());
     }
 
+    @Test
     public void testShouldShowAnsweredAdded() {
         dispatcher.flagsUpdated(result.getUid(), sessionId, new Flags(),
                 new Flags(Flags.Flag.ANSWERED));
@@ -91,6 +101,7 @@ public class MailboxEventDispatcherFlagsTest extends MockObjectTestCase {
         assertFalse(iterator.hasNext());
     }
 
+    @Test
     public void testShouldShowAnsweredRemoved() {
         dispatcher.flagsUpdated(result.getUid(), sessionId, new Flags(
                 Flags.Flag.ANSWERED), new Flags());
@@ -105,6 +116,7 @@ public class MailboxEventDispatcherFlagsTest extends MockObjectTestCase {
         assertFalse(iterator.hasNext());
     }
 
+    @Test
     public void testShouldShowDeletedAdded() {
         dispatcher.flagsUpdated(result.getUid(), sessionId, new Flags(),
                 new Flags(Flags.Flag.DELETED));
@@ -119,6 +131,7 @@ public class MailboxEventDispatcherFlagsTest extends MockObjectTestCase {
         assertFalse(iterator.hasNext());
     }
 
+    @Test
     public void testShouldShowDeletedRemoved() {
         dispatcher.flagsUpdated(result.getUid(), sessionId, new Flags(
                 Flags.Flag.DELETED), new Flags());
@@ -133,6 +146,7 @@ public class MailboxEventDispatcherFlagsTest extends MockObjectTestCase {
         assertFalse(iterator.hasNext());
     }
 
+    @Test
     public void testShouldShowDraftAdded() {
         dispatcher.flagsUpdated(result.getUid(), sessionId, new Flags(),
                 new Flags(Flags.Flag.DRAFT));
@@ -147,6 +161,7 @@ public class MailboxEventDispatcherFlagsTest extends MockObjectTestCase {
         assertFalse(iterator.hasNext());
     }
 
+    @Test
     public void testShouldShowDraftRemoved() {
         dispatcher.flagsUpdated(result.getUid(), sessionId, new Flags(
                 Flags.Flag.DRAFT), new Flags());
@@ -161,6 +176,7 @@ public class MailboxEventDispatcherFlagsTest extends MockObjectTestCase {
         assertFalse(iterator.hasNext());
     }
 
+    @Test
     public void testShouldShowFlaggedAdded() {
         dispatcher.flagsUpdated(result.getUid(), sessionId, new Flags(),
                 new Flags(Flags.Flag.FLAGGED));
@@ -175,6 +191,7 @@ public class MailboxEventDispatcherFlagsTest extends MockObjectTestCase {
         assertFalse(iterator.hasNext());
     }
 
+    @Test
     public void testShouldShowFlaggedRemoved() {
         dispatcher.flagsUpdated(result.getUid(), sessionId, new Flags(
                 Flags.Flag.FLAGGED), new Flags());
@@ -189,6 +206,7 @@ public class MailboxEventDispatcherFlagsTest extends MockObjectTestCase {
         assertFalse(iterator.hasNext());
     }
 
+    @Test
     public void testShouldShowRecentAdded() {
         dispatcher.flagsUpdated(result.getUid(), sessionId, new Flags(),
                 new Flags(Flags.Flag.RECENT));
@@ -203,6 +221,7 @@ public class MailboxEventDispatcherFlagsTest extends MockObjectTestCase {
         assertFalse(iterator.hasNext());
     }
 
+    @Test
     public void testShouldShowRecentRemoved() {
         dispatcher.flagsUpdated(result.getUid(), sessionId, new Flags(
                 Flags.Flag.RECENT), new Flags());
@@ -217,6 +236,7 @@ public class MailboxEventDispatcherFlagsTest extends MockObjectTestCase {
         assertFalse(iterator.hasNext());
     }
 
+    @Test
     public void testShouldShowSeenAdded() {
         dispatcher.flagsUpdated(result.getUid(), sessionId, new Flags(),
                 new Flags(Flags.Flag.SEEN));
@@ -231,6 +251,7 @@ public class MailboxEventDispatcherFlagsTest extends MockObjectTestCase {
         assertFalse(iterator.hasNext());
     }
 
+    @Test
     public void testShouldShowSeenRemoved() {
         dispatcher.flagsUpdated(result.getUid(), sessionId, new Flags(
                 Flags.Flag.SEEN), new Flags());
@@ -245,6 +266,7 @@ public class MailboxEventDispatcherFlagsTest extends MockObjectTestCase {
         assertFalse(iterator.hasNext());
     }
 
+    @Test
     public void testShouldShowMixedChanges() {
         Flags originals = new Flags();
         originals.add(Flags.Flag.DRAFT);

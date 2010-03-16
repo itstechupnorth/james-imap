@@ -19,6 +19,8 @@
 
 package org.apache.james.imap.decode.parser;
 
+import static org.junit.Assert.assertEquals;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.UnsupportedEncodingException;
@@ -33,10 +35,17 @@ import org.apache.james.imap.api.message.request.DayMonthYear;
 import org.apache.james.imap.api.message.request.SearchKey;
 import org.apache.james.imap.decode.ImapRequestLineReader;
 import org.apache.james.imap.decode.DecodingException;
-import org.jmock.integration.junit3.MockObjectTestCase;
+import org.jmock.Mockery;
+import org.jmock.integration.junit4.JMock;
+import org.jmock.integration.junit4.JUnit4Mockery;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
-public class SearchCommandParserAndParenthesesTest extends MockObjectTestCase {
+@RunWith(JMock.class)
+public class SearchCommandParserAndParenthesesTest {
 
+    private Mockery context = new JUnit4Mockery();
     Input[] variety = { sequence(), uid(), fromHeader(), since(),
             stringQuoted(), stringUnquoted(), draft(), mailingListHeader(),
             on(), unanswered() };
@@ -146,23 +155,21 @@ public class SearchCommandParserAndParenthesesTest extends MockObjectTestCase {
 
     ImapMessage message;
 
+    @Before
     protected void setUp() throws Exception {
-        super.setUp();
         parser = new SearchCommandParser();
-        mockMessageFactory = mock(ImapMessageFactory.class);
+        mockMessageFactory = context.mock(ImapMessageFactory.class);
         command = ImapCommand.anyStateCommand("Command");
-        message = mock(ImapMessage.class);
+        message = context.mock(ImapMessage.class);
         parser.setMessageFactory(mockMessageFactory);
     }
 
-    protected void tearDown() throws Exception {
-        super.tearDown();
-    }
-
+    @Test
     public void testShouldParseTopLevelParentheses() throws Exception {
         check(and(variety, true));
     }
 
+    @Test
     public void testShouldParseDeepParentheses() throws Exception {
         Input[] deep = { and(variety, true), and(variety, true), sequence(),
                 and(variety, true), draft(), mailingListHeader() };
@@ -173,6 +180,7 @@ public class SearchCommandParserAndParenthesesTest extends MockObjectTestCase {
         check(and(top, true));
     }
 
+    @Test
     public void testShouldParseParenthesesOnTopLevel() throws Exception {
         Input[] deep = { and(variety, true), and(variety, true), sequence(),
                 and(variety, true), draft(), mailingListHeader() };

@@ -23,6 +23,7 @@ import java.util.Locale;
 
 import org.apache.james.imap.functional.FrameworkForSelectedStateBase;
 import org.apache.james.test.functional.HostSystem;
+import org.junit.Test;
 
 public class PartialFetch extends FrameworkForSelectedStateBase {
 
@@ -30,50 +31,62 @@ public class PartialFetch extends FrameworkForSelectedStateBase {
         super(system);
     }
 
+    @Test
     public void testBodyPartialFetchUS() throws Exception {
         scriptTest("BodyPartialFetch", Locale.US);
     }
 
+    @Test
     public void testBodyPartialFetchIT() throws Exception {
         scriptTest("BodyPartialFetch", Locale.ITALY);
     }
 
+    @Test
     public void testBodyPartialFetchKO() throws Exception {
         scriptTest("BodyPartialFetch", Locale.KOREA);
     }
 
+    @Test
     public void testTextPartialFetchUS() throws Exception {
         scriptTest("TextPartialFetch", Locale.US);
     }
 
+    @Test
     public void testTextPartialFetchKO() throws Exception {
         scriptTest("TextPartialFetch", Locale.US);
     }
 
+    @Test
     public void testTextPartialFetchIT() throws Exception {
         scriptTest("TextPartialFetch", Locale.US);
     }
 
+    @Test
     public void testMimePartialFetchUS() throws Exception {
         scriptTest("MimePartialFetch", Locale.US);
     }
 
+    @Test
     public void testMimePartialFetchIT() throws Exception {
         scriptTest("MimePartialFetch", Locale.ITALY);
     }
 
+    @Test
     public void testMimePartialFetchKO() throws Exception {
         scriptTest("MimePartialFetch", Locale.KOREA);
     }
 
+    @Test
     public void testHeaderPartialFetchUS() throws Exception {
         scriptTest("HeaderPartialFetch", Locale.US);
     }
 
+    @Test
     public void testHeaderPartialFetchIT() throws Exception {
         scriptTest("HeaderPartialFetch", Locale.ITALY);
     }
 
+    @Test
     public void testHeaderPartialFetchKO() throws Exception {
         scriptTest("HeaderPartialFetch", Locale.KOREA);
     }

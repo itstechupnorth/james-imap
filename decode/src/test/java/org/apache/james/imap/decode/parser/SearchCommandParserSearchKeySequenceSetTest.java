@@ -19,6 +19,8 @@
 
 package org.apache.james.imap.decode.parser;
 
+import static org.junit.Assert.*;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 
@@ -28,9 +30,15 @@ import org.apache.james.imap.api.ImapMessage;
 import org.apache.james.imap.api.message.IdRange;
 import org.apache.james.imap.api.message.request.SearchKey;
 import org.apache.james.imap.decode.ImapRequestLineReader;
-import org.jmock.integration.junit3.MockObjectTestCase;
+import org.jmock.Mockery;
+import org.jmock.integration.junit4.JMock;
+import org.jmock.integration.junit4.JUnit4Mockery;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
-public class SearchCommandParserSearchKeySequenceSetTest extends MockObjectTestCase {
+@RunWith(JMock.class)
+public class SearchCommandParserSearchKeySequenceSetTest {
 
     SearchCommandParser parser;
 
@@ -40,19 +48,18 @@ public class SearchCommandParserSearchKeySequenceSetTest extends MockObjectTestC
 
     ImapMessage message;
 
+    private Mockery mockery = new JUnit4Mockery();
+    
+    @Before
     protected void setUp() throws Exception {
-        super.setUp();
         parser = new SearchCommandParser();
-        mockMessageFactory = mock(ImapMessageFactory.class);
+        mockMessageFactory = mockery.mock(ImapMessageFactory.class);
         command = ImapCommand.anyStateCommand("Command");
-        message = mock(ImapMessage.class);
+        message = mockery.mock(ImapMessage.class);
         parser.setMessageFactory(mockMessageFactory);
     }
-
-    protected void tearDown() throws Exception {
-        super.tearDown();
-    }
-
+    
+    @Test
     public void testAllNumbers() throws Exception {
 
         IdRange[] range = { new IdRange(2), new IdRange(4), new IdRange(9),
@@ -62,12 +69,14 @@ public class SearchCommandParserSearchKeySequenceSetTest extends MockObjectTestC
         check("2,4,9,16,25,36,49,64,81,100", range);
     }
 
+    @Test
     public void testEndStar() throws Exception {
         IdRange[] range = { new IdRange(8), new IdRange(9, 10),
                 new IdRange(17), new IdRange(100, Long.MAX_VALUE) };
         check("8,9:10,17,100:*", range);
     }
 
+    @Test
     public void testStartStar() throws Exception {
         IdRange[] range = { new IdRange(Long.MAX_VALUE, 9), new IdRange(15),
                 new IdRange(799, 820) };

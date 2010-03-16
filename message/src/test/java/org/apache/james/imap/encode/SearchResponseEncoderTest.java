@@ -19,6 +19,8 @@
 
 package org.apache.james.imap.encode;
 
+import static org.junit.Assert.*;
+
 import java.util.Arrays;
 import java.util.List;
 
@@ -30,9 +32,15 @@ import org.apache.james.imap.encode.ListResponseEncoder;
 import org.apache.james.imap.message.response.LSubResponse;
 import org.apache.james.imap.message.response.ListResponse;
 import org.jmock.Expectations;
-import org.jmock.integration.junit3.MockObjectTestCase;
+import org.jmock.Mockery;
+import org.jmock.integration.junit4.JMock;
+import org.jmock.integration.junit4.JUnit4Mockery;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
-public class SearchResponseEncoderTest extends MockObjectTestCase {
+@RunWith(JMock.class)
+public class SearchResponseEncoderTest {
 
     ListResponseEncoder encoder;
 
@@ -40,28 +48,28 @@ public class SearchResponseEncoderTest extends MockObjectTestCase {
 
     ImapResponseComposer composer;
 
+    private Mockery context = new JUnit4Mockery();
+    
+    @Before
     protected void setUp() throws Exception {
-        super.setUp();
-        mockNextEncoder = mock(ImapEncoder.class);
-        composer = mock(ImapResponseComposer.class);
+        mockNextEncoder = context.mock(ImapEncoder.class);
+        composer = context.mock(ImapResponseComposer.class);
         encoder = new ListResponseEncoder(mockNextEncoder);
     }
 
-    protected void tearDown() throws Exception {
-        super.tearDown();
-    }
-
+    @Test
     public void testIsAcceptable() {
         assertTrue(encoder.isAcceptable(new ListResponse(true, true, true,
                 true, false, false, ".", "name")));
         assertFalse(encoder.isAcceptable(new LSubResponse("name", ".", true)));
-        assertFalse(encoder.isAcceptable(mock(ImapMessage.class)));
+        assertFalse(encoder.isAcceptable(context.mock(ImapMessage.class)));
         assertFalse(encoder.isAcceptable(null));
     }
 
+    @Test
     @SuppressWarnings("unchecked")
 	public void testName() throws Exception {
-        checking(new Expectations() {{
+        context.checking(new Expectations() {{
             oneOf(composer).listResponse(
                             with(same("LIST")), 
                             with(aNull(List.class)), 
@@ -71,9 +79,10 @@ public class SearchResponseEncoderTest extends MockObjectTestCase {
         encoder.encode(new ListResponse(false, false, false, false, false, false, ".", "INBOX.name"), composer, new FakeImapSession());
     }
 
+    @Test
     @SuppressWarnings("unchecked")
 	public void testDelimiter() throws Exception {
-        checking(new Expectations() {{
+        context.checking(new Expectations() {{
             oneOf(composer).listResponse(
                             with(same("LIST")), 
                             with(aNull(List.class)), 
@@ -83,9 +92,10 @@ public class SearchResponseEncoderTest extends MockObjectTestCase {
         encoder.encode(new ListResponse(false, false, false, false, false, false, "@", "INBOX.name"), composer, new FakeImapSession());
     }
 
+    @Test
     @SuppressWarnings("unchecked")
 	public void testNoDelimiter() throws Exception {
-        checking(new Expectations() {{
+        context.checking(new Expectations() {{
             oneOf(composer).listResponse(
                             with(same("LIST")), 
                             with(aNull(List.class)), 
@@ -95,12 +105,13 @@ public class SearchResponseEncoderTest extends MockObjectTestCase {
         encoder.encode(new ListResponse(false, false, false, false, false, false, null, "INBOX.name"), composer, new FakeImapSession());
     }
 
+    @Test
     public void testAllAttributes() throws Exception {
         final String[] all = { ImapConstants.NAME_ATTRIBUTE_NOINFERIORS,
                 ImapConstants.NAME_ATTRIBUTE_NOSELECT,
                 ImapConstants.NAME_ATTRIBUTE_MARKED,
                 ImapConstants.NAME_ATTRIBUTE_UNMARKED };
-        checking(new Expectations() {{
+        context.checking(new Expectations() {{
             oneOf(composer).listResponse(
                             with(same("LIST")), 
                             with(equal(Arrays.asList(all))), 
@@ -110,9 +121,10 @@ public class SearchResponseEncoderTest extends MockObjectTestCase {
         encoder.encode(new ListResponse(true, true, true, true, false, false, ".", "INBOX.name"), composer, new FakeImapSession());
     }
 
+    @Test
     public void testNoInferiors() throws Exception {
         final String[] values = { ImapConstants.NAME_ATTRIBUTE_NOINFERIORS };
-        checking(new Expectations() {{
+        context.checking(new Expectations() {{
             oneOf(composer).listResponse(
                             with(same("LIST")), 
                             with(equal(Arrays.asList(values))), 
@@ -122,9 +134,10 @@ public class SearchResponseEncoderTest extends MockObjectTestCase {
         encoder.encode(new ListResponse(true, false, false, false, false, false, ".", "INBOX.name"), composer, new FakeImapSession());
     }
 
+    @Test
     public void testNoSelect() throws Exception {
         final String[] values = { ImapConstants.NAME_ATTRIBUTE_NOSELECT };
-        checking(new Expectations() {{
+        context.checking(new Expectations() {{
             oneOf(composer).listResponse(
                             with(same("LIST")), 
                             with(equal(Arrays.asList(values))), 
@@ -134,9 +147,10 @@ public class SearchResponseEncoderTest extends MockObjectTestCase {
         encoder.encode(new ListResponse(false, true, false, false, false, false, ".", "INBOX.name"), composer, new FakeImapSession());
     }
 
+    @Test
     public void testMarked() throws Exception {
         final String[] values = { ImapConstants.NAME_ATTRIBUTE_MARKED };
-        checking(new Expectations() {{
+        context.checking(new Expectations() {{
             oneOf(composer).listResponse(
                             with(same("LIST")), 
                             with(equal(Arrays.asList(values))), 
@@ -146,9 +160,10 @@ public class SearchResponseEncoderTest extends MockObjectTestCase {
         encoder.encode(new ListResponse(false, false, true, false, false, false, ".", "INBOX.name"), composer, new FakeImapSession());
     }
 
+    @Test
     public void testUnmarked() throws Exception {
         final String[] values = { ImapConstants.NAME_ATTRIBUTE_UNMARKED };
-        checking(new Expectations() {{
+        context.checking(new Expectations() {{
             oneOf(composer).listResponse(
                             with(same("LIST")), 
                             with(equal(Arrays.asList(values))), 

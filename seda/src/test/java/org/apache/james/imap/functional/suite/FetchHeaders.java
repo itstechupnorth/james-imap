@@ -23,6 +23,7 @@ import java.util.Locale;
 
 import org.apache.james.imap.functional.FrameworkForSelectedStateBase;
 import org.apache.james.test.functional.HostSystem;
+import org.junit.Test;
 
 public class FetchHeaders extends FrameworkForSelectedStateBase {
 
@@ -30,26 +31,32 @@ public class FetchHeaders extends FrameworkForSelectedStateBase {
         super(system);
     }
 
+    @Test
     public void testFetchHeaderFieldsUS() throws Exception {
         scriptTest("FetchHeaderFields", Locale.US);
     }
 
+    @Test
     public void testFetchHeaderFieldsITALY() throws Exception {
         scriptTest("FetchHeaderFields", Locale.ITALY);
     }
 
+    @Test
     public void testFetchHeaderFieldsKOREA() throws Exception {
         scriptTest("FetchHeaderFields", Locale.KOREA);
     }
 
+    @Test
     public void testFetchHeaderFieldsNotUS() throws Exception {
         scriptTest("FetchHeaderFieldsNot", Locale.US);
     }
 
+    @Test
     public void testFetchHeaderFieldsNotITALY() throws Exception {
         scriptTest("FetchHeaderFieldsNot", Locale.ITALY);
     }
 
+    @Test
     public void testFetchHeaderFieldsNotKOREA() throws Exception {
         scriptTest("FetchHeaderFieldsNot", Locale.KOREA);
     }

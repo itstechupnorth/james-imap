@@ -23,6 +23,7 @@ import java.util.Locale;
 
 import org.apache.james.imap.functional.FrameworkForAuthenticatedState;
 import org.apache.james.test.functional.HostSystem;
+import org.junit.Test;
 
 public class UidSearch extends
         FrameworkForAuthenticatedState {
@@ -31,27 +32,34 @@ public class UidSearch extends
         super(system);
     }
 
+    @Test
     public void testSearchAtomsUS() throws Exception {
         scriptTest("UidSearchAtoms", Locale.US);
     }
 
+    @Test
     public void testSearchAtomsITALY() throws Exception {
         scriptTest("UidSearchAtoms", Locale.ITALY);
     }
 
+    @Test
     public void testSearchAtomsKOREA() throws Exception {
         scriptTest("UidSearchAtoms", Locale.KOREA);
     }
 
+    @Test
     public void testSearchCombinationsUS() throws Exception {
         scriptTest("UidSearchCombinations", Locale.US);
     }
 
+    @Test
     public void testSearchCombinationsITALY() throws Exception {
         scriptTest("UidSearchCombinations", Locale.ITALY);
     }
 
+    @Test
     public void testSearchCombinationsKOREA() throws Exception {
         scriptTest("UidSearchCombinations", Locale.KOREA);
     }
 }
+

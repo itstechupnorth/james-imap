@@ -26,6 +26,7 @@ import javax.mail.Flags;
 
 import org.apache.james.imap.api.ImapCommand;
 import org.apache.james.imap.encode.AbstractTestImapResponseComposer;
+import org.junit.Before;
 
 public class ImapResponseComposerImplTest extends
         AbstractTestImapResponseComposer {
@@ -34,15 +35,12 @@ public class ImapResponseComposerImplTest extends
 
     ByteImapResponseWriter writer;
 
+    @Before
     protected void setUp() throws Exception {
-        super.setUp();
         writer = new ByteImapResponseWriter();
         composer = new ImapResponseComposerImpl(writer);
     }
 
-    protected void tearDown() throws Exception {
-        super.tearDown();
-    }
 
     protected byte[] encodeListResponse(String typeName, List<String> attributes,
             String hierarchyDelimiter, String name) throws Exception {

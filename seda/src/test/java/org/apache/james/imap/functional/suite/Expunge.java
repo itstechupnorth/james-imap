@@ -23,6 +23,7 @@ import java.util.Locale;
 
 import org.apache.james.imap.functional.FrameworkForSelectedStateBase;
 import org.apache.james.test.functional.HostSystem;
+import org.junit.Test;
 
 public class Expunge extends FrameworkForSelectedStateBase {
 
@@ -30,14 +31,17 @@ public class Expunge extends FrameworkForSelectedStateBase {
         super(system);
     }
     
+    @Test
     public void testBasicExpungeUS() throws Exception {
         scriptTest("ExpungeBasics", Locale.US);
     }
     
+    @Test
     public void testBasicExpungeIT() throws Exception {
         scriptTest("ExpungeBasics", Locale.ITALY);
     }
     
+    @Test
     public void testBasicExpungeKO() throws Exception {
         scriptTest("ExpungeBasics", Locale.KOREA);
     }

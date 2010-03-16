@@ -19,7 +19,9 @@
 
 package org.apache.james.test.functional;
 
-import junit.framework.TestCase;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
 
 /**
  * Abstract Protocol Test is the root of all of the James Imap Server test
@@ -31,7 +33,7 @@ import junit.framework.TestCase;
  * @author Darrell DeBoer
  * @author Andrew C. Oliver
  */
-public abstract class AbstractProtocolTestFramework extends TestCase {
+public abstract class AbstractProtocolTestFramework {
     /** The Protocol session which is run before the testElements */
     protected ProtocolSession preElements = new ProtocolSession();
 
@@ -52,10 +54,6 @@ public abstract class AbstractProtocolTestFramework extends TestCase {
         this.password = password;
     }
 
-    protected void setUp() throws Exception {
-        super.setUp();
-        setUpEnvironment();
-    }
 
     protected void continueAfterFailure() {
         preElements.setContinueAfterFailure(true);
@@ -112,8 +110,20 @@ public abstract class AbstractProtocolTestFramework extends TestCase {
     /**
      * Initialises the UsersRepository and ImapHost on first call.
      */
-    private void setUpEnvironment() throws Exception {
+    @Before
+    public void setUpEnvironment() throws Exception {
         hostSystem.reset();
         hostSystem.addUser(userName, password);
+    }
+    
+    
+    @AfterClass
+    public void afterTests() throws Exception {
+        hostSystem.afterTests();
+    }
+    
+    @BeforeClass
+    public void beforeTests() throws Exception {
+        hostSystem.beforeTests();
     }
 }

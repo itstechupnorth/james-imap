@@ -28,10 +28,16 @@ import org.apache.james.imap.encode.ImapResponseComposer;
 import org.apache.james.imap.message.response.FetchResponse;
 import org.apache.james.imap.message.response.FetchResponse.Envelope.Address;
 import org.jmock.Expectations;
+import org.jmock.Mockery;
 import org.jmock.Sequence;
-import org.jmock.integration.junit3.MockObjectTestCase;
+import org.jmock.integration.junit4.JMock;
+import org.jmock.integration.junit4.JUnit4Mockery;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
-public class FetchResponseEncoderEnvelopeTest extends MockObjectTestCase {
+@RunWith(JMock.class)
+public class FetchResponseEncoderEnvelopeTest {
 
     private static final String ADDRESS_ONE_HOST = "HOST";
 
@@ -51,6 +57,8 @@ public class FetchResponseEncoderEnvelopeTest extends MockObjectTestCase {
 
     private static final int MSN = 100;
 
+    private Mockery context = new JUnit4Mockery();
+    
     Flags flags;
 
     ImapResponseComposer composer;
@@ -85,9 +93,9 @@ public class FetchResponseEncoderEnvelopeTest extends MockObjectTestCase {
 
     Address[] to;
 
+    @Before
     protected void setUp() throws Exception {
-        super.setUp();
-        envelope = mock(FetchResponse.Envelope.class);
+        envelope = context.mock(FetchResponse.Envelope.class);
 
         bcc = null;
         cc = null;
@@ -101,8 +109,8 @@ public class FetchResponseEncoderEnvelopeTest extends MockObjectTestCase {
         to = null;
 
         message = new FetchResponse(MSN, null, null, null, null, envelope, null, null, null);
-        composer = mock(ImapResponseComposer.class);
-        mockNextEncoder = mock(ImapEncoder.class);
+        composer = context.mock(ImapResponseComposer.class);
+        mockNextEncoder = context.mock(ImapEncoder.class);
         encoder = new FetchResponseEncoder(mockNextEncoder, false);
         stubCommand = ImapCommand.anyStateCommand("COMMAND");
         flags = new Flags(Flags.Flag.DELETED);
@@ -125,8 +133,8 @@ public class FetchResponseEncoderEnvelopeTest extends MockObjectTestCase {
 
     private Address mockAddress(final String name, final String domainList,
             final String mailbox, final String host) {
-        final Address address = mock(Address.class, name + host);
-        checking(new Expectations() {{
+        final Address address = context.mock(Address.class, name + host);
+        context.checking(new Expectations() {{
             oneOf (address).getPersonalName();will(returnValue(name));
             oneOf (address).getAtDomainList();will(returnValue(domainList));
             oneOf (address).getMailboxName();will(returnValue(mailbox));
@@ -136,7 +144,7 @@ public class FetchResponseEncoderEnvelopeTest extends MockObjectTestCase {
     }
 
     private void envelopExpects() {
-        checking(new Expectations() {{
+        context.checking(new Expectations() {{
             oneOf(envelope).getBcc();will(returnValue(bcc));
             oneOf(envelope).getCc();will(returnValue(cc));
             oneOf(envelope).getDate();will(returnValue(date));
@@ -150,14 +158,11 @@ public class FetchResponseEncoderEnvelopeTest extends MockObjectTestCase {
         }});
     }
 
-    protected void tearDown() throws Exception {
-        super.tearDown();
-    }
-
+    @Test
     public void testShouldNilAllNullProperties() throws Exception {
         envelopExpects();
-        checking(new Expectations() {{
-            final Sequence composition = sequence("composition");
+        context.checking(new Expectations() {{
+            final Sequence composition = context.sequence("composition");
             oneOf(composer).openFetchResponse(with(equal((long) MSN))); inSequence(composition);
             oneOf(composer).startEnvelope(with(aNull(String.class)), with(aNull(String.class)), with(equal(true))); inSequence(composition);
             exactly(6).of(composer).nil(); inSequence(composition);
@@ -167,11 +172,12 @@ public class FetchResponseEncoderEnvelopeTest extends MockObjectTestCase {
         encoder.doEncode(message, composer, new FakeImapSession());
     }
 
+    @Test
     public void testShouldComposeDate() throws Exception {
         date = "a date";
         envelopExpects();
-        checking(new Expectations() {{
-            final Sequence composition = sequence("composition");
+        context.checking(new Expectations() {{
+            final Sequence composition = context.sequence("composition");
             oneOf(composer).openFetchResponse(with(equal((long) MSN))); inSequence(composition);
             oneOf(composer).startEnvelope(with(date), with(aNull(String.class)), with(equal(true))); inSequence(composition);
             exactly(6).of(composer).nil(); inSequence(composition);
@@ -180,12 +186,13 @@ public class FetchResponseEncoderEnvelopeTest extends MockObjectTestCase {
         }});
         encoder.doEncode(message, composer, new FakeImapSession());
     }
-
+    
+    @Test
     public void testShouldComposeSubject() throws Exception {
         subject = "some subject";
         envelopExpects();
-        checking(new Expectations() {{
-            final Sequence composition = sequence("composition");
+        context.checking(new Expectations() {{
+            final Sequence composition = context.sequence("composition");
             oneOf(composer).openFetchResponse(with(equal((long) MSN))); inSequence(composition);
             oneOf(composer).startEnvelope(with(aNull(String.class)), with(equal(subject)), with(equal(true))); inSequence(composition);
             exactly(6).of(composer).nil(); inSequence(composition);
@@ -195,11 +202,12 @@ public class FetchResponseEncoderEnvelopeTest extends MockObjectTestCase {
         encoder.doEncode(message, composer, new FakeImapSession());
     }
 
+    @Test
     public void testShouldComposeInReplyTo() throws Exception {
         inReplyTo = "some reply to";
         envelopExpects();
-        checking(new Expectations() {{
-            final Sequence composition = sequence("composition");
+        context.checking(new Expectations() {{
+            final Sequence composition = context.sequence("composition");
             oneOf(composer).openFetchResponse(with(equal((long) MSN))); inSequence(composition);
             oneOf(composer).startEnvelope(with(aNull(String.class)), with(aNull(String.class)), with(equal(true))); inSequence(composition);
             exactly(6).of(composer).nil(); inSequence(composition);
@@ -209,11 +217,12 @@ public class FetchResponseEncoderEnvelopeTest extends MockObjectTestCase {
         encoder.doEncode(message, composer, new FakeImapSession());
     }
 
+    @Test
     public void testShouldComposeMessageId() throws Exception {
         messageId = "some message id";
         envelopExpects();
-        checking(new Expectations() {{
-            final Sequence composition = sequence("composition");
+        context.checking(new Expectations() {{
+            final Sequence composition = context.sequence("composition");
             oneOf(composer).openFetchResponse(with(equal((long) MSN))); inSequence(composition);
             oneOf(composer).startEnvelope(with(aNull(String.class)), with(aNull(String.class)), with(equal(true))); inSequence(composition);
             exactly(6).of(composer).nil(); inSequence(composition);
@@ -223,11 +232,12 @@ public class FetchResponseEncoderEnvelopeTest extends MockObjectTestCase {
         encoder.doEncode(message, composer, new FakeImapSession());
     }
 
+    @Test
     public void testShouldComposeOneFromAddress() throws Exception {
         from = mockOneAddress();
         envelopExpects();
-        checking(new Expectations() {{
-            final Sequence composition = sequence("composition");
+        context.checking(new Expectations() {{
+            final Sequence composition = context.sequence("composition");
             oneOf(composer).openFetchResponse(with(equal((long) MSN))); inSequence(composition);
             oneOf(composer).startEnvelope(with(aNull(String.class)), with(aNull(String.class)), with(equal(true))); inSequence(composition);
             oneOf(composer).startAddresses(); inSequence(composition);
@@ -244,11 +254,12 @@ public class FetchResponseEncoderEnvelopeTest extends MockObjectTestCase {
         encoder.doEncode(message, composer, new FakeImapSession());
     }
 
+    @Test
     public void testShouldComposeManyFromAddress() throws Exception {
         from = mockManyAddresses();
         envelopExpects();
-        checking(new Expectations() {{
-            final Sequence composition = sequence("composition");
+        context.checking(new Expectations() {{
+            final Sequence composition = context.sequence("composition");
             oneOf(composer).openFetchResponse(with(equal((long) MSN))); inSequence(composition);
             oneOf(composer).startEnvelope(with(aNull(String.class)), with(aNull(String.class)), with(equal(true))); inSequence(composition);
             oneOf(composer).startAddresses(); inSequence(composition);
@@ -270,11 +281,12 @@ public class FetchResponseEncoderEnvelopeTest extends MockObjectTestCase {
         encoder.doEncode(message, composer, new FakeImapSession());
     }
 
+    @Test
     public void testShouldComposeOneSenderAddress() throws Exception {
         sender = mockOneAddress();
         envelopExpects();
-        checking(new Expectations() {{
-            final Sequence composition = sequence("composition");
+        context.checking(new Expectations() {{
+            final Sequence composition = context.sequence("composition");
             oneOf(composer).openFetchResponse(with(equal((long) MSN))); inSequence(composition);
             oneOf(composer).startEnvelope(with(aNull(String.class)), with(aNull(String.class)), with(equal(true))); inSequence(composition);
             exactly(1).of(composer).nil(); inSequence(composition);
@@ -292,11 +304,12 @@ public class FetchResponseEncoderEnvelopeTest extends MockObjectTestCase {
         encoder.doEncode(message, composer, new FakeImapSession());
     }
 
+    @Test
     public void testShouldComposeManySenderAddress() throws Exception {
         sender = mockManyAddresses();
         envelopExpects();
-        checking(new Expectations() {{
-            final Sequence composition = sequence("composition");
+        context.checking(new Expectations() {{
+            final Sequence composition = context.sequence("composition");
             oneOf(composer).openFetchResponse(with(equal((long) MSN))); inSequence(composition);
             oneOf(composer).startEnvelope(with(aNull(String.class)), with(aNull(String.class)), with(equal(true))); inSequence(composition);
             exactly(1).of(composer).nil(); inSequence(composition);
@@ -320,11 +333,12 @@ public class FetchResponseEncoderEnvelopeTest extends MockObjectTestCase {
     }
     
 
+    @Test
     public void testShouldComposeOneReplyToAddress() throws Exception {
         replyTo = mockOneAddress();
         envelopExpects();
-        checking(new Expectations() {{
-            final Sequence composition = sequence("composition");
+        context.checking(new Expectations() {{
+            final Sequence composition = context.sequence("composition");
             oneOf(composer).openFetchResponse(with(equal((long) MSN))); inSequence(composition);
             oneOf(composer).startEnvelope(with(aNull(String.class)), with(aNull(String.class)), with(equal(true))); inSequence(composition);
             exactly(2).of(composer).nil(); inSequence(composition);
@@ -342,11 +356,12 @@ public class FetchResponseEncoderEnvelopeTest extends MockObjectTestCase {
         encoder.doEncode(message, composer, new FakeImapSession());
     }
 
+    @Test
     public void testShouldComposeManyReplyToAddress() throws Exception {
         replyTo = mockManyAddresses();
         envelopExpects();
-        checking(new Expectations() {{
-            final Sequence composition = sequence("composition");
+        context.checking(new Expectations() {{
+            final Sequence composition = context.sequence("composition");
             oneOf(composer).openFetchResponse(with(equal((long) MSN))); inSequence(composition);
             oneOf(composer).startEnvelope(with(aNull(String.class)), with(aNull(String.class)), with(equal(true))); inSequence(composition);
             exactly(2).of(composer).nil(); inSequence(composition);
@@ -369,11 +384,12 @@ public class FetchResponseEncoderEnvelopeTest extends MockObjectTestCase {
         encoder.doEncode(message, composer, new FakeImapSession());
     }
 
+    @Test
     public void testShouldComposeOneToAddress() throws Exception {
         to = mockOneAddress();
         envelopExpects();
-        checking(new Expectations() {{
-            final Sequence composition = sequence("composition");
+        context.checking(new Expectations() {{
+            final Sequence composition = context.sequence("composition");
             oneOf(composer).openFetchResponse(with(equal((long) MSN))); inSequence(composition);
             oneOf(composer).startEnvelope(with(aNull(String.class)), with(aNull(String.class)), with(equal(true))); inSequence(composition);
             exactly(3).of(composer).nil(); inSequence(composition);
@@ -391,11 +407,12 @@ public class FetchResponseEncoderEnvelopeTest extends MockObjectTestCase {
         encoder.doEncode(message, composer, new FakeImapSession());
     }
 
+    @Test
     public void testShouldComposeManyToAddress() throws Exception {
         to = mockManyAddresses();
         envelopExpects();
-        checking(new Expectations() {{
-            final Sequence composition = sequence("composition");
+        context.checking(new Expectations() {{
+            final Sequence composition = context.sequence("composition");
             oneOf(composer).openFetchResponse(with(equal((long) MSN))); inSequence(composition);
             oneOf(composer).startEnvelope(with(aNull(String.class)), with(aNull(String.class)), with(equal(true))); inSequence(composition);
             exactly(3).of(composer).nil(); inSequence(composition);
@@ -418,11 +435,12 @@ public class FetchResponseEncoderEnvelopeTest extends MockObjectTestCase {
         encoder.doEncode(message, composer, new FakeImapSession());
     }
 
+    @Test
     public void testShouldComposeOneCcAddress() throws Exception {
         cc = mockOneAddress();
         envelopExpects();
-        checking(new Expectations() {{
-            final Sequence composition = sequence("composition");
+        context.checking(new Expectations() {{
+            final Sequence composition = context.sequence("composition");
             oneOf(composer).openFetchResponse(with(equal((long) MSN))); inSequence(composition);
             oneOf(composer).startEnvelope(with(aNull(String.class)), with(aNull(String.class)), with(equal(true))); inSequence(composition);
             exactly(4).of(composer).nil(); inSequence(composition);
@@ -440,11 +458,12 @@ public class FetchResponseEncoderEnvelopeTest extends MockObjectTestCase {
         encoder.doEncode(message, composer, new FakeImapSession());
     }
 
+    @Test
     public void testShouldComposeManyCcAddress() throws Exception {
         cc = mockManyAddresses();
         envelopExpects();
-        checking(new Expectations() {{
-            final Sequence composition = sequence("composition");
+        context.checking(new Expectations() {{
+            final Sequence composition = context.sequence("composition");
             oneOf(composer).openFetchResponse(with(equal((long) MSN))); inSequence(composition);
             oneOf(composer).startEnvelope(with(aNull(String.class)), with(aNull(String.class)), with(equal(true))); inSequence(composition);
             exactly(4).of(composer).nil(); inSequence(composition);
@@ -466,12 +485,13 @@ public class FetchResponseEncoderEnvelopeTest extends MockObjectTestCase {
         }});
         encoder.doEncode(message, composer, new FakeImapSession());
     }
-
+    
+    @Test
     public void testShouldComposeOneBccAddress() throws Exception {
         bcc = mockOneAddress();
         envelopExpects();
-        checking(new Expectations() {{
-            final Sequence composition = sequence("composition");
+        context.checking(new Expectations() {{
+            final Sequence composition = context.sequence("composition");
             oneOf(composer).openFetchResponse(with(equal((long) MSN))); inSequence(composition);
             oneOf(composer).startEnvelope(with(aNull(String.class)), with(aNull(String.class)), with(equal(true))); inSequence(composition);
             exactly(5).of(composer).nil(); inSequence(composition);
@@ -488,11 +508,12 @@ public class FetchResponseEncoderEnvelopeTest extends MockObjectTestCase {
         encoder.doEncode(message, composer, new FakeImapSession());
     }
 
+    @Test
     public void testShouldComposeManyBccAddress() throws Exception {
         bcc = mockManyAddresses();
         envelopExpects();
-        checking(new Expectations() {{
-            final Sequence composition = sequence("composition");
+        context.checking(new Expectations() {{
+            final Sequence composition = context.sequence("composition");
             oneOf(composer).openFetchResponse(with(equal((long) MSN))); inSequence(composition);
             oneOf(composer).startEnvelope(with(aNull(String.class)), with(aNull(String.class)), with(equal(true))); inSequence(composition);
             exactly(5).of(composer).nil(); inSequence(composition);

@@ -23,6 +23,7 @@ import java.util.Locale;
 
 import org.apache.james.imap.functional.FrameworkForSelectedStateBase;
 import org.apache.james.test.functional.HostSystem;
+import org.junit.Test;
 
 public class Fetch extends FrameworkForSelectedStateBase {
 
@@ -30,98 +31,122 @@ public class Fetch extends FrameworkForSelectedStateBase {
         super(system);
     }
 
+    @Test
     public void testFetchEnvelopeUS() throws Exception {
         scriptTest("FetchEnvelope", Locale.US);
     }
 
+    @Test
     public void testFetchEnvelopeIT() throws Exception {
         scriptTest("FetchEnvelope", Locale.ITALY);
     }
 
+    @Test
     public void testFetchEnvelopeKOREA() throws Exception {
         scriptTest("FetchEnvelope", Locale.KOREA);
     }
 
+    @Test
     public void testFetchTextUS() throws Exception {
         scriptTest("FetchText", Locale.US);
     }
 
+    @Test
     public void testFetchBodyNoSectionUS() throws Exception {
         scriptTest("FetchBodyNoSection", Locale.US);
     }
 
+    @Test
     public void testFetchTextIT() throws Exception {
         scriptTest("FetchText", Locale.ITALY);
     }
 
+    @Test
     public void testFetchBodyNoSectionIT() throws Exception {
         scriptTest("FetchBodyNoSection", Locale.ITALY);
     }
 
+    @Test
     public void testFetchTextKOREA() throws Exception {
         scriptTest("FetchText", Locale.KOREA);
     }
 
+    @Test
     public void testFetchBodyNoSectionKOREA() throws Exception {
         scriptTest("FetchBodyNoSection", Locale.KOREA);
     }
 
+    @Test
     public void testFetchRFC822US() throws Exception {
         scriptTest("FetchRFC822", Locale.US);
     }
 
+    @Test
     public void testFetchRFC822TextUS() throws Exception {
         scriptTest("FetchRFC822Text", Locale.US);
     }
 
+    @Test
     public void testFetchRFC822HeaderUS() throws Exception {
         scriptTest("FetchRFC822Header", Locale.US);
     }
 
+    @Test
     public void testFetchRFC822KOREA() throws Exception {
         scriptTest("FetchRFC822", Locale.KOREA);
     }
 
+    @Test
     public void testFetchRFC822TextKOREA() throws Exception {
         scriptTest("FetchRFC822Text", Locale.KOREA);
     }
 
+    @Test
     public void testFetchRFC822HeaderKOREA() throws Exception {
         scriptTest("FetchRFC822Header", Locale.KOREA);
     }
 
+    @Test
     public void testFetchRFC822ITALY() throws Exception {
         scriptTest("FetchRFC822", Locale.ITALY);
     }
 
+    @Test
     public void testFetchRFC822TextITALY() throws Exception {
         scriptTest("FetchRFC822Text", Locale.ITALY);
     }
 
+    @Test
     public void testFetchRFC822HeaderITALY() throws Exception {
         scriptTest("FetchRFC822Header", Locale.ITALY);
     }
 
+    @Test
     public void testFetchInternalDateUS() throws Exception {
         scriptTest("FetchInternalDate", Locale.US);
     }
 
+    @Test
     public void testFetchInternalDateITALY() throws Exception {
         scriptTest("FetchInternalDate", Locale.ITALY);
     }
 
+    @Test
     public void testFetchInternalDateKOREA() throws Exception {
         scriptTest("FetchInternalDate", Locale.KOREA);
     }
 
+    @Test
     public void testFetchFetchRfcMixedUS() throws Exception {
         scriptTest("FetchRFC822Mixed", Locale.US);
     }
 
+    @Test
     public void testFetchFetchRfcMixedKOREA() throws Exception {
         scriptTest("FetchRFC822Mixed", Locale.KOREA);
     }
 
+    @Test
     public void testFetchFetchRfcMixedITALY() throws Exception {
         scriptTest("FetchRFC822Mixed", Locale.ITALY);
     }

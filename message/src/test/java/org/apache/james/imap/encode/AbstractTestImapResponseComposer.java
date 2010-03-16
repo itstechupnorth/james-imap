@@ -26,9 +26,13 @@ import java.util.List;
 import javax.mail.Flags;
 
 import org.apache.james.imap.api.ImapCommand;
-import org.jmock.integration.junit3.MockObjectTestCase;
+import org.jmock.integration.junit4.JMock;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import static org.junit.Assert.assertEquals;
 
-public abstract class AbstractTestImapResponseComposer extends MockObjectTestCase {
+@RunWith(JMock.class)
+public abstract class AbstractTestImapResponseComposer {
 
     private static final long[] ONE_TWO_THREE = { 1, 2, 3 };
 
@@ -36,21 +40,16 @@ public abstract class AbstractTestImapResponseComposer extends MockObjectTestCas
 
     private static final long[] EMPTY = {};
 
-    protected void setUp() throws Exception {
-        super.setUp();
-    }
 
-    protected void tearDown() throws Exception {
-        super.tearDown();
-    }
-
+    @Test
     public void testSearch() throws Exception {
         checkSearchResponseEncode("* SEARCH 1 2 3\r\n", ONE_TWO_THREE);
         checkSearchResponseEncode("* SEARCH 1 1 2 3 5 8 13 21 34 65 99\r\n",
                 FIBS);
         checkSearchResponseEncode("* SEARCH\r\n", EMPTY);
     }
-
+    
+    @Test
     public void testQuotedDelimiter() throws Exception {
         checkListResponseEncode("* LSUB () \"\\\"\" \"#news\"\r\n", "LSUB",
                 null, "\"", "#news");
@@ -61,7 +60,8 @@ public abstract class AbstractTestImapResponseComposer extends MockObjectTestCas
         checkListResponseEncode("* LIST () \"\\\\\" \"#INBOX\"\r\n", "LIST",
                 null, "\\", "#INBOX");
     }
-
+    
+    @Test
     public void testNilDelimiter() throws Exception {
         checkListResponseEncode("* LSUB () NIL \"#news\"\r\n", "LSUB", null,
                 null, "#news");
@@ -69,6 +69,7 @@ public abstract class AbstractTestImapResponseComposer extends MockObjectTestCas
                 null, "#INBOX");
     }
 
+    @Test
     public void testSimple() throws Exception {
         checkListResponseEncode("* LSUB () \".\" \"#news\"\r\n", "LSUB", null,
                 ".", "#news");
@@ -80,6 +81,7 @@ public abstract class AbstractTestImapResponseComposer extends MockObjectTestCas
                 null, ".", "#INBOX.sub");
     }
 
+    @Test
     public void testSpecialNames() throws Exception {
         checkListResponseEncode(
                 "* LSUB () \"\\\\\" \"#news\\\\sub\\\\directory\"\r\n", "LSUB",
@@ -101,6 +103,7 @@ public abstract class AbstractTestImapResponseComposer extends MockObjectTestCas
                 "LIST", null, ".", "#INBOX.\"sub directory\".what");
     }
 
+    @Test
     public void testAttributes() throws Exception {
         List<String> attributes = new ArrayList<String>();
         attributes.add("\\one");
@@ -115,6 +118,7 @@ public abstract class AbstractTestImapResponseComposer extends MockObjectTestCas
                 "LIST", attributes, ".", "#INBOX");
     }
 
+    @Test
     public void testEncodeStatus() throws Exception {
         checkStatusResponseEncode(
                 "* STATUS \"#INBOX.\\\"sub directory\\\".what\" (MESSAGES 3 RECENT 5 UIDNEXT 7 UIDVALIDITY 11 UNSEEN 13)\r\n",
@@ -132,6 +136,7 @@ public abstract class AbstractTestImapResponseComposer extends MockObjectTestCas
                 null, null, null, new Long(42), "#INBOX");
     }
 
+    @Test
     public void testShouldEncodeFlagsCorrectly() throws Exception {
         checkFlagsEncode(" FLAGS (\\Seen)", new Flags(Flags.Flag.SEEN));
         checkFlagsEncode(" FLAGS (\\Recent)", new Flags(Flags.Flag.RECENT));
@@ -150,6 +155,7 @@ public abstract class AbstractTestImapResponseComposer extends MockObjectTestCas
                 " FLAGS (\\Answered \\Deleted \\Draft \\Flagged \\Seen)", flags);
     }
 
+    @Test
     public void testShouldEncodeUnparameterisedStatus() throws Exception {
         checkStatusResponseEncode("A1 NO [ALERT] APPEND failed\r\n", "A1",
                 command("APPEND"), "NO", "ALERT", new ArrayList<String>(), 0,
@@ -159,6 +165,7 @@ public abstract class AbstractTestImapResponseComposer extends MockObjectTestCas
                 new ArrayList<String>(), 0, "whatever");
     }
 
+    @Test
     public void testShouldEncodeListParameterStatus() throws Exception {
         Collection<String> parameters = new ArrayList<String>();
         parameters.add("ONE");
@@ -169,6 +176,7 @@ public abstract class AbstractTestImapResponseComposer extends MockObjectTestCas
                 command("APPEND"), "NO", "BADCHARSET", parameters, 0, "failed");
     }
 
+    @Test
     public void testShouldEncodeNumberParameterStatus() throws Exception {
         checkStatusResponseEncode("A1 NO [UIDNEXT 10] APPEND failed\r\n", "A1",
                 command("APPEND"), "NO", "UIDNEXT", null, 10, "failed");

@@ -19,18 +19,15 @@
 
 package org.apache.james.imap.api.message.response;
 
+import static org.junit.Assert.*;
+
 import org.apache.james.imap.api.message.response.StatusResponse;
+import org.junit.Test;
 
-import junit.framework.TestCase;
 
-public class StatusResponseTest extends TestCase {
+public class StatusResponseTest  {
 
-    protected void setUp() throws Exception {
-    }
-
-    protected void tearDown() throws Exception {
-    }
-
+    @Test
     public void testResponseCodeExtension() throws Exception {
         assertEquals("Preserve names beginning with X", "XEXTENSION",
                 StatusResponse.ResponseCode.createExtension("XEXTENSION")

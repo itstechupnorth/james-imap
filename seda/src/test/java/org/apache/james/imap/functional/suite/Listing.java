@@ -23,6 +23,7 @@ import java.util.Locale;
 
 import org.apache.james.imap.functional.FrameworkForAuthenticatedState;
 import org.apache.james.test.functional.HostSystem;
+import org.junit.Test;
 
 public class Listing extends FrameworkForAuthenticatedState {
 
@@ -30,26 +31,32 @@ public class Listing extends FrameworkForAuthenticatedState {
         super(system);
     }
 
+    @Test
     public void testListPlusUS() throws Exception {
         scriptTest("ListPlus", Locale.US);
     }
     
+    @Test
     public void testListPercentWildcardUS() throws Exception {
         scriptTest("ListPercentWildcard", Locale.US);
     }
 
+    @Test
     public void testListPlusKOREA() throws Exception {
         scriptTest("ListPlus", Locale.KOREA);
     }
     
+    @Test
     public void testListPercentWildcardKOREA() throws Exception {
         scriptTest("ListPercentWildcard", Locale.KOREA);
     }
     
+    @Test
     public void testListPlusITALY() throws Exception {
         scriptTest("ListPlus", Locale.ITALY);
     }
     
+    @Test
     public void testListPercentWildcardITALY() throws Exception {
         scriptTest("ListPercentWildcard", Locale.ITALY);
     }

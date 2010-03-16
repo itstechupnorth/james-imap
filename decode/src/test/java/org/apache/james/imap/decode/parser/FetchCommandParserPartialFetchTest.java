@@ -31,11 +31,19 @@ import org.apache.james.imap.api.message.IdRange;
 import org.apache.james.imap.decode.ImapRequestLineReader;
 import org.apache.james.imap.decode.DecodingException;
 import org.apache.james.imap.decode.parser.FetchCommandParser;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.jmock.Expectations;
-import org.jmock.integration.junit3.MockObjectTestCase;
+import org.jmock.Mockery;
+import org.jmock.integration.junit4.JMock;
+import org.jmock.integration.junit4.JUnit4Mockery;
 
-public class FetchCommandParserPartialFetchTest extends MockObjectTestCase {
+@RunWith(JMock.class)
+public class FetchCommandParserPartialFetchTest  {
 
+    Mockery context = new JUnit4Mockery();
+    
     FetchCommandParser parser;
 
     ImapMessageFactory mockMessageFactory;
@@ -43,19 +51,17 @@ public class FetchCommandParserPartialFetchTest extends MockObjectTestCase {
 
     ImapMessage message;
 
+    @Before
     protected void setUp() throws Exception {
-        super.setUp();
         parser = new FetchCommandParser();
-        mockMessageFactory = mock(ImapMessageFactory.class);
+        mockMessageFactory = context.mock(ImapMessageFactory.class);
         command = ImapCommand.anyStateCommand("Command");
-        message = mock(ImapMessage.class);
+        message = context.mock(ImapMessage.class);
         parser.setMessageFactory(mockMessageFactory);
     }
 
-    protected void tearDown() throws Exception {
-        super.tearDown();
-    }
 
+    @Test
     public void testShouldParseZeroAndLength() throws Exception {
         IdRange[] ranges = { new IdRange(1) };
         FetchData data = new FetchData();
@@ -64,6 +70,7 @@ public class FetchCommandParserPartialFetchTest extends MockObjectTestCase {
         check("1 (BODY[]<0.100>)\r\n", ranges, false, data, "A01");
     }
 
+    @Test
     public void testShouldParseNonZeroAndLength() throws Exception {
         IdRange[] ranges = { new IdRange(1) };
         FetchData data = new FetchData();
@@ -72,13 +79,15 @@ public class FetchCommandParserPartialFetchTest extends MockObjectTestCase {
         check("1 (BODY[]<20.12342348>)\r\n", ranges, false, data, "A01");
     }
 
+    @Test
     public void testShouldNotParseZeroLength() throws Exception {
         try {
             ImapRequestLineReader reader = new ImapRequestLineReader(
                     new ByteArrayInputStream("1 (BODY[]<20.0>)\r\n"
                             .getBytes("US-ASCII")), new ByteArrayOutputStream());
-            parser.decode(command, reader, "A01", false, new MockLogger());
-            fail("Number of octets must be non-zero");
+            parser.decode(command, reader, "A01", false, new MockLogger());                
+            throw new Exception("Number of octets must be non-zero");
+
         } catch (DecodingException e) {
             // expected
         }
@@ -89,7 +98,7 @@ public class FetchCommandParserPartialFetchTest extends MockObjectTestCase {
         ImapRequestLineReader reader = new ImapRequestLineReader(
                 new ByteArrayInputStream(input.getBytes("US-ASCII")),
                 new ByteArrayOutputStream());
-        checking(new Expectations() {{
+        context.checking(new Expectations() {{
             oneOf (mockMessageFactory).createFetchMessage( with(equal(command)), with(equal(useUids)), 
                     with(equal(idSet)),with(equal(data)), with(same(tag)));will(returnValue(message));
         }});

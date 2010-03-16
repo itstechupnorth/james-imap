@@ -23,6 +23,7 @@ import java.util.Locale;
 
 import org.apache.james.imap.functional.FrameworkForAuthenticatedState;
 import org.apache.james.test.functional.HostSystem;
+import org.junit.Test;
 
 public class ConcurrentSessions extends FrameworkForAuthenticatedState {
 
@@ -30,86 +31,107 @@ public class ConcurrentSessions extends FrameworkForAuthenticatedState {
         super(system);
     }
     
+    @Test
     public void testConcurrentExpungeResponseUS() throws Exception {
           scriptTest("ConcurrentExpungeResponse", Locale.US);
     }
 
+    @Test
     public void testConcurrentExpungeResponseITALY() throws Exception {
         scriptTest("ConcurrentExpungeResponse", Locale.ITALY);
     }
 
+    @Test
     public void testConcurrentExpungeResponseKOREA() throws Exception {
         scriptTest("ConcurrentExpungeResponse", Locale.KOREA);
     }
 
+    @Test
     public void testConcurrentCrossExpungeUS() throws Exception {
           scriptTest("ConcurrentCrossExpunge", Locale.US);
     }
     
+    @Test
     public void testConcurrentCrossExpungeITALY() throws Exception {
           scriptTest("ConcurrentCrossExpunge", Locale.ITALY);
     }
     
+    @Test
     public void testConcurrentCrossExpungeKOREA() throws Exception {
           scriptTest("ConcurrentCrossExpunge", Locale.KOREA);
     }
     
+    @Test
     public void testConcurrentRenameSelectedSubUS() throws Exception {
         scriptTest("ConcurrentRenameSelectedSub", Locale.US);
     }
 
+    @Test
     public void testConcurrentExistsResponseUS() throws Exception {
         scriptTest("ConcurrentExistsResponse", Locale.US);
     }
 
+    @Test
     public void testConcurrentDeleteSelectedUS() throws Exception {
         scriptTest("ConcurrentDeleteSelected", Locale.US);
     }
 
+    @Test
     public void testConcurrentFetchResponseUS() throws Exception {
         scriptTest("ConcurrentFetchResponse", Locale.US);
     }
 
+    @Test
     public void testConcurrentRenameSelectedUS() throws Exception {
         scriptTest("ConcurrentRenameSelected", Locale.US);
     }
 
+    @Test
     public void testConcurrentRenameSelectedSubKOREA() throws Exception {
         scriptTest("ConcurrentRenameSelectedSub", Locale.KOREA);
     }
     
+    @Test
     public void testConcurrentExistsResponseKOREA() throws Exception {
         scriptTest("ConcurrentExistsResponse", Locale.KOREA);
     }
 
+    @Test
     public void testConcurrentDeleteSelectedKOREA() throws Exception {
         scriptTest("ConcurrentDeleteSelected", Locale.KOREA);
     }
 
+    @Test
     public void testConcurrentFetchResponseKOREA() throws Exception {
         scriptTest("ConcurrentFetchResponse", Locale.KOREA);
     }
 
+    @Test
     public void testConcurrentRenameSelectedKOREA() throws Exception {
         scriptTest("ConcurrentRenameSelected", Locale.KOREA);
     }
 
+    @Test
     public void testConcurrentRenameSelectedSubITALY() throws Exception {
         scriptTest("ConcurrentRenameSelectedSub", Locale.ITALY);
     }
     
+    @Test
     public void testConcurrentExistsResponseITALY() throws Exception {
         scriptTest("ConcurrentExistsResponse", Locale.ITALY);
     }
 
+    @Test
     public void testConcurrentDeleteSelectedITALY() throws Exception {
         scriptTest("ConcurrentDeleteSelected", Locale.ITALY);
     }
 
+    @Test
     public void testConcurrentFetchResponseITALY() throws Exception {
         scriptTest("ConcurrentFetchResponse", Locale.ITALY);
     }
 
+    @Test
     public void testConcurrentRenameSelectedITALY() throws Exception {
         scriptTest("ConcurrentRenameSelected", Locale.ITALY);
     }

@@ -23,6 +23,7 @@ import java.util.Locale;
 
 import org.apache.james.imap.functional.FrameworkForSelectedStateBase;
 import org.apache.james.test.functional.HostSystem;
+import org.junit.Test;
 
 public class FetchBodyStructure extends FrameworkForSelectedStateBase {
 
@@ -30,50 +31,62 @@ public class FetchBodyStructure extends FrameworkForSelectedStateBase {
         super(system);
     }
 
+    @Test
     public void testFetchFetchSimpleBodyStructureUS() throws Exception {
         scriptTest("FetchSimpleBodyStructure", Locale.US);
     }
 
+    @Test
     public void testFetchFetchSimpleBodyStructureKOREA() throws Exception {
         scriptTest("FetchSimpleBodyStructure", Locale.KOREA);
     }
 
+    @Test
     public void testFetchFetchSimpleBodyStructureITALY() throws Exception {
         scriptTest("FetchSimpleBodyStructure", Locale.ITALY);
     }
 
+    @Test
     public void testFetchFetchMultipartBodyStructureUS() throws Exception {
         scriptTest("FetchMultipartBodyStructure", Locale.US);
     }
 
+    @Test
     public void testFetchFetchMultipartBodyStructureKOREA() throws Exception {
         scriptTest("FetchMultipartBodyStructure", Locale.KOREA);
     }
 
+    @Test
     public void testFetchFetchMultipartBodyStructureITALY() throws Exception {
         scriptTest("FetchMultipartBodyStructure", Locale.ITALY);
     }
 
+    @Test
     public void testFetchStructureEmbeddedUS() throws Exception {
         scriptTest("FetchStructureEmbedded", Locale.US);
     }
 
+    @Test
     public void testFetchStructureEmbeddedITALY() throws Exception {
         scriptTest("FetchStructureEmbedded", Locale.ITALY);
     }
 
+    @Test
     public void testFetchStructureEmbeddedKOREA() throws Exception {
         scriptTest("FetchStructureEmbedded", Locale.KOREA);
     }
 
+    @Test
     public void testFetchStructureComplexUS() throws Exception {
         scriptTest("FetchStructureComplex", Locale.US);
     }
 
+    @Test
     public void testFetchStructureComplexITALY() throws Exception {
         scriptTest("FetchStructureComplex", Locale.ITALY);
     }
 
+    @Test
     public void testFetchStructureComplexKOREA() throws Exception {
         scriptTest("FetchStructureComplex", Locale.KOREA);
     }

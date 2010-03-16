@@ -18,6 +18,8 @@
  ****************************************************************/
 package org.apache.james.imap.encode;
 
+import static org.junit.Assert.*;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,10 +28,16 @@ import org.apache.james.imap.api.ImapMessage;
 import org.apache.james.imap.api.process.ImapSession;
 import org.apache.james.imap.message.response.NamespaceResponse;
 import org.jmock.Expectations;
+import org.jmock.Mockery;
 import org.jmock.Sequence;
-import org.jmock.integration.junit3.MockObjectTestCase;
+import org.jmock.integration.junit4.JMock;
+import org.jmock.integration.junit4.JUnit4Mockery;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
-public class NamespaceResponseEncoderTest extends MockObjectTestCase {
+@RunWith(JMock.class)
+public class NamespaceResponseEncoderTest {
 
     ImapSession dummySession;
 
@@ -37,25 +45,24 @@ public class NamespaceResponseEncoderTest extends MockObjectTestCase {
 
     NamespaceResponseEncoder subject;
 
+    private Mockery context = new JUnit4Mockery();
+    
+    @Before
     protected void setUp() throws Exception {
-        super.setUp();
-        dummySession = mock(ImapSession.class);
-        final ImapEncoder stubNextEncoderInChain = mock(ImapEncoder.class);
+        dummySession = context.mock(ImapSession.class);
+        final ImapEncoder stubNextEncoderInChain = context.mock(ImapEncoder.class);
         subject = new NamespaceResponseEncoder(stubNextEncoderInChain);
-        mockComposer = mock(ImapResponseComposer.class);
+        mockComposer = context.mock(ImapResponseComposer.class);
     }
 
-    protected void tearDown() throws Exception {
-        super.tearDown();
-    }
-
+    @Test
     public void testOneSharedNamespaceShouldWriteNilThenPrefixThenDeliminatorThenNil()
             throws Exception {
         final String aPrefix = "A Prefix";
         final String aDeliminator = "@";
-        checking(new Expectations() {
+        context.checking(new Expectations() {
             {
-                final Sequence sequence = sequence("Composition order");
+                final Sequence sequence = context.sequence("Composition order");
                 oneOf(mockComposer).untagged(); inSequence(sequence);
                 oneOf(mockComposer).commandName(ImapConstants.NAMESPACE_COMMAND_NAME);
                 oneOf(mockComposer).nil(); inSequence(sequence);
@@ -76,13 +83,14 @@ public class NamespaceResponseEncoderTest extends MockObjectTestCase {
                 mockComposer, dummySession);
     }
 
+    @Test
     public void testOneUsersNamespaceShouldWriteNilThenPrefixThenDeliminatorThenNil()
             throws Exception {
         final String aPrefix = "A Prefix";
         final String aDeliminator = "@";
-        checking(new Expectations() {
+        context.checking(new Expectations() {
             {
-                final Sequence sequence = sequence("Composition order");
+                final Sequence sequence = context.sequence("Composition order");
                 oneOf(mockComposer).untagged(); inSequence(sequence);
                 oneOf(mockComposer).commandName(ImapConstants.NAMESPACE_COMMAND_NAME);
                 oneOf(mockComposer).nil(); inSequence(sequence);
@@ -103,13 +111,14 @@ public class NamespaceResponseEncoderTest extends MockObjectTestCase {
                 mockComposer, dummySession);
     }
 
+    @Test
     public void testOnePersonalNamespaceShouldWritePrefixThenDeliminatorThenNilNil()
             throws Exception {
         final String aPrefix = "A Prefix";
         final String aDeliminator = "@";
-        checking(new Expectations() {
+        context.checking(new Expectations() {
             {
-                final Sequence sequence = sequence("Composition order");
+                final Sequence sequence = context.sequence("Composition order");
                 oneOf(mockComposer).untagged(); inSequence(sequence);
                 oneOf(mockComposer).commandName(ImapConstants.NAMESPACE_COMMAND_NAME);
                 oneOf(mockComposer).openParen(); inSequence(sequence);
@@ -130,15 +139,16 @@ public class NamespaceResponseEncoderTest extends MockObjectTestCase {
                 mockComposer, dummySession);
     }
 
+    @Test
     public void testTwoPersonalNamespaceShouldWritePrefixThenDeliminatorThenNilNil()
             throws Exception {
         final String aPrefix = "A Prefix";
         final String aDeliminator = "@";
         final String anotherPrefix = "Another Prefix";
         final String anotherDeliminator = "^";
-        checking(new Expectations() {
+        context.checking(new Expectations() {
             {
-                final Sequence sequence = sequence("Composition order");
+                final Sequence sequence = context.sequence("Composition order");
                 oneOf(mockComposer).untagged(); inSequence(sequence);
                 oneOf(mockComposer).commandName(ImapConstants.NAMESPACE_COMMAND_NAME);
                 oneOf(mockComposer).openParen(); inSequence(sequence);
@@ -165,10 +175,11 @@ public class NamespaceResponseEncoderTest extends MockObjectTestCase {
                 mockComposer, dummySession);
     }
 
+    @Test
     public void testAllNullShouldWriteAllNIL() throws Exception {
-        checking(new Expectations() {
+        context.checking(new Expectations() {
             {
-                final Sequence sequence = sequence("Composition order");
+                final Sequence sequence = context.sequence("Composition order");
                 oneOf(mockComposer).untagged(); inSequence(sequence);
                 oneOf(mockComposer).commandName(ImapConstants.NAMESPACE_COMMAND_NAME);
                 oneOf(mockComposer).nil(); inSequence(sequence);
@@ -181,8 +192,9 @@ public class NamespaceResponseEncoderTest extends MockObjectTestCase {
                 dummySession);
     }
 
+    @Test
     public void testNamespaceResponseIsAcceptable() throws Exception {
-        assertFalse(subject.isAcceptable(mock(ImapMessage.class)));
+        assertFalse(subject.isAcceptable(context.mock(ImapMessage.class)));
         assertTrue(subject
                 .isAcceptable(new NamespaceResponse(null, null, null)));
     }

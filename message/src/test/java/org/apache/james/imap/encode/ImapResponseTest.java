@@ -19,12 +19,14 @@
 
 package org.apache.james.imap.encode;
 
+import static org.junit.Assert.*;
+
 import javax.mail.Flags;
 
 import org.apache.james.imap.encode.base.ImapResponseComposerImpl;
-import org.jmock.integration.junit3.MockObjectTestCase;
+import org.junit.Test;
 
-public class ImapResponseTest extends MockObjectTestCase {
+public class ImapResponseTest  {
 
     private static final String TAG = "TAG";
 
@@ -33,15 +35,13 @@ public class ImapResponseTest extends MockObjectTestCase {
     MockImapResponseWriter writer;
 
     protected void setUp() throws Exception {
-        super.setUp();
         writer = new MockImapResponseWriter();
         response = new ImapResponseComposerImpl(writer);
     }
 
-    protected void tearDown() throws Exception {
-        super.tearDown();
-    }
+   
 
+    @Test
     public void testFlagsResponse() throws Exception {
         Flags flags = new Flags();
         response.flagsResponse(flags);
@@ -58,6 +58,7 @@ public class ImapResponseTest extends MockObjectTestCase {
                 writer.operations.get(4));
     }
 
+    @Test
     public void testExistsResponse() throws Exception {
         int count = 5;
         response.existsResponse(count);
@@ -72,6 +73,7 @@ public class ImapResponseTest extends MockObjectTestCase {
                 writer.operations.get(3));
     }
 
+    @Test
     public void testRecentResponse() throws Exception {
         int count = 5;
         response.recentResponse(count);
@@ -86,6 +88,7 @@ public class ImapResponseTest extends MockObjectTestCase {
                 writer.operations.get(3));
     }
 
+    @Test
     public void testExpungeResponse() throws Exception {
         int count = 5;
         response.expungeResponse(count);
@@ -100,6 +103,7 @@ public class ImapResponseTest extends MockObjectTestCase {
                 writer.operations.get(3));
     }
 
+    @Test
     public void testTaggedResponse() throws Exception {
         String message = "A message";
         response.taggedResponse(message, TAG);
@@ -112,6 +116,7 @@ public class ImapResponseTest extends MockObjectTestCase {
                 writer.operations.get(2));
     }
 
+    @Test
     public void testUntaggedResponse() throws Exception {
         String message = "A message";
         response.untaggedResponse(message);
@@ -124,6 +129,7 @@ public class ImapResponseTest extends MockObjectTestCase {
                 writer.operations.get(2));
     }
 
+    @Test
     public void testByeResponse() throws Exception {
         String message = "A message";
         response.byeResponse(message);

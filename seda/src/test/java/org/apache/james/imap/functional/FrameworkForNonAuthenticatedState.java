@@ -20,6 +20,7 @@
 package org.apache.james.imap.functional;
 
 import org.apache.james.test.functional.HostSystem;
+import org.junit.Before;
 
 /**
  * <p>
@@ -49,8 +50,8 @@ public abstract class FrameworkForNonAuthenticatedState extends ImapProtocolFram
      * 
      * @throws Exception
      */
+    @Before
     public void setUp() throws Exception {
-        super.setUp();
         addTestFile("Welcome.test", preElements);
     }
 }

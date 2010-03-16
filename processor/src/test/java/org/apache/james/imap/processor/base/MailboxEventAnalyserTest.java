@@ -19,49 +19,59 @@
 
 package org.apache.james.imap.processor.base;
 
+import static org.junit.Assert.*;
+
 import java.util.Iterator;
 
 import javax.mail.Flags;
 
 import org.apache.james.imap.mailbox.MailboxListener;
 import org.jmock.Expectations;
-import org.jmock.integration.junit3.MockObjectTestCase;
+import org.jmock.Mockery;
+import org.jmock.integration.junit4.JMock;
+import org.jmock.integration.junit4.JUnit4Mockery;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
-public class MailboxEventAnalyserTest extends MockObjectTestCase {
+@RunWith(JMock.class)
+public class MailboxEventAnalyserTest {
 
     private static final long BASE_SESSION_ID = 99;
 
     MailboxEventAnalyser analyser;
 
+    private Mockery mockery = new JUnit4Mockery();
+    
+    @Before
     protected void setUp() throws Exception {
-        super.setUp();
         analyser = new MailboxEventAnalyser(BASE_SESSION_ID, "Mailbox Name");
     }
 
-    protected void tearDown() throws Exception {
-        super.tearDown();
-    }
-
+    @Test
     public void testShouldBeNoSizeChangeOnOtherEvent() throws Exception {
-        final MailboxListener.Event event = mock(MailboxListener.Event.class);
-        checking(new Expectations() {{
+        final MailboxListener.Event event = mockery.mock(MailboxListener.Event.class);
+        mockery.checking(new Expectations() {{
             oneOf(event).getSessionId();will(returnValue(11L));
         }});
         analyser.event(event);
         assertFalse(analyser.isSizeChanged());
     }
 
+    @Test
     public void testShouldBeNoSizeChangeOnAdded() throws Exception {
         analyser.event(new FakeMailboxListenerAdded(78, 11));
         assertTrue(analyser.isSizeChanged());
     }
 
+    @Test
     public void testShouldNoSizeChangeAfterReset() throws Exception {
         analyser.event(new FakeMailboxListenerAdded(99, 11));
         analyser.reset();
         assertFalse(analyser.isSizeChanged());
     }
 
+    @Test
     public void testShouldNotSetUidWhenNoSystemFlagChange() throws Exception {
         final FakeMailboxListenerFlagsUpdate update = new FakeMailboxListenerFlagsUpdate(
                 90, new Flags(), 11);
@@ -70,6 +80,7 @@ public class MailboxEventAnalyserTest extends MockObjectTestCase {
         assertFalse(analyser.flagUpdateUids().iterator().hasNext());
     }
 
+    @Test
     public void testShouldSetUidWhenSystemFlagChange() throws Exception {
         final long uid = 900L;
         final FakeMailboxListenerFlagsUpdate update = new FakeMailboxListenerFlagsUpdate(
@@ -83,6 +94,7 @@ public class MailboxEventAnalyserTest extends MockObjectTestCase {
         assertFalse(iterator.hasNext());
     }
 
+    @Test
     public void testShouldClearFlagUidsUponReset() throws Exception {
         final long uid = 900L;
         final FakeMailboxListenerFlagsUpdate update = new FakeMailboxListenerFlagsUpdate(
@@ -94,6 +106,7 @@ public class MailboxEventAnalyserTest extends MockObjectTestCase {
         assertFalse(analyser.flagUpdateUids().iterator().hasNext());
     }
 
+    @Test
     public void testShouldNotSetUidWhenSystemFlagChangeDifferentSessionInSilentMode()
             throws Exception {
         final long uid = 900L;
@@ -109,6 +122,7 @@ public class MailboxEventAnalyserTest extends MockObjectTestCase {
         assertFalse(iterator.hasNext());
     }
 
+    @Test
     public void testShouldNotSetUidWhenSystemFlagChangeSameSessionInSilentMode()
             throws Exception {
         final FakeMailboxListenerFlagsUpdate update = new FakeMailboxListenerFlagsUpdate(
@@ -121,6 +135,7 @@ public class MailboxEventAnalyserTest extends MockObjectTestCase {
         assertFalse(iterator.hasNext());
     }
 
+    @Test
     public void testShouldNotSetUidWhenOnlyRecentFlagUpdated() throws Exception {
         final FakeMailboxListenerFlagsUpdate update = new FakeMailboxListenerFlagsUpdate(
                 886, new Flags(), BASE_SESSION_ID);

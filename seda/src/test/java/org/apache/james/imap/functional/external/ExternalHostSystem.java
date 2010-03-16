@@ -168,4 +168,12 @@ public class ExternalHostSystem implements HostSystem {
             }
         }
     }
+
+    public void afterTests() throws Exception {
+        // Do nothing        
+    }
+
+    public void beforeTests() throws Exception {
+        // Do nothing
+    }
 }

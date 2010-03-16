@@ -23,6 +23,7 @@ import java.util.Locale;
 
 import org.apache.james.imap.functional.ImapProtocolFramework;
 import org.apache.james.test.functional.HostSystem;
+import org.junit.Test;
 
 public class Security extends ImapProtocolFramework {
 
@@ -30,86 +31,107 @@ public class Security extends ImapProtocolFramework {
         super(system);
     }
 
+    @Test
     public void testLoginThreeStrikesUS() throws Exception {
         scriptTest("LoginThreeStrikes", Locale.US);
     }
 
+    @Test
     public void testLoginThreeStrikesKOREA() throws Exception {
         scriptTest("LoginThreeStrikes", Locale.KOREA);
     }
 
+    @Test
     public void testLoginThreeStrikesITALY() throws Exception {
         scriptTest("LoginThreeStrikes", Locale.ITALY);
     }
 
+    @Test
     public void testBadTagUS() throws Exception {
         scriptTest("BadTag", Locale.US);
     }
 
+    @Test
     public void testBadTagKOREA() throws Exception {
         scriptTest("BadTag", Locale.KOREA);
     }
 
+    @Test
     public void testBadTagITALY() throws Exception {
         scriptTest("BadTag", Locale.ITALY);
     }
 
+    @Test
     public void testNoTagUS() throws Exception {
         scriptTest("NoTag", Locale.US);
     }
 
+    @Test
     public void testNoTagKOREA() throws Exception {
         scriptTest("NoTag", Locale.KOREA);
     }
 
+    @Test
     public void testNoTagITALY() throws Exception {
         scriptTest("NoTag", Locale.ITALY);
     }
 
+    @Test
     public void testIllegalTagUS() throws Exception {
         scriptTest("IllegalTag", Locale.US);
     }
 
+    @Test
     public void testIllegalTagKOREA() throws Exception {
         scriptTest("IllegalTag", Locale.KOREA);
     }
 
+    @Test
     public void testIllegalTagITALY() throws Exception {
         scriptTest("IllegalTag", Locale.ITALY);
     }
 
+    @Test
     public void testJustTagUS() throws Exception {
         scriptTest("JustTag", Locale.US);
     }
 
+    @Test
     public void testJustTagKOREA() throws Exception {
         scriptTest("JustTag", Locale.KOREA);
     }
 
+    @Test
     public void testJustTagITALY() throws Exception {
         scriptTest("JustTag", Locale.ITALY);
     }
 
+    @Test
     public void testNoCommandUS() throws Exception {
         scriptTest("NoCommand", Locale.US);
     }
 
+    @Test
     public void testNoCommandKOREA() throws Exception {
         scriptTest("NoCommand", Locale.KOREA);
     }
 
+    @Test
     public void testNoCommandITALY() throws Exception {
         scriptTest("NoCommand", Locale.ITALY);
     }
 
+    @Test
     public void testBogusCommandUS() throws Exception {
         scriptTest("BogusCommand", Locale.US);
     }
 
+    @Test
     public void testBogusCommandKOREA() throws Exception {
         scriptTest("BogusCommand", Locale.KOREA);
     }
 
+    @Test
     public void testNoBogusITALY() throws Exception {
         scriptTest("BogusCommand", Locale.ITALY);
     }

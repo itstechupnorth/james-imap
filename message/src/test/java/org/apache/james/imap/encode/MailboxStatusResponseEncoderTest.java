@@ -19,15 +19,23 @@
 
 package org.apache.james.imap.encode;
 
+import static org.junit.Assert.*;
+
 import org.apache.james.imap.api.ImapMessage;
 import org.apache.james.imap.encode.ImapEncoder;
 import org.apache.james.imap.encode.ImapResponseComposer;
 import org.apache.james.imap.encode.MailboxStatusResponseEncoder;
 import org.apache.james.imap.message.response.MailboxStatusResponse;
 import org.jmock.Expectations;
-import org.jmock.integration.junit3.MockObjectTestCase;
+import org.jmock.Mockery;
+import org.jmock.integration.junit4.JMock;
+import org.jmock.integration.junit4.JUnit4Mockery;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
-public class MailboxStatusResponseEncoderTest extends MockObjectTestCase {
+@RunWith(JMock.class)
+public class MailboxStatusResponseEncoderTest  {
 
     MailboxStatusResponseEncoder encoder;
 
@@ -35,24 +43,25 @@ public class MailboxStatusResponseEncoderTest extends MockObjectTestCase {
 
     ImapResponseComposer composer;
 
+    private Mockery context = new JUnit4Mockery();
+    
+    @Before
     protected void setUp() throws Exception {
-        super.setUp();
-        mockNextEncoder = mock(ImapEncoder.class);
-        composer = mock(ImapResponseComposer.class);
+        mockNextEncoder = context.mock(ImapEncoder.class);
+        composer = context.mock(ImapResponseComposer.class);
         encoder = new MailboxStatusResponseEncoder(mockNextEncoder);
     }
+    
 
-    protected void tearDown() throws Exception {
-        super.tearDown();
-    }
-
+    @Test
     public void testIsAcceptable() throws Exception {
         assertTrue(encoder.isAcceptable(new MailboxStatusResponse(null, null, null,
                 null, null, "mailbox")));
-        assertFalse(encoder.isAcceptable(mock(ImapMessage.class)));
+        assertFalse(encoder.isAcceptable(context.mock(ImapMessage.class)));
         assertFalse(encoder.isAcceptable(null));
     }
 
+    @Test
     public void testDoEncode() throws Exception {
         final Long messages = new Long(2);
         final Long recent = new Long(3);
@@ -60,7 +69,7 @@ public class MailboxStatusResponseEncoderTest extends MockObjectTestCase {
         final Long uidValidity = new Long(7);
         final Long unseen = new Long(11);
         final String mailbox = "A mailbox named desire";
-        checking(new Expectations() {{
+        context.checking(new Expectations() {{
             oneOf(composer).statusResponse(
                     with(same(messages)), 
                     with(same(recent)), 
