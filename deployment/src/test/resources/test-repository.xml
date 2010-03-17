@@ -54,7 +54,7 @@
             class: FQN of class implementing the PersistenceManager interface
         -->
 		<PersistenceManager class="org.apache.jackrabbit.core.persistence.mem.InMemPersistenceManager">
-			<param name="persistent" value="false"/>
+			<param name="persistent" value="true"/>
 		</PersistenceManager>
         
         <SearchIndex class='org.apache.jackrabbit.core.query.lucene.SearchIndex'>
@@ -74,7 +74,7 @@
         </FileSystem>
 
 		<PersistenceManager class="org.apache.jackrabbit.core.persistence.mem.InMemPersistenceManager">
-			<param name="persistent" value="false"/>
+			<param name="persistent" value="true"/>
 		</PersistenceManager>
         
     </Versioning>

@@ -36,10 +36,15 @@ import org.apache.james.imap.jcr.JCRImapConstants;
 import org.apache.james.imap.jcr.JCRUtils;
 import org.apache.james.imap.jcr.Persistent;
 import org.apache.james.imap.store.mail.model.AbstractDocument;
+import org.apache.james.imap.store.mail.model.Document;
 import org.apache.james.imap.store.mail.model.Header;
 import org.apache.james.imap.store.mail.model.Property;
 import org.apache.james.imap.store.mail.model.PropertyBuilder;
 
+/**
+ * JCR implementation of {@link Document}
+ *
+ */
 public class JCRMessage extends AbstractDocument implements JCRImapConstants, Persistent{
 
     private Node node;
@@ -174,7 +179,8 @@ public class JCRMessage extends AbstractDocument implements JCRImapConstants, Pe
         if (isPersistent()) {
             try {
                 List<Header> headers = new ArrayList<Header>();
-                NodeIterator nodeIt = node.getNodes(HEADERS_NODE + NODE_DELIMITER +"*");
+                Node headersNode = node.getNode(HEADERS_NODE);
+                NodeIterator nodeIt = headersNode.getNodes();
                 while (nodeIt.hasNext()) {
                     headers.add(new JCRHeader(nodeIt.nextNode(), logger));
                 }
@@ -210,7 +216,7 @@ public class JCRMessage extends AbstractDocument implements JCRImapConstants, Pe
         if (isPersistent()) {
             try {
                 List<Property> properties = new ArrayList<Property>();
-                NodeIterator nodeIt = node.getNodes(PROPERTIES_NODE + NODE_DELIMITER +"*");
+                NodeIterator nodeIt = node.getNode(PROPERTIES_NODE).getNodes();
                 while (nodeIt.hasNext()) {
                     properties.add(new JCRProperty(nodeIt.nextNode(), logger));
                 }
@@ -302,36 +308,60 @@ public class JCRMessage extends AbstractDocument implements JCRImapConstants, Pe
         node.setProperty(SUBTYPE_PROPERTY, getSubType());
         node.setProperty(BODY_START_OCTET_PROPERTY, getBodyStartOctet());
 
-        Node headersNode;
-        // check if some headers are already stored on this.
-        // if so remove the node just to be sure we get fresh data
-        if (node.hasNode(HEADERS_NODE)) {
-            headersNode = node.getNode(HEADERS_NODE);
-            headersNode.remove();
+        // copy the headers and store them in memory as pure pojos
+        List<Header> currentHeaders = getHeaders();
+        List<Header> newHeaders = new ArrayList<Header>();
+        for (int i = 0 ; i < currentHeaders.size(); i++) {
+            newHeaders.add(new JCRHeader(currentHeaders.get(i), logger));
         }
         
-        headersNode = node.addNode(HEADERS_NODE);
+        Node headersNode;
+        // check if some headers are already stored
+        if (node.hasNode(HEADERS_NODE)) {
+            
+            headersNode = node.getNode(HEADERS_NODE);
+            NodeIterator iterator = headersNode.getNodes();
+            // remove old headers
+            while(iterator.hasNext()) {
+                iterator.nextNode().remove();
+            }
+        } else {
+            headersNode = node.addNode(HEADERS_NODE);
+        }
         
-        for (int i = 0; i < getHeaders().size(); i++) {
-            JCRHeader header = (JCRHeader) getHeaders().get(i);
+            
+        // add headers to the message again
+        for (int i = 0; i < newHeaders.size(); i++) {
+            JCRHeader header = (JCRHeader) newHeaders.get(i);
             Node headerNode = headersNode.addNode(header.getFieldName());
             header.merge(headerNode);
         }
       
+        List<Property> currentProperties = getProperties();
+        List<Property> newProperites = new ArrayList<Property>();
+        for (int i = 0; i < currentProperties.size(); i++) {
+            Property prop = currentProperties.get(i);
+            newProperites.add(new JCRProperty(prop, i, logger));
+        }
         Node propertiesNode;
         
         // check if some properties are already stored on this.
-        // if so remove the node just to be sure we get fresh data
         if (node.hasNode(PROPERTIES_NODE)) {
             propertiesNode = node.getNode(PROPERTIES_NODE);
-            propertiesNode.remove();
-        } 
+            
+            // remove old properties, we will add a bunch of new ones
+            NodeIterator iterator = propertiesNode.getNodes();
+            while(iterator.hasNext()) {
+                iterator.nextNode().remove();
+            }
+        } else {
+            propertiesNode = node.addNode(PROPERTIES_NODE);
+        }
         
-        propertiesNode = node.addNode(PROPERTIES_NODE);
 
-        
-        for (int i = 0; i < getProperties().size(); i++) {
-            JCRProperty prop = (JCRProperty) getProperties().get(i);
+        // store new properties
+        for (int i = 0; i < newProperites.size(); i++) {
+            JCRProperty prop = (JCRProperty)newProperites.get(i);
             Node propNode = propertiesNode.addNode(JCRUtils.createPath(prop.getNamespace()+ "." + prop.getLocalName()));
             prop.merge(propNode);
         }

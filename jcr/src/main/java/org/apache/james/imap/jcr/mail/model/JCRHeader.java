@@ -73,7 +73,7 @@ public class JCRHeader extends AbstractComparableHeader implements JCRImapConsta
     public String getFieldName() {
         if (isPersistent()) {
             try {
-                return  node.getProperty(FIELDNAME_PROPERTY).getString();
+                return node.getProperty(FIELDNAME_PROPERTY).getString();
             } catch (RepositoryException e) {
                 logger.error("Unable to access property " + FIELDNAME_PROPERTY, e);
             }
@@ -88,7 +88,7 @@ public class JCRHeader extends AbstractComparableHeader implements JCRImapConsta
     public int getLineNumber() {
         if (isPersistent()) {
             try {
-                return  new Long(node.getProperty(LINENUMBER_PROPERTY).getLong()).intValue();
+                return new Long(node.getProperty(LINENUMBER_PROPERTY).getLong()).intValue();
             } catch (RepositoryException e) {
                 logger.error("Unable to access property " + FIELDNAME_PROPERTY, e);
             }

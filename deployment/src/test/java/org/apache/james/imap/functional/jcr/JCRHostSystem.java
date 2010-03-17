@@ -21,11 +21,8 @@ package org.apache.james.imap.functional.jcr;
 import java.io.File;
 import java.io.FileInputStream;
 
-import javax.jcr.Repository;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.jackrabbit.core.RepositoryImpl;
-import org.apache.jackrabbit.core.TransientRepository;
 import org.apache.jackrabbit.core.config.RepositoryConfig;
 import org.apache.james.imap.encode.main.DefaultImapEncoderFactory;
 import org.apache.james.imap.functional.ImapHostSystem;
@@ -104,10 +101,6 @@ public class JCRHostSystem extends ImapHostSystem{
             repository.shutdown();
             repository = null;
         }
-        
-        
-        //File home = new File(JACKRABBIT_HOME);
-        //delete(home);
     }
     
     private void delete(File home) throws Exception{
@@ -122,7 +115,6 @@ public class JCRHostSystem extends ImapHostSystem{
                 }            
             }
             home.delete();
-            FileUtils.deleteDirectory(home);
         }
     }
 

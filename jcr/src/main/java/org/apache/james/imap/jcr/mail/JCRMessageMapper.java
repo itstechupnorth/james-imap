@@ -23,7 +23,6 @@ import java.util.List;
 
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
-import javax.jcr.PathNotFoundException;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.query.Query;
@@ -64,14 +63,12 @@ public class JCRMessageMapper extends AbstractJCRMapper implements MessageMapper
      * org.apache.james.imap.store.mail.MessageMapper#countMessagesInMailbox()
      */
     public long countMessagesInMailbox() throws StorageException {
-        
         try {
             String queryString = "//" + PATH + "//element(*)[@" + JCRMailboxMembership.MAILBOX_UUID_PROPERTY +"='" + uuid +"']";
             QueryManager manager = getSession().getWorkspace().getQueryManager();
             QueryResult result = manager.createQuery(queryString, Query.XPATH).execute();
             NodeIterator nodes = result.getNodes();
             long count = nodes.getSize();
-            
             if (count == -1) {
                 count = 0;
                 while(nodes.hasNext()) {
@@ -166,6 +163,8 @@ public class JCRMessageMapper extends AbstractJCRMapper implements MessageMapper
                     results = findMessagesInMailboxBetweenUIDs(uuid, from, to);
                     break;       
             }
+            System.out.println("FOUND=" + results.size() + " TYPE="+ type.toString());
+
             return results;
         } catch (RepositoryException e) {
             e.printStackTrace();
@@ -306,7 +305,7 @@ public class JCRMessageMapper extends AbstractJCRMapper implements MessageMapper
             switch (type) {
                 default:
                 case ALL:
-                    results = findMessagesInMailbox(uuid);
+                    results = findDeletedMessagesInMailbox(uuid);
                     break;
                 case FROM:
                     results = findDeletedMessagesInMailboxAfterUID(uuid, from);
@@ -318,11 +317,6 @@ public class JCRMessageMapper extends AbstractJCRMapper implements MessageMapper
                     results = findDeletedMessagesInMailboxBetweenUIDs(uuid, from, to);
                     break;       
             }
-            for (int i = 0; i < results.size();i++) {
-                MailboxMembership membership = results.get(i);
-                System.out.println("UID= " + membership.getUid() + " DELETED=" + membership.isDeleted());
-            }
-            //System.out.println("DELETE FOUND=" + results.size() + " TYPE="+ type.toString());
             return results;
         } catch (RepositoryException e) {
             e.printStackTrace();

@@ -78,7 +78,7 @@ public class JCRMailbox extends StoreMailbox{
     
     @Override
     protected MailboxMembership copyMessage(MailboxMembership originalMessage, long uid) {
-        MailboxMembership newRow = new JCRMailboxMembership(uuid, uid, (JCRMailboxMembership) originalMessage, log);
+        MailboxMembership newRow = new JCRMailboxMembership(getMailboxUUID(), uid, (JCRMailboxMembership) originalMessage, log);
         return newRow;
     }
 

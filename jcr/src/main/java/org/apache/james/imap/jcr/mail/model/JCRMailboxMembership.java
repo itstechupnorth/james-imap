@@ -32,8 +32,14 @@ import org.apache.james.imap.jcr.JCRImapConstants;
 import org.apache.james.imap.jcr.Persistent;
 import org.apache.james.imap.store.mail.model.AbstractMailboxMembership;
 import org.apache.james.imap.store.mail.model.Document;
+import org.apache.james.imap.store.mail.model.Mailbox;
+import org.apache.james.imap.store.mail.model.MailboxMembership;
 import org.apache.james.imap.store.mail.model.PropertyBuilder;
 
+/**
+ * JCR implementation of {@link MailboxMembership}
+ *
+ */
 public class JCRMailboxMembership extends AbstractMailboxMembership implements
 		Persistent, JCRImapConstants {
 
@@ -166,10 +172,15 @@ public class JCRMailboxMembership extends AbstractMailboxMembership implements
 		throw new UnsupportedOperationException("Not Supported. Use UUID");
 	}
 
+	/**
+	 * Return the MailboxUUID for the mapped {@link Mailbox}
+	 * 
+	 * @return mailbox
+	 */
 	public String getMailboxUUID() {
 		if (isPersistent()) {
 			try {
-				node.getProperty(MAILBOX_UUID_PROPERTY).getString();
+				return node.getProperty(MAILBOX_UUID_PROPERTY).getString();
 			} catch (RepositoryException e) {
 				logger.error("Unable to access property "
 						+ MAILBOX_UUID_PROPERTY, e);
@@ -383,6 +394,11 @@ public class JCRMailboxMembership extends AbstractMailboxMembership implements
 		}
 	}
 
+	/**
+	 * Return the UUID for this instance
+	 * 
+	 * @return uuid
+	 */
 	public String getUUID() {
 		if (isPersistent()) {
 			try {
