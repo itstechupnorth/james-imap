@@ -52,6 +52,8 @@ public abstract class FrameworkForNonAuthenticatedState extends ImapProtocolFram
      */
     @Before
     public void setUp() throws Exception {
+        super.setUp();
+
         addTestFile("Welcome.test", preElements);
     }
 }

@@ -56,6 +56,7 @@ public abstract class AbstractSimpleScriptedTestProtocol extends
 
     @After
     public void tearDown() throws Exception {
+        super.tearDown();
         Locale.setDefault(BASE_DEFAULT_LOCALE);
     }
 

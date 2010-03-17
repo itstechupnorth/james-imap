@@ -19,8 +19,12 @@
 package org.apache.james.imap.functional.jcr;
 
 import java.io.File;
+import java.io.FileInputStream;
+
+import javax.jcr.Repository;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.jackrabbit.core.RepositoryImpl;
 import org.apache.jackrabbit.core.TransientRepository;
 import org.apache.jackrabbit.core.config.RepositoryConfig;
 import org.apache.james.imap.encode.main.DefaultImapEncoderFactory;
@@ -44,35 +48,30 @@ public class JCRHostSystem extends ImapHostSystem{
 
     private static final String JACKRABBIT_HOME = "deployment/target/jackrabbit";
     public static final String META_DATA_DIRECTORY = "target/user-meta-data";
-    private TransientRepository repository;
-
-    private javax.jcr.Session session;
+    private RepositoryImpl repository;
     
     public JCRHostSystem() throws Exception {
-        
-        File home = new File(JACKRABBIT_HOME);
-        if (home.exists()) {
-            FileUtils.deleteDirectory(home);
+
+        delete(new File(JACKRABBIT_HOME));
+        try {
+            
+            RepositoryConfig config = RepositoryConfig.create(new InputSource(new FileInputStream("deployment/src/test/resources/test-repository.xml")), JACKRABBIT_HOME);
+            repository =  RepositoryImpl.create(config);
+
+            userManager = new InMemoryUserManager();
+
+            mailboxManager = new JCRGlobalUserMailboxManager(userManager, new JCRGlobalUserSubscriptionManager(repository, null, "user", "pass"), repository, null, "user", "pass");
+
+            final DefaultImapProcessorFactory defaultImapProcessorFactory = new DefaultImapProcessorFactory();
+            resetUserMetaData();
+            mailboxManager.deleteEverything();
+
+            defaultImapProcessorFactory.configure(mailboxManager);
+            configure(new DefaultImapDecoderFactory().buildImapDecoder(), new DefaultImapEncoderFactory().buildImapEncoder(), defaultImapProcessorFactory.buildImapProcessor());
+        } catch (Exception e) {
+            shutdownRepository();
+            throw e;
         }
-
-        RepositoryConfig config = RepositoryConfig.create(new InputSource(this.getClass().getClassLoader().getResourceAsStream("test-repository.xml")), JACKRABBIT_HOME);
-        repository = new TransientRepository(config);
-        session = repository.login();
-
-        userManager = new InMemoryUserManager();
-          
-
-        
-        mailboxManager = new JCRGlobalUserMailboxManager(userManager, new JCRGlobalUserSubscriptionManager(repository, null, "user", "pass"), repository, null, "user", "pass");
-        
-        final DefaultImapProcessorFactory defaultImapProcessorFactory = new DefaultImapProcessorFactory();
-        resetUserMetaData();
-        mailboxManager.deleteEverything();
-        
-        defaultImapProcessorFactory.configure(mailboxManager);
-        configure(new DefaultImapDecoderFactory().buildImapDecoder(),
-                new DefaultImapEncoderFactory().buildImapEncoder(),
-                defaultImapProcessorFactory.buildImapProcessor());
     }
 
    
@@ -97,9 +96,34 @@ public class JCRHostSystem extends ImapHostSystem{
 
     @Override
     public void afterTests() throws Exception {
-        session.logout();
-        repository.shutdown();
-        repository = null;
+        shutdownRepository();
+    }
+    
+    private void shutdownRepository() throws Exception{
+        if (repository != null) {
+            repository.shutdown();
+            repository = null;
+        }
+        
+        
+        //File home = new File(JACKRABBIT_HOME);
+        //delete(home);
+    }
+    
+    private void delete(File home) throws Exception{
+        if (home.exists()) {
+            File[] files = home.listFiles();
+            for (int i = 0;i < files.length; i++) {
+                File f = files[i];
+                if (f.isDirectory()) {
+                    delete(f);
+                } else {
+                    f.delete();
+                }            
+            }
+            home.delete();
+            FileUtils.deleteDirectory(home);
+        }
     }
 
 

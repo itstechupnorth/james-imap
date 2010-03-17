@@ -71,6 +71,7 @@ public abstract class FrameworkForAuthenticatedState extends
      */
     @Before
     public void setUp() throws Exception {
+        super.setUp();
         addTestFile("Welcome.test", preElements);
         addLogin(USER, PASSWORD);
     }

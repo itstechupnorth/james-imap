@@ -19,6 +19,7 @@
 
 package org.apache.james.test.functional;
 
+import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 
@@ -42,20 +43,28 @@ public abstract class AbstractProtocolTestFramework {
     /** The Protocol session which is run after the testElements. */
     protected ProtocolSession postElements = new ProtocolSession();
 
-    private static HostSystem hostSystem;
+    private HostSystem hostSystem;
     
     private final String userName;
     private final String password;
 
     public AbstractProtocolTestFramework(HostSystem hostSystem, String userName, String password) throws Exception {
-        AbstractProtocolTestFramework.hostSystem = hostSystem;
+        this.hostSystem = hostSystem;
         this.userName = userName;
         this.password = password;
+    }
+
+    @Before
+    public void setUp() throws Exception {
         hostSystem.beforeTests();
+        setUpEnvironment();
 
     }
 
-
+    @After
+    public void tearDown() throws Exception {
+        hostSystem.afterTests();
+    }
     protected void continueAfterFailure() {
         preElements.setContinueAfterFailure(true);
         testElements.setContinueAfterFailure(true);
@@ -111,15 +120,9 @@ public abstract class AbstractProtocolTestFramework {
     /**
      * Initialises the UsersRepository and ImapHost on first call.
      */
-    @Before
     public void setUpEnvironment() throws Exception {
         hostSystem.reset();
         hostSystem.addUser(userName, password);
     }
     
-    
-    @AfterClass
-    public static void afterTests() throws Exception {
-        hostSystem.afterTests();
-    }
 }
