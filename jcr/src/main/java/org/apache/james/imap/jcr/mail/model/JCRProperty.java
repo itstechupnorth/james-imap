@@ -22,6 +22,7 @@ import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 
 import org.apache.commons.logging.Log;
+import org.apache.jackrabbit.JcrConstants;
 import org.apache.james.imap.jcr.Persistent;
 import org.apache.james.imap.jcr.JCRImapConstants;
 
@@ -168,5 +169,59 @@ public class JCRProperty extends AbstractComparableProperty<JCRProperty> impleme
         localName = null;
         value = null;
         */
+    }
+    
+    
+    public String getUUID() {
+        if (isPersistent()) {
+            try {
+                return node.getUUID();
+            } catch (RepositoryException e) {
+                logger.error("Unable to access property " + JcrConstants.JCR_UUID, e);
+            }
+        }
+        return null;  
+    }
+    
+
+    @Override
+    public int hashCode() {
+        final int PRIME = 31;
+        int result = 1;
+        result = PRIME * result + getUUID().hashCode();
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        final JCRProperty other = (JCRProperty) obj;
+        if (getUUID() != other.getUUID())
+            return false;
+        return true;
+    }
+
+    /**
+     * Constructs a <code>String</code> with all attributes
+     * in name = value format.
+     *
+     * @return a <code>String</code> representation 
+     * of this object.
+     */
+    public String toString()
+    {
+        final String result = "Property ( "
+            + "uuid = " + this.getUUID() + " "
+            + "localName = " + this.getLocalName() + " "
+            + "namespace = " + this.getNamespace() + " "
+            + "value = " + this.getValue() 
+            + " )";
+    
+        return result;
     }
 }

@@ -387,12 +387,15 @@ public class JCRMessageMapper extends AbstractJCRMapper implements MessageMapper
         JCRMailboxMembership membership = (JCRMailboxMembership) message;
         try {
             createNodeIfNotExists(PATH);
-            String path = JCRUtils.createPath(PATH, String.valueOf(membership.getUid()));
-            Node messageNode;
+            Node messageNode = null;;
             
-            if (getSession().getRootNode().hasNode(path)) {
-                messageNode = getSession().getRootNode().getNode(path);
-            } else {
+            if (membership.isPersistent()) {
+                messageNode = getSession().getNodeByUUID(membership.getUUID());
+            }
+
+            if (messageNode == null) {
+                String path = JCRUtils.createPath(PATH, String.valueOf(membership.getUid()));
+
                 messageNode = getSession().getRootNode().addNode(path);
                 messageNode.addMixin(JcrConstants.MIX_REFERENCEABLE);
             }
@@ -455,7 +458,7 @@ public class JCRMessageMapper extends AbstractJCRMapper implements MessageMapper
                     } else if (low == high) {
                         queryBuilder.append(" AND [@" + JCRMailboxMembership.UID_PROPERTY +"=").append(low).append("]");
                     } else {
-                        queryBuilder.append(" AND [@" + JCRMailboxMembership.UID_PROPERTY +"<").append(low).append("] AND [@" + JCRMailboxMembership.UID_PROPERTY + ">").append(high).append("]");
+                        queryBuilder.append(" AND [@" + JCRMailboxMembership.UID_PROPERTY +"<=").append(high).append("] AND [@" + JCRMailboxMembership.UID_PROPERTY + ">=").append(low).append("]");
                     }
                 }
             }

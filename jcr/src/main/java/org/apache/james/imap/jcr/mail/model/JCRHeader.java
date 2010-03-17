@@ -22,6 +22,7 @@ import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 
 import org.apache.commons.logging.Log;
+import org.apache.jackrabbit.JcrConstants;
 import org.apache.james.imap.jcr.Persistent;
 import org.apache.james.imap.jcr.JCRImapConstants;
 import org.apache.james.imap.store.mail.model.AbstractComparableHeader;
@@ -33,6 +34,7 @@ import org.apache.james.imap.store.mail.model.Header;
  *
  */
 public class JCRHeader extends AbstractComparableHeader implements JCRImapConstants, Persistent{
+    private static final String TOSTRING_SEP = " ";
 
     public final static String FIELDNAME_PROPERTY = PROPERTY_PREFIX + "headerFieldName";
     public final static String VALUE_PROPERTY = PROPERTY_PREFIX + "headerFalue";
@@ -145,4 +147,51 @@ public class JCRHeader extends AbstractComparableHeader implements JCRImapConsta
         this.value = null;
         */
     }
+    
+    
+    public String getUUID() {
+        if (isPersistent()) {
+            try {
+                return node.getUUID();
+            } catch (RepositoryException e) {
+                logger.error("Unable to access property " + JcrConstants.JCR_UUID, e);
+            }
+        }
+        return null;  
+    }
+    
+
+    @Override
+    public int hashCode() {
+        final int PRIME = 31;
+        int result = 1;
+        result = PRIME * result + getUUID().hashCode();
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        final JCRHeader other = (JCRHeader) obj;
+        if (getUUID() != other.getUUID())
+            return false;
+        return true;
+    }
+
+    public String toString()
+    {
+        final String retValue =  "Header ( "
+            + "UUID = " + this.getUUID() + TOSTRING_SEP
+            + "lineNumber = " + this.getLineNumber() + TOSTRING_SEP
+            + "field = " + this.getFieldName() + TOSTRING_SEP
+            + "value = " + this.getValue() + TOSTRING_SEP
+            + " )";
+        return retValue;
+    }
+
 }

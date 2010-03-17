@@ -327,6 +327,7 @@ public class JCRMessage extends AbstractDocument implements JCRImapConstants, Pe
             }
         } else {
             headersNode = node.addNode(HEADERS_NODE);
+            headersNode.addMixin(JcrConstants.MIX_REFERENCEABLE);
         }
         
             
@@ -356,6 +357,8 @@ public class JCRMessage extends AbstractDocument implements JCRImapConstants, Pe
             }
         } else {
             propertiesNode = node.addNode(PROPERTIES_NODE);
+            propertiesNode.addMixin(JcrConstants.MIX_REFERENCEABLE);
+
         }
         
 
@@ -394,5 +397,38 @@ public class JCRMessage extends AbstractDocument implements JCRImapConstants, Pe
         }
         return bodyStartOctet;
     }
+    
+
+    @Override
+    public int hashCode() {
+        final int PRIME = 31;
+        int result = 1;
+        result = PRIME * result + getUUID().hashCode();
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        final JCRMessage other = (JCRMessage) obj;
+        if (getUUID() != other.getUUID())
+            return false;
+        return true;
+    }
+
+    public String toString()
+    {
+        final String retValue = 
+            "message("
+            + "uuid = " + getUUID()
+            + " )";
+        return retValue;
+    }
+
 
 }

@@ -225,21 +225,15 @@ public class JCRMailboxMapper extends AbstractJCRMapper implements MailboxMapper
         try {
             createNodeIfNotExists(PATH);
             JCRMailbox jcrMailbox = (JCRMailbox)mailbox;
-            JCRMailbox savedMailbox = null;
+            Node node = null;
 
-            try {
-                savedMailbox = (JCRMailbox) findMailboxByName(mailbox.getName());
-            } catch (MailboxNotFoundException e) {
-                // no mailbox with this name..
+            if (jcrMailbox.isPersistent()) {
+                node = getSession().getNodeByUUID(jcrMailbox.getUUID());
             }
-            
-            Node node;
-            if (savedMailbox == null) {
+            if (node == null) {
                 node = getSession().getRootNode().addNode(nodePath);
                 node.addMixin(JcrConstants.MIX_REFERENCEABLE);
-            } else {
-                node = savedMailbox.getNode();
-            }
+           } 
             
             jcrMailbox.merge(node);
 

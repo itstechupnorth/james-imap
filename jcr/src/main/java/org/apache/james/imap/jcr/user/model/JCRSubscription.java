@@ -23,6 +23,7 @@ import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 
 import org.apache.commons.logging.Log;
+import org.apache.jackrabbit.JcrConstants;
 import org.apache.james.imap.jcr.Persistent;
 import org.apache.james.imap.jcr.JCRImapConstants;
 import org.apache.james.imap.store.user.model.Subscription;
@@ -32,6 +33,8 @@ import org.apache.james.imap.store.user.model.Subscription;
  * 
  */
 public class JCRSubscription implements Subscription, Persistent, JCRImapConstants {
+    private static final String TOSTRING_SEPARATOR = " ";
+
     public final static String USERNAME_PROPERTY = PROPERTY_PREFIX + "subscriptionUsername";
     public final static String MAILBOX_PROPERTY = PROPERTY_PREFIX  + "subscriptionMailbox";
     
@@ -118,5 +121,55 @@ public class JCRSubscription implements Subscription, Persistent, JCRImapConstan
         username = null;
         */
     }
+    
+    public String getUUID() {
+        if (isPersistent()) {
+            try {
+                return node.getUUID();
+            } catch (RepositoryException e) {
+                log.error("Unable to access property " + JcrConstants.JCR_UUID, e);
+            }
+        }
+        return null;  
+    }
+    
+    @Override
+    public int hashCode() {
+        final int PRIME = 31;
+        int result = 1;
+        result = PRIME * result + getUUID().hashCode();
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        final JCRSubscription other = (JCRSubscription) obj;
+        if (getUUID() != other.getUUID())
+            return false;
+        return true;
+    }
+
+    /**
+     * Renders output suitable for debugging.
+     *
+     * @return output suitable for debugging
+     */
+    public String toString()
+    {
+        final String result = "Subscription ( "
+            + "uuid = " + this.getUUID() + TOSTRING_SEPARATOR
+            + "user = " + this.getUser() + TOSTRING_SEPARATOR
+            + "mailbox = " + this.getMailbox() + TOSTRING_SEPARATOR
+            + " )";
+    
+        return result;
+    }
+    
 
 }

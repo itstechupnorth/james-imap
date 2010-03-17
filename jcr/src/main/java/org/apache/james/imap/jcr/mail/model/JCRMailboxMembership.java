@@ -42,6 +42,7 @@ import org.apache.james.imap.store.mail.model.PropertyBuilder;
  */
 public class JCRMailboxMembership extends AbstractMailboxMembership implements
 		Persistent, JCRImapConstants {
+    private static final String TOSTRING_SEPARATOR = " ";
 
 	public final static String MAILBOX_UUID_PROPERTY = PROPERTY_PREFIX
 			+ "mailboxUUID";
@@ -480,5 +481,50 @@ public class JCRMailboxMembership extends AbstractMailboxMembership implements
 		uid = 0;
 		*/
 	}
+	
+
+    @Override
+    public int hashCode() {
+        final int PRIME = 31;
+        int result = 1;
+        result = PRIME * result + getUUID().hashCode();
+        result = PRIME * result + getMailboxUUID().hashCode();
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        final JCRMailboxMembership other = (JCRMailboxMembership) obj;
+        if (getMailboxUUID() != other.getMailboxUUID())
+            return false;
+        if (getUUID() != other.getUUID())
+            return false;
+        return true;
+    }
+
+    public String toString()
+    {
+        final String retValue = 
+            "mailbox("
+            + "mailboxUUID = " + this.getMailboxUUID() + TOSTRING_SEPARATOR
+            + "uuid = " + this.getUUID() + TOSTRING_SEPARATOR
+            + "internalDate = " + this.getInternalDate() + TOSTRING_SEPARATOR
+            + "size = " + this.getSize() + TOSTRING_SEPARATOR
+            + "answered = " + this.isAnswered() + TOSTRING_SEPARATOR
+            + "deleted = " + this.isDeleted() + TOSTRING_SEPARATOR
+            + "draft = " + this.isDraft() + TOSTRING_SEPARATOR
+            + "flagged = " + this.isFlagged() + TOSTRING_SEPARATOR
+            + "recent = " + this.isRecent() + TOSTRING_SEPARATOR
+            + "seen = " + this.isSeen() + TOSTRING_SEPARATOR
+            + " )";
+
+        return retValue;
+    }
 
 }

@@ -33,12 +33,13 @@ import org.apache.james.imap.store.mail.model.Mailbox;
  */
 public class JCRMailbox implements Mailbox, JCRImapConstants, Persistent{
 
-    public final static String ID_PROPERTY = PROPERTY_PREFIX + "mailboxId";
+    private static final String TAB = " ";
+
+    
     public final static String NAME_PROPERTY = PROPERTY_PREFIX + "mailboxName";
     public final static String UIDVALIDITY_PROPERTY = PROPERTY_PREFIX + "mailboxUidValidity";
     public final static String LASTUID_PROPERTY = PROPERTY_PREFIX + "mailboxLastUid";
 
-    private long id = -1;
     private String name;
     private long uidValidity;
     private long lastUid = 0;
@@ -95,21 +96,6 @@ public class JCRMailbox implements Mailbox, JCRImapConstants, Persistent{
             }
         }
         return lastUid;
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see org.apache.james.imap.store.mail.model.Mailbox#getMailboxId()
-     */
-    public long getMailboxId() {
-        if (isPersistent()) {
-            try {
-                return node.getProperty(ID_PROPERTY).getLong();
-            } catch (RepositoryException e) {
-                logger.error("Unable to access property " + ID_PROPERTY, e);
-            }
-        }
-        return id;
     }
 
    
@@ -181,7 +167,6 @@ public class JCRMailbox implements Mailbox, JCRImapConstants, Persistent{
      * @see org.apache.james.imap.jcr.Persistent#merge(javax.jcr.Node)
      */
     public void  merge(Node node) throws RepositoryException {
-        node.setProperty(ID_PROPERTY,  getMailboxId());
         node.setProperty(NAME_PROPERTY, getName());
         node.setProperty(UIDVALIDITY_PROPERTY, getUidValidity());
         node.setProperty(LASTUID_PROPERTY, getLastUid());   
@@ -205,4 +190,47 @@ public class JCRMailbox implements Mailbox, JCRImapConstants, Persistent{
         }
         return null;  
     }
+    
+    @Override
+    public String toString()
+    {
+        final String retValue = "Mailbox ( "
+            + "mailboxUID = " + this.getUUID() + TAB
+            + "name = " + this.getName() + TAB
+            + "uidValidity = " + this.getUidValidity() + TAB
+            + "lastUid = " + this.getLastUid() + TAB
+            + " )";
+        return retValue;
+    }
+    
+    @Override
+    public int hashCode() {
+        final int PRIME = 31;
+        int result = 1;
+        result = PRIME * result + (int) getUUID().hashCode();
+        return result;
+    }
+    
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        final JCRMailbox other = (JCRMailbox) obj;
+        if (getUUID() != other.getUUID())
+            return false;
+        return true;
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.store.mail.model.Mailbox#getMailboxId()
+     */
+    public long getMailboxId() {
+        return getUUID().hashCode();
+    }
+
 }

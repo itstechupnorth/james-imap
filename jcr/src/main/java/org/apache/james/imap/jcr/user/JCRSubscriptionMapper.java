@@ -31,6 +31,7 @@ import javax.jcr.query.QueryManager;
 import javax.jcr.query.QueryResult;
 
 import org.apache.commons.logging.Log;
+import org.apache.jackrabbit.JcrConstants;
 import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.jcr.AbstractJCRMapper;
 import org.apache.james.imap.jcr.JCRUtils;
@@ -139,8 +140,8 @@ public class JCRSubscriptionMapper extends AbstractJCRMapper implements Subscrip
         String nodename = JCRUtils.createPath(PATH, username, mailbox);
         try {
 
-            
-            Node node;
+            Node node = null;
+         
             JCRSubscription sub = (JCRSubscription) findFindMailboxSubscriptionForUser(username, mailbox);
             
             // its a new subscription
@@ -150,6 +151,7 @@ public class JCRSubscriptionMapper extends AbstractJCRMapper implements Subscrip
                 createNodeIfNotExists(JCRUtils.createPath(PATH,username));
                 
                 node = getSession().getRootNode().addNode(nodename);
+                node.addMixin(JcrConstants.MIX_REFERENCEABLE);
             } else {
                 node = sub.getNode();
             }
