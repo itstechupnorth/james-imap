@@ -93,7 +93,8 @@ public class JCRSubscriptionMapper extends AbstractJCRMapper implements Subscrip
             
             NodeIterator nodeIt = result.getNodes();
             if (nodeIt.hasNext()) {
-                new JCRSubscription(nodeIt.nextNode(), log);
+                JCRSubscription sub = new JCRSubscription(nodeIt.nextNode(), log);
+                return sub;
             }
             
         } catch (PathNotFoundException e) {
