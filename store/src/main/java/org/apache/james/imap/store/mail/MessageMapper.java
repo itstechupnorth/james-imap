@@ -35,6 +35,8 @@ public interface MessageMapper extends TransactionalMapper {
 
     /**
      * Return a List of {@link MailboxMembership} which represent the given {@link MessageRange}
+     * The list must be ordered by the {@link Document} uid
+     * 
      * @param set
      * @return list
      * @throws StorageException
@@ -43,7 +45,8 @@ public interface MessageMapper extends TransactionalMapper {
             throws StorageException;
 
     /**
-     * Return a List of {@link MailboxMembership} for the given {@link MessageRange} which are marked for deletion 
+     * Return a List of {@link MailboxMembership} for the given {@link MessageRange} which are marked for deletion
+     * The list must be ordered by the {@link Document} uid
      * @param set 
      * @return list
      * @throws StorageException
@@ -72,6 +75,7 @@ public interface MessageMapper extends TransactionalMapper {
 
     /**
      * Return a List of {@link MailboxMembership} which matched the {@link SearchQuery}
+     * The list must be ordered by the {@link Document} uid
      * @param query
      * @return
      * @throws StorageException
@@ -87,15 +91,17 @@ public interface MessageMapper extends TransactionalMapper {
     public abstract void delete(MailboxMembership message) throws StorageException;
 
     /**
-     * Return a List of {@link MailboxMembership} which are unseen. The list is ordered by uid
+     * Return a List of {@link MailboxMembership} which are unseen. 
+     * The list must be ordered by the {@link Document} uid.
      * 
      * @return list
      * @throws StorageException
      */
-    public abstract List<MailboxMembership> findUnseenMessagesInMailboxOrderByUid() throws StorageException;
+    public abstract List<MailboxMembership> findUnseenMessagesInMailbox() throws StorageException;
 
     /**
-     * Return a List of {@link MailboxMembership} which are recent
+     * Return a List of {@link MailboxMembership} which are recent.
+     * The list must be ordered by the {@link Document} uid
      * 
      * @return recentList
      * @throws StorageException

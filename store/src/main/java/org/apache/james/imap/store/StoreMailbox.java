@@ -59,6 +59,11 @@ import org.apache.james.mime4j.MimeException;
 import org.apache.james.mime4j.descriptor.MaximalBodyDescriptor;
 import org.apache.james.mime4j.parser.MimeTokenStream;
 
+/**
+ * Abstract base class for {@link org.apache.james.imap.mailbox.Mailbox} implementations
+ * 
+ *
+ */
 public abstract class StoreMailbox implements org.apache.james.imap.mailbox.Mailbox {
 
     private static final int INITIAL_SIZE_FLAGS = 32;
@@ -70,12 +75,17 @@ public abstract class StoreMailbox implements org.apache.james.imap.mailbox.Mail
     private final UidChangeTracker tracker;
     private final MailboxSession session;
     
-    public StoreMailbox(final Mailbox mailbox, MailboxSession session) {
+    public StoreMailbox(final Mailbox mailbox, final MailboxSession session) {
         this.mailboxId = mailbox.getMailboxId();
         this.tracker = new UidChangeTracker(mailbox.getLastUid());
         this.session = session;
     }
 
+    /**
+     * Return the {@link MailboxSession} for this {@link StoreMailbox}
+     * 
+     * @return session
+     */
     protected MailboxSession getMailboxSession() {
         return session;
     }
@@ -103,7 +113,7 @@ public abstract class StoreMailbox implements org.apache.james.imap.mailbox.Mail
      * 
      * @return id
      */
-    public long getMailboxId() {
+    protected long getMailboxId() {
         return mailboxId;
     }
 
@@ -297,6 +307,12 @@ public abstract class StoreMailbox implements org.apache.james.imap.mailbox.Mail
     protected abstract Header createHeader(int lineNumber, String name, String value);
 
 
+    /**
+     * Reserve the next Uid on the underlying {@link Mailbox} 
+     * 
+     * @return mailbox
+     * @throws MailboxException
+     */
     protected abstract Mailbox reserveNextUid() throws  MailboxException;
 
     /*
@@ -335,7 +351,7 @@ public abstract class StoreMailbox implements org.apache.james.imap.mailbox.Mail
         }
     }
 
-    public Flags getPermanentFlags() {
+    private Flags getPermanentFlags() {
         Flags permanentFlags = new Flags();
         permanentFlags.add(Flags.Flag.ANSWERED);
         permanentFlags.add(Flags.Flag.DELETED);
@@ -345,7 +361,7 @@ public abstract class StoreMailbox implements org.apache.james.imap.mailbox.Mail
         return permanentFlags;
     }
 
-    public long[] recent(final boolean reset, MailboxSession mailboxSession) throws MailboxException {
+    private long[] recent(final boolean reset, MailboxSession mailboxSession) throws MailboxException {
         final MessageMapper mapper = createMessageMapper(session);
         final List<Long> results = new ArrayList<Long>();
 
@@ -368,10 +384,10 @@ public abstract class StoreMailbox implements org.apache.james.imap.mailbox.Mail
         return ArrayUtils.toPrimitive(results.toArray(new Long[results.size()]));
     }
 
-    public Long getFirstUnseen(MailboxSession mailboxSession) throws MailboxException {
+    private Long getFirstUnseen(MailboxSession mailboxSession) throws MailboxException {
         try {
             final MessageMapper messageMapper = createMessageMapper(session);
-            final List<MailboxMembership> members = messageMapper.findUnseenMessagesInMailboxOrderByUid();
+            final List<MailboxMembership> members = messageMapper.findUnseenMessagesInMailbox();
             final Iterator<MailboxMembership> it = members.iterator();
             final Long result;
             if (it.hasNext()) {
@@ -387,7 +403,7 @@ public abstract class StoreMailbox implements org.apache.james.imap.mailbox.Mail
         }
     }
 
-    public int getUnseenCount(MailboxSession mailboxSession) throws MailboxException {
+    private int getUnseenCount(MailboxSession mailboxSession) throws MailboxException {
         final MessageMapper messageMapper = createMessageMapper(session);
         final int count = (int) messageMapper.countUnseenMessagesInMailbox();
         return count;
@@ -440,7 +456,6 @@ public abstract class StoreMailbox implements org.apache.james.imap.mailbox.Mail
 
             public void run() throws MailboxException {
                 final List<MailboxMembership> members = mapper.findInMailbox(set);
-                System.out.println("FOUND=" + members.size());
                 for (final MailboxMembership member:members) {
                     originalFlagsByUid.put(member.getUid(), member.createFlags());
                     if (replace) {
@@ -469,12 +484,12 @@ public abstract class StoreMailbox implements org.apache.james.imap.mailbox.Mail
         tracker.addMailboxListener(listener);
     }
 
-    public long getUidValidity(MailboxSession mailboxSession) throws MailboxException {
+    private long getUidValidity(MailboxSession mailboxSession) throws MailboxException {
         final long result = getMailboxRow().getUidValidity();
         return result;
     }
 
-    public long getUidNext(MailboxSession mailboxSession) throws MailboxException {
+    private long getUidNext(MailboxSession mailboxSession) throws MailboxException {
         Mailbox mailbox = getMailboxRow();
         if (mailbox == null) {
             throw new MailboxNotFoundException("Mailbox has been deleted");
@@ -521,7 +536,7 @@ public abstract class StoreMailbox implements org.apache.james.imap.mailbox.Mail
     }
     
 
-    public void copy(final List<MailboxMembership> originalRows, MailboxSession session) throws MailboxException {
+    private void copy(final List<MailboxMembership> originalRows, MailboxSession session) throws MailboxException {
         try {
             final List<MailboxMembership> copiedRows = new ArrayList<MailboxMembership>();
             final MessageMapper mapper = createMessageMapper(session);

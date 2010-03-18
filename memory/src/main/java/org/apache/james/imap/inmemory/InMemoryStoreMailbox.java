@@ -86,10 +86,18 @@ public class InMemoryStoreMailbox extends StoreMailbox implements MessageMapper 
         return mailbox;
     }
 
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.store.mail.MessageMapper#countMessagesInMailbox()
+     */
     public long countMessagesInMailbox() throws StorageException {
         return membershipByUid.size();
     }
 
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.store.mail.MessageMapper#countUnseenMessagesInMailbox()
+     */
     public long countUnseenMessagesInMailbox() throws StorageException {
         long count = 0;
         for(MailboxMembership member:membershipByUid.values()) {
@@ -100,6 +108,10 @@ public class InMemoryStoreMailbox extends StoreMailbox implements MessageMapper 
         return count;
     }
 
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.store.mail.MessageMapper#delete(org.apache.james.imap.store.mail.model.MailboxMembership)
+     */
     public void delete(MailboxMembership message) throws StorageException {
         membershipByUid.remove(message.getUid());
     }
@@ -144,6 +156,10 @@ public class InMemoryStoreMailbox extends StoreMailbox implements MessageMapper 
         return results;
     }
 
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.store.mail.MessageMapper#findMarkedForDeletionInMailbox(org.apache.james.imap.mailbox.MessageRange)
+     */
     public List<MailboxMembership> findMarkedForDeletionInMailbox(MessageRange set) throws StorageException {
         final List<MailboxMembership> results = findInMailbox(set);
         for(final Iterator<MailboxMembership> it=results.iterator();it.hasNext();) {
@@ -154,6 +170,10 @@ public class InMemoryStoreMailbox extends StoreMailbox implements MessageMapper 
         return results;
     }
 
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.store.mail.MessageMapper#findRecentMessagesInMailbox()
+     */
     public List<MailboxMembership> findRecentMessagesInMailbox() throws StorageException {
         final List<MailboxMembership> results = new ArrayList<MailboxMembership>();
         for(MailboxMembership member:membershipByUid.values()) {
@@ -161,10 +181,16 @@ public class InMemoryStoreMailbox extends StoreMailbox implements MessageMapper 
                 results.add(member);
             }
         }
+        Collections.sort(results, MailboxMembershipComparator.INSTANCE);
+
         return results;
     }
 
-    public List<MailboxMembership> findUnseenMessagesInMailboxOrderByUid() throws StorageException {
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.store.mail.MessageMapper#findUnseenMessagesInMailbox()
+     */
+    public List<MailboxMembership> findUnseenMessagesInMailbox() throws StorageException {
         final List<MailboxMembership> results = new ArrayList<MailboxMembership>();
         for(MailboxMembership member:membershipByUid.values()) {
             if (!member.isSeen()) {
@@ -175,10 +201,18 @@ public class InMemoryStoreMailbox extends StoreMailbox implements MessageMapper 
         return results;
     }
 
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.store.mail.MessageMapper#save(org.apache.james.imap.store.mail.model.MailboxMembership)
+     */
     public void save(MailboxMembership message) throws StorageException {
         membershipByUid.put(message.getUid(), message);
     }
 
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.store.mail.MessageMapper#searchMailbox(org.apache.james.imap.mailbox.SearchQuery)
+     */
     public List<MailboxMembership> searchMailbox(SearchQuery query) throws StorageException {
         return new ArrayList<MailboxMembership>(membershipByUid.values());
     }
