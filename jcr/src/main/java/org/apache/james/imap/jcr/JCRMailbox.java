@@ -45,7 +45,6 @@ import org.apache.james.imap.store.mail.MessageMapper;
 import org.apache.james.imap.store.mail.model.Header;
 import org.apache.james.imap.store.mail.model.Mailbox;
 import org.apache.james.imap.store.mail.model.MailboxMembership;
-import org.apache.james.imap.store.mail.model.Property;
 import org.apache.james.imap.store.mail.model.PropertyBuilder;
 
 /**
@@ -73,9 +72,15 @@ public class JCRMailbox extends StoreMailbox{
         throw new UnsupportedOperationException("Please use getMailboxUUID for this implementation");
     }
 
+    /**
+     * Return the UUID of this Mailbox
+     * 
+     * @return uuid
+     */
     public String getMailboxUUID() {
         return uuid;
     }
+    
     
     @Override
     protected MailboxMembership copyMessage(MailboxMembership originalMessage, long uid) {
@@ -111,6 +116,13 @@ public class JCRMailbox extends StoreMailbox{
 
     }
 
+    /**
+     * Ceate a MailboxMapper for the given {@link MailboxSession} 
+     * 
+     * @param session
+     * @return mailboxMapper
+     * @throws MailboxException
+     */
     protected JCRMailboxMapper createMailboxMapper(MailboxSession session) throws MailboxException {
         Session jcrSession = getSession(session);
         JCRUtils.addJCRSession(session, jcrSession);

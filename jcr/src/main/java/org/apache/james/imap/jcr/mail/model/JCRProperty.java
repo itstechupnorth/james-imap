@@ -213,8 +213,7 @@ public class JCRProperty extends AbstractComparableProperty<JCRProperty> impleme
      * @return a <code>String</code> representation 
      * of this object.
      */
-    public String toString()
-    {
+    public String toString() {
         final String result = "Property ( "
             + "uuid = " + this.getUUID() + " "
             + "localName = " + this.getLocalName() + " "

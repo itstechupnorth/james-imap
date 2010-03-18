@@ -152,7 +152,7 @@ public class JCRMailboxManager extends StoreMailboxManager {
 
 
     /**
-     * Logout from all openen JCR Sessions
+     * Logout from all opened JCR Sessions
      */
     public void endProcessingRequest(MailboxSession session) {
         List<Session> sessions = JCRUtils.getJCRSessions(session);

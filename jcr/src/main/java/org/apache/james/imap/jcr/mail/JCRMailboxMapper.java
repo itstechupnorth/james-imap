@@ -50,7 +50,7 @@ import org.apache.james.imap.store.mail.model.Mailbox;
 public class JCRMailboxMapper extends AbstractJCRMapper implements MailboxMapper {
 
     public final String PATH = PROPERTY_PREFIX + "mailboxes";
-    private Log logger;
+    private final Log logger;
 
     public JCRMailboxMapper(final Session session, final Log logger) {
         super(session);
@@ -243,6 +243,14 @@ public class JCRMailboxMapper extends AbstractJCRMapper implements MailboxMapper
         }
     }
     
+    /**
+     * Consume the next uid for the {@link Mailbox} with the given uuid
+     * 
+     * @param uuid
+     * @return mailbox
+     * @throws StorageException
+     * @throws MailboxNotFoundException
+     */
     public Mailbox consumeNextUid(String uuid) throws StorageException, MailboxNotFoundException {
 
         final JCRMailbox mailbox = (JCRMailbox) findMailboxByUUID(uuid);

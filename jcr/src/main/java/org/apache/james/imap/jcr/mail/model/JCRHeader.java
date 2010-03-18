@@ -183,8 +183,7 @@ public class JCRHeader extends AbstractComparableHeader implements JCRImapConsta
         return true;
     }
 
-    public String toString()
-    {
+    public String toString() {
         final String retValue =  "Header ( "
             + "UUID = " + this.getUUID() + TOSTRING_SEP
             + "lineNumber = " + this.getLineNumber() + TOSTRING_SEP

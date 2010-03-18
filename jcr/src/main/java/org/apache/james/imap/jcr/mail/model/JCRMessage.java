@@ -421,8 +421,7 @@ public class JCRMessage extends AbstractDocument implements JCRImapConstants, Pe
         return true;
     }
 
-    public String toString()
-    {
+    public String toString() {
         final String retValue = 
             "message("
             + "uuid = " + getUUID()

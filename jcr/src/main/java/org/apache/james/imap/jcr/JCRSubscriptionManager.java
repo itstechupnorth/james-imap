@@ -44,11 +44,9 @@ import org.apache.james.imap.store.user.model.Subscription;
  * 
  */
 public class JCRSubscriptionManager extends StoreSubscriptionManager {
-    private Log logger = LogFactory.getLog(JCRSubscriptionManager.class);
-
-    public final static String MAPPER = "SUBSCRIPTION_MAPPER";
+    private final Log logger = LogFactory.getLog(JCRSubscriptionManager.class);
     private final Repository repository;
-    private String workspace;
+    private final String workspace;
 
     public JCRSubscriptionManager(final Repository repository, final String workspace) {
         super();
@@ -103,12 +101,12 @@ public class JCRSubscriptionManager extends StoreSubscriptionManager {
         return workspace;
     }
 
+    /**
+     * Return the JCR Repository 
+     * 
+     * @return repository
+     */
     protected Repository getRepository() {
         return repository;
-    }
-
-    @Override
-    protected void onLogout(MailboxSession session) {
-        
     }
 }

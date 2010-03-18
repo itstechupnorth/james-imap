@@ -508,8 +508,7 @@ public class JCRMailboxMembership extends AbstractMailboxMembership implements
         return true;
     }
 
-    public String toString()
-    {
+    public String toString() {
         final String retValue = 
             "mailbox("
             + "mailboxUUID = " + this.getMailboxUUID() + TOSTRING_SEPARATOR

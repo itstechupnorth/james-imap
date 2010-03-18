@@ -33,54 +33,53 @@ import org.apache.james.imap.mailbox.MailboxSession;
 public class JCRUtils implements JCRImapConstants{
 
     /**
-     * Identifier of stored JCR Session 
+     * Identifier of stored JCR Session
      */
     public final static String JCR_SESSIONS = "JCR_SESSIONS";
-    
+
     /**
      * Create a path which can be used for nodes. It handles the escaping etc
      * 
      * @param subNodes
      * @return completePath
      */
-	public static String createPath(String... subNodes) {
-		StringBuffer pathBuf = new StringBuffer();
-		
-		for (int i = 0; i < subNodes.length; i++ ) {
-			String path = subNodes[i];
-			/*
-			if (path.startsWith(PROPERTY_PREFIX) == false) {
-				pathBuf.append(PROPERTY_PREFIX);
-			}
-			*/
-			pathBuf.append(Text.escapeIllegalJcrChars(path));
-			
-			if (i +1 != subNodes.length) {
-				pathBuf.append(NODE_DELIMITER);
-			}
-		}
+    public static String createPath(String... subNodes) {
+        StringBuffer pathBuf = new StringBuffer();
+
+        for (int i = 0; i < subNodes.length; i++) {
+            String path = subNodes[i];
+            /*
+             * if (path.startsWith(PROPERTY_PREFIX) == false) {
+             * pathBuf.append(PROPERTY_PREFIX); }
+             */
+            pathBuf.append(Text.escapeIllegalJcrChars(path));
+
+            if (i + 1 != subNodes.length) {
+                pathBuf.append(NODE_DELIMITER);
+            }
+        }
         return pathBuf.toString();
-		
-	}
-	
-	/**
-	 * Return a List of JCR Sessions for the given MailboxSession
-	 * 
-	 * @param session
-	 * @return jcrSessionList
-	 */
-	@SuppressWarnings("unchecked")
+
+    }
+
+    /**
+     * Return a List of JCR Sessions for the given MailboxSession
+     * 
+     * @param session
+     * @return jcrSessionList
+     */
+    @SuppressWarnings("unchecked")
     public static List<Session> getJCRSessions(MailboxSession session) {
-	    List<Session> sessions = null;
-	    if (session != null) {
-	        sessions = (List<Session>) session.getAttributes().get(JCR_SESSIONS);
-	    }
-	    if (sessions == null) {
-	        sessions = new ArrayList<Session>();
-	    }
-	    return sessions;
-	}
-	
+        List<Session> sessions = null;
+        if (session != null) {
+            sessions = (List<Session>) session.getAttributes().get(JCR_SESSIONS);
+        }
+        if (sessions == null) {
+            sessions = new ArrayList<Session>();
+        }
+        return sessions;
+    }
+
 	/**
 	 * Add the JCR Session to the MailboxSession
 	 * @param session

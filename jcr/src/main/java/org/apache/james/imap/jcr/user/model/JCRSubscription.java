@@ -160,8 +160,7 @@ public class JCRSubscription implements Subscription, Persistent, JCRImapConstan
      *
      * @return output suitable for debugging
      */
-    public String toString()
-    {
+    public String toString() {
         final String result = "Subscription ( "
             + "uuid = " + this.getUUID() + TOSTRING_SEPARATOR
             + "user = " + this.getUser() + TOSTRING_SEPARATOR

@@ -41,9 +41,7 @@ import org.apache.james.imap.store.user.SubscriptionMapper;
 import org.apache.james.imap.store.user.model.Subscription;
 
 /**
- * JCR implementation of a SubscriptionManager. Just be aware, this
- * SubscriptionManager doesn't support transactions. So very call on a method
- * ends in a "real" action
+ * JCR implementation of a SubscriptionManager
  * 
  */
 public class JCRSubscriptionMapper extends AbstractJCRMapper implements SubscriptionMapper {
@@ -88,13 +86,23 @@ public class JCRSubscriptionMapper extends AbstractJCRMapper implements Subscrip
      */
     public Subscription findFindMailboxSubscriptionForUser(String user, String mailbox) throws SubscriptionException {
         try {
-            Node node = getSession().getRootNode().getNode(JCRUtils.createPath(PATH, user, mailbox));
-            return new JCRSubscription(node, log);
+            String queryString = "//" + PATH + "//element(*)[@" + JCRSubscription.USERNAME_PROPERTY + "='" + user + "'] AND [@" + JCRSubscription.MAILBOX_PROPERTY +"='" + mailbox + "']";
+
+            QueryManager manager = getSession().getWorkspace().getQueryManager();
+            QueryResult result = manager.createQuery(queryString, Query.XPATH).execute();
+            
+            NodeIterator nodeIt = result.getNodes();
+            if (nodeIt.hasNext()) {
+                new JCRSubscription(nodeIt.nextNode(), log);
+            }
+            
         } catch (PathNotFoundException e) {
-            return null;
+            // nothing todo here
         } catch (RepositoryException e) {
             throw new SubscriptionException(HumanReadableText.SEARCH_FAILED, e);
         }
+        return null;
+
     }
 
     /*

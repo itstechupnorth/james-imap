@@ -117,6 +117,4 @@ public abstract class StoreSubscriptionManager implements Subscriber {
             throw (SubscriptionException) e;
         }
     }
-    
-    protected abstract void onLogout(MailboxSession session);
 }

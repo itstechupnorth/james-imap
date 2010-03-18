@@ -163,12 +163,6 @@ public class JCRMessageMapper extends AbstractJCRMapper implements MessageMapper
                     results = findMessagesInMailboxBetweenUIDs(uuid, from, to);
                     break;       
             }
-           /* 
-            for (int i = 0; i < results.size(); i++) {
-                System.out.println("FOUND=" + results.get(i).getUid() + " TYPE="+ type.toString());
-
-            }
-*/
             return results;
         } catch (RepositoryException e) {
             e.printStackTrace();

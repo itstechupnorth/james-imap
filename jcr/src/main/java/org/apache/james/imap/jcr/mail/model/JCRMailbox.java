@@ -192,8 +192,7 @@ public class JCRMailbox implements Mailbox, JCRImapConstants, Persistent{
     }
     
     @Override
-    public String toString()
-    {
+    public String toString() {
         final String retValue = "Mailbox ( "
             + "mailboxUID = " + this.getUUID() + TAB
             + "name = " + this.getName() + TAB
