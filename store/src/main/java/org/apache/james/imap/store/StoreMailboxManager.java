@@ -199,6 +199,7 @@ public abstract class StoreMailboxManager extends AbstractLogEnabled implements 
 
                 public void run() throws MailboxException {
                     Mailbox mailbox = mapper.findMailboxByName(mailboxName);
+                    System.out.println(mailbox);
                     if (mailbox == null) {
                         throw new MailboxNotFoundException("Mailbox not found");
                     }

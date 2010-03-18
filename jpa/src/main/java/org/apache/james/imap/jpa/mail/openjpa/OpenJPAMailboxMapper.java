@@ -35,6 +35,10 @@ public class OpenJPAMailboxMapper extends JPAMailboxMapper {
         super(entityManager);
     }
 
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.jpa.mail.JPAMailboxMapper#doConsumeNextUid(long)
+     */
     public JPAMailbox doConsumeNextUid(long mailboxId) {
         OpenJPAEntityManager oem = OpenJPAPersistence.cast(entityManager);
         final boolean originalLocking = oem.getOptimistic();

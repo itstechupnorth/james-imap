@@ -18,6 +18,7 @@
  ****************************************************************/
 package org.apache.james.imap.jpa;
 
+import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 
 import org.apache.james.imap.jpa.user.JPASubscriptionMapper;
@@ -27,9 +28,13 @@ import org.apache.james.imap.store.StoreSubscriptionManager;
 import org.apache.james.imap.store.user.SubscriptionMapper;
 import org.apache.james.imap.store.user.model.Subscription;
 
+/**
+ * JPA implementation of {@link StoreSubscriptionManager}
+ * 
+ *
+ */
 public class JPASubscriptionManager extends StoreSubscriptionManager {
     private final EntityManagerFactory factory;
-    public final static String MAPPER = "SUBSCRIPTION_MAPPER";
     
     public JPASubscriptionManager(final EntityManagerFactory factory) {
         super();
@@ -41,8 +46,11 @@ public class JPASubscriptionManager extends StoreSubscriptionManager {
      * @see org.apache.james.imap.store.StoreSubscriptionManager#createMapper(org.apache.james.imap.mailbox.MailboxSession)
      */
     protected SubscriptionMapper createMapper(MailboxSession session) {
+        EntityManager manager = factory.createEntityManager();
         
-        JPASubscriptionMapper  mapper = new JPASubscriptionMapper(factory.createEntityManager());
+        JPAUtils.addEntityManager(session, manager);
+        
+        JPASubscriptionMapper  mapper = new JPASubscriptionMapper(manager);
         
         return mapper;
     }
@@ -54,13 +62,5 @@ public class JPASubscriptionManager extends StoreSubscriptionManager {
     protected Subscription createSubscription(final MailboxSession session, final String mailbox) {
         final Subscription newSubscription = new JPASubscription(session.getUser().getUserName(), mailbox);
         return newSubscription;
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see org.apache.james.imap.store.StoreSubscriptionManager#onLogout(org.apache.james.imap.mailbox.MailboxSession)
-     */
-    protected void onLogout(MailboxSession session) {
-        
     }
 }

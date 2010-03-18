@@ -18,6 +18,9 @@
  ****************************************************************/
 package org.apache.james.imap.jpa;
 
+import java.util.List;
+
+import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 
 import org.apache.james.imap.mailbox.MailboxException;
@@ -29,6 +32,12 @@ import org.apache.james.imap.store.mail.MailboxMapper;
 import org.apache.james.imap.store.mail.model.Mailbox;
 import org.apache.james.imap.store.transaction.TransactionalMapper;
 
+
+/**
+ * JPA implementation of {@link StoreMailboxManager}
+ * 
+ *
+ */
 public abstract class JPAMailboxManager extends StoreMailboxManager {
 
     protected final EntityManagerFactory entityManagerFactory;
@@ -70,5 +79,23 @@ public abstract class JPAMailboxManager extends StoreMailboxManager {
             
         });
     }
+
+
+    @Override
+    public void endProcessingRequest(MailboxSession session) {
+        List<EntityManager> managers = JPAUtils.getEntityManagers(session);
+        for (int i = 0 ; i < managers.size(); i++) {
+            EntityManager manager = managers.get(i);
+            if (manager.isOpen()) {
+                try {
+                    manager.close();
+                } catch (Exception e) {
+                    // just catch exceptions on logout
+                }
+            }
+        }
+    }
+    
+    
     
 }

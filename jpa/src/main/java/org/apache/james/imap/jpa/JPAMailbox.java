@@ -23,6 +23,7 @@ import java.util.Date;
 import java.util.List;
 
 import javax.mail.Flags;
+import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 
 import org.apache.james.imap.jpa.mail.JPAMailboxMapper;
@@ -69,7 +70,11 @@ public abstract class JPAMailbox extends StoreMailbox {
     
     @Override
     protected MessageMapper createMessageMapper(MailboxSession session) {
-        JPAMessageMapper mapper = new JPAMessageMapper(entityManagerFactory.createEntityManager(), mailboxId);
+        EntityManager manager = entityManagerFactory.createEntityManager();
+        
+        JPAUtils.addEntityManager(session, manager);
+        
+        JPAMessageMapper mapper = new JPAMessageMapper(manager, mailboxId);
        
         return mapper;
     }
