@@ -19,7 +19,6 @@
 package org.apache.james.imap.functional.jcr;
 
 import java.io.File;
-import java.io.FileInputStream;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.jackrabbit.core.RepositoryImpl;
@@ -50,9 +49,10 @@ public class JCRHostSystem extends ImapHostSystem{
     public JCRHostSystem() throws Exception {
 
         delete(new File(JACKRABBIT_HOME));
+        
         try {
             
-            RepositoryConfig config = RepositoryConfig.create(new InputSource(new FileInputStream("deployment/src/test/resources/test-repository.xml")), JACKRABBIT_HOME);
+            RepositoryConfig config = RepositoryConfig.create(new InputSource(this.getClass().getClassLoader().getResourceAsStream("test-repository.xml")), JACKRABBIT_HOME);
             repository =  RepositoryImpl.create(config);
 
             userManager = new InMemoryUserManager();
