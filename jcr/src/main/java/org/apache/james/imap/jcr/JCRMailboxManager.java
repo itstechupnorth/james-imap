@@ -56,16 +56,26 @@ public class JCRMailboxManager extends StoreMailboxManager {
     private final Repository repository;
     private final String workspace;
     private final Log logger = LogFactory.getLog(JCRMailboxManager.class);
-    public JCRMailboxManager(final Authenticator authenticator, final Subscriber subscriber, final Repository repository, final String workspace) {
+    private final int scaling;
+    public JCRMailboxManager(final Authenticator authenticator, final Subscriber subscriber, final Repository repository, final String workspace, final int scaling) {
         super(authenticator, subscriber);
         this.repository = repository;
         this.workspace = workspace;
+        this.scaling = scaling;
     }
 
+    /**
+     * Return the scaling depth
+     * 
+     * @return scaling
+     */
+    protected int getScaling() {
+        return scaling;
+    }
     
     @Override
     protected StoreMailbox createMailbox(Mailbox mailboxRow, MailboxSession session) {
-        JCRMailbox mailbox = new JCRMailbox((org.apache.james.imap.jcr.mail.model.JCRMailbox) mailboxRow, session, getRepository(), getWorkspace(), getLog());
+        JCRMailbox mailbox = new JCRMailbox((org.apache.james.imap.jcr.mail.model.JCRMailbox) mailboxRow, session, getRepository(), getWorkspace(), getScaling(), getLog());
         return mailbox;
     }
 
@@ -76,7 +86,7 @@ public class JCRMailboxManager extends StoreMailboxManager {
 
         JCRUtils.addJCRSession(session, jcrSession);
         
-        JCRMailboxMapper mapper = new JCRMailboxMapper(jcrSession, getLog());
+        JCRMailboxMapper mapper = new JCRMailboxMapper(jcrSession, getScaling(), getLog());
         return mapper;
 
     }

@@ -18,27 +18,41 @@
  ****************************************************************/
 package org.apache.james.imap.jcr;
 
-/**
- * Constants for JCR
- *
- */
-public interface JCRImapConstants {
+import static org.junit.Assert.*;
 
-    /**
-     * Node path scaling
-     */
-    public final static int MAX_SCALING = -1;
+import org.junit.Test;
 
-    public final static int MIN_SCALING = 0;
-
+public class JCRUtilsTest {
     
-	/**
-	 * Delimiter for Nodes
-	 */
-	public static final String NODE_DELIMITER = "/";
-	
-	/**
-	 * Prefix for all imap related properties
-	 */
-	public static final String PROPERTY_PREFIX ="";//"imap:";
+    @Test
+    public void testCreateScalingPath() {
+        String path = "user/myname";
+        
+        // no scaling at all
+        String scaledPath = JCRUtils.createScaledPath(path, 0);
+        assertEquals(path, scaledPath);
+        
+        // max scaling
+        String scaledPath2 = JCRUtils.createScaledPath(path, -1);     
+        assertEquals("u/us/use/user/m/my/myn/myna/mynam/myname", scaledPath2);
+        
+        // max scaling
+        String scaledPathInt = JCRUtils.createScaledPath(path, -1);     
+        assertEquals("1", scaledPathInt);
+        
+        // test with scaling longer then any sub path
+        String scaledPath3 = JCRUtils.createScaledPath(path, 10);
+        assertEquals("u/us/use/user/m/my/myn/myna/mynam/myname", scaledPath3);
+        
+        
+        // scaling of 2 
+        String scaledPath4 = JCRUtils.createScaledPath(path, 2);
+        assertEquals("u/us/user/m/my/myname", scaledPath4);
+        
+        // scaling of 4 
+        String scaledPath5 = JCRUtils.createScaledPath(path, 4);
+        assertEquals("u/us/use/user/m/my/myn/myna/myname", scaledPath5);
+        
+    }
+
 }

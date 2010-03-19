@@ -57,16 +57,27 @@ public class JCRMailbox extends StoreMailbox{
     private final String workspace;
     private final Log log;
     private final String uuid;
+    private final int scaling;
     
-    public JCRMailbox(final org.apache.james.imap.jcr.mail.model.JCRMailbox mailbox, final MailboxSession session, final Repository repository, final String workspace, final Log log) {
+    public JCRMailbox(final org.apache.james.imap.jcr.mail.model.JCRMailbox mailbox, final MailboxSession session, final Repository repository, final String workspace, final int scaling, final Log log) {
         super(mailbox, session );
         this.repository = repository;
         this.workspace = workspace;
         this.log = log;
         this.uuid = mailbox.getUUID();
+        this.scaling = scaling;
         
     }
 
+    /**
+     * Return the scaling depth
+     * 
+     * @return scaling
+     */
+    protected int getScaling() {
+        return scaling;
+    }
+    
     @Override
     public long getMailboxId() {
         throw new UnsupportedOperationException("Please use getMailboxUUID for this implementation");
@@ -110,7 +121,7 @@ public class JCRMailbox extends StoreMailbox{
         Session jcrSession = getSession(session);
         JCRUtils.addJCRSession(session, jcrSession);
         
-        JCRMessageMapper messageMapper = new JCRMessageMapper(jcrSession, getMailboxUUID(), log);
+        JCRMessageMapper messageMapper = new JCRMessageMapper(jcrSession, getMailboxUUID(), getScaling(), log);
         
         return messageMapper;
 
@@ -127,7 +138,7 @@ public class JCRMailbox extends StoreMailbox{
         Session jcrSession = getSession(session);
         JCRUtils.addJCRSession(session, jcrSession);
         
-        JCRMailboxMapper mapper = new JCRMailboxMapper(jcrSession, log);
+        JCRMailboxMapper mapper = new JCRMailboxMapper(jcrSession, getScaling(), log);
         return mapper;
 
     }

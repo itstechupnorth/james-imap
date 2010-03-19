@@ -47,20 +47,32 @@ public class JCRSubscriptionManager extends StoreSubscriptionManager {
     private final Log logger = LogFactory.getLog(JCRSubscriptionManager.class);
     private final Repository repository;
     private final String workspace;
+    private final int scaling;
 
-    public JCRSubscriptionManager(final Repository repository, final String workspace) {
+    public JCRSubscriptionManager(final Repository repository, final String workspace, final int scaling) {
         super();
+        this.scaling = scaling;
         this.workspace = workspace;
         this.repository = repository;
     }
 
+
+    /**
+     * Return the scaling depth
+     * 
+     * @return scaling
+     */
+    protected int getScaling() {
+        return scaling;
+    }
+    
     @Override
     protected SubscriptionMapper createMapper(MailboxSession session) throws SubscriptionException {
         Session jcrSession = getSession(session);
         JCRUtils.addJCRSession(session, jcrSession);
         
         
-        JCRSubscriptionMapper mapper = new JCRSubscriptionMapper(jcrSession, logger);
+        JCRSubscriptionMapper mapper = new JCRSubscriptionMapper(jcrSession, getScaling(), logger);
 
         return mapper;
     }

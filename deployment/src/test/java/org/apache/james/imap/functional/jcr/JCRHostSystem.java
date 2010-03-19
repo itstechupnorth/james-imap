@@ -28,6 +28,7 @@ import org.apache.james.imap.functional.ImapHostSystem;
 import org.apache.james.imap.functional.InMemoryUserManager;
 import org.apache.james.imap.jcr.JCRGlobalUserMailboxManager;
 import org.apache.james.imap.jcr.JCRGlobalUserSubscriptionManager;
+import org.apache.james.imap.jcr.JCRImapConstants;
 import org.apache.james.imap.main.DefaultImapDecoderFactory;
 import org.apache.james.imap.processor.main.DefaultImapProcessorFactory;
 import org.apache.james.test.functional.HostSystem;
@@ -57,7 +58,7 @@ public class JCRHostSystem extends ImapHostSystem{
 
             userManager = new InMemoryUserManager();
 
-            mailboxManager = new JCRGlobalUserMailboxManager(userManager, new JCRGlobalUserSubscriptionManager(repository, null, "user", "pass"), repository, null, "user", "pass");
+            mailboxManager = new JCRGlobalUserMailboxManager(userManager, new JCRGlobalUserSubscriptionManager(repository, null, "user", "pass", JCRImapConstants.MAX_SCALING), repository, null, "user", "pass", JCRImapConstants.MAX_SCALING);
 
             final DefaultImapProcessorFactory defaultImapProcessorFactory = new DefaultImapProcessorFactory();
             resetUserMetaData();

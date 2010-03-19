@@ -21,7 +21,14 @@ package org.apache.james.imap.jcr;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.jcr.ItemExistsException;
+import javax.jcr.Node;
+import javax.jcr.PathNotFoundException;
+import javax.jcr.RepositoryException;
 import javax.jcr.Session;
+import javax.jcr.lock.LockException;
+import javax.jcr.nodetype.ConstraintViolationException;
+import javax.jcr.version.VersionException;
 
 import org.apache.jackrabbit.util.Text;
 import org.apache.james.imap.mailbox.MailboxSession;
@@ -37,13 +44,112 @@ public class JCRUtils implements JCRImapConstants{
      */
     public final static String JCR_SESSIONS = "JCR_SESSIONS";
 
+    
+    /**
+     * Create a scaled path for the given path, where scaling is the nesting mode. 
+     * There will be no escaping of illegal chars at this point
+     * 
+     * With scaling -1 it will create a sub-path for every  char in the path. 
+     * 
+     * So for example:
+     * 
+     * scaling  = -1 
+     * user/test:
+     *     u/us/use/user/t/te/tes/test
+     *   
+     * scaling = 2
+     * user/test:
+     *     u/us/user/t/te/test
+     *     
+     * scaling = 0
+     * user/test:
+     *     user/test
+     *     
+     *     
+     * @param path
+     * @param scaling
+     * @return scaledPath
+     */
+    public static String createScaledPath(String path, int scaling) {
+        if (scaling == MIN_SCALING) {
+            return path;
+        } else {
+            StringBuffer buffer = new StringBuffer();
+            String[] pathParts = path.split(NODE_DELIMITER);
+            
+            for (int a = 0; a < pathParts.length; a++) {
+                String subPath = pathParts[a];
+                
+                for (int i = 0; i < subPath.length(); i++) {
+                    
+                    if ( scaling != MAX_SCALING && i == scaling) {                       
+                        buffer.append(subPath);
+                        
+                        if (a +1 != pathParts.length) {
+                            buffer.append(NODE_DELIMITER);
+                        }
+                        break;
+                    } else {
+                        buffer.append(subPath.substring(0,i +1));
+
+                        if (i +1 != subPath.length() || a +1 != pathParts.length) {
+                            buffer.append(NODE_DELIMITER);
+                        }
+                    }
+                }
+            }
+            return buffer.toString();
+        }
+    }
+    
+    public static String createScaledPath(String[] paths, int scaling) {
+        StringBuffer sb = new StringBuffer();
+        for (int i = 0; i < paths.length; i++) {
+            String path = paths[i];
+            sb.append(path);
+            if (i + 1 != path.length()) {
+                sb.append(NODE_DELIMITER);
+            }
+        }
+        return createScaledPath(sb.toString(), scaling);
+    }
+
+    
+    
+    /**
+     * Create a node path recursive from the given root {@link Node}. This includes
+     * to create all subnodes
+     * 
+     * @param rootNode
+     * @param nodePath
+     * @return lastNode
+     * @throws PathNotFoundException
+     * @throws ItemExistsException
+     * @throws VersionException
+     * @throws ConstraintViolationException
+     * @throws LockException
+     * @throws RepositoryException
+     */
+    public static Node createNodeRecursive(Node rootNode, String nodePath) throws PathNotFoundException, ItemExistsException, VersionException, ConstraintViolationException, LockException, RepositoryException {
+        Node parent = rootNode;
+        String nodeNames[] = nodePath.split(NODE_DELIMITER);
+        for (int i = 0; i < nodeNames.length; i++) {
+            String nodeName = Text.escapeIllegalJcrChars(nodeNames[i]);
+            if (parent.hasNode(nodeName)) {
+                parent = parent.getNode(nodeName);
+            } else {
+                parent = parent.addNode(nodeName);
+            }
+        }
+        return parent;
+    }
     /**
      * Create a path which can be used for nodes. It handles the escaping etc
      * 
      * @param subNodes
      * @return completePath
      */
-    public static String createPath(String... subNodes) {
+    public static String escapePath(String... subNodes) {
         StringBuffer pathBuf = new StringBuffer();
 
         for (int i = 0; i < subNodes.length; i++) {
@@ -59,7 +165,6 @@ public class JCRUtils implements JCRImapConstants{
             }
         }
         return pathBuf.toString();
-
     }
 
     /**

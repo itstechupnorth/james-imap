@@ -47,8 +47,8 @@ public class JCRGlobalUserMailboxManager extends JCRMailboxManager {
     private final String username;
     private final char[] password; 
 
-    public JCRGlobalUserMailboxManager(final Authenticator authenticator, final Subscriber subscriber, final Repository repository, final String workspace, final String username, final String password) {
-        super(authenticator, subscriber, repository, workspace);
+    public JCRGlobalUserMailboxManager(final Authenticator authenticator, final Subscriber subscriber, final Repository repository, final String workspace, final String username, final String password, final int scaling) {
+        super(authenticator, subscriber, repository, workspace, scaling);
 
         this.username = username;
         if (password != null) {
@@ -61,7 +61,7 @@ public class JCRGlobalUserMailboxManager extends JCRMailboxManager {
 
     public void deleteEverything() throws MailboxException {
         Session session = getSession(null);
-        final MailboxMapper mapper = new JCRMailboxMapper(session,getLog());
+        final MailboxMapper mapper = new JCRMailboxMapper(session, getScaling(), getLog());
         mapper.execute(new TransactionalMapper.Transaction() {
 
             public void run() throws MailboxException {
@@ -75,7 +75,7 @@ public class JCRGlobalUserMailboxManager extends JCRMailboxManager {
     
     @Override
     protected StoreMailbox createMailbox(Mailbox mailboxRow, MailboxSession session) {
-        JCRMailbox mailbox = new JCRGlobalMailbox((org.apache.james.imap.jcr.mail.model.JCRMailbox) mailboxRow, session, getRepository(), getWorkspace(), username, password, getLog());
+        JCRMailbox mailbox = new JCRGlobalMailbox((org.apache.james.imap.jcr.mail.model.JCRMailbox) mailboxRow, session, getRepository(), getWorkspace(), username, password, getScaling(), getLog());
         return mailbox;
     }
     

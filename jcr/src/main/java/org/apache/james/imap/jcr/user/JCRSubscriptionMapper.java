@@ -49,8 +49,8 @@ public class JCRSubscriptionMapper extends AbstractJCRMapper implements Subscrip
     private final Log log;
     private final static String PATH = PROPERTY_PREFIX + "subscriptions";
 
-    public JCRSubscriptionMapper(final Session session, final Log log) {
-        super(session);
+    public JCRSubscriptionMapper(final Session session, final int scaling,final Log log) {
+        super(session, scaling);
         this.log = log;
     }
 
@@ -146,7 +146,6 @@ public class JCRSubscriptionMapper extends AbstractJCRMapper implements Subscrip
     public void save(Subscription subscription) throws SubscriptionException {
         String username = subscription.getUser();
         String mailbox = subscription.getMailbox();
-        String nodename = JCRUtils.createPath(PATH, username, mailbox);
         try {
 
             Node node = null;
@@ -155,11 +154,9 @@ public class JCRSubscriptionMapper extends AbstractJCRMapper implements Subscrip
             
             // its a new subscription
             if (sub == null) {
-                createNodeIfNotExists(PATH);
-                // just a hack for now
-                createNodeIfNotExists(JCRUtils.createPath(PATH,username));
+                String nodePath = JCRUtils.escapePath(PATH,JCRUtils.createScaledPath(new String[] {username, mailbox}, getScaling()));
                 
-                node = getSession().getRootNode().addNode(nodename);
+                node = JCRUtils.createNodeRecursive(getSession().getRootNode(), nodePath);
                 node.addMixin(JcrConstants.MIX_REFERENCEABLE);
             } else {
                 node = sub.getNode();

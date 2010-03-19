@@ -40,8 +40,8 @@ public class JCRGlobalUserSubscriptionManager extends JCRSubscriptionManager {
     private final String username;
     private final char[] password;
 
-    public JCRGlobalUserSubscriptionManager(final Repository repository, final String workspace, final String username, final String password) {
-        super(repository, workspace);
+    public JCRGlobalUserSubscriptionManager(final Repository repository, final String workspace, final String username, final String password, final int scaling) {
+        super(repository, workspace, scaling);
         this.username = username;
         if (password != null) {
         	this.password = password.toCharArray();

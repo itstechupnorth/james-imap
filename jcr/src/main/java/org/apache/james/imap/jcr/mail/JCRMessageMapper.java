@@ -50,8 +50,8 @@ public class JCRMessageMapper extends AbstractJCRMapper implements MessageMapper
     private final Log logger;
     private final String uuid;
 
-    public JCRMessageMapper(final Session session, final String uuid, final Log logger) {
-        super(session);
+    public JCRMessageMapper(final Session session, final String uuid, final int scaling, final Log logger) {
+        super(session,scaling);
         this.logger = logger;
         this.uuid = uuid;
     }
@@ -383,16 +383,16 @@ public class JCRMessageMapper extends AbstractJCRMapper implements MessageMapper
     public void save(MailboxMembership message) throws StorageException {
         JCRMailboxMembership membership = (JCRMailboxMembership) message;
         try {
-            createNodeIfNotExists(PATH);
-            Node messageNode = null;;
+            JCRUtils.createNodeRecursive(getSession().getRootNode(), PATH);
+            Node messageNode = null;
             
             if (membership.isPersistent()) {
                 messageNode = getSession().getNodeByUUID(membership.getUUID());
             }
 
             if (messageNode == null) {
-                String path = JCRUtils.createPath(PATH, String.valueOf(membership.getUid()));
-
+                // TODO: Maybe we should use some kind of hashes for scaling here
+                String path = JCRUtils.escapePath(PATH, String.valueOf(membership.getUid()));
                 messageNode = getSession().getRootNode().addNode(path);
                 messageNode.addMixin(JcrConstants.MIX_REFERENCEABLE);
             }

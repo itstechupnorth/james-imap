@@ -37,9 +37,15 @@ import org.apache.james.imap.store.transaction.AbstractTransactionalMapper;
 public abstract class AbstractJCRMapper extends AbstractTransactionalMapper implements JCRImapConstants{
 
     private final Session session;
+    private final int scaling;
 
-    public AbstractJCRMapper(final Session session) {
+    public AbstractJCRMapper(final Session session, final int scaling) {
         this.session = session;
+        this.scaling = scaling;
+    }
+    
+    protected int getScaling() {
+        return scaling;
     }
     
     /**
@@ -85,13 +91,6 @@ public abstract class AbstractJCRMapper extends AbstractTransactionalMapper impl
      */
     protected void rollback() throws MailboxException {
         // no rollback supported by level 1 jcr
-    }
-    
-    protected void createNodeIfNotExists(String path) throws RepositoryException, PathNotFoundException {
-        
-        if (session.getRootNode().hasNode(path) == false) {
-           session.getRootNode().addNode(path);
-        }
     }
     
 }

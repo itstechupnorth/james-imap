@@ -42,8 +42,8 @@ public class JCRGlobalMailbox extends JCRMailbox{
 	private final char[] password;
 	
 	public JCRGlobalMailbox(final org.apache.james.imap.jcr.mail.model.JCRMailbox mailbox, MailboxSession session,
-			Repository repository, String workspace, String username, char[] password,Log log) {
-		super(mailbox, session, repository, workspace, log);
+			Repository repository, String workspace, String username, char[] password, final int scaling, Log log) {
+		super(mailbox, session, repository, workspace, scaling, log);
 		this.username = username;
 		this.password = password;
 	}

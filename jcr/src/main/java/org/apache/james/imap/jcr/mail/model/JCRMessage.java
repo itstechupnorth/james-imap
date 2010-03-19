@@ -365,7 +365,7 @@ public class JCRMessage extends AbstractDocument implements JCRImapConstants, Pe
         // store new properties
         for (int i = 0; i < newProperites.size(); i++) {
             JCRProperty prop = (JCRProperty)newProperites.get(i);
-            Node propNode = propertiesNode.addNode(JCRUtils.createPath(prop.getNamespace()+ "." + prop.getLocalName()));
+            Node propNode = propertiesNode.addNode(JCRUtils.escapePath(String.valueOf(prop.getOrder())));
             prop.merge(propNode);
         }
       

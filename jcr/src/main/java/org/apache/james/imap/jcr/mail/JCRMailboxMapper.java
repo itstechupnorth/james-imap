@@ -52,8 +52,8 @@ public class JCRMailboxMapper extends AbstractJCRMapper implements MailboxMapper
     public final String PATH = PROPERTY_PREFIX + "mailboxes";
     private final Log logger;
 
-    public JCRMailboxMapper(final Session session, final Log logger) {
-        super(session);
+    public JCRMailboxMapper(final Session session, final int scaling,final Log logger) {
+        super(session, scaling);
         this.logger = logger;
     }
 
@@ -221,9 +221,7 @@ public class JCRMailboxMapper extends AbstractJCRMapper implements MailboxMapper
      */
     public void save(Mailbox mailbox) throws StorageException {
         
-        String nodePath = JCRUtils.createPath(PATH, mailbox.getName());
         try {
-            createNodeIfNotExists(PATH);
             JCRMailbox jcrMailbox = (JCRMailbox)mailbox;
             Node node = null;
 
@@ -231,7 +229,9 @@ public class JCRMailboxMapper extends AbstractJCRMapper implements MailboxMapper
                 node = getSession().getNodeByUUID(jcrMailbox.getUUID());
             }
             if (node == null) {
-                node = getSession().getRootNode().addNode(nodePath);
+                String nodePath = JCRUtils.escapePath(PATH,JCRUtils.createScaledPath(mailbox.getName(), getScaling()));
+
+                node = JCRUtils.createNodeRecursive(getSession().getRootNode(), nodePath);
                 node.addMixin(JcrConstants.MIX_REFERENCEABLE);
            } 
             
