@@ -36,8 +36,7 @@ public class JCRUtilsTest {
         String scaledPath2 = JCRUtils.createScaledPath(path, -1);     
         assertEquals("u/us/use/user/m/my/myn/myna/mynam/myname", scaledPath2);
         
-        // max scaling
-        String scaledPathInt = JCRUtils.createScaledPath(path, -1);     
+        String scaledPathInt = JCRUtils.createScaledPath("1", -1);     
         assertEquals("1", scaledPathInt);
         
         // test with scaling longer then any sub path
