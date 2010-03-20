@@ -19,8 +19,14 @@
 package org.apache.james.imap.functional.jcr;
 
 import java.io.File;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+
+import javax.jcr.Session;
+import javax.jcr.SimpleCredentials;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.jackrabbit.commons.cnd.CndImporter;
 import org.apache.jackrabbit.core.RepositoryImpl;
 import org.apache.jackrabbit.core.config.RepositoryConfig;
 import org.apache.james.imap.encode.main.DefaultImapEncoderFactory;
@@ -56,6 +62,14 @@ public class JCRHostSystem extends ImapHostSystem{
             RepositoryConfig config = RepositoryConfig.create(new InputSource(this.getClass().getClassLoader().getResourceAsStream("test-repository.xml")), JACKRABBIT_HOME);
             repository =  RepositoryImpl.create(config);
 
+            Session session = repository.login(new SimpleCredentials("user", new char[0]),"default");
+            // Register the custom node types defined in the CND file
+            // TODO: should we move this to the MailboxManager implementation ?
+            InputStream is = Thread.currentThread().getContextClassLoader()
+                                  .getResourceAsStream("org/apache/james/imap/jcr/imap.cnd");
+            CndImporter.registerNodeTypes(new InputStreamReader(is), session);
+            session.logout();
+             
             userManager = new InMemoryUserManager();
 
             mailboxManager = new JCRGlobalUserMailboxManager(userManager, new JCRGlobalUserSubscriptionManager(repository, null, "user", "pass", JCRImapConstants.MAX_SCALING), repository, null, "user", "pass", JCRImapConstants.MAX_SCALING);

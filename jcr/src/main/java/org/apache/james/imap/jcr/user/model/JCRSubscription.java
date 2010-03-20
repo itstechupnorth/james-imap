@@ -23,7 +23,6 @@ import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 
 import org.apache.commons.logging.Log;
-import org.apache.jackrabbit.JcrConstants;
 import org.apache.james.imap.jcr.Persistent;
 import org.apache.james.imap.jcr.JCRImapConstants;
 import org.apache.james.imap.store.user.model.Subscription;
@@ -35,8 +34,8 @@ import org.apache.james.imap.store.user.model.Subscription;
 public class JCRSubscription implements Subscription, Persistent, JCRImapConstants {
     private static final String TOSTRING_SEPARATOR = " ";
 
-    public final static String USERNAME_PROPERTY = PROPERTY_PREFIX + "subscriptionUsername";
-    public final static String MAILBOX_PROPERTY = PROPERTY_PREFIX  + "subscriptionMailbox";
+    public final static String USERNAME_PROPERTY = "imap:subscriptionUsername";
+    public final static String MAILBOX_PROPERTY =  "imap:subscriptionMailbox";
     
     private Node node;
     private final Log log;
@@ -122,22 +121,13 @@ public class JCRSubscription implements Subscription, Persistent, JCRImapConstan
         */
     }
     
-    public String getUUID() {
-        if (isPersistent()) {
-            try {
-                return node.getUUID();
-            } catch (RepositoryException e) {
-                log.error("Unable to access property " + JcrConstants.JCR_UUID, e);
-            }
-        }
-        return null;  
-    }
-    
     @Override
     public int hashCode() {
         final int PRIME = 31;
         int result = 1;
-        result = PRIME * result + getUUID().hashCode();
+        result = PRIME * result + getUser().hashCode();
+        result = PRIME * result + getMailbox().hashCode();
+
         return result;
     }
 
@@ -150,7 +140,7 @@ public class JCRSubscription implements Subscription, Persistent, JCRImapConstan
         if (getClass() != obj.getClass())
             return false;
         final JCRSubscription other = (JCRSubscription) obj;
-        if (getUUID() != other.getUUID())
+        if (getUser() != other.getUser() || getMailbox() != other.getMailbox())
             return false;
         return true;
     }
@@ -162,7 +152,6 @@ public class JCRSubscription implements Subscription, Persistent, JCRImapConstan
      */
     public String toString() {
         final String result = "Subscription ( "
-            + "uuid = " + this.getUUID() + TOSTRING_SEPARATOR
             + "user = " + this.getUser() + TOSTRING_SEPARATOR
             + "mailbox = " + this.getMailbox() + TOSTRING_SEPARATOR
             + " )";

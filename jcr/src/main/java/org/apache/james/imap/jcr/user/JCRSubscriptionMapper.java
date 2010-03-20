@@ -31,7 +31,6 @@ import javax.jcr.query.QueryManager;
 import javax.jcr.query.QueryResult;
 
 import org.apache.commons.logging.Log;
-import org.apache.jackrabbit.JcrConstants;
 import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.jcr.AbstractJCRMapper;
 import org.apache.james.imap.jcr.JCRUtils;
@@ -86,7 +85,7 @@ public class JCRSubscriptionMapper extends AbstractJCRMapper implements Subscrip
      */
     public Subscription findFindMailboxSubscriptionForUser(String user, String mailbox) throws SubscriptionException {
         try {
-            String queryString = "//" + PATH + "//element(*)[@" + JCRSubscription.USERNAME_PROPERTY + "='" + user + "'] AND [@" + JCRSubscription.MAILBOX_PROPERTY +"='" + mailbox + "']";
+            String queryString = "//" + PATH + "//element(*,imap:subscription)[@" + JCRSubscription.USERNAME_PROPERTY + "='" + user + "'] AND [@" + JCRSubscription.MAILBOX_PROPERTY +"='" + mailbox + "']";
 
             QueryManager manager = getSession().getWorkspace().getQueryManager();
             QueryResult result = manager.createQuery(queryString, Query.XPATH).execute();
@@ -116,7 +115,7 @@ public class JCRSubscriptionMapper extends AbstractJCRMapper implements Subscrip
     public List<Subscription> findSubscriptionsForUser(String user) throws SubscriptionException {
         List<Subscription> subList = new ArrayList<Subscription>();
         try {
-            String queryString = "//" + PATH + "//element(*)[@" + JCRSubscription.USERNAME_PROPERTY + "='" + user + "']";
+            String queryString = "//" + PATH + "//element(*,imap:subscription)[@" + JCRSubscription.USERNAME_PROPERTY + "='" + user + "']";
 
             QueryManager manager = getSession().getWorkspace().getQueryManager();
             QueryResult result = manager.createQuery(queryString, Query.XPATH).execute();
@@ -156,8 +155,7 @@ public class JCRSubscriptionMapper extends AbstractJCRMapper implements Subscrip
             if (sub == null) {
                 String nodePath = JCRUtils.escapePath(PATH,JCRUtils.createScaledPath(new String[] {username, mailbox}, getScaling()));
                 
-                node = JCRUtils.createNodeRecursive(getSession().getRootNode(), nodePath);
-                node.addMixin(JcrConstants.MIX_REFERENCEABLE);
+                node = JCRUtils.createNodeRecursive(getSession().getRootNode(), nodePath, "imap:subscription");
             } else {
                 node = sub.getNode();
             }

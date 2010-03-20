@@ -131,6 +131,10 @@ public class JCRUtils implements JCRImapConstants{
      * @throws RepositoryException
      */
     public static Node createNodeRecursive(Node rootNode, String nodePath) throws PathNotFoundException, ItemExistsException, VersionException, ConstraintViolationException, LockException, RepositoryException {
+        return createNodeRecursive(rootNode, nodePath, null);
+    }
+    
+    public static Node createNodeRecursive(Node rootNode, String nodePath, String primaryNodeTypeName) throws PathNotFoundException, ItemExistsException, VersionException, ConstraintViolationException, LockException, RepositoryException {
         Node parent = rootNode;
         String nodeNames[] = nodePath.split(NODE_DELIMITER);
         for (int i = 0; i < nodeNames.length; i++) {
@@ -138,7 +142,11 @@ public class JCRUtils implements JCRImapConstants{
             if (parent.hasNode(nodeName)) {
                 parent = parent.getNode(nodeName);
             } else {
-                parent = parent.addNode(nodeName);
+                if (i +1 == nodeNames.length && primaryNodeTypeName != null) {
+                    parent = parent.addNode(nodeName, primaryNodeTypeName);
+                } else {
+                    parent = parent.addNode(nodeName);
+                }
             }
         }
         return parent;
