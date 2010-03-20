@@ -1,0 +1,68 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+<imap = 'http://james.apache.org/imap/jcr/'>
+
+[imap:subscription] > nt:base
+    - imap:subscriptionUsername (STRING) mandatory
+    - imap:subscriptionMailbox (STRING) mandatory
+
+[imap:header] > nt:base
+    - imap:headerName (STRING) mandatory
+    - imap:headerValue(STRING) mandatory
+    - imap:headerLineNumber (LONG) mandatory
+
+[imap:property] > nt:base
+    - imap:propertyNamespace (STRING) mandatory
+    - imap:propertyLocalName (STRING) mandatory
+    - imap:propertyValue(STRING) mandatory
+    - imap:propertyOrder (Long) mandatory
+   
+[imap:message] >  mix:referenceable, nt:base
+    - imap:messageBodyStartOctet (LONG) mandatory
+    - imap:messageFullContentOctets (LONG) mandatory
+    - imap:messageTextualLineCount (LONG) mandatory
+    + imap:headers 
+    + imap:properties
+    + jcr:content mandatory
+    
+[imap:headers] > nt:unstructured
+    + imap:header multiple
+    
+ [imap:properties] > nt:unstructured
+    + imap:property multiple
+       
+[imap:mailbox] >  mix:referenceable, nt:base
+    - imap:mailboxUidValidity (LONG) mandatory
+    - imap:mailboxName (STRING) mandatory
+    - imap:mailboxLastUid (LONG) mandatory
+ 
+[imap:mailboxMembership] >  mix:referenceable, nt:base
+    - imap:mailboxUUID (REFERENCE) mandatory < 'imap:mailbox'
+    - imap:uid (LONG) mandatory
+    - imap:size (LONG) mandatory
+    - imap:answered (BOOLEAN) mandatory
+    - imap:deleted (BOOLEAN) mandatory
+    - imap:draft (BOOLEAN) mandatory
+    - imap:flagged (BOOLEAN) mandatory
+    - imap:recent (BOOLEAN) mandatory
+    - imap:seen (BOOLEAN) mandatory
+    - imap:internalDate (DATE) mandatory
+    + imap:message
+
+    
+   
