@@ -75,7 +75,7 @@ public class JCRSubscriptionManager extends StoreSubscriptionManager implements 
             CndImporter.registerNodeTypes(new InputStreamReader(is), session);
             session.logout();
         } catch (Exception e) {
-            throw new RuntimeException("Unable to register cnd file");
+            throw new RuntimeException("Unable to register cnd file", e);
         }    
     }
 
