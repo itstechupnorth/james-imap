@@ -36,9 +36,9 @@ public class JCRMailbox implements Mailbox, JCRImapConstants, Persistent{
     private static final String TAB = " ";
 
     
-    public final static String NAME_PROPERTY = PROPERTY_PREFIX + "mailboxName";
-    public final static String UIDVALIDITY_PROPERTY = PROPERTY_PREFIX + "mailboxUidValidity";
-    public final static String LASTUID_PROPERTY = PROPERTY_PREFIX + "mailboxLastUid";
+    public final static String NAME_PROPERTY = "imap:mailboxName";
+    public final static String UIDVALIDITY_PROPERTY = "imap:mailboxUidValidity";
+    public final static String LASTUID_PROPERTY = "imap:mailboxLastUid";
 
     private String name;
     private long uidValidity;
