@@ -18,7 +18,6 @@
  ****************************************************************/
 package org.apache.james.imap.jcr;
 
-import javax.jcr.PathNotFoundException;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 
