@@ -54,7 +54,7 @@ import org.apache.james.imap.store.transaction.TransactionalMapper;
  * 
  * 
  */
-public class JCRMailboxManager extends StoreMailboxManager {
+public class JCRMailboxManager extends StoreMailboxManager implements JCRImapConstants{
 
     private final Repository repository;
     private final String workspace;
@@ -69,6 +69,11 @@ public class JCRMailboxManager extends StoreMailboxManager {
         registerCnd();
     }
 
+    
+    public JCRMailboxManager(final Authenticator authenticator, final Subscriber subscriber, final Repository repository, final String workspace) {
+        this(authenticator, subscriber, repository, workspace, MAX_SCALING);
+    }
+    
     protected void registerCnd() {
         try {
             Session session = repository.login(getWorkspace());

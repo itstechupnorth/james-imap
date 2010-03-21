@@ -47,7 +47,7 @@ import org.apache.james.imap.store.user.model.Subscription;
  * 
  * 
  */
-public class JCRSubscriptionManager extends StoreSubscriptionManager {
+public class JCRSubscriptionManager extends StoreSubscriptionManager implements JCRImapConstants{
     private final Log logger = LogFactory.getLog(JCRSubscriptionManager.class);
     private final Repository repository;
     private final String workspace;
@@ -61,6 +61,11 @@ public class JCRSubscriptionManager extends StoreSubscriptionManager {
         registerCnd();
     }
 
+
+    public JCRSubscriptionManager(final Repository repository, final String workspace) {
+        this(repository, workspace, MAX_SCALING);
+    }
+    
     protected void registerCnd() {
         try {
             Session session = repository.login(getWorkspace());

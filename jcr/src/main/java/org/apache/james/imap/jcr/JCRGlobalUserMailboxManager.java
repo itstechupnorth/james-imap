@@ -42,7 +42,7 @@ import org.apache.james.imap.store.transaction.TransactionalMapper;
  * 
  * 
  */
-public class JCRGlobalUserMailboxManager extends JCRMailboxManager {
+public class JCRGlobalUserMailboxManager extends JCRMailboxManager{
 
     private final String username;
     private final char[] password; 
@@ -59,6 +59,10 @@ public class JCRGlobalUserMailboxManager extends JCRMailboxManager {
     }
 
 
+    public JCRGlobalUserMailboxManager(final Authenticator authenticator, final Subscriber subscriber, final Repository repository, final String workspace, final String username, final String password) {
+        this(authenticator, subscriber, repository, workspace, username, password, MAX_SCALING);
+    }
+    
     public void deleteEverything() throws MailboxException {
         Session session = getSession(null);
         final MailboxMapper mapper = new JCRMailboxMapper(session, getScaling(), getLog());

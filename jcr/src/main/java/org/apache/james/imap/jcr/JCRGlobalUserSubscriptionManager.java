@@ -50,6 +50,11 @@ public class JCRGlobalUserSubscriptionManager extends JCRSubscriptionManager {
         }    
     }
 
+    public JCRGlobalUserSubscriptionManager(final Repository repository, final String workspace, final String username, final String password) {
+        this(repository, workspace, username, password, MAX_SCALING);
+    }
+
+    
     @Override
     protected Session getSession(MailboxSession session) throws SubscriptionException {
         try {
