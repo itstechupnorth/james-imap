@@ -18,6 +18,9 @@
  ****************************************************************/
 package org.apache.james.imap.jcr;
 
+import java.io.InputStream;
+import java.io.InputStreamReader;
+
 import javax.jcr.LoginException;
 import javax.jcr.NoSuchWorkspaceException;
 import javax.jcr.Repository;
@@ -27,6 +30,7 @@ import javax.jcr.SimpleCredentials;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.jackrabbit.commons.cnd.CndImporter;
 import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.jcr.user.JCRSubscriptionMapper;
 import org.apache.james.imap.jcr.user.model.JCRSubscription;
@@ -54,6 +58,20 @@ public class JCRSubscriptionManager extends StoreSubscriptionManager {
         this.scaling = scaling;
         this.workspace = workspace;
         this.repository = repository;
+        registerCnd();
+    }
+
+    protected void registerCnd() {
+        try {
+            Session session = repository.login(getWorkspace());
+            // Register the custom node types defined in the CND file
+            InputStream is = Thread.currentThread().getContextClassLoader()
+                                  .getResourceAsStream("org/apache/james/imap/jcr/imap.cnd");
+            CndImporter.registerNodeTypes(new InputStreamReader(is), session);
+            session.logout();
+        } catch (Exception e) {
+            throw new RuntimeException("Unable to register cnd file");
+        }    
     }
 
 
