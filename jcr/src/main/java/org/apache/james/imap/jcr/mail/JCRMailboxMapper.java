@@ -49,7 +49,7 @@ import org.apache.james.imap.store.mail.model.Mailbox;
  */
 public class JCRMailboxMapper extends AbstractJCRMapper implements MailboxMapper {
 
-    public final String PATH = PROPERTY_PREFIX + "mailboxes";
+    public final String PATH =  "mailboxes";
     private final Log logger;
 
     public JCRMailboxMapper(final Session session, final int scaling,final Log logger) {

@@ -46,7 +46,7 @@ import org.apache.james.imap.store.user.model.Subscription;
 public class JCRSubscriptionMapper extends AbstractJCRMapper implements SubscriptionMapper {
 
     private final Log log;
-    private final static String PATH = PROPERTY_PREFIX + "subscriptions";
+    private final static String PATH =  "subscriptions";
 
     public JCRSubscriptionMapper(final Session session, final int scaling,final Log log) {
         super(session, scaling);

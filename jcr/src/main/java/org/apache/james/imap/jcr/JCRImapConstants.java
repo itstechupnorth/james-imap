@@ -36,9 +36,5 @@ public interface JCRImapConstants {
 	 * Delimiter for Nodes
 	 */
 	public static final String NODE_DELIMITER = "/";
-	
-	/**
-	 * Prefix for all imap related properties
-	 */
-	public static final String PROPERTY_PREFIX ="";//"imap:";
+
 }

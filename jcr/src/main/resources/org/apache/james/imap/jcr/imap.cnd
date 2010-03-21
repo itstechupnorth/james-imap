@@ -51,7 +51,7 @@
     - imap:mailboxUidValidity (LONG) mandatory
     - imap:mailboxName (STRING) mandatory
     - imap:mailboxLastUid (LONG) mandatory
-    + * (imap:mailboxMembership) multiple 
+    + mailboxMemberships (imap:mailboxMemberships) 
  
 [imap:mailboxMembership] >  mix:referenceable, nt:base
     - imap:mailboxUUID (REFERENCE) mandatory < 'imap:mailbox'
@@ -66,5 +66,6 @@
     - imap:internalDate (DATE) mandatory
     + message (imap:message) mandatory
 
-    
+ [imap:mailboxMemberships] > nt:unstructured
+    + imap:mailboxMembership multiple   
    

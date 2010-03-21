@@ -383,7 +383,6 @@ public class JCRMessageMapper extends AbstractJCRMapper implements MessageMapper
     public void save(MailboxMembership message) throws StorageException {
         JCRMailboxMembership membership = (JCRMailboxMembership) message;
         try {
-            Node mailboxNode = getSession().getNodeByUUID(uuid);
             //JCRUtils.createNodeRecursive(getSession().getRootNode(), mailboxN);
             Node messageNode = null;
             
@@ -392,9 +391,21 @@ public class JCRMessageMapper extends AbstractJCRMapper implements MessageMapper
             }
 
             if (messageNode == null) {
+                Node mailboxNode = getSession().getNodeByUUID(uuid);
+                Node membershipsNode;
+                
+                if (mailboxNode.hasNode("mailboxMemberships")) {
+                    membershipsNode = mailboxNode.getNode("mailboxMemberships");
+                } else {
+                    membershipsNode = mailboxNode.addNode("mailboxMemberships","imap:mailboxMemberships");
+                }
+                
                 // TODO: Maybe we should use some kind of hashes for scaling here
-                String path = mailboxNode.getPath() + NODE_DELIMITER + JCRUtils.escapePath(String.valueOf(membership.getUid()));
+                String path = membershipsNode.getPath() + NODE_DELIMITER + JCRUtils.escapePath(String.valueOf(membership.getUid()));
+                
+                // strip leading /
                 path = path.substring(1, path.length());
+                
                 messageNode = getSession().getRootNode().addNode(path,"imap:mailboxMembership");
                 messageNode.addMixin(JcrConstants.MIX_REFERENCEABLE);
             }
