@@ -44,23 +44,19 @@ public class JCRMailboxMembership extends AbstractMailboxMembership implements
 		Persistent, JCRImapConstants {
     private static final String TOSTRING_SEPARATOR = " ";
 
-	public final static String MAILBOX_UUID_PROPERTY = PROPERTY_PREFIX
-			+ "mailboxUUID";
-	public final static String UID_PROPERTY = PROPERTY_PREFIX + "uid";
-	public final static String SIZE_PROPERTY = PROPERTY_PREFIX + "size";
-	public final static String ANSWERED_PROPERTY = PROPERTY_PREFIX
-			+ "answered";
-	public final static String DELETED_PROPERTY = PROPERTY_PREFIX
-			+ "deleted";
-	public final static String DRAFT_PROPERTY = PROPERTY_PREFIX + "draft";
-	public final static String FLAGGED_PROPERTY = PROPERTY_PREFIX + "flagged";
-	public final static String RECENT_PROPERTY = PROPERTY_PREFIX
-			+ "recent";
-	public final static String SEEN_PROPERTY = PROPERTY_PREFIX + "seen";
-	public final static String INTERNAL_DATE_PROPERTY = PROPERTY_PREFIX
-			+ "internalDate";
+	public final static String MAILBOX_UUID_PROPERTY = "imap:mailboxUUID";
+	public final static String UID_PROPERTY = "imap:uid";
+	public final static String SIZE_PROPERTY = "imap:size";
+	public final static String ANSWERED_PROPERTY = "imap:answered";
+	public final static String DELETED_PROPERTY = "imap:deleted";
+	public final static String DRAFT_PROPERTY =  "imap:draft";
+	public final static String FLAGGED_PROPERTY = "imap:flagged";
+	public final static String RECENT_PROPERTY = "imap:recent";
+	public final static String SEEN_PROPERTY = "imap:seen";
+	public final static String INTERNAL_DATE_PROPERTY = "imap:internalDate";
+    public final static String MESSAGE_NODE = "message";
 
-	public final static String MESSAGE_NODE = "message";
+	public final static String MESSAGE_NODE_TYPE = "imap:message";
 	
 	private String mailboxUUID;
 	private long uid;
@@ -460,7 +456,7 @@ public class JCRMailboxMembership extends AbstractMailboxMembership implements
 		if (node.hasNode(MESSAGE_NODE)) {
 		    messageNode = node.getNode(MESSAGE_NODE);
 		} else {
-	        messageNode = node.addNode(MESSAGE_NODE);
+	        messageNode = node.addNode(MESSAGE_NODE, MESSAGE_NODE_TYPE);
 	        messageNode.addMixin(JcrConstants.MIX_REFERENCEABLE);
 		}
 		((JCRMessage)getDocument()).merge(messageNode);

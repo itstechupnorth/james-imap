@@ -21,12 +21,12 @@
     - imap:subscriptionUsername (STRING) mandatory
     - imap:subscriptionMailbox (STRING) mandatory
 
-[imap:header] > nt:base
-    - imap:headerName (STRING) mandatory
+[imap:messageHeader] > nt:base
+    - imap:headerFieldName (STRING) mandatory
     - imap:headerValue(STRING) mandatory
     - imap:headerLineNumber (LONG) mandatory
 
-[imap:property] > nt:base
+[imap:messageProperty] > nt:base
     - imap:propertyNamespace (STRING) mandatory
     - imap:propertyLocalName (STRING) mandatory
     - imap:propertyValue(STRING) mandatory
@@ -35,21 +35,23 @@
 [imap:message] >  mix:referenceable, nt:base
     - imap:messageBodyStartOctet (LONG) mandatory
     - imap:messageFullContentOctets (LONG) mandatory
-    - imap:messageTextualLineCount (LONG) mandatory
-    + imap:headers 
-    + imap:properties
-    + jcr:content mandatory
+    - imap:messageTextualLineCount (LONG)
+    - imap:messageSubType (String) mandatory
+    + messageHeaders (imap:messageHeaders) 
+    + messageProperties (imap:messageProperties)
+    + jcr:content (nt:resource) mandatory 
     
-[imap:headers] > nt:unstructured
-    + imap:header multiple
+[imap:messageHeaders] > nt:unstructured
+    + imap:messageHeader multiple
     
- [imap:properties] > nt:unstructured
-    + imap:property multiple
+ [imap:messageProperties] > nt:unstructured
+    + imap:messageProperty multiple
        
 [imap:mailbox] >  mix:referenceable, nt:base
     - imap:mailboxUidValidity (LONG) mandatory
     - imap:mailboxName (STRING) mandatory
     - imap:mailboxLastUid (LONG) mandatory
+    + * (imap:mailboxMembership) multiple 
  
 [imap:mailboxMembership] >  mix:referenceable, nt:base
     - imap:mailboxUUID (REFERENCE) mandatory < 'imap:mailbox'
@@ -62,7 +64,7 @@
     - imap:recent (BOOLEAN) mandatory
     - imap:seen (BOOLEAN) mandatory
     - imap:internalDate (DATE) mandatory
-    + imap:message
+    + message (imap:message) mandatory
 
     
    

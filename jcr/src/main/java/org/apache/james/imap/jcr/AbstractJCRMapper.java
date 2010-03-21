@@ -81,6 +81,7 @@ public abstract class AbstractJCRMapper extends AbstractTransactionalMapper impl
                 session.save();
             }
         } catch (RepositoryException e) {
+            e.printStackTrace();
             throw new MailboxException(HumanReadableText.SAVE_FAILED, e);
         }
 

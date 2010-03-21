@@ -47,6 +47,7 @@ import org.apache.james.imap.mailbox.SubscriptionException;
 import org.apache.james.imap.mailbox.MailboxMetaData.Selectability;
 import org.apache.james.imap.mailbox.util.SimpleMailboxMetaData;
 import org.apache.james.imap.store.mail.MailboxMapper;
+import org.apache.james.imap.store.mail.MessageMapper;
 import org.apache.james.imap.store.mail.model.Mailbox;
 import org.apache.james.imap.store.transaction.TransactionalMapper;
 
@@ -194,7 +195,9 @@ public abstract class StoreMailboxManager extends AbstractLogEnabled implements 
         session.getLog().info("deleteMailbox " + mailboxName);
         synchronized (mailboxes) {
             // TODO put this into a serilizable transaction
+            
             final MailboxMapper mapper = createMailboxMapper(session);
+            
             mapper.execute(new TransactionalMapper.Transaction() {
 
                 public void run() throws MailboxException {

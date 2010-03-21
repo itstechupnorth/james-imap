@@ -58,13 +58,16 @@ public class JCRMessage extends AbstractDocument implements JCRImapConstants, Pe
     private List<JCRProperty> properties;
     private int bodyStartOctet;
     
-    public final static String BODY_START_OCTET_PROPERTY = PROPERTY_PREFIX + "messageBodyStartOctet";
-    public final static String FULL_CONTENT_OCTETS_PROPERTY = PROPERTY_PREFIX + "messageFullContentOctets";
-    public final static String HEADERS_NODE = PROPERTY_PREFIX + "messageHeaders";
-    public final static String PROPERTIES_NODE = PROPERTY_PREFIX + "messageProperties";
+    public final static String BODY_START_OCTET_PROPERTY = "imap:messageBodyStartOctet";
+    public final static String FULL_CONTENT_OCTETS_PROPERTY =  "imap:messageFullContentOctets";
+    public final static String HEADERS_NODE_TYPE =  "imap:messageHeaders";
+    public final static String HEADERS_NODE =  "messageHeaders";
 
-    public final static String TEXTUAL_LINE_COUNT_PROPERTY  = PROPERTY_PREFIX + "messageTextualLineCount";
-    public final static String SUBTYPE_PROPERTY  = PROPERTY_PREFIX + "messageSubType";
+    public final static String PROPERTIES_NODE_TYPE =  "imap:messageProperties";
+    public final static String PROPERTIES_NODE =  "messageProperties";
+
+    public final static String TEXTUAL_LINE_COUNT_PROPERTY  = "imap:messageTextualLineCount";
+    public final static String SUBTYPE_PROPERTY  = "imap:messageSubType";
 
     public JCRMessage(Node node, Log logger) {
         this.logger= logger;
@@ -326,15 +329,14 @@ public class JCRMessage extends AbstractDocument implements JCRImapConstants, Pe
                 iterator.nextNode().remove();
             }
         } else {
-            headersNode = node.addNode(HEADERS_NODE);
-            headersNode.addMixin(JcrConstants.MIX_REFERENCEABLE);
+            headersNode = node.addNode(HEADERS_NODE, HEADERS_NODE_TYPE);
         }
         
             
         // add headers to the message again
         for (int i = 0; i < newHeaders.size(); i++) {
             JCRHeader header = (JCRHeader) newHeaders.get(i);
-            Node headerNode = headersNode.addNode(header.getFieldName());
+            Node headerNode = headersNode.addNode(header.getFieldName(), "imap:messageHeader");
             header.merge(headerNode);
         }
       
@@ -356,16 +358,14 @@ public class JCRMessage extends AbstractDocument implements JCRImapConstants, Pe
                 iterator.nextNode().remove();
             }
         } else {
-            propertiesNode = node.addNode(PROPERTIES_NODE);
-            propertiesNode.addMixin(JcrConstants.MIX_REFERENCEABLE);
-
+            propertiesNode = node.addNode(PROPERTIES_NODE, "imap:messageProperties");
         }
         
 
         // store new properties
         for (int i = 0; i < newProperites.size(); i++) {
             JCRProperty prop = (JCRProperty)newProperites.get(i);
-            Node propNode = propertiesNode.addNode(JCRUtils.escapePath(String.valueOf(prop.getOrder())));
+            Node propNode = propertiesNode.addNode(JCRUtils.escapePath(String.valueOf(prop.getOrder())), "imap:messageProperty");
             prop.merge(propNode);
         }
       
