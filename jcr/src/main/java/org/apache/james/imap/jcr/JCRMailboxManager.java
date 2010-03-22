@@ -18,8 +18,6 @@
  ****************************************************************/
 package org.apache.james.imap.jcr;
 
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -33,7 +31,6 @@ import javax.jcr.SimpleCredentials;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.jackrabbit.commons.cnd.CndImporter;
 import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.jcr.mail.JCRMailboxMapper;
 import org.apache.james.imap.mailbox.BadCredentialsException;
@@ -66,25 +63,11 @@ public class JCRMailboxManager extends StoreMailboxManager implements JCRImapCon
         this.repository = repository;
         this.workspace = workspace;
         this.scaling = scaling;
-        registerCnd();
     }
 
     
     public JCRMailboxManager(final Authenticator authenticator, final Subscriber subscriber, final Repository repository, final String workspace) {
         this(authenticator, subscriber, repository, workspace, MAX_SCALING);
-    }
-    
-    protected void registerCnd() {
-        try {
-            Session session = repository.login(getWorkspace());
-            // Register the custom node types defined in the CND file
-            InputStream is = Thread.currentThread().getContextClassLoader()
-                                  .getResourceAsStream("org/apache/james/imap/jcr/imap.cnd");
-            CndImporter.registerNodeTypes(new InputStreamReader(is), session);
-            session.logout();
-        } catch (Exception e) {
-            throw new RuntimeException("Unable to register cnd file", e);
-        }    
     }
     
     /**

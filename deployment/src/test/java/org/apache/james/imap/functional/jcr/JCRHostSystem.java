@@ -28,7 +28,7 @@ import org.apache.james.imap.functional.ImapHostSystem;
 import org.apache.james.imap.functional.InMemoryUserManager;
 import org.apache.james.imap.jcr.JCRGlobalUserMailboxManager;
 import org.apache.james.imap.jcr.JCRGlobalUserSubscriptionManager;
-import org.apache.james.imap.jcr.JCRImapConstants;
+import org.apache.james.imap.jcr.JCRUtils;
 import org.apache.james.imap.main.DefaultImapDecoderFactory;
 import org.apache.james.imap.processor.main.DefaultImapProcessorFactory;
 import org.apache.james.test.functional.HostSystem;
@@ -53,14 +53,19 @@ public class JCRHostSystem extends ImapHostSystem{
         
         try {
             
+            String user = "user";
+            String pass = "pass";
+            String workspace = null;
             RepositoryConfig config = RepositoryConfig.create(new InputSource(this.getClass().getClassLoader().getResourceAsStream("test-repository.xml")), JACKRABBIT_HOME);
             repository =  RepositoryImpl.create(config);
 
-           
-             
+            
+            // Register imap cnd file
+            JCRUtils.registerCnd(repository, workspace, user, pass);
+            
             userManager = new InMemoryUserManager();
 
-            mailboxManager = new JCRGlobalUserMailboxManager(userManager, new JCRGlobalUserSubscriptionManager(repository, null, "user", "pass", JCRImapConstants.MAX_SCALING), repository, null, "user", "pass", JCRImapConstants.MAX_SCALING);
+            mailboxManager = new JCRGlobalUserMailboxManager(userManager, new JCRGlobalUserSubscriptionManager(repository, workspace, user, pass), repository, workspace, user, pass);
 
             final DefaultImapProcessorFactory defaultImapProcessorFactory = new DefaultImapProcessorFactory();
             resetUserMetaData();

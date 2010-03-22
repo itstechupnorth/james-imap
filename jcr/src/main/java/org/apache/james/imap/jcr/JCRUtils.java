@@ -18,18 +18,23 @@
  ****************************************************************/
 package org.apache.james.imap.jcr;
 
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.jcr.ItemExistsException;
 import javax.jcr.Node;
 import javax.jcr.PathNotFoundException;
+import javax.jcr.Repository;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
+import javax.jcr.SimpleCredentials;
 import javax.jcr.lock.LockException;
 import javax.jcr.nodetype.ConstraintViolationException;
 import javax.jcr.version.VersionException;
 
+import org.apache.jackrabbit.commons.cnd.CndImporter;
 import org.apache.jackrabbit.util.Text;
 import org.apache.james.imap.mailbox.MailboxSession;
 
@@ -210,5 +215,37 @@ public class JCRUtils implements JCRImapConstants{
         }
     }
     
+
+    /**
+     * Register the imap CND file in the workspace
+     * 
+     * @param repository
+     * @param workspace
+     * @param username
+     * @param password
+     */
+    public static void registerCnd(Repository repository, String workspace, String username, String password) {
+        try {
+            Session session;
+            if (username == null) {
+                session = repository.login(workspace);
+            } else {
+                char pass[];
+                if (password == null) {
+                    pass = new char[0];
+                } else {
+                    pass = password.toCharArray();
+                }
+                session = repository.login(new SimpleCredentials(username, pass), workspace);
+            }
+            // Register the custom node types defined in the CND file
+            InputStream is = Thread.currentThread().getContextClassLoader()
+                                  .getResourceAsStream("org/apache/james/imap/jcr/imap.cnd");
+            CndImporter.registerNodeTypes(new InputStreamReader(is), session);
+            session.logout();
+        } catch (Exception e) {
+            throw new RuntimeException("Unable to register cnd file", e);
+        }    
+    }
     
 }
