@@ -38,8 +38,8 @@ public class MessageBuilder {
     public final List<SimpleHeader> headers = new ArrayList<SimpleHeader>();
     public int lineNumber = 0;
     
-    public MailboxMembership build() throws Exception {
-        MailboxMembership result = new SimpleMailboxMembership(mailboxId, uid, internalDate, size, flags, body, headers);
+    public MailboxMembership<Long> build() throws Exception {
+        MailboxMembership<Long> result = new SimpleMailboxMembership(mailboxId, uid, internalDate, size, flags, body, headers);
         return result;
     }
     

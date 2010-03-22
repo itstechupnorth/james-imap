@@ -26,7 +26,6 @@ import org.apache.james.imap.api.message.request.ImapRequest;
 import org.apache.james.imap.api.message.response.StatusResponseFactory;
 import org.apache.james.imap.api.process.ImapProcessor;
 import org.apache.james.imap.api.process.ImapSession;
-import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.MailboxManager;
 import org.apache.james.imap.mailbox.MailboxSession;
 import org.apache.james.imap.mailbox.SubscriptionException;
@@ -68,12 +67,6 @@ public class SubscribeProcessor extends AbstractMailboxProcessor {
             } else {
                 displayTextKey = exceptionKey;
             }
-            no(command, tag, responder, displayTextKey);
-        } catch (MailboxException e) {
-            session.getLog().debug("Subscription failed", e);
-            unsolicitedResponses(session, responder, false);
-
-            final HumanReadableText displayTextKey = HumanReadableText.GENERIC_SUBSCRIPTION_FAILURE;
             no(command, tag, responder, displayTextKey);
         }
     }

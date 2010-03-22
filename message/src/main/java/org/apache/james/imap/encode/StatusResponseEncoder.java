@@ -20,8 +20,9 @@
 package org.apache.james.imap.encode;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
+import java.util.Locale;
 
 import org.apache.james.imap.api.ImapCommand;
 import org.apache.james.imap.api.ImapMessage;
@@ -54,7 +55,7 @@ public class StatusResponseEncoder extends AbstractChainedImapEncoder {
         final ImapCommand command = response.getCommand();
         final HumanReadableText textKey = response.getTextKey();
         final String text = asString(textKey, session);
-        final Collection parameters;
+        final Collection<String> parameters;
         final long number;
         if (responseCode == null) {
             parameters = null;
@@ -67,10 +68,9 @@ public class StatusResponseEncoder extends AbstractChainedImapEncoder {
                 text);
     }
 
-    @SuppressWarnings("unchecked")
     private String asString(HumanReadableText text, ImapSession session) {
         // TODO: calculate locales
-        return localizer.localize(text, new Locales(Collections.EMPTY_LIST, null));
+        return localizer.localize(text, new Locales(new ArrayList<Locale>(), null));
     }
 
     private String asString(StatusResponse.ResponseCode code) {

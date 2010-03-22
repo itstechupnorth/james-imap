@@ -87,7 +87,7 @@ public class MailboxEventAnalyserTest {
                 uid, new Flags(), 11);
         update.flags.add(Flags.Flag.ANSWERED);
         analyser.event(update);
-        final Iterator iterator = analyser.flagUpdateUids().iterator();
+        final Iterator<Long> iterator = analyser.flagUpdateUids().iterator();
         assertNotNull(iterator);
         assertTrue(iterator.hasNext());
         assertEquals(new Long(uid), iterator.next());
@@ -115,7 +115,7 @@ public class MailboxEventAnalyserTest {
         update.flags.add(Flags.Flag.ANSWERED);
         analyser.setSilentFlagChanges(true);
         analyser.event(update);
-        final Iterator iterator = analyser.flagUpdateUids().iterator();
+        final Iterator<Long> iterator = analyser.flagUpdateUids().iterator();
         assertNotNull(iterator);
         assertTrue(iterator.hasNext());
         assertEquals(new Long(uid), iterator.next());
@@ -130,7 +130,7 @@ public class MailboxEventAnalyserTest {
         update.flags.add(Flags.Flag.ANSWERED);
         analyser.setSilentFlagChanges(true);
         analyser.event(update);
-        final Iterator iterator = analyser.flagUpdateUids().iterator();
+        final Iterator<Long> iterator = analyser.flagUpdateUids().iterator();
         assertNotNull(iterator);
         assertFalse(iterator.hasNext());
     }
@@ -141,7 +141,7 @@ public class MailboxEventAnalyserTest {
                 886, new Flags(), BASE_SESSION_ID);
         update.flags.add(Flags.Flag.RECENT);
         analyser.event(update);
-        final Iterator iterator = analyser.flagUpdateUids().iterator();
+        final Iterator<Long> iterator = analyser.flagUpdateUids().iterator();
         assertNotNull(iterator);
         assertFalse(iterator.hasNext());
     }

@@ -105,7 +105,7 @@ public class MessageResultUtilsTest {
     @Test
     public void testGetNotMatching() throws Exception {
 
-        List results = MessageResultUtils.getNotMatching(NAMES, headers
+        List<MessageResult.Header> results = MessageResultUtils.getNotMatching(NAMES, headers
                 .iterator());
         assertEquals(1, results.size());
         assertEquals(headerTwo, results.get(0));

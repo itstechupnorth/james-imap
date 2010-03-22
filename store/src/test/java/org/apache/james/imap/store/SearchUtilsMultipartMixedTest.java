@@ -105,11 +105,11 @@ public class SearchUtilsMultipartMixedTest {
             + "  Than both your poets can in praise devise.\r\n"
             + "\r\n--2.50290787509--\r\n" + "\r\n--1729--\r\n";
 
-    MailboxMembership row;
+    MailboxMembership<Long> row;
 
     MessageSearches searches;
 
-    Collection recent;
+    Collection<Long> recent;
 
     @Before
     public void setUp() throws Exception {
@@ -123,7 +123,7 @@ public class SearchUtilsMultipartMixedTest {
         builder.body = Charset.forName("us-ascii").encode(BODY).array();
         row = builder.build();
         searches = new MessageSearches();
-        recent = new ArrayList();
+        recent = new ArrayList<Long>();
     }
     
 

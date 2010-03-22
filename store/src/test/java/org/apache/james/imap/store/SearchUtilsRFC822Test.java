@@ -45,15 +45,15 @@ public class SearchUtilsRFC822Test {
             + "It has " + RHUBARD + ".\r\n" + "It has " + CUSTARD + ".\r\n"
             + "It needs naught else.\r\n";
 
-    MailboxMembership row;
+    MailboxMembership<Long> row;
 
     MessageSearches searches;
 
-    Collection recent;
+    Collection<Long> recent;
 
     @Before
     public void setUp() throws Exception {
-        recent = new ArrayList();
+        recent = new ArrayList<Long>();
         MessageBuilder builder = new MessageBuilder();
         builder.header(ImapConstants.RFC822_FROM, "Alex <alex@example.org");
         builder.header(ImapConstants.RFC822_TO, FROM_ADDRESS);

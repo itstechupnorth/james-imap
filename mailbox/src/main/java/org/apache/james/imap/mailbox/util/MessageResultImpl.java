@@ -333,7 +333,6 @@ public class MessageResultImpl implements MessageResult {
 
         private int content;
 
-        @SuppressWarnings("unused")
 		public final int getContent() {
             return content;
         }

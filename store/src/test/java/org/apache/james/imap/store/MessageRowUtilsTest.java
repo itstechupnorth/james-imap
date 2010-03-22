@@ -29,12 +29,12 @@ public class MessageRowUtilsTest {
     @Test
     public void testShouldReturnPositiveWhenFirstGreaterThanSecond()
             throws Exception {
-        MailboxMembership one = buildMessage(100);
-        MailboxMembership two = buildMessage(99);
+        MailboxMembership<Long> one = buildMessage(100);
+        MailboxMembership<Long> two = buildMessage(99);
         assertTrue(ResultUtils.getUidComparator().compare(one, two) > 0);
     }
 
-    private MailboxMembership buildMessage(int uid) throws Exception {
+    private MailboxMembership<Long> buildMessage(int uid) throws Exception {
         MessageBuilder builder = new MessageBuilder();
         builder.uid = uid;
         return builder.build();
@@ -43,15 +43,15 @@ public class MessageRowUtilsTest {
     @Test
     public void testShouldReturnNegativeWhenFirstLessThanSecond()
             throws Exception {
-        MailboxMembership one = buildMessage(98);
-        MailboxMembership two = buildMessage(99);
+        MailboxMembership<Long> one = buildMessage(98);
+        MailboxMembership<Long> two = buildMessage(99);
         assertTrue(ResultUtils.getUidComparator().compare(one, two) < 0);
     }
 
     @Test
     public void testShouldReturnZeroWhenFirstEqualsSecond() throws Exception {
-        MailboxMembership one = buildMessage(90);
-        MailboxMembership two = buildMessage(90);
+        MailboxMembership<Long> one = buildMessage(90);
+        MailboxMembership<Long> two = buildMessage(90);
         assertEquals(0, ResultUtils.getUidComparator().compare(one, two));
     }
 }
