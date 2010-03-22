@@ -65,7 +65,7 @@ public class JCRGlobalUserMailboxManager extends JCRMailboxManager{
     
     public void deleteEverything() throws MailboxException {
         Session session = getSession(null);
-        final MailboxMapper mapper = new JCRMailboxMapper(session, getScaling(), getLog());
+        final MailboxMapper<String> mapper = new JCRMailboxMapper(session, getScaling(), getLog());
         mapper.execute(new TransactionalMapper.Transaction() {
 
             public void run() throws MailboxException {
@@ -78,7 +78,7 @@ public class JCRGlobalUserMailboxManager extends JCRMailboxManager{
     }
     
     @Override
-    protected StoreMailbox createMailbox(Mailbox mailboxRow, MailboxSession session) {
+    protected StoreMailbox<String> createMailbox(Mailbox<String> mailboxRow, MailboxSession session) {
         JCRMailbox mailbox = new JCRGlobalMailbox((org.apache.james.imap.jcr.mail.model.JCRMailbox) mailboxRow, session, getRepository(), getWorkspace(), username, password, getScaling(), getLog());
         return mailbox;
     }

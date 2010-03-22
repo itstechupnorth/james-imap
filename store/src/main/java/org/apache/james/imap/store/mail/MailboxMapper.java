@@ -29,7 +29,7 @@ import org.apache.james.imap.store.transaction.TransactionalMapper;
  * Mapper for {@link Mailbox}
  *
  */
-public interface MailboxMapper extends TransactionalMapper{
+public interface MailboxMapper<Id> extends TransactionalMapper{
     
     /**
      * Save the give {@link Mailbox} to the underlying storage
@@ -37,7 +37,7 @@ public interface MailboxMapper extends TransactionalMapper{
      * @param mailbox
      * @throws StorageException
      */
-    public abstract void save(Mailbox mailbox) throws StorageException;
+    public abstract void save(Mailbox<Id> mailbox) throws StorageException;
 
     /**
      * Return the {@link Mailbox} for the given name
@@ -47,7 +47,7 @@ public interface MailboxMapper extends TransactionalMapper{
      * @throws StorageException
      * @throws MailboxNotFoundException
      */
-    public abstract Mailbox findMailboxByName(String name)
+    public abstract Mailbox<Id> findMailboxByName(String name)
             throws StorageException, MailboxNotFoundException;
 
     /**
@@ -65,7 +65,7 @@ public interface MailboxMapper extends TransactionalMapper{
      * @param mailbox
      * @throws StorageException
      */
-    public abstract void delete(Mailbox mailbox) throws StorageException;
+    public abstract void delete(Mailbox<Id> mailbox) throws StorageException;
 
     /**
      * Return a List of {@link Mailbox} which name is like the given name
@@ -74,7 +74,7 @@ public interface MailboxMapper extends TransactionalMapper{
      * @return mailboxList
      * @throws StorageException
      */
-    public abstract List<Mailbox> findMailboxWithNameLike(String name)
+    public abstract List<Mailbox<Id>> findMailboxWithNameLike(String name)
             throws StorageException;
 
     /**
@@ -102,6 +102,6 @@ public interface MailboxMapper extends TransactionalMapper{
      * @throws StorageException
      * @throws MailboxNotFoundException
      */
-    public abstract Mailbox findMailboxById(long mailboxId)
+    public abstract Mailbox<Id> findMailboxById(Id mailboxId)
             throws StorageException, MailboxNotFoundException;
 }

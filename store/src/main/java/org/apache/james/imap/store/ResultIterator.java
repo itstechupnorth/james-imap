@@ -20,7 +20,6 @@
 package org.apache.james.imap.store;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -36,19 +35,18 @@ import org.apache.james.imap.mailbox.MessageResult.FetchGroup;
 import org.apache.james.imap.mailbox.util.FetchGroupImpl;
 import org.apache.james.imap.store.mail.model.MailboxMembership;
 
-public class ResultIterator implements Iterator<MessageResult> {
+public class ResultIterator<Id> implements Iterator<MessageResult> {
 
-    private final List<MailboxMembership> messages;
+    private final List<MailboxMembership<Id>> messages;
 
     private final FetchGroup fetchGroup;
 
-    @SuppressWarnings("unchecked")
-    public ResultIterator(final List<MailboxMembership> messages, final FetchGroup fetchGroup) {
+    public ResultIterator(final List<MailboxMembership<Id>> messages, final FetchGroup fetchGroup) {
         super();
         if (messages == null) {
-            this.messages = Collections.EMPTY_LIST;
+            this.messages = new ArrayList<MailboxMembership<Id>>();
         } else {
-            this.messages = new ArrayList<MailboxMembership>(messages);
+            this.messages = new ArrayList<MailboxMembership<Id>>(messages);
         }
         this.fetchGroup = fetchGroup;
     }
@@ -58,7 +56,7 @@ public class ResultIterator implements Iterator<MessageResult> {
      * 
      * @return <code>Iterator</code> for message rows
      */
-    public final Iterator<MailboxMembership> iterateRows() {
+    public final Iterator<MailboxMembership<Id>> iterateRows() {
         return messages.iterator();
     }
 
@@ -70,14 +68,14 @@ public class ResultIterator implements Iterator<MessageResult> {
         if (messages.isEmpty()) {
             throw new NoSuchElementException("No such element.");
         }
-        final MailboxMembership message = messages.get(0);
+        final MailboxMembership<Id> message = messages.get(0);
         messages.remove(message);
         MessageResult result;
         try {
 
             result = ResultUtils.loadMessageResult(message, this.fetchGroup);
         } catch (MailboxException e) {
-            result = new UnloadedMessageResult(message, e);
+            result = new UnloadedMessageResult<Id>(message, e);
         }
         return result;
     }
@@ -94,7 +92,7 @@ public class ResultIterator implements Iterator<MessageResult> {
         return results;
     }
     
-    private static final class UnloadedMessageResult implements MessageResult {
+    private static final class UnloadedMessageResult<Id> implements MessageResult {
         private static final FetchGroup FETCH_GROUP = FetchGroupImpl.MINIMAL;
 
         private final MailboxException exception;
@@ -105,7 +103,7 @@ public class ResultIterator implements Iterator<MessageResult> {
 
         private final long uid;
 
-        public UnloadedMessageResult(final MailboxMembership message,
+        public UnloadedMessageResult(final MailboxMembership<Id> message,
                 final MailboxException exception) {
             super();
             internalDate = message.getInternalDate();
@@ -122,7 +120,6 @@ public class ResultIterator implements Iterator<MessageResult> {
             throw exception;
         }
 
-        @SuppressWarnings("unused")
 		public FetchGroup getIncludedResults() {
             return FETCH_GROUP;
         }

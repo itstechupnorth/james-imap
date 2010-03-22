@@ -21,7 +21,7 @@ package org.apache.james.imap.store.mail.model;
 /**
  * Models long term mailbox data.
  */
-public interface Mailbox {
+public interface Mailbox<Id> {
 
     /**
      * Gets the last UID.
@@ -38,7 +38,7 @@ public interface Mailbox {
      * Gets the unique mailbox ID.
      * @return mailbox id
      */
-    public abstract long getMailboxId();
+    public abstract Id getMailboxId();
 
     /**
      * Gets the current name for this mailbox.

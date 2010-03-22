@@ -51,12 +51,11 @@ import org.apache.james.imap.store.mail.model.PropertyBuilder;
  * JCR implementation of a {@link StoreMailbox}
  *
  */
-public class JCRMailbox extends StoreMailbox{
+public class JCRMailbox extends StoreMailbox<String>{
 
     private final Repository repository;
     private final String workspace;
     private final Log log;
-    private final String uuid;
     private final int scaling;
     
     public JCRMailbox(final org.apache.james.imap.jcr.mail.model.JCRMailbox mailbox, final MailboxSession session, final Repository repository, final String workspace, final int scaling, final Log log) {
@@ -64,7 +63,6 @@ public class JCRMailbox extends StoreMailbox{
         this.repository = repository;
         this.workspace = workspace;
         this.log = log;
-        this.uuid = mailbox.getUUID();
         this.scaling = scaling;
         
     }
@@ -78,24 +76,11 @@ public class JCRMailbox extends StoreMailbox{
         return scaling;
     }
     
-    @Override
-    public long getMailboxId() {
-        throw new UnsupportedOperationException("Please use getMailboxUUID for this implementation");
-    }
 
-    /**
-     * Return the UUID of this Mailbox
-     * 
-     * @return uuid
-     */
-    public String getMailboxUUID() {
-        return uuid;
-    }
-    
     
     @Override
-    protected MailboxMembership copyMessage(MailboxMembership originalMessage, long uid) {
-        MailboxMembership newRow = new JCRMailboxMembership(getMailboxUUID(), uid, (JCRMailboxMembership) originalMessage, log);
+    protected MailboxMembership<String> copyMessage(MailboxMembership<String> originalMessage, long uid) {
+        MailboxMembership<String> newRow = new JCRMailboxMembership(getMailboxId(), uid, (JCRMailboxMembership) originalMessage, log);
         return newRow;
     }
 
@@ -105,23 +90,23 @@ public class JCRMailbox extends StoreMailbox{
     }
 
     @Override
-    protected MailboxMembership createMessage(Date internalDate, long uid, int size, int bodyStartOctet, byte[] document, Flags flags, List<Header> headers, PropertyBuilder propertyBuilder) {
+    protected MailboxMembership<String> createMessage(Date internalDate, long uid, int size, int bodyStartOctet, byte[] document, Flags flags, List<Header> headers, PropertyBuilder propertyBuilder) {
         final List<JCRHeader> jcrHeaders = new ArrayList<JCRHeader>(headers.size());
         for (Header header: headers) {
             jcrHeaders.add((JCRHeader) header);
         }
-        final MailboxMembership message = new JCRMailboxMembership(getMailboxUUID(), uid, internalDate, 
+        final MailboxMembership<String> message = new JCRMailboxMembership(getMailboxId(), uid, internalDate, 
                 size, flags, document, bodyStartOctet, jcrHeaders, propertyBuilder, log);
         return message;       
         
     }
 
     @Override
-    protected MessageMapper createMessageMapper(MailboxSession session) throws MailboxException {
+    protected MessageMapper<String> createMessageMapper(MailboxSession session) throws MailboxException {
         Session jcrSession = getSession(session);
         JCRUtils.addJCRSession(session, jcrSession);
         
-        JCRMessageMapper messageMapper = new JCRMessageMapper(jcrSession, getMailboxUUID(), getScaling(), log);
+        JCRMessageMapper messageMapper = new JCRMessageMapper(jcrSession, getMailboxId(), getScaling(), log);
         
         return messageMapper;
 
@@ -144,15 +129,15 @@ public class JCRMailbox extends StoreMailbox{
     }
     
     @Override
-    protected Mailbox getMailboxRow() throws MailboxException {
+    protected Mailbox<String> getMailboxRow() throws MailboxException {
         final JCRMailboxMapper mapper = createMailboxMapper(getMailboxSession());
-        return mapper.findMailboxByUUID(getMailboxUUID());
+        return mapper.findMailboxById(getMailboxId());
     }
 
     @Override
-    protected Mailbox reserveNextUid() throws MailboxException {
+    protected Mailbox<String> reserveNextUid() throws MailboxException {
         final JCRMailboxMapper mapper = createMailboxMapper(getMailboxSession());
-        return mapper.consumeNextUid(getMailboxUUID());
+        return mapper.consumeNextUid(getMailboxId());
     }
 
     /**

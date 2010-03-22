@@ -45,11 +45,11 @@ import org.apache.james.imap.store.mail.model.PropertyBuilder;
  * 
  *
  */
-public abstract class JPAMailbox extends StoreMailbox {
+public abstract class JPAMailbox extends StoreMailbox<Long> {
 
     protected final EntityManagerFactory entityManagerFactory;
 
-    public JPAMailbox(final Mailbox mailbox, MailboxSession session, final EntityManagerFactory entityManagerfactory) {
+    public JPAMailbox(final Mailbox<Long> mailbox, MailboxSession session, final EntityManagerFactory entityManagerfactory) {
         super(mailbox, session);
         this.entityManagerFactory = entityManagerfactory;
     }    
@@ -62,14 +62,14 @@ public abstract class JPAMailbox extends StoreMailbox {
     protected abstract JPAMailboxMapper createMailboxMapper(MailboxSession session);
 
     @Override
-    protected Mailbox getMailboxRow() throws MailboxException {
-        final MailboxMapper mapper = createMailboxMapper(getMailboxSession());
+    protected Mailbox<Long> getMailboxRow() throws MailboxException {
+        final MailboxMapper<Long> mapper = createMailboxMapper(getMailboxSession());
         return mapper.findMailboxById(mailboxId);
     }
 
     
     @Override
-    protected MessageMapper createMessageMapper(MailboxSession session) {
+    protected MessageMapper<Long> createMessageMapper(MailboxSession session) {
         EntityManager manager = entityManagerFactory.createEntityManager();
         
         JPAUtils.addEntityManager(session, manager);
@@ -80,20 +80,20 @@ public abstract class JPAMailbox extends StoreMailbox {
     }
     
     @Override
-    protected MailboxMembership createMessage(Date internalDate, final long uid, final int size, int bodyStartOctet, final byte[] document, 
+    protected MailboxMembership<Long> createMessage(Date internalDate, final long uid, final int size, int bodyStartOctet, final byte[] document, 
             final Flags flags, final List<Header> headers, PropertyBuilder propertyBuilder) {
         final List<JPAHeader> jpaHeaders = new ArrayList<JPAHeader>(headers.size());
         for (Header header: headers) {
             jpaHeaders.add((JPAHeader) header);
         }
-        final MailboxMembership message = new JPAMailboxMembership(mailboxId, uid, internalDate, 
+        final MailboxMembership<Long> message = new JPAMailboxMembership(mailboxId, uid, internalDate, 
                 size, flags, document, bodyStartOctet, jpaHeaders, propertyBuilder);
         return message;
     }
     
     @Override
-    protected MailboxMembership copyMessage(MailboxMembership originalMessage, long uid) {
-        MailboxMembership newRow = new JPAMailboxMembership(getMailboxId(), uid, (JPAMailboxMembership) originalMessage);
+    protected MailboxMembership<Long> copyMessage(MailboxMembership<Long> originalMessage, long uid) {
+        MailboxMembership<Long> newRow = new JPAMailboxMembership(getMailboxId(), uid, (JPAMailboxMembership) originalMessage);
         return newRow;
     }
     
@@ -104,9 +104,9 @@ public abstract class JPAMailbox extends StoreMailbox {
     }
 
     @Override
-    protected Mailbox reserveNextUid() throws MailboxException {
+    protected Mailbox<Long> reserveNextUid() throws MailboxException {
         final JPAMailboxMapper mapper = createMailboxMapper(getMailboxSession());
-        final Mailbox mailbox = mapper.consumeNextUid(mailboxId);
+        final Mailbox<Long> mailbox = mapper.consumeNextUid(mailboxId);
         return mailbox;
     } 
 }

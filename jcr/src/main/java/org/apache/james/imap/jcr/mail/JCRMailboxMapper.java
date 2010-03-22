@@ -47,7 +47,7 @@ import org.apache.james.imap.store.mail.model.Mailbox;
  * 
  * 
  */
-public class JCRMailboxMapper extends AbstractJCRMapper implements MailboxMapper {
+public class JCRMailboxMapper extends AbstractJCRMapper implements MailboxMapper<String> {
 
     public final String PATH =  "mailboxes";
     private final Log logger;
@@ -95,9 +95,9 @@ public class JCRMailboxMapper extends AbstractJCRMapper implements MailboxMapper
      * org.apache.james.imap.store.mail.MailboxMapper#delete(org.apache.james
      * .imap.store.mail.model.Mailbox)
      */
-    public void delete(Mailbox mailbox) throws StorageException {
+    public void delete(Mailbox<String> mailbox) throws StorageException {
         try {
-        	getSession().getNodeByUUID(((JCRMailbox) mailbox).getUUID()).remove();
+        	getSession().getNodeByUUID(((JCRMailbox) mailbox).getMailboxId()).remove();
         } catch (PathNotFoundException e) {
             // mailbox does not exists..
         } catch (RepositoryException e) {
@@ -143,20 +143,16 @@ public class JCRMailboxMapper extends AbstractJCRMapper implements MailboxMapper
         }
     }
 
+
     /*
      * (non-Javadoc)
-     * 
-     * @see org.apache.james.imap.store.mail.MailboxMapper#findMailboxById(long)
+     * @see org.apache.james.imap.store.mail.MailboxMapper#findMailboxById(java.lang.Object)
      */
-    public Mailbox findMailboxById(long mailboxId) throws StorageException, MailboxNotFoundException {
-        throw new StorageException(HumanReadableText.UNSUPPORTED,null);
-    }
-
-    public Mailbox findMailboxByUUID(String uuid) throws StorageException, MailboxNotFoundException {
-    	try {
-            return new JCRMailbox(getSession().getNodeByUUID(uuid),logger);
+    public Mailbox<String> findMailboxById(String mailboxId) throws StorageException, MailboxNotFoundException {
+        try {
+            return new JCRMailbox(getSession().getNodeByUUID(mailboxId),logger);
         } catch (PathNotFoundException e) {
-            throw new MailboxNotFoundException(uuid);
+            throw new MailboxNotFoundException(mailboxId);
         } catch (RepositoryException e) {
             throw new StorageException(HumanReadableText.SEARCH_FAILED, e);
         }
@@ -169,7 +165,7 @@ public class JCRMailboxMapper extends AbstractJCRMapper implements MailboxMapper
      * org.apache.james.imap.store.mail.MailboxMapper#findMailboxByName(java
      * .lang.String)
      */
-    public Mailbox findMailboxByName(String name) throws StorageException, MailboxNotFoundException {
+    public Mailbox<String> findMailboxByName(String name) throws StorageException, MailboxNotFoundException {
         try {
         	QueryManager manager = getSession().getWorkspace().getQueryManager();
         	String queryString = "//" + PATH + "//element(*,imap:mailbox)[@" + JCRMailbox.NAME_PROPERTY + "='" + name + "']";
@@ -194,8 +190,8 @@ public class JCRMailboxMapper extends AbstractJCRMapper implements MailboxMapper
      * org.apache.james.imap.store.mail.MailboxMapper#findMailboxWithNameLike
      * (java.lang.String)
      */
-    public List<Mailbox> findMailboxWithNameLike(String name) throws StorageException {
-        List<Mailbox> mailboxList = new ArrayList<Mailbox>();
+    public List<Mailbox<String>> findMailboxWithNameLike(String name) throws StorageException {
+        List<Mailbox<String>> mailboxList = new ArrayList<Mailbox<String>>();
         try {       
         	QueryManager manager = getSession().getWorkspace().getQueryManager();
         	String queryString = "//" + PATH + "//element(*,imap:mailbox)[jcr:like(@" + JCRMailbox.NAME_PROPERTY + ",'%" + name + "%')]";
@@ -219,14 +215,14 @@ public class JCRMailboxMapper extends AbstractJCRMapper implements MailboxMapper
      * org.apache.james.imap.store.mail.MailboxMapper#save(org.apache.james.
      * imap.store.mail.model.Mailbox)
      */
-    public void save(Mailbox mailbox) throws StorageException {
+    public void save(Mailbox<String> mailbox) throws StorageException {
         
         try {
             JCRMailbox jcrMailbox = (JCRMailbox)mailbox;
             Node node = null;
 
             if (jcrMailbox.isPersistent()) {
-                node = getSession().getNodeByUUID(jcrMailbox.getUUID());
+                node = getSession().getNodeByUUID(jcrMailbox.getMailboxId());
             }
             if (node == null) {
                 String nodePath = JCRUtils.escapePath(PATH,JCRUtils.createScaledPath(mailbox.getName(), getScaling()));
@@ -251,9 +247,9 @@ public class JCRMailboxMapper extends AbstractJCRMapper implements MailboxMapper
      * @throws StorageException
      * @throws MailboxNotFoundException
      */
-    public Mailbox consumeNextUid(String uuid) throws StorageException, MailboxNotFoundException {
+    public Mailbox<String> consumeNextUid(String uuid) throws StorageException, MailboxNotFoundException {
 
-        final JCRMailbox mailbox = (JCRMailbox) findMailboxByUUID(uuid);
+        final JCRMailbox mailbox = (JCRMailbox) findMailboxById(uuid);
         try {
             execute(new Transaction() {
                 

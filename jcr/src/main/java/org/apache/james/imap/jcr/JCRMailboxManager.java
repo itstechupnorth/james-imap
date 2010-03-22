@@ -51,7 +51,7 @@ import org.apache.james.imap.store.transaction.TransactionalMapper;
  * 
  * 
  */
-public class JCRMailboxManager extends StoreMailboxManager implements JCRImapConstants{
+public class JCRMailboxManager extends StoreMailboxManager<String> implements JCRImapConstants{
 
     private final Repository repository;
     private final String workspace;
@@ -80,13 +80,13 @@ public class JCRMailboxManager extends StoreMailboxManager implements JCRImapCon
     }
     
     @Override
-    protected StoreMailbox createMailbox(Mailbox mailboxRow, MailboxSession session) {
+    protected StoreMailbox<String> createMailbox(Mailbox<String> mailboxRow, MailboxSession session) {
         JCRMailbox mailbox = new JCRMailbox((org.apache.james.imap.jcr.mail.model.JCRMailbox) mailboxRow, session, getRepository(), getWorkspace(), getScaling(), getLog());
         return mailbox;
     }
 
     @Override
-    protected MailboxMapper createMailboxMapper(MailboxSession session) throws MailboxException {
+    protected MailboxMapper<String> createMailboxMapper(MailboxSession session) throws MailboxException {
 
         Session jcrSession = getSession(session);
 
@@ -121,7 +121,7 @@ public class JCRMailboxManager extends StoreMailboxManager implements JCRImapCon
 
     @Override
     protected void doCreate(String namespaceName, MailboxSession session) throws MailboxException {
-        final Mailbox mailbox = new org.apache.james.imap.jcr.mail.model.JCRMailbox(namespaceName, randomUidValidity(), logger);
+        final Mailbox<String> mailbox = new org.apache.james.imap.jcr.mail.model.JCRMailbox(namespaceName, randomUidValidity(), logger);
         final JCRMailboxMapper mapper = (JCRMailboxMapper)createMailboxMapper(session);
         mapper.execute(new TransactionalMapper.Transaction() {
 

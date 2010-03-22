@@ -25,7 +25,7 @@ import javax.mail.Flags;
 /**
  * Links mailbox to member messages.
  */
-public interface MailboxMembership {
+public interface MailboxMembership<Id> {
 
     public abstract Date getInternalDate();
 
@@ -34,7 +34,7 @@ public interface MailboxMembership {
      * 
      * @return mailboxId
      */
-    public abstract long getMailboxId();
+    public abstract Id getMailboxId();
 
     /**
      * Return the size

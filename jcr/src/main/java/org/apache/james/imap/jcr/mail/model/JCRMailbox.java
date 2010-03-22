@@ -31,7 +31,7 @@ import org.apache.james.imap.store.mail.model.Mailbox;
 /**
  * JCR implementation of a {@link Mailbox}
  */
-public class JCRMailbox implements Mailbox, JCRImapConstants, Persistent{
+public class JCRMailbox implements Mailbox<String>, JCRImapConstants, Persistent{
 
     private static final String TAB = " ";
 
@@ -180,21 +180,10 @@ public class JCRMailbox implements Mailbox, JCRImapConstants, Persistent{
         */
     }
     
-    public String getUUID() {
-        if (isPersistent()) {
-            try {
-                return node.getUUID();
-            } catch (RepositoryException e) {
-                logger.error("Unable to access property " + JcrConstants.JCR_UUID, e);
-            }
-        }
-        return null;  
-    }
-    
     @Override
     public String toString() {
         final String retValue = "Mailbox ( "
-            + "mailboxUID = " + this.getUUID() + TAB
+            + "mailboxUID = " + this.getMailboxId() + TAB
             + "name = " + this.getName() + TAB
             + "uidValidity = " + this.getUidValidity() + TAB
             + "lastUid = " + this.getLastUid() + TAB
@@ -206,7 +195,7 @@ public class JCRMailbox implements Mailbox, JCRImapConstants, Persistent{
     public int hashCode() {
         final int PRIME = 31;
         int result = 1;
-        result = PRIME * result + (int) getUUID().hashCode();
+        result = PRIME * result + (int) getMailboxId().hashCode();
         return result;
     }
     
@@ -219,7 +208,7 @@ public class JCRMailbox implements Mailbox, JCRImapConstants, Persistent{
         if (getClass() != obj.getClass())
             return false;
         final JCRMailbox other = (JCRMailbox) obj;
-        if (getUUID() != other.getUUID())
+        if (getMailboxId() != other.getMailboxId())
             return false;
         return true;
     }
@@ -228,8 +217,15 @@ public class JCRMailbox implements Mailbox, JCRImapConstants, Persistent{
      * (non-Javadoc)
      * @see org.apache.james.imap.store.mail.model.Mailbox#getMailboxId()
      */
-    public long getMailboxId() {
-        return getUUID().hashCode();
+    public String getMailboxId() {
+        if (isPersistent()) {
+            try {
+                return node.getUUID();
+            } catch (RepositoryException e) {
+                logger.error("Unable to access property " + JcrConstants.JCR_UUID, e);
+            }
+        }
+        return null;      
     }
 
 }

@@ -32,7 +32,7 @@ import org.apache.james.imap.store.mail.model.MailboxMembership;
 import org.apache.james.imap.store.mail.model.Property;
 import org.apache.james.imap.store.mail.model.PropertyBuilder;
 
-public class SimpleMailboxMembership extends AbstractMailboxMembership implements Document, Comparable<MailboxMembership> {
+public class SimpleMailboxMembership extends AbstractMailboxMembership<Long> implements Document, Comparable<MailboxMembership<Long>> {
 
     private final long uid;
     private final long mailboxId;
@@ -97,7 +97,7 @@ public class SimpleMailboxMembership extends AbstractMailboxMembership implement
         return internalDate;
     }
 
-    public long getMailboxId() {
+    public Long getMailboxId() {
         return mailboxId;
     }
 
@@ -206,7 +206,7 @@ public class SimpleMailboxMembership extends AbstractMailboxMembership implement
         return true;
     }
 
-    public int compareTo(MailboxMembership o) {
+    public int compareTo(MailboxMembership<Long> o) {
         final long otherUid = getUid();
         return uid < otherUid ? -1 : uid == otherUid ? 0 : 1;
     }

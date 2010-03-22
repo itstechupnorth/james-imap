@@ -54,7 +54,7 @@ public class ResultUtils {
 
     static final Charset US_ASCII = Charset.forName("US-ASCII");
 
-    public static List<MessageResult.Header> createHeaders(MailboxMembership message) {
+    public static List<MessageResult.Header> createHeaders(MailboxMembership<?> message) {
         final org.apache.james.imap.store.mail.model.Document document = message.getDocument();
         return createHeaders(document);
     }
@@ -82,7 +82,7 @@ public class ResultUtils {
      * @param membership
      * @return bodyContent
      */
-    public static Content createBodyContent(MailboxMembership membership) {
+    public static Content createBodyContent(MailboxMembership<?> membership) {
         final ByteBuffer bytes = membership.getDocument().getBodyContent();
         final ByteContent result = new ByteContent(bytes);
         return result;
@@ -94,7 +94,7 @@ public class ResultUtils {
      * @param membership
      * @return content
      */
-    public static Content createFullContent(final MailboxMembership membership) {
+    public static Content createFullContent(final MailboxMembership<?> membership) {
         final ByteBuffer bytes = membership.getDocument().getFullContent();
         final ByteContent results = new ByteContent(bytes);
         return results;
@@ -108,7 +108,7 @@ public class ResultUtils {
      * @return result
      * @throws MailboxException
      */
-    public static MessageResult loadMessageResult(final MailboxMembership message, final FetchGroup fetchGroup) 
+    public static MessageResult loadMessageResult(final MailboxMembership<?> message, final FetchGroup fetchGroup) 
                 throws MailboxException {
 
         MessageResultImpl messageResult = new MessageResultImpl();
@@ -150,31 +150,31 @@ public class ResultUtils {
         return messageResult;
     }
 
-    private static void addMimeDescriptor(MailboxMembership message, MessageResultImpl messageResult) throws IOException, MimeException {
+    private static void addMimeDescriptor(MailboxMembership<?> message, MessageResultImpl messageResult) throws IOException, MimeException {
             MimeDescriptor descriptor = MimeDescriptorImpl.build(message.getDocument());
             messageResult.setMimeDescriptor(descriptor);
     }
 
-    private static void addFullContent(final MailboxMembership messageRow, MessageResultImpl messageResult) 
+    private static void addFullContent(final MailboxMembership<?> messageRow, MessageResultImpl messageResult) 
             throws MailboxException {
         final Content content = createFullContent(messageRow);
         messageResult.setFullContent(content);
     }
 
-    private static void addBody(final MailboxMembership message,
+    private static void addBody(final MailboxMembership<?> message,
             MessageResultImpl messageResult) {
         final Content content = createBodyContent(message);
         messageResult.setBody(content);
     }
 
-    private static void addHeaders(final MailboxMembership message,
+    private static void addHeaders(final MailboxMembership<?> message,
             MessageResultImpl messageResult) {
         final List<MessageResult.Header> headers = createHeaders(message);
         messageResult.setHeaders(headers);
     }
 
     private static void addPartContent(final FetchGroup fetchGroup,
-            MailboxMembership message, MessageResultImpl messageResult)
+            MailboxMembership<?> message, MessageResultImpl messageResult)
             throws MailboxException, IOException,
             MimeException {
         Collection<FetchGroup.PartContentDescriptor> partContent = fetchGroup.getPartContentDescriptors();
@@ -186,7 +186,7 @@ public class ResultUtils {
     }
 
     private static void addPartContent(
-            FetchGroup.PartContentDescriptor descriptor, MailboxMembership message,
+            FetchGroup.PartContentDescriptor descriptor, MailboxMembership<?> message,
             MessageResultImpl messageResult) throws 
             MailboxException, IOException, MimeException {
         final MimePath mimePath = descriptor.path();
@@ -208,7 +208,7 @@ public class ResultUtils {
         }
     }
 
-    private static PartContentBuilder build(int[] path, final MailboxMembership message)
+    private static PartContentBuilder build(int[] path, final MailboxMembership<?> message)
             throws IOException, MimeException {
         final InputStream stream = toInput(message);
         PartContentBuilder result = new PartContentBuilder();
@@ -232,7 +232,7 @@ public class ResultUtils {
      * @param membership
      * @return stream
      */
-    public static InputStream toInput(final MailboxMembership membership) {
+    public static InputStream toInput(final MailboxMembership<?> membership) {
         final org.apache.james.imap.store.mail.model.Document document = membership.getDocument();
         return toInput(document);
     }
@@ -297,7 +297,7 @@ public class ResultUtils {
         return result;
     }
 
-    private static void addHeaders(MailboxMembership message,
+    private static void addHeaders(MailboxMembership<?> message,
             MessageResultImpl messageResult, MimePath mimePath)
             throws IOException, MimeException {
         final int[] path = path(mimePath);
@@ -310,7 +310,7 @@ public class ResultUtils {
         }
     }
 
-    private static void addMimeHeaders(MailboxMembership message,
+    private static void addMimeHeaders(MailboxMembership<?> message,
             MessageResultImpl messageResult, MimePath mimePath)
             throws IOException, MimeException {
         final int[] path = path(mimePath);
@@ -323,7 +323,7 @@ public class ResultUtils {
         }
     }
 
-    private static void addBodyContent(MailboxMembership message,
+    private static void addBodyContent(MailboxMembership<?> message,
             MessageResultImpl messageResult, MimePath mimePath) throws IOException, MimeException {
         final int[] path = path(mimePath);
         if (path == null) {
@@ -335,7 +335,7 @@ public class ResultUtils {
         }
     }
 
-    private static void addMimeBodyContent(MailboxMembership message,
+    private static void addMimeBodyContent(MailboxMembership<?> message,
             MessageResultImpl messageResult, MimePath mimePath)
             throws IOException, MimeException {
         final int[] path = path(mimePath);
@@ -344,7 +344,7 @@ public class ResultUtils {
         messageResult.setMimeBodyContent(mimePath, content);
     }
 
-    private static void addFullContent(MailboxMembership message,
+    private static void addFullContent(MailboxMembership<?> message,
             MessageResultImpl messageResult, MimePath mimePath)
             throws MailboxException, IOException,
             MimeException {
@@ -364,14 +364,14 @@ public class ResultUtils {
      * 
      * @return {@link Comparator}, not null
      */
-    public static Comparator<MailboxMembership> getUidComparator() {
+    public static Comparator<MailboxMembership<?>> getUidComparator() {
         return UidComparator.INSTANCE;
     }
 
-    private static final class UidComparator implements Comparator<MailboxMembership> {
+    private static final class UidComparator implements Comparator<MailboxMembership<?>> {
         private static final UidComparator INSTANCE = new UidComparator();
 
-        public int compare(MailboxMembership one, MailboxMembership two) {
+        public int compare(MailboxMembership<?> one, MailboxMembership<?> two) {
             final int result = (int) (one.getUid() - two.getUid());
             return result;
         }

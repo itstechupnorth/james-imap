@@ -42,7 +42,7 @@ import org.apache.james.imap.store.mail.model.Mailbox;
     @NamedQuery(name="countMailboxesWithNameLike",
                 query="SELECT COUNT(mailbox) FROM Mailbox mailbox WHERE mailbox.name LIKE :nameParam")     
 })
-public class JPAMailbox implements Mailbox {
+public class JPAMailbox implements Mailbox<Long> {
     
     private static final String TAB = " ";
 
@@ -91,7 +91,7 @@ public class JPAMailbox implements Mailbox {
     /**
      * @see org.apache.james.imap.store.mail.model.Mailbox#getMailboxId()
      */
-    public long getMailboxId() {
+    public Long getMailboxId() {
         return mailboxId;
     }
 

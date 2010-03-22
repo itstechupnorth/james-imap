@@ -36,7 +36,7 @@ import org.apache.james.imap.store.mail.model.Mailbox;
 public class OpenJPAMailbox extends JPAMailbox{
 
     public final static String MAILBOX_MAPPER = "MAILBOX_MAPPER";
-    public OpenJPAMailbox(Mailbox mailbox,
+    public OpenJPAMailbox(Mailbox<Long> mailbox,
     		MailboxSession session, EntityManagerFactory entityManagerfactory) {
 		super(mailbox, session, entityManagerfactory);
 	}

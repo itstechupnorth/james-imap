@@ -44,7 +44,7 @@ import org.apache.james.imap.mailbox.SearchQuery.NumericRange;
 import org.apache.james.imap.store.mail.MessageMapper;
 import org.apache.james.imap.store.mail.model.MailboxMembership;
 
-public class JCRMessageMapper extends AbstractJCRMapper implements MessageMapper {
+public class JCRMessageMapper extends AbstractJCRMapper implements MessageMapper<String> {
 
     private final static String PATH =  "mailboxes";
     private final Log logger;
@@ -122,12 +122,12 @@ public class JCRMessageMapper extends AbstractJCRMapper implements MessageMapper
      * org.apache.james.imap.store.mail.MessageMapper#delete(org.apache.james
      * .imap.store.mail.model.MailboxMembership)
      */
-    public void delete(MailboxMembership message) throws StorageException {
+    public void delete(MailboxMembership<String> message) throws StorageException {
         JCRMailboxMembership membership = (JCRMailboxMembership) message;
         if (membership.isPersistent()) {
             try {
 
-                getSession().getNodeByUUID(membership.getUUID()).remove();
+                getSession().getNodeByUUID(membership.getId()).remove();
             } catch (RepositoryException e) {
                 e.printStackTrace();
                 throw new StorageException(HumanReadableText.DELETED_FAILED, e);
@@ -142,9 +142,9 @@ public class JCRMessageMapper extends AbstractJCRMapper implements MessageMapper
      * org.apache.james.imap.store.mail.MessageMapper#findInMailbox(org.apache
      * .james.imap.mailbox.MessageRange)
      */
-    public List<MailboxMembership> findInMailbox(MessageRange set) throws StorageException {
+    public List<MailboxMembership<String>> findInMailbox(MessageRange set) throws StorageException {
         try {
-            final List<MailboxMembership> results;
+            final List<MailboxMembership<String>> results;
             final long from = set.getUidFrom();
             final long to = set.getUidTo();
             final Type type = set.getType();
@@ -170,8 +170,8 @@ public class JCRMessageMapper extends AbstractJCRMapper implements MessageMapper
         }
     }
 
-    private List<MailboxMembership> findMessagesInMailboxAfterUID(String uuid, long uid) throws RepositoryException {
-        List<MailboxMembership> list = new ArrayList<MailboxMembership>();
+    private List<MailboxMembership<String>> findMessagesInMailboxAfterUID(String uuid, long uid) throws RepositoryException {
+        List<MailboxMembership<String>> list = new ArrayList<MailboxMembership<String>>();
         String queryString = "//" + PATH + "//element(*,imap:mailboxMembership)[@" + JCRMailboxMembership.MAILBOX_UUID_PROPERTY + "='" + uuid + "'] AND [@" + JCRMailboxMembership.UID_PROPERTY + ">=" + uid + "] order by @" + JCRMailboxMembership.UID_PROPERTY;
 
         QueryManager manager = getSession().getWorkspace().getQueryManager();
@@ -184,8 +184,8 @@ public class JCRMessageMapper extends AbstractJCRMapper implements MessageMapper
         return list;
     }
 
-    private List<MailboxMembership> findMessagesInMailboxWithUID(String uuid, long uid) throws RepositoryException  {
-        List<MailboxMembership> list = new ArrayList<MailboxMembership>();
+    private List<MailboxMembership<String>> findMessagesInMailboxWithUID(String uuid, long uid) throws RepositoryException  {
+        List<MailboxMembership<String>> list = new ArrayList<MailboxMembership<String>>();
         String queryString = "//" + PATH + "//element(*,imap:mailboxMembership)[@" + JCRMailboxMembership.MAILBOX_UUID_PROPERTY + "='" + uuid + "'] AND [@" + JCRMailboxMembership.UID_PROPERTY + "=" + uid + "] order by @" + JCRMailboxMembership.UID_PROPERTY;
 
         QueryManager manager = getSession().getWorkspace().getQueryManager();
@@ -198,8 +198,8 @@ public class JCRMessageMapper extends AbstractJCRMapper implements MessageMapper
         return list;
     }
 
-    private List<MailboxMembership> findMessagesInMailboxBetweenUIDs(String uuid, long from, long to) throws RepositoryException {
-        List<MailboxMembership> list = new ArrayList<MailboxMembership>();
+    private List<MailboxMembership<String>> findMessagesInMailboxBetweenUIDs(String uuid, long from, long to) throws RepositoryException {
+        List<MailboxMembership<String>> list = new ArrayList<MailboxMembership<String>>();
         String queryString = "//" + PATH + "//element(*,imap:mailboxMembership)[@" + JCRMailboxMembership.MAILBOX_UUID_PROPERTY + "='" + uuid + "'] AND [@" + JCRMailboxMembership.UID_PROPERTY + ">=" + from + "] AND [@" + JCRMailboxMembership.UID_PROPERTY + "<=" + to + "] order by @" + JCRMailboxMembership.UID_PROPERTY;
         
         QueryManager manager = getSession().getWorkspace().getQueryManager();
@@ -212,8 +212,8 @@ public class JCRMessageMapper extends AbstractJCRMapper implements MessageMapper
         return list;
     }
     
-    private List<MailboxMembership> findMessagesInMailbox(String uuid) throws RepositoryException {        
-        List<MailboxMembership> list = new ArrayList<MailboxMembership>();
+    private List<MailboxMembership<String>> findMessagesInMailbox(String uuid) throws RepositoryException {        
+        List<MailboxMembership<String>> list = new ArrayList<MailboxMembership<String>>();
         
         String queryString = "//" + PATH + "//element(*,imap:mailboxMembership)[@" + JCRMailboxMembership.MAILBOX_UUID_PROPERTY +"='" + uuid +"'] order by @" + JCRMailboxMembership.UID_PROPERTY;
         getSession().refresh(true);
@@ -229,8 +229,8 @@ public class JCRMessageMapper extends AbstractJCRMapper implements MessageMapper
 
     
     
-    private List<MailboxMembership> findDeletedMessagesInMailboxAfterUID(String uuid, long uid) throws RepositoryException {
-        List<MailboxMembership> list = new ArrayList<MailboxMembership>();
+    private List<MailboxMembership<String>> findDeletedMessagesInMailboxAfterUID(String uuid, long uid) throws RepositoryException {
+        List<MailboxMembership<String>> list = new ArrayList<MailboxMembership<String>>();
         String queryString = "//" + PATH + "//element(*,imap:mailboxMembership)[@" + JCRMailboxMembership.MAILBOX_UUID_PROPERTY + "='" + uuid + "'] AND [@" + JCRMailboxMembership.UID_PROPERTY + ">=" + uid + "] AND [@" + JCRMailboxMembership.DELETED_PROPERTY+ "='true'] order by @" + JCRMailboxMembership.UID_PROPERTY;
  
         QueryManager manager = getSession().getWorkspace().getQueryManager();
@@ -243,8 +243,8 @@ public class JCRMessageMapper extends AbstractJCRMapper implements MessageMapper
         return list;
     }
 
-    private List<MailboxMembership> findDeletedMessagesInMailboxWithUID(String uuid, long uid) throws RepositoryException  {
-        List<MailboxMembership> list = new ArrayList<MailboxMembership>();
+    private List<MailboxMembership<String>> findDeletedMessagesInMailboxWithUID(String uuid, long uid) throws RepositoryException  {
+        List<MailboxMembership<String>> list = new ArrayList<MailboxMembership<String>>();
         String queryString = "//" + PATH + "//element(*,imap:mailboxMembership)[@" + JCRMailboxMembership.MAILBOX_UUID_PROPERTY + "='" + uuid + "'] AND [@" + JCRMailboxMembership.UID_PROPERTY + "=" + uid + "] AND [@" + JCRMailboxMembership.DELETED_PROPERTY+ "='true']  order by @" + JCRMailboxMembership.UID_PROPERTY;
         QueryManager manager = getSession().getWorkspace().getQueryManager();
         QueryResult result = manager.createQuery(queryString, Query.XPATH).execute();
@@ -257,8 +257,8 @@ public class JCRMessageMapper extends AbstractJCRMapper implements MessageMapper
         return list;
     }
 
-    private List<MailboxMembership> findDeletedMessagesInMailboxBetweenUIDs(String uuid, long from, long to) throws RepositoryException {
-        List<MailboxMembership> list = new ArrayList<MailboxMembership>();
+    private List<MailboxMembership<String>> findDeletedMessagesInMailboxBetweenUIDs(String uuid, long from, long to) throws RepositoryException {
+        List<MailboxMembership<String>> list = new ArrayList<MailboxMembership<String>>();
         String queryString = "//" + PATH + "//element(*,imap:mailboxMembership)[@" + JCRMailboxMembership.MAILBOX_UUID_PROPERTY + "='" + uuid + "'] AND [@" + JCRMailboxMembership.UID_PROPERTY + ">=" + from + "] AND [@" + JCRMailboxMembership.UID_PROPERTY + "<=" + to + "] AND [@" + JCRMailboxMembership.DELETED_PROPERTY+ "='true'] order by @" + JCRMailboxMembership.UID_PROPERTY;
        
         QueryManager manager = getSession().getWorkspace().getQueryManager();
@@ -271,9 +271,9 @@ public class JCRMessageMapper extends AbstractJCRMapper implements MessageMapper
         return list;
     }
     
-    private List<MailboxMembership> findDeletedMessagesInMailbox(String uuid) throws RepositoryException {
+    private List<MailboxMembership<String>> findDeletedMessagesInMailbox(String uuid) throws RepositoryException {
         
-        List<MailboxMembership> list = new ArrayList<MailboxMembership>();
+        List<MailboxMembership<String>> list = new ArrayList<MailboxMembership<String>>();
         String queryString = "//" + PATH + "//element(*,imap:mailboxMembership)[@" + JCRMailboxMembership.MAILBOX_UUID_PROPERTY +"='" + uuid +"'] AND [@" + JCRMailboxMembership.DELETED_PROPERTY+ "='true'] order by @" + JCRMailboxMembership.UID_PROPERTY;
         
         QueryManager manager = getSession().getWorkspace().getQueryManager();
@@ -294,9 +294,9 @@ public class JCRMessageMapper extends AbstractJCRMapper implements MessageMapper
      * org.apache.james.imap.store.mail.MessageMapper#findMarkedForDeletionInMailbox
      * (org.apache.james.imap.mailbox.MessageRange)
      */
-    public List<MailboxMembership> findMarkedForDeletionInMailbox(MessageRange set) throws StorageException {
+    public List<MailboxMembership<String>> findMarkedForDeletionInMailbox(MessageRange set) throws StorageException {
         try {
-            final List<MailboxMembership> results;
+            final List<MailboxMembership<String>> results;
             final long from = set.getUidFrom();
             final long to = set.getUidTo();
             final Type type = set.getType();
@@ -329,10 +329,10 @@ public class JCRMessageMapper extends AbstractJCRMapper implements MessageMapper
      * org.apache.james.imap.store.mail.MessageMapper#findRecentMessagesInMailbox
      * ()
      */
-    public List<MailboxMembership> findRecentMessagesInMailbox() throws StorageException {
+    public List<MailboxMembership<String>> findRecentMessagesInMailbox() throws StorageException {
         
         try {
-            List<MailboxMembership> list = new ArrayList<MailboxMembership>();
+            List<MailboxMembership<String>> list = new ArrayList<MailboxMembership<String>>();
             String queryString = "//" + PATH + "//element(*,imap:mailboxMembership)[@" + JCRMailboxMembership.MAILBOX_UUID_PROPERTY +"='" + uuid +"'] AND [@" + JCRMailboxMembership.RECENT_PROPERTY +"='true'] order by @" + JCRMailboxMembership.UID_PROPERTY;
             
             QueryManager manager = getSession().getWorkspace().getQueryManager();
@@ -354,9 +354,9 @@ public class JCRMessageMapper extends AbstractJCRMapper implements MessageMapper
      * (non-Javadoc)
      * @see org.apache.james.imap.store.mail.MessageMapper#findUnseenMessagesInMailbox()
      */
-    public List<MailboxMembership> findUnseenMessagesInMailbox() throws StorageException {
+    public List<MailboxMembership<String>> findUnseenMessagesInMailbox() throws StorageException {
         try {
-            List<MailboxMembership> list = new ArrayList<MailboxMembership>();
+            List<MailboxMembership<String>> list = new ArrayList<MailboxMembership<String>>();
             String queryString = "//" + PATH + "//element(*,imap:mailboxMembership)[@" + JCRMailboxMembership.MAILBOX_UUID_PROPERTY +"='" + uuid +"'] AND [@" + JCRMailboxMembership.SEEN_PROPERTY +"='false'] order by @" + JCRMailboxMembership.UID_PROPERTY;
           
             QueryManager manager = getSession().getWorkspace().getQueryManager();
@@ -380,14 +380,14 @@ public class JCRMessageMapper extends AbstractJCRMapper implements MessageMapper
      * org.apache.james.imap.store.mail.MessageMapper#save(org.apache.james.
      * imap.store.mail.model.MailboxMembership)
      */
-    public void save(MailboxMembership message) throws StorageException {
+    public void save(MailboxMembership<String> message) throws StorageException {
         JCRMailboxMembership membership = (JCRMailboxMembership) message;
         try {
             //JCRUtils.createNodeRecursive(getSession().getRootNode(), mailboxN);
             Node messageNode = null;
             
             if (membership.isPersistent()) {
-                messageNode = getSession().getNodeByUUID(membership.getUUID());
+                messageNode = getSession().getNodeByUUID(membership.getId());
             }
 
             if (messageNode == null) {
@@ -424,9 +424,9 @@ public class JCRMessageMapper extends AbstractJCRMapper implements MessageMapper
      * org.apache.james.imap.store.mail.MessageMapper#searchMailbox(org.apache
      * .james.imap.mailbox.SearchQuery)
      */
-    public List<MailboxMembership> searchMailbox(SearchQuery query) throws StorageException {
+    public List<MailboxMembership<String>> searchMailbox(SearchQuery query) throws StorageException {
         try {
-            List<MailboxMembership> list = new ArrayList<MailboxMembership>();
+            List<MailboxMembership<String>> list = new ArrayList<MailboxMembership<String>>();
             final String xpathQuery = formulateXPath(uuid, query);
             
             QueryManager manager = getSession().getWorkspace().getQueryManager();

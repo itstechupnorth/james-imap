@@ -42,20 +42,20 @@ import org.apache.james.imap.store.mail.model.Mailbox;
 import org.apache.james.imap.store.mail.model.MailboxMembership;
 import org.apache.james.imap.store.mail.model.PropertyBuilder;
 
-public class InMemoryStoreMailbox extends StoreMailbox implements MessageMapper {
+public class InMemoryStoreMailbox extends StoreMailbox<Long> implements MessageMapper<Long> {
     
     private static final int INITIAL_SIZE = 256;
-    private Map<Long, MailboxMembership> membershipByUid;
+    private Map<Long, MailboxMembership<Long>> membershipByUid;
     private InMemoryMailbox mailbox;
 
     public InMemoryStoreMailbox(InMemoryMailbox mailbox, MailboxSession session) {
         super(mailbox,session);
         this.mailbox = mailbox;
-        this.membershipByUid = new ConcurrentHashMap<Long, MailboxMembership>(INITIAL_SIZE);
+        this.membershipByUid = new ConcurrentHashMap<Long, MailboxMembership<Long>>(INITIAL_SIZE);
     }
 
     @Override
-    protected MailboxMembership copyMessage(MailboxMembership originalMessage, long uid) {
+    protected MailboxMembership<Long> copyMessage(MailboxMembership<Long> originalMessage, long uid) {
         return new SimpleMailboxMembership(mailboxId, uid, (SimpleMailboxMembership) originalMessage);
     }
 
@@ -65,23 +65,23 @@ public class InMemoryStoreMailbox extends StoreMailbox implements MessageMapper 
     }
 
     @Override
-    protected MailboxMembership createMessage(Date internalDate, long uid, int size, int bodyStartOctet, 
+    protected MailboxMembership<Long> createMessage(Date internalDate, long uid, int size, int bodyStartOctet, 
             byte[] document, Flags flags, List<Header> headers, PropertyBuilder propertyBuilder) {
         return new SimpleMailboxMembership(internalDate, uid, size, bodyStartOctet, document, flags, headers, propertyBuilder, mailboxId);
     }
 
     @Override
-    protected MessageMapper createMessageMapper(MailboxSession session) {
+    protected MessageMapper<Long> createMessageMapper(MailboxSession session) {
         return this;
     }
 
     @Override
-    protected Mailbox getMailboxRow() throws MailboxException {
+    protected Mailbox<Long> getMailboxRow() throws MailboxException {
         return mailbox;
     }
 
     @Override
-    protected Mailbox reserveNextUid() throws MailboxException {
+    protected Mailbox<Long> reserveNextUid() throws MailboxException {
         mailbox.consumeUid();
         return mailbox;
     }
@@ -100,7 +100,7 @@ public class InMemoryStoreMailbox extends StoreMailbox implements MessageMapper 
      */
     public long countUnseenMessagesInMailbox() throws StorageException {
         long count = 0;
-        for(MailboxMembership member:membershipByUid.values()) {
+        for(MailboxMembership<Long> member:membershipByUid.values()) {
             if (!member.isSeen()) {
                 count++;
             }
@@ -112,29 +112,29 @@ public class InMemoryStoreMailbox extends StoreMailbox implements MessageMapper 
      * (non-Javadoc)
      * @see org.apache.james.imap.store.mail.MessageMapper#delete(org.apache.james.imap.store.mail.model.MailboxMembership)
      */
-    public void delete(MailboxMembership message) throws StorageException {
+    public void delete(MailboxMembership<Long> message) throws StorageException {
         membershipByUid.remove(message.getUid());
     }
 
     @SuppressWarnings("unchecked")
-    public List<MailboxMembership> findInMailbox(MessageRange set) throws StorageException {
-        final List<MailboxMembership> results;
+    public List<MailboxMembership<Long>> findInMailbox(MessageRange set) throws StorageException {
+        final List<MailboxMembership<Long>> results;
         final MessageRange.Type type = set.getType();
         switch (type) {
             case ALL:
-                results = new ArrayList<MailboxMembership>(membershipByUid.values());
+                results = new ArrayList<MailboxMembership<Long>>(membershipByUid.values());
                 break;
             case FROM:
-                results = new ArrayList<MailboxMembership>(membershipByUid.values());
-                for (final Iterator<MailboxMembership> it=results.iterator();it.hasNext();) {
+                results = new ArrayList<MailboxMembership<Long>>(membershipByUid.values());
+                for (final Iterator<MailboxMembership<Long>> it=results.iterator();it.hasNext();) {
                    if (it.next().getUid()< set.getUidFrom()) {
                        it.remove(); 
                    }
                 }
                 break;
             case RANGE:
-                results = new ArrayList<MailboxMembership>(membershipByUid.values());
-                for (final Iterator<MailboxMembership> it=results.iterator();it.hasNext();) {
+                results = new ArrayList<MailboxMembership<Long>>(membershipByUid.values());
+                for (final Iterator<MailboxMembership<Long>> it=results.iterator();it.hasNext();) {
                    final long uid = it.next().getUid();
                 if (uid<set.getUidFrom() || uid>set.getUidTo()) {
                        it.remove(); 
@@ -142,14 +142,14 @@ public class InMemoryStoreMailbox extends StoreMailbox implements MessageMapper 
                 }
                 break;
             case ONE:
-                results  = new ArrayList<MailboxMembership>(1);
+                results  = new ArrayList<MailboxMembership<Long>>(1);
                 final MailboxMembership member = membershipByUid.get(set.getUidFrom());
                 if (member != null) {
                     results.add(member);
                 }
                 break;
             default:
-                results = Collections.EMPTY_LIST;
+                results = new ArrayList<MailboxMembership<Long>>();
                 break;
         }
         Collections.sort(results, MailboxMembershipComparator.INSTANCE);
@@ -160,9 +160,9 @@ public class InMemoryStoreMailbox extends StoreMailbox implements MessageMapper 
      * (non-Javadoc)
      * @see org.apache.james.imap.store.mail.MessageMapper#findMarkedForDeletionInMailbox(org.apache.james.imap.mailbox.MessageRange)
      */
-    public List<MailboxMembership> findMarkedForDeletionInMailbox(MessageRange set) throws StorageException {
-        final List<MailboxMembership> results = findInMailbox(set);
-        for(final Iterator<MailboxMembership> it=results.iterator();it.hasNext();) {
+    public List<MailboxMembership<Long>> findMarkedForDeletionInMailbox(MessageRange set) throws StorageException {
+        final List<MailboxMembership<Long>> results = findInMailbox(set);
+        for(final Iterator<MailboxMembership<Long>> it=results.iterator();it.hasNext();) {
             if (!it.next().isDeleted()) {
                 it.remove();
             }
@@ -174,9 +174,9 @@ public class InMemoryStoreMailbox extends StoreMailbox implements MessageMapper 
      * (non-Javadoc)
      * @see org.apache.james.imap.store.mail.MessageMapper#findRecentMessagesInMailbox()
      */
-    public List<MailboxMembership> findRecentMessagesInMailbox() throws StorageException {
-        final List<MailboxMembership> results = new ArrayList<MailboxMembership>();
-        for(MailboxMembership member:membershipByUid.values()) {
+    public List<MailboxMembership<Long>> findRecentMessagesInMailbox() throws StorageException {
+        final List<MailboxMembership<Long>> results = new ArrayList<MailboxMembership<Long>>();
+        for(MailboxMembership<Long> member:membershipByUid.values()) {
             if (member.isRecent()) {
                 results.add(member);
             }
@@ -190,9 +190,9 @@ public class InMemoryStoreMailbox extends StoreMailbox implements MessageMapper 
      * (non-Javadoc)
      * @see org.apache.james.imap.store.mail.MessageMapper#findUnseenMessagesInMailbox()
      */
-    public List<MailboxMembership> findUnseenMessagesInMailbox() throws StorageException {
-        final List<MailboxMembership> results = new ArrayList<MailboxMembership>();
-        for(MailboxMembership member:membershipByUid.values()) {
+    public List<MailboxMembership<Long>> findUnseenMessagesInMailbox() throws StorageException {
+        final List<MailboxMembership<Long>> results = new ArrayList<MailboxMembership<Long>>();
+        for(MailboxMembership<Long> member:membershipByUid.values()) {
             if (!member.isSeen()) {
                 results.add(member);
             }
@@ -205,7 +205,7 @@ public class InMemoryStoreMailbox extends StoreMailbox implements MessageMapper 
      * (non-Javadoc)
      * @see org.apache.james.imap.store.mail.MessageMapper#save(org.apache.james.imap.store.mail.model.MailboxMembership)
      */
-    public void save(MailboxMembership message) throws StorageException {
+    public void save(MailboxMembership<Long> message) throws StorageException {
         membershipByUid.put(message.getUid(), message);
     }
 
@@ -213,8 +213,8 @@ public class InMemoryStoreMailbox extends StoreMailbox implements MessageMapper 
      * (non-Javadoc)
      * @see org.apache.james.imap.store.mail.MessageMapper#searchMailbox(org.apache.james.imap.mailbox.SearchQuery)
      */
-    public List<MailboxMembership> searchMailbox(SearchQuery query) throws StorageException {
-        return new ArrayList<MailboxMembership>(membershipByUid.values());
+    public List<MailboxMembership<Long>> searchMailbox(SearchQuery query) throws StorageException {
+        return new ArrayList<MailboxMembership<Long>>(membershipByUid.values());
     }
 
 

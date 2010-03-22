@@ -26,7 +26,7 @@ import org.apache.james.imap.store.mail.model.Mailbox;
 /**
  * Mailbox data which is stored only in memory.
  */
-public class InMemoryMailbox implements Mailbox {
+public class InMemoryMailbox implements Mailbox<Long> {
 
     private final long id;    
     private final long uidValidity;
@@ -49,7 +49,7 @@ public class InMemoryMailbox implements Mailbox {
         return nextUid.get();
     }
 
-    public long getMailboxId() {
+    public Long getMailboxId() {
         return id;
     }
 

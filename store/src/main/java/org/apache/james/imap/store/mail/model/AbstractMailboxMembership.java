@@ -25,7 +25,7 @@ import javax.mail.Flags;
  * 
  *
  */
-public abstract class AbstractMailboxMembership implements MailboxMembership{
+public abstract class AbstractMailboxMembership<Id> implements MailboxMembership<Id>{
 
 
     /**

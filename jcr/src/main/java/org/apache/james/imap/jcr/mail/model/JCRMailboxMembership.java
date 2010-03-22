@@ -32,7 +32,6 @@ import org.apache.james.imap.jcr.JCRImapConstants;
 import org.apache.james.imap.jcr.Persistent;
 import org.apache.james.imap.store.mail.model.AbstractMailboxMembership;
 import org.apache.james.imap.store.mail.model.Document;
-import org.apache.james.imap.store.mail.model.Mailbox;
 import org.apache.james.imap.store.mail.model.MailboxMembership;
 import org.apache.james.imap.store.mail.model.PropertyBuilder;
 
@@ -40,7 +39,7 @@ import org.apache.james.imap.store.mail.model.PropertyBuilder;
  * JCR implementation of {@link MailboxMembership}
  *
  */
-public class JCRMailboxMembership extends AbstractMailboxMembership implements
+public class JCRMailboxMembership extends AbstractMailboxMembership<String> implements
 		Persistent, JCRImapConstants {
     private static final String TOSTRING_SEPARATOR = " ";
 
@@ -165,26 +164,18 @@ public class JCRMailboxMembership extends AbstractMailboxMembership implements
 	 * @see
 	 * org.apache.james.imap.store.mail.model.MailboxMembership#getMailboxId()
 	 */
-	public long getMailboxId() {
-		throw new UnsupportedOperationException("Not Supported. Use UUID");
-	}
+	public String getMailboxId() {
+	    if (isPersistent()) {
+            try {
+                return node.getProperty(MAILBOX_UUID_PROPERTY).getString();
+            } catch (RepositoryException e) {
+                logger.error("Unable to access property "
+                        + MAILBOX_UUID_PROPERTY, e);
+            }
+        }
+        return mailboxUUID;
+    }
 
-	/**
-	 * Return the MailboxUUID for the mapped {@link Mailbox}
-	 * 
-	 * @return mailbox
-	 */
-	public String getMailboxUUID() {
-		if (isPersistent()) {
-			try {
-				return node.getProperty(MAILBOX_UUID_PROPERTY).getString();
-			} catch (RepositoryException e) {
-				logger.error("Unable to access property "
-						+ MAILBOX_UUID_PROPERTY, e);
-			}
-		}
-		return mailboxUUID;
-	}
 
 	/*
 	 * (non-Javadoc)
@@ -391,23 +382,6 @@ public class JCRMailboxMembership extends AbstractMailboxMembership implements
 		}
 	}
 
-	/**
-	 * Return the UUID for this instance
-	 * 
-	 * @return uuid
-	 */
-	public String getUUID() {
-		if (isPersistent()) {
-			try {
-				return node.getUUID();
-			} catch (RepositoryException e) {
-				logger.error("Unable to access property "
-						+ JcrConstants.JCR_UUID, e);
-			}
-		}
-		return null;
-	}
-
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -432,7 +406,7 @@ public class JCRMailboxMembership extends AbstractMailboxMembership implements
 	 * @see org.apache.james.imap.jcr.Persistent#merge(javax.jcr.Node)
 	 */
 	public void merge(Node node) throws RepositoryException {
-		node.setProperty(MAILBOX_UUID_PROPERTY, getMailboxUUID());
+		node.setProperty(MAILBOX_UUID_PROPERTY, getMailboxId());
 		node.setProperty(UID_PROPERTY, getUid());
 		node.setProperty(SIZE_PROPERTY, getSize());
 		node.setProperty(ANSWERED_PROPERTY, isAnswered());
@@ -477,14 +451,23 @@ public class JCRMailboxMembership extends AbstractMailboxMembership implements
 		uid = 0;
 		*/
 	}
-	
+
+    public String getId() {
+        if (isPersistent()) {
+            try {
+                return node.getUUID();
+            } catch (RepositoryException e) {
+                logger.error("Unable to access property " + JcrConstants.JCR_UUID, e);
+            }
+        }
+        return null;      
+    }
 
     @Override
     public int hashCode() {
         final int PRIME = 31;
         int result = 1;
-        result = PRIME * result + getUUID().hashCode();
-        result = PRIME * result + getMailboxUUID().hashCode();
+        result = PRIME * result + getMailboxId().hashCode();
         return result;
     }
 
@@ -497,9 +480,9 @@ public class JCRMailboxMembership extends AbstractMailboxMembership implements
         if (getClass() != obj.getClass())
             return false;
         final JCRMailboxMembership other = (JCRMailboxMembership) obj;
-        if (getMailboxUUID() != other.getMailboxUUID())
+        if (getMailboxId() != other.getMailboxId())
             return false;
-        if (getUUID() != other.getUUID())
+        if (getId() != other.getId())
             return false;
         return true;
     }
@@ -507,8 +490,8 @@ public class JCRMailboxMembership extends AbstractMailboxMembership implements
     public String toString() {
         final String retValue = 
             "mailbox("
-            + "mailboxUUID = " + this.getMailboxUUID() + TOSTRING_SEPARATOR
-            + "uuid = " + this.getUUID() + TOSTRING_SEPARATOR
+            + "mailboxUUID = " + this.getMailboxId() + TOSTRING_SEPARATOR
+            + "uuid = " + this.getId() + TOSTRING_SEPARATOR
             + "internalDate = " + this.getInternalDate() + TOSTRING_SEPARATOR
             + "size = " + this.getSize() + TOSTRING_SEPARATOR
             + "answered = " + this.isAnswered() + TOSTRING_SEPARATOR

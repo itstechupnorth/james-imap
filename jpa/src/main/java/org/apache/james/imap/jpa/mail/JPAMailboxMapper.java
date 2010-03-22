@@ -36,7 +36,7 @@ import org.apache.james.imap.store.mail.model.Mailbox;
 /**
  * Data access management for mailbox.
  */
-public abstract class JPAMailboxMapper extends JPATransactionalMapper implements MailboxMapper {
+public abstract class JPAMailboxMapper extends JPATransactionalMapper implements MailboxMapper<Long> {
 
     private static final char SQL_WILDCARD_CHAR = '%';
     
@@ -59,7 +59,7 @@ public abstract class JPAMailboxMapper extends JPATransactionalMapper implements
     /**
      * @see org.apache.james.imap.store.mail.MailboxMapper#save(Mailbox)
      */
-    public void save(Mailbox mailbox) throws StorageException {
+    public void save(Mailbox<Long> mailbox) throws StorageException {
         try {
             entityManager.persist(mailbox);
         } catch (PersistenceException e) {
@@ -70,7 +70,7 @@ public abstract class JPAMailboxMapper extends JPATransactionalMapper implements
     /**
      * @see org.apache.james.imap.store.mail.MailboxMapper#findMailboxByName(java.lang.String)
      */
-    public Mailbox findMailboxByName(String name) throws StorageException, MailboxNotFoundException {
+    public Mailbox<Long> findMailboxByName(String name) throws StorageException, MailboxNotFoundException {
         try {
             return (JPAMailbox) entityManager.createNamedQuery("findMailboxByName").setParameter("nameParam", name).getSingleResult();
         } catch (NoResultException e) {
@@ -84,7 +84,7 @@ public abstract class JPAMailboxMapper extends JPATransactionalMapper implements
     /**
      * @see org.apache.james.imap.store.mail.MailboxMapper#delete(Mailbox)
      */
-    public void delete(Mailbox mailbox) throws StorageException {
+    public void delete(Mailbox<Long> mailbox) throws StorageException {
         try {  
             entityManager.remove(mailbox);
         } catch (PersistenceException e) {
@@ -96,7 +96,7 @@ public abstract class JPAMailboxMapper extends JPATransactionalMapper implements
      * @see org.apache.james.imap.store.mail.MailboxMapper#findMailboxWithNameLike(java.lang.String)
      */
     @SuppressWarnings("unchecked")
-    public List<Mailbox> findMailboxWithNameLike(String name) throws StorageException {
+    public List<Mailbox<Long>> findMailboxWithNameLike(String name) throws StorageException {
         try {
             return entityManager.createNamedQuery("findMailboxWithNameLike").setParameter("nameParam", SQL_WILDCARD_CHAR + name + SQL_WILDCARD_CHAR).getResultList();
         } catch (PersistenceException e) {
@@ -129,7 +129,7 @@ public abstract class JPAMailboxMapper extends JPATransactionalMapper implements
     /**
      * @see org.apache.james.imap.store.mail.MailboxMapper#findMailboxById(long)
      */
-    public Mailbox findMailboxById(long mailboxId) throws StorageException, MailboxNotFoundException  {
+    public Mailbox<Long> findMailboxById(Long mailboxId) throws StorageException, MailboxNotFoundException  {
         try {
             return (JPAMailbox) entityManager.createNamedQuery("findMailboxById").setParameter("idParam", mailboxId).getSingleResult();
         } catch (NoResultException e) {
@@ -139,10 +139,12 @@ public abstract class JPAMailboxMapper extends JPATransactionalMapper implements
         } 
     }
 
-    /**
-     * @see org.apache.james.imap.store.mail.MailboxMapper#consumeNextUid(long)
+
+
+    /*
+     * 
      */
-    public Mailbox consumeNextUid(long mailboxId) throws StorageException, MailboxNotFoundException {
+    public Mailbox<Long> consumeNextUid(Long mailboxId) throws StorageException, MailboxNotFoundException {
         try {
             return doConsumeNextUid(mailboxId);
         } catch (NoResultException e) {

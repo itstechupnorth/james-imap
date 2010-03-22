@@ -65,7 +65,7 @@ import org.apache.james.imap.store.mail.model.PropertyBuilder;
     @NamedQuery(name="countMessagesInMailbox",
             query="SELECT COUNT(membership) FROM Membership membership WHERE membership.mailboxId = :idParam")                     
 })
-public class JPAMailboxMembership extends AbstractMailboxMembership {
+public class JPAMailboxMembership extends AbstractMailboxMembership<Long> {
 
     private static final String TOSTRING_SEPARATOR = " ";
 
@@ -187,7 +187,7 @@ public class JPAMailboxMembership extends AbstractMailboxMembership {
     /**
      * @see org.apache.james.imap.store.mail.model.MailboxMembership#getMailboxId()
      */
-    public long getMailboxId() {
+    public Long getMailboxId() {
         return mailboxId;
     }
 

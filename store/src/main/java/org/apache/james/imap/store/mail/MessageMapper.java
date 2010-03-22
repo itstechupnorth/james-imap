@@ -31,7 +31,7 @@ import org.apache.james.imap.store.transaction.TransactionalMapper;
 /**
  * Maps {@link Document} in a {@link Mailbox}.
  */
-public interface MessageMapper extends TransactionalMapper {
+public interface MessageMapper<Id> extends TransactionalMapper {
 
     /**
      * Return a List of {@link MailboxMembership} which represent the given {@link MessageRange}
@@ -41,7 +41,7 @@ public interface MessageMapper extends TransactionalMapper {
      * @return list
      * @throws StorageException
      */
-    public abstract List<MailboxMembership> findInMailbox(MessageRange set)
+    public abstract List<MailboxMembership<Id>> findInMailbox(MessageRange set)
             throws StorageException;
 
     /**
@@ -51,7 +51,7 @@ public interface MessageMapper extends TransactionalMapper {
      * @return list
      * @throws StorageException
      */
-    public abstract List<MailboxMembership> findMarkedForDeletionInMailbox(
+    public abstract List<MailboxMembership<Id>> findMarkedForDeletionInMailbox(
             final MessageRange set)
             throws StorageException;
 
@@ -80,7 +80,7 @@ public interface MessageMapper extends TransactionalMapper {
      * @return
      * @throws StorageException
      */
-    public abstract List<MailboxMembership> searchMailbox(SearchQuery query) throws StorageException;
+    public abstract List<MailboxMembership<Id>> searchMailbox(SearchQuery query) throws StorageException;
 
     /**
      * Delete the given {@link MailboxMembership}
@@ -88,7 +88,7 @@ public interface MessageMapper extends TransactionalMapper {
      * @param message
      * @throws StorageException
      */
-    public abstract void delete(MailboxMembership message) throws StorageException;
+    public abstract void delete(MailboxMembership<Id> message) throws StorageException;
 
     /**
      * Return a List of {@link MailboxMembership} which are unseen. 
@@ -97,7 +97,7 @@ public interface MessageMapper extends TransactionalMapper {
      * @return list
      * @throws StorageException
      */
-    public abstract List<MailboxMembership> findUnseenMessagesInMailbox() throws StorageException;
+    public abstract List<MailboxMembership<Id>> findUnseenMessagesInMailbox() throws StorageException;
 
     /**
      * Return a List of {@link MailboxMembership} which are recent.
@@ -106,7 +106,7 @@ public interface MessageMapper extends TransactionalMapper {
      * @return recentList
      * @throws StorageException
      */
-    public abstract List<MailboxMembership> findRecentMessagesInMailbox() throws StorageException;
+    public abstract List<MailboxMembership<Id>> findRecentMessagesInMailbox() throws StorageException;
 
 
     /**
@@ -115,6 +115,6 @@ public interface MessageMapper extends TransactionalMapper {
      * @param message
      * @throws StorageException
      */
-    public abstract void save(MailboxMembership message) throws StorageException;
+    public abstract void save(MailboxMembership<Id> message) throws StorageException;
 
 }

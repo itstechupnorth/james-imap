@@ -38,7 +38,7 @@ import org.apache.james.imap.store.transaction.TransactionalMapper;
  * 
  *
  */
-public abstract class JPAMailboxManager extends StoreMailboxManager {
+public abstract class JPAMailboxManager extends StoreMailboxManager<Long> {
 
     protected final EntityManagerFactory entityManagerFactory;
 
@@ -51,8 +51,8 @@ public abstract class JPAMailboxManager extends StoreMailboxManager {
     
     @Override
     protected void doCreate(String namespaceName, MailboxSession session) throws MailboxException {
-        final Mailbox mailbox = new org.apache.james.imap.jpa.mail.model.JPAMailbox(namespaceName, randomUidValidity());
-        final MailboxMapper mapper = createMailboxMapper(session);
+        final Mailbox<Long> mailbox = new org.apache.james.imap.jpa.mail.model.JPAMailbox(namespaceName, randomUidValidity());
+        final MailboxMapper<Long> mapper = createMailboxMapper(session);
         mapper.execute(new TransactionalMapper.Transaction(){
 
             public void run() throws MailboxException {
@@ -69,7 +69,7 @@ public abstract class JPAMailboxManager extends StoreMailboxManager {
      */
 
     public void deleteEverything() throws MailboxException {
-        final MailboxMapper mapper = createMailboxMapper(null);
+        final MailboxMapper<Long> mapper = createMailboxMapper(null);
         mapper.execute(new TransactionalMapper.Transaction() {
 
             public void run() throws MailboxException {

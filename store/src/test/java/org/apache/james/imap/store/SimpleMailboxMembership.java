@@ -27,7 +27,7 @@ import javax.mail.Flags;
 import org.apache.james.imap.store.mail.model.Document;
 import org.apache.james.imap.store.mail.model.MailboxMembership;
 
-public class SimpleMailboxMembership implements MailboxMembership {
+public class SimpleMailboxMembership implements MailboxMembership<Long> {
     
     private static final String TOSTRING_SEPARATOR = " ";
     
@@ -86,7 +86,7 @@ public class SimpleMailboxMembership implements MailboxMembership {
     /**
      * @see org.apache.james.imap.jpa.mail.model.Document#getMailboxId()
      */
-    public long getMailboxId() {
+    public Long getMailboxId() {
         return mailboxId;
     }
 
@@ -201,6 +201,7 @@ public class SimpleMailboxMembership implements MailboxMembership {
         return result;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public boolean equals(Object obj) {
         if (this == obj)
@@ -209,7 +210,7 @@ public class SimpleMailboxMembership implements MailboxMembership {
             return false;
         if (getClass() != obj.getClass())
             return false;
-        final MailboxMembership other = (MailboxMembership) obj;
+        final MailboxMembership<Long> other = (MailboxMembership<Long>) obj;
         if (mailboxId != other.getMailboxId())
             return false;
         if (uid != other.getUid())

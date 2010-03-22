@@ -42,14 +42,13 @@ public class OpenJPAMailboxManager extends JPAMailboxManager{
 	}
 
 	@Override
-	protected MailboxMapper createMailboxMapper(MailboxSession session) {
+	protected MailboxMapper<Long> createMailboxMapper(MailboxSession session) {
         return new OpenJPAMailboxMapper(entityManagerFactory.createEntityManager());
 	}
 
 
-    @Override
-    protected StoreMailbox createMailbox(Mailbox mailboxRow, MailboxSession session) {
-        StoreMailbox result;
+    protected StoreMailbox<Long> createMailbox(Mailbox<Long> mailboxRow, MailboxSession session) {
+        StoreMailbox<Long> result;
         result = new OpenJPAMailbox(mailboxRow, session, entityManagerFactory);
         return result;
     }

@@ -47,18 +47,17 @@ import org.apache.james.imap.mailbox.SubscriptionException;
 import org.apache.james.imap.mailbox.MailboxMetaData.Selectability;
 import org.apache.james.imap.mailbox.util.SimpleMailboxMetaData;
 import org.apache.james.imap.store.mail.MailboxMapper;
-import org.apache.james.imap.store.mail.MessageMapper;
 import org.apache.james.imap.store.mail.model.Mailbox;
 import org.apache.james.imap.store.transaction.TransactionalMapper;
 
-public abstract class StoreMailboxManager extends AbstractLogEnabled implements MailboxManager {
+public abstract class StoreMailboxManager<Id> extends AbstractLogEnabled implements MailboxManager {
     public static final String USER_NAMESPACE_PREFIX = "#mail";
     
     public static final char SQL_WILDCARD_CHAR = '%';
 
     private final static Random random = new Random();
 
-    protected final Map<String, StoreMailbox> mailboxes;
+    protected final Map<String, StoreMailbox<Id>> mailboxes;
 
     private final Authenticator authenticator;    
     private final Subscriber subscriber;    
@@ -73,7 +72,7 @@ public abstract class StoreMailboxManager extends AbstractLogEnabled implements 
 
     
     public StoreMailboxManager(final Authenticator authenticator, final Subscriber subscriber, final char delimiter) {
-        mailboxes = new HashMap<String, StoreMailbox>();
+        mailboxes = new HashMap<String, StoreMailbox<Id>>();
         this.authenticator = authenticator;
         this.subscriber = subscriber;
         this.delimiter = delimiter;
@@ -85,14 +84,14 @@ public abstract class StoreMailboxManager extends AbstractLogEnabled implements 
      * @param mailboxRow
      * @return storeMailbox
      */
-    protected abstract StoreMailbox createMailbox(Mailbox mailboxRow, MailboxSession session);
+    protected abstract StoreMailbox<Id> createMailbox(Mailbox<Id> mailboxRow, MailboxSession session);
     
     /**
      * Create the MailboxMapper which should get used 
      * 
      * @return mailboxMapper
      */
-    protected abstract MailboxMapper createMailboxMapper(MailboxSession session) throws MailboxException;
+    protected abstract MailboxMapper<Id> createMailboxMapper(MailboxSession session) throws MailboxException;
     
     /**
      * Create a Mailbox for the given namespace and store it to the underlying storage
@@ -119,10 +118,10 @@ public abstract class StoreMailboxManager extends AbstractLogEnabled implements 
      * @return mailbox the mailbox for the given name
      * @throws MailboxException get thrown if no Mailbox could be found for the given name
      */
-    private StoreMailbox doGetMailbox(String mailboxName, MailboxSession session) throws MailboxException {
+    private StoreMailbox<Id> doGetMailbox(String mailboxName, MailboxSession session) throws MailboxException {
         synchronized (mailboxes) {
-            final MailboxMapper mapper = createMailboxMapper(session);
-            Mailbox mailboxRow = mapper.findMailboxByName(mailboxName);
+            final MailboxMapper<Id> mapper = createMailboxMapper(session);
+            Mailbox<Id> mailboxRow = mapper.findMailboxByName(mailboxName);
             
             if (mailboxRow == null) {
                 getLog().info("Mailbox '" + mailboxName + "' not found.");
@@ -131,7 +130,7 @@ public abstract class StoreMailboxManager extends AbstractLogEnabled implements 
             } else {
                 getLog().debug("Loaded mailbox " + mailboxName);
 
-                StoreMailbox result = (StoreMailbox) mailboxes.get(mailboxName);
+                StoreMailbox<Id> result = (StoreMailbox<Id>) mailboxes.get(mailboxName);
                 if (result == null) {
                     result = createMailbox(mailboxRow, session);
                     mailboxes.put(mailboxName, result);
@@ -196,12 +195,12 @@ public abstract class StoreMailboxManager extends AbstractLogEnabled implements 
         synchronized (mailboxes) {
             // TODO put this into a serilizable transaction
             
-            final MailboxMapper mapper = createMailboxMapper(session);
+            final MailboxMapper<Id> mapper = createMailboxMapper(session);
             
             mapper.execute(new TransactionalMapper.Transaction() {
 
                 public void run() throws MailboxException {
-                    Mailbox mailbox = mapper.findMailboxByName(mailboxName);
+                    Mailbox<Id> mailbox = mapper.findMailboxByName(mailboxName);
                     if (mailbox == null) {
                         throw new MailboxNotFoundException("Mailbox not found");
                     }
@@ -210,7 +209,7 @@ public abstract class StoreMailboxManager extends AbstractLogEnabled implements 
                 
             });
             
-            final StoreMailbox storeMailbox = mailboxes.remove(mailboxName);
+            final StoreMailbox<Id> storeMailbox = mailboxes.remove(mailboxName);
             if (storeMailbox != null) {
                 storeMailbox.deleted(session);
             }
@@ -230,12 +229,12 @@ public abstract class StoreMailboxManager extends AbstractLogEnabled implements 
                 throw new MailboxExistsException(to);
             }
 
-            final MailboxMapper mapper = createMailboxMapper(session);                
+            final MailboxMapper<Id> mapper = createMailboxMapper(session);                
             mapper.execute(new TransactionalMapper.Transaction() {
 
                 public void run() throws MailboxException {
                     // TODO put this into a serilizable transaction
-                    final Mailbox mailbox = mapper.findMailboxByName(from);
+                    final Mailbox<Id> mailbox = mapper.findMailboxByName(from);
 
                     if (mailbox == null) {
                         throw new MailboxNotFoundException(from);
@@ -246,8 +245,8 @@ public abstract class StoreMailboxManager extends AbstractLogEnabled implements 
                     changeMailboxName(from, to);
 
                     // rename submailbox
-                    final List<Mailbox> subMailboxes = mapper.findMailboxWithNameLike(from + delimiter + "%");
-                    for (Mailbox sub:subMailboxes) {
+                    final List<Mailbox<Id>> subMailboxes = mapper.findMailboxWithNameLike(from + delimiter + "%");
+                    for (Mailbox<Id> sub:subMailboxes) {
                         final String subOriginalName = sub.getName();
                         final String subNewName = to + subOriginalName.substring(from.length());
                         sub.setName(subNewName);
@@ -279,7 +278,7 @@ public abstract class StoreMailboxManager extends AbstractLogEnabled implements 
      * @param to not null
      */
     private void changeMailboxName(String from, String to) {
-        final StoreMailbox jpaMailbox = mailboxes.remove(from);
+        final StoreMailbox<Id> jpaMailbox = mailboxes.remove(from);
         if (jpaMailbox != null) {
             jpaMailbox.reportRenamed(to);
             mailboxes.put(to, jpaMailbox);
@@ -292,8 +291,8 @@ public abstract class StoreMailboxManager extends AbstractLogEnabled implements 
      */
     public void copyMessages(MessageRange set, String from, String to,
             MailboxSession session) throws MailboxException {
-        StoreMailbox toMailbox = doGetMailbox(to, session);
-        StoreMailbox fromMailbox = doGetMailbox(from, session);
+        StoreMailbox<Id> toMailbox = doGetMailbox(to, session);
+        StoreMailbox<Id> fromMailbox = doGetMailbox(from, session);
         fromMailbox.copyTo(set, toMailbox, session);
     }
 
@@ -317,10 +316,10 @@ public abstract class StoreMailboxManager extends AbstractLogEnabled implements 
                 delimiter).replace(freeWildcard, SQL_WILDCARD_CHAR)
                 .replace(localWildcard, SQL_WILDCARD_CHAR);
 
-        final MailboxMapper mapper = createMailboxMapper(session);
-        final List<Mailbox> mailboxes = mapper.findMailboxWithNameLike(search);
+        final MailboxMapper<Id> mapper = createMailboxMapper(session);
+        final List<Mailbox<Id>> mailboxes = mapper.findMailboxWithNameLike(search);
         final List<MailboxMetaData> results = new ArrayList<MailboxMetaData>(mailboxes.size());
-        for (Mailbox mailbox: mailboxes) {
+        for (Mailbox<Id> mailbox: mailboxes) {
             final String name = mailbox.getName();
             if (name.startsWith(base)) {
                 final String match = name.substring(baseLength);
@@ -347,7 +346,7 @@ public abstract class StoreMailboxManager extends AbstractLogEnabled implements 
      * @throws StorageException 
      * @throws TorqueException
      */
-    private boolean hasChildren(String name, final MailboxMapper mapper) throws StorageException {
+    private boolean hasChildren(String name, final MailboxMapper<Id> mapper) throws StorageException {
         return mapper.existsMailboxStartingWith(name + delimiter);
     }
 
@@ -357,7 +356,7 @@ public abstract class StoreMailboxManager extends AbstractLogEnabled implements 
      */
     public boolean mailboxExists(String mailboxName, MailboxSession session) throws MailboxException {
         synchronized (mailboxes) {
-            final MailboxMapper mapper = createMailboxMapper(session);
+            final MailboxMapper<Id> mapper = createMailboxMapper(session);
             final long count = mapper.countMailboxesWithName(mailboxName);
             if (count == 0) {
                 mailboxes.remove(mailboxName);
@@ -460,7 +459,7 @@ public abstract class StoreMailboxManager extends AbstractLogEnabled implements 
      * @see org.apache.james.imap.mailbox.MailboxManager#addListener(java.lang.String, org.apache.james.imap.mailbox.MailboxListener, org.apache.james.imap.mailbox.MailboxSession)
      */
     public void addListener(String mailboxName, MailboxListener listener, MailboxSession session) throws MailboxException {
-        final StoreMailbox mailbox = doGetMailbox(mailboxName,session);
+        final StoreMailbox<Id> mailbox = doGetMailbox(mailboxName,session);
         mailbox.addListener(listener);
     }
 
