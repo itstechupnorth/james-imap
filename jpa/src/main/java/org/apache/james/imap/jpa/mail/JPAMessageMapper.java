@@ -136,14 +136,14 @@ public class JPAMessageMapper extends JPATransactionalMapper implements MessageM
 
     @SuppressWarnings("unchecked")
     private List<MailboxMembership<Long>> findDeletedMessagesInMailboxAfterUID(long mailboxId, long uid) {
-        return entityManager.createNamedQuery("findDeletedMessagesInMailboxBetweenUIDs")
+        return entityManager.createNamedQuery("findDeletedMessagesInMailboxAfterUID")
         .setParameter("idParam", mailboxId)
         .setParameter("uidParam", uid).getResultList();
     }
 
     @SuppressWarnings("unchecked")
     private List<MailboxMembership<Long>> findDeletedMessagesInMailboxWithUID(long mailboxId, long uid) {
-        return entityManager.createNamedQuery("findDeletedMessagesInMailboxBetweenUIDs")
+        return entityManager.createNamedQuery("findDeletedMessagesInMailboxWithUID")
         .setParameter("idParam", mailboxId)
         .setParameter("uidParam", uid).getResultList();
     }
