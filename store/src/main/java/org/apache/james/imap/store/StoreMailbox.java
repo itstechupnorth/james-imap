@@ -57,6 +57,7 @@ import org.apache.james.imap.store.mail.model.PropertyBuilder;
 import org.apache.james.imap.store.transaction.TransactionalMapper;
 import org.apache.james.mime4j.MimeException;
 import org.apache.james.mime4j.descriptor.MaximalBodyDescriptor;
+import org.apache.james.mime4j.parser.MimeEntityConfig;
 import org.apache.james.mime4j.parser.MimeTokenStream;
 
 /**
@@ -151,8 +152,13 @@ public abstract class StoreMailbox<Id> implements org.apache.james.imap.mailbox.
                 final long uid = mailbox.getLastUid();
                 final int size = messageBytes.length;
                 final int bodyStartOctet = bodyStartOctet(messageBytes);
-                
-                final MimeTokenStream parser = MimeTokenStream.createMaximalDescriptorStream();
+
+                // Disable line length... This should be handled by the smtp server component and not the parser itself
+                // https://issues.apache.org/jira/browse/IMAP-122
+                MimeEntityConfig config = new MimeEntityConfig();
+                config.setMaximalBodyDescriptor(true);
+                config.setMaxLineLen(-1);
+                final ConfigurableMimeTokenStream parser = new ConfigurableMimeTokenStream(config);
                
                 parser.setRecursionMode(MimeTokenStream.M_NO_RECURSE);
                 parser.parse(new ByteArrayInputStream(messageBytes));
@@ -617,6 +623,14 @@ public abstract class StoreMailbox<Id> implements org.apache.james.imap.mailbox.
         }
             
         return new MailboxMetaData(recent, permanentFlags, uidValidity, uidNext, messageCount, unseenCount, firstUnseen, isWriteable());
+    }
+    
+    
+    private final class ConfigurableMimeTokenStream extends MimeTokenStream {
+        
+        public ConfigurableMimeTokenStream(MimeEntityConfig config) {
+            super(config);
+        }
     }
     
 }
