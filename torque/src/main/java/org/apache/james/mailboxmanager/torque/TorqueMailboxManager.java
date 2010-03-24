@@ -425,4 +425,20 @@ public class TorqueMailboxManager implements MailboxManager {
         // Do nothing        
     }
 
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.mailbox.MailboxManager#getDelimiter()
+     */
+    public char getDelimiter() {
+        return delimiter;
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.mailbox.MailboxManager#getUserNameSpacePrefix()
+     */
+    public String getUserNameSpacePrefix() {
+        return USER_NAMESPACE_PREFIX;
+    }
+
 }

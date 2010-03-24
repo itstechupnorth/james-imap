@@ -483,13 +483,20 @@ public abstract class StoreMailboxManager<Id> extends AbstractLogEnabled impleme
         // Do nothing by default
     }
 
-    /**
-     * Return the delemiter to use
-     * 
-     * @return delemiter
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.mailbox.MailboxManager#getDelimiter()
      */
-    protected char getDelimiter() {
+    public char getDelimiter() {
     	return delimiter;
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.mailbox.MailboxManager#getUserNameSpacePrefix()
+     */
+    public String getUserNameSpacePrefix() {
+        return USER_NAMESPACE_PREFIX;
     }
 
 

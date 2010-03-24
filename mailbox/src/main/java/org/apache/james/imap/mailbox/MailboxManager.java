@@ -61,6 +61,20 @@ import org.apache.commons.logging.Log;
 public interface MailboxManager {
 
     /**
+     * Return the delimter to use for folders
+     * 
+     * @return delimiter
+     */
+    char getDelimiter();
+    
+    /**
+     * Return the prefix for the namespace
+     * 
+     * @return namespacePrefix
+     */
+    String getUserNameSpacePrefix();
+    
+    /**
      * <p>
      * Resolves a path for the given user.
      * </p>
