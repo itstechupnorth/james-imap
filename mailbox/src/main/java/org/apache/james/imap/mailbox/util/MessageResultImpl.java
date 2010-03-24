@@ -149,6 +149,9 @@ public class MessageResultImpl implements MessageResult {
      * @see org.apache.james.imap.mailbox.MessageResult#headers()
      */
     public Iterator<Header> headers() {
+        if (headers == null) {
+            return null;
+        }
         return headers.iterator();
     }
 
