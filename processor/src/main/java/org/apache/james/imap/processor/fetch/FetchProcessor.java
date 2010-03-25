@@ -56,10 +56,18 @@ public class FetchProcessor extends AbstractMailboxProcessor {
         super(next, mailboxManager, factory);
     }
 
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.processor.base.AbstractChainedProcessor#isAcceptable(org.apache.james.imap.api.ImapMessage)
+     */
     protected boolean isAcceptable(ImapMessage message) {
         return (message instanceof FetchRequest);
     }
 
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.processor.AbstractMailboxProcessor#doProcess(org.apache.james.imap.api.message.request.ImapRequest, org.apache.james.imap.api.process.ImapSession, java.lang.String, org.apache.james.imap.api.ImapCommand, org.apache.james.imap.api.process.ImapProcessor.Responder)
+     */
     protected void doProcess(ImapRequest message, ImapSession session,
             String tag, ImapCommand command, Responder responder) {
         final FetchRequest request = (FetchRequest) message;
@@ -69,6 +77,11 @@ public class FetchProcessor extends AbstractMailboxProcessor {
         try {
             FetchGroup resultToFetch = getFetchGroup(fetch);
             final Mailbox mailbox = getSelectedMailbox(session);
+
+            if (mailbox == null) {
+                throw new MessagingException("Session not in SELECTED state");
+            }
+            
             for (int i = 0; i < idSet.length; i++) {
                 final FetchResponseBuilder builder = new FetchResponseBuilder(
                         new EnvelopeBuilder(session.getLog()));
