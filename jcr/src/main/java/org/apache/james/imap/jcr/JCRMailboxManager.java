@@ -67,7 +67,7 @@ public class JCRMailboxManager extends StoreMailboxManager<String> implements JC
 
     
     public JCRMailboxManager(final Authenticator authenticator, final Subscriber subscriber, final Repository repository, final String workspace) {
-        this(authenticator, subscriber, repository, workspace, MAX_SCALING);
+        this(authenticator, subscriber, repository, workspace, MIN_SCALING);
     }
     
     /**

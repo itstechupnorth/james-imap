@@ -58,7 +58,7 @@ public class JCRSubscriptionManager extends StoreSubscriptionManager implements 
 
 
     public JCRSubscriptionManager(final Repository repository, final String workspace) {
-        this(repository, workspace, MAX_SCALING);
+        this(repository, workspace, MIN_SCALING);
     }
     
 

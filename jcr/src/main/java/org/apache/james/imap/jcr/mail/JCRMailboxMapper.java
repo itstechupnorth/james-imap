@@ -225,7 +225,7 @@ public class JCRMailboxMapper extends AbstractJCRMapper implements MailboxMapper
                 node = getSession().getNodeByUUID(jcrMailbox.getMailboxId());
             }
             if (node == null) {
-                String nodePath = JCRUtils.escapePath(PATH,JCRUtils.createScaledPath(mailbox.getName(), getScaling()));
+                String nodePath =   PATH + NODE_DELIMITER + JCRUtils.createScaledPath(mailbox.getName(), getScaling());
 
                 node = JCRUtils.createNodeRecursive(getSession().getRootNode(), nodePath, "imap:mailbox");
                 node.addMixin(JcrConstants.MIX_REFERENCEABLE);

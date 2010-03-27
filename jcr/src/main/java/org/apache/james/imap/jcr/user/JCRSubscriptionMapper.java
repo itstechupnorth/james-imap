@@ -153,7 +153,7 @@ public class JCRSubscriptionMapper extends AbstractJCRMapper implements Subscrip
             
             // its a new subscription
             if (sub == null) {
-                String nodePath = JCRUtils.escapePath(PATH,JCRUtils.createScaledPath(new String[] {username, mailbox}, getScaling()));
+                String nodePath = PATH + NODE_DELIMITER + JCRUtils.createScaledPath(new String[] {username, mailbox}, getScaling());
                 
                 node = JCRUtils.createNodeRecursive(getSession().getRootNode(), nodePath, "imap:subscription");
             } else {

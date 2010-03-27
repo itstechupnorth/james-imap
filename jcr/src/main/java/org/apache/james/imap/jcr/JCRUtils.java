@@ -83,7 +83,7 @@ public class JCRUtils implements JCRImapConstants{
             String[] pathParts = path.split(NODE_DELIMITER);
             
             for (int a = 0; a < pathParts.length; a++) {
-                String subPath = pathParts[a];
+                String subPath =escape(pathParts[a]);
                 
                 for (int i = 0; i < subPath.length(); i++) {
                     
@@ -105,6 +105,10 @@ public class JCRUtils implements JCRImapConstants{
             }
             return buffer.toString();
         }
+    }
+  
+    public static String escape(String string) {
+        return Text.escapeIllegalJcrChars(string);
     }
     
     public static String createScaledPath(String[] paths, int scaling) {
@@ -143,7 +147,7 @@ public class JCRUtils implements JCRImapConstants{
         Node parent = rootNode;
         String nodeNames[] = nodePath.split(NODE_DELIMITER);
         for (int i = 0; i < nodeNames.length; i++) {
-            String nodeName = Text.escapeIllegalJcrChars(nodeNames[i]);
+            String nodeName = escape(nodeNames[i]);
             if (parent.hasNode(nodeName)) {
                 parent = parent.getNode(nodeName);
             } else {
@@ -167,11 +171,7 @@ public class JCRUtils implements JCRImapConstants{
 
         for (int i = 0; i < subNodes.length; i++) {
             String path = subNodes[i];
-            /*
-             * if (path.startsWith(PROPERTY_PREFIX) == false) {
-             * pathBuf.append(PROPERTY_PREFIX); }
-             */
-            pathBuf.append(Text.escapeIllegalJcrChars(path));
+            pathBuf.append(escape(path));
 
             if (i + 1 != subNodes.length) {
                 pathBuf.append(NODE_DELIMITER);
