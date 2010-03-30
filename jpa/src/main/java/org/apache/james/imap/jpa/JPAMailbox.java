@@ -103,8 +103,11 @@ public abstract class JPAMailbox extends StoreMailbox<Long> {
         return header;
     }
 
-    @Override
-    protected Mailbox<Long> reserveNextUid() throws MailboxException {
+    /**
+     * Reserve next Uid in mailbox and return the mailbox. This method needs to be synchronized 
+     * to be sure we don't get any race-condition
+     */
+    protected synchronized Mailbox<Long> reserveNextUid() throws MailboxException {
         final JPAMailboxMapper mapper = createMailboxMapper(getMailboxSession());
         final Mailbox<Long> mailbox = mapper.consumeNextUid(mailboxId);
         return mailbox;
