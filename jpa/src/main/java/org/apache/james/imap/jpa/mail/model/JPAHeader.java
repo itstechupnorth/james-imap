@@ -38,12 +38,13 @@ public class JPAHeader extends AbstractComparableHeader {
     @Basic(optional=false) private int lineNumber;
 
     /** The value for the field field */
+    /** Use a max of 1024 which could happen on very freaky header field names*/
+    @Column(length=1024)
     @Basic(optional=false) private String field;
 
     /** The value for the value field */
-    /** We use a 1024 as length because the max line length is 998 and 1024 is not so strict. The limit usual count for the whole line but 
-     ** giving a few extra chars can't harm to much. See RFC2822 2.1.1 **/
-    @Column(length=1024)
+    /** We use 10240 as max which is mostly overkill for most emails but better waste a bit of space then loose headers**/
+    @Column(length=10240)
     @Basic(optional=false) private String value;
     
     /**
