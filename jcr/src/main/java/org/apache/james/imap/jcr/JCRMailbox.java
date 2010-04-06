@@ -18,6 +18,7 @@
  ****************************************************************/
 package org.apache.james.imap.jcr;
 
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -90,7 +91,7 @@ public class JCRMailbox extends StoreMailbox<String>{
     }
 
     @Override
-    protected MailboxMembership<String> createMessage(Date internalDate, long uid, int size, int bodyStartOctet, byte[] document, Flags flags, List<Header> headers, PropertyBuilder propertyBuilder) {
+    protected MailboxMembership<String> createMessage(Date internalDate, long uid, int size, int bodyStartOctet, InputStream document, Flags flags, List<Header> headers, PropertyBuilder propertyBuilder) {
         final List<JCRHeader> jcrHeaders = new ArrayList<JCRHeader>(headers.size());
         for (Header header: headers) {
             jcrHeaders.add((JCRHeader) header);

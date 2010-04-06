@@ -19,6 +19,7 @@
 
 package org.apache.james.imap.mailbox;
 
+import java.io.InputStream;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.Map;
@@ -103,7 +104,7 @@ public interface Mailbox {
      * @return uid for the newly added message
      * @throws MailboxException when message cannot be appended
      */
-    long appendMessage(byte[] message, Date internalDate, MailboxSession mailboxSession, 
+    long appendMessage(InputStream msgIn, Date internalDate, MailboxSession mailboxSession, 
             boolean isRecent, Flags flags) throws MailboxException;
 
     /**

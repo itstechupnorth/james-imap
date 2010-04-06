@@ -19,7 +19,6 @@
 
 package org.apache.james.mailboxmanager.torque;
 
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -125,10 +124,9 @@ public class TorqueMailbox implements Mailbox {
         LockException.tryLock(lock.readLock(), LOCK_TIMEOUT);
     }
 
-    public long appendMessage(byte[] message, Date internalDate,
+    public long appendMessage(InputStream messageIn, Date internalDate,
             MailboxSession mailboxSession, boolean isRecent, Flags flags)
     throws MailboxException {
-
         try {
             checkAccess();
 
@@ -136,6 +134,7 @@ public class TorqueMailbox implements Mailbox {
 
             if (myMailboxRow != null) {
                 try {
+                    
                     // To be thread safe, we first get our own copy and the
                     // exclusive
                     // Uid
@@ -151,7 +150,7 @@ public class TorqueMailbox implements Mailbox {
                     messageRow.setMailboxId(getMailboxRow().getMailboxId());
                     messageRow.setUid(uid);
                     messageRow.setInternalDate(internalDate);
-                    final MimeMessage mimeMessage = new MimeMessage(null, new ByteArrayInputStream(message));
+                    final MimeMessage mimeMessage = new MimeMessage(null, messageIn);
                     if (isRecent) {
                         mimeMessage.setFlag(Flags.Flag.RECENT, true);
                     }

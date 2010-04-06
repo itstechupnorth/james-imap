@@ -18,6 +18,7 @@
  ****************************************************************/
 package org.apache.james.imap.jcr.mail.model;
 
+import java.io.InputStream;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -72,7 +73,7 @@ public class JCRMailboxMembership extends AbstractMailboxMembership<String> impl
 	private Node node;
 
 	public JCRMailboxMembership(String mailboxUUID, long uid,
-			Date internalDate, int size, Flags flags, byte[] content,
+			Date internalDate, int size, Flags flags, InputStream content,
 			int bodyStartOctet, final List<JCRHeader> headers,
 			final PropertyBuilder propertyBuilder, Log logger) {
 		super();
@@ -80,7 +81,7 @@ public class JCRMailboxMembership extends AbstractMailboxMembership<String> impl
 		this.uid = uid;
 		this.internalDate = internalDate;
 		this.size = size;
-		this.message = new JCRMessage(content, bodyStartOctet, headers,
+		this.message = new JCRMessage(content, size, bodyStartOctet, headers,
 				propertyBuilder, logger);
 		this.logger = logger;
 		setFlags(flags);

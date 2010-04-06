@@ -16,48 +16,44 @@
  * specific language governing permissions and limitations      *
  * under the License.                                           *
  ****************************************************************/
-package org.apache.james.imap.jpa.mail.model;
+package org.apache.james.imap.jpa.mail.model.openjpa;
 
-import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.util.List;
 
-import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
-import javax.persistence.Lob;
 
+import org.apache.james.imap.jpa.mail.model.AbstractJPAMessage;
+import org.apache.james.imap.jpa.mail.model.JPAHeader;
+import org.apache.james.imap.jpa.mail.model.JPAMessage;
 import org.apache.james.imap.store.mail.model.PropertyBuilder;
+import org.apache.openjpa.persistence.Persistent;
 
+/**
+ * JPA implementation of {@link AbstractJPAMessage} which use openjpas {@link Persistent} type to
+ * be able to stream the message content without loading it into the memory at all. 
+ * 
+ * This is not supported for all DB's yet. See {@link http://openjpa.apache.org/builds/latest/docs/manual/ref_guide_mapping_jpa.html}
+ * 
+ * If your DB is not supported by this, use {@link JPAMessage} 
+ *
+ */
 @Entity(name="Message")
-public class JPAMessage extends AbstractJPAMessage{
+public class JPAStreamingMessage extends AbstractJPAMessage{
 
 
-    /** The value for the body field. Lazy loaded */
-    /** We use a max length to represent 1gb data. Thats prolly overkill, but who knows */
-    @Basic(optional=false, fetch=FetchType.LAZY) @Column(length=1048576000)  @Lob private byte[] content;
+	@Persistent(optional=false, fetch=FetchType.LAZY) @Column(length=1048576000)  private InputStream content;
+	 
 
     @Deprecated
-    public JPAMessage() {}
+    public JPAStreamingMessage() {}
 
-    public JPAMessage(final InputStream content, final long contentOctets, final int bodyStartOctet, final List<JPAHeader> headers, final PropertyBuilder propertyBuilder) {
+    public JPAStreamingMessage(final InputStream content, final long contentOctets, final int bodyStartOctet, final List<JPAHeader> headers, final PropertyBuilder propertyBuilder) {
         super(contentOctets,bodyStartOctet,headers,propertyBuilder);
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        try {
-            byte[] buf = new byte[1024];
-            int i = 0;
-            while ((i = content.read(buf)) != -1) {
-                out.write(buf, 0, i);
-            }
-            this.content = out.toByteArray();
-            if (out != null)
-                out.close();
-
-        } catch (Exception e) {
-            this.content = new byte[0];
-        }
+        this.content = content;
     }
 
     /**
@@ -65,15 +61,9 @@ public class JPAMessage extends AbstractJPAMessage{
      * 
      * @param message
      */
-    public JPAMessage(JPAMessage message) {
+    public JPAStreamingMessage(JPAStreamingMessage message) {
         super(message);
-        ByteBuffer buf = message.getFullContent().duplicate(); 
-        int a = 0;
-        this.content = new byte[buf.capacity()];
-        while(buf.hasRemaining()) {
-            content[a] = buf.get();
-            a++;
-        }     
+        this.content = new ByteBufferInputStream(message.getFullContent().duplicate());
     }
 
     /*
@@ -81,7 +71,7 @@ public class JPAMessage extends AbstractJPAMessage{
      * @see org.apache.james.imap.store.mail.model.Document#getFullContent()
      */
     public ByteBuffer getFullContent() {
-        return ByteBuffer.wrap(content);
+        return getContentAsByteBuffer(content);
     }
 
 }

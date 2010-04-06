@@ -19,8 +19,12 @@
 
 package org.apache.james.imap.store;
 
-import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.PushbackInputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -131,15 +135,32 @@ public abstract class StoreMailbox<Id> implements org.apache.james.imap.mailbox.
      * (non-Javadoc)
      * @see org.apache.james.imap.mailbox.Mailbox#appendMessage(byte[], java.util.Date, org.apache.james.imap.mailbox.MailboxSession, boolean, javax.mail.Flags)
      */
-    public long appendMessage(byte[] messageBytes, Date internalDate,
+    public long appendMessage(InputStream msgIn, Date internalDate,
             MailboxSession mailboxSession, boolean isRecent, Flags flagsToBeSet)
     throws MailboxException {
+
         final Mailbox<Id> mailbox = reserveNextUid();
         if (mailbox == null) {
             throw new MailboxNotFoundException("Mailbox has been deleted");
         } else {
+           
             
+            File file = null;
             try {
+                // Create a temporary file and copy the message to it. We will work with the file as
+                // source for the InputStream
+                file = File.createTempFile("imap", ".msg");
+                FileOutputStream out = new FileOutputStream(file);
+                
+                byte[] buf = new byte[1024];
+                int i = 0;
+                while ((i = msgIn.read(buf)) != -1) {
+                    out.write(buf, 0, i);
+                }
+                out.flush();
+                out.close();
+                
+                FileInputStream tmpMsgIn = new FileInputStream(file);
                 // To be thread safe, we first get our own copy and the
                 // exclusive
                 // Uid
@@ -150,8 +171,8 @@ public abstract class StoreMailbox<Id> implements org.apache.james.imap.mailbox.
                 // mail 4 is big and comes over a slow connection.
 
                 final long uid = mailbox.getLastUid();
-                final int size = messageBytes.length;
-                final int bodyStartOctet = bodyStartOctet(messageBytes);
+                final int size = tmpMsgIn.available();
+                final int bodyStartOctet = bodyStartOctet(new FileInputStream(file));
 
                 // Disable line length... This should be handled by the smtp server component and not the parser itself
                 // https://issues.apache.org/jira/browse/IMAP-122
@@ -161,7 +182,7 @@ public abstract class StoreMailbox<Id> implements org.apache.james.imap.mailbox.
                 final ConfigurableMimeTokenStream parser = new ConfigurableMimeTokenStream(config);
                
                 parser.setRecursionMode(MimeTokenStream.M_NO_RECURSE);
-                parser.parse(new ByteArrayInputStream(messageBytes));
+                parser.parse(new FileInputStream(file));
                 final List<Header> headers = new ArrayList<Header>(INITIAL_SIZE_HEADERS);
                 
                 int lineNumber = 0;
@@ -245,7 +266,7 @@ public abstract class StoreMailbox<Id> implements org.apache.james.imap.mailbox.
                     flags.add(Flags.Flag.RECENT);
                 }
                 
-                final MailboxMembership<Id> message = createMessage(internalDate, uid, size, bodyStartOctet, messageBytes, flags, headers, propertyBuilder);
+                final MailboxMembership<Id> message = createMessage(internalDate, uid, size, bodyStartOctet, new FileInputStream(file), flags, headers, propertyBuilder);
                 final MessageMapper<Id> mapper = createMessageMapper(session);
 
                 mapper.execute(new TransactionalMapper.Transaction() {
@@ -266,24 +287,55 @@ public abstract class StoreMailbox<Id> implements org.apache.james.imap.mailbox.
             } catch (MimeException e) {
                 e.printStackTrace();
                 throw new MailboxException(HumanReadableText.FAILURE_MAIL_PARSE, e);
+            } finally {
+                // delete the temporary file if one was specified
+                if (file != null) {
+                    file.delete();
+                }
             }
         }
     }
 
-    private int bodyStartOctet(byte[] messageBytes) {
-        int bodyStartOctet = messageBytes.length;
-        for (int i=0;i<messageBytes.length-4;i++) {
-            if (messageBytes[i] == 0x0D) {
-                if (messageBytes[i+1] == 0x0A) {
-                    if (messageBytes[i+2] == 0x0D) {
-                        if (messageBytes[i+3] == 0x0A) {
-                            bodyStartOctet = i+4;
+    /**
+     * Return the position in the given {@link InputStream} at which the Body of the 
+     * Message starts
+     * 
+     * @param msgIn
+     * @return bodyStartOctet
+     * @throws IOException
+     */
+    private int bodyStartOctet(InputStream msgIn) throws IOException{
+        // we need to pushback maximal 3 bytes
+        PushbackInputStream in = new PushbackInputStream(msgIn,3);
+        
+        int bodyStartOctet = in.available();
+        int i = -1;
+        int count = 0;
+        while ((i = in.read()) != -1 && in.available() > 4) {
+            if (i == 0x0D) {
+                int a = in.read();
+                if (a == 0x0A) {
+                    int b = in.read();
+
+                    if (b == 0x0D) {
+                        int c = in.read();
+
+                        if (c == 0x0A) {
+                            bodyStartOctet = count+4;
                             break;
                         }
+                        in.unread(c);
                     }
+                    in.unread(b);
                 }
+                in.unread(a);
             }
+            count++;
         }
+        
+        // close the stream
+        in.close();
+        
         return bodyStartOctet;
     }
 
@@ -294,14 +346,14 @@ public abstract class StoreMailbox<Id> implements org.apache.james.imap.mailbox.
      * @param uid
      * @param size
      * @param bodyStartOctet
-     * @param document
+     * @param documentIn
      * @param flags
      * @param headers
      * @param propertyBuilder
      * @return membership
      */
     protected abstract MailboxMembership<Id> createMessage(Date internalDate, final long uid, final int size, int bodyStartOctet, 
-            final byte[] document, final Flags flags, final List<Header> headers, PropertyBuilder propertyBuilder);
+            final InputStream documentIn, final Flags flags, final List<Header> headers, PropertyBuilder propertyBuilder);
     
     /**
      * Create a new {@link Header} for the given data

@@ -18,6 +18,7 @@
  ****************************************************************/
 package org.apache.james.imap.jpa;
 
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -80,7 +81,7 @@ public abstract class JPAMailbox extends StoreMailbox<Long> {
     }
     
     @Override
-    protected MailboxMembership<Long> createMessage(Date internalDate, final long uid, final int size, int bodyStartOctet, final byte[] document, 
+    protected MailboxMembership<Long> createMessage(Date internalDate, final long uid, final int size, int bodyStartOctet, final InputStream document, 
             final Flags flags, final List<Header> headers, PropertyBuilder propertyBuilder) {
         final List<JPAHeader> jpaHeaders = new ArrayList<JPAHeader>(headers.size());
         for (Header header: headers) {

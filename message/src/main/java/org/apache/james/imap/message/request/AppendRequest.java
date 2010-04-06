@@ -18,6 +18,7 @@
  ****************************************************************/
 package org.apache.james.imap.message.request;
 
+import java.io.InputStream;
 import java.util.Date;
 
 import javax.mail.Flags;
@@ -31,10 +32,10 @@ public class AppendRequest extends AbstractImapRequest {
 
     private final Date datetime;
 
-    private final byte[] message;
+    private final InputStream message;
 
     public AppendRequest(ImapCommand command, String mailboxName, Flags flags,
-            Date datetime, byte[] message, String tag) {
+            Date datetime, InputStream message, String tag) {
         super(tag, command);
         this.mailboxName = mailboxName;
         this.flags = flags;
@@ -54,7 +55,7 @@ public class AppendRequest extends AbstractImapRequest {
         return mailboxName;
     }
 
-    public byte[] getMessage() {
+    public InputStream getMessage() {
         return message;
     }
 }

@@ -18,6 +18,7 @@
  ****************************************************************/
 package org.apache.james.imap.jpa.mail.model;
 
+import java.io.InputStream;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
@@ -145,13 +146,13 @@ public class JPAMailboxMembership extends AbstractMailboxMembership<Long> {
     public JPAMailboxMembership() {}
 
     public JPAMailboxMembership(long mailboxId, long uid, Date internalDate, int size, Flags flags, 
-            byte[] content, int bodyStartOctet, final List<JPAHeader> headers, final PropertyBuilder propertyBuilder) {
+            InputStream content, int bodyStartOctet, final List<JPAHeader> headers, final PropertyBuilder propertyBuilder) {
         super();
         this.mailboxId = mailboxId;
         this.uid = uid;
         this.internalDate = internalDate;
         this.size = size;
-        this.message = new JPAMessage(content, bodyStartOctet, headers, propertyBuilder);
+        this.message = new JPAMessage(content, size, bodyStartOctet, headers, propertyBuilder);
         setFlags(flags);
     }
 

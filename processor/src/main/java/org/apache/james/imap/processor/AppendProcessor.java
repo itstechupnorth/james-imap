@@ -19,6 +19,7 @@
 
 package org.apache.james.imap.processor;
 
+import java.io.InputStream;
 import java.util.Date;
 
 import javax.mail.Flags;
@@ -60,7 +61,7 @@ public class AppendProcessor extends AbstractMailboxProcessor {
             String tag, ImapCommand command, Responder responder) {
         final AppendRequest request = (AppendRequest) message;
         final String mailboxName = request.getMailboxName();
-        final byte[] messageBytes = request.getMessage();
+        final InputStream messageIn = request.getMessage();
         final Date datetime = request.getDatetime();
         final Flags flags = request.getFlags();
         try {
@@ -68,7 +69,7 @@ public class AppendProcessor extends AbstractMailboxProcessor {
             final String fullMailboxName = buildFullName(session, mailboxName);
             final MailboxManager mailboxManager = getMailboxManager();
             final Mailbox mailbox = mailboxManager.getMailbox(fullMailboxName, ImapSessionUtils.getMailboxSession(session));
-            appendToMailbox(messageBytes, datetime, flags, session, tag,
+            appendToMailbox(messageIn, datetime, flags, session, tag,
                     command, mailbox, responder, fullMailboxName);
         } catch (MailboxNotFoundException e) {
 //          Indicates that the mailbox does not exist
@@ -104,7 +105,7 @@ public class AppendProcessor extends AbstractMailboxProcessor {
                 StatusResponse.ResponseCode.tryCreate());
     }
 
-    private void appendToMailbox(final byte[] message, final Date datetime,
+    private void appendToMailbox(final InputStream message, final Date datetime,
             final Flags flagsToBeSet, final ImapSession session, final String tag,
             final ImapCommand command, final Mailbox mailbox, Responder responder, final String fullMailboxName) {
         try {

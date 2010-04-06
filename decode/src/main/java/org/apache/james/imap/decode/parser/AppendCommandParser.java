@@ -18,6 +18,7 @@
  ****************************************************************/
 package org.apache.james.imap.decode.parser;
 
+import java.io.ByteArrayInputStream;
 import java.util.Date;
 
 import javax.mail.Flags;
@@ -81,8 +82,9 @@ class AppendCommandParser extends AbstractImapCommandParser {
         final byte[] message = consumeLiteral(request);
         endLine(request);
         final ImapMessageFactory factory = getMessageFactory();
+        //TODO: FIX ME
         final ImapMessage result = factory.createAppendMessage(command,
-                mailboxName, flags, datetime, message, tag);
+                mailboxName, flags, datetime, new ByteArrayInputStream(message), tag);
         return result;
     }
 }

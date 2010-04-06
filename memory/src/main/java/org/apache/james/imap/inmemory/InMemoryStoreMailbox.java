@@ -19,6 +19,8 @@
 
 package org.apache.james.imap.inmemory;
 
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -66,8 +68,26 @@ public class InMemoryStoreMailbox extends StoreMailbox<Long> implements MessageM
 
     @Override
     protected MailboxMembership<Long> createMessage(Date internalDate, long uid, int size, int bodyStartOctet, 
-            byte[] document, Flags flags, List<Header> headers, PropertyBuilder propertyBuilder) {
-        return new SimpleMailboxMembership(internalDate, uid, size, bodyStartOctet, document, flags, headers, propertyBuilder, mailboxId);
+            InputStream  document, Flags flags, List<Header> headers, PropertyBuilder propertyBuilder) {
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        byte[] byteContent;
+        try {
+            byte[] buf = new byte[1024];
+            int i = 0;
+            while ((i = document.read(buf)) != -1) {
+                out.write(buf, 0, i);
+            }
+            byteContent = out.toByteArray();
+            if (out != null)
+                out.close();
+
+        } catch (Exception e) {
+            byteContent = new byte[0];
+        }
+        
+        return new SimpleMailboxMembership(internalDate, uid, size, bodyStartOctet, byteContent, flags, headers, propertyBuilder, mailboxId);
+
+
     }
 
     @Override

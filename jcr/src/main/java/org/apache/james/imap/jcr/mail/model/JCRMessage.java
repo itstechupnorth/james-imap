@@ -18,9 +18,6 @@
  ****************************************************************/
 package org.apache.james.imap.jcr.mail.model;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
@@ -49,7 +46,7 @@ public class JCRMessage extends AbstractDocument implements JCRImapConstants, Pe
 
     private Node node;
     private final Log logger;
-    private byte[] content;
+    private InputStream content;
     private List<JCRHeader> headers;
     private long fullContentOctets;
     private String mediaType;
@@ -74,11 +71,12 @@ public class JCRMessage extends AbstractDocument implements JCRImapConstants, Pe
         this.node = node;
     }
     
-    public JCRMessage(byte[] content, final int bodyStartOctet, final List<JCRHeader> headers, final PropertyBuilder propertyBuilder, Log logger) {
+    public JCRMessage(InputStream content, final long contentOctets, final int bodyStartOctet, final List<JCRHeader> headers, final PropertyBuilder propertyBuilder, Log logger) {
         super();
         this.logger = logger;
         this.content = content;
-        this.fullContentOctets = content.length;
+        this.fullContentOctets = contentOctets;
+       
         this.bodyStartOctet = bodyStartOctet;
         this.headers = new ArrayList<JCRHeader>(headers);
         this.textualLineCount = propertyBuilder.getTextualLineCount();
@@ -102,13 +100,9 @@ public class JCRMessage extends AbstractDocument implements JCRImapConstants, Pe
     public JCRMessage(JCRMessage message, Log logger) {
         this.logger = logger;
         ByteBuffer buf = message.getFullContent().duplicate();
-        int a = 0;
-        this.content = new byte[buf.capacity()];
-        while(buf.hasRemaining()) {
-            content[a] = buf.get();
-            a++;
-        }
-        this.fullContentOctets = content.length;
+        this.content = new ByteBufferInputStream(buf);
+       
+        this.fullContentOctets = message.getFullContentOctets();
         this.bodyStartOctet = (int) (message.getFullContentOctets() - message.getBodyOctets());
         this.headers = new ArrayList<JCRHeader>();
         
@@ -138,23 +132,13 @@ public class JCRMessage extends AbstractDocument implements JCRImapConstants, Pe
             try {
                 //TODO: Maybe we should cache this somehow...
                 InputStream contentStream = node.getNode(JcrConstants.JCR_CONTENT).getProperty(JcrConstants.JCR_DATA).getStream();
-                ByteArrayOutputStream out = new ByteArrayOutputStream();
- 
-                    byte[] buf = new byte[1024];
-                    int i = 0;
-                    while ((i = contentStream.read(buf)) != -1) {
-                        out.write(buf, 0, i);
-                    }
-
-                return ByteBuffer.wrap(out.toByteArray());
+                return getContentAsByteBuffer(contentStream);
             } catch (RepositoryException e) {
-                logger.error("Unable to retrieve property " + JcrConstants.JCR_CONTENT, e);
-            } catch (IOException e) {
                 logger.error("Unable to retrieve property " + JcrConstants.JCR_CONTENT, e);
             }
             return null;
         }
-        return ByteBuffer.wrap(content);
+        return getContentAsByteBuffer(content);
     }
 
     /*
@@ -301,7 +285,7 @@ public class JCRMessage extends AbstractDocument implements JCRImapConstants, Pe
         } else {
             contentNode = node.getNode(JcrConstants.JCR_CONTENT);
         }
-        contentNode.setProperty(JcrConstants.JCR_DATA, new ByteArrayInputStream(getFullContent().array()));
+        contentNode.setProperty(JcrConstants.JCR_DATA, new ByteBufferInputStream(getFullContent()));
         contentNode.setProperty(JcrConstants.JCR_MIMETYPE, getMediaType());
 
         node.setProperty(FULL_CONTENT_OCTETS_PROPERTY, getFullContentOctets());

@@ -18,6 +18,7 @@
  ****************************************************************/
 package org.apache.james.imap.api;
 
+import java.io.InputStream;
 import java.util.Date;
 
 import javax.mail.Flags;
@@ -53,7 +54,7 @@ public interface ImapMessageFactory {
 
     public ImapMessage createAppendMessage(ImapCommand command,
             String mailboxName, Flags flags, Date datetime,
-            byte[] message, String tag);
+            InputStream message, String tag);
 
     public ImapMessage createAuthenticateMessage(final ImapCommand command,
             final String authType, final String tag);
