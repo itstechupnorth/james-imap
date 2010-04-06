@@ -19,6 +19,7 @@
 
 package org.apache.james.imap.processor;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.Date;
 
@@ -34,7 +35,6 @@ import org.apache.james.imap.api.message.response.StatusResponseFactory;
 import org.apache.james.imap.api.process.ImapProcessor;
 import org.apache.james.imap.api.process.ImapSession;
 import org.apache.james.imap.api.process.SelectedMailbox;
-import org.apache.james.imap.decode.base.EolInputStream;
 import org.apache.james.imap.mailbox.Mailbox;
 import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.MailboxManager;
@@ -63,7 +63,7 @@ public class AppendProcessor extends AbstractMailboxProcessor {
             String tag, ImapCommand command, Responder responder) {
         final AppendRequest request = (AppendRequest) message;
         final String mailboxName = request.getMailboxName();
-        final EolInputStream messageIn = request.getMessage();
+        final InputStream messageIn = request.getMessage();
         final Date datetime = request.getDatetime();
         final Flags flags = request.getFlags();
         try {
@@ -75,7 +75,11 @@ public class AppendProcessor extends AbstractMailboxProcessor {
                     command, mailbox, responder, fullMailboxName);
         } catch (MailboxNotFoundException e) {
             // consume stream
-            messageIn.cosume();
+            try {
+                while(messageIn.read() != -1);
+            } catch (IOException e1) {
+                // just consume
+            }
             
 //          Indicates that the mailbox does not exist
 //          So TRY CREATE

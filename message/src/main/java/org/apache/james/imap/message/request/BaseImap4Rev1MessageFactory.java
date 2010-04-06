@@ -18,6 +18,7 @@
  ****************************************************************/
 package org.apache.james.imap.message.request;
 
+import java.io.InputStream;
 import java.util.Date;
 
 import javax.mail.Flags;
@@ -32,7 +33,6 @@ import org.apache.james.imap.api.message.StatusDataItems;
 import org.apache.james.imap.api.message.request.SearchKey;
 import org.apache.james.imap.api.message.response.StatusResponse;
 import org.apache.james.imap.api.message.response.StatusResponseFactory;
-import org.apache.james.imap.decode.base.EolInputStream;
 
 /**
  * Naive, factory creates unpooled instances.
@@ -49,7 +49,7 @@ public class BaseImap4Rev1MessageFactory implements ImapMessageFactory {
 
     public ImapMessage createAppendMessage(ImapCommand command,
             String mailboxName, Flags flags, Date datetime,
-            EolInputStream message, String tag) {
+            InputStream message, String tag) {
         return new AppendRequest(command, mailboxName, flags, datetime,
                 message, tag);
     }

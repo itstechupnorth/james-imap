@@ -67,14 +67,4 @@ public class EolInputStream extends FilterInputStream{
         }
     }
     
-    /**
-     * Consume the whole stream
-     */
-    public void cosume() { 
-        try {
-            while (read() != -1);
-        } catch (IOException e) {
-            // do nothing here
-        }
-    }
 }
