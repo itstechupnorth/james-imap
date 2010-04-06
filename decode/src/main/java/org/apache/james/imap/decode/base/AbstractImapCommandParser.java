@@ -19,6 +19,9 @@
 
 package org.apache.james.imap.decode.base;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.charset.CharacterCodingException;
@@ -33,6 +36,7 @@ import java.util.Date;
 
 import javax.mail.Flags;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.james.imap.api.ImapMessageFactory;
 import org.apache.james.imap.api.ImapCommand;
@@ -115,6 +119,7 @@ public abstract class AbstractImapCommandParser implements ImapCommandParser, Me
 
         } catch (DecodingException e) {
             logger.debug("Cannot parse protocol ", e);
+            e.printStackTrace();
             result = messageFactory.taggedBad(tag, command, e.getKey());
         }
         return result;
@@ -319,13 +324,19 @@ public abstract class AbstractImapCommandParser implements ImapCommandParser, Me
         if (charset == null) {
             return consumeLiteral(request, US_ASCII);
         } else {
-            final byte[] bytes = consumeLiteral(request);
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            try {
+                IOUtils.copy(consumeLiteral(request),out);
+            } catch (IOException e) {
+                throw new DecodingException(HumanReadableText.BAD_IO_ENCODING, "Bad character encoding",  e);
+            }
+            final byte[] bytes = out.toByteArray();
             final ByteBuffer buffer = ByteBuffer.wrap(bytes);
             return decode(charset, buffer);
         }
     }
 
-    protected byte[] consumeLiteral(final ImapRequestLineReader request) throws DecodingException {
+    protected InputStream  consumeLiteral(final ImapRequestLineReader request) throws DecodingException {
         // The 1st character must be '{'
         consumeChar(request, '{');
 
@@ -358,15 +369,12 @@ public abstract class AbstractImapCommandParser implements ImapCommandParser, Me
         }
 
         final int size = Integer.parseInt(digits.toString());
-        final byte[] bytes = new byte[size];
-        request.read(bytes);
-        return bytes;
+        return request.read(size);
     }
 
     private String decode(final Charset charset, final ByteBuffer buffer)
             throws DecodingException {
         try {
-
             final String result = charset.newDecoder().onMalformedInput(
                     CodingErrorAction.REPORT).onUnmappableCharacter(
                     CodingErrorAction.REPORT).decode(buffer).toString();

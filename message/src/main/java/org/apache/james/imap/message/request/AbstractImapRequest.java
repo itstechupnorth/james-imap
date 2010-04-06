@@ -50,4 +50,5 @@ abstract public class AbstractImapRequest implements ImapMessage, ImapRequest {
     public final String getTag() {
         return tag;
     }
+    
 }

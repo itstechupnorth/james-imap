@@ -169,6 +169,7 @@ public final class ImapRequestHandler  {
         final ResponseEncoder responseEncoder = new ResponseEncoder(encoder,
                 response, session);
         processor.process(message, responseEncoder, session);
+        
         final boolean result;
         final IOException failure = responseEncoder.getFailure();
         if (failure == null) {

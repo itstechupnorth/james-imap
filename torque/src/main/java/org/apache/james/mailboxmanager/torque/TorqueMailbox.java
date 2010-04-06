@@ -20,6 +20,9 @@
 package org.apache.james.mailboxmanager.torque;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.SQLException;
@@ -37,6 +40,7 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
+import javax.imageio.stream.FileImageInputStream;
 import javax.mail.Flags;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
@@ -133,6 +137,7 @@ public class TorqueMailbox implements Mailbox {
             final MailboxRow myMailboxRow = reserveNextUid();
 
             if (myMailboxRow != null) {
+                File file = null;
                 try {
                     
                     // To be thread safe, we first get our own copy and the
@@ -150,7 +155,21 @@ public class TorqueMailbox implements Mailbox {
                     messageRow.setMailboxId(getMailboxRow().getMailboxId());
                     messageRow.setUid(uid);
                     messageRow.setInternalDate(internalDate);
-                    final MimeMessage mimeMessage = new MimeMessage(null, messageIn);
+                    // Create a temporary file and copy the message to it. We will work with the file as
+                    // source for the InputStream
+                    file = File.createTempFile("imap", ".msg");
+                    FileOutputStream out = new FileOutputStream(file);
+                    
+                    byte[] buf = new byte[1024];
+                    int i = 0;
+                    while ((i = messageIn.read(buf)) != -1) {
+                        out.write(buf, 0, i);
+                    }
+                    out.flush();
+                    out.close();
+                    
+                    final MimeMessage mimeMessage = new MimeMessage(null, new FileInputStream(file));
+
                     if (isRecent) {
                         mimeMessage.setFlag(Flags.Flag.RECENT, true);
                     }
@@ -174,7 +193,12 @@ public class TorqueMailbox implements Mailbox {
                     getUidChangeTracker().found(messageResult.getUid(), messageResult.getFlags());
                     return messageResult.getUid();
                 } catch (Exception e) {
+                    e.printStackTrace();
                     throw new MailboxException(HumanReadableText.FAILURE_MAIL_PARSE, e);
+                } finally {
+                    if (file != null) {
+                        file.delete();
+                    }
                 }
             } else {
                 // mailboxRow==null

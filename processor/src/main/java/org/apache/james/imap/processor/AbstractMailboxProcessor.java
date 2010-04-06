@@ -289,6 +289,13 @@ abstract public class AbstractMailboxProcessor extends AbstractChainedProcessor 
         responder.respond(response);
     }
 
+    protected void taggedBad(final ImapCommand command, final String tag,
+            final ImapProcessor.Responder responder,
+            final HumanReadableText e) {
+        StatusResponse response = factory.taggedBad(tag, command, e);
+
+        responder.respond(response);
+    }
     protected void bye(final ImapProcessor.Responder responder) {
         final StatusResponse response = factory.bye(HumanReadableText.BYE);
         responder.respond(response);

@@ -28,4 +28,5 @@ package org.apache.james.imap.api;
  * </p>
  */
 public interface ImapMessage {
+  
 }

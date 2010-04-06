@@ -24,6 +24,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 import org.apache.james.imap.api.display.HumanReadableText;
+import org.apache.james.imap.decode.base.FixedLengthInputStream;
 
 /**
  * Wraps the client input reader with a bunch of convenience methods, allowing
@@ -161,25 +162,12 @@ public class ImapRequestLineReader {
      * @throws DecodingException
      *             If a char can't be read into each array element.
      */
-    public void read(byte[] holder) throws DecodingException {
-        int readTotal = 0;
-        try {
-            while (readTotal < holder.length) {
-                int count = 0;
-                count = input
-                        .read(holder, readTotal, holder.length - readTotal);
-                if (count == -1) {
-                    throw new DecodingException(HumanReadableText.ILLEGAL_ARGUMENTS, "Unexpected end of stream.");
-                }
-                readTotal += count;
-            }
-            // Unset the next char.
-            nextSeen = false;
-            nextChar = 0;
-        } catch (IOException e) {
-            throw new DecodingException(HumanReadableText.SOCKET_IO_FAILURE, 
-                    "Error reading from stream.", e);
-        }
+    public InputStream read(int size) throws DecodingException {
+
+        // Unset the next char.
+        nextSeen = false;
+        nextChar = 0;
+        return new FixedLengthInputStream(input, size);
 
     }
 

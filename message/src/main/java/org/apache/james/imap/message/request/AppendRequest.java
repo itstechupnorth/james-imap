@@ -18,12 +18,12 @@
  ****************************************************************/
 package org.apache.james.imap.message.request;
 
-import java.io.InputStream;
 import java.util.Date;
 
 import javax.mail.Flags;
 
 import org.apache.james.imap.api.ImapCommand;
+import org.apache.james.imap.decode.base.EolInputStream;
 
 public class AppendRequest extends AbstractImapRequest {
     private final String mailboxName;
@@ -32,10 +32,10 @@ public class AppendRequest extends AbstractImapRequest {
 
     private final Date datetime;
 
-    private final InputStream message;
+    private final EolInputStream message;
 
     public AppendRequest(ImapCommand command, String mailboxName, Flags flags,
-            Date datetime, InputStream message, String tag) {
+            Date datetime, EolInputStream message, String tag) {
         super(tag, command);
         this.mailboxName = mailboxName;
         this.flags = flags;
@@ -55,7 +55,9 @@ public class AppendRequest extends AbstractImapRequest {
         return mailboxName;
     }
 
-    public InputStream getMessage() {
+    public EolInputStream getMessage() {
         return message;
     }
+    
+    
 }

@@ -18,7 +18,6 @@
  ****************************************************************/
 package org.apache.james.imap.api;
 
-import java.io.InputStream;
 import java.util.Date;
 
 import javax.mail.Flags;
@@ -29,6 +28,7 @@ import org.apache.james.imap.api.message.IdRange;
 import org.apache.james.imap.api.message.StatusDataItems;
 import org.apache.james.imap.api.message.request.SearchKey;
 import org.apache.james.imap.api.message.response.StatusResponse;
+import org.apache.james.imap.decode.base.EolInputStream;
 
 /**
  * Creates messages. Implementations may support message pooling but this is not
@@ -54,7 +54,7 @@ public interface ImapMessageFactory {
 
     public ImapMessage createAppendMessage(ImapCommand command,
             String mailboxName, Flags flags, Date datetime,
-            InputStream message, String tag);
+            EolInputStream message, String tag);
 
     public ImapMessage createAuthenticateMessage(final ImapCommand command,
             final String authType, final String tag);

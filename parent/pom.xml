@@ -418,7 +418,6 @@
       <dependency>
         <groupId>commons-io</groupId>
         <artifactId>commons-io</artifactId>
-        <scope>test</scope>
         <version>1.4</version>
       </dependency>
       <dependency>

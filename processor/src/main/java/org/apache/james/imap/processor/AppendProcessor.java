@@ -34,11 +34,13 @@ import org.apache.james.imap.api.message.response.StatusResponseFactory;
 import org.apache.james.imap.api.process.ImapProcessor;
 import org.apache.james.imap.api.process.ImapSession;
 import org.apache.james.imap.api.process.SelectedMailbox;
+import org.apache.james.imap.decode.base.EolInputStream;
 import org.apache.james.imap.mailbox.Mailbox;
 import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.MailboxManager;
 import org.apache.james.imap.mailbox.MailboxNotFoundException;
 import org.apache.james.imap.mailbox.MailboxSession;
+import org.apache.james.imap.mailbox.StorageException;
 import org.apache.james.imap.message.request.AppendRequest;
 import org.apache.james.imap.processor.base.ImapSessionUtils;
 
@@ -61,7 +63,7 @@ public class AppendProcessor extends AbstractMailboxProcessor {
             String tag, ImapCommand command, Responder responder) {
         final AppendRequest request = (AppendRequest) message;
         final String mailboxName = request.getMailboxName();
-        final InputStream messageIn = request.getMessage();
+        final EolInputStream messageIn = request.getMessage();
         final Date datetime = request.getDatetime();
         final Flags flags = request.getFlags();
         try {
@@ -72,12 +74,18 @@ public class AppendProcessor extends AbstractMailboxProcessor {
             appendToMailbox(messageIn, datetime, flags, session, tag,
                     command, mailbox, responder, fullMailboxName);
         } catch (MailboxNotFoundException e) {
+            // consume stream
+            messageIn.cosume();
+            
 //          Indicates that the mailbox does not exist
 //          So TRY CREATE
             tryCreate(session, tag, command, responder, e);
+            
         } catch (MailboxException e) {
+           
 //          Some other issue
             no(command, tag, responder, e, session);
+            
         }
 
     }
@@ -100,9 +108,11 @@ public class AppendProcessor extends AbstractMailboxProcessor {
         if (logger.isDebugEnabled()) {
             logger.debug("Cannot open mailbox: ", e);
         }
+        
         no(command, tag, responder,
                 HumanReadableText.FAILURE_NO_SUCH_MAILBOX,
                 StatusResponse.ResponseCode.tryCreate());
+       
     }
 
     private void appendToMailbox(final InputStream message, final Date datetime,
@@ -125,6 +135,8 @@ public class AppendProcessor extends AbstractMailboxProcessor {
 //          Indicates that the mailbox does not exist
 //          So TRY CREATE
             tryCreate(session, tag, command, responder, e);
+        } catch (StorageException e) {
+            taggedBad(command, tag, responder, e.getKey());
         } catch (MailboxException e) {
 //          Some other issue
             no(command, tag, responder, e, session);

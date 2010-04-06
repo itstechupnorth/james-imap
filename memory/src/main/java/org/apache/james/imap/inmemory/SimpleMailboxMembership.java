@@ -76,6 +76,7 @@ public class SimpleMailboxMembership extends AbstractMailboxMembership<Long> imp
             Flags flags, List<Header> headers, PropertyBuilder propertyBuilder, final long mailboxId) {
         this.uid = uid;
         this.document = document;
+        
         this.size = size;
         this.bodyStartOctet = bodyStartOctet;
         setFlags(flags);

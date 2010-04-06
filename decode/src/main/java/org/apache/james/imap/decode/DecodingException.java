@@ -19,6 +19,8 @@
 
 package org.apache.james.imap.decode;
 
+import java.io.IOException;
+
 import org.apache.james.imap.api.display.HumanReadableText;
 
 /**
@@ -36,7 +38,7 @@ import org.apache.james.imap.api.display.HumanReadableText;
  * <li>{@link HumanReadableText#BAD_IO_ENCODING}</li>
  * </ul>
  */
-public class DecodingException extends Exception {
+public class DecodingException extends IOException {
 
     private static final long serialVersionUID = 8719349386686261422L;
 

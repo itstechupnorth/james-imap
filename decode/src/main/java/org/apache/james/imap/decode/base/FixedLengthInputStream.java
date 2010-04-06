@@ -24,14 +24,13 @@ import java.io.IOException;
 import java.io.InputStream;
 
 /**
- * This class is not yet used in the AppendCommand.
  * 
  * An input stream which reads a fixed number of bytes from the underlying input
  * stream. Once the number of bytes has been read, the FixedLengthInputStream
  * will act as thought the end of stream has been reached, even if more bytes
  * are present in the underlying input stream.
  */
-class FixedLengthInputStream extends FilterInputStream {
+public class FixedLengthInputStream extends FilterInputStream {
     private long pos = 0;
 
     private long length;
@@ -50,22 +49,30 @@ class FixedLengthInputStream extends FilterInputStream {
     }
 
     public int read(byte b[]) throws IOException {
-        if (pos >= length) {
+
+        if (pos >= length) {   
             return -1;
         }
 
         if (pos + b.length >= length) {
+            int readLimit = (int) length - (int) pos;
             pos = length;
-            return super.read(b, 0, (int) (length - pos));
+
+            return super.read(b, 0, readLimit);
         }
 
         pos += b.length;
+
         return super.read(b);
     }
 
     public int read(byte b[], int off, int len) throws IOException {
-        throw new IOException("Not implemented");
-        // return super.read( b, off, len );
+        byte[] tmpArray = new byte[len]; 
+        int a = in.read(tmpArray);
+        for (int i = 0; i < tmpArray.length; i++) {
+            b[off + i] = tmpArray[i];
+        }
+        return a;
     }
 
     public long skip(long n) throws IOException {
@@ -74,7 +81,7 @@ class FixedLengthInputStream extends FilterInputStream {
     }
 
     public int available() throws IOException {
-        return super.available();
+        return 0;
     }
 
     public void close() throws IOException {

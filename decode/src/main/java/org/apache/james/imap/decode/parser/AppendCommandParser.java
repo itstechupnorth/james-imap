@@ -18,7 +18,6 @@
  ****************************************************************/
 package org.apache.james.imap.decode.parser;
 
-import java.io.ByteArrayInputStream;
 import java.util.Date;
 
 import javax.mail.Flags;
@@ -31,6 +30,7 @@ import org.apache.james.imap.api.ImapMessage;
 import org.apache.james.imap.decode.ImapRequestLineReader;
 import org.apache.james.imap.decode.DecodingException;
 import org.apache.james.imap.decode.base.AbstractImapCommandParser;
+import org.apache.james.imap.decode.base.EolInputStream;
 
 class AppendCommandParser extends AbstractImapCommandParser {
 
@@ -79,12 +79,12 @@ class AppendCommandParser extends AbstractImapCommandParser {
             datetime = new Date();
         }
         request.nextWordChar();
-        final byte[] message = consumeLiteral(request);
-        endLine(request);
+        
+        // Use a EolInputStream so it will call eol when the message was read
+        final EolInputStream message = new EolInputStream(request, consumeLiteral(request));
         final ImapMessageFactory factory = getMessageFactory();
-        //TODO: FIX ME
         final ImapMessage result = factory.createAppendMessage(command,
-                mailboxName, flags, datetime, new ByteArrayInputStream(message), tag);
+                mailboxName, flags, datetime, message, tag);
         return result;
     }
 }

@@ -82,9 +82,10 @@ public class InMemoryStoreMailbox extends StoreMailbox<Long> implements MessageM
                 out.close();
 
         } catch (Exception e) {
+            e.printStackTrace();
             byteContent = new byte[0];
         }
-        
+        System.out.println("byte=" + new String(byteContent));
         return new SimpleMailboxMembership(internalDate, uid, size, bodyStartOctet, byteContent, flags, headers, propertyBuilder, mailboxId);
 
 

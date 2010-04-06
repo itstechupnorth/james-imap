@@ -43,6 +43,7 @@ class StatusCommandParser extends AbstractImapCommandParser {
         consumeChar(request, '(');
         CharacterValidator validator = new NoopCharValidator();
         String nextWord = consumeWord(request, validator);
+
         while (!nextWord.endsWith(")")) {
             addItem(nextWord, items);
             nextWord = consumeWord(request, validator);
@@ -57,6 +58,7 @@ class StatusCommandParser extends AbstractImapCommandParser {
 
     private void addItem(String nextWord, StatusDataItems items)
             throws DecodingException {
+
         if (nextWord.equals(ImapConstants.STATUS_MESSAGES)) {
             items.setMessages(true);
         } else if (nextWord.equals(ImapConstants.STATUS_RECENT)) {
@@ -81,6 +83,7 @@ class StatusCommandParser extends AbstractImapCommandParser {
         final ImapMessageFactory factory = getMessageFactory();
         final ImapMessage result = factory.createStatusMessage(command,
                 mailboxName, statusDataItems, tag);
+        
         return result;
     }
 }
