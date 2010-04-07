@@ -18,8 +18,9 @@
  ****************************************************************/
 package org.apache.james.imap.jcr.mail.model;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStream;
-import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,6 +33,9 @@ import org.apache.jackrabbit.JcrConstants;
 import org.apache.james.imap.jcr.JCRImapConstants;
 import org.apache.james.imap.jcr.JCRUtils;
 import org.apache.james.imap.jcr.Persistent;
+import org.apache.james.imap.store.LazySkippingInputStream;
+import org.apache.james.imap.store.RewindableInputStream;
+import org.apache.james.imap.store.StreamUtils;
 import org.apache.james.imap.store.mail.model.AbstractDocument;
 import org.apache.james.imap.store.mail.model.Document;
 import org.apache.james.imap.store.mail.model.Header;
@@ -96,11 +100,11 @@ public class JCRMessage extends AbstractDocument implements JCRImapConstants, Pe
      * Create a copy of the given message
      * 
      * @param message
+     * @throws IOException 
      */
-    public JCRMessage(JCRMessage message, Log logger) {
+    public JCRMessage(JCRMessage message, Log logger) throws IOException {
         this.logger = logger;
-        ByteBuffer buf = message.getFullContent().duplicate();
-        this.content = new ByteBufferInputStream(buf);
+        this.content = new ByteArrayInputStream(StreamUtils.toByteArray(message.getFullContent()));
        
         this.fullContentOctets = message.getFullContentOctets();
         this.bodyStartOctet = (int) (message.getFullContentOctets() - message.getBodyOctets());
@@ -127,18 +131,23 @@ public class JCRMessage extends AbstractDocument implements JCRImapConstants, Pe
      * (non-Javadoc)
      * @see org.apache.james.imap.store.mail.model.Document#getFullContent()
      */
-    public ByteBuffer getFullContent() {
+    public RewindableInputStream getFullContent() throws IOException {
+        return new RewindableInputStream(getFullContentInternal());
+    }
+    
+    
+    public InputStream getFullContentInternal() throws IOException {
         if (isPersistent()) {
             try {
                 //TODO: Maybe we should cache this somehow...
                 InputStream contentStream = node.getNode(JcrConstants.JCR_CONTENT).getProperty(JcrConstants.JCR_DATA).getStream();
-                return getContentAsByteBuffer(contentStream);
+                return contentStream;
             } catch (RepositoryException e) {
                 logger.error("Unable to retrieve property " + JcrConstants.JCR_CONTENT, e);
             }
             return null;
         }
-        return getContentAsByteBuffer(content);
+        return content;
     }
 
     /*
@@ -278,14 +287,14 @@ public class JCRMessage extends AbstractDocument implements JCRImapConstants, Pe
      * (non-Javadoc)
      * @see org.apache.james.imap.jcr.Persistent#merge(javax.jcr.Node)
      */
-    public void merge(Node node) throws RepositoryException {
+    public void merge(Node node) throws RepositoryException, IOException {
         Node contentNode;
         if (node.hasNode(JcrConstants.JCR_CONTENT) == false) {
             contentNode = node.addNode(JcrConstants.JCR_CONTENT, JcrConstants.NT_RESOURCE);
         } else {
             contentNode = node.getNode(JcrConstants.JCR_CONTENT);
         }
-        contentNode.setProperty(JcrConstants.JCR_DATA, new ByteBufferInputStream(getFullContent()));
+        contentNode.setProperty(JcrConstants.JCR_DATA, getFullContent());
         contentNode.setProperty(JcrConstants.JCR_MIMETYPE, getMediaType());
 
         node.setProperty(FULL_CONTENT_OCTETS_PROPERTY, getFullContentOctets());
@@ -411,6 +420,14 @@ public class JCRMessage extends AbstractDocument implements JCRImapConstants, Pe
             + "uuid = " + getUUID()
             + " )";
         return retValue;
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.store.mail.model.Document#getBodyContent()
+     */
+    public RewindableInputStream getBodyContent() throws IOException {
+        return new RewindableInputStream(new LazySkippingInputStream(getFullContentInternal(), getBodyStartOctet()));
     }
 
 

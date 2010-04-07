@@ -82,7 +82,7 @@ public abstract class JPAMailbox extends StoreMailbox<Long> {
     
     @Override
     protected MailboxMembership<Long> createMessage(Date internalDate, final long uid, final int size, int bodyStartOctet, final InputStream document, 
-            final Flags flags, final List<Header> headers, PropertyBuilder propertyBuilder) {
+            final Flags flags, final List<Header> headers, PropertyBuilder propertyBuilder) throws MailboxException{
         final List<JPAHeader> jpaHeaders = new ArrayList<JPAHeader>(headers.size());
         for (Header header: headers) {
             jpaHeaders.add((JPAHeader) header);
@@ -93,7 +93,7 @@ public abstract class JPAMailbox extends StoreMailbox<Long> {
     }
     
     @Override
-    protected MailboxMembership<Long> copyMessage(MailboxMembership<Long> originalMessage, long uid) {
+    protected MailboxMembership<Long> copyMessage(MailboxMembership<Long> originalMessage, long uid) throws MailboxException{
         MailboxMembership<Long> newRow = new JPAMailboxMembership(getMailboxId(), uid, (JPAMailboxMembership) originalMessage);
         return newRow;
     }

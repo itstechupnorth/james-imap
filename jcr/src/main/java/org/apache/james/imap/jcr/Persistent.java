@@ -18,6 +18,8 @@
  ****************************************************************/
 package org.apache.james.imap.jcr;
 
+import java.io.IOException;
+
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 
@@ -28,7 +30,7 @@ public interface Persistent {
 	 * 
 	 * @param node
 	 */
-	public void merge(Node node) throws RepositoryException;
+	public void merge(Node node) throws RepositoryException,IOException;
 
 	/**
 	 * Return underlying Node

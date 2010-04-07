@@ -24,6 +24,12 @@ package org.apache.james.imap.store;
 import java.io.IOException;
 import java.io.InputStream;
 
+/**
+ * {@link InputStream} implementation which just consume the the wrapped {@link InputStream} and count
+ * the lines which are contained within the wrapped stream
+ * 
+ *
+ */
 final class CountingInputStream extends InputStream {
 
     private final InputStream in;
@@ -52,10 +58,20 @@ final class CountingInputStream extends InputStream {
         return next;
     }
 
+    /**
+     * Return the line count 
+     * 
+     * @return lineCount
+     */
     public final int getLineCount() {
         return lineCount;
     }
 
+    /**
+     * Return the octet count
+     * 
+     * @return octetCount
+     */
     public final int getOctetCount() {
         return octetCount;
     }

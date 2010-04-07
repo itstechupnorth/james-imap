@@ -33,6 +33,12 @@ public class LazySkippingInputStream extends FilterInputStream{
     private long skipBytes;
     private boolean skipped = false;
 
+    /**
+     * Construct the {@link LazySkippingInputStream}
+     * 
+     * @param in {@link InputStream} to wrap
+     * @param skipBytes bytes to skip
+     */
     public LazySkippingInputStream(InputStream in, long skipBytes) {
         super(in);
         this.skipBytes = skipBytes;
@@ -80,6 +86,11 @@ public class LazySkippingInputStream extends FilterInputStream{
         return super.skip(n);
     }
 
+    /**
+     * Check if the bytes are skipped already. If not do now
+     * 
+     * @throws IOException
+     */
     private void skipIfNeeded() throws IOException {
         if (skipped == false) {
             super.skip(skipBytes);

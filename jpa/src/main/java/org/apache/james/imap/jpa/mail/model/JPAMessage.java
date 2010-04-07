@@ -18,9 +18,9 @@
  ****************************************************************/
 package org.apache.james.imap.jpa.mail.model;
 
-import java.io.ByteArrayOutputStream;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStream;
-import java.nio.ByteBuffer;
 import java.util.List;
 
 import javax.persistence.Basic;
@@ -29,6 +29,9 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Lob;
 
+import org.apache.james.imap.store.LazySkippingInputStream;
+import org.apache.james.imap.store.RewindableInputStream;
+import org.apache.james.imap.store.StreamUtils;
 import org.apache.james.imap.store.mail.model.PropertyBuilder;
 
 @Entity(name="Message")
@@ -42,22 +45,9 @@ public class JPAMessage extends AbstractJPAMessage{
     @Deprecated
     public JPAMessage() {}
 
-    public JPAMessage(final InputStream content, final long contentOctets, final int bodyStartOctet, final List<JPAHeader> headers, final PropertyBuilder propertyBuilder) {
+    public JPAMessage(final InputStream content, final long contentOctets, final int bodyStartOctet, final List<JPAHeader> headers, final PropertyBuilder propertyBuilder) throws IOException {
         super(contentOctets,bodyStartOctet,headers,propertyBuilder);
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        try {
-            byte[] buf = new byte[1024];
-            int i = 0;
-            while ((i = content.read(buf)) != -1) {
-                out.write(buf, 0, i);
-            }
-            this.content = out.toByteArray();
-            if (out != null)
-                out.close();
-
-        } catch (Exception e) {
-            this.content = new byte[0];
-        }
+        this.content = StreamUtils.out(content).toByteArray();
     }
 
     /**
@@ -65,23 +55,26 @@ public class JPAMessage extends AbstractJPAMessage{
      * 
      * @param message
      */
-    public JPAMessage(JPAMessage message) {
+    public JPAMessage(JPAMessage message) throws IOException{
         super(message);
-        ByteBuffer buf = message.getFullContent().duplicate(); 
-        int a = 0;
-        this.content = new byte[buf.capacity()];
-        while(buf.hasRemaining()) {
-            content[a] = buf.get();
-            a++;
-        }     
+        this.content = StreamUtils.out(message.getFullContent()).toByteArray();
+        
     }
 
     /*
      * (non-Javadoc)
      * @see org.apache.james.imap.store.mail.model.Document#getFullContent()
      */
-    public ByteBuffer getFullContent() {
-        return ByteBuffer.wrap(content);
+    public RewindableInputStream getFullContent() throws IOException{
+        return new RewindableInputStream(new ByteArrayInputStream(content));
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.store.mail.model.Document#getBodyContent()
+     */
+    public RewindableInputStream getBodyContent() throws IOException {
+        return new RewindableInputStream(new LazySkippingInputStream(new ByteArrayInputStream(content), getBodyStartOctet()));
     }
 
 }

@@ -80,7 +80,7 @@ public class JCRMailbox extends StoreMailbox<String>{
 
     
     @Override
-    protected MailboxMembership<String> copyMessage(MailboxMembership<String> originalMessage, long uid) {
+    protected MailboxMembership<String> copyMessage(MailboxMembership<String> originalMessage, long uid) throws MailboxException {
         MailboxMembership<String> newRow = new JCRMailboxMembership(getMailboxId(), uid, (JCRMailboxMembership) originalMessage, log);
         return newRow;
     }

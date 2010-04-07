@@ -18,6 +18,7 @@
  ****************************************************************/
 package org.apache.james.imap.jcr.mail;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -412,6 +413,8 @@ public class JCRMessageMapper extends AbstractJCRMapper implements MessageMapper
             membership.merge(messageNode);
         } catch (RepositoryException e) {
             e.printStackTrace();
+            throw new StorageException(HumanReadableText.SAVE_FAILED, e);
+        } catch (IOException e) {
             throw new StorageException(HumanReadableText.SAVE_FAILED, e);
         }
 

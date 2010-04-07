@@ -28,7 +28,7 @@ import java.io.OutputStream;
 
 /**
  * {@link FilterInputStream} which support the get rewinded. This is done by copy over every byte
- * to a File after it was read. The rewinding will get queued as long as possible. So if you call
+ * to a File after it was read. The rewinding will get delayed as long as possible. So if you call
  * rewind, it will only get performed when needed
  * 
  *
@@ -106,14 +106,27 @@ public class RewindableInputStream extends FilterInputStream{
         return read(b,0,b.length);
     }
     
+    /**
+     * Mark the stream for rewind. The rewind itself will get delayed as long as possible
+     */
     public void rewind() {
         rewind = true;
     }
 
+    /**
+     * Check if the stream needs to get rewind
+     * 
+     * @return true if the stream is marked for rewind
+     */
     protected boolean needsRewind() {
         return rewind;
     }
     
+    /**
+     * Do the real rewind if needed
+     * 
+     * @throws IOException
+     */
     protected void rewindIfNeeded() throws IOException {
         if (needsRewind()) {
             rewind = false;
@@ -134,17 +147,23 @@ public class RewindableInputStream extends FilterInputStream{
         }
     }
 
-    @Override
+    /**
+     * Mark is not supported
+     */
     public synchronized void mark(int readlimit) {
         // do nothing
     }
 
-    @Override
+    /**
+     * Mark is not supported
+     */
     public boolean markSupported() {
         return false;
     }
 
-    @Override
+    /**
+     * Reset is not supported
+     */
     public synchronized void reset() throws IOException {
         // do nothing
     }

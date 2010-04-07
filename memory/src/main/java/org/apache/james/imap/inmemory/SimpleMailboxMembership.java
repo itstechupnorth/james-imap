@@ -21,7 +21,6 @@ package org.apache.james.imap.inmemory;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.nio.ByteBuffer;
 import java.util.Date;
 import java.util.List;
 

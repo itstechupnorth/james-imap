@@ -101,7 +101,7 @@ public abstract class StoreMailbox<Id> implements org.apache.james.imap.mailbox.
      * @param uid
      * @return membershipCopy
      */
-    protected abstract MailboxMembership<Id> copyMessage(MailboxMembership<Id> originalMessage, long uid);
+    protected abstract MailboxMembership<Id> copyMessage(MailboxMembership<Id> originalMessage, long uid) throws MailboxException;
     
     /**
      * Create a new {@link MessageMapper} to use
@@ -351,9 +351,10 @@ public abstract class StoreMailbox<Id> implements org.apache.james.imap.mailbox.
      * @param headers
      * @param propertyBuilder
      * @return membership
+     * @throws MailboxException 
      */
     protected abstract MailboxMembership<Id> createMessage(Date internalDate, final long uid, final int size, int bodyStartOctet, 
-            final InputStream documentIn, final Flags flags, final List<Header> headers, PropertyBuilder propertyBuilder);
+            final InputStream documentIn, final Flags flags, final List<Header> headers, PropertyBuilder propertyBuilder) throws MailboxException;
     
     /**
      * Create a new {@link Header} for the given data

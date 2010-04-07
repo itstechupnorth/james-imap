@@ -18,6 +18,7 @@
  ****************************************************************/
 package org.apache.james.imap.jcr.mail.model;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.Calendar;
 import java.util.Date;
@@ -29,8 +30,10 @@ import javax.mail.Flags;
 
 import org.apache.commons.logging.Log;
 import org.apache.jackrabbit.JcrConstants;
+import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.jcr.JCRImapConstants;
 import org.apache.james.imap.jcr.Persistent;
+import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.store.mail.model.AbstractMailboxMembership;
 import org.apache.james.imap.store.mail.model.Document;
 import org.apache.james.imap.store.mail.model.MailboxMembership;
@@ -97,9 +100,10 @@ public class JCRMailboxMembership extends AbstractMailboxMembership<String> impl
 	 *            new UID
 	 * @param original
 	 *            message to be copied, not null
+	 * @throws MailboxException 
 	 */
 	public JCRMailboxMembership(String mailboxUUID, long uid,
-			JCRMailboxMembership original, Log logger) {
+			JCRMailboxMembership original, Log logger) throws MailboxException {
 		super();
 		this.mailboxUUID = mailboxUUID;
 		this.uid = uid;
@@ -111,8 +115,12 @@ public class JCRMailboxMembership extends AbstractMailboxMembership<String> impl
 		this.flagged = original.isFlagged();
 		this.recent = original.isRecent();
 		this.seen = original.isSeen();
-		this.message = new JCRMessage((JCRMessage) original.getDocument(),
-				logger);
+		try {
+            this.message = new JCRMessage((JCRMessage) original.getDocument(),
+            		logger);
+        } catch (IOException e) {
+            throw new MailboxException(HumanReadableText.FAILURE_MAIL_PARSE, e);
+        }
 	}
 
 	public JCRMailboxMembership(Node node, Log logger) {
@@ -406,7 +414,7 @@ public class JCRMailboxMembership extends AbstractMailboxMembership<String> impl
 	 * 
 	 * @see org.apache.james.imap.jcr.Persistent#merge(javax.jcr.Node)
 	 */
-	public void merge(Node node) throws RepositoryException {
+	public void merge(Node node) throws RepositoryException, IOException {
 		node.setProperty(MAILBOX_UUID_PROPERTY, getMailboxId());
 		node.setProperty(UID_PROPERTY, getUid());
 		node.setProperty(SIZE_PROPERTY, getSize());

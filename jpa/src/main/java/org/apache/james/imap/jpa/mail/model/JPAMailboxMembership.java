@@ -18,6 +18,7 @@
  ****************************************************************/
 package org.apache.james.imap.jpa.mail.model;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.util.Date;
@@ -34,6 +35,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 
+import org.apache.james.imap.api.display.HumanReadableText;
+import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.store.mail.model.AbstractMailboxMembership;
 import org.apache.james.imap.store.mail.model.Document;
 import org.apache.james.imap.store.mail.model.PropertyBuilder;
@@ -146,13 +149,17 @@ public class JPAMailboxMembership extends AbstractMailboxMembership<Long> {
     public JPAMailboxMembership() {}
 
     public JPAMailboxMembership(long mailboxId, long uid, Date internalDate, int size, Flags flags, 
-            InputStream content, int bodyStartOctet, final List<JPAHeader> headers, final PropertyBuilder propertyBuilder) {
+            InputStream content, int bodyStartOctet, final List<JPAHeader> headers, final PropertyBuilder propertyBuilder) throws MailboxException {
         super();
         this.mailboxId = mailboxId;
         this.uid = uid;
         this.internalDate = internalDate;
         this.size = size;
-        this.message = new JPAMessage(content, size, bodyStartOctet, headers, propertyBuilder);
+        try {
+            this.message = new JPAMessage(content, size, bodyStartOctet, headers, propertyBuilder);
+        } catch (IOException e) {
+            throw new MailboxException(HumanReadableText.FAILURE_MAILBOX_EXISTS,e);
+        }
         setFlags(flags);
     }
 
@@ -162,8 +169,9 @@ public class JPAMailboxMembership extends AbstractMailboxMembership<Long> {
      * @param mailboxId new mailbox ID
      * @param uid new UID
      * @param original message to be copied, not null
+     * @throws IOException 
      */
-    public JPAMailboxMembership(long mailboxId, long uid, JPAMailboxMembership original) {
+    public JPAMailboxMembership(long mailboxId, long uid, JPAMailboxMembership original) throws MailboxException {
         super();
         this.mailboxId = mailboxId;
         this.uid = uid;
@@ -175,7 +183,11 @@ public class JPAMailboxMembership extends AbstractMailboxMembership<Long> {
         this.flagged = original.isFlagged();
         this.recent = original.isRecent();
         this.seen = original.isSeen();
-        this.message = new JPAMessage((JPAMessage) original.getDocument());
+        try {
+            this.message = new JPAMessage((JPAMessage) original.getDocument());
+        } catch (IOException e) {
+            throw new MailboxException(HumanReadableText.FAILURE_MAILBOX_EXISTS,e);
+        }
     }
 
     /**

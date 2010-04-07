@@ -18,8 +18,10 @@
  ****************************************************************/
 package org.apache.james.imap.jpa.mail.model.openjpa;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStream;
-import java.nio.ByteBuffer;
+
 import java.util.List;
 
 import javax.persistence.Column;
@@ -29,6 +31,9 @@ import javax.persistence.FetchType;
 import org.apache.james.imap.jpa.mail.model.AbstractJPAMessage;
 import org.apache.james.imap.jpa.mail.model.JPAHeader;
 import org.apache.james.imap.jpa.mail.model.JPAMessage;
+import org.apache.james.imap.store.LazySkippingInputStream;
+import org.apache.james.imap.store.RewindableInputStream;
+import org.apache.james.imap.store.StreamUtils;
 import org.apache.james.imap.store.mail.model.PropertyBuilder;
 import org.apache.openjpa.persistence.Persistent;
 
@@ -60,18 +65,28 @@ public class JPAStreamingMessage extends AbstractJPAMessage{
      * Create a copy of the given message
      * 
      * @param message
+     * @throws IOException 
      */
-    public JPAStreamingMessage(JPAStreamingMessage message) {
+    public JPAStreamingMessage(JPAStreamingMessage message) throws IOException {
         super(message);
-        this.content = new ByteBufferInputStream(message.getFullContent().duplicate());
+        this.content = new ByteArrayInputStream(StreamUtils.toByteArray(message.getFullContent()));
     }
 
     /*
      * (non-Javadoc)
      * @see org.apache.james.imap.store.mail.model.Document#getFullContent()
      */
-    public ByteBuffer getFullContent() {
-        return getContentAsByteBuffer(content);
+    public RewindableInputStream getFullContent() throws IOException {
+        return new RewindableInputStream(content);
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.store.mail.model.Document#getBodyContent()
+     */
+    public RewindableInputStream getBodyContent() throws IOException {
+        return new RewindableInputStream(new LazySkippingInputStream(content, getBodyStartOctet()));
+
     }
 
 }
