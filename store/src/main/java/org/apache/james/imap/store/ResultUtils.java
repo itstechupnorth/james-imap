@@ -21,7 +21,6 @@ package org.apache.james.imap.store;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -81,10 +80,11 @@ public class ResultUtils {
      * 
      * @param membership
      * @return bodyContent
+     * @throws IOException 
      */
-    public static Content createBodyContent(MailboxMembership<?> membership) {
-        final ByteBuffer bytes = membership.getDocument().getBodyContent();
-        final ByteContent result = new ByteContent(bytes);
+    public static Content createBodyContent(MailboxMembership<?> membership) throws IOException {
+        final RewindableInputStream stream = membership.getDocument().getBodyContent();
+        final InputStreamContent result = new InputStreamContent(stream);
         return result;
     }
 
@@ -93,10 +93,11 @@ public class ResultUtils {
      * 
      * @param membership
      * @return content
+     * @throws IOException 
      */
-    public static Content createFullContent(final MailboxMembership<?> membership) {
-        final ByteBuffer bytes = membership.getDocument().getFullContent();
-        final ByteContent results = new ByteContent(bytes);
+    public static Content createFullContent(final MailboxMembership<?> membership) throws IOException {
+        final RewindableInputStream stream = membership.getDocument().getFullContent();
+        final InputStreamContent results = new InputStreamContent(stream);
         return results;
     }
 
@@ -118,20 +119,21 @@ public class ResultUtils {
             messageResult.setFlags(message.createFlags());
             messageResult.setSize(message.getSize());
             messageResult.setInternalDate(message.getInternalDate());
-            
-            if ((content & FetchGroup.HEADERS) > 0) {
-                addHeaders(message, messageResult);
-                content -= FetchGroup.HEADERS;
-            }
-            if ((content & FetchGroup.BODY_CONTENT) > 0) {
-                addBody(message, messageResult);
-                content -= FetchGroup.BODY_CONTENT;
-            }
-            if ((content & FetchGroup.FULL_CONTENT) > 0) {
-                addFullContent(message, messageResult);
-                content -= FetchGroup.FULL_CONTENT;
-            }
+
             try {
+
+                if ((content & FetchGroup.HEADERS) > 0) {
+                    addHeaders(message, messageResult);
+                    content -= FetchGroup.HEADERS;
+                }
+                if ((content & FetchGroup.BODY_CONTENT) > 0) {
+                    addBody(message, messageResult);
+                    content -= FetchGroup.BODY_CONTENT;
+                }
+                if ((content & FetchGroup.FULL_CONTENT) > 0) {
+                    addFullContent(message, messageResult);
+                    content -= FetchGroup.FULL_CONTENT;
+                }
                 if ((content & FetchGroup.MIME_DESCRIPTOR) > 0) {
                     addMimeDescriptor(message, messageResult);
                     content -= FetchGroup.MIME_DESCRIPTOR;
@@ -139,7 +141,7 @@ public class ResultUtils {
                 if (content != 0) {
                     throw new UnsupportedOperationException("Unsupported result: " + content);
                 }
-            
+
                 addPartContent(fetchGroup, message, messageResult);
             } catch (IOException e) {
                 throw new MailboxException(HumanReadableText.FAILURE_MAIL_PARSE, e);
@@ -155,16 +157,16 @@ public class ResultUtils {
             messageResult.setMimeDescriptor(descriptor);
     }
 
-    private static void addFullContent(final MailboxMembership<?> messageRow, MessageResultImpl messageResult) 
-            throws MailboxException {
-        final Content content = createFullContent(messageRow);
+    private static void addFullContent(final MailboxMembership<?> messageRow, MessageResultImpl messageResult) throws IOException {
+        Content content = createFullContent(messageRow);
         messageResult.setFullContent(content);
+
     }
 
-    private static void addBody(final MailboxMembership<?> message,
-            MessageResultImpl messageResult) {
+    private static void addBody(final MailboxMembership<?> message, MessageResultImpl messageResult)throws IOException {
         final Content content = createBodyContent(message);
         messageResult.setBody(content);
+
     }
 
     private static void addHeaders(final MailboxMembership<?> message,
@@ -231,19 +233,23 @@ public class ResultUtils {
      * 
      * @param membership
      * @return stream
+     * @throws IOException 
      */
-    public static InputStream toInput(final MailboxMembership<?> membership) {
+
+    public static InputStream toInput(final MailboxMembership<?> membership) throws IOException {
         final org.apache.james.imap.store.mail.model.Document document = membership.getDocument();
         return toInput(document);
     }
+   
 
     /**
      * Return an {@link InputStream} which holds the content of the given {@link org.apache.james.imap.store.mail.model.Document}
      * 
      * @param document
      * @return stream
+     * @throws IOException 
      */
-    public static InputStream toInput(final org.apache.james.imap.store.mail.model.Document document) {
+    public static InputStream toInput(final org.apache.james.imap.store.mail.model.Document document) throws IOException {
         final List<Header> headers = getSortedHeaders(document);
         final StringBuffer headersToString = new StringBuffer(headers.size() * 50);
         for (Header header: headers) {
@@ -253,40 +259,83 @@ public class ResultUtils {
             headersToString.append("\r\n");
         }
         headersToString.append("\r\n");
-        final ByteBuffer bodyContent = document.getBodyContent();
+        final RewindableInputStream bodyContent = document.getBodyContent();
         final MessageInputStream stream = new MessageInputStream(headersToString, bodyContent);
         return stream;
     }
 
-    private static final class MessageInputStream extends InputStream {
+
+    private static final class MessageInputStream extends RewindableInputStream {
         private final StringBuffer headers;
-
-        private final ByteBuffer bodyContent;
-
         private int headerPosition = 0;
 
         public MessageInputStream(final StringBuffer headers,
-                final ByteBuffer bodyContent) {
-            super();
+                final RewindableInputStream bodyContent) throws IOException{
+            super(bodyContent);
+            
             this.headers = headers;
             bodyContent.rewind();
-            this.bodyContent = bodyContent;
         }
 
         public int read() throws IOException {
+            rewindIfNeeded();
             final int result;
             if (headerPosition < headers.length()) {
                 result = headers.charAt(headerPosition++);
-            } else if (bodyContent.hasRemaining()) {
-                result = bodyContent.get();
-            } else {
-                result = -1;
+            } else  { 
+                result = in.read();
             }
             return result;
         }
 
-    }
+        @Override
+        public int read(byte[] b, int off, int len) throws IOException {
 
+            rewindIfNeeded();
+            if (headerPosition < headers.length()) {
+                int headersLeft = headers.length() - headerPosition;
+                if (len > headersLeft) {
+                    int i;
+                    for (i = 0; i < headersLeft; i++) {
+                        int a =  read();
+                        if (a == -1) {
+                            return i;
+                        } 
+                        b[off +i] = (byte) a;
+                    }
+                    int bytesLeft = len - headersLeft;
+                    return i + in.read(b, off +i, bytesLeft);
+                } else {
+
+                    for (int i = 0 ; i < len; i++) {
+                        int a =  read();
+                        if (a == -1) {
+                            return -1;
+                        } 
+                        b[off +i] = (byte) a;
+                    }
+                    return len;
+                }
+            }
+            return in.read(b, off, len);
+        }
+
+        @Override
+        public int read(byte[] b) throws IOException {
+            return read(b, 0, b.length);
+        }
+
+        @Override
+        protected void rewindIfNeeded() throws IOException {
+            if (needsRewind()) {
+                headerPosition = 0;
+                ((RewindableInputStream)in).rewindIfNeeded();
+            }
+        }
+        
+        
+    }
+  
     private static final int[] path(MimePath mimePath) {
         final int[] result;
         if (mimePath == null) {

@@ -40,7 +40,7 @@ import org.apache.james.imap.mailbox.MessageResult.FetchGroup;
 import org.apache.james.imap.mailbox.MessageResult.MimePath;
 import org.apache.james.imap.mailbox.util.MessageResultImpl;
 import org.apache.james.imap.store.ByteContent;
-import org.apache.james.imap.store.FullContent;
+import org.apache.james.imap.store.FullByteContent;
 import org.apache.james.imap.store.MimeDescriptorImpl;
 import org.apache.james.imap.store.PartContentBuilder;
 import org.apache.james.imap.store.ResultHeader;
@@ -123,8 +123,12 @@ public class MessageRowUtils {
         final MessageBody body = (MessageBody) messageRow.getMessageBodys()
                 .get(0);
         final byte[] bytes = body.getBody();
-        final FullContent results = new FullContent(ByteBuffer.wrap(bytes), headers);
-        return results;
+        FullByteContent results;
+        try {
+            return new FullByteContent(ByteBuffer.wrap(bytes), headers);
+        } catch (IOException e) {
+            throw new TorqueException("Unable to parse message",e);
+        }
     }
 
     public static MessageResult loadMessageResult(final MessageRow messageRow,

@@ -19,12 +19,16 @@
 
 package org.apache.james.imap.inmemory;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.Date;
 import java.util.List;
 
 import javax.mail.Flags;
 
+import org.apache.james.imap.store.LazySkippingInputStream;
+import org.apache.james.imap.store.RewindableInputStream;
 import org.apache.james.imap.store.mail.model.AbstractMailboxMembership;
 import org.apache.james.imap.store.mail.model.Document;
 import org.apache.james.imap.store.mail.model.Header;
@@ -147,18 +151,17 @@ public class SimpleMailboxMembership extends AbstractMailboxMembership<Long> imp
         recent = false;
     }
 
-    public ByteBuffer getBodyContent() {
-        final ByteBuffer contentBuffer = getFullContent();
-        contentBuffer.position(bodyStartOctet);
-        return contentBuffer.slice();
+    public RewindableInputStream getBodyContent() throws IOException {
+        return new RewindableInputStream(new LazySkippingInputStream(new ByteArrayInputStream(document),bodyStartOctet));
+       
     }
 
     public long getBodyOctets() {
         return getFullContentOctets() - bodyStartOctet;
     }
 
-    public ByteBuffer getFullContent() {
-        return ByteBuffer.wrap(document).asReadOnlyBuffer();
+    public RewindableInputStream getFullContent() throws IOException {
+        return new RewindableInputStream(new ByteArrayInputStream(document));
     }
 
     public long getFullContentOctets() {

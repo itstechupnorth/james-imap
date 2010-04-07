@@ -18,8 +18,10 @@
  ****************************************************************/
 package org.apache.james.imap.store.mail.model;
 
-import java.nio.ByteBuffer;
+import java.io.IOException;
 import java.util.List;
+
+import org.apache.james.imap.store.RewindableInputStream;
 
 /**
  * A MIME documents, consisting of meta-data (including MIME headers)
@@ -31,16 +33,16 @@ public interface Document {
 
     /**
      * Gets the full content (including headers) of the document.
-     * @return read only buffer, not null
+     * @return fullContent, not null
      */
-    public abstract ByteBuffer getFullContent();
+    public abstract RewindableInputStream getFullContent() throws IOException;
     
     /**
      * Gets the body content of the document.
      * Headers are excluded.
-     * @return read only buffer, not null
+     * @return body, not null
      */
-    public abstract ByteBuffer getBodyContent();
+    public abstract RewindableInputStream getBodyContent() throws IOException;
 
     /**
      * Gets the top level MIME content media type.

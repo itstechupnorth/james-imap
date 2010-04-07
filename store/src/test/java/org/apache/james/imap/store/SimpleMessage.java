@@ -18,10 +18,11 @@
  ****************************************************************/
 package org.apache.james.imap.store;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
-import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -83,18 +84,20 @@ public class SimpleMessage implements Document {
     }
 
     /**
+     * @throws IOException 
      * @see org.apache.james.imap.jpa.mail.model.Document#getBodyContent()
      */
-    public ByteBuffer getBodyContent() {
-        return ByteBuffer.wrap(body).asReadOnlyBuffer();
+    public RewindableInputStream getBodyContent() throws IOException {
+        return new RewindableInputStream(new ByteArrayInputStream(body));
     }
 
     /**
      * Gets the full content (including headers) of the document.
      * @return read only buffer, not null
+     * @throws IOException 
      */
-    public ByteBuffer getFullContent() {
-        return ByteBuffer.wrap(fullContent).asReadOnlyBuffer();
+    public RewindableInputStream getFullContent() throws IOException {
+        return new RewindableInputStream(new ByteArrayInputStream(fullContent));
     }
     
     /**

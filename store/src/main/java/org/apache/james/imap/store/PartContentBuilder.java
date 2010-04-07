@@ -121,7 +121,7 @@ public class PartContentBuilder {
     public Content getFullContent() throws IOException, UnexpectedEOFException, MimeException {
         final List<Header> headers = getMimeHeaders();
         final byte[] content = mimeBodyContent();
-        return new FullContent(ByteBuffer.wrap(content), headers);
+        return new FullByteContent(ByteBuffer.wrap(content), headers);
     }
 
     public Content getMessageBodyContent() throws IOException, MimeException {

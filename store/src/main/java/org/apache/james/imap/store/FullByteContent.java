@@ -25,40 +25,22 @@ package org.apache.james.imap.store;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.WritableByteChannel;
-import java.util.Iterator;
 import java.util.List;
 
-import org.apache.james.imap.mailbox.Content;
 import org.apache.james.imap.mailbox.MessageResult;
 
 /**
  * Content which holds the full content, including {@link Header} objets
  *
  */
-public final class FullContent implements Content {
+public final class FullByteContent extends  AbstractFullContent {
     private final ByteBuffer contents;
-
-    private final List<MessageResult.Header> headers;
-
     private final long size;
 
-    public FullContent(final ByteBuffer contents, final List<MessageResult.Header> headers) {
+    public FullByteContent(final ByteBuffer contents, final List<MessageResult.Header> headers) throws IOException {
+        super(headers);
         this.contents = contents;
-        this.headers = headers;
         this.size = caculateSize();
-    }
-
-    private long caculateSize() {
-        long result = contents.limit();
-        result += 2;
-        for (final Iterator<MessageResult.Header> it = headers.iterator(); it.hasNext();) {
-            final MessageResult.Header header = it.next();
-            if (header != null) {
-                result += header.size();
-                result += 2;
-            }
-        }
-        return result;
     }
 
     /*
@@ -69,37 +51,15 @@ public final class FullContent implements Content {
         return size;
     }
 
-    /*
-     * (non-Javadoc)
-     * @see org.apache.james.imap.mailbox.Content#writeTo(java.nio.channels.WritableByteChannel)
-     */
-    public void writeTo(WritableByteChannel channel) throws IOException {
-        ByteBuffer newLine = ByteBuffer.wrap(ResultUtils.BYTES_NEW_LINE);
-        for (final Iterator<MessageResult.Header> it = headers.iterator(); it.hasNext();) {
-            final MessageResult.Header header = it.next();
-            if (header != null) {
-                header.writeTo(channel);
-            }
-            newLine.rewind();
-            writeAll(channel, newLine);
-        }
-        newLine.rewind();
-        writeAll(channel, newLine);
+    @Override
+    protected void bodyWriteTo(WritableByteChannel channel) throws IOException {
         contents.rewind();
-        writeAll(channel, contents);
+        writeAll(channel, contents);        
     }
 
-    /**
-     * Write all 
-     * 
-     * @param channel
-     * @param buffer
-     * @throws IOException
-     */
-    private void writeAll(WritableByteChannel channel, ByteBuffer buffer)
-            throws IOException {
-        while (channel.write(buffer) > 0) {
-            // write more
-        }
+    @Override
+    protected long getBodySize() throws IOException {
+        return contents.limit();
     }
+
 }
