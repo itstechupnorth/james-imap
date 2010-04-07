@@ -34,7 +34,8 @@ import org.apache.james.imap.decode.ImapRequestLineReader;
 public class EolInputStream extends FilterInputStream{
 
     private ImapRequestLineReader reader;
-
+    private boolean eolCalled = false;
+    
     public EolInputStream(ImapRequestLineReader reader, InputStream in) {
         super(in);
         this.reader = reader;
@@ -62,9 +63,15 @@ public class EolInputStream extends FilterInputStream{
     }
 
     private void eol(int i ) throws IOException{
-        if (i == -1) {
+        if (i == -1 && eolCalled == false) {
             reader.eol();
+            eolCalled = true;
         }
+    }
+
+    @Override
+    public int available() throws IOException {
+        return in.available();
     }
     
 }

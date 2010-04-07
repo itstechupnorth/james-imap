@@ -74,24 +74,30 @@ public class AppendProcessor extends AbstractMailboxProcessor {
             appendToMailbox(messageIn, datetime, flags, session, tag,
                     command, mailbox, responder, fullMailboxName);
         } catch (MailboxNotFoundException e) {
-            // consume stream
-            try {
-                while(messageIn.read() != -1);
-            } catch (IOException e1) {
-                // just consume
-            }
+            // consume message on exception
+            cosume(messageIn);
             
 //          Indicates that the mailbox does not exist
 //          So TRY CREATE
             tryCreate(session, tag, command, responder, e);
             
         } catch (MailboxException e) {
-           
+            // consume message on exception
+            cosume(messageIn);
+            
 //          Some other issue
             no(command, tag, responder, e, session);
             
         }
 
+    }
+    
+    private void cosume(InputStream in) {
+        try {
+            while(in.read() != -1);
+        } catch (IOException e1) {
+            // just consume
+        } 
     }
 
     /**

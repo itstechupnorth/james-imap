@@ -81,7 +81,7 @@ public class FixedLengthInputStream extends FilterInputStream {
     }
 
     public int available() throws IOException {
-        return 0;
+        return (int) (length - pos);
     }
 
     public void close() throws IOException {
