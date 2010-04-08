@@ -33,6 +33,7 @@ import javax.persistence.NamedQuery;
 
 import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.store.mail.model.AbstractMailboxMembership;
+import org.apache.james.imap.store.mail.model.MailboxMembership;
 import org.apache.james.imap.store.mail.model.PropertyBuilder;
 
 @MappedSuperclass
@@ -158,7 +159,7 @@ public abstract class AbstractJPAMailboxMembership extends AbstractMailboxMember
      * @param original message to be copied, not null
      * @throws IOException 
      */
-    public AbstractJPAMailboxMembership(long mailboxId, long uid, AbstractJPAMailboxMembership original) throws MailboxException {
+    public AbstractJPAMailboxMembership(long mailboxId, long uid, MailboxMembership<?> original) throws MailboxException {
         super();
         this.mailboxId = mailboxId;
         this.uid = uid;

@@ -34,6 +34,7 @@ import org.apache.james.imap.jpa.mail.model.AbstractJPAMailboxMembership;
 import org.apache.james.imap.jpa.mail.model.JPAHeader;
 import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.store.mail.model.Document;
+import org.apache.james.imap.store.mail.model.MailboxMembership;
 import org.apache.james.imap.store.mail.model.PropertyBuilder;
 
 @Entity(name="Membership")
@@ -58,10 +59,10 @@ public class JPAStreamingMailboxMembership extends AbstractJPAMailboxMembership{
        
     }
 
-    public JPAStreamingMailboxMembership(long mailboxId, long uid, AbstractJPAMailboxMembership original) throws MailboxException {
+    public JPAStreamingMailboxMembership(long mailboxId, long uid, MailboxMembership<?> original) throws MailboxException {
         super(mailboxId, uid, original);
         try {
-            this.message = new JPAStreamingMessage((JPAStreamingMessage) original.getDocument());
+            this.message = new JPAStreamingMessage(original.getDocument());
         } catch (IOException e) {
             throw new MailboxException(HumanReadableText.FAILURE_MAILBOX_EXISTS,e);
         }

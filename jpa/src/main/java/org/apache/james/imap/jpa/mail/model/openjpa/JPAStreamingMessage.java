@@ -32,6 +32,7 @@ import org.apache.james.imap.jpa.mail.model.AbstractJPAMessage;
 import org.apache.james.imap.jpa.mail.model.JPAHeader;
 import org.apache.james.imap.jpa.mail.model.JPAMessage;
 import org.apache.james.imap.store.StreamUtils;
+import org.apache.james.imap.store.mail.model.Document;
 import org.apache.james.imap.store.mail.model.PropertyBuilder;
 import org.apache.openjpa.persistence.Persistent;
 
@@ -65,7 +66,7 @@ public class JPAStreamingMessage extends AbstractJPAMessage{
      * @param message
      * @throws IOException 
      */
-    public JPAStreamingMessage(JPAStreamingMessage message) throws IOException {
+    public JPAStreamingMessage(Document message) throws IOException {
         super(message);
         this.content = new ByteArrayInputStream(StreamUtils.toByteArray(message.getFullContent()));
     }

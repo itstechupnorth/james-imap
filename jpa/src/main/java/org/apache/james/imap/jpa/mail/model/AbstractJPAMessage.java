@@ -31,6 +31,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
 
 import org.apache.james.imap.store.mail.model.AbstractDocument;
+import org.apache.james.imap.store.mail.model.Document;
 import org.apache.james.imap.store.mail.model.Header;
 import org.apache.james.imap.store.mail.model.Property;
 import org.apache.james.imap.store.mail.model.PropertyBuilder;
@@ -85,7 +86,7 @@ public abstract class AbstractJPAMessage extends AbstractDocument{
      * 
      * @param message
      */
-    public AbstractJPAMessage(AbstractJPAMessage message) {
+    public AbstractJPAMessage(Document message) {
     	
         this.contentOctets = message.getFullContentOctets();
         this.bodyStartOctet = (int) (message.getFullContentOctets() - message.getBodyOctets());
