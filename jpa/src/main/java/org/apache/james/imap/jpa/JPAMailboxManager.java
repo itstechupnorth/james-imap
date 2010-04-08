@@ -61,6 +61,7 @@ public abstract class JPAMailboxManager extends StoreMailboxManager<Long> {
             
         });
     }
+
     
     /**
      * Delete every Mailbox which exists

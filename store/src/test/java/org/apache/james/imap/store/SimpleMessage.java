@@ -88,7 +88,7 @@ public class SimpleMessage implements Document {
      * @see org.apache.james.imap.jpa.mail.model.Document#getBodyContent()
      */
     public RewindableInputStream getBodyContent() throws IOException {
-        return new RewindableInputStream(new ByteArrayInputStream(body));
+        return new InMemoryRewindableInputStream(new ByteArrayInputStream(body));
     }
 
     /**
@@ -97,7 +97,7 @@ public class SimpleMessage implements Document {
      * @throws IOException 
      */
     public RewindableInputStream getFullContent() throws IOException {
-        return new RewindableInputStream(new ByteArrayInputStream(fullContent));
+        return new InMemoryRewindableInputStream(new ByteArrayInputStream(fullContent));
     }
     
     /**

@@ -33,6 +33,7 @@ import org.apache.jackrabbit.JcrConstants;
 import org.apache.james.imap.jcr.JCRImapConstants;
 import org.apache.james.imap.jcr.JCRUtils;
 import org.apache.james.imap.jcr.Persistent;
+import org.apache.james.imap.store.DelegatingRewindableInputStream;
 import org.apache.james.imap.store.LazySkippingInputStream;
 import org.apache.james.imap.store.RewindableInputStream;
 import org.apache.james.imap.store.StreamUtils;
@@ -132,7 +133,7 @@ public class JCRMessage extends AbstractDocument implements JCRImapConstants, Pe
      * @see org.apache.james.imap.store.mail.model.Document#getFullContent()
      */
     public RewindableInputStream getFullContent() throws IOException {
-        return new RewindableInputStream(getFullContentInternal());
+        return new DelegatingRewindableInputStream(getFullContentInternal(), getFullContentOctets());
     }
     
     
@@ -427,7 +428,7 @@ public class JCRMessage extends AbstractDocument implements JCRImapConstants, Pe
      * @see org.apache.james.imap.store.mail.model.Document#getBodyContent()
      */
     public RewindableInputStream getBodyContent() throws IOException {
-        return new RewindableInputStream(new LazySkippingInputStream(getFullContentInternal(), getBodyStartOctet()));
+        return new DelegatingRewindableInputStream(new LazySkippingInputStream(getFullContentInternal(), getBodyStartOctet()), getFullContentOctets());
     }
 
 

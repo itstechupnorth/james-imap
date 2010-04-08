@@ -260,38 +260,42 @@ public class ResultUtils {
         }
         headersToString.append("\r\n");
         final RewindableInputStream bodyContent = document.getBodyContent();
-        final MessageInputStream stream = new MessageInputStream(headersToString, bodyContent);
+        final MessageInputStream stream = new MessageInputStream(headersToString, bodyContent, document.getFullContentOctets());
         return stream;
     }
 
 
-    private static final class MessageInputStream extends RewindableInputStream {
+    private static final class MessageInputStream extends DelegatingRewindableInputStream {
         private final StringBuffer headers;
         private int headerPosition = 0;
 
         public MessageInputStream(final StringBuffer headers,
-                final RewindableInputStream bodyContent) throws IOException{
-            super(bodyContent);
+                final RewindableInputStream bodyContent, long bodySize) throws IOException{
+            super(bodyContent, bodySize);
             
             this.headers = headers;
             bodyContent.rewind();
         }
 
         public int read() throws IOException {
-            rewindIfNeeded();
+            if (needsRewind()) {
+                rewind();
+            }
             final int result;
             if (headerPosition < headers.length()) {
                 result = headers.charAt(headerPosition++);
             } else  { 
-                result = in.read();
+                result = super.read();
             }
             return result;
         }
 
         @Override
         public int read(byte[] b, int off, int len) throws IOException {
-
-            rewindIfNeeded();
+            if (needsRewind()) {
+                rewind();
+            }
+            
             if (headerPosition < headers.length()) {
                 int headersLeft = headers.length() - headerPosition;
                 if (len > headersLeft) {
@@ -304,7 +308,7 @@ public class ResultUtils {
                         b[off +i] = (byte) a;
                     }
                     int bytesLeft = len - headersLeft;
-                    return i + in.read(b, off +i, bytesLeft);
+                    return i + super.read(b, off +i, bytesLeft);
                 } else {
 
                     for (int i = 0 ; i < len; i++) {
@@ -317,20 +321,12 @@ public class ResultUtils {
                     return len;
                 }
             }
-            return in.read(b, off, len);
+            return super.read(b, off, len);
         }
 
         @Override
         public int read(byte[] b) throws IOException {
             return read(b, 0, b.length);
-        }
-
-        @Override
-        protected void rewindIfNeeded() throws IOException {
-            if (needsRewind()) {
-                headerPosition = 0;
-                ((RewindableInputStream)in).rewindIfNeeded();
-            }
         }
         
         

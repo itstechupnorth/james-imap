@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations      *
  * under the License.                                           *
  ****************************************************************/
-package org.apache.james.imap.jpa.mail.model;
+package org.apache.james.imap.jpa.mail.model.openjpa;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -30,38 +30,38 @@ import javax.persistence.FetchType;
 import javax.persistence.ManyToOne;
 
 import org.apache.james.imap.api.display.HumanReadableText;
+import org.apache.james.imap.jpa.mail.model.AbstractJPAMailboxMembership;
+import org.apache.james.imap.jpa.mail.model.JPAHeader;
 import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.store.mail.model.Document;
 import org.apache.james.imap.store.mail.model.PropertyBuilder;
 
 @Entity(name="Membership")
-public class JPAMailboxMembership extends AbstractJPAMailboxMembership{
+public class JPAStreamingMailboxMembership extends AbstractJPAMailboxMembership{
 
 
     /** The value for the body field. Lazy loaded */
-    @ManyToOne(cascade = CascadeType.ALL, fetch=FetchType.LAZY) private JPAMessage message;
+    @ManyToOne(cascade = CascadeType.ALL, fetch=FetchType.LAZY) private JPAStreamingMessage message;
   
     
     /**
      * For enhancement only.
      */
     @Deprecated
-    public JPAMailboxMembership() {}
+    public JPAStreamingMailboxMembership() {}
 
-    public JPAMailboxMembership(long mailboxId, long uid, Date internalDate, int size, Flags flags, 
+    public JPAStreamingMailboxMembership(long mailboxId, long uid, Date internalDate, int size, Flags flags, 
             InputStream content, int bodyStartOctet, final List<JPAHeader> headers, final PropertyBuilder propertyBuilder) throws MailboxException {
         super(mailboxId, uid, internalDate, size, flags, bodyStartOctet, headers, propertyBuilder);  
-        try {
-            this.message = new JPAMessage(content, size, bodyStartOctet, headers, propertyBuilder);
-        } catch (IOException e) {
-            throw new MailboxException(HumanReadableText.FAILURE_MAILBOX_EXISTS,e);
-        }
+        this.message = new JPAStreamingMessage(content, size, bodyStartOctet, headers, propertyBuilder);
+        
+       
     }
 
-    public JPAMailboxMembership(long mailboxId, long uid, AbstractJPAMailboxMembership original) throws MailboxException {
+    public JPAStreamingMailboxMembership(long mailboxId, long uid, AbstractJPAMailboxMembership original) throws MailboxException {
         super(mailboxId, uid, original);
         try {
-            this.message = new JPAMessage((JPAMessage) original.getDocument());
+            this.message = new JPAStreamingMessage((JPAStreamingMessage) original.getDocument());
         } catch (IOException e) {
             throw new MailboxException(HumanReadableText.FAILURE_MAILBOX_EXISTS,e);
         }

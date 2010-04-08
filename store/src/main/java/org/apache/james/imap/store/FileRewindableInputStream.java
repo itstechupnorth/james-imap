@@ -18,53 +18,62 @@
  ****************************************************************/
 package org.apache.james.imap.store;
 
-import java.io.FilterInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 
 /**
- * {@link FilterInputStream} which support the get rewinded.
+ * {@link RewindableInputStream} implementations which stores the data into a {@link File}. This is
+ * useful for big data
  * 
- * The rewinding will get delayed as long as possible. So if you call
- * rewind, it will only get performed when needed
- * 
- *
  */
-public abstract class RewindableInputStream extends FilterInputStream{
+public class FileRewindableInputStream extends AbstractRewindableInputStream{
 
-    private boolean rewind;
+    private File f;
+    private FileOutputStream fOut;
+    private FileInputStream fIn;
 
-    protected RewindableInputStream(InputStream in) {
+    public FileRewindableInputStream(InputStream in) throws IOException {
         super(in);
     }
 
-    /**
-     * Return if the stream needs to get rewinded
-     * 
-     * @return needsRewind
-     */
-    public final boolean needsRewind() {
-        return rewind;
+    @Override
+    protected OutputStream getRewindOutputStream() throws IOException {
+        if (f == null) {
+            f = File.createTempFile("rewindable", ".tmp");
+        }
+        if (fOut == null) {
+            fOut = new FileOutputStream(f);
+        
+        }
+        return fOut;
     }
     
-    /**
-     * Rewind was done
-     */
-    protected final void rewindDone() {
-        this.rewind = false;
-    }
-    
-    /**
-     * Mark the stream for rewind. The rewind itself should get delayed as long as possible
-     */
-    public final void rewind() {
-        this.rewind = true;
+    @Override
+    protected void afterRewindComplete() throws IOException {
+        fIn = new FileInputStream(f);        
     }
 
-    /**
-     * Perform the actual rewind 
-     * @throws IOException
-     */
-    protected abstract void rewindIfNeeded() throws IOException;
+    @Override
+    protected void dispose() throws IOException {
+        if (f != null) {
+            f.delete();
+        }
+    }
 
+    @Override
+    protected InputStream getRewindInputStream() throws IOException {
+        if (f == null) {
+            f = File.createTempFile("rewindable", ".tmp");
+        }
+        if (fIn == null) {
+
+            fIn = new FileInputStream(f);
+        }
+        return fIn;
+    }
 }

@@ -21,12 +21,14 @@ package org.apache.james.imap.store;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+
 import static org.junit.Assert.*;
 
 import org.junit.Before;
 import org.junit.Test;
 
-public class RewindableInputStreamTest {
+public abstract class RewindableInputStreamTest {
 
     private RewindableInputStream in;
     private final static String CONTENT = "test\nblah!\n";
@@ -36,10 +38,12 @@ public class RewindableInputStreamTest {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         out.write(CONTENT.getBytes());
 
-        in = new RewindableInputStream(new ByteArrayInputStream(out.toByteArray()));
+        in = create(new ByteArrayInputStream(out.toByteArray()));
 
     }
 
+    protected abstract RewindableInputStream create(InputStream in) throws IOException;
+    
     public void tearDown() throws IOException {
         in.close();
     }

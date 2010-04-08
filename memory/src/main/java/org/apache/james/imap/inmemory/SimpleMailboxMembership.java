@@ -26,6 +26,7 @@ import java.util.List;
 
 import javax.mail.Flags;
 
+import org.apache.james.imap.store.DelegatingRewindableInputStream;
 import org.apache.james.imap.store.LazySkippingInputStream;
 import org.apache.james.imap.store.RewindableInputStream;
 import org.apache.james.imap.store.mail.model.AbstractMailboxMembership;
@@ -151,7 +152,7 @@ public class SimpleMailboxMembership extends AbstractMailboxMembership<Long> imp
     }
 
     public RewindableInputStream getBodyContent() throws IOException {
-        return new RewindableInputStream(new LazySkippingInputStream(new ByteArrayInputStream(document),bodyStartOctet));
+        return new DelegatingRewindableInputStream(new LazySkippingInputStream(new ByteArrayInputStream(document),bodyStartOctet), getFullContentOctets());
        
     }
 
@@ -160,7 +161,7 @@ public class SimpleMailboxMembership extends AbstractMailboxMembership<Long> imp
     }
 
     public RewindableInputStream getFullContent() throws IOException {
-        return new RewindableInputStream(new ByteArrayInputStream(document));
+        return new DelegatingRewindableInputStream(new ByteArrayInputStream(document), getFullContentOctets());
     }
 
     public long getFullContentOctets() {

@@ -34,22 +34,27 @@ import org.apache.james.imap.store.mail.model.Mailbox;
  * OpenJPA implementation of MailboxManager
  *
  */
-public class OpenJPAMailboxManager extends JPAMailboxManager{
+public class OpenJPAMailboxManager extends JPAMailboxManager {
 
-	public OpenJPAMailboxManager(Authenticator authenticator,
-			Subscriber subscriber, EntityManagerFactory entityManagerFactory) {
-		super(authenticator, subscriber, entityManagerFactory);
-	}
+    private boolean useStreaming;
 
-	@Override
-	protected MailboxMapper<Long> createMailboxMapper(MailboxSession session) {
+    public OpenJPAMailboxManager(Authenticator authenticator, Subscriber subscriber, EntityManagerFactory entityManagerFactory, boolean useStreaming) {
+        super(authenticator, subscriber, entityManagerFactory);
+        this.useStreaming = useStreaming;
+    }
+
+    public OpenJPAMailboxManager(Authenticator authenticator, Subscriber subscriber, EntityManagerFactory entityManagerFactory) {
+        this(authenticator, subscriber, entityManagerFactory, false);
+    }
+
+    @Override
+    protected MailboxMapper<Long> createMailboxMapper(MailboxSession session) {
         return new OpenJPAMailboxMapper(entityManagerFactory.createEntityManager());
-	}
-
+    }
 
     protected StoreMailbox<Long> createMailbox(Mailbox<Long> mailboxRow, MailboxSession session) {
         StoreMailbox<Long> result;
-        result = new OpenJPAMailbox(mailboxRow, session, entityManagerFactory);
+        result = new OpenJPAMailbox(mailboxRow, session, entityManagerFactory, useStreaming);
         return result;
     }
 }

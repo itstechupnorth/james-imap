@@ -29,6 +29,9 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Lob;
 
+import org.apache.james.imap.store.DelegatingRewindableInputStream;
+import org.apache.james.imap.store.FileRewindableInputStream;
+import org.apache.james.imap.store.InMemoryRewindableInputStream;
 import org.apache.james.imap.store.LazySkippingInputStream;
 import org.apache.james.imap.store.RewindableInputStream;
 import org.apache.james.imap.store.StreamUtils;
@@ -66,7 +69,7 @@ public class JPAMessage extends AbstractJPAMessage{
      * @see org.apache.james.imap.store.mail.model.Document#getFullContent()
      */
     public RewindableInputStream getFullContent() throws IOException{
-        return new RewindableInputStream(new ByteArrayInputStream(content));
+        return new DelegatingRewindableInputStream(new ByteArrayInputStream(content),getFullContentOctets());
     }
 
     /*
@@ -74,7 +77,7 @@ public class JPAMessage extends AbstractJPAMessage{
      * @see org.apache.james.imap.store.mail.model.Document#getBodyContent()
      */
     public RewindableInputStream getBodyContent() throws IOException {
-        return new RewindableInputStream(new LazySkippingInputStream(new ByteArrayInputStream(content), getBodyStartOctet()));
+        return new DelegatingRewindableInputStream(new LazySkippingInputStream(new ByteArrayInputStream(content), getBodyStartOctet()),getFullContentOctets());
     }
 
 }

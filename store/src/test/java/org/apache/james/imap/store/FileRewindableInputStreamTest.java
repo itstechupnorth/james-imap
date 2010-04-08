@@ -18,53 +18,14 @@
  ****************************************************************/
 package org.apache.james.imap.store;
 
-import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-/**
- * {@link FilterInputStream} which support the get rewinded.
- * 
- * The rewinding will get delayed as long as possible. So if you call
- * rewind, it will only get performed when needed
- * 
- *
- */
-public abstract class RewindableInputStream extends FilterInputStream{
+public class FileRewindableInputStreamTest extends RewindableInputStreamTest{
 
-    private boolean rewind;
-
-    protected RewindableInputStream(InputStream in) {
-        super(in);
+    @Override
+    protected RewindableInputStream create(InputStream in) throws IOException {
+        return new FileRewindableInputStream(in);
     }
-
-    /**
-     * Return if the stream needs to get rewinded
-     * 
-     * @return needsRewind
-     */
-    public final boolean needsRewind() {
-        return rewind;
-    }
-    
-    /**
-     * Rewind was done
-     */
-    protected final void rewindDone() {
-        this.rewind = false;
-    }
-    
-    /**
-     * Mark the stream for rewind. The rewind itself should get delayed as long as possible
-     */
-    public final void rewind() {
-        this.rewind = true;
-    }
-
-    /**
-     * Perform the actual rewind 
-     * @throws IOException
-     */
-    protected abstract void rewindIfNeeded() throws IOException;
 
 }

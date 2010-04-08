@@ -29,6 +29,7 @@ import javax.persistence.EntityManagerFactory;
 
 import org.apache.james.imap.jpa.mail.JPAMailboxMapper;
 import org.apache.james.imap.jpa.mail.JPAMessageMapper;
+import org.apache.james.imap.jpa.mail.model.AbstractJPAMailboxMembership;
 import org.apache.james.imap.jpa.mail.model.JPAHeader;
 import org.apache.james.imap.jpa.mail.model.JPAMailboxMembership;
 import org.apache.james.imap.mailbox.MailboxException;
@@ -49,12 +50,12 @@ import org.apache.james.imap.store.mail.model.PropertyBuilder;
 public abstract class JPAMailbox extends StoreMailbox<Long> {
 
     protected final EntityManagerFactory entityManagerFactory;
-
+    
     public JPAMailbox(final Mailbox<Long> mailbox, MailboxSession session, final EntityManagerFactory entityManagerfactory) {
         super(mailbox, session);
-        this.entityManagerFactory = entityManagerfactory;
-    }    
-
+        this.entityManagerFactory = entityManagerfactory;        
+    }  
+    
     /**
      * Create MailboxMapper 
      * 
@@ -87,14 +88,15 @@ public abstract class JPAMailbox extends StoreMailbox<Long> {
         for (Header header: headers) {
             jpaHeaders.add((JPAHeader) header);
         }
-        final MailboxMembership<Long> message = new JPAMailboxMembership(mailboxId, uid, internalDate, 
-                size, flags, document, bodyStartOctet, jpaHeaders, propertyBuilder);
+        final MailboxMembership<Long> message = new JPAMailboxMembership(mailboxId, uid, internalDate, size, flags, document, bodyStartOctet, jpaHeaders, propertyBuilder);
         return message;
+
+       
     }
     
     @Override
     protected MailboxMembership<Long> copyMessage(MailboxMembership<Long> originalMessage, long uid) throws MailboxException{
-        MailboxMembership<Long> newRow = new JPAMailboxMembership(getMailboxId(), uid, (JPAMailboxMembership) originalMessage);
+        final MailboxMembership<Long> newRow = new JPAMailboxMembership(getMailboxId(), uid, (AbstractJPAMailboxMembership) originalMessage);
         return newRow;
     }
     
