@@ -18,6 +18,13 @@
  ****************************************************************/
 package org.apache.james.imap.store.mail.model;
 
+import java.io.IOException;
+import java.io.InputStream;
+
+import org.apache.james.imap.store.DelegatingRewindableInputStream;
+import org.apache.james.imap.store.LazySkippingInputStream;
+import org.apache.james.imap.store.RewindableInputStream;
+
 
 /**
  * Abstract base class for {@link Document}
@@ -41,6 +48,30 @@ public abstract class AbstractDocument implements Document{
      * @return startOctet
      */
     protected abstract int getBodyStartOctet();
+    
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.store.mail.model.Document#getFullContent()
+     */
+    public RewindableInputStream getFullContent() throws IOException {
+        return new DelegatingRewindableInputStream(getRawFullContent(), getFullContentOctets());
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.store.mail.model.Document#getBodyContent()
+     */
+    public RewindableInputStream getBodyContent() throws IOException {
+        return new DelegatingRewindableInputStream(new LazySkippingInputStream(getRawFullContent(), getBodyStartOctet()),getFullContentOctets());
+
+    }
+    
+    /**
+     * Return the raw {@link InputStream} of the full content
+     * 
+     * @return rawFullContent
+     */
+    protected abstract InputStream getRawFullContent();
     
 
 }

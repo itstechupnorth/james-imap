@@ -33,9 +33,6 @@ import org.apache.jackrabbit.JcrConstants;
 import org.apache.james.imap.jcr.JCRImapConstants;
 import org.apache.james.imap.jcr.JCRUtils;
 import org.apache.james.imap.jcr.Persistent;
-import org.apache.james.imap.store.DelegatingRewindableInputStream;
-import org.apache.james.imap.store.LazySkippingInputStream;
-import org.apache.james.imap.store.RewindableInputStream;
 import org.apache.james.imap.store.StreamUtils;
 import org.apache.james.imap.store.mail.model.AbstractDocument;
 import org.apache.james.imap.store.mail.model.Document;
@@ -128,29 +125,6 @@ public class JCRMessage extends AbstractDocument implements JCRImapConstants, Pe
         }
     }
     
-    /*
-     * (non-Javadoc)
-     * @see org.apache.james.imap.store.mail.model.Document#getFullContent()
-     */
-    public RewindableInputStream getFullContent() throws IOException {
-        return new DelegatingRewindableInputStream(getFullContentInternal(), getFullContentOctets());
-    }
-    
-    
-    public InputStream getFullContentInternal() throws IOException {
-        if (isPersistent()) {
-            try {
-                //TODO: Maybe we should cache this somehow...
-                InputStream contentStream = node.getNode(JcrConstants.JCR_CONTENT).getProperty(JcrConstants.JCR_DATA).getStream();
-                return contentStream;
-            } catch (RepositoryException e) {
-                logger.error("Unable to retrieve property " + JcrConstants.JCR_CONTENT, e);
-            }
-            return null;
-        }
-        return content;
-    }
-
     /*
      * (non-Javadoc)
      * @see org.apache.james.imap.store.mail.model.Document#getFullContentOctets()
@@ -423,13 +397,19 @@ public class JCRMessage extends AbstractDocument implements JCRImapConstants, Pe
         return retValue;
     }
 
-    /*
-     * (non-Javadoc)
-     * @see org.apache.james.imap.store.mail.model.Document#getBodyContent()
-     */
-    public RewindableInputStream getBodyContent() throws IOException {
-        return new DelegatingRewindableInputStream(new LazySkippingInputStream(getFullContentInternal(), getBodyStartOctet()), getFullContentOctets());
+    @Override
+    protected InputStream getRawFullContent() {
+        if (isPersistent()) {
+            try {
+                //TODO: Maybe we should cache this somehow...
+                InputStream contentStream = node.getNode(JcrConstants.JCR_CONTENT).getProperty(JcrConstants.JCR_DATA).getStream();
+                return contentStream;
+            } catch (RepositoryException e) {
+                logger.error("Unable to retrieve property " + JcrConstants.JCR_CONTENT, e);
+            }
+            return null;
+        }
+        return content;
     }
-
 
 }
