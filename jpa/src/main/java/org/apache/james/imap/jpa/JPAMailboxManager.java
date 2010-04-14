@@ -75,7 +75,6 @@ public abstract class JPAMailboxManager extends StoreMailboxManager<Long> {
 
             public void run() throws MailboxException {
                 mapper.deleteAll(); 
-                mailboxes.clear();
             }
             
         });

@@ -176,7 +176,6 @@ public class InMemoryMailboxManager extends StoreMailboxManager<Long> implements
 
             public void run() throws MailboxException {
                 mapper.deleteAll(); 
-                mailboxes.clear();
             }
             
         });

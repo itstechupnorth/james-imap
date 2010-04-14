@@ -22,10 +22,8 @@ package org.apache.james.imap.store;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.Random;
 
 import org.apache.commons.logging.Log;
@@ -57,8 +55,6 @@ public abstract class StoreMailboxManager<Id> extends AbstractLogEnabled impleme
 
     private final static Random random = new Random();
 
-    protected final Map<String, StoreMailbox<Id>> mailboxes;
-
     private final Authenticator authenticator;    
     private final Subscriber subscriber;    
     
@@ -72,7 +68,6 @@ public abstract class StoreMailboxManager<Id> extends AbstractLogEnabled impleme
 
     
     public StoreMailboxManager(final Authenticator authenticator, final Subscriber subscriber, final char delimiter) {
-        mailboxes = new HashMap<String, StoreMailbox<Id>>();
         this.authenticator = authenticator;
         this.subscriber = subscriber;
         this.delimiter = delimiter;
@@ -119,27 +114,19 @@ public abstract class StoreMailboxManager<Id> extends AbstractLogEnabled impleme
      * @throws MailboxException get thrown if no Mailbox could be found for the given name
      */
     private StoreMailbox<Id> doGetMailbox(String mailboxName, MailboxSession session) throws MailboxException {
-        synchronized (mailboxes) {
-            final MailboxMapper<Id> mapper = createMailboxMapper(session);
-            Mailbox<Id> mailboxRow = mapper.findMailboxByName(mailboxName);
-            
-            if (mailboxRow == null) {
-                getLog().info("Mailbox '" + mailboxName + "' not found.");
-                throw new MailboxNotFoundException(mailboxName);
+        final MailboxMapper<Id> mapper = createMailboxMapper(session);
+        Mailbox<Id> mailboxRow = mapper.findMailboxByName(mailboxName);
 
-            } else {
-                getLog().debug("Loaded mailbox " + mailboxName);
+        if (mailboxRow == null) {
+            getLog().info("Mailbox '" + mailboxName + "' not found.");
+            throw new MailboxNotFoundException(mailboxName);
 
-                StoreMailbox<Id> result = (StoreMailbox<Id>) mailboxes.get(mailboxName);
-                if (result == null) {
-                    result = createMailbox(mailboxRow, session);
-                    mailboxes.put(mailboxName, result);
-                    
-                    // store the mailbox in the session so we can cleanup things later
-                    //session.getAttributes().put(MAILBOX, result);
-                }
-                return result;
-            }
+        } else {
+            getLog().debug("Loaded mailbox " + mailboxName);
+
+            StoreMailbox<Id> result = createMailbox(mailboxRow, session);
+            return result;
+
         }
     }
 
@@ -147,8 +134,7 @@ public abstract class StoreMailboxManager<Id> extends AbstractLogEnabled impleme
      * (non-Javadoc)
      * @see org.apache.james.imap.mailbox.MailboxManager#createMailbox(java.lang.String, org.apache.james.imap.mailbox.MailboxSession)
      */
-    public void createMailbox(String namespaceName, MailboxSession mailboxSession)
-    throws MailboxException {
+    public void createMailbox(String namespaceName, MailboxSession mailboxSession) throws MailboxException {
         getLog().debug("createMailbox " + namespaceName);
         final int length = namespaceName.length();
         if (length == 0) {
@@ -156,64 +142,54 @@ public abstract class StoreMailboxManager<Id> extends AbstractLogEnabled impleme
         } else if (namespaceName.charAt(length - 1) == delimiter) {
             createMailbox(namespaceName.substring(0, length - 1), mailboxSession);
         } else {
-            synchronized (mailboxes) {
-                // Create root first
-                // If any creation fails then mailbox will not be created
-                // TODO: transaction
-                int index = namespaceName.indexOf(delimiter);
-                int count = 0;
-                while (index >= 0) {
-                    // Until explicit namespace support is added,
-                    // this workaround prevents the namespaced elements being
-                    // created
-                    // TODO: add explicit support for namespaces
-                    if (index > 0 && count++ > 1) {
-                        final String mailbox = namespaceName
-                        .substring(0, index);
-                        if (!mailboxExists(mailbox, mailboxSession)) {
-                            doCreate(mailbox, mailboxSession);
-                        }
+            // Create root first
+            // If any creation fails then mailbox will not be created
+            // TODO: transaction
+            int index = namespaceName.indexOf(delimiter);
+            int count = 0;
+            while (index >= 0) {
+                // Until explicit namespace support is added,
+                // this workaround prevents the namespaced elements being
+                // created
+                // TODO: add explicit support for namespaces
+                if (index > 0 && count++ > 1) {
+                    final String mailbox = namespaceName.substring(0, index);
+                    if (!mailboxExists(mailbox, mailboxSession)) {
+                        doCreate(mailbox, mailboxSession);
                     }
-                    index = namespaceName.indexOf(delimiter, ++index);
                 }
-                if (mailboxExists(namespaceName, mailboxSession)) {
-                    throw new MailboxExistsException(namespaceName); 
-                } else {
-                    doCreate(namespaceName, mailboxSession);
-                }
+                index = namespaceName.indexOf(delimiter, ++index);
+            }
+            if (mailboxExists(namespaceName, mailboxSession)) {
+                throw new MailboxExistsException(namespaceName);
+            } else {
+                doCreate(namespaceName, mailboxSession);
             }
         }
+
     }
 
     /*
      * (non-Javadoc)
      * @see org.apache.james.imap.mailbox.MailboxManager#deleteMailbox(java.lang.String, org.apache.james.imap.mailbox.MailboxSession)
      */
-    public void deleteMailbox(final String mailboxName, final MailboxSession session)
-    throws MailboxException {
+    public void deleteMailbox(final String mailboxName, final MailboxSession session) throws MailboxException {
         session.getLog().info("deleteMailbox " + mailboxName);
-        synchronized (mailboxes) {
-            // TODO put this into a serilizable transaction
-            
-            final MailboxMapper<Id> mapper = createMailboxMapper(session);
-            
-            mapper.execute(new TransactionalMapper.Transaction() {
+        // TODO put this into a serilizable transaction
+        final MailboxMapper<Id> mapper = createMailboxMapper(session);
 
-                public void run() throws MailboxException {
-                    Mailbox<Id> mailbox = mapper.findMailboxByName(mailboxName);
-                    if (mailbox == null) {
-                        throw new MailboxNotFoundException("Mailbox not found");
-                    }
-                    mapper.delete(mailbox);
+        mapper.execute(new TransactionalMapper.Transaction() {
+
+            public void run() throws MailboxException {
+                Mailbox<Id> mailbox = mapper.findMailboxByName(mailboxName);
+                if (mailbox == null) {
+                    throw new MailboxNotFoundException("Mailbox not found");
                 }
-                
-            });
-            
-            final StoreMailbox<Id> storeMailbox = mailboxes.remove(mailboxName);
-            if (storeMailbox != null) {
-                storeMailbox.deleted(session);
+                mapper.delete(mailbox);
             }
-        }
+
+        });
+
     }
 
     /*
@@ -223,44 +199,40 @@ public abstract class StoreMailboxManager<Id> extends AbstractLogEnabled impleme
     public void renameMailbox(final String from, final String to, final MailboxSession session)
     throws MailboxException {
         final Log log = getLog();
-        if (log.isDebugEnabled()) log.debug("renameMailbox " + from + " to " + to);
-        synchronized (mailboxes) {
-            if (mailboxExists(to, session)) {
-                throw new MailboxExistsException(to);
+        if (log.isDebugEnabled())
+            log.debug("renameMailbox " + from + " to " + to);
+        if (mailboxExists(to, session)) {
+            throw new MailboxExistsException(to);
+        }
+
+        final MailboxMapper<Id> mapper = createMailboxMapper(session);
+        mapper.execute(new TransactionalMapper.Transaction() {
+
+            public void run() throws MailboxException {
+                // TODO put this into a serilizable transaction
+                final Mailbox<Id> mailbox = mapper.findMailboxByName(from);
+
+                if (mailbox == null) {
+                    throw new MailboxNotFoundException(from);
+                }
+                mailbox.setName(to);
+                mapper.save(mailbox);
+
+                // rename submailbox
+                final List<Mailbox<Id>> subMailboxes = mapper.findMailboxWithNameLike(from + delimiter + "%");
+                for (Mailbox<Id> sub : subMailboxes) {
+                    final String subOriginalName = sub.getName();
+                    final String subNewName = to + subOriginalName.substring(from.length());
+                    sub.setName(subNewName);
+                    mapper.save(sub);
+
+                    if (log.isDebugEnabled())
+                        log.debug("Rename mailbox sub-mailbox " + subOriginalName + " to " + subNewName);
+                }
             }
 
-            final MailboxMapper<Id> mapper = createMailboxMapper(session);                
-            mapper.execute(new TransactionalMapper.Transaction() {
-
-                public void run() throws MailboxException {
-                    // TODO put this into a serilizable transaction
-                    final Mailbox<Id> mailbox = mapper.findMailboxByName(from);
-
-                    if (mailbox == null) {
-                        throw new MailboxNotFoundException(from);
-                    }
-                    mailbox.setName(to);
-                    mapper.save(mailbox);
-
-                    changeMailboxName(from, to);
-
-                    // rename submailbox
-                    final List<Mailbox<Id>> subMailboxes = mapper.findMailboxWithNameLike(from + delimiter + "%");
-                    for (Mailbox<Id> sub:subMailboxes) {
-                        final String subOriginalName = sub.getName();
-                        final String subNewName = to + subOriginalName.substring(from.length());
-                        sub.setName(subNewName);
-                        mapper.save(sub);
-
-                        changeMailboxName(subOriginalName, subNewName);
-
-                        if (log.isDebugEnabled()) log.debug("Rename mailbox sub-mailbox " + subOriginalName + " to "
-                                + subNewName);
-                    }
-                }
-                
-            });
-        }
+        });
+        
     }
 
     /**
@@ -270,19 +242,6 @@ public abstract class StoreMailboxManager<Id> extends AbstractLogEnabled impleme
      */
     protected int randomUidValidity() {
         return Math.abs(random.nextInt());
-    }
-    
-    /**
-     * Changes the name of the mailbox instance in the cache.
-     * @param from not null
-     * @param to not null
-     */
-    private void changeMailboxName(String from, String to) {
-        final StoreMailbox<Id> jpaMailbox = mailboxes.remove(from);
-        if (jpaMailbox != null) {
-            jpaMailbox.reportRenamed(to);
-            mailboxes.put(to, jpaMailbox);
-        }
     }
 
     /*
@@ -352,27 +311,24 @@ public abstract class StoreMailboxManager<Id> extends AbstractLogEnabled impleme
 
     /*
      * (non-Javadoc)
-     * @see org.apache.james.imap.mailbox.MailboxManager#mailboxExists(java.lang.String, org.apache.james.imap.mailbox.MailboxSession)
+     * 
+     * @see
+     * org.apache.james.imap.mailbox.MailboxManager#mailboxExists(java.lang.
+     * String, org.apache.james.imap.mailbox.MailboxSession)
      */
     public boolean mailboxExists(String mailboxName, MailboxSession session) throws MailboxException {
-        synchronized (mailboxes) {
-            final MailboxMapper<Id> mapper = createMailboxMapper(session);
-            final long count = mapper.countMailboxesWithName(mailboxName);
-            if (count == 0) {
-                mailboxes.remove(mailboxName);
-                return false;
+        final MailboxMapper<Id> mapper = createMailboxMapper(session);
+        final long count = mapper.countMailboxesWithName(mailboxName);
+        if (count == 0) {
+            return false;
+        } else {
+            if (count == 1) {
+                return true;
             } else {
-                if (count == 1) {
-                    return true;
-                } else {
-                    throw new MailboxException(HumanReadableText.DUPLICATE_MAILBOXES, 
-                            "Expected one mailbox but found " + count + " mailboxes");
-                }
+                throw new MailboxException(HumanReadableText.DUPLICATE_MAILBOXES, "Expected one mailbox but found " + count + " mailboxes");
             }
         }
     }
-
-  
     
     /*
      * (non-Javadoc)

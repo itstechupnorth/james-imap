@@ -70,7 +70,6 @@ public class JCRGlobalUserMailboxManager extends JCRMailboxManager{
 
             public void run() throws MailboxException {
                 mapper.deleteAll(); 
-                mailboxes.clear();
             }
             
         });
