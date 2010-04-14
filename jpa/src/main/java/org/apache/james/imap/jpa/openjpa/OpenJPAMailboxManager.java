@@ -19,9 +19,11 @@
 
 package org.apache.james.imap.jpa.openjpa;
 
+import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 
 import org.apache.james.imap.jpa.JPAMailboxManager;
+import org.apache.james.imap.jpa.JPAUtils;
 import org.apache.james.imap.jpa.mail.openjpa.OpenJPAMailboxMapper;
 import org.apache.james.imap.mailbox.MailboxSession;
 import org.apache.james.imap.store.Authenticator;
@@ -49,7 +51,9 @@ public class OpenJPAMailboxManager extends JPAMailboxManager {
 
     @Override
     protected MailboxMapper<Long> createMailboxMapper(MailboxSession session) {
-        return new OpenJPAMailboxMapper(entityManagerFactory.createEntityManager());
+        EntityManager manager = entityManagerFactory.createEntityManager();
+        JPAUtils.addEntityManager(session, manager);
+        return new OpenJPAMailboxMapper(manager);
     }
 
     protected StoreMailbox<Long> createMailbox(Mailbox<Long> mailboxRow, MailboxSession session) {
