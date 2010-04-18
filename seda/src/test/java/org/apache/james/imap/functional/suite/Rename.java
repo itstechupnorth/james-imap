@@ -25,7 +25,7 @@ import org.apache.james.imap.functional.FrameworkForSelectedStateBase;
 import org.apache.james.test.functional.HostSystem;
 import org.junit.Test;
 
-public class Rename extends FrameworkForSelectedStateBase {
+public abstract class Rename extends FrameworkForSelectedStateBase {
 
     public Rename(HostSystem system) throws Exception {
         super(system);

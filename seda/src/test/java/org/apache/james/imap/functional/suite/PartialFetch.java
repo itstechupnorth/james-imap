@@ -25,7 +25,7 @@ import org.apache.james.imap.functional.FrameworkForSelectedStateBase;
 import org.apache.james.test.functional.HostSystem;
 import org.junit.Test;
 
-public class PartialFetch extends FrameworkForSelectedStateBase {
+public abstract class PartialFetch extends FrameworkForSelectedStateBase {
 
     public PartialFetch(HostSystem system) throws Exception {
         super(system);

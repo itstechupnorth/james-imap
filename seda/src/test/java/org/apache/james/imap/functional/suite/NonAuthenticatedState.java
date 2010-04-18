@@ -25,7 +25,7 @@ import org.apache.james.imap.functional.FrameworkForNonAuthenticatedState;
 import org.apache.james.test.functional.HostSystem;
 import org.junit.Test;
 
-public class NonAuthenticatedState extends FrameworkForNonAuthenticatedState {
+public abstract class NonAuthenticatedState extends FrameworkForNonAuthenticatedState {
 
     public NonAuthenticatedState(HostSystem system) throws Exception {
         super(system);

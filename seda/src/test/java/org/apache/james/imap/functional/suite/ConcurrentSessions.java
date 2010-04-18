@@ -25,7 +25,7 @@ import org.apache.james.imap.functional.FrameworkForAuthenticatedState;
 import org.apache.james.test.functional.HostSystem;
 import org.junit.Test;
 
-public class ConcurrentSessions extends FrameworkForAuthenticatedState {
+public abstract class ConcurrentSessions extends FrameworkForAuthenticatedState {
 
     public ConcurrentSessions(HostSystem system) throws Exception {
         super(system);

@@ -25,7 +25,7 @@ import org.apache.james.imap.functional.FrameworkForSelectedStateBase;
 import org.apache.james.test.functional.HostSystem;
 import org.junit.Test;
 
-public class FetchBodyStructure extends FrameworkForSelectedStateBase {
+public abstract class FetchBodyStructure extends FrameworkForSelectedStateBase {
 
     public FetchBodyStructure(HostSystem system) throws Exception {
         super(system);

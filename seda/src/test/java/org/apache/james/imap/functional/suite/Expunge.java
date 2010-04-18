@@ -25,7 +25,7 @@ import org.apache.james.imap.functional.FrameworkForSelectedStateBase;
 import org.apache.james.test.functional.HostSystem;
 import org.junit.Test;
 
-public class Expunge extends FrameworkForSelectedStateBase {
+public abstract class Expunge extends FrameworkForSelectedStateBase {
 
     public Expunge(HostSystem system) throws Exception {
         super(system);

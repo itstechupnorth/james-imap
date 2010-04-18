@@ -25,7 +25,7 @@ import org.apache.james.imap.functional.FrameworkForSelectedInbox;
 import org.apache.james.test.functional.HostSystem;
 import org.junit.Test;
 
-public class SelectedInbox extends FrameworkForSelectedInbox {
+public abstract class SelectedInbox extends FrameworkForSelectedInbox {
 
     public SelectedInbox(HostSystem system) throws Exception {
         super(system);

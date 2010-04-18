@@ -25,7 +25,7 @@ import org.apache.james.imap.functional.FrameworkForAuthenticatedState;
 import org.apache.james.test.functional.HostSystem;
 import org.junit.Test;
 
-public class Search extends FrameworkForAuthenticatedState {
+public abstract class Search extends FrameworkForAuthenticatedState {
 
     public Search(HostSystem system) throws Exception {
         super(system);

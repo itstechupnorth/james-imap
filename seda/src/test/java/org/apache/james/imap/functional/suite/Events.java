@@ -25,7 +25,7 @@ import org.apache.james.imap.functional.FrameworkForSelectedStateBase;
 import org.apache.james.test.functional.HostSystem;
 import org.junit.Test;
 
-public class Events extends FrameworkForSelectedStateBase {
+public abstract class Events extends FrameworkForSelectedStateBase {
 
     public Events(HostSystem system) throws Exception {
         super(system);

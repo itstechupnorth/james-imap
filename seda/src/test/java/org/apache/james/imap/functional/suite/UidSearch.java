@@ -25,7 +25,7 @@ import org.apache.james.imap.functional.FrameworkForAuthenticatedState;
 import org.apache.james.test.functional.HostSystem;
 import org.junit.Test;
 
-public class UidSearch extends
+public abstract class UidSearch extends
         FrameworkForAuthenticatedState {
 
     public UidSearch(HostSystem system) throws Exception {

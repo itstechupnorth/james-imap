@@ -25,7 +25,7 @@ import org.apache.james.imap.functional.FrameworkForAuthenticatedState;
 import org.apache.james.test.functional.HostSystem;
 import org.junit.Test;
 
-public class Listing extends FrameworkForAuthenticatedState {
+public abstract class Listing extends FrameworkForAuthenticatedState {
 
     public Listing(HostSystem system) throws Exception {
         super(system);
