@@ -636,6 +636,7 @@ public abstract class StoreMailbox<Id> implements org.apache.james.imap.mailbox.
             toMailbox.copy(originalRows, session);
 
         } catch (MessagingException e) {
+            e.printStackTrace();
             throw new MailboxException(HumanReadableText.FAILURE_MAIL_PARSE, e);
         }
     }

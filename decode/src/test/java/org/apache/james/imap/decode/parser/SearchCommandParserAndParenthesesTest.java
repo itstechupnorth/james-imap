@@ -35,6 +35,7 @@ import org.apache.james.imap.api.message.request.DayMonthYear;
 import org.apache.james.imap.api.message.request.SearchKey;
 import org.apache.james.imap.decode.ImapRequestLineReader;
 import org.apache.james.imap.decode.DecodingException;
+import org.apache.james.imap.decode.ImapRequestStreamLineReader;
 import org.jmock.Mockery;
 import org.jmock.integration.junit4.JMock;
 import org.jmock.integration.junit4.JUnit4Mockery;
@@ -194,7 +195,7 @@ public class SearchCommandParserAndParenthesesTest {
     private void check(Input in) throws UnsupportedEncodingException,
             DecodingException {
         String input = in.input + "\r\n";
-        ImapRequestLineReader reader = new ImapRequestLineReader(
+        ImapRequestLineReader reader = new ImapRequestStreamLineReader(
                 new ByteArrayInputStream(input.getBytes("US-ASCII")),
                 new ByteArrayOutputStream());
 

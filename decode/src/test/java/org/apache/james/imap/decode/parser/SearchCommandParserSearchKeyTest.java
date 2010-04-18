@@ -32,6 +32,7 @@ import org.apache.james.imap.api.message.request.DayMonthYear;
 import org.apache.james.imap.api.message.request.SearchKey;
 import org.apache.james.imap.decode.ImapRequestLineReader;
 import org.apache.james.imap.decode.DecodingException;
+import org.apache.james.imap.decode.ImapRequestStreamLineReader;
 import org.jmock.Mockery;
 import org.jmock.integration.junit4.JMock;
 import org.jmock.integration.junit4.JUnit4Mockery;
@@ -386,7 +387,7 @@ public class SearchCommandParserSearchKeyTest {
 
    
     private void checkValid(String input, final SearchKey key) throws Exception {
-        ImapRequestLineReader reader = new ImapRequestLineReader(
+        ImapRequestLineReader reader = new ImapRequestStreamLineReader(
                 new ByteArrayInputStream(input.getBytes("US-ASCII")),
                 new ByteArrayOutputStream());
 
@@ -739,7 +740,7 @@ public class SearchCommandParserSearchKeyTest {
 
     private void checkInvalid(String input, final SearchKey key)
             throws Exception {
-        ImapRequestLineReader reader = new ImapRequestLineReader(
+        ImapRequestLineReader reader = new ImapRequestStreamLineReader(
                 new ByteArrayInputStream(input.getBytes("US-ASCII")),
                 new ByteArrayOutputStream());
 

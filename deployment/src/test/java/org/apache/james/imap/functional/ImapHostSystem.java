@@ -33,7 +33,7 @@ import org.apache.james.imap.api.process.ImapProcessor;
 import org.apache.james.imap.decode.ImapDecoder;
 import org.apache.james.imap.encode.ImapEncoder;
 import org.apache.james.imap.mailbox.MailboxSession.User;
-import org.apache.james.imap.main.ImapRequestHandler;
+import org.apache.james.imap.main.ImapRequestStreamHandler;
 import org.apache.james.imap.main.ImapSessionImpl;
 import org.apache.james.test.functional.HostSystem;
 
@@ -105,7 +105,7 @@ public abstract class ImapHostSystem implements HostSystem {
 
         ByteBufferInputStream in;
 
-        ImapRequestHandler handler;
+        ImapRequestStreamHandler handler;
 
         ImapSessionImpl session;
 
@@ -114,7 +114,7 @@ public abstract class ImapHostSystem implements HostSystem {
         public Session(Continuation continuation) {
             out = new ByteBufferOutputStream(continuation);
             in = new ByteBufferInputStream();
-            handler = new ImapRequestHandler(decoder, processor, encoder);
+            handler = new ImapRequestStreamHandler(decoder, processor, encoder);
             session = new ImapSessionImpl();
             session.setLog(new SilentLog());
         }

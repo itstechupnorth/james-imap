@@ -39,7 +39,7 @@ import org.junit.runner.RunWith;
 public class ImapRequestHandlerAdandonConnectionTest {
 
     /** System under test */
-    ImapRequestHandler subject;
+    ImapRequestStreamHandler subject;
     
     // Fakes
     /** Stores output */
@@ -64,7 +64,7 @@ public class ImapRequestHandlerAdandonConnectionTest {
         encoderStub = mockery.mock(ImapEncoder.class);
         sessionStub = mockery.mock(ImapSession.class);
         // System under test
-        subject = new ImapRequestHandler(decoderStub, processorStub, encoderStub);
+        subject = new ImapRequestStreamHandler(decoderStub, processorStub, encoderStub);
     }
     
     @Test

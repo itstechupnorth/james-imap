@@ -37,6 +37,7 @@ import org.apache.james.imap.api.message.request.SearchKey;
 import org.apache.james.imap.api.message.response.StatusResponse;
 import org.apache.james.imap.api.message.response.StatusResponseFactory;
 import org.apache.james.imap.decode.ImapRequestLineReader;
+import org.apache.james.imap.decode.ImapRequestStreamLineReader;
 import org.jmock.Expectations;
 import org.jmock.Mockery;
 import org.jmock.integration.junit4.JMock;
@@ -108,7 +109,7 @@ public class SearchCommandParserCharsetTest {
                     with(equal(HumanReadableText.BAD_CHARSET)),
                     with(equal(StatusResponse.ResponseCode.badCharset(charsetNames))));
         }});
-        ImapRequestLineReader reader = new ImapRequestLineReader(
+        ImapRequestLineReader reader = new ImapRequestStreamLineReader(
                 new ByteArrayInputStream("CHARSET BOGUS ".getBytes("US-ASCII")),
                 new ByteArrayOutputStream());
         parser.decode(command, reader, TAG, false, new MockLogger());
@@ -179,7 +180,7 @@ public class SearchCommandParserCharsetTest {
 
     private void checkUTF8Valid(byte[] term, final SearchKey key)
             throws Exception {
-        ImapRequestLineReader reader = new ImapRequestLineReader(
+        ImapRequestLineReader reader = new ImapRequestStreamLineReader(
                 new ByteArrayInputStream(NioUtils.add(NioUtils.add(CHARSET,
                         term), BYTES_UTF8_NON_ASCII_SEARCH_TERM)),
                 new ByteArrayOutputStream());
@@ -189,7 +190,7 @@ public class SearchCommandParserCharsetTest {
 
     private void checkValid(String input, final SearchKey key, boolean isFirst,
             String charset) throws Exception {
-        ImapRequestLineReader reader = new ImapRequestLineReader(
+        ImapRequestLineReader reader = new ImapRequestStreamLineReader(
                 new ByteArrayInputStream(input.getBytes(charset)),
                 new ByteArrayOutputStream());
 

@@ -19,33 +19,23 @@
 
 package org.apache.james.imap.decode;
 
-import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 
 import org.apache.james.imap.api.display.HumanReadableText;
-import org.apache.james.imap.decode.base.FixedLengthInputStream;
 
 /**
  * Wraps the client input reader with a bunch of convenience methods, allowing
  * lookahead=1 on the underlying character stream. TODO need to look at
- * encoding, and whether we should be wrapping an InputStream instead.
+ * encoding
  * 
  * @version $Revision: 109034 $
  */
-public class ImapRequestLineReader {
-    private InputStream input;
+public abstract class ImapRequestLineReader {
+    
 
-    private OutputStream output;
+    protected boolean nextSeen = false;
 
-    private boolean nextSeen = false;
-
-    private char nextChar; // unknown
-
-    public ImapRequestLineReader(InputStream input, OutputStream output) {
-        this.input = input;
-        this.output = output;
-    }
+    protected char nextChar; // unknown
 
     /**
      * Reads the next regular, non-space character in the current line. Spaces
@@ -82,26 +72,7 @@ public class ImapRequestLineReader {
      * @throws DecodingException
      *             If the end-of-stream is reached.
      */
-    public char nextChar() throws DecodingException {
-        if (!nextSeen) {
-            int next = -1;
-
-            try {
-                next = input.read();
-            } catch (IOException e) {
-                throw new DecodingException(HumanReadableText.SOCKET_IO_FAILURE, 
-                        "Error reading from stream.", e);
-            }
-            if (next == -1) {
-                throw new DecodingException(HumanReadableText.ILLEGAL_ARGUMENTS, 
-                        "Unexpected end of stream.");
-            }
-
-            nextSeen = true;
-            nextChar = (char) next;
-        }
-        return nextChar;
-    }
+    public abstract char nextChar() throws DecodingException;
 
     /**
      * Moves the request line reader to end of the line, checking that no
@@ -162,33 +133,19 @@ public class ImapRequestLineReader {
      * @throws DecodingException
      *             If a char can't be read into each array element.
      */
-    public InputStream read(int size) throws DecodingException {
-
-        // Unset the next char.
-        nextSeen = false;
-        nextChar = 0;
-        return new FixedLengthInputStream(input, size);
-
-    }
+    public abstract InputStream read(int size) throws DecodingException;
 
     /**
      * Sends a server command continuation request '+' back to the client,
      * requesting more data to be sent.
      */
-    public void commandContinuationRequest() throws DecodingException {
-        try {
-            output.write('+');
-            output.write('\r');
-            output.write('\n');
-            output.flush();
-        } catch (IOException e) {
-            throw new DecodingException(
-                    HumanReadableText.SOCKET_IO_FAILURE, 
-                    "Unexpected exception in sending command continuation request.",
-                    e);
-        }
-    }
+    public abstract void commandContinuationRequest() throws DecodingException;
 
+    /**
+     * Consume the rest of the line
+     * 
+     * @throws DecodingException
+     */
     public void consumeLine() throws DecodingException {
         char next = nextChar();
         while (next != '\n') {

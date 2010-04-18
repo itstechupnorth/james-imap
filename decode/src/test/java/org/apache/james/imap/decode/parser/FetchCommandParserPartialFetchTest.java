@@ -30,6 +30,7 @@ import org.apache.james.imap.api.message.FetchData;
 import org.apache.james.imap.api.message.IdRange;
 import org.apache.james.imap.decode.ImapRequestLineReader;
 import org.apache.james.imap.decode.DecodingException;
+import org.apache.james.imap.decode.ImapRequestStreamLineReader;
 import org.apache.james.imap.decode.parser.FetchCommandParser;
 import org.junit.Before;
 import org.junit.Test;
@@ -82,7 +83,7 @@ public class FetchCommandParserPartialFetchTest  {
     @Test
     public void testShouldNotParseZeroLength() throws Exception {
         try {
-            ImapRequestLineReader reader = new ImapRequestLineReader(
+            ImapRequestLineReader reader = new ImapRequestStreamLineReader(
                     new ByteArrayInputStream("1 (BODY[]<20.0>)\r\n"
                             .getBytes("US-ASCII")), new ByteArrayOutputStream());
             parser.decode(command, reader, "A01", false, new MockLogger());                
@@ -95,7 +96,7 @@ public class FetchCommandParserPartialFetchTest  {
 
     private void check(String input, final IdRange[] idSet,
             final boolean useUids, final FetchData data, final String tag) throws Exception {
-        ImapRequestLineReader reader = new ImapRequestLineReader(
+        ImapRequestLineReader reader = new ImapRequestStreamLineReader(
                 new ByteArrayInputStream(input.getBytes("US-ASCII")),
                 new ByteArrayOutputStream());
         context.checking(new Expectations() {{
