@@ -679,12 +679,4 @@ public abstract class StoreMailbox<Id> implements org.apache.james.imap.mailbox.
         return new MailboxMetaData(recent, permanentFlags, uidValidity, uidNext, messageCount, unseenCount, firstUnseen, isWriteable());
     }
     
-    
-    private final class ConfigurableMimeTokenStream extends MimeTokenStream {
-        
-        public ConfigurableMimeTokenStream(MimeEntityConfig config) {
-            super(config);
-        }
-    }
-    
 }

@@ -35,6 +35,7 @@ import org.apache.james.imap.store.mail.model.Property;
 import org.apache.james.imap.store.mail.model.PropertyBuilder;
 import org.apache.james.mime4j.MimeException;
 import org.apache.james.mime4j.descriptor.MaximalBodyDescriptor;
+import org.apache.james.mime4j.parser.MimeEntityConfig;
 import org.apache.james.mime4j.parser.MimeTokenStream;
 import org.apache.james.mime4j.parser.RecursionMode;
 
@@ -84,8 +85,13 @@ public class MimeDescriptorImpl implements MimeDescriptor {
     }
 
     public static MimeDescriptorImpl build(final InputStream stream) throws IOException, MimeException {
-        final MimeTokenStream parser = MimeTokenStream
-                .createMaximalDescriptorStream();
+        // Disable line length limit
+        // See https://issues.apache.org/jira/browse/IMAP-132
+        MimeEntityConfig config = new MimeEntityConfig();
+        config.setMaximalBodyDescriptor(true);
+        config.setMaxLineLen(-1);
+        final ConfigurableMimeTokenStream parser = new ConfigurableMimeTokenStream(config);
+
         parser.parse(stream);
         parser.setRecursionMode(RecursionMode.M_NO_RECURSE);
         return createDescriptor(parser);
