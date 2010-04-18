@@ -22,11 +22,11 @@ package org.apache.james.imap.store;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Random;
+import java.util.WeakHashMap;
 
 import org.apache.commons.logging.Log;
 import org.apache.james.imap.api.AbstractLogEnabled;
@@ -72,7 +72,7 @@ public abstract class StoreMailboxManager<Id> extends AbstractLogEnabled impleme
 
     
     public StoreMailboxManager(final Authenticator authenticator, final Subscriber subscriber, final char delimiter) {
-        mailboxes = new HashMap<String, StoreMailbox<Id>>();
+        mailboxes = new WeakHashMap<String, StoreMailbox<Id>>();
         this.authenticator = authenticator;
         this.subscriber = subscriber;
         this.delimiter = delimiter;
@@ -409,7 +409,7 @@ public abstract class StoreMailboxManager<Id> extends AbstractLogEnabled impleme
      * @see org.apache.james.imap.mailbox.MailboxManager#resolve(java.lang.String, java.lang.String)
      */
     public String resolve(final String userName, String mailboxPath) {
-        if (mailboxPath.charAt(0) != delimiter) {
+        if (mailboxPath.length() > 0 && mailboxPath.charAt(0) != delimiter) {
             mailboxPath = delimiter + mailboxPath;
         }
         final String result = USER_NAMESPACE_PREFIX + delimiter + userName
