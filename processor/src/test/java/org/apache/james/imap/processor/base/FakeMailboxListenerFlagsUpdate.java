@@ -34,24 +34,17 @@ public class FakeMailboxListenerFlagsUpdate extends FlagsUpdated {
 
     public long subjectUid;
 
-    public long sessionId;
-
     public Flags newFlags;
 
     public FakeMailboxListenerFlagsUpdate(long subjectUid, Flags newFlags,
             long sessionId) {
-        super();
+        super(sessionId);
         this.subjectUid = subjectUid;
-        this.sessionId = sessionId;
         this.newFlags = newFlags;
     }
 
     public long getSubjectUid() {
         return subjectUid;
-    }
-
-    public long getSessionId() {
-        return sessionId;
     }
 
     public Iterator<Flag> flagsIterator() {

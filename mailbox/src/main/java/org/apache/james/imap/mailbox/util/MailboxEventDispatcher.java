@@ -91,43 +91,29 @@ public class MailboxEventDispatcher implements MailboxListener {
 
     private final static class AddedImpl extends MailboxListener.Added {
 
-        private final long sessionId;
-
         private final long subjectUid;
 
         public AddedImpl(final long sessionId, final long subjectUid) {
-            super();
-            this.sessionId = sessionId;
+            super(sessionId);
             this.subjectUid = subjectUid;
         }
 
         public long getSubjectUid() {
             return subjectUid;
-        }
-
-        public long getSessionId() {
-            return sessionId;
         }
     }
 
     private final static class ExpungedImpl extends MailboxListener.Expunged {
 
-        private final long sessionId;
-
         private final long subjectUid;
 
         public ExpungedImpl(final long sessionId, final long subjectUid) {
-            super();
-            this.sessionId = sessionId;
+            super(sessionId);
             this.subjectUid = subjectUid;
         }
 
         public long getSubjectUid() {
             return subjectUid;
-        }
-
-        public long getSessionId() {
-            return sessionId;
         }
     }
 
@@ -145,8 +131,6 @@ public class MailboxEventDispatcher implements MailboxListener {
                 Flags.Flag.RECENT, Flags.Flag.SEEN };
 
         private static final int NUMBER_OF_SYSTEM_FLAGS = 6;
-
-        private final long sessionId;
 
         private final long subjectUid;
 
@@ -170,8 +154,7 @@ public class MailboxEventDispatcher implements MailboxListener {
                 boolean deletedUpdated, boolean draftUpdated,
                 boolean flaggedUpdated, boolean recentUpdated,
                 boolean seenUpdated) {
-            super();
-            this.sessionId = sessionId;
+            super(sessionId);
             this.subjectUid = subjectUid;
             this.modifiedFlags = new boolean[NUMBER_OF_SYSTEM_FLAGS];
             this.modifiedFlags[0] = answeredUpdated;
@@ -189,14 +172,6 @@ public class MailboxEventDispatcher implements MailboxListener {
          */
         public long getSubjectUid() {
             return subjectUid;
-        }
-
-        /*
-         * (non-Javadoc)
-         * @see org.apache.james.imap.mailbox.MailboxListener.Event#getSessionId()
-         */
-        public long getSessionId() {
-            return sessionId;
         }
 
         /*
@@ -269,32 +244,19 @@ public class MailboxEventDispatcher implements MailboxListener {
         event(event);
     }
 
-    private static final class MailboxDeletionEventImpl implements
+    private static final class MailboxDeletionEventImpl extends
             MailboxListener.MailboxDeletionEvent {
-        private final long sessionId;
-
         public MailboxDeletionEventImpl(final long sessionId) {
-            super();
-            this.sessionId = sessionId;
-        }
-
-        /*
-         * (non-Javadoc)
-         * @see org.apache.james.imap.mailbox.MailboxListener.Event#getSessionId()
-         */
-        public long getSessionId() {
-            return sessionId;
+            super(sessionId);
         }
     }
 
-    private static final class MailboxRenamedEventImpl implements MailboxListener.MailboxRenamed {
+    private static final class MailboxRenamedEventImpl extends MailboxListener.MailboxRenamed {
         private final String newName;
-        private final long sessionId;
 
         public MailboxRenamedEventImpl(final String newName, final long sessionId) {
-            super();
+            super(sessionId);
             this.newName = newName;
-            this.sessionId = sessionId;
         }
 
         /*
@@ -303,14 +265,6 @@ public class MailboxEventDispatcher implements MailboxListener {
          */
         public String getNewName() {
             return newName;
-        }
-
-        /*
-         * (non-Javadoc)
-         * @see org.apache.james.imap.mailbox.MailboxListener.Event#getSessionId()
-         */
-        public long getSessionId() {
-            return sessionId;
         }
     }
 

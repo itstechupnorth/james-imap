@@ -19,29 +19,24 @@
 
 package org.apache.james.imap.processor.base;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Iterator;
 
 import javax.mail.Flags;
 
 import org.apache.james.imap.mailbox.MailboxListener;
-import org.jmock.Expectations;
-import org.jmock.Mockery;
-import org.jmock.integration.junit4.JMock;
-import org.jmock.integration.junit4.JUnit4Mockery;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 
-@RunWith(JMock.class)
 public class MailboxEventAnalyserTest {
 
     private static final long BASE_SESSION_ID = 99;
 
-    MailboxEventAnalyser analyser;
-
-    private Mockery mockery = new JUnit4Mockery();
+    private MailboxEventAnalyser analyser;
     
     @Before
     public void setUp() throws Exception {
@@ -50,10 +45,8 @@ public class MailboxEventAnalyserTest {
 
     @Test
     public void testShouldBeNoSizeChangeOnOtherEvent() throws Exception {
-        final MailboxListener.Event event = mockery.mock(MailboxListener.Event.class);
-        mockery.checking(new Expectations() {{
-            oneOf(event).getSessionId();will(returnValue(11L));
-        }});
+        final MailboxListener.Event event = new MailboxListener.Event(0) {};
+      
         analyser.event(event);
         assertFalse(analyser.isSizeChanged());
     }
