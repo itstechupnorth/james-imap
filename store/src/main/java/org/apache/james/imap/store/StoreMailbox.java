@@ -87,6 +87,15 @@ public abstract class StoreMailbox<Id> implements org.apache.james.imap.mailbox.
     }
 
     /**
+     * Return the {@link UidChangeTracker} which is used for the {@link Mailbox}
+     * 
+     * @return tracker
+     */
+    protected UidChangeTracker getUidChangeTracker() {
+        return tracker;
+    }
+    
+    /**
      * Return the {@link MailboxSession} for this {@link StoreMailbox}
      * 
      * @return session
