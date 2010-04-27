@@ -69,7 +69,7 @@ public class InMemoryMailboxManager extends StoreMailboxManager<Long> implements
      * (non-Javadoc)
      * @see org.apache.james.imap.store.mail.MailboxMapper#countMailboxesWithName(java.lang.String)
      */
-    public long countMailboxesWithName(String name) throws StorageException {
+    public synchronized long countMailboxesWithName(String name) throws StorageException {
         int total = 0;
         for (final InMemoryMailbox mailbox:mailboxesById.values()) {
             if (mailbox.getName().equals(name)) {
@@ -83,7 +83,7 @@ public class InMemoryMailboxManager extends StoreMailboxManager<Long> implements
      * (non-Javadoc)
      * @see org.apache.james.imap.store.mail.MailboxMapper#delete(org.apache.james.imap.store.mail.model.Mailbox)
      */
-    public void delete(Mailbox<Long> mailbox) throws StorageException {
+    public synchronized void delete(Mailbox<Long> mailbox) throws StorageException {
         mailboxesById.remove(mailbox.getMailboxId());
     }
 
@@ -91,7 +91,7 @@ public class InMemoryMailboxManager extends StoreMailboxManager<Long> implements
      * (non-Javadoc)
      * @see org.apache.james.imap.store.mail.MailboxMapper#deleteAll()
      */
-    public void deleteAll() throws StorageException {
+    public synchronized void deleteAll() throws StorageException {
         mailboxesById.clear();
     }
 
@@ -100,7 +100,7 @@ public class InMemoryMailboxManager extends StoreMailboxManager<Long> implements
      * (non-Javadoc)
      * @see org.apache.james.imap.store.mail.MailboxMapper#findMailboxById(java.lang.Object)
      */
-    public Mailbox<Long> findMailboxById(Long mailboxId) throws StorageException, MailboxNotFoundException {
+    public synchronized Mailbox<Long> findMailboxById(Long mailboxId) throws StorageException, MailboxNotFoundException {
         return mailboxesById.get(mailboxesById);
     }
 
@@ -108,7 +108,7 @@ public class InMemoryMailboxManager extends StoreMailboxManager<Long> implements
      * (non-Javadoc)
      * @see org.apache.james.imap.store.mail.MailboxMapper#findMailboxByName(java.lang.String)
      */
-    public Mailbox<Long> findMailboxByName(String name) throws StorageException, MailboxNotFoundException {
+    public synchronized Mailbox<Long> findMailboxByName(String name) throws StorageException, MailboxNotFoundException {
         Mailbox<Long> result = null;
         for (final InMemoryMailbox mailbox:mailboxesById.values()) {
             if (mailbox.getName().equals(name)) {
@@ -123,7 +123,7 @@ public class InMemoryMailboxManager extends StoreMailboxManager<Long> implements
      * (non-Javadoc)
      * @see org.apache.james.imap.store.mail.MailboxMapper#findMailboxWithNameLike(java.lang.String)
      */
-    public List<Mailbox<Long>> findMailboxWithNameLike(String name) throws StorageException {
+    public synchronized List<Mailbox<Long>> findMailboxWithNameLike(String name) throws StorageException {
         final String regex = name.replace("%", ".*");
         List<Mailbox<Long>> results = new ArrayList<Mailbox<Long>>();
         for (final InMemoryMailbox mailbox:mailboxesById.values()) {
@@ -138,7 +138,7 @@ public class InMemoryMailboxManager extends StoreMailboxManager<Long> implements
      * (non-Javadoc)
      * @see org.apache.james.imap.store.mail.MailboxMapper#existsMailboxStartingWith(java.lang.String)
      */
-    public boolean existsMailboxStartingWith(String mailboxName) throws StorageException {
+    public synchronized boolean existsMailboxStartingWith(String mailboxName) throws StorageException {
         boolean result = false;
         for (final InMemoryMailbox mailbox:mailboxesById.values()) {
             if (mailbox.getName().startsWith(mailboxName)) {
@@ -153,7 +153,7 @@ public class InMemoryMailboxManager extends StoreMailboxManager<Long> implements
      * (non-Javadoc)
      * @see org.apache.james.imap.store.mail.MailboxMapper#save(org.apache.james.imap.store.mail.model.Mailbox)
      */
-    public void save(Mailbox<Long> mailbox) throws StorageException {
+    public synchronized void save(Mailbox<Long> mailbox) throws StorageException {
         mailboxesById.put(mailbox.getMailboxId(), (InMemoryMailbox) mailbox);
     }
 
@@ -171,13 +171,12 @@ public class InMemoryMailboxManager extends StoreMailboxManager<Long> implements
      * @throws MailboxException
      */
 
-    public void deleteEverything() throws MailboxException {
+    public synchronized void deleteEverything() throws MailboxException {
         final MailboxMapper<Long> mapper = createMailboxMapper(null);
         mapper.execute(new TransactionalMapper.Transaction() {
 
             public void run() throws MailboxException {
                 mapper.deleteAll(); 
-                mailboxes.clear();
             }
             
         });

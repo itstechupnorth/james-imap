@@ -23,11 +23,9 @@ import javax.persistence.EntityManager;
 
 import org.apache.james.imap.jpa.mail.JPAMailboxMapper;
 import org.apache.james.imap.jpa.mail.model.JPAMailbox;
-import org.apache.openjpa.persistence.OpenJPAEntityManager;
-import org.apache.openjpa.persistence.OpenJPAPersistence;
 
 /**
- * OpenJPA implemetnation of MailboxMapper.
+ * OpenJPA implementation of MailboxMapper.
  */
 public class OpenJPAMailboxMapper extends JPAMailboxMapper {
     
@@ -40,18 +38,10 @@ public class OpenJPAMailboxMapper extends JPAMailboxMapper {
      * @see org.apache.james.imap.jpa.mail.JPAMailboxMapper#doConsumeNextUid(long)
      */
     public JPAMailbox doConsumeNextUid(long mailboxId) {
-        OpenJPAEntityManager oem = OpenJPAPersistence.cast(entityManager);
-        final boolean originalLocking = oem.getOptimistic();
-        oem.setOptimistic(false);
-        oem.getTransaction().begin();
-        try {
-            JPAMailbox mailbox = (JPAMailbox) entityManager.createNamedQuery("findMailboxById").setParameter("idParam", mailboxId).getSingleResult();
-            mailbox.consumeUid();
-            oem.persist(mailbox);
-            oem.getTransaction().commit();
-            return mailbox;
-        } finally {
-            oem.setOptimistic(originalLocking);
-        }
+        JPAMailbox mailbox = (JPAMailbox) entityManager.createNamedQuery("findMailboxById").setParameter("idParam", mailboxId).getSingleResult();
+        mailbox.consumeUid();
+        entityManager.persist(mailbox);
+        return mailbox;
+        
     }
 }

@@ -56,6 +56,7 @@ public class InMemoryStoreMailbox extends StoreMailbox<Long> implements MessageM
         this.mailbox = mailbox;
         this.membershipByUid = new ConcurrentHashMap<Long, MailboxMembership<Long>>(INITIAL_SIZE);
     }
+    
 
     @Override
     protected MailboxMembership<Long> copyMessage(MailboxMembership<Long> originalMessage, long uid, MailboxSession session) {

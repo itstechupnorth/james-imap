@@ -31,7 +31,7 @@ import org.apache.james.test.functional.HostSystem;
 
 public class InMemoryHostSystem extends ImapHostSystem {
 
-    private final StoreMailboxManager mailboxManager;
+    private final InMemoryMailboxManager mailboxManager;
     private final InMemoryUserManager userManager; 
     
     static HostSystem build() throws Exception {        
@@ -57,7 +57,7 @@ public class InMemoryHostSystem extends ImapHostSystem {
 
     @Override
     protected void resetData() throws Exception {
-        //mailboxManager.deleteEverything();
+        mailboxManager.deleteEverything();
     }
 
 }

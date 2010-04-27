@@ -145,166 +145,165 @@ public abstract class StoreMailbox<Id> implements org.apache.james.imap.mailbox.
      * (non-Javadoc)
      * @see org.apache.james.imap.mailbox.Mailbox#appendMessage(byte[], java.util.Date, org.apache.james.imap.mailbox.MailboxSession, boolean, javax.mail.Flags)
      */
-    public long appendMessage(InputStream msgIn, Date internalDate,
-            MailboxSession mailboxSession, boolean isRecent, Flags flagsToBeSet)
+    public long appendMessage(final InputStream msgIn, final Date internalDate,
+            final MailboxSession mailboxSession,final boolean isRecent, final Flags flagsToBeSet)
     throws MailboxException {
-
-        final Mailbox<Id> mailbox = reserveNextUid(mailboxSession);
-        if (mailbox == null) {
-            throw new MailboxNotFoundException("Mailbox has been deleted");
-        } else {
-           
-            
-            File file = null;
-            try {
-                // Create a temporary file and copy the message to it. We will work with the file as
-                // source for the InputStream
-                file = File.createTempFile("imap", ".msg");
-                FileOutputStream out = new FileOutputStream(file);
+        // this will hold the uid after the transaction was complete
+        final List<Long> uidHolder = new ArrayList<Long>();
+        final MessageMapper<Id> mapper = createMessageMapper(mailboxSession);
+        mapper.execute(new TransactionalMapper.Transaction() {
+          
+            public void run() throws MailboxException {
+                final Mailbox<Id> mailbox = reserveNextUid(mailboxSession);
                 
-                byte[] buf = new byte[1024];
-                int i = 0;
-                while ((i = msgIn.read(buf)) != -1) {
-                    out.write(buf, 0, i);
-                }
-                out.flush();
-                out.close();
-                
-                FileInputStream tmpMsgIn = new FileInputStream(file);
-                // To be thread safe, we first get our own copy and the
-                // exclusive
-                // Uid
-                // TODO create own message_id and assign uid later
-                // at the moment it could lead to the situation that uid 5
-                // is
-                // inserted long before 4, when
-                // mail 4 is big and comes over a slow connection.
-
-                final long uid = mailbox.getLastUid();
-                final int size = tmpMsgIn.available();
-                final int bodyStartOctet = bodyStartOctet(new FileInputStream(file));
-
-                // Disable line length... This should be handled by the smtp server component and not the parser itself
-                // https://issues.apache.org/jira/browse/IMAP-122
-                MimeEntityConfig config = new MimeEntityConfig();
-                config.setMaximalBodyDescriptor(true);
-                config.setMaxLineLen(-1);
-                final ConfigurableMimeTokenStream parser = new ConfigurableMimeTokenStream(config);
-               
-                parser.setRecursionMode(MimeTokenStream.M_NO_RECURSE);
-                parser.parse(new FileInputStream(file));
-                final List<Header> headers = new ArrayList<Header>(INITIAL_SIZE_HEADERS);
-                
-                int lineNumber = 0;
-                int next = parser.next();
-                while (next != MimeTokenStream.T_BODY
-                        && next != MimeTokenStream.T_END_OF_STREAM
-                        && next != MimeTokenStream.T_START_MULTIPART) {
-                    if (next == MimeTokenStream.T_FIELD) {
-                        String fieldValue = parser.getField().getBody();
-                        if (fieldValue.endsWith("\r\f")) {
-                            fieldValue = fieldValue.substring(0,fieldValue.length() - 2);
-                        }
-                        if (fieldValue.startsWith(" ")) {
-                            fieldValue = fieldValue.substring(1);
-                        }
-                        final Header header 
-                            = createHeader(++lineNumber, parser.getField().getName(), 
-                                fieldValue);
-                        headers.add(header);
-                    }
-                    next = parser.next();
-                }
-                final MaximalBodyDescriptor descriptor = (MaximalBodyDescriptor) parser.getBodyDescriptor();
-                final PropertyBuilder propertyBuilder = new PropertyBuilder();
-                final String mediaType;
-                final String mediaTypeFromHeader = descriptor.getMediaType();
-                final String subType;
-                if (mediaTypeFromHeader == null) {
-                    mediaType = "text";
-                    subType = "plain";
-                } else {
-                    mediaType = mediaTypeFromHeader;
-                    subType = descriptor.getSubType();
-                }
-                propertyBuilder.setMediaType(mediaType);
-                propertyBuilder.setSubType(subType);
-                propertyBuilder.setContentID(descriptor.getContentId());
-                propertyBuilder.setContentDescription(descriptor.getContentDescription());
-                propertyBuilder.setContentLocation(descriptor.getContentLocation());
-                propertyBuilder.setContentMD5(descriptor.getContentMD5Raw());
-                propertyBuilder.setContentTransferEncoding(descriptor.getTransferEncoding());
-                propertyBuilder.setContentLanguage(descriptor.getContentLanguage());
-                propertyBuilder.setContentDispositionType(descriptor.getContentDispositionType());
-                propertyBuilder.setContentDispositionParameters(descriptor.getContentDispositionParameters());
-                propertyBuilder.setContentTypeParameters(descriptor.getContentTypeParameters());
-                // Add missing types
-                final String codeset = descriptor.getCharset();
-                if (codeset == null) {
-                    if ("TEXT".equalsIgnoreCase(mediaType)) {
-                        propertyBuilder.setCharset("us-ascii");
-                    }
-                } else {
-                    propertyBuilder.setCharset(codeset);
-                }
-                
-                final String boundary = descriptor.getBoundary();
-                if (boundary != null) {
-                    propertyBuilder.setBoundary(boundary);
-                }   
-                if ("text".equalsIgnoreCase(mediaType)) {
-                    final CountingInputStream bodyStream = new CountingInputStream(parser.getInputStream());
-                    bodyStream.readAll();
-                    long lines = bodyStream.getLineCount();
+                File file = null;
+                try {
+                    // Create a temporary file and copy the message to it. We will work with the file as
+                    // source for the InputStream
+                    file = File.createTempFile("imap", ".msg");
+                    FileOutputStream out = new FileOutputStream(file);
                     
-                    next = parser.next();
-                    if (next == MimeTokenStream.T_EPILOGUE)  {
-                        final CountingInputStream epilogueStream = new CountingInputStream(parser.getInputStream());
-                        epilogueStream.readAll();
-                        lines+=epilogueStream.getLineCount();
+                    byte[] buf = new byte[1024];
+                    int i = 0;
+                    while ((i = msgIn.read(buf)) != -1) {
+                        out.write(buf, 0, i);
                     }
-                    propertyBuilder.setTextualLineCount(lines);
-                }
-                
-                final Flags flags;
-                if (flagsToBeSet == null) {
-                    flags = new Flags();
-                } else {
-                    flags = flagsToBeSet;
-                }
-                if (isRecent) {
-                    flags.add(Flags.Flag.RECENT);
-                }
-                
-                final MailboxMembership<Id> message = createMessage(internalDate, uid, size, bodyStartOctet, new FileInputStream(file), flags, headers, propertyBuilder);
-                final MessageMapper<Id> mapper = createMessageMapper(mailboxSession);
+                    out.flush();
+                    out.close();
+                    
+                    FileInputStream tmpMsgIn = new FileInputStream(file);
+                    // To be thread safe, we first get our own copy and the
+                    // exclusive
+                    // Uid
+                    // TODO create own message_id and assign uid later
+                    // at the moment it could lead to the situation that uid 5
+                    // is
+                    // inserted long before 4, when
+                    // mail 4 is big and comes over a slow connection.
 
-                mapper.execute(new TransactionalMapper.Transaction() {
+                    final long uid = mailbox.getLastUid();
+                    final int size = tmpMsgIn.available();
+                    final int bodyStartOctet = bodyStartOctet(new FileInputStream(file));
 
-                    public void run() throws MailboxException {
-                        mapper.save(message);
+                    // Disable line length... This should be handled by the smtp server component and not the parser itself
+                    // https://issues.apache.org/jira/browse/IMAP-122
+                    MimeEntityConfig config = new MimeEntityConfig();
+                    config.setMaximalBodyDescriptor(true);
+                    config.setMaxLineLen(-1);
+                    final ConfigurableMimeTokenStream parser = new ConfigurableMimeTokenStream(config);
+                   
+                    parser.setRecursionMode(MimeTokenStream.M_NO_RECURSE);
+                    parser.parse(new FileInputStream(file));
+                    final List<Header> headers = new ArrayList<Header>(INITIAL_SIZE_HEADERS);
+                    
+                    int lineNumber = 0;
+                    int next = parser.next();
+                    while (next != MimeTokenStream.T_BODY
+                            && next != MimeTokenStream.T_END_OF_STREAM
+                            && next != MimeTokenStream.T_START_MULTIPART) {
+                        if (next == MimeTokenStream.T_FIELD) {
+                            String fieldValue = parser.getField().getBody();
+                            if (fieldValue.endsWith("\r\f")) {
+                                fieldValue = fieldValue.substring(0,fieldValue.length() - 2);
+                            }
+                            if (fieldValue.startsWith(" ")) {
+                                fieldValue = fieldValue.substring(1);
+                            }
+                            final Header header 
+                                = createHeader(++lineNumber, parser.getField().getName(), 
+                                    fieldValue);
+                            headers.add(header);
+                        }
+                        next = parser.next();
+                    }
+                    final MaximalBodyDescriptor descriptor = (MaximalBodyDescriptor) parser.getBodyDescriptor();
+                    final PropertyBuilder propertyBuilder = new PropertyBuilder();
+                    final String mediaType;
+                    final String mediaTypeFromHeader = descriptor.getMediaType();
+                    final String subType;
+                    if (mediaTypeFromHeader == null) {
+                        mediaType = "text";
+                        subType = "plain";
+                    } else {
+                        mediaType = mediaTypeFromHeader;
+                        subType = descriptor.getSubType();
+                    }
+                    propertyBuilder.setMediaType(mediaType);
+                    propertyBuilder.setSubType(subType);
+                    propertyBuilder.setContentID(descriptor.getContentId());
+                    propertyBuilder.setContentDescription(descriptor.getContentDescription());
+                    propertyBuilder.setContentLocation(descriptor.getContentLocation());
+                    propertyBuilder.setContentMD5(descriptor.getContentMD5Raw());
+                    propertyBuilder.setContentTransferEncoding(descriptor.getTransferEncoding());
+                    propertyBuilder.setContentLanguage(descriptor.getContentLanguage());
+                    propertyBuilder.setContentDispositionType(descriptor.getContentDispositionType());
+                    propertyBuilder.setContentDispositionParameters(descriptor.getContentDispositionParameters());
+                    propertyBuilder.setContentTypeParameters(descriptor.getContentTypeParameters());
+                    // Add missing types
+                    final String codeset = descriptor.getCharset();
+                    if (codeset == null) {
+                        if ("TEXT".equalsIgnoreCase(mediaType)) {
+                            propertyBuilder.setCharset("us-ascii");
+                        }
+                    } else {
+                        propertyBuilder.setCharset(codeset);
                     }
                     
-                });
-                dispatcher.added(uid, mailboxSession.getSessionId(), getMailboxRow(mailboxSession).getName());
-                //tracker.found(uid, message.createFlags());
-                return uid;
-            } catch (IOException e) {
-                e.printStackTrace();
-                throw new MailboxException(HumanReadableText.FAILURE_MAIL_PARSE, e);
-            } catch (MessagingException e) {
-                e.printStackTrace();
-                throw new MailboxException(HumanReadableText.FAILURE_MAIL_PARSE, e);
-            } catch (MimeException e) {
-                e.printStackTrace();
-                throw new MailboxException(HumanReadableText.FAILURE_MAIL_PARSE, e);
-            } finally {
-                // delete the temporary file if one was specified
-                if (file != null) {
-                    file.delete();
+                    final String boundary = descriptor.getBoundary();
+                    if (boundary != null) {
+                        propertyBuilder.setBoundary(boundary);
+                    }   
+                    if ("text".equalsIgnoreCase(mediaType)) {
+                        final CountingInputStream bodyStream = new CountingInputStream(parser.getInputStream());
+                        bodyStream.readAll();
+                        long lines = bodyStream.getLineCount();
+                        
+                        next = parser.next();
+                        if (next == MimeTokenStream.T_EPILOGUE)  {
+                            final CountingInputStream epilogueStream = new CountingInputStream(parser.getInputStream());
+                            epilogueStream.readAll();
+                            lines+=epilogueStream.getLineCount();
+                        }
+                        propertyBuilder.setTextualLineCount(lines);
+                    }
+                    
+                    final Flags flags;
+                    if (flagsToBeSet == null) {
+                        flags = new Flags();
+                    } else {
+                        flags = flagsToBeSet;
+                    }
+                    if (isRecent) {
+                        flags.add(Flags.Flag.RECENT);
+                    }
+                    
+                    final MailboxMembership<Id> message = createMessage(internalDate, uid, size, bodyStartOctet, new FileInputStream(file), flags, headers, propertyBuilder);
+                    mapper.save(message);
+                       
+                        
+                   
+                    dispatcher.added(uid, mailboxSession.getSessionId(), getMailboxRow(mailboxSession).getName());
+                    //tracker.found(uid, message.createFlags());
+                    uidHolder.add(uid);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    throw new MailboxException(HumanReadableText.FAILURE_MAIL_PARSE, e);
+                } catch (MessagingException e) {
+                    e.printStackTrace();
+                    throw new MailboxException(HumanReadableText.FAILURE_MAIL_PARSE, e);
+                } catch (MimeException e) {
+                    e.printStackTrace();
+                    throw new MailboxException(HumanReadableText.FAILURE_MAIL_PARSE, e);
+                } finally {
+                    // delete the temporary file if one was specified
+                    if (file != null) {
+                        file.delete();
+                    }
                 }
             }
-        }
+        });
+       
+        return uidHolder.get(0);
     }
 
     /**

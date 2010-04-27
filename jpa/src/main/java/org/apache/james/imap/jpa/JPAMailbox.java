@@ -25,7 +25,6 @@ import java.util.List;
 
 import javax.mail.Flags;
 import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
 
 import org.apache.james.imap.jpa.mail.JPAMailboxMapper;
 import org.apache.james.imap.jpa.mail.JPAMessageMapper;
@@ -50,9 +49,9 @@ import org.apache.james.imap.store.mail.model.PropertyBuilder;
  */
 public abstract class JPAMailbox extends StoreMailbox<Long> {
 
-    protected final EntityManagerFactory entityManagerFactory;
+    protected final MailboxSessionEntityManagerFactory entityManagerFactory;
     
-    public JPAMailbox(final MailboxEventDispatcher dispatcher, final Mailbox<Long> mailbox, final EntityManagerFactory entityManagerfactory) {
+    public JPAMailbox(final MailboxEventDispatcher dispatcher, final Mailbox<Long> mailbox, final MailboxSessionEntityManagerFactory entityManagerfactory) {
         super(dispatcher, mailbox);
         this.entityManagerFactory = entityManagerfactory;        
     }  
@@ -73,10 +72,8 @@ public abstract class JPAMailbox extends StoreMailbox<Long> {
     
     @Override
     protected MessageMapper<Long> createMessageMapper(MailboxSession session) {
-        EntityManager manager = entityManagerFactory.createEntityManager();
-        
-        JPAUtils.addEntityManager(session, manager);
-        
+        EntityManager manager = entityManagerFactory.getEntityManager(session);
+                
         JPAMessageMapper mapper = new JPAMessageMapper(manager, getMailboxId());
        
         return mapper;
@@ -111,7 +108,7 @@ public abstract class JPAMailbox extends StoreMailbox<Long> {
      * Reserve next Uid in mailbox and return the mailbox. This method needs to be synchronized 
      * to be sure we don't get any race-condition
      */
-    protected synchronized Mailbox<Long> reserveNextUid(MailboxSession session) throws MailboxException {
+    protected Mailbox<Long> reserveNextUid(MailboxSession session) throws MailboxException {
         final JPAMailboxMapper mapper = createMailboxMapper(session);
         final Mailbox<Long> mailbox = mapper.consumeNextUid(getMailboxId());
         return mailbox;

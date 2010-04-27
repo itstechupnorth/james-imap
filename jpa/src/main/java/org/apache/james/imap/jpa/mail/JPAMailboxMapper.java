@@ -150,6 +150,7 @@ public abstract class JPAMailboxMapper extends JPATransactionalMapper implements
         } catch (NoResultException e) {
             throw new MailboxNotFoundException(mailboxId);
         } catch (PersistenceException e) {
+            e.printStackTrace();
             throw new StorageException(HumanReadableText.COMSUME_UID_FAILED, e);
         } 
     }

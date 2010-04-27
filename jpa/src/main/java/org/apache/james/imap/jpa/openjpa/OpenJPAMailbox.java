@@ -26,10 +26,9 @@ import java.util.List;
 
 import javax.mail.Flags;
 import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
 
 import org.apache.james.imap.jpa.JPAMailbox;
-import org.apache.james.imap.jpa.JPAUtils;
+import org.apache.james.imap.jpa.MailboxSessionEntityManagerFactory;
 import org.apache.james.imap.jpa.mail.JPAMailboxMapper;
 import org.apache.james.imap.jpa.mail.model.AbstractJPAMailboxMembership;
 import org.apache.james.imap.jpa.mail.model.JPAHeader;
@@ -49,13 +48,12 @@ import org.apache.james.imap.store.mail.model.PropertyBuilder;
  */
 public class OpenJPAMailbox extends JPAMailbox{
 
-    public final static String MAILBOX_MAPPER = "MAILBOX_MAPPER";
     private final boolean useStreaming;
-    public OpenJPAMailbox(MailboxEventDispatcher dispatcher, Mailbox<Long> mailbox,  EntityManagerFactory entityManagerfactory) {
+    public OpenJPAMailbox(MailboxEventDispatcher dispatcher, Mailbox<Long> mailbox,  MailboxSessionEntityManagerFactory entityManagerfactory) {
 		this(dispatcher, mailbox, entityManagerfactory, false);
 	}
 
-    public OpenJPAMailbox(MailboxEventDispatcher dispatcher, Mailbox<Long> mailbox, EntityManagerFactory entityManagerfactory, final boolean useStreaming) {
+    public OpenJPAMailbox(MailboxEventDispatcher dispatcher, Mailbox<Long> mailbox, MailboxSessionEntityManagerFactory entityManagerfactory, final boolean useStreaming) {
         super(dispatcher, mailbox, entityManagerfactory);
         this.useStreaming = useStreaming;
     }
@@ -65,10 +63,8 @@ public class OpenJPAMailbox extends JPAMailbox{
      * @see org.apache.james.imap.jpa.JPAMailbox#createMailboxMapper(org.apache.james.imap.mailbox.MailboxSession)
      */
 	protected JPAMailboxMapper createMailboxMapper(MailboxSession session) {
-	    EntityManager manager = entityManagerFactory.createEntityManager();
-	    
-	    JPAUtils.addEntityManager(session, manager);
-	    
+	    EntityManager manager = entityManagerFactory.getEntityManager(session);
+	    	    
         JPAMailboxMapper mapper = new OpenJPAMailboxMapper(manager);
 
         return mapper;

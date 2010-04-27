@@ -18,10 +18,6 @@
  ****************************************************************/
 package org.apache.james.imap.jpa;
 
-import java.util.List;
-
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
 
 import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.MailboxSession;
@@ -40,10 +36,10 @@ import org.apache.james.imap.store.transaction.TransactionalMapper;
  */
 public abstract class JPAMailboxManager extends StoreMailboxManager<Long> {
 
-    protected final EntityManagerFactory entityManagerFactory;
+    protected final MailboxSessionEntityManagerFactory entityManagerFactory;
 
     public JPAMailboxManager(final Authenticator authenticator, final Subscriber subscriber, 
-            final EntityManagerFactory entityManagerFactory) {
+            final MailboxSessionEntityManagerFactory entityManagerFactory) {
         super(authenticator, subscriber);
         this.entityManagerFactory = entityManagerFactory;
     }
@@ -68,25 +64,17 @@ public abstract class JPAMailboxManager extends StoreMailboxManager<Long> {
 
             public void run() throws MailboxException {
                 mapper.deleteAll(); 
-                mailboxes.clear();
             }
             
         });
     }
 
+    
     @Override
     public void endProcessingRequest(MailboxSession session) {
-        List<EntityManager> managers = JPAUtils.getEntityManagers(session);
-        for (int i = 0 ; i < managers.size(); i++) {
-            EntityManager manager = managers.get(i);
-            if (manager.isOpen()) {
-                try {
-                    manager.close();
-                } catch (Exception e) {
-                    // just catch exceptions on logout
-                }
-            }
-        }
+        // close the entityManager after each request so we are sure everything is flushed
+        entityManagerFactory.closeEntityManager(session);
+       
     }
     
     

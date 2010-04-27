@@ -20,10 +20,9 @@
 package org.apache.james.imap.jpa.openjpa;
 
 import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
 
 import org.apache.james.imap.jpa.JPAMailboxManager;
-import org.apache.james.imap.jpa.JPAUtils;
+import org.apache.james.imap.jpa.MailboxSessionEntityManagerFactory;
 import org.apache.james.imap.jpa.mail.openjpa.OpenJPAMailboxMapper;
 import org.apache.james.imap.mailbox.MailboxSession;
 import org.apache.james.imap.mailbox.util.MailboxEventDispatcher;
@@ -41,19 +40,18 @@ public class OpenJPAMailboxManager extends JPAMailboxManager {
 
     private boolean useStreaming;
 
-    public OpenJPAMailboxManager(Authenticator authenticator, Subscriber subscriber, EntityManagerFactory entityManagerFactory, boolean useStreaming) {
+    public OpenJPAMailboxManager(Authenticator authenticator, Subscriber subscriber, MailboxSessionEntityManagerFactory entityManagerFactory, boolean useStreaming) {
         super(authenticator, subscriber, entityManagerFactory);
         this.useStreaming = useStreaming;
     }
 
-    public OpenJPAMailboxManager(Authenticator authenticator, Subscriber subscriber, EntityManagerFactory entityManagerFactory) {
+    public OpenJPAMailboxManager(Authenticator authenticator, Subscriber subscriber, MailboxSessionEntityManagerFactory entityManagerFactory) {
         this(authenticator, subscriber, entityManagerFactory, false);
     }
 
     @Override
     protected MailboxMapper<Long> createMailboxMapper(MailboxSession session) {
-        EntityManager manager = entityManagerFactory.createEntityManager();
-        JPAUtils.addEntityManager(session, manager);
+        EntityManager manager = entityManagerFactory.getEntityManager(session);
         return new OpenJPAMailboxMapper(manager);
     }
 
