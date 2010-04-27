@@ -40,6 +40,7 @@ import org.apache.james.imap.jcr.mail.model.JCRMailboxMembership;
 import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.MailboxSession;
 import org.apache.james.imap.mailbox.SubscriptionException;
+import org.apache.james.imap.mailbox.util.MailboxEventDispatcher;
 import org.apache.james.imap.store.PasswordAwareUser;
 import org.apache.james.imap.store.StoreMailbox;
 import org.apache.james.imap.store.mail.MessageMapper;
@@ -59,8 +60,8 @@ public class JCRMailbox extends StoreMailbox<String>{
     private final Log log;
     private final int scaling;
     
-    public JCRMailbox(final org.apache.james.imap.jcr.mail.model.JCRMailbox mailbox, final MailboxSession session, final Repository repository, final String workspace, final int scaling, final Log log) {
-        super(mailbox, session );
+    public JCRMailbox(final MailboxEventDispatcher dispatcher, final org.apache.james.imap.jcr.mail.model.JCRMailbox mailbox, final Repository repository, final String workspace, final int scaling, final Log log) {
+        super(dispatcher, mailbox);
         this.repository = repository;
         this.workspace = workspace;
         this.log = log;
@@ -80,7 +81,7 @@ public class JCRMailbox extends StoreMailbox<String>{
 
     
     @Override
-    protected MailboxMembership<String> copyMessage(MailboxMembership<String> originalMessage, long uid) throws MailboxException {
+    protected MailboxMembership<String> copyMessage(MailboxMembership<String> originalMessage, long uid, MailboxSession session) throws MailboxException {
         MailboxMembership<String> newRow = new JCRMailboxMembership(getMailboxId(), uid, (JCRMailboxMembership) originalMessage, log);
         return newRow;
     }
@@ -130,14 +131,14 @@ public class JCRMailbox extends StoreMailbox<String>{
     }
     
     @Override
-    protected Mailbox<String> getMailboxRow() throws MailboxException {
-        final JCRMailboxMapper mapper = createMailboxMapper(getMailboxSession());
+    protected Mailbox<String> getMailboxRow(MailboxSession session) throws MailboxException {
+        final JCRMailboxMapper mapper = createMailboxMapper(session);
         return mapper.findMailboxById(getMailboxId());
     }
 
     @Override
-    protected Mailbox<String> reserveNextUid() throws MailboxException {
-        final JCRMailboxMapper mapper = createMailboxMapper(getMailboxSession());
+    protected Mailbox<String> reserveNextUid(MailboxSession session) throws MailboxException {
+        final JCRMailboxMapper mapper = createMailboxMapper(session);
         return mapper.consumeNextUid(getMailboxId());
     }
 
@@ -149,7 +150,7 @@ public class JCRMailbox extends StoreMailbox<String>{
      * @throws MailboxException
      */
     protected Session getSession(MailboxSession session) throws SubscriptionException {
-        PasswordAwareUser user = (PasswordAwareUser) getMailboxSession().getUser();
+        PasswordAwareUser user = (PasswordAwareUser) session.getUser();
 
         try {
             return repository.login(new SimpleCredentials(user.getUserName(), user.getPassword().toCharArray()), getWorkspace());

@@ -42,16 +42,19 @@ public class UidChangeTracker implements Constants {
 
     private long lastUid;
 
-    public UidChangeTracker(long lastUid) {
+    private String name;
+
+    public UidChangeTracker(long lastUid, String name) {
         this.lastUid = lastUid;
         eventDispatcher = new MailboxEventDispatcher();
         cache = new TreeMap<Long, Flags>();
+        this.name = name;
     }
 
     public synchronized void expunged(final Collection<Long> uidsExpunged) {
         for (Long uid:uidsExpunged) {
             cache.remove(uid);
-            eventDispatcher.expunged(uid, 0);
+            eventDispatcher.expunged(uid, 0, name);
         }
     }
 
@@ -76,7 +79,7 @@ public class UidChangeTracker implements Constants {
                     lastFlags = cachedFlags;
                 }
                 if (!newFlags.equals(lastFlags)) {
-                    eventDispatcher.flagsUpdated(uid, sessionId, lastFlags, newFlags);
+                    eventDispatcher.flagsUpdated(uid, sessionId, name, lastFlags, newFlags);
                 }
                 cache.put(uid, newFlags);
             }
@@ -96,7 +99,7 @@ public class UidChangeTracker implements Constants {
 
         for (Iterator<Long> iter = expectedSet.iterator(); iter.hasNext();) {
             long uid = ((Long) iter.next()).longValue();
-            eventDispatcher.expunged(uid, Mailbox.ANONYMOUS_SESSION);
+            eventDispatcher.expunged(uid, Mailbox.ANONYMOUS_SESSION, name);
         }
     }
 
@@ -104,11 +107,11 @@ public class UidChangeTracker implements Constants {
         if (flags != null) {
             final Flags cachedFlags = cache.get(uid);
             if (cachedFlags == null || !flags.equals(cachedFlags)) {
-                eventDispatcher.flagsUpdated(uid, Mailbox.ANONYMOUS_SESSION, cachedFlags, flags);
+                eventDispatcher.flagsUpdated(uid, Mailbox.ANONYMOUS_SESSION, name, cachedFlags, flags);
             }
         }
         if (uid > lastUid) {
-            eventDispatcher.added(uid, Mailbox.ANONYMOUS_SESSION);
+            eventDispatcher.added(uid, Mailbox.ANONYMOUS_SESSION, name);
             lastUid = uid;
         }
         cache.put(uid, flags);
@@ -133,10 +136,11 @@ public class UidChangeTracker implements Constants {
     }
     
     public void mailboxDeleted(long sessionId) {
-        eventDispatcher.mailboxDeleted(sessionId);
+        eventDispatcher.mailboxDeleted(sessionId, name);
     }
 
     public void reportRenamed(String to) {
-        eventDispatcher.mailboxRenamed(to, Mailbox.ANONYMOUS_SESSION);
+        eventDispatcher.mailboxRenamed(name, to, Mailbox.ANONYMOUS_SESSION);
+        name = to;
     }
 }

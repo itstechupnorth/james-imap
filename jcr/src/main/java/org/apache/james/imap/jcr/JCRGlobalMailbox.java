@@ -30,6 +30,7 @@ import org.apache.commons.logging.Log;
 import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.mailbox.MailboxSession;
 import org.apache.james.imap.mailbox.SubscriptionException;
+import org.apache.james.imap.mailbox.util.MailboxEventDispatcher;
 
 /**
  * JCR based Mailbox which use the same username and password to obtain a
@@ -41,9 +42,9 @@ public class JCRGlobalMailbox extends JCRMailbox{
 	private final String username;
 	private final char[] password;
 	
-	public JCRGlobalMailbox(final org.apache.james.imap.jcr.mail.model.JCRMailbox mailbox, MailboxSession session,
+	public JCRGlobalMailbox(MailboxEventDispatcher dispatcher, final org.apache.james.imap.jcr.mail.model.JCRMailbox mailbox,
 			Repository repository, String workspace, String username, char[] password, final int scaling, Log log) {
-		super(mailbox, session, repository, workspace, scaling, log);
+		super(dispatcher, mailbox, repository, workspace, scaling, log);
 		this.username = username;
 		this.password = password;
 	}

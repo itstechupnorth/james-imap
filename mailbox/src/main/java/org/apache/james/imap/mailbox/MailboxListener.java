@@ -51,9 +51,10 @@ public interface MailboxListener {
      */
     public abstract class Event {
         private final long sessionId;
-
-        public Event(final long sessionId) {
+        private final String name;
+        public Event(final long sessionId, final String name) {
             this.sessionId = sessionId;
+            this.name = name;
         }
         
         /**
@@ -64,6 +65,15 @@ public interface MailboxListener {
         public long getSessionId() {
             return sessionId;
         }
+        
+        /**
+         * Return the name of the Mailbox this event belongs to. 
+         * 
+         * @return name
+         */
+        public String getMailboxName() {
+            return name;
+        }
     }
 
     /**
@@ -71,8 +81,8 @@ public interface MailboxListener {
      */
     public abstract class MailboxDeletionEvent extends Event {
 
-        public MailboxDeletionEvent(long sessionId) {
-            super(sessionId);
+        public MailboxDeletionEvent(long sessionId, String name) {
+            super(sessionId, name);
         }
     }
     
@@ -81,12 +91,12 @@ public interface MailboxListener {
      * Indicates that a mailbox has been renamed.
      */
     public abstract class MailboxRenamed extends Event {
-        public MailboxRenamed(long sessionId) {
-            super(sessionId);
+        public MailboxRenamed(long sessionId, String name) {
+            super(sessionId, name);
         }
-
         /**
          * Gets the new name for this mailbox.
+         * 
          * @return name, not null
          */
         public abstract String getNewName();
@@ -97,8 +107,8 @@ public interface MailboxListener {
      */
     public abstract class MessageEvent extends Event {
 
-        public MessageEvent(long sessionId) {
-            super(sessionId);
+        public MessageEvent(long sessionId, String name) {
+            super(sessionId, name);
         }
 
         /**
@@ -111,15 +121,20 @@ public interface MailboxListener {
 
     public abstract class Expunged extends MessageEvent {
 
-        public Expunged(long sessionId) {
-            super(sessionId);
+        public Expunged(long sessionId, String name) {
+            super(sessionId, name);
         }
     }
 
+    /**
+     * A mailbox event related to updated flags
+     * 
+     *
+     */
     public abstract class FlagsUpdated extends MessageEvent {
 
-        public FlagsUpdated(long sessionId) {
-            super(sessionId);
+        public FlagsUpdated(long sessionId, String name) {
+            super(sessionId, name);
         }
 
         /**
@@ -135,10 +150,15 @@ public interface MailboxListener {
         public abstract Iterator<Flags.Flag> flagsIterator();
     }
 
+    /**
+     * A mailbox event related to added message
+     * 
+     *
+     */
     public abstract class Added extends MessageEvent {
 
-        public Added(long sessionId) {
-            super(sessionId);
+        public Added(long sessionId, String name) {
+            super(sessionId, name);
         }
     }
 

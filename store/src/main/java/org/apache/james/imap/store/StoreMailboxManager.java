@@ -45,11 +45,21 @@ import org.apache.james.imap.mailbox.StandardMailboxMetaDataComparator;
 import org.apache.james.imap.mailbox.StorageException;
 import org.apache.james.imap.mailbox.SubscriptionException;
 import org.apache.james.imap.mailbox.MailboxMetaData.Selectability;
+import org.apache.james.imap.mailbox.util.MailboxEventDispatcher;
 import org.apache.james.imap.mailbox.util.SimpleMailboxMetaData;
 import org.apache.james.imap.store.mail.MailboxMapper;
 import org.apache.james.imap.store.mail.model.Mailbox;
 import org.apache.james.imap.store.transaction.TransactionalMapper;
 
+/**
+ * This abstract base class of an {@link MailboxManager} implementation provides a high-level api for writing your own
+ * {@link MailboxManager} implementation. If you plan to write your own {@link MailboxManager} its most times so easiest 
+ * to extend just this class.
+ * 
+ * If you need a more low-level api just implement {@link MailboxManager} directly
+ *
+ * @param <Id>
+ */
 public abstract class StoreMailboxManager<Id> extends AbstractLogEnabled implements MailboxManager {
     public static final String USER_NAMESPACE_PREFIX = "#mail";
     
@@ -58,7 +68,8 @@ public abstract class StoreMailboxManager<Id> extends AbstractLogEnabled impleme
     private final static Random random = new Random();
 
     protected final Map<String, StoreMailbox<Id>> mailboxes;
-
+    private final MailboxEventDispatcher dispatcher = new MailboxEventDispatcher();
+    
     private final Authenticator authenticator;    
     private final Subscriber subscriber;    
     
@@ -84,7 +95,7 @@ public abstract class StoreMailboxManager<Id> extends AbstractLogEnabled impleme
      * @param mailboxRow
      * @return storeMailbox
      */
-    protected abstract StoreMailbox<Id> createMailbox(Mailbox<Id> mailboxRow, MailboxSession session);
+    protected abstract StoreMailbox<Id> createMailbox(MailboxEventDispatcher dispatcher, Mailbox<Id> mailboxRow);
     
     /**
      * Create the MailboxMapper which should get used 
@@ -132,7 +143,7 @@ public abstract class StoreMailboxManager<Id> extends AbstractLogEnabled impleme
 
                 StoreMailbox<Id> result = (StoreMailbox<Id>) mailboxes.get(mailboxName);
                 if (result == null) {
-                    result = createMailbox(mailboxRow, session);
+                    result = createMailbox(dispatcher, mailboxRow);
                     mailboxes.put(mailboxName, result);
                     
                     // store the mailbox in the session so we can cleanup things later
@@ -211,8 +222,9 @@ public abstract class StoreMailboxManager<Id> extends AbstractLogEnabled impleme
             
             final StoreMailbox<Id> storeMailbox = mailboxes.remove(mailboxName);
             if (storeMailbox != null) {
-                storeMailbox.deleted(session);
+                //storeMailbox.deleted(session);
             }
+            dispatcher.mailboxDeleted(session.getSessionId(), mailboxName);
         }
     }
 
@@ -242,7 +254,7 @@ public abstract class StoreMailboxManager<Id> extends AbstractLogEnabled impleme
                     mailbox.setName(to);
                     mapper.save(mailbox);
 
-                    changeMailboxName(from, to);
+                    changeMailboxName(from, to, session);
 
                     // rename submailbox
                     final List<Mailbox<Id>> subMailboxes = mapper.findMailboxWithNameLike(from + delimiter + "%");
@@ -252,7 +264,7 @@ public abstract class StoreMailboxManager<Id> extends AbstractLogEnabled impleme
                         sub.setName(subNewName);
                         mapper.save(sub);
 
-                        changeMailboxName(subOriginalName, subNewName);
+                        changeMailboxName(subOriginalName, subNewName, session);
 
                         if (log.isDebugEnabled()) log.debug("Rename mailbox sub-mailbox " + subOriginalName + " to "
                                 + subNewName);
@@ -277,12 +289,13 @@ public abstract class StoreMailboxManager<Id> extends AbstractLogEnabled impleme
      * @param from not null
      * @param to not null
      */
-    private void changeMailboxName(String from, String to) {
+    private void changeMailboxName(String from, String to, MailboxSession session) {
         final StoreMailbox<Id> jpaMailbox = mailboxes.remove(from);
         if (jpaMailbox != null) {
-            jpaMailbox.reportRenamed(to);
-            mailboxes.put(to, jpaMailbox);
+            //jpaMailbox.reportRenamed(to);
         }
+        mailboxes.put(to, jpaMailbox);
+        dispatcher.mailboxRenamed(from, to, session.getSessionId());
     }
 
     /*

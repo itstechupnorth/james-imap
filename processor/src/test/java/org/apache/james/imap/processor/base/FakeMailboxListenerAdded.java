@@ -27,8 +27,8 @@ public class FakeMailboxListenerAdded extends MailboxListener.Added {
 
     public long sessionId;
 
-    public FakeMailboxListenerAdded(long subjectUid, long sessionId) {
-        super(sessionId);
+    public FakeMailboxListenerAdded(long subjectUid, long sessionId, String name) {
+        super(sessionId, name);
         this.subjectUid = subjectUid;
     }
 

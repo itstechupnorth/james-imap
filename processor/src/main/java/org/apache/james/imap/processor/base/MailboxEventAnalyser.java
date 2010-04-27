@@ -29,6 +29,12 @@ import javax.mail.Flags;
 
 import org.apache.james.imap.mailbox.MailboxListener;
 
+/**
+ * {@link MailboxListener} implementation which will listen for {@link Event} notifications and 
+ * analyze these. It will only act on {@link Event} notifications whiche are send for the registered
+ * Mailbox name
+ *
+ */
 public class MailboxEventAnalyser implements MailboxListener {
 
     private final long sessionId;
@@ -51,15 +57,34 @@ public class MailboxEventAnalyser implements MailboxListener {
         this.mailboxName = mailboxName;
     }
     
+    /**
+     * Return the name of the to observing Mailbox 
+     * 
+     * @return name
+     */
     public String getMailboxName() {
         return mailboxName;
     }
 
+    /**
+     * Set the mailbox name of the to observing Mailbox
+     * 
+     * @param mailboxName
+     */
     public void setMailboxName(String mailboxName) {
         this.mailboxName = mailboxName;
     }
 
+    /**
+     * Handle the given {@link Event} if it was fired for the mailbox we are observing
+     * 
+     * (non-Javadoc)
+     * @see org.apache.james.imap.mailbox.MailboxListener#event(org.apache.james.imap.mailbox.MailboxListener.Event)
+     */
     public void event(Event event) {
+        
+        // Check if the event was for the mailbox we are observing
+        if (event.getMailboxName().equals(mailboxName)) {
         final long eventSessionId = event.getSessionId();
         if (event instanceof MessageEvent) {
             final MessageEvent messageEvent = (MessageEvent) event;
@@ -85,6 +110,7 @@ public class MailboxEventAnalyser implements MailboxListener {
             final MailboxRenamed mailboxRenamed = (MailboxRenamed) event;
             setMailboxName(mailboxRenamed.getNewName());
         }
+        }
     }
 
     private boolean interestingFlags(FlagsUpdated updated) {
@@ -103,6 +129,9 @@ public class MailboxEventAnalyser implements MailboxListener {
         return result;
     }
 
+    /**
+     * Reset the analyzer
+     */
     public void reset() {
         sizeChanged = false;
         flagUpdateUids.clear();
@@ -150,22 +179,45 @@ public class MailboxEventAnalyser implements MailboxListener {
         return isDeletedByOtherSession;
     }
 
+    /**
+     * Return a unmodifiable {@link Collection} of uids which have updated flags
+     * 
+     * @return uids
+     */
+    
     public Collection<Long> flagUpdateUids() {
         return Collections.unmodifiableSet(flagUpdateUids);
     }
 
+    /**
+     * Return a unmodifiable {@link Collection} of uids that where expunged
+     * 
+     * @return uids
+     */
     public Collection<Long> expungedUids() {
         return Collections.unmodifiableSet(expungedUids);
     }
 
+    /**
+     * Return if the analyzer found expunged uids
+     * 
+     * @return hasUids
+     */
     public boolean hasExpungedUids() {
         return !expungedUids.isEmpty();
     }
 
+    /**
+     * Mark the listener as closed. If its marked as closed it will get removed
+     */
     public void close() {
         closed = true;
     }
     
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.mailbox.MailboxListener#isClosed()
+     */
     public boolean isClosed() {
         return closed;
     }

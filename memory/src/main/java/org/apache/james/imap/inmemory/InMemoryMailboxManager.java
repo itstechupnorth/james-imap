@@ -28,6 +28,7 @@ import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.MailboxNotFoundException;
 import org.apache.james.imap.mailbox.MailboxSession;
 import org.apache.james.imap.mailbox.StorageException;
+import org.apache.james.imap.mailbox.util.MailboxEventDispatcher;
 import org.apache.james.imap.store.Authenticator;
 import org.apache.james.imap.store.StoreMailbox;
 import org.apache.james.imap.store.StoreMailboxManager;
@@ -47,8 +48,8 @@ public class InMemoryMailboxManager extends StoreMailboxManager<Long> implements
     }
 
     @Override
-    protected StoreMailbox<Long> createMailbox(Mailbox<Long> mailboxRow, MailboxSession session) {
-        final InMemoryStoreMailbox storeMailbox = new InMemoryStoreMailbox((InMemoryMailbox)mailboxRow, session);
+    protected StoreMailbox<Long> createMailbox(MailboxEventDispatcher dispatcher, Mailbox<Long> mailboxRow) {
+        final InMemoryStoreMailbox storeMailbox = new InMemoryStoreMailbox(dispatcher, (InMemoryMailbox)mailboxRow);
         return storeMailbox;
     }
 

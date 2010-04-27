@@ -29,6 +29,7 @@ import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.jcr.mail.JCRMailboxMapper;
 import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.MailboxSession;
+import org.apache.james.imap.mailbox.util.MailboxEventDispatcher;
 import org.apache.james.imap.store.Authenticator;
 import org.apache.james.imap.store.StoreMailbox;
 import org.apache.james.imap.store.Subscriber;
@@ -63,8 +64,8 @@ public class JCRGlobalUserMailboxManager extends JCRMailboxManager{
         this(authenticator, subscriber, repository, workspace, username, password, MAX_SCALING);
     }
     
-    public void deleteEverything() throws MailboxException {
-        Session session = getSession(null);
+    public void deleteEverything(MailboxSession mailboxSession) throws MailboxException {
+        Session session = getSession(mailboxSession);
         final MailboxMapper<String> mapper = new JCRMailboxMapper(session, getScaling(), getLog());
         mapper.execute(new TransactionalMapper.Transaction() {
 
@@ -78,8 +79,8 @@ public class JCRGlobalUserMailboxManager extends JCRMailboxManager{
     }
     
     @Override
-    protected StoreMailbox<String> createMailbox(Mailbox<String> mailboxRow, MailboxSession session) {
-        JCRMailbox mailbox = new JCRGlobalMailbox((org.apache.james.imap.jcr.mail.model.JCRMailbox) mailboxRow, session, getRepository(), getWorkspace(), username, password, getScaling(), getLog());
+    protected StoreMailbox<String> createMailbox(MailboxEventDispatcher dispatcher, Mailbox<String> mailboxRow) {
+        JCRMailbox mailbox = new JCRGlobalMailbox(dispatcher, (org.apache.james.imap.jcr.mail.model.JCRMailbox) mailboxRow, getRepository(), getWorkspace(), username, password, getScaling(), getLog());
         return mailbox;
     }
     

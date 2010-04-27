@@ -26,6 +26,7 @@ import org.apache.james.imap.jpa.JPAMailboxManager;
 import org.apache.james.imap.jpa.JPAUtils;
 import org.apache.james.imap.jpa.mail.openjpa.OpenJPAMailboxMapper;
 import org.apache.james.imap.mailbox.MailboxSession;
+import org.apache.james.imap.mailbox.util.MailboxEventDispatcher;
 import org.apache.james.imap.store.Authenticator;
 import org.apache.james.imap.store.StoreMailbox;
 import org.apache.james.imap.store.Subscriber;
@@ -56,9 +57,8 @@ public class OpenJPAMailboxManager extends JPAMailboxManager {
         return new OpenJPAMailboxMapper(manager);
     }
 
-    protected StoreMailbox<Long> createMailbox(Mailbox<Long> mailboxRow, MailboxSession session) {
-        StoreMailbox<Long> result;
-        result = new OpenJPAMailbox(mailboxRow, session, entityManagerFactory, useStreaming);
+    protected StoreMailbox<Long> createMailbox(MailboxEventDispatcher dispatcher, Mailbox<Long> mailboxRow) {
+        StoreMailbox<Long> result =  new OpenJPAMailbox(dispatcher,mailboxRow, entityManagerFactory, useStreaming);
         return result;
     }
 }

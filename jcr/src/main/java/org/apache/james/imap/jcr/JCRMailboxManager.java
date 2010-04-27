@@ -36,6 +36,7 @@ import org.apache.james.imap.jcr.mail.JCRMailboxMapper;
 import org.apache.james.imap.mailbox.BadCredentialsException;
 import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.MailboxSession;
+import org.apache.james.imap.mailbox.util.MailboxEventDispatcher;
 import org.apache.james.imap.store.Authenticator;
 import org.apache.james.imap.store.PasswordAwareMailboxSession;
 import org.apache.james.imap.store.PasswordAwareUser;
@@ -80,8 +81,8 @@ public class JCRMailboxManager extends StoreMailboxManager<String> implements JC
     }
     
     @Override
-    protected StoreMailbox<String> createMailbox(Mailbox<String> mailboxRow, MailboxSession session) {
-        JCRMailbox mailbox = new JCRMailbox((org.apache.james.imap.jcr.mail.model.JCRMailbox) mailboxRow, session, getRepository(), getWorkspace(), getScaling(), getLog());
+    protected StoreMailbox<String> createMailbox(MailboxEventDispatcher dispatcher, Mailbox<String> mailboxRow) {
+        JCRMailbox mailbox = new JCRMailbox(dispatcher, (org.apache.james.imap.jcr.mail.model.JCRMailbox) mailboxRow, getRepository(), getWorkspace(), getScaling(), getLog());
         return mailbox;
     }
 

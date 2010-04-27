@@ -21,6 +21,7 @@ package org.apache.james.imap.functional.jcr;
 import java.io.File;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.logging.impl.SimpleLog;
 import org.apache.jackrabbit.core.RepositoryImpl;
 import org.apache.jackrabbit.core.config.RepositoryConfig;
 import org.apache.james.imap.encode.main.DefaultImapEncoderFactory;
@@ -30,6 +31,7 @@ import org.apache.james.imap.jcr.JCRGlobalUserMailboxManager;
 import org.apache.james.imap.jcr.JCRGlobalUserSubscriptionManager;
 import org.apache.james.imap.jcr.JCRImapConstants;
 import org.apache.james.imap.jcr.JCRUtils;
+import org.apache.james.imap.mailbox.MailboxSession;
 import org.apache.james.imap.main.DefaultImapDecoderFactory;
 import org.apache.james.imap.processor.main.DefaultImapProcessorFactory;
 import org.apache.james.test.functional.HostSystem;
@@ -71,8 +73,12 @@ public class JCRHostSystem extends ImapHostSystem{
 
             final DefaultImapProcessorFactory defaultImapProcessorFactory = new DefaultImapProcessorFactory();
             resetUserMetaData();
-            mailboxManager.deleteEverything();
-
+            MailboxSession session = mailboxManager.createSystemSession("test", new SimpleLog("TestLog"));
+            mailboxManager.startProcessingRequest(session);
+            mailboxManager.deleteEverything(session);
+            mailboxManager.endProcessingRequest(session);
+            mailboxManager.logout(session, false);
+            
             defaultImapProcessorFactory.configure(mailboxManager);
             configure(new DefaultImapDecoderFactory().buildImapDecoder(), new DefaultImapEncoderFactory().buildImapEncoder(), defaultImapProcessorFactory.buildImapProcessor());
         } catch (Exception e) {

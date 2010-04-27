@@ -62,15 +62,8 @@ public abstract class JPAMailboxManager extends StoreMailboxManager<Long> {
         });
     }
 
-    
-    /**
-     * Delete every Mailbox which exists
-     * 
-     * @throws MailboxException
-     */
-
-    public void deleteEverything() throws MailboxException {
-        final MailboxMapper<Long> mapper = createMailboxMapper(null);
+    public void deleteEverything(MailboxSession maibloxSession) throws MailboxException {
+        final MailboxMapper<Long> mapper = createMailboxMapper(maibloxSession);
         mapper.execute(new TransactionalMapper.Transaction() {
 
             public void run() throws MailboxException {
@@ -80,7 +73,6 @@ public abstract class JPAMailboxManager extends StoreMailboxManager<Long> {
             
         });
     }
-
 
     @Override
     public void endProcessingRequest(MailboxSession session) {

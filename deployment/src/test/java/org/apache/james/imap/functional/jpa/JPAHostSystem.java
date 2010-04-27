@@ -25,11 +25,13 @@ import java.util.HashMap;
 import javax.persistence.EntityManagerFactory;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.logging.impl.SimpleLog;
 import org.apache.james.imap.encode.main.DefaultImapEncoderFactory;
 import org.apache.james.imap.functional.ImapHostSystem;
 import org.apache.james.imap.functional.InMemoryUserManager;
 import org.apache.james.imap.jpa.JPASubscriptionManager;
 import org.apache.james.imap.jpa.openjpa.OpenJPAMailboxManager;
+import org.apache.james.imap.mailbox.MailboxSession;
 import org.apache.james.imap.main.DefaultImapDecoderFactory;
 import org.apache.james.imap.processor.main.DefaultImapProcessorFactory;
 import org.apache.james.test.functional.HostSystem;
@@ -46,6 +48,7 @@ public class JPAHostSystem extends ImapHostSystem {
     
     private final OpenJPAMailboxManager mailboxManager;
     private final InMemoryUserManager userManager; 
+    private final EntityManagerFactory entityManagerFactory;
 
     public JPAHostSystem() throws Exception {
         HashMap<String, String> properties = new HashMap<String, String>();
@@ -64,7 +67,7 @@ public class JPAHostSystem extends ImapHostSystem {
                 "org.apache.james.imap.jpa.user.model.JPASubscription)");
         
         userManager = new InMemoryUserManager();
-        final EntityManagerFactory entityManagerFactory = OpenJPAPersistence.getEntityManagerFactory(properties);
+        entityManagerFactory = OpenJPAPersistence.getEntityManagerFactory(properties);
         mailboxManager = new OpenJPAMailboxManager(userManager, new JPASubscriptionManager(entityManagerFactory), entityManagerFactory);
         
         final DefaultImapProcessorFactory defaultImapProcessorFactory = new DefaultImapProcessorFactory();
@@ -82,7 +85,12 @@ public class JPAHostSystem extends ImapHostSystem {
 
     public void resetData() throws Exception {
         resetUserMetaData();
-        mailboxManager.deleteEverything();
+        MailboxSession session = mailboxManager.createSystemSession("test", new SimpleLog("TestLog"));
+        mailboxManager.startProcessingRequest(session);
+        mailboxManager.deleteEverything(session);
+        mailboxManager.endProcessingRequest(session);
+        mailboxManager.logout(session, false);
+        
     }
     
     public void resetUserMetaData() throws Exception {

@@ -34,6 +34,7 @@ import org.apache.james.imap.jpa.mail.model.JPAHeader;
 import org.apache.james.imap.jpa.mail.model.JPAMailboxMembership;
 import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.MailboxSession;
+import org.apache.james.imap.mailbox.util.MailboxEventDispatcher;
 import org.apache.james.imap.store.StoreMailbox;
 import org.apache.james.imap.store.mail.MailboxMapper;
 import org.apache.james.imap.store.mail.MessageMapper;
@@ -51,8 +52,8 @@ public abstract class JPAMailbox extends StoreMailbox<Long> {
 
     protected final EntityManagerFactory entityManagerFactory;
     
-    public JPAMailbox(final Mailbox<Long> mailbox, MailboxSession session, final EntityManagerFactory entityManagerfactory) {
-        super(mailbox, session);
+    public JPAMailbox(final MailboxEventDispatcher dispatcher, final Mailbox<Long> mailbox, final EntityManagerFactory entityManagerfactory) {
+        super(dispatcher, mailbox);
         this.entityManagerFactory = entityManagerfactory;        
     }  
     
@@ -64,9 +65,9 @@ public abstract class JPAMailbox extends StoreMailbox<Long> {
     protected abstract JPAMailboxMapper createMailboxMapper(MailboxSession session);
 
     @Override
-    protected Mailbox<Long> getMailboxRow() throws MailboxException {
-        final MailboxMapper<Long> mapper = createMailboxMapper(getMailboxSession());
-        return mapper.findMailboxById(mailboxId);
+    protected Mailbox<Long> getMailboxRow(MailboxSession session) throws MailboxException {
+        final MailboxMapper<Long> mapper = createMailboxMapper(session);
+        return mapper.findMailboxById(getMailboxId());
     }
 
     
@@ -76,7 +77,7 @@ public abstract class JPAMailbox extends StoreMailbox<Long> {
         
         JPAUtils.addEntityManager(session, manager);
         
-        JPAMessageMapper mapper = new JPAMessageMapper(manager, mailboxId);
+        JPAMessageMapper mapper = new JPAMessageMapper(manager, getMailboxId());
        
         return mapper;
     }
@@ -88,14 +89,14 @@ public abstract class JPAMailbox extends StoreMailbox<Long> {
         for (Header header: headers) {
             jpaHeaders.add((JPAHeader) header);
         }
-        final MailboxMembership<Long> message = new JPAMailboxMembership(mailboxId, uid, internalDate, size, flags, document, bodyStartOctet, jpaHeaders, propertyBuilder);
+        final MailboxMembership<Long> message = new JPAMailboxMembership(getMailboxId(), uid, internalDate, size, flags, document, bodyStartOctet, jpaHeaders, propertyBuilder);
         return message;
 
        
     }
     
     @Override
-    protected MailboxMembership<Long> copyMessage(MailboxMembership<Long> originalMessage, long uid) throws MailboxException{
+    protected MailboxMembership<Long> copyMessage(MailboxMembership<Long> originalMessage, long uid, MailboxSession session) throws MailboxException{
         final MailboxMembership<Long> newRow = new JPAMailboxMembership(getMailboxId(), uid, (AbstractJPAMailboxMembership) originalMessage);
         return newRow;
     }
@@ -110,9 +111,9 @@ public abstract class JPAMailbox extends StoreMailbox<Long> {
      * Reserve next Uid in mailbox and return the mailbox. This method needs to be synchronized 
      * to be sure we don't get any race-condition
      */
-    protected synchronized Mailbox<Long> reserveNextUid() throws MailboxException {
-        final JPAMailboxMapper mapper = createMailboxMapper(getMailboxSession());
-        final Mailbox<Long> mailbox = mapper.consumeNextUid(mailboxId);
+    protected synchronized Mailbox<Long> reserveNextUid(MailboxSession session) throws MailboxException {
+        final JPAMailboxMapper mapper = createMailboxMapper(session);
+        final Mailbox<Long> mailbox = mapper.consumeNextUid(getMailboxId());
         return mailbox;
     } 
 }

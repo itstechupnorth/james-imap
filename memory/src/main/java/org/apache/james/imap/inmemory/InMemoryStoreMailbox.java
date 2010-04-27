@@ -36,6 +36,7 @@ import org.apache.james.imap.mailbox.MailboxSession;
 import org.apache.james.imap.mailbox.MessageRange;
 import org.apache.james.imap.mailbox.SearchQuery;
 import org.apache.james.imap.mailbox.StorageException;
+import org.apache.james.imap.mailbox.util.MailboxEventDispatcher;
 import org.apache.james.imap.store.MailboxMembershipComparator;
 import org.apache.james.imap.store.StoreMailbox;
 import org.apache.james.imap.store.mail.MessageMapper;
@@ -50,15 +51,15 @@ public class InMemoryStoreMailbox extends StoreMailbox<Long> implements MessageM
     private Map<Long, MailboxMembership<Long>> membershipByUid;
     private InMemoryMailbox mailbox;
 
-    public InMemoryStoreMailbox(InMemoryMailbox mailbox, MailboxSession session) {
-        super(mailbox,session);
+    public InMemoryStoreMailbox(MailboxEventDispatcher dispatcher, InMemoryMailbox mailbox) {
+        super(dispatcher, mailbox);
         this.mailbox = mailbox;
         this.membershipByUid = new ConcurrentHashMap<Long, MailboxMembership<Long>>(INITIAL_SIZE);
     }
 
     @Override
-    protected MailboxMembership<Long> copyMessage(MailboxMembership<Long> originalMessage, long uid) {
-        return new SimpleMailboxMembership(mailboxId, uid, (SimpleMailboxMembership) originalMessage);
+    protected MailboxMembership<Long> copyMessage(MailboxMembership<Long> originalMessage, long uid, MailboxSession session) {
+        return new SimpleMailboxMembership(getMailboxId(), uid, (SimpleMailboxMembership) originalMessage);
     }
 
     @Override
@@ -85,7 +86,7 @@ public class InMemoryStoreMailbox extends StoreMailbox<Long> implements MessageM
             e.printStackTrace();
             byteContent = new byte[0];
         }
-        return new SimpleMailboxMembership(internalDate, uid, size, bodyStartOctet, byteContent, flags, headers, propertyBuilder, mailboxId);
+        return new SimpleMailboxMembership(internalDate, uid, size, bodyStartOctet, byteContent, flags, headers, propertyBuilder, getMailboxId());
 
 
     }
@@ -96,12 +97,12 @@ public class InMemoryStoreMailbox extends StoreMailbox<Long> implements MessageM
     }
 
     @Override
-    protected Mailbox<Long> getMailboxRow() throws MailboxException {
+    protected Mailbox<Long> getMailboxRow(MailboxSession session) throws MailboxException {
         return mailbox;
     }
 
     @Override
-    protected Mailbox<Long> reserveNextUid() throws MailboxException {
+    protected Mailbox<Long> reserveNextUid(MailboxSession session) throws MailboxException {
         mailbox.consumeUid();
         return mailbox;
     }

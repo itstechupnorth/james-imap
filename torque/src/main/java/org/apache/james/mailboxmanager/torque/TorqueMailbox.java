@@ -94,7 +94,7 @@ public class TorqueMailbox implements Mailbox {
     TorqueMailbox(final MailboxRow mailboxRow, final ReentrantReadWriteLock lock) {
         this.searches = new MessageSearches();
         this.mailboxRow = mailboxRow;
-        this.tracker = new UidChangeTracker(mailboxRow.getLastUid());
+        this.tracker = new UidChangeTracker(mailboxRow.getLastUid(), mailboxRow.getName());
         this.lock = lock;
     }
 
@@ -806,7 +806,7 @@ public class TorqueMailbox implements Mailbox {
         tracker.mailboxDeleted(session.getSessionId());
     }
 
-    public void reportRenamed(MailboxRow mailboxRow) {
+    public void reportRenamed(String from, MailboxRow mailboxRow) {
         tracker.reportRenamed(mailboxRow.getName());
         this.mailboxRow = mailboxRow;
     }

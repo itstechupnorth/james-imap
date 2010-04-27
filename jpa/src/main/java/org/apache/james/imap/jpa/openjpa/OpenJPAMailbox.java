@@ -37,6 +37,7 @@ import org.apache.james.imap.jpa.mail.model.openjpa.JPAStreamingMailboxMembershi
 import org.apache.james.imap.jpa.mail.openjpa.OpenJPAMailboxMapper;
 import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.MailboxSession;
+import org.apache.james.imap.mailbox.util.MailboxEventDispatcher;
 import org.apache.james.imap.store.mail.model.Header;
 import org.apache.james.imap.store.mail.model.Mailbox;
 import org.apache.james.imap.store.mail.model.MailboxMembership;
@@ -50,14 +51,12 @@ public class OpenJPAMailbox extends JPAMailbox{
 
     public final static String MAILBOX_MAPPER = "MAILBOX_MAPPER";
     private final boolean useStreaming;
-    public OpenJPAMailbox(Mailbox<Long> mailbox,
-    		MailboxSession session, EntityManagerFactory entityManagerfactory) {
-		this(mailbox,session, entityManagerfactory, false);
+    public OpenJPAMailbox(MailboxEventDispatcher dispatcher, Mailbox<Long> mailbox,  EntityManagerFactory entityManagerfactory) {
+		this(dispatcher, mailbox, entityManagerfactory, false);
 	}
 
-    public OpenJPAMailbox(Mailbox<Long> mailbox,
-            MailboxSession session, EntityManagerFactory entityManagerfactory, final boolean useStreaming) {
-        super(mailbox, session, entityManagerfactory);
+    public OpenJPAMailbox(MailboxEventDispatcher dispatcher, Mailbox<Long> mailbox, EntityManagerFactory entityManagerfactory, final boolean useStreaming) {
+        super(dispatcher, mailbox, entityManagerfactory);
         this.useStreaming = useStreaming;
     }
 
@@ -76,11 +75,11 @@ public class OpenJPAMailbox extends JPAMailbox{
     }
 
     @Override
-    protected MailboxMembership<Long> copyMessage(MailboxMembership<Long> originalMessage, long uid) throws MailboxException {
+    protected MailboxMembership<Long> copyMessage(MailboxMembership<Long> originalMessage, long uid, MailboxSession session) throws MailboxException {
         if (useStreaming) {
             return  new JPAStreamingMailboxMembership(getMailboxId(), uid, (AbstractJPAMailboxMembership) originalMessage);
         } else {
-            return super.copyMessage(originalMessage, uid);
+            return super.copyMessage(originalMessage, uid, session);
         }
     }
 
@@ -91,7 +90,7 @@ public class OpenJPAMailbox extends JPAMailbox{
             for (Header header: headers) {
                 jpaHeaders.add((JPAHeader) header);
             }
-            return new JPAStreamingMailboxMembership(mailboxId, uid, internalDate, size, flags, document, bodyStartOctet, jpaHeaders, propertyBuilder);
+            return new JPAStreamingMailboxMembership(getMailboxId(), uid, internalDate, size, flags, document, bodyStartOctet, jpaHeaders, propertyBuilder);
         } else {
             return super.createMessage(internalDate, uid, size, bodyStartOctet, document, flags, headers, propertyBuilder);
         }

@@ -37,15 +37,15 @@ public class MailboxEventAnalyserTest {
     private static final long BASE_SESSION_ID = 99;
 
     private MailboxEventAnalyser analyser;
-    
+    private String name = "Mailbox Name";
     @Before
     public void setUp() throws Exception {
-        analyser = new MailboxEventAnalyser(BASE_SESSION_ID, "Mailbox Name");
+        analyser = new MailboxEventAnalyser(BASE_SESSION_ID, name);
     }
 
     @Test
     public void testShouldBeNoSizeChangeOnOtherEvent() throws Exception {
-        final MailboxListener.Event event = new MailboxListener.Event(0) {};
+        final MailboxListener.Event event = new MailboxListener.Event(0, name) {};
       
         analyser.event(event);
         assertFalse(analyser.isSizeChanged());
@@ -53,13 +53,13 @@ public class MailboxEventAnalyserTest {
 
     @Test
     public void testShouldBeNoSizeChangeOnAdded() throws Exception {
-        analyser.event(new FakeMailboxListenerAdded(78, 11));
+        analyser.event(new FakeMailboxListenerAdded(78, 11, name));
         assertTrue(analyser.isSizeChanged());
     }
 
     @Test
     public void testShouldNoSizeChangeAfterReset() throws Exception {
-        analyser.event(new FakeMailboxListenerAdded(99, 11));
+        analyser.event(new FakeMailboxListenerAdded(99, 11, name));
         analyser.reset();
         assertFalse(analyser.isSizeChanged());
     }
@@ -67,7 +67,7 @@ public class MailboxEventAnalyserTest {
     @Test
     public void testShouldNotSetUidWhenNoSystemFlagChange() throws Exception {
         final FakeMailboxListenerFlagsUpdate update = new FakeMailboxListenerFlagsUpdate(
-                90, new Flags(), 11);
+                90, new Flags(), 11, name);
         analyser.event(update);
         assertNotNull(analyser.flagUpdateUids());
         assertFalse(analyser.flagUpdateUids().iterator().hasNext());
@@ -77,7 +77,7 @@ public class MailboxEventAnalyserTest {
     public void testShouldSetUidWhenSystemFlagChange() throws Exception {
         final long uid = 900L;
         final FakeMailboxListenerFlagsUpdate update = new FakeMailboxListenerFlagsUpdate(
-                uid, new Flags(), 11);
+                uid, new Flags(), 11, name);
         update.flags.add(Flags.Flag.ANSWERED);
         analyser.event(update);
         final Iterator<Long> iterator = analyser.flagUpdateUids().iterator();
@@ -91,7 +91,7 @@ public class MailboxEventAnalyserTest {
     public void testShouldClearFlagUidsUponReset() throws Exception {
         final long uid = 900L;
         final FakeMailboxListenerFlagsUpdate update = new FakeMailboxListenerFlagsUpdate(
-                uid, new Flags(), 11);
+                uid, new Flags(), 11, name);
         update.flags.add(Flags.Flag.ANSWERED);
         analyser.event(update);
         analyser.reset();
@@ -104,7 +104,7 @@ public class MailboxEventAnalyserTest {
             throws Exception {
         final long uid = 900L;
         final FakeMailboxListenerFlagsUpdate update = new FakeMailboxListenerFlagsUpdate(
-                uid, new Flags(), 11);
+                uid, new Flags(), 11, name);
         update.flags.add(Flags.Flag.ANSWERED);
         analyser.setSilentFlagChanges(true);
         analyser.event(update);
@@ -119,7 +119,7 @@ public class MailboxEventAnalyserTest {
     public void testShouldNotSetUidWhenSystemFlagChangeSameSessionInSilentMode()
             throws Exception {
         final FakeMailboxListenerFlagsUpdate update = new FakeMailboxListenerFlagsUpdate(
-                345, new Flags(), BASE_SESSION_ID);
+                345, new Flags(), BASE_SESSION_ID, name);
         update.flags.add(Flags.Flag.ANSWERED);
         analyser.setSilentFlagChanges(true);
         analyser.event(update);
@@ -131,7 +131,7 @@ public class MailboxEventAnalyserTest {
     @Test
     public void testShouldNotSetUidWhenOnlyRecentFlagUpdated() throws Exception {
         final FakeMailboxListenerFlagsUpdate update = new FakeMailboxListenerFlagsUpdate(
-                886, new Flags(), BASE_SESSION_ID);
+                886, new Flags(), BASE_SESSION_ID ,name);
         update.flags.add(Flags.Flag.RECENT);
         analyser.event(update);
         final Iterator<Long> iterator = analyser.flagUpdateUids().iterator();

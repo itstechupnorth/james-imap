@@ -243,7 +243,7 @@ public class TorqueMailboxManager implements MailboxManager {
     private void changeMailboxName(String from, String to, final MailboxRow mr) {
         TorqueMailbox torqueMailbox = (TorqueMailbox) mailboxes.remove(from);
         if (torqueMailbox != null) {
-            torqueMailbox.reportRenamed(mr);
+            torqueMailbox.reportRenamed(from, mr);
             mailboxes.put(to, torqueMailbox);
         }
     }
