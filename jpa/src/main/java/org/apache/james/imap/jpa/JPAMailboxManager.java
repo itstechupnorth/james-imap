@@ -19,6 +19,9 @@
 package org.apache.james.imap.jpa;
 
 
+import javax.persistence.EntityManager;
+
+import org.apache.james.imap.jpa.mail.JPAMailboxMapper;
 import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.MailboxSession;
 import org.apache.james.imap.store.Authenticator;
@@ -37,7 +40,6 @@ import org.apache.james.imap.store.transaction.TransactionalMapper;
 public abstract class JPAMailboxManager extends StoreMailboxManager<Long> {
 
     protected final MailboxSessionEntityManagerFactory entityManagerFactory;
-
     public JPAMailboxManager(final Authenticator authenticator, final Subscriber subscriber, 
             final MailboxSessionEntityManagerFactory entityManagerFactory) {
         super(authenticator, subscriber);
@@ -77,6 +79,11 @@ public abstract class JPAMailboxManager extends StoreMailboxManager<Long> {
        
     }
     
-    
+    @Override
+    protected MailboxMapper<Long> createMailboxMapper(MailboxSession session) {
+        EntityManager manager = entityManagerFactory.getEntityManager(session);
+        return new JPAMailboxMapper(manager);
+    }
+
     
 }

@@ -25,6 +25,8 @@ import java.util.List;
 
 import javax.mail.Flags;
 import javax.persistence.EntityManager;
+import javax.persistence.EntityTransaction;
+import javax.persistence.Query;
 
 import org.apache.james.imap.jpa.mail.JPAMailboxMapper;
 import org.apache.james.imap.jpa.mail.JPAMessageMapper;
@@ -105,12 +107,19 @@ public abstract class JPAMailbox extends StoreMailbox<Long> {
     }
 
     /**
-     * Reserve next Uid in mailbox and return the mailbox. This method needs to be synchronized 
-     * to be sure we don't get any race-condition
+     * Reserve next Uid in mailbox and return the mailbox. We use a transaction here to be sure we don't get any duplicates
+     * 
      */
     protected Mailbox<Long> reserveNextUid(MailboxSession session) throws MailboxException {
-        final JPAMailboxMapper mapper = createMailboxMapper(session);
-        final Mailbox<Long> mailbox = mapper.consumeNextUid(getMailboxId());
+        EntityManager entityManager = entityManagerFactory.getEntityManager(session);
+
+        EntityTransaction transaction = entityManager.getTransaction();
+        transaction.begin();
+        Query query = entityManager.createNamedQuery("findMailboxById").setParameter("idParam", getMailboxId());
+        org.apache.james.imap.jpa.mail.model.JPAMailbox mailbox = (org.apache.james.imap.jpa.mail.model.JPAMailbox) query.getSingleResult();
+        mailbox.consumeUid();
+        entityManager.persist(mailbox);
+        transaction.commit();
         return mailbox;
-    } 
+    }
 }

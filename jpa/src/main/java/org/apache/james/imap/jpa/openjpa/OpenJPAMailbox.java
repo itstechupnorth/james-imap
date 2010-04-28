@@ -33,7 +33,6 @@ import org.apache.james.imap.jpa.mail.JPAMailboxMapper;
 import org.apache.james.imap.jpa.mail.model.AbstractJPAMailboxMembership;
 import org.apache.james.imap.jpa.mail.model.JPAHeader;
 import org.apache.james.imap.jpa.mail.model.openjpa.JPAStreamingMailboxMembership;
-import org.apache.james.imap.jpa.mail.openjpa.OpenJPAMailboxMapper;
 import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.MailboxSession;
 import org.apache.james.imap.mailbox.util.MailboxEventDispatcher;
@@ -65,7 +64,7 @@ public class OpenJPAMailbox extends JPAMailbox{
 	protected JPAMailboxMapper createMailboxMapper(MailboxSession session) {
 	    EntityManager manager = entityManagerFactory.getEntityManager(session);
 	    	    
-        JPAMailboxMapper mapper = new OpenJPAMailboxMapper(manager);
+        JPAMailboxMapper mapper = new JPAMailboxMapper(manager);
 
         return mapper;
     }

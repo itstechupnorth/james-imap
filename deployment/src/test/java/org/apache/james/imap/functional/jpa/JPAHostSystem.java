@@ -66,7 +66,11 @@ public class JPAHostSystem extends ImapHostSystem {
                 "org.apache.james.imap.jpa.mail.model.JPAMessage;" +
                 "org.apache.james.imap.jpa.mail.model.JPAProperty;" +
                 "org.apache.james.imap.jpa.user.model.JPASubscription)");
-        
+        // persimistic locking..
+        properties.put("openjpa.LockManager", "pessimistic");
+        properties.put("openjpa.ReadLockLevel", "read");
+        properties.put("openjpa.WriteLockLevel", "write");
+        properties.put("openjpa.jdbc.TransactionIsolation", "repeatable-read");
         userManager = new InMemoryUserManager();
         entityManagerFactory = OpenJPAPersistence.getEntityManagerFactory(properties);
         MailboxSessionEntityManagerFactory factory = new MailboxSessionEntityManagerFactory(entityManagerFactory);

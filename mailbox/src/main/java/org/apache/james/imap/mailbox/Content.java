@@ -33,6 +33,10 @@ public interface Content {
     /**
      * Writes content to the given channel.
      * 
+     * Be aware that this operation may only be called once one the content because its possible dispose
+     * temp data. If you need to write the content more then one time you 
+     * should "re-create" the content
+     * 
      * @param channel
      *            <code>Channel</code> open, not null
      * @throws MailboxException

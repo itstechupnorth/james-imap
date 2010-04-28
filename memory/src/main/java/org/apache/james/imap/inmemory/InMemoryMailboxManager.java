@@ -41,26 +41,38 @@ public class InMemoryMailboxManager extends StoreMailboxManager<Long> implements
 
     private static final int INITIAL_SIZE = 128;
     private Map<Long, InMemoryMailbox> mailboxesById;
-    
+    private Map<String, InMemoryStoreMailbox> storeMailboxByName;
+    private Map<Long, String> idNameMap;
+    private MailboxSession session;
+
     public InMemoryMailboxManager(Authenticator authenticator, Subscriber subscriber) {
         super(authenticator, subscriber);
         mailboxesById = new ConcurrentHashMap<Long, InMemoryMailbox>(INITIAL_SIZE);
+        storeMailboxByName = new ConcurrentHashMap<String, InMemoryStoreMailbox>(INITIAL_SIZE);
+        idNameMap = new ConcurrentHashMap<Long, String>(INITIAL_SIZE);
     }
 
     @Override
     protected StoreMailbox<Long> createMailbox(MailboxEventDispatcher dispatcher, Mailbox<Long> mailboxRow) {
-        final InMemoryStoreMailbox storeMailbox = new InMemoryStoreMailbox(dispatcher, (InMemoryMailbox)mailboxRow);
+        InMemoryStoreMailbox storeMailbox = storeMailboxByName.get(mailboxRow.getName());
+        if (storeMailbox == null) {
+            storeMailbox = new InMemoryStoreMailbox(dispatcher, (InMemoryMailbox)mailboxRow);
+            storeMailboxByName.put(mailboxRow.getName(), storeMailbox);
+        }
+        
         return storeMailbox;
     }
 
     @Override
     protected MailboxMapper<Long> createMailboxMapper(MailboxSession session) {
+        this.session = session;
         return this;
     }
 
     @Override
     protected void doCreate(String namespaceName, MailboxSession session) throws StorageException {
         InMemoryMailbox mailbox = new InMemoryMailbox(randomId(), namespaceName, randomUidValidity());
+        idNameMap.put(mailbox.getMailboxId(), mailbox.getName());
         save(mailbox);
     }
 
@@ -69,7 +81,7 @@ public class InMemoryMailboxManager extends StoreMailboxManager<Long> implements
      * (non-Javadoc)
      * @see org.apache.james.imap.store.mail.MailboxMapper#countMailboxesWithName(java.lang.String)
      */
-    public synchronized long countMailboxesWithName(String name) throws StorageException {
+    public long countMailboxesWithName(String name) throws StorageException {
         int total = 0;
         for (final InMemoryMailbox mailbox:mailboxesById.values()) {
             if (mailbox.getName().equals(name)) {
@@ -83,7 +95,7 @@ public class InMemoryMailboxManager extends StoreMailboxManager<Long> implements
      * (non-Javadoc)
      * @see org.apache.james.imap.store.mail.MailboxMapper#delete(org.apache.james.imap.store.mail.model.Mailbox)
      */
-    public synchronized void delete(Mailbox<Long> mailbox) throws StorageException {
+    public void delete(Mailbox<Long> mailbox) throws StorageException {
         mailboxesById.remove(mailbox.getMailboxId());
     }
 
@@ -91,7 +103,7 @@ public class InMemoryMailboxManager extends StoreMailboxManager<Long> implements
      * (non-Javadoc)
      * @see org.apache.james.imap.store.mail.MailboxMapper#deleteAll()
      */
-    public synchronized void deleteAll() throws StorageException {
+    public void deleteAll() throws StorageException {
         mailboxesById.clear();
     }
 
@@ -100,7 +112,7 @@ public class InMemoryMailboxManager extends StoreMailboxManager<Long> implements
      * (non-Javadoc)
      * @see org.apache.james.imap.store.mail.MailboxMapper#findMailboxById(java.lang.Object)
      */
-    public synchronized Mailbox<Long> findMailboxById(Long mailboxId) throws StorageException, MailboxNotFoundException {
+    public Mailbox<Long> findMailboxById(Long mailboxId) throws StorageException, MailboxNotFoundException {
         return mailboxesById.get(mailboxesById);
     }
 
@@ -123,7 +135,7 @@ public class InMemoryMailboxManager extends StoreMailboxManager<Long> implements
      * (non-Javadoc)
      * @see org.apache.james.imap.store.mail.MailboxMapper#findMailboxWithNameLike(java.lang.String)
      */
-    public synchronized List<Mailbox<Long>> findMailboxWithNameLike(String name) throws StorageException {
+    public List<Mailbox<Long>> findMailboxWithNameLike(String name) throws StorageException {
         final String regex = name.replace("%", ".*");
         List<Mailbox<Long>> results = new ArrayList<Mailbox<Long>>();
         for (final InMemoryMailbox mailbox:mailboxesById.values()) {
@@ -138,7 +150,7 @@ public class InMemoryMailboxManager extends StoreMailboxManager<Long> implements
      * (non-Javadoc)
      * @see org.apache.james.imap.store.mail.MailboxMapper#existsMailboxStartingWith(java.lang.String)
      */
-    public synchronized boolean existsMailboxStartingWith(String mailboxName) throws StorageException {
+    public boolean existsMailboxStartingWith(String mailboxName) throws StorageException {
         boolean result = false;
         for (final InMemoryMailbox mailbox:mailboxesById.values()) {
             if (mailbox.getName().startsWith(mailboxName)) {
@@ -153,8 +165,21 @@ public class InMemoryMailboxManager extends StoreMailboxManager<Long> implements
      * (non-Javadoc)
      * @see org.apache.james.imap.store.mail.MailboxMapper#save(org.apache.james.imap.store.mail.model.Mailbox)
      */
-    public synchronized void save(Mailbox<Long> mailbox) throws StorageException {
+    public void save(Mailbox<Long> mailbox) throws StorageException {
         mailboxesById.put(mailbox.getMailboxId(), (InMemoryMailbox) mailbox);
+        String name = idNameMap.remove(mailbox.getMailboxId());
+        if (name != null) {
+            InMemoryStoreMailbox m = storeMailboxByName.remove(name);
+            if (m!= null) {
+                try {
+                    m.getMailboxRow(session).setName(mailbox.getName());
+                    storeMailboxByName.put(mailbox.getName(), m);
+                } catch (MailboxException e) {
+                    throw new StorageException(e.getKey(), e);
+                } 
+            }
+        }
+        idNameMap.put(mailbox.getMailboxId(), mailbox.getName());
     }
 
     /*
@@ -180,6 +205,8 @@ public class InMemoryMailboxManager extends StoreMailboxManager<Long> implements
             }
             
         });
+        storeMailboxByName.clear();
+        idNameMap.clear();
     }
     
 }

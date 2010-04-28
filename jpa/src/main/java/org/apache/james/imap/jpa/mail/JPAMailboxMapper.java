@@ -36,7 +36,7 @@ import org.apache.james.imap.store.mail.model.Mailbox;
 /**
  * Data access management for mailbox.
  */
-public abstract class JPAMailboxMapper extends JPATransactionalMapper implements MailboxMapper<Long> {
+public class JPAMailboxMapper extends JPATransactionalMapper implements MailboxMapper<Long> {
 
     private static final char SQL_WILDCARD_CHAR = '%';
     
@@ -138,23 +138,4 @@ public abstract class JPAMailboxMapper extends JPATransactionalMapper implements
             throw new StorageException(HumanReadableText.SEARCH_FAILED, e);
         } 
     }
-
-
-
-    /*
-     * 
-     */
-    public Mailbox<Long> consumeNextUid(Long mailboxId) throws StorageException, MailboxNotFoundException {
-        try {
-            return doConsumeNextUid(mailboxId);
-        } catch (NoResultException e) {
-            throw new MailboxNotFoundException(mailboxId);
-        } catch (PersistenceException e) {
-            e.printStackTrace();
-            throw new StorageException(HumanReadableText.COMSUME_UID_FAILED, e);
-        } 
-    }
-
-    /** Locking is required and is implementation specific */
-    protected abstract JPAMailbox doConsumeNextUid(long mailboxId) throws PersistenceException;
 }

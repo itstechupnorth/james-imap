@@ -50,7 +50,7 @@ public class DelegatingMailboxListener implements MailboxListener{
      * (non-Javadoc)
      * @see org.apache.james.imap.mailbox.MailboxListener#event(org.apache.james.imap.mailbox.MailboxListener.Event)
      */
-    public synchronized void event(Event event) {
+    public void event(Event event) {
         List<MailboxListener> mListeners = listeners.get(event.getMailboxName());
         if (mListeners != null && mListeners.isEmpty() == false) {
             for (int i = 0; i < mListeners.size(); i++) {
