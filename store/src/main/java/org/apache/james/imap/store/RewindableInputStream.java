@@ -28,6 +28,9 @@ import java.io.InputStream;
  * The rewinding will get delayed as long as possible. So if you call
  * rewind, it will only get performed when needed
  * 
+ * Be sure to call {@link #close()} to cleanup temporary data when you 
+ * are done with reading from the stream
+ * 
  *
  */
 public abstract class RewindableInputStream extends FilterInputStream{

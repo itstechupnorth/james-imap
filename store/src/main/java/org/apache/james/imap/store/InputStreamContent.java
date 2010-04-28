@@ -53,19 +53,27 @@ public final class InputStreamContent implements Content{
      */
     public void writeTo(WritableByteChannel channel) throws IOException {
         
-        // rewind the stream before write it to the channel
-        in.rewind();
+        try {
+            // rewind the stream before write it to the channel
+            in.rewind();
         
-        // read all the content of the underlying InputStream in 16384 byte chunks, wrap them
-        // in a ByteBuffer and finally write the Buffer to the channel
-        byte[] buf = new byte[16384];
-        int i = 0;
-        while ((i = in.read(buf)) != -1) {
-            ByteBuffer buffer = ByteBuffer.wrap(buf);
-            // set the limit of the buffer to the returned bytes
-            buffer.limit(i);
-            channel.write(buffer);
-        }  
+            // read all the content of the underlying InputStream in 16384 byte chunks, wrap them
+            // in a ByteBuffer and finally write the Buffer to the channel
+            byte[] buf = new byte[16384];
+            int i = 0;
+            while ((i = in.read(buf)) != -1) {
+                ByteBuffer buffer = ByteBuffer.wrap(buf);
+                // set the limit of the buffer to the returned bytes
+                    buffer.limit(i);
+                    channel.write(buffer);
+            }
+        } finally {
+            // close the stream so temporary files could get delete
+            in.close();
+        }
+        
     }
+    
+   
 
 }
