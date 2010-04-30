@@ -24,9 +24,7 @@ import java.util.Date;
 import java.util.List;
 
 import javax.mail.Flags;
-import javax.persistence.EntityManager;
-import javax.persistence.EntityTransaction;
-import javax.persistence.Query;
+import javax.persistence.EntityManagerFactory;
 
 import org.apache.james.imap.jpa.mail.JPAMailboxMapper;
 import org.apache.james.imap.jpa.mail.JPAMessageMapper;
@@ -51,9 +49,9 @@ import org.apache.james.imap.store.mail.model.PropertyBuilder;
  */
 public abstract class JPAMailbox extends StoreMailbox<Long> {
 
-    protected final MailboxSessionEntityManagerFactory entityManagerFactory;
+    protected final EntityManagerFactory entityManagerFactory;
     
-    public JPAMailbox(final MailboxEventDispatcher dispatcher, final Mailbox<Long> mailbox, final MailboxSessionEntityManagerFactory entityManagerfactory) {
+    public JPAMailbox(final MailboxEventDispatcher dispatcher, final Mailbox<Long> mailbox, final EntityManagerFactory entityManagerfactory) {
         super(dispatcher, mailbox);
         this.entityManagerFactory = entityManagerfactory;        
     }  
@@ -73,10 +71,8 @@ public abstract class JPAMailbox extends StoreMailbox<Long> {
 
     
     @Override
-    protected MessageMapper<Long> createMessageMapper(MailboxSession session) {
-        EntityManager manager = entityManagerFactory.getEntityManager(session);
-                
-        JPAMessageMapper mapper = new JPAMessageMapper(manager, getMailboxId());
+    protected MessageMapper<Long> createMessageMapper(MailboxSession session) {                
+        JPAMessageMapper mapper = new JPAMessageMapper(entityManagerFactory, getMailboxId());
        
         return mapper;
     }
@@ -104,22 +100,5 @@ public abstract class JPAMailbox extends StoreMailbox<Long> {
     protected Header createHeader(int lineNumber, String name, String value) {
         final Header header = new JPAHeader(lineNumber, name, value);
         return header;
-    }
-
-    /**
-     * Reserve next Uid in mailbox and return the mailbox. We use a transaction here to be sure we don't get any duplicates
-     * 
-     */
-    protected Mailbox<Long> reserveNextUid(MailboxSession session) throws MailboxException {
-        EntityManager entityManager = entityManagerFactory.getEntityManager(session);
-
-        EntityTransaction transaction = entityManager.getTransaction();
-        transaction.begin();
-        Query query = entityManager.createNamedQuery("findMailboxById").setParameter("idParam", getMailboxId());
-        org.apache.james.imap.jpa.mail.model.JPAMailbox mailbox = (org.apache.james.imap.jpa.mail.model.JPAMailbox) query.getSingleResult();
-        mailbox.consumeUid();
-        entityManager.persist(mailbox);
-        transaction.commit();
-        return mailbox;
     }
 }

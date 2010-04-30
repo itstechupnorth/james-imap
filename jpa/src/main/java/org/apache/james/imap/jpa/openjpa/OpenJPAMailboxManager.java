@@ -19,8 +19,9 @@
 
 package org.apache.james.imap.jpa.openjpa;
 
+import javax.persistence.EntityManagerFactory;
+
 import org.apache.james.imap.jpa.JPAMailboxManager;
-import org.apache.james.imap.jpa.MailboxSessionEntityManagerFactory;
 import org.apache.james.imap.mailbox.util.MailboxEventDispatcher;
 import org.apache.james.imap.store.Authenticator;
 import org.apache.james.imap.store.StoreMailbox;
@@ -35,12 +36,12 @@ public class OpenJPAMailboxManager extends JPAMailboxManager {
 
     private boolean useStreaming;
 
-    public OpenJPAMailboxManager(Authenticator authenticator, Subscriber subscriber, MailboxSessionEntityManagerFactory entityManagerFactory, boolean useStreaming) {
+    public OpenJPAMailboxManager(Authenticator authenticator, Subscriber subscriber, EntityManagerFactory entityManagerFactory, boolean useStreaming) {
         super(authenticator, subscriber, entityManagerFactory);
         this.useStreaming = useStreaming;
     }
 
-    public OpenJPAMailboxManager(Authenticator authenticator, Subscriber subscriber, MailboxSessionEntityManagerFactory entityManagerFactory) {
+    public OpenJPAMailboxManager(Authenticator authenticator, Subscriber subscriber, EntityManagerFactory entityManagerFactory) {
         this(authenticator, subscriber, entityManagerFactory, false);
     }
 

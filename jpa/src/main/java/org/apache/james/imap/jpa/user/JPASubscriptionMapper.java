@@ -20,7 +20,7 @@ package org.apache.james.imap.jpa.user;
 
 import java.util.List;
 
-import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceException;
 
@@ -31,12 +31,12 @@ import org.apache.james.imap.store.user.SubscriptionMapper;
 import org.apache.james.imap.store.user.model.Subscription;
 
 /**
- * Maps data access logic to JPA operations.
+ * JPA implementation of a {@link SubscriptionMapper}. This class is not thread-safe!
  */
 public class JPASubscriptionMapper extends JPATransactionalMapper implements SubscriptionMapper {
 
-    public JPASubscriptionMapper(final EntityManager entityManager) {
-        super(entityManager);
+    public JPASubscriptionMapper(final EntityManagerFactory factory) {
+        super(factory);
     }
 
 
@@ -46,7 +46,7 @@ public class JPASubscriptionMapper extends JPATransactionalMapper implements Sub
      */
     public Subscription findFindMailboxSubscriptionForUser(final String user, final String mailbox) throws SubscriptionException {
         try {
-            return (Subscription) entityManager.createNamedQuery("findFindMailboxSubscriptionForUser")
+            return (Subscription) getManager().createNamedQuery("findFindMailboxSubscriptionForUser")
             .setParameter("userParam", user).setParameter("mailboxParam", mailbox).getSingleResult();
         } catch (NoResultException e) {
             return null;
@@ -61,7 +61,7 @@ public class JPASubscriptionMapper extends JPATransactionalMapper implements Sub
      */
     public void save(Subscription subscription) throws SubscriptionException {
         try {
-            entityManager.persist(subscription);
+            getManager().persist(subscription);
         } catch (PersistenceException e) {
             throw new SubscriptionException(HumanReadableText.SAVE_FAILED, e);
         }
@@ -74,7 +74,7 @@ public class JPASubscriptionMapper extends JPATransactionalMapper implements Sub
     @SuppressWarnings("unchecked")
     public List<Subscription> findSubscriptionsForUser(String user) throws SubscriptionException {
         try {
-            return (List<Subscription>) entityManager.createNamedQuery("findSubscriptionsForUser").setParameter("userParam", user).getResultList();
+            return (List<Subscription>) getManager().createNamedQuery("findSubscriptionsForUser").setParameter("userParam", user).getResultList();
         } catch (PersistenceException e) {
             throw new SubscriptionException(HumanReadableText.SEARCH_FAILED, e);
         }
@@ -86,7 +86,7 @@ public class JPASubscriptionMapper extends JPATransactionalMapper implements Sub
      */
     public void delete(Subscription subscription) throws SubscriptionException {
         try {
-            entityManager.remove(subscription);
+            getManager().remove(subscription);
         } catch (PersistenceException e) {
             throw new SubscriptionException(HumanReadableText.DELETED_FAILED, e);
         }

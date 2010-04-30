@@ -25,10 +25,11 @@ import java.util.Date;
 import java.util.List;
 
 import javax.mail.Flags;
-import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.EntityTransaction;
+import javax.persistence.Query;
 
 import org.apache.james.imap.jpa.JPAMailbox;
-import org.apache.james.imap.jpa.MailboxSessionEntityManagerFactory;
 import org.apache.james.imap.jpa.mail.JPAMailboxMapper;
 import org.apache.james.imap.jpa.mail.model.AbstractJPAMailboxMembership;
 import org.apache.james.imap.jpa.mail.model.JPAHeader;
@@ -40,6 +41,8 @@ import org.apache.james.imap.store.mail.model.Header;
 import org.apache.james.imap.store.mail.model.Mailbox;
 import org.apache.james.imap.store.mail.model.MailboxMembership;
 import org.apache.james.imap.store.mail.model.PropertyBuilder;
+import org.apache.openjpa.persistence.OpenJPAEntityManager;
+import org.apache.openjpa.persistence.OpenJPAPersistence;
 
 /**
  * OpenJPA implementation of Mailbox
@@ -48,11 +51,11 @@ import org.apache.james.imap.store.mail.model.PropertyBuilder;
 public class OpenJPAMailbox extends JPAMailbox{
 
     private final boolean useStreaming;
-    public OpenJPAMailbox(MailboxEventDispatcher dispatcher, Mailbox<Long> mailbox,  MailboxSessionEntityManagerFactory entityManagerfactory) {
+    public OpenJPAMailbox(MailboxEventDispatcher dispatcher, Mailbox<Long> mailbox,  EntityManagerFactory entityManagerfactory) {
 		this(dispatcher, mailbox, entityManagerfactory, false);
 	}
 
-    public OpenJPAMailbox(MailboxEventDispatcher dispatcher, Mailbox<Long> mailbox, MailboxSessionEntityManagerFactory entityManagerfactory, final boolean useStreaming) {
+    public OpenJPAMailbox(MailboxEventDispatcher dispatcher, Mailbox<Long> mailbox, EntityManagerFactory entityManagerfactory, final boolean useStreaming) {
         super(dispatcher, mailbox, entityManagerfactory);
         this.useStreaming = useStreaming;
     }
@@ -61,10 +64,8 @@ public class OpenJPAMailbox extends JPAMailbox{
      * (non-Javadoc)
      * @see org.apache.james.imap.jpa.JPAMailbox#createMailboxMapper(org.apache.james.imap.mailbox.MailboxSession)
      */
-	protected JPAMailboxMapper createMailboxMapper(MailboxSession session) {
-	    EntityManager manager = entityManagerFactory.getEntityManager(session);
-	    	    
-        JPAMailboxMapper mapper = new JPAMailboxMapper(manager);
+	protected JPAMailboxMapper createMailboxMapper(MailboxSession session) {	    	    
+        JPAMailboxMapper mapper = new JPAMailboxMapper(entityManagerFactory);
 
         return mapper;
     }
@@ -88,6 +89,31 @@ public class OpenJPAMailbox extends JPAMailbox{
             return new JPAStreamingMailboxMembership(getMailboxId(), uid, internalDate, size, flags, document, bodyStartOctet, jpaHeaders, propertyBuilder);
         } else {
             return super.createMessage(internalDate, uid, size, bodyStartOctet, document, flags, headers, propertyBuilder);
+        }
+    }
+    
+    /**
+     * Reserve next Uid in mailbox and return the mailbox. We use a transaction here to be sure we don't get any duplicates
+     * 
+     */
+    protected Mailbox<Long> reserveNextUid(MailboxSession session) throws MailboxException {
+        OpenJPAEntityManager oem = OpenJPAPersistence.cast(entityManagerFactory.createEntityManager());
+        boolean optimistic = oem.getOptimistic();
+        try {
+
+            oem.setOptimistic(false);
+            EntityTransaction transaction = oem.getTransaction();
+            transaction.begin();
+            Query query = oem.createNamedQuery("findMailboxById").setParameter("idParam", getMailboxId());
+            org.apache.james.imap.jpa.mail.model.JPAMailbox mailbox = (org.apache.james.imap.jpa.mail.model.JPAMailbox) query.getSingleResult();
+            //entityManager.lock(mailbox, LockModeType.READ);
+            mailbox.consumeUid();
+            oem.persist(mailbox);
+            oem.flush();
+            transaction.commit();
+            return mailbox;
+        } finally {
+            oem.setOptimistic(optimistic);
         }
     }
 

@@ -19,6 +19,7 @@
 package org.apache.james.imap.jpa;
 
 import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 import javax.persistence.PersistenceException;
 
@@ -28,17 +29,29 @@ import org.apache.james.imap.mailbox.StorageException;
 import org.apache.james.imap.store.transaction.AbstractTransactionalMapper;
 
 /**
- * JPA implementation of TransactionMapper  
+ * JPA implementation of TransactionMapper. This class is not thread-safe!
  *
  */
 public class JPATransactionalMapper extends AbstractTransactionalMapper {
 
-    protected final EntityManager entityManager;
+    private final EntityManagerFactory factory;
+    private EntityManager entityManager;
     
-    public JPATransactionalMapper(final EntityManager entityManager) {
-        this.entityManager = entityManager;
+    public JPATransactionalMapper(final EntityManagerFactory factory) {
+        this.factory = factory;
     }
 
+    /**
+     * Return the currently used {@link EntityManager}. If the currently used {@link EntityManager} is null or is closed a new will get obtained from the {@link EntityManagerFactory}
+     * 
+     * @return entitymanger
+     */
+    protected EntityManager getManager() {
+        if (entityManager == null || entityManager.isOpen() == false) {
+            entityManager = factory.createEntityManager();
+        }
+        return entityManager;
+    }
 
     /*
      * (non-Javadoc)
@@ -46,20 +59,20 @@ public class JPATransactionalMapper extends AbstractTransactionalMapper {
      */
     protected void begin() throws MailboxException {
         try {
-            entityManager.getTransaction().begin();
+            getManager().getTransaction().begin();
         } catch (PersistenceException e) {
             throw new StorageException(HumanReadableText.START_TRANSACTION_FAILED, e);
         }
     }
     
 
-    /*
-     * (non-Javadoc)
-     * @see org.apache.james.imap.store.transaction.AbstractTransactionalMapper#commit()
+    /**
+     * Commit the Transaction and close the EntityManager
      */
     protected void commit() throws MailboxException {
         try {
-            entityManager.getTransaction().commit();
+            getManager().getTransaction().commit();
+            getManager().close();
         } catch (PersistenceException e) {
             throw new StorageException(HumanReadableText.COMMIT_TRANSACTION_FAILED, e);
         }
@@ -73,7 +86,7 @@ public class JPATransactionalMapper extends AbstractTransactionalMapper {
         EntityTransaction transaction = entityManager.getTransaction();
         // check if we have a transaction to rollback
         if (transaction.isActive()) {
-            entityManager.getTransaction().rollback();
+            getManager().getTransaction().rollback();
         }
     }
 

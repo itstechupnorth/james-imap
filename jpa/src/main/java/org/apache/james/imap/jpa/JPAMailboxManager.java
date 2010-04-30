@@ -19,7 +19,7 @@
 package org.apache.james.imap.jpa;
 
 
-import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
 
 import org.apache.james.imap.jpa.mail.JPAMailboxMapper;
 import org.apache.james.imap.mailbox.MailboxException;
@@ -39,9 +39,9 @@ import org.apache.james.imap.store.transaction.TransactionalMapper;
  */
 public abstract class JPAMailboxManager extends StoreMailboxManager<Long> {
 
-    protected final MailboxSessionEntityManagerFactory entityManagerFactory;
+    protected final EntityManagerFactory entityManagerFactory;
     public JPAMailboxManager(final Authenticator authenticator, final Subscriber subscriber, 
-            final MailboxSessionEntityManagerFactory entityManagerFactory) {
+            final EntityManagerFactory entityManagerFactory) {
         super(authenticator, subscriber);
         this.entityManagerFactory = entityManagerFactory;
     }
@@ -60,6 +60,12 @@ public abstract class JPAMailboxManager extends StoreMailboxManager<Long> {
         });
     }
 
+    /**
+     * Delete all mailboxes 
+     * 
+     * @param maibloxSession
+     * @throws MailboxException
+     */
     public void deleteEverything(MailboxSession maibloxSession) throws MailboxException {
         final MailboxMapper<Long> mapper = createMailboxMapper(maibloxSession);
         mapper.execute(new TransactionalMapper.Transaction() {
@@ -72,17 +78,10 @@ public abstract class JPAMailboxManager extends StoreMailboxManager<Long> {
     }
 
     
-    @Override
-    public void endProcessingRequest(MailboxSession session) {
-        // close the entityManager after each request so we are sure everything is flushed
-        entityManagerFactory.closeEntityManager(session);
-       
-    }
     
     @Override
     protected MailboxMapper<Long> createMailboxMapper(MailboxSession session) {
-        EntityManager manager = entityManagerFactory.getEntityManager(session);
-        return new JPAMailboxMapper(manager);
+        return new JPAMailboxMapper(entityManagerFactory);
     }
 
     

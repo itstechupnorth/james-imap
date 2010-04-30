@@ -66,7 +66,7 @@ public class JPAMailbox implements Mailbox<Long> {
     
     /** The value for the size field */
     @Basic(optional=false) private long size = 0;
-
+    
     /**
      * JPA only
      */
