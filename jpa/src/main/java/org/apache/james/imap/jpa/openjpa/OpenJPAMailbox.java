@@ -98,22 +98,18 @@ public class OpenJPAMailbox extends JPAMailbox{
      */
     protected Mailbox<Long> reserveNextUid(MailboxSession session) throws MailboxException {
         OpenJPAEntityManager oem = OpenJPAPersistence.cast(entityManagerFactory.createEntityManager());
-        boolean optimistic = oem.getOptimistic();
-        try {
-
-            oem.setOptimistic(false);
-            EntityTransaction transaction = oem.getTransaction();
-            transaction.begin();
-            Query query = oem.createNamedQuery("findMailboxById").setParameter("idParam", getMailboxId());
-            org.apache.james.imap.jpa.mail.model.JPAMailbox mailbox = (org.apache.james.imap.jpa.mail.model.JPAMailbox) query.getSingleResult();
-            mailbox.consumeUid();
-            oem.persist(mailbox);
-            oem.flush();
-            transaction.commit();
-            return mailbox;
-        } finally {
-            oem.setOptimistic(optimistic);
-        }
+        oem.setOptimistic(false);
+        EntityTransaction transaction = oem.getTransaction();
+        transaction.begin();
+        Query query = oem.createNamedQuery("findMailboxById").setParameter("idParam", getMailboxId());
+        org.apache.james.imap.jpa.mail.model.JPAMailbox mailbox = (org.apache.james.imap.jpa.mail.model.JPAMailbox) query.getSingleResult();
+        mailbox.consumeUid();
+        oem.persist(mailbox);
+        oem.flush();
+        transaction.commit();
+        oem.close();
+        return mailbox;
+     
     }
 
 }
