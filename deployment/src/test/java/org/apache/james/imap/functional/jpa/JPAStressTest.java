@@ -68,7 +68,6 @@ public class JPAStressTest {
         properties.put("openjpa.WriteLockLevel", "write");
         properties.put("openjpa.jdbc.TransactionIsolation", "repeatable-read");
         EntityManagerFactory entityManagerFactory = OpenJPAPersistence.getEntityManagerFactory(properties);
-        //MailboxSessionEntityManagerFactory factory = new MailboxSessionEntityManagerFactory(entityManagerFactory);
         
         mailboxManager = new OpenJPAMailboxManager(null, new JPASubscriptionManager(entityManagerFactory), entityManagerFactory);
     }
@@ -79,7 +78,6 @@ public class JPAStressTest {
         try {
             mailboxManager.deleteEverything(session);
         } catch (MailboxException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
         session.close();
@@ -119,7 +117,7 @@ public class JPAStressTest {
                         mailboxManager.startProcessingRequest(session);
                         Mailbox m = mailboxManager.getMailbox(OpenJPAMailboxManager.USER_NAMESPACE_PREFIX +".INBOX", session);
                         
-                        System.out.println("uid=" + m.appendMessage(new ByteArrayInputStream("Subject: test\r\n\r\ntestmail".getBytes()), new Date(), session, false, new Flags()));
+                        System.out.println("Append message with uid=" + m.appendMessage(new ByteArrayInputStream("Subject: test\r\n\r\ntestmail".getBytes()), new Date(), session, false, new Flags()));
                         mailboxManager.endProcessingRequest(session);
                         mailboxManager.logout(session,false);
                     } catch (MailboxException e) {

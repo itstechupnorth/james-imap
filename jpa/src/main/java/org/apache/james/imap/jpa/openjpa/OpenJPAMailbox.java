@@ -106,7 +106,6 @@ public class OpenJPAMailbox extends JPAMailbox{
             transaction.begin();
             Query query = oem.createNamedQuery("findMailboxById").setParameter("idParam", getMailboxId());
             org.apache.james.imap.jpa.mail.model.JPAMailbox mailbox = (org.apache.james.imap.jpa.mail.model.JPAMailbox) query.getSingleResult();
-            //entityManager.lock(mailbox, LockModeType.READ);
             mailbox.consumeUid();
             oem.persist(mailbox);
             oem.flush();
