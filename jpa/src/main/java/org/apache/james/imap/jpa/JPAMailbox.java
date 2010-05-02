@@ -55,19 +55,8 @@ public abstract class JPAMailbox extends StoreMailbox<Long> {
         super(dispatcher, mailbox);
         this.entityManagerFactory = entityManagerfactory;        
     }  
-    
-    /**
-     * Create MailboxMapper 
-     * 
-     * @return mapper
-     */
-    protected abstract JPAMailboxMapper createMailboxMapper(MailboxSession session);
 
-    @Override
-    protected Mailbox<Long> getMailboxRow(MailboxSession session) throws MailboxException {
-        final MailboxMapper<Long> mapper = createMailboxMapper(session);
-        return mapper.findMailboxById(getMailboxId());
-    }
+
 
     
     @Override
@@ -101,4 +90,14 @@ public abstract class JPAMailbox extends StoreMailbox<Long> {
         final Header header = new JPAHeader(lineNumber, name, value);
         return header;
     }
+
+
+
+
+    @Override
+    protected MailboxMapper<Long> createMailboxMapper(MailboxSession session) {
+        return new JPAMailboxMapper(entityManagerFactory);
+    }
+    
+    
 }

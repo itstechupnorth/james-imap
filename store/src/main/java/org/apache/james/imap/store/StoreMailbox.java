@@ -53,6 +53,7 @@ import org.apache.james.imap.mailbox.SearchQuery;
 import org.apache.james.imap.mailbox.MessageResult.FetchGroup;
 import org.apache.james.imap.mailbox.util.MailboxEventDispatcher;
 import org.apache.james.imap.mailbox.util.UidRange;
+import org.apache.james.imap.store.mail.MailboxMapper;
 import org.apache.james.imap.store.mail.MessageMapper;
 import org.apache.james.imap.store.mail.model.Header;
 import org.apache.james.imap.store.mail.model.Mailbox;
@@ -73,7 +74,7 @@ import com.sun.mail.imap.protocol.MessageSet;
  * 
  *
  */
-public abstract class StoreMailbox<Id> implements org.apache.james.imap.mailbox.Mailbox {
+public abstract class StoreMailbox<Id> implements org.apache.james.imap.mailbox.Mailbox, StoreConstants {
 
     private static final int INITIAL_SIZE_FLAGS = 32;
 
@@ -83,7 +84,6 @@ public abstract class StoreMailbox<Id> implements org.apache.james.imap.mailbox.
     
     private MailboxEventDispatcher dispatcher;
     
-    public final static String MESSAGE_MAPPER = "MESSAGE_MAPPER";
     
     public StoreMailbox(final MailboxEventDispatcher dispatcher, final Mailbox<Id> mailbox) {
         this.mailboxId = mailbox.getMailboxId();
@@ -140,7 +140,11 @@ public abstract class StoreMailbox<Id> implements org.apache.james.imap.mailbox.
      * @return mailbox
      * @throws MailboxException
      */
-    protected abstract Mailbox<Id> getMailboxRow(MailboxSession session) throws MailboxException;
+    
+    protected Mailbox<Id> getMailboxRow(MailboxSession session) throws MailboxException {
+        final MailboxMapper<Id> mapper = getMailboxMapperForRequest(session);
+        return mapper.findMailboxById(getMailboxId());
+    }
 
     /**
      * Return the Id of the wrapped {@link Mailbox}
@@ -715,4 +719,29 @@ public abstract class StoreMailbox<Id> implements org.apache.james.imap.mailbox.
         return new MailboxMetaData(recent, permanentFlags, uidValidity, uidNext, messageCount, unseenCount, firstUnseen, isWriteable());
     }
     
+    
+    /**
+     * Create MailboxMapper 
+     * 
+     * @return mapper
+     */
+    protected abstract MailboxMapper<Id> createMailboxMapper(MailboxSession session) throws MailboxException;
+    
+    /**
+     * Return the {@link MailboxMapper} for the current Request. If none exists, it will get created.
+     * 
+     * @param session
+     * @return mapper
+     * @throws MailboxException
+     */
+    @SuppressWarnings("unchecked")
+    public MailboxMapper<Id> getMailboxMapperForRequest(MailboxSession session) throws MailboxException {
+        MailboxMapper<Id> mapper = (MailboxMapper<Id>) session.getAttributes().get(MAILBOX_MAPPER);
+        if (mapper == null) {
+            mapper = createMailboxMapper(session);
+            session.getAttributes().put(MAILBOX_MAPPER, mapper);
+        }
+        return mapper;
+    }
+
 }

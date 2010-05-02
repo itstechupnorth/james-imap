@@ -59,8 +59,7 @@ import org.apache.james.imap.store.transaction.TransactionalMapper;
  *
  * @param <Id>
  */
-public abstract class StoreMailboxManager<Id> extends AbstractLogEnabled implements MailboxManager {
-    public static final String USER_NAMESPACE_PREFIX = "#mail";
+public abstract class StoreMailboxManager<Id> extends AbstractLogEnabled implements MailboxManager, StoreConstants {
     
     public static final char SQL_WILDCARD_CHAR = '%';
 
@@ -72,7 +71,6 @@ public abstract class StoreMailboxManager<Id> extends AbstractLogEnabled impleme
     private final DelegatingMailboxListener delegatingListener = new DelegatingMailboxListener();
     private final Authenticator authenticator;    
     private final Subscriber subscriber;    
-    private final static String MAILBOX_MAPPER = "MAILBOX_MAPPER"; 
     private final char delimiter;
     
     public StoreMailboxManager(final Authenticator authenticator, final Subscriber subscriber) {

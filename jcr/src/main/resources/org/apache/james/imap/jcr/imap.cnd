@@ -47,7 +47,7 @@
  [imap:messageProperties] > nt:unstructured
     + imap:messageProperty multiple
        
-[imap:mailbox] >  mix:referenceable, nt:base
+[imap:mailbox] >  mix:referenceable, mix:lockable, nt:base
     - imap:mailboxUidValidity (LONG) mandatory
     - imap:mailboxName (STRING) mandatory
     - imap:mailboxLastUid (LONG) mandatory

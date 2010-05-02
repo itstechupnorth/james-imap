@@ -43,11 +43,13 @@ import org.apache.james.imap.mailbox.SubscriptionException;
 import org.apache.james.imap.mailbox.util.MailboxEventDispatcher;
 import org.apache.james.imap.store.PasswordAwareUser;
 import org.apache.james.imap.store.StoreMailbox;
+import org.apache.james.imap.store.mail.MailboxMapper;
 import org.apache.james.imap.store.mail.MessageMapper;
 import org.apache.james.imap.store.mail.model.Header;
 import org.apache.james.imap.store.mail.model.Mailbox;
 import org.apache.james.imap.store.mail.model.MailboxMembership;
 import org.apache.james.imap.store.mail.model.PropertyBuilder;
+import org.apache.james.imap.store.transaction.TransactionalMapper;
 
 /**
  * JCR implementation of a {@link StoreMailbox}
@@ -59,7 +61,7 @@ public class JCRMailbox extends StoreMailbox<String>{
     private final String workspace;
     private final Log log;
     private final int scaling;
-    
+
     public JCRMailbox(final MailboxEventDispatcher dispatcher, final org.apache.james.imap.jcr.mail.model.JCRMailbox mailbox, final Repository repository, final String workspace, final int scaling, final Log log) {
         super(dispatcher, mailbox);
         this.repository = repository;
@@ -117,6 +119,7 @@ public class JCRMailbox extends StoreMailbox<String>{
      * 
      * @param session
      * @return mailboxMapper
+     * @throws MailboxException 
      * @throws MailboxException
      */
     protected JCRMailboxMapper createMailboxMapper(MailboxSession session) throws MailboxException {
@@ -125,17 +128,19 @@ public class JCRMailbox extends StoreMailbox<String>{
         return mapper;
 
     }
-    
-    @Override
-    protected Mailbox<String> getMailboxRow(MailboxSession session) throws MailboxException {
-        final JCRMailboxMapper mapper = createMailboxMapper(session);
-        return mapper.findMailboxById(getMailboxId());
-    }
 
     @Override
     protected Mailbox<String> reserveNextUid(MailboxSession session) throws MailboxException {
-        final JCRMailboxMapper mapper = createMailboxMapper(session);
-        return mapper.consumeNextUid(getMailboxId());
+        final MailboxMapper<String> mapper = getMailboxMapperForRequest(session);
+        final org.apache.james.imap.jcr.mail.model.JCRMailbox mailbox = (org.apache.james.imap.jcr.mail.model.JCRMailbox) mapper.findMailboxById(getMailboxId());
+        mapper.execute(new TransactionalMapper.Transaction() {
+
+            public void run() throws MailboxException {
+                mailbox.consumeUid();
+            }
+            
+        });
+        return mailbox;
     }
 
     /**

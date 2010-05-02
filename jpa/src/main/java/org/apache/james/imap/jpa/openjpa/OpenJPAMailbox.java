@@ -30,7 +30,6 @@ import javax.persistence.EntityTransaction;
 import javax.persistence.Query;
 
 import org.apache.james.imap.jpa.JPAMailbox;
-import org.apache.james.imap.jpa.mail.JPAMailboxMapper;
 import org.apache.james.imap.jpa.mail.model.AbstractJPAMailboxMembership;
 import org.apache.james.imap.jpa.mail.model.JPAHeader;
 import org.apache.james.imap.jpa.mail.model.openjpa.JPAStreamingMailboxMembership;
@@ -58,16 +57,6 @@ public class OpenJPAMailbox extends JPAMailbox{
     public OpenJPAMailbox(MailboxEventDispatcher dispatcher, Mailbox<Long> mailbox, EntityManagerFactory entityManagerfactory, final boolean useStreaming) {
         super(dispatcher, mailbox, entityManagerfactory);
         this.useStreaming = useStreaming;
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see org.apache.james.imap.jpa.JPAMailbox#createMailboxMapper(org.apache.james.imap.mailbox.MailboxSession)
-     */
-	protected JPAMailboxMapper createMailboxMapper(MailboxSession session) {	    	    
-        JPAMailboxMapper mapper = new JPAMailboxMapper(entityManagerFactory);
-
-        return mapper;
     }
 
     @Override

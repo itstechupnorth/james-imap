@@ -39,6 +39,7 @@ import org.apache.james.imap.mailbox.StorageException;
 import org.apache.james.imap.mailbox.util.MailboxEventDispatcher;
 import org.apache.james.imap.store.MailboxMembershipComparator;
 import org.apache.james.imap.store.StoreMailbox;
+import org.apache.james.imap.store.mail.MailboxMapper;
 import org.apache.james.imap.store.mail.MessageMapper;
 import org.apache.james.imap.store.mail.model.Header;
 import org.apache.james.imap.store.mail.model.Mailbox;
@@ -97,10 +98,6 @@ public class InMemoryStoreMailbox extends StoreMailbox<Long> implements MessageM
         return this;
     }
 
-    @Override
-    protected Mailbox<Long> getMailboxRow(MailboxSession session) throws MailboxException {
-        return mailbox;
-    }
 
     @Override
     protected Mailbox<Long> reserveNextUid(MailboxSession session) throws MailboxException {
@@ -257,4 +254,18 @@ public class InMemoryStoreMailbox extends StoreMailbox<Long> implements MessageM
     public MessageMapper<Long> getMessageMapperForRequest(MailboxSession session) throws MailboxException {
         return createMessageMapper(session);
     }
+
+
+    @Override
+    protected MailboxMapper<Long> createMailboxMapper(MailboxSession session) throws MailboxException {
+        return null;
+    }
+
+
+    @Override
+    protected Mailbox<Long> getMailboxRow(MailboxSession session) throws MailboxException {
+        return mailbox;
+    }
+
+    
 }

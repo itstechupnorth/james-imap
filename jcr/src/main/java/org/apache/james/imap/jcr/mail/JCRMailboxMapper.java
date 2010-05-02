@@ -238,29 +238,4 @@ public class JCRMailboxMapper extends AbstractJCRMapper implements MailboxMapper
             throw new StorageException(HumanReadableText.SAVE_FAILED, e);
         }
     }
-    
-    /**
-     * Consume the next uid for the {@link Mailbox} with the given uuid
-     * 
-     * @param uuid
-     * @return mailbox
-     * @throws StorageException
-     * @throws MailboxNotFoundException
-     */
-    public Mailbox<String> consumeNextUid(String uuid) throws StorageException, MailboxNotFoundException {
-
-        final JCRMailbox mailbox = (JCRMailbox) findMailboxById(uuid);
-        try {
-            execute(new Transaction() {
-                
-                public void run() throws MailboxException {
-                    mailbox.consumeUid();
-                }
-            });
-        } catch (MailboxException e) {
-            throw (StorageException)e;
-        }
-        return mailbox;
-
-    }
 }
