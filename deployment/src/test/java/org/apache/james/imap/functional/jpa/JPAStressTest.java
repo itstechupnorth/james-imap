@@ -18,29 +18,25 @@
  ****************************************************************/
 package org.apache.james.imap.functional.jpa;
 
-import java.io.ByteArrayInputStream;
-import java.util.Date;
 import java.util.HashMap;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.atomic.AtomicBoolean;
 
-import javax.mail.Flags;
 import javax.persistence.EntityManagerFactory;
 
 import org.apache.commons.logging.impl.SimpleLog;
+import org.apache.james.imap.functional.AbstractStressTest;
 import org.apache.james.imap.jpa.JPASubscriptionManager;
 import org.apache.james.imap.jpa.openjpa.OpenJPAMailboxManager;
-import org.apache.james.imap.mailbox.Mailbox;
 import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.MailboxSession;
+import org.apache.james.imap.store.StoreMailboxManager;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Test;
 
-public class JPAStressTest {
+/**
+ * Proof of bug https://issues.apache.org/jira/browse/IMAP-137
+ */
+public class JPAStressTest extends AbstractStressTest{
 
     
     private OpenJPAMailboxManager mailboxManager;
@@ -82,61 +78,10 @@ public class JPAStressTest {
         }
         session.close();
     }
-    /**
-     * Proof of bug https://issues.apache.org/jira/browse/IMAP-137
-     *
-     * @throws InterruptedException
-     * @throws MailboxException
-     */
-    @Test
-    public void testStessTest() throws InterruptedException, MailboxException {
-       
-        final CountDownLatch latch = new CountDownLatch(1000);
-        final ExecutorService pool = Executors.newFixedThreadPool(500);
-        
-        MailboxSession session = mailboxManager.createSystemSession("test", new SimpleLog("Test"));
-        mailboxManager.startProcessingRequest(session);
-        mailboxManager.createMailbox(OpenJPAMailboxManager.USER_NAMESPACE_PREFIX +".INBOX", session);
-        mailboxManager.endProcessingRequest(session);
-        mailboxManager.logout(session, false);
-        final AtomicBoolean fail = new AtomicBoolean(false);
-        
-        // fire of 1000 append operations
-        for (int i = 0 ; i < 1000; i++) {
-            pool.execute(new Runnable() {
-                
-                public void run() {
-                    if (fail.get()){
-                        latch.countDown();
-                        return;
-                    }
-                    
-                    MailboxSession session = mailboxManager.createSystemSession("test", new SimpleLog("Test"));
 
-                    try {
-                        mailboxManager.startProcessingRequest(session);
-                        Mailbox m = mailboxManager.getMailbox(OpenJPAMailboxManager.USER_NAMESPACE_PREFIX +".INBOX", session);
-                        
-                        System.out.println("Append message with uid=" + m.appendMessage(new ByteArrayInputStream("Subject: test\r\n\r\ntestmail".getBytes()), new Date(), session, false, new Flags()));
-                        mailboxManager.endProcessingRequest(session);
-                        mailboxManager.logout(session,false);
-                    } catch (MailboxException e) {
-                        e.printStackTrace();
-                        fail.set(true);
-                    } finally {
-                        latch.countDown();
-                    }
-                    
-                    
-                }
-            });
-        }
-        
-        latch.await();
-        
-        org.junit.Assert.assertFalse("Unable to append all messages",fail.get());
-        pool.shutdown();
-
-        
+    @Override
+    protected StoreMailboxManager<?> getMailboxManager() {
+        return mailboxManager;
     }
+   
 }
