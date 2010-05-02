@@ -19,7 +19,6 @@
 package org.apache.james.imap.jcr;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Locale;
 
 import javax.jcr.LoginException;
@@ -90,8 +89,6 @@ public class JCRMailboxManager extends StoreMailboxManager<String> implements JC
     protected MailboxMapper<String> createMailboxMapper(MailboxSession session) throws MailboxException {
 
         Session jcrSession = getSession(session);
-
-        JCRUtils.addJCRSession(session, jcrSession);
         
         JCRMailboxMapper mapper = new JCRMailboxMapper(jcrSession, getScaling(), getLog());
         return mapper;
@@ -165,24 +162,6 @@ public class JCRMailboxManager extends StoreMailboxManager<String> implements JC
      */
     protected Repository getRepository() {
         return repository;
-    }
-
-
-    /**
-     * Logout from all opened JCR Sessions
-     */
-    public void endProcessingRequest(MailboxSession session) {
-        List<Session> sessions = JCRUtils.getJCRSessions(session);
-        for (int i = 0 ; i < sessions.size(); i++) {
-            Session jcrSession = sessions.get(i);
-            if (jcrSession.isLive()) {
-                try {
-                    jcrSession.logout();
-                } catch (Exception e) {
-                    // just catch exceptions on logout
-                }
-            }
-        }
     }
     
     

@@ -50,4 +50,8 @@ public interface TransactionalMapper {
         public void run() throws MailboxException;
     }
 
+    /**
+     * Dispose the mapper
+     */
+    public void dispose();
 }

@@ -92,5 +92,10 @@ public abstract class AbstractJCRMapper extends AbstractTransactionalMapper impl
     protected void rollback() throws MailboxException {
         // no rollback supported by level 1 jcr
     }
+
+    public void dispose() {
+        session.logout();
+    }
+    
     
 }

@@ -105,9 +105,7 @@ public class JCRMailbox extends StoreMailbox<String>{
 
     @Override
     protected MessageMapper<String> createMessageMapper(MailboxSession session) throws MailboxException {
-        Session jcrSession = getSession(session);
-        JCRUtils.addJCRSession(session, jcrSession);
-        
+        Session jcrSession = getSession(session);        
         JCRMessageMapper messageMapper = new JCRMessageMapper(jcrSession, getMailboxId(), getScaling(), log);
         
         return messageMapper;
@@ -122,9 +120,7 @@ public class JCRMailbox extends StoreMailbox<String>{
      * @throws MailboxException
      */
     protected JCRMailboxMapper createMailboxMapper(MailboxSession session) throws MailboxException {
-        Session jcrSession = getSession(session);
-        JCRUtils.addJCRSession(session, jcrSession);
-        
+        Session jcrSession = getSession(session);        
         JCRMailboxMapper mapper = new JCRMailboxMapper(jcrSession, getScaling(), log);
         return mapper;
 

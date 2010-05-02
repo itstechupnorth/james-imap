@@ -246,4 +246,15 @@ public class InMemoryStoreMailbox extends StoreMailbox<Long> implements MessageM
     public void execute(Transaction transaction) throws MailboxException {
         transaction.run();
     }
+
+
+    public void dispose() {
+        // do nothing
+        
+    }
+    
+    
+    public MessageMapper<Long> getMessageMapperForRequest(MailboxSession session) throws MailboxException {
+        return createMessageMapper(session);
+    }
 }

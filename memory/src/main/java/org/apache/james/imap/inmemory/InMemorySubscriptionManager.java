@@ -174,4 +174,13 @@ public class InMemorySubscriptionManager extends StoreSubscriptionManager implem
     public void execute(Transaction transaction) throws MailboxException {
         transaction.run();
     }
+
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.store.transaction.TransactionalMapper#dispose()
+     */
+    public void dispose() {
+        // do nothing
+        
+    }
 }

@@ -65,6 +65,6 @@ public abstract class AbstractTransactionalMapper implements TransactionalMapper
      * @throws StorageException
      */
     protected abstract void rollback() throws MailboxException;
-
+    
 
 }

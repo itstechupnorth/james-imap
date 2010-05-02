@@ -20,8 +20,6 @@ package org.apache.james.imap.jcr;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.jcr.ItemExistsException;
 import javax.jcr.Node;
@@ -36,7 +34,6 @@ import javax.jcr.version.VersionException;
 
 import org.apache.jackrabbit.commons.cnd.CndImporter;
 import org.apache.jackrabbit.util.Text;
-import org.apache.james.imap.mailbox.MailboxSession;
 
 /**
  * Utilities used for JCR 
@@ -180,40 +177,6 @@ public class JCRUtils implements JCRImapConstants{
         return pathBuf.toString();
     }
 
-    /**
-     * Return a List of JCR Sessions for the given MailboxSession
-     * 
-     * @param session
-     * @return jcrSessionList
-     */
-    @SuppressWarnings("unchecked")
-    public static List<Session> getJCRSessions(MailboxSession session) {
-        List<Session> sessions = null;
-        if (session != null) {
-            sessions = (List<Session>) session.getAttributes().get(JCR_SESSIONS);
-        }
-        if (sessions == null) {
-            sessions = new ArrayList<Session>();
-        }
-        return sessions;
-    }
-
-	/**
-	 * Add the JCR Session to the MailboxSession
-	 * @param session
-	 * @param jcrSession
-	 */
-    @SuppressWarnings("unchecked")
-    public static void addJCRSession(MailboxSession session, Session jcrSession) {
-        if (session != null) {
-            List<Session> sessions = (List<Session>) session.getAttributes().get(JCR_SESSIONS); 
-            if (sessions == null) {
-                sessions = new ArrayList<Session>();
-            }
-            sessions.add(jcrSession);
-            session.getAttributes().put(JCR_SESSIONS, sessions); 
-        }
-    }
     
 
     /**

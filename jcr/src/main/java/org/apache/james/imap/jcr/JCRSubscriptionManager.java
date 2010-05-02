@@ -73,9 +73,7 @@ public class JCRSubscriptionManager extends StoreSubscriptionManager implements 
     
     @Override
     protected SubscriptionMapper createMapper(MailboxSession session) throws SubscriptionException {
-        Session jcrSession = getSession(session);
-        JCRUtils.addJCRSession(session, jcrSession);
-        
+        Session jcrSession = getSession(session);        
         
         JCRSubscriptionMapper mapper = new JCRSubscriptionMapper(jcrSession, getScaling(), logger);
 

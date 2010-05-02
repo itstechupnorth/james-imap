@@ -50,7 +50,7 @@ public abstract class JPAMailboxManager extends StoreMailboxManager<Long> {
     @Override
     protected void doCreate(String namespaceName, MailboxSession session) throws MailboxException {
         final Mailbox<Long> mailbox = new org.apache.james.imap.jpa.mail.model.JPAMailbox(namespaceName, randomUidValidity());
-        final MailboxMapper<Long> mapper = createMailboxMapper(session);
+        final MailboxMapper<Long> mapper = getMailboxMapperForRequest(session);
         mapper.execute(new TransactionalMapper.Transaction(){
 
             public void run() throws MailboxException {
@@ -66,8 +66,8 @@ public abstract class JPAMailboxManager extends StoreMailboxManager<Long> {
      * @param maibloxSession
      * @throws MailboxException
      */
-    public void deleteEverything(MailboxSession maibloxSession) throws MailboxException {
-        final MailboxMapper<Long> mapper = createMailboxMapper(maibloxSession);
+    public void deleteEverything(MailboxSession mailboxSession) throws MailboxException {
+        final MailboxMapper<Long> mapper = getMailboxMapperForRequest(mailboxSession);
         mapper.execute(new TransactionalMapper.Transaction() {
 
             public void run() throws MailboxException {

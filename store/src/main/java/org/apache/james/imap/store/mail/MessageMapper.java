@@ -29,7 +29,8 @@ import org.apache.james.imap.store.mail.model.MailboxMembership;
 import org.apache.james.imap.store.transaction.TransactionalMapper;
 
 /**
- * Maps {@link Document} in a {@link Mailbox}.
+ * Maps {@link Document} in a {@link Mailbox}. A {@link MessageMapper} has a lifecycle from the start of a request 
+ * to the end of the request.
  */
 public interface MessageMapper<Id> extends TransactionalMapper {
 

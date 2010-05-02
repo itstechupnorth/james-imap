@@ -46,6 +46,7 @@ import org.apache.james.imap.mailbox.MailboxMetaData.Selectability;
 import org.apache.james.imap.mailbox.util.MailboxEventDispatcher;
 import org.apache.james.imap.mailbox.util.SimpleMailboxMetaData;
 import org.apache.james.imap.store.mail.MailboxMapper;
+import org.apache.james.imap.store.mail.MessageMapper;
 import org.apache.james.imap.store.mail.model.Mailbox;
 import org.apache.james.imap.store.transaction.TransactionalMapper;
 
@@ -71,7 +72,7 @@ public abstract class StoreMailboxManager<Id> extends AbstractLogEnabled impleme
     private final DelegatingMailboxListener delegatingListener = new DelegatingMailboxListener();
     private final Authenticator authenticator;    
     private final Subscriber subscriber;    
-    
+    private final static String MAILBOX_MAPPER = "MAILBOX_MAPPER"; 
     private final char delimiter;
     
     public StoreMailboxManager(final Authenticator authenticator, final Subscriber subscriber) {
@@ -86,6 +87,22 @@ public abstract class StoreMailboxManager<Id> extends AbstractLogEnabled impleme
     }
 
     /**
+     * Return the {@link MailboxMapper} for the current Request. If none exists, it will get created lazy
+     * 
+     * @param session
+     * @return mapper
+     * @throws MailboxException
+     */
+    @SuppressWarnings("unchecked")
+    protected MailboxMapper<Id> getMailboxMapperForRequest(MailboxSession session) throws MailboxException {
+        MailboxMapper<Id> mapper = (MailboxMapper<Id>) session.getAttributes().get(MAILBOX_MAPPER);
+        if (mapper == null) {
+            mapper = createMailboxMapper(session);
+            session.getAttributes().put(MAILBOX_MAPPER, mapper);
+        }
+        return mapper;
+    }
+    /**
      * Create a StoreMailbox for the given Mailbox
      * 
      * @param mailboxRow
@@ -94,7 +111,7 @@ public abstract class StoreMailboxManager<Id> extends AbstractLogEnabled impleme
     protected abstract StoreMailbox<Id> createMailbox(MailboxEventDispatcher dispatcher, Mailbox<Id> mailboxRow);
     
     /**
-     * Create the MailboxMapper which should get used 
+     * Create the MailboxMapper
      * 
      * @return mailboxMapper
      */
@@ -127,7 +144,7 @@ public abstract class StoreMailboxManager<Id> extends AbstractLogEnabled impleme
      */
     private StoreMailbox<Id> doGetMailbox(String mailboxName, MailboxSession session) throws MailboxException {
         synchronized (mutex) {
-            final MailboxMapper<Id> mapper = createMailboxMapper(session);
+            final MailboxMapper<Id> mapper = getMailboxMapperForRequest(session);
             Mailbox<Id> mailboxRow = mapper.findMailboxByName(mailboxName);
             
             if (mailboxRow == null) {
@@ -196,7 +213,7 @@ public abstract class StoreMailboxManager<Id> extends AbstractLogEnabled impleme
         synchronized (mutex) {
             // TODO put this into a serilizable transaction
             
-            final MailboxMapper<Id> mapper = createMailboxMapper(session);
+            final MailboxMapper<Id> mapper = getMailboxMapperForRequest(session);
             
             mapper.execute(new TransactionalMapper.Transaction() {
 
@@ -227,7 +244,7 @@ public abstract class StoreMailboxManager<Id> extends AbstractLogEnabled impleme
                 throw new MailboxExistsException(to);
             }
 
-            final MailboxMapper<Id> mapper = createMailboxMapper(session);                
+            final MailboxMapper<Id> mapper = getMailboxMapperForRequest(session);                
             mapper.execute(new TransactionalMapper.Transaction() {
 
                 public void run() throws MailboxException {
@@ -313,7 +330,7 @@ public abstract class StoreMailboxManager<Id> extends AbstractLogEnabled impleme
                 delimiter).replace(freeWildcard, SQL_WILDCARD_CHAR)
                 .replace(localWildcard, SQL_WILDCARD_CHAR);
 
-        final MailboxMapper<Id> mapper = createMailboxMapper(session);
+        final MailboxMapper<Id> mapper = getMailboxMapperForRequest(session);
         final List<Mailbox<Id>> mailboxes = mapper.findMailboxWithNameLike(search);
         final List<MailboxMetaData> results = new ArrayList<MailboxMetaData>(mailboxes.size());
         for (Mailbox<Id> mailbox: mailboxes) {
@@ -353,7 +370,7 @@ public abstract class StoreMailboxManager<Id> extends AbstractLogEnabled impleme
      */
     public boolean mailboxExists(String mailboxName, MailboxSession session) throws MailboxException {
         synchronized (mutex) {
-            final MailboxMapper<Id> mapper = createMailboxMapper(session);
+            final MailboxMapper<Id> mapper = getMailboxMapperForRequest(session);
             final long count = mapper.countMailboxesWithName(mailboxName);
             if (count == 0) {
                 return false;
@@ -496,13 +513,21 @@ public abstract class StoreMailboxManager<Id> extends AbstractLogEnabled impleme
 
 
     /**
-     * End processing of Request for session. Default is to do nothing.
-     * 
-     * Implementations should override this if they need todo anything special
+     * End processing of Request for session. This will dispose all objects which belong to the current
+     * Request
      */
+    @SuppressWarnings("unchecked")
     public void endProcessingRequest(MailboxSession session) {
-        // Default do nothing
-        
+        if (session != null) {
+            // dispose mapper
+            MailboxMapper<Id> mapper = (MailboxMapper<Id>) session.getAttributes().remove(MAILBOX_MAPPER);
+            if (mapper != null)
+                mapper.dispose();
+
+            MessageMapper<Id> messageMapper = (MessageMapper<Id>) session.getAttributes().remove(StoreMailbox.MESSAGE_MAPPER);
+            if (messageMapper != null)
+                messageMapper.dispose();
+        }
     }
 
 

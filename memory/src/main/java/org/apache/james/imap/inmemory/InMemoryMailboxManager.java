@@ -208,5 +208,17 @@ public class InMemoryMailboxManager extends StoreMailboxManager<Long> implements
         storeMailboxByName.clear();
         idNameMap.clear();
     }
+
+    public void dispose() {
+        // do nothing
+        
+    }
+
+    @Override
+    protected MailboxMapper<Long> getMailboxMapperForRequest(MailboxSession session) throws MailboxException {
+        return createMailboxMapper(session);
+    }
+    
+    
     
 }

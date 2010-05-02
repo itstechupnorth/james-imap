@@ -18,6 +18,7 @@
  ****************************************************************/
 package org.apache.james.imap.jpa;
 
+
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
@@ -32,11 +33,10 @@ import org.apache.james.imap.store.transaction.AbstractTransactionalMapper;
  * JPA implementation of TransactionMapper. This class is not thread-safe!
  *
  */
-public class JPATransactionalMapper extends AbstractTransactionalMapper {
+public abstract class JPATransactionalMapper extends AbstractTransactionalMapper {
 
     private final EntityManagerFactory factory;
     private EntityManager entityManager;
-    
     public JPATransactionalMapper(final EntityManagerFactory factory) {
         this.factory = factory;
     }
@@ -72,7 +72,6 @@ public class JPATransactionalMapper extends AbstractTransactionalMapper {
     protected void commit() throws MailboxException {
         try {
             getManager().getTransaction().commit();
-            getManager().close();
         } catch (PersistenceException e) {
             throw new StorageException(HumanReadableText.COMMIT_TRANSACTION_FAILED, e);
         }
@@ -87,6 +86,16 @@ public class JPATransactionalMapper extends AbstractTransactionalMapper {
         // check if we have a transaction to rollback
         if (transaction.isActive()) {
             getManager().getTransaction().rollback();
+        }
+    }
+    
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.store.transaction.TransactionalMapper#dispose()
+     */
+    public void dispose() {
+        if (entityManager != null && entityManager.isOpen()) {
+            entityManager.close();
         }
     }
 

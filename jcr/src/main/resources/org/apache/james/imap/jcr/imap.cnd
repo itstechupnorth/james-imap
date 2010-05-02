@@ -54,7 +54,7 @@
     + mailboxMemberships (imap:mailboxMemberships) 
  
 [imap:mailboxMembership] >  mix:referenceable, nt:base
-    - imap:mailboxUUID (REFERENCE) mandatory < 'imap:mailbox'
+    - imap:mailboxUUID (String) mandatory
     - imap:uid (LONG) mandatory
     - imap:size (LONG) mandatory
     - imap:answered (BOOLEAN) mandatory
