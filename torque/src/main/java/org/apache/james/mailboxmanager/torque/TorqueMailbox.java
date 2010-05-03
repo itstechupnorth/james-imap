@@ -58,7 +58,6 @@ import org.apache.james.imap.mailbox.MessageResult.FetchGroup;
 import org.apache.james.imap.mailbox.SearchQuery.Criterion;
 import org.apache.james.imap.mailbox.SearchQuery.NumericRange;
 import org.apache.james.imap.mailbox.util.FetchGroupImpl;
-import org.apache.james.imap.mailbox.util.UidChangeTracker;
 import org.apache.james.imap.mailbox.util.UidRange;
 import org.apache.james.imap.store.CRLFOutputStream;
 import org.apache.james.mailboxmanager.torque.om.MailboxRow;

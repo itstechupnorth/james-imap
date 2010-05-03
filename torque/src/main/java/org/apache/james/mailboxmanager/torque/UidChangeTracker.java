@@ -17,7 +17,7 @@
  * under the License.                                           *
  ****************************************************************/
 
-package org.apache.james.imap.mailbox.util;
+package org.apache.james.mailboxmanager.torque;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -33,6 +33,8 @@ import javax.mail.Flags;
 import org.apache.james.imap.mailbox.Constants;
 import org.apache.james.imap.mailbox.Mailbox;
 import org.apache.james.imap.mailbox.MailboxListener;
+import org.apache.james.imap.mailbox.util.MailboxEventDispatcher;
+import org.apache.james.imap.mailbox.util.UidRange;
 
 public class UidChangeTracker implements Constants {
 
