@@ -19,8 +19,6 @@
 package org.apache.james.imap.jpa;
 
 
-import javax.persistence.EntityManagerFactory;
-
 import org.apache.james.imap.jpa.mail.JPAMailboxMapper;
 import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.MailboxSession;
@@ -39,9 +37,9 @@ import org.apache.james.imap.store.transaction.TransactionalMapper;
  */
 public abstract class JPAMailboxManager extends StoreMailboxManager<Long> {
 
-    protected final EntityManagerFactory entityManagerFactory;
+    protected final MailboxSessionEntityManagerFactory entityManagerFactory;
     public JPAMailboxManager(final Authenticator authenticator, final Subscriber subscriber, 
-            final EntityManagerFactory entityManagerFactory) {
+            final MailboxSessionEntityManagerFactory entityManagerFactory) {
         super(authenticator, subscriber);
         this.entityManagerFactory = entityManagerFactory;
     }
@@ -50,7 +48,7 @@ public abstract class JPAMailboxManager extends StoreMailboxManager<Long> {
     @Override
     protected void doCreate(String namespaceName, MailboxSession session) throws MailboxException {
         final Mailbox<Long> mailbox = new org.apache.james.imap.jpa.mail.model.JPAMailbox(namespaceName, randomUidValidity());
-        final MailboxMapper<Long> mapper = getMailboxMapperForRequest(session);
+        final MailboxMapper<Long> mapper = createMailboxMapper(session);
         mapper.execute(new TransactionalMapper.Transaction(){
 
             public void run() throws MailboxException {
@@ -67,7 +65,7 @@ public abstract class JPAMailboxManager extends StoreMailboxManager<Long> {
      * @throws MailboxException
      */
     public void deleteEverything(MailboxSession mailboxSession) throws MailboxException {
-        final MailboxMapper<Long> mapper = getMailboxMapperForRequest(mailboxSession);
+        final MailboxMapper<Long> mapper = createMailboxMapper(mailboxSession);
         mapper.execute(new TransactionalMapper.Transaction() {
 
             public void run() throws MailboxException {
@@ -78,10 +76,15 @@ public abstract class JPAMailboxManager extends StoreMailboxManager<Long> {
     }
 
     
-    
+    @Override
+    public void endProcessingRequest(MailboxSession session) {
+        entityManagerFactory.closeEntityManager(session);
+    }
+
+
     @Override
     protected MailboxMapper<Long> createMailboxMapper(MailboxSession session) {
-        return new JPAMailboxMapper(entityManagerFactory);
+        return new JPAMailboxMapper(entityManagerFactory.createEntityManager(session));
     }
 
     

@@ -35,10 +35,9 @@ import org.apache.james.imap.store.transaction.AbstractTransactionalMapper;
  */
 public abstract class JPATransactionalMapper extends AbstractTransactionalMapper {
 
-    private final EntityManagerFactory factory;
     private EntityManager entityManager;
-    public JPATransactionalMapper(final EntityManagerFactory factory) {
-        this.factory = factory;
+    public JPATransactionalMapper(final EntityManager entityManager) {
+        this.entityManager = entityManager;
     }
 
     /**
@@ -47,9 +46,6 @@ public abstract class JPATransactionalMapper extends AbstractTransactionalMapper
      * @return entitymanger
      */
     protected EntityManager getManager() {
-        if (entityManager == null || entityManager.isOpen() == false) {
-            entityManager = factory.createEntityManager();
-        }
         return entityManager;
     }
 
@@ -89,14 +85,5 @@ public abstract class JPATransactionalMapper extends AbstractTransactionalMapper
         }
     }
     
-    /*
-     * (non-Javadoc)
-     * @see org.apache.james.imap.store.transaction.TransactionalMapper#dispose()
-     */
-    public void dispose() {
-        if (entityManager != null && entityManager.isOpen()) {
-            entityManager.close();
-        }
-    }
 
 }

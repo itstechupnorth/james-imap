@@ -27,9 +27,10 @@ import org.apache.jackrabbit.core.config.RepositoryConfig;
 import org.apache.james.imap.encode.main.DefaultImapEncoderFactory;
 import org.apache.james.imap.functional.ImapHostSystem;
 import org.apache.james.imap.functional.InMemoryUserManager;
-import org.apache.james.imap.jcr.JCRGlobalUserMailboxManager;
-import org.apache.james.imap.jcr.JCRGlobalUserSubscriptionManager;
+import org.apache.james.imap.jcr.GlobalMailboxSessionJCRRepository;
 import org.apache.james.imap.jcr.JCRImapConstants;
+import org.apache.james.imap.jcr.JCRMailboxManager;
+import org.apache.james.imap.jcr.JCRSubscriptionManager;
 import org.apache.james.imap.jcr.JCRUtils;
 import org.apache.james.imap.mailbox.MailboxSession;
 import org.apache.james.imap.main.DefaultImapDecoderFactory;
@@ -43,7 +44,7 @@ public class JCRHostSystem extends ImapHostSystem{
         return new JCRHostSystem();
     }
     
-    private final JCRGlobalUserMailboxManager mailboxManager;
+    private final JCRMailboxManager mailboxManager;
     private final InMemoryUserManager userManager; 
 
     private static final String JACKRABBIT_HOME = "deployment/target/jackrabbit";
@@ -61,7 +62,7 @@ public class JCRHostSystem extends ImapHostSystem{
             String workspace = null;
             RepositoryConfig config = RepositoryConfig.create(new InputSource(this.getClass().getClassLoader().getResourceAsStream("test-repository.xml")), JACKRABBIT_HOME);
             repository =  RepositoryImpl.create(config);
-
+            GlobalMailboxSessionJCRRepository sessionRepos = new GlobalMailboxSessionJCRRepository(repository, workspace, user, pass);
             
             // Register imap cnd file
             JCRUtils.registerCnd(repository, workspace, user, pass);
@@ -69,13 +70,13 @@ public class JCRHostSystem extends ImapHostSystem{
             userManager = new InMemoryUserManager();
 
             //TODO: Fix the scaling stuff so the tests will pass with max scaling too
-            mailboxManager = new JCRGlobalUserMailboxManager(userManager, new JCRGlobalUserSubscriptionManager(repository, workspace, user, pass, JCRImapConstants.MIN_SCALING), repository, workspace, user, pass, JCRImapConstants.MIN_SCALING);
+            mailboxManager = new JCRMailboxManager(userManager, new JCRSubscriptionManager(sessionRepos, JCRImapConstants.MIN_SCALING), sessionRepos, JCRImapConstants.MIN_SCALING);
 
             final DefaultImapProcessorFactory defaultImapProcessorFactory = new DefaultImapProcessorFactory();
             resetUserMetaData();
             MailboxSession session = mailboxManager.createSystemSession("test", new SimpleLog("TestLog"));
             mailboxManager.startProcessingRequest(session);
-            mailboxManager.deleteEverything(session);
+            //mailboxManager.deleteEverything(session);
             mailboxManager.endProcessingRequest(session);
             mailboxManager.logout(session, false);
             

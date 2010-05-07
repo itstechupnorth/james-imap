@@ -23,25 +23,17 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import javax.jcr.LoginException;
-import javax.jcr.NoSuchWorkspaceException;
-import javax.jcr.Repository;
-import javax.jcr.RepositoryException;
 import javax.jcr.Session;
-import javax.jcr.SimpleCredentials;
 import javax.mail.Flags;
 
 import org.apache.commons.logging.Log;
-import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.jcr.mail.JCRMailboxMapper;
 import org.apache.james.imap.jcr.mail.JCRMessageMapper;
 import org.apache.james.imap.jcr.mail.model.JCRHeader;
 import org.apache.james.imap.jcr.mail.model.JCRMailboxMembership;
 import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.MailboxSession;
-import org.apache.james.imap.mailbox.SubscriptionException;
 import org.apache.james.imap.mailbox.util.MailboxEventDispatcher;
-import org.apache.james.imap.store.PasswordAwareUser;
 import org.apache.james.imap.store.StoreMailbox;
 import org.apache.james.imap.store.mail.MailboxMapper;
 import org.apache.james.imap.store.mail.MessageMapper;
@@ -57,17 +49,15 @@ import org.apache.james.imap.store.transaction.TransactionalMapper;
  */
 public class JCRMailbox extends StoreMailbox<String>{
 
-    private final Repository repository;
-    private final String workspace;
+    private final Session jcrSession;
     private final Log log;
     private final int scaling;
 
-    public JCRMailbox(final MailboxEventDispatcher dispatcher, final org.apache.james.imap.jcr.mail.model.JCRMailbox mailbox, final Repository repository, final String workspace, final int scaling, final Log log) {
+    public JCRMailbox(final MailboxEventDispatcher dispatcher, final org.apache.james.imap.jcr.mail.model.JCRMailbox mailbox, final Session jcrSession, final int scaling, final Log log) {
         super(dispatcher, mailbox);
-        this.repository = repository;
-        this.workspace = workspace;
         this.log = log;
         this.scaling = scaling;
+        this.jcrSession = jcrSession;
         
     }
 
@@ -107,7 +97,6 @@ public class JCRMailbox extends StoreMailbox<String>{
 
     @Override
     protected MessageMapper<String> createMessageMapper(MailboxSession session) throws MailboxException {
-        Session jcrSession = getSession(session);        
         JCRMessageMapper messageMapper = new JCRMessageMapper(jcrSession, getMailboxId(), getScaling(), log);
         
         return messageMapper;
@@ -123,7 +112,6 @@ public class JCRMailbox extends StoreMailbox<String>{
      * @throws MailboxException
      */
     protected JCRMailboxMapper createMailboxMapper(MailboxSession session) throws MailboxException {
-        Session jcrSession = getSession(session);        
         JCRMailboxMapper mapper = new JCRMailboxMapper(jcrSession, getScaling(), log);
         return mapper;
 
@@ -131,7 +119,7 @@ public class JCRMailbox extends StoreMailbox<String>{
 
     @Override
     protected Mailbox<String> reserveNextUid(MailboxSession session) throws MailboxException {
-        final MailboxMapper<String> mapper = getMailboxMapperForRequest(session);
+        final MailboxMapper<String> mapper = createMailboxMapper(session);
         final org.apache.james.imap.jcr.mail.model.JCRMailbox mailbox = (org.apache.james.imap.jcr.mail.model.JCRMailbox) mapper.findMailboxById(getMailboxId());
         mapper.execute(new TransactionalMapper.Transaction() {
 
@@ -142,45 +130,4 @@ public class JCRMailbox extends StoreMailbox<String>{
         });
         return mailbox;
     }
-
-    /**
-     * Return a new JCR Session for the given MailboxSession
-     * 
-     * @param s
-     * @return session
-     * @throws MailboxException
-     */
-    protected Session getSession(MailboxSession session) throws SubscriptionException {
-        PasswordAwareUser user = (PasswordAwareUser) session.getUser();
-
-        try {
-            return repository.login(new SimpleCredentials(user.getUserName(), user.getPassword().toCharArray()), getWorkspace());
-        } catch (LoginException e) {
-            throw new SubscriptionException(HumanReadableText.INVALID_LOGIN, e);
-        } catch (NoSuchWorkspaceException e) {
-            throw new SubscriptionException(HumanReadableText.GENERIC_FAILURE_DURING_PROCESSING, e);
-        } catch (RepositoryException e) {
-            throw new SubscriptionException(HumanReadableText.GENERIC_FAILURE_DURING_PROCESSING, e);
-
-        }
-    }
-
-    /**
-     * Return the JCR workspace
-     * 
-     * @return workspace
-     */
-    protected String getWorkspace() {
-        return workspace;
-    }
-
-    /**
-     * Return JCR Repository
-     * 
-     * @return repository
-     */
-    protected Repository getRepository() {
-        return repository;
-    }
-
 }

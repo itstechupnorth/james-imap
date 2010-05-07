@@ -19,9 +19,10 @@
 
 package org.apache.james.imap.jpa.openjpa;
 
-import javax.persistence.EntityManagerFactory;
 
 import org.apache.james.imap.jpa.JPAMailboxManager;
+import org.apache.james.imap.jpa.MailboxSessionEntityManagerFactory;
+import org.apache.james.imap.mailbox.MailboxSession;
 import org.apache.james.imap.mailbox.util.MailboxEventDispatcher;
 import org.apache.james.imap.store.Authenticator;
 import org.apache.james.imap.store.StoreMailbox;
@@ -36,17 +37,17 @@ public class OpenJPAMailboxManager extends JPAMailboxManager {
 
     private boolean useStreaming;
 
-    public OpenJPAMailboxManager(Authenticator authenticator, Subscriber subscriber, EntityManagerFactory entityManagerFactory, boolean useStreaming) {
+    public OpenJPAMailboxManager(Authenticator authenticator, Subscriber subscriber, MailboxSessionEntityManagerFactory entityManagerFactory, boolean useStreaming) {
         super(authenticator, subscriber, entityManagerFactory);
         this.useStreaming = useStreaming;
     }
 
-    public OpenJPAMailboxManager(Authenticator authenticator, Subscriber subscriber, EntityManagerFactory entityManagerFactory) {
+    public OpenJPAMailboxManager(Authenticator authenticator, Subscriber subscriber, MailboxSessionEntityManagerFactory entityManagerFactory) {
         this(authenticator, subscriber, entityManagerFactory, false);
     }
 
-    protected StoreMailbox<Long> createMailbox(MailboxEventDispatcher dispatcher, Mailbox<Long> mailboxRow) {
-        StoreMailbox<Long> result =  new OpenJPAMailbox(dispatcher,mailboxRow, entityManagerFactory, useStreaming);
+    protected StoreMailbox<Long> createMailbox(MailboxEventDispatcher dispatcher, Mailbox<Long> mailboxRow, MailboxSession session) {
+        StoreMailbox<Long> result =  new OpenJPAMailbox(dispatcher,mailboxRow, entityManagerFactory.createEntityManager(session), useStreaming);
         return result;
     }
 }

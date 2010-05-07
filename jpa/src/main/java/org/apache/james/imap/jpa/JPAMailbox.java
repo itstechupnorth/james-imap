@@ -24,7 +24,7 @@ import java.util.Date;
 import java.util.List;
 
 import javax.mail.Flags;
-import javax.persistence.EntityManagerFactory;
+import javax.persistence.EntityManager;
 
 import org.apache.james.imap.jpa.mail.JPAMailboxMapper;
 import org.apache.james.imap.jpa.mail.JPAMessageMapper;
@@ -49,11 +49,11 @@ import org.apache.james.imap.store.mail.model.PropertyBuilder;
  */
 public abstract class JPAMailbox extends StoreMailbox<Long> {
 
-    protected final EntityManagerFactory entityManagerFactory;
+    protected final EntityManager manager;
     
-    public JPAMailbox(final MailboxEventDispatcher dispatcher, final Mailbox<Long> mailbox, final EntityManagerFactory entityManagerfactory) {
+    public JPAMailbox(final MailboxEventDispatcher dispatcher, final Mailbox<Long> mailbox, final EntityManager manager) {
         super(dispatcher, mailbox);
-        this.entityManagerFactory = entityManagerfactory;        
+        this.manager = manager;        
     }  
 
 
@@ -61,7 +61,7 @@ public abstract class JPAMailbox extends StoreMailbox<Long> {
     
     @Override
     protected MessageMapper<Long> createMessageMapper(MailboxSession session) {                
-        JPAMessageMapper mapper = new JPAMessageMapper(entityManagerFactory, getMailboxId());
+        JPAMessageMapper mapper = new JPAMessageMapper(manager, getMailboxId());
        
         return mapper;
     }
@@ -96,7 +96,7 @@ public abstract class JPAMailbox extends StoreMailbox<Long> {
 
     @Override
     protected MailboxMapper<Long> createMailboxMapper(MailboxSession session) {
-        return new JPAMailboxMapper(entityManagerFactory);
+        return new JPAMailboxMapper(manager);
     }
     
     

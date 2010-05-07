@@ -18,22 +18,16 @@
  ****************************************************************/
 package org.apache.james.imap.jcr;
 
-import javax.jcr.LoginException;
-import javax.jcr.NoSuchWorkspaceException;
-import javax.jcr.Repository;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
-import javax.jcr.SimpleCredentials;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.jcr.user.JCRSubscriptionMapper;
 import org.apache.james.imap.jcr.user.model.JCRSubscription;
-import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.MailboxSession;
 import org.apache.james.imap.mailbox.SubscriptionException;
-import org.apache.james.imap.store.PasswordAwareUser;
 import org.apache.james.imap.store.StoreSubscriptionManager;
 import org.apache.james.imap.store.user.SubscriptionMapper;
 import org.apache.james.imap.store.user.model.Subscription;
@@ -45,20 +39,18 @@ import org.apache.james.imap.store.user.model.Subscription;
  */
 public class JCRSubscriptionManager extends StoreSubscriptionManager implements JCRImapConstants{
     private final Log logger = LogFactory.getLog(JCRSubscriptionManager.class);
-    private final Repository repository;
-    private final String workspace;
+    private final MailboxSessionJCRRepository repository;
     private final int scaling;
 
-    public JCRSubscriptionManager(final Repository repository, final String workspace, final int scaling) {
+    public JCRSubscriptionManager(final MailboxSessionJCRRepository repository, final int scaling) {
         super();
         this.scaling = scaling;
-        this.workspace = workspace;
         this.repository = repository;
     }
 
 
-    public JCRSubscriptionManager(final Repository repository, final String workspace) {
-        this(repository, workspace, MIN_SCALING);
+    public JCRSubscriptionManager(final MailboxSessionJCRRepository repository ) {
+        this(repository, MIN_SCALING);
     }
     
 
@@ -73,55 +65,20 @@ public class JCRSubscriptionManager extends StoreSubscriptionManager implements 
     
     @Override
     protected SubscriptionMapper createMapper(MailboxSession session) throws SubscriptionException {
-        Session jcrSession = getSession(session);        
-        
-        JCRSubscriptionMapper mapper = new JCRSubscriptionMapper(jcrSession, getScaling(), logger);
+        try {
+            Session jcrSession = repository.login(session);
+            JCRSubscriptionMapper mapper = new JCRSubscriptionMapper(jcrSession, getScaling(), logger);
 
-        return mapper;
+            return mapper;
+        } catch (RepositoryException e) {
+            throw new SubscriptionException(HumanReadableText.GENERIC_SUBSCRIPTION_FAILURE, e);
+        }        
+        
+      
     }
 
     @Override
     protected Subscription createSubscription(MailboxSession session, String mailbox) {
         return new JCRSubscription(session.getUser().getUserName(), mailbox, logger);
-    }
-
-    /**
-     * Return a new JCR Session for the given MailboxSession
-     * 
-     * @param s
-     * @return session
-     * @throws MailboxException
-     */
-    protected Session getSession(MailboxSession session) throws SubscriptionException {
-        PasswordAwareUser user = (PasswordAwareUser) session.getUser();
-
-        try {
-            return repository.login(new SimpleCredentials(user.getUserName(), user.getPassword().toCharArray()), getWorkspace());
-        } catch (LoginException e) {
-            throw new SubscriptionException(HumanReadableText.INVALID_LOGIN, e);
-        } catch (NoSuchWorkspaceException e) {
-            throw new SubscriptionException(HumanReadableText.GENERIC_FAILURE_DURING_PROCESSING, e);
-        } catch (RepositoryException e) {
-            throw new SubscriptionException(HumanReadableText.GENERIC_FAILURE_DURING_PROCESSING, e);
-
-        }
-    }
-
-    /**
-     * Return the JCR workspace
-     * 
-     * @return workspace
-     */
-    protected String getWorkspace() {
-        return workspace;
-    }
-
-    /**
-     * Return the JCR Repository 
-     * 
-     * @return repository
-     */
-    protected Repository getRepository() {
-        return repository;
     }
 }

@@ -20,7 +20,7 @@ package org.apache.james.imap.jpa.mail;
 
 import java.util.List;
 
-import javax.persistence.EntityManagerFactory;
+import javax.persistence.EntityManager;
 import javax.persistence.PersistenceException;
 
 import org.apache.james.imap.api.display.HumanReadableText;
@@ -43,7 +43,7 @@ public class JPAMessageMapper extends JPATransactionalMapper implements MessageM
 
     private final long mailboxId;
     
-    public JPAMessageMapper(final EntityManagerFactory factory, final long mailboxId) {
+    public JPAMessageMapper(final EntityManager factory, final long mailboxId) {
         super(factory);
         this.mailboxId = mailboxId;
     }

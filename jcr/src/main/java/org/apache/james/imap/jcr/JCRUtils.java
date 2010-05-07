@@ -41,10 +41,6 @@ import org.apache.jackrabbit.util.Text;
  */
 public class JCRUtils implements JCRImapConstants{
 
-    /**
-     * Identifier of stored JCR Session
-     */
-    public final static String JCR_SESSIONS = "JCR_SESSIONS";
 
     
     /**

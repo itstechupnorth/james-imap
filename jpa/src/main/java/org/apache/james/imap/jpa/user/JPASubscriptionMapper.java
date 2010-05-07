@@ -20,7 +20,7 @@ package org.apache.james.imap.jpa.user;
 
 import java.util.List;
 
-import javax.persistence.EntityManagerFactory;
+import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceException;
 
@@ -35,7 +35,7 @@ import org.apache.james.imap.store.user.model.Subscription;
  */
 public class JPASubscriptionMapper extends JPATransactionalMapper implements SubscriptionMapper {
 
-    public JPASubscriptionMapper(final EntityManagerFactory factory) {
+    public JPASubscriptionMapper(final EntityManager factory) {
         super(factory);
     }
 

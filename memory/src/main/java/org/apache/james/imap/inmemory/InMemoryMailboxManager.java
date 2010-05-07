@@ -53,7 +53,7 @@ public class InMemoryMailboxManager extends StoreMailboxManager<Long> implements
     }
 
     @Override
-    protected StoreMailbox<Long> createMailbox(MailboxEventDispatcher dispatcher, Mailbox<Long> mailboxRow) {
+    protected StoreMailbox<Long> createMailbox(MailboxEventDispatcher dispatcher, Mailbox<Long> mailboxRow, MailboxSession session) {
         InMemoryStoreMailbox storeMailbox = storeMailboxByName.get(mailboxRow.getName());
         if (storeMailbox == null) {
             storeMailbox = new InMemoryStoreMailbox(dispatcher, (InMemoryMailbox)mailboxRow);
@@ -209,16 +209,5 @@ public class InMemoryMailboxManager extends StoreMailboxManager<Long> implements
         idNameMap.clear();
     }
 
-    public void dispose() {
-        // do nothing
-        
-    }
-
-    @Override
-    protected MailboxMapper<Long> getMailboxMapperForRequest(MailboxSession session) throws MailboxException {
-        return createMailboxMapper(session);
-    }
-    
-    
     
 }

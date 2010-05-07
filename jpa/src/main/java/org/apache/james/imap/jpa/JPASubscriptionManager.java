@@ -18,8 +18,6 @@
  ****************************************************************/
 package org.apache.james.imap.jpa;
 
-import javax.persistence.EntityManagerFactory;
-
 import org.apache.james.imap.jpa.user.JPASubscriptionMapper;
 import org.apache.james.imap.jpa.user.model.JPASubscription;
 import org.apache.james.imap.mailbox.MailboxSession;
@@ -33,9 +31,9 @@ import org.apache.james.imap.store.user.model.Subscription;
  *
  */
 public class JPASubscriptionManager extends StoreSubscriptionManager {
-    private final EntityManagerFactory factory;
+    private final MailboxSessionEntityManagerFactory factory;
     
-    public JPASubscriptionManager(final EntityManagerFactory factory) {
+    public JPASubscriptionManager(final MailboxSessionEntityManagerFactory factory) {
         super();
         this.factory = factory;
     }
@@ -45,7 +43,7 @@ public class JPASubscriptionManager extends StoreSubscriptionManager {
      * @see org.apache.james.imap.store.StoreSubscriptionManager#createMapper(org.apache.james.imap.mailbox.MailboxSession)
      */
     protected SubscriptionMapper createMapper(MailboxSession session) {                
-        JPASubscriptionMapper  mapper = new JPASubscriptionMapper(factory);
+        JPASubscriptionMapper  mapper = new JPASubscriptionMapper(factory.createEntityManager(session));
         
         return mapper;
     }

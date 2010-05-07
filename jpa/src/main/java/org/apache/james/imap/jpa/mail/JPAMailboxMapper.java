@@ -21,7 +21,7 @@ package org.apache.james.imap.jpa.mail;
 
 import java.util.List;
 
-import javax.persistence.EntityManagerFactory;
+import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceException;
 
@@ -40,7 +40,7 @@ public class JPAMailboxMapper extends JPATransactionalMapper implements MailboxM
 
     private static final char SQL_WILDCARD_CHAR = '%';
     
-    public JPAMailboxMapper(EntityManagerFactory factory) {
+    public JPAMailboxMapper(EntityManager factory) {
         super(factory);
     }
 

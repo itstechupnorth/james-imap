@@ -21,12 +21,8 @@ package org.apache.james.imap.jcr;
 import java.util.ArrayList;
 import java.util.Locale;
 
-import javax.jcr.LoginException;
-import javax.jcr.NoSuchWorkspaceException;
-import javax.jcr.Repository;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
-import javax.jcr.SimpleCredentials;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -38,7 +34,6 @@ import org.apache.james.imap.mailbox.MailboxSession;
 import org.apache.james.imap.mailbox.util.MailboxEventDispatcher;
 import org.apache.james.imap.store.Authenticator;
 import org.apache.james.imap.store.PasswordAwareMailboxSession;
-import org.apache.james.imap.store.PasswordAwareUser;
 import org.apache.james.imap.store.StoreMailbox;
 import org.apache.james.imap.store.StoreMailboxManager;
 import org.apache.james.imap.store.Subscriber;
@@ -53,21 +48,19 @@ import org.apache.james.imap.store.transaction.TransactionalMapper;
  */
 public class JCRMailboxManager extends StoreMailboxManager<String> implements JCRImapConstants{
 
-    private final Repository repository;
-    private final String workspace;
+    private final MailboxSessionJCRRepository repository;
     private final Log logger = LogFactory.getLog(JCRMailboxManager.class);
     private final int scaling;
     
-    public JCRMailboxManager(final Authenticator authenticator, final Subscriber subscriber, final Repository repository, final String workspace, final int scaling) {
+    public JCRMailboxManager(final Authenticator authenticator, final Subscriber subscriber, final MailboxSessionJCRRepository repository, final int scaling) {
         super(authenticator, subscriber);
         this.repository = repository;
-        this.workspace = workspace;
         this.scaling = scaling;
     }
 
     
-    public JCRMailboxManager(final Authenticator authenticator, final Subscriber subscriber, final Repository repository, final String workspace) {
-        this(authenticator, subscriber, repository, workspace, MIN_SCALING);
+    public JCRMailboxManager(final Authenticator authenticator, final Subscriber subscriber, final MailboxSessionJCRRepository repository) {
+        this(authenticator, subscriber, repository, MIN_SCALING);
     }
     
     /**
@@ -80,41 +73,25 @@ public class JCRMailboxManager extends StoreMailboxManager<String> implements JC
     }
     
     @Override
-    protected StoreMailbox<String> createMailbox(MailboxEventDispatcher dispatcher, Mailbox<String> mailboxRow) {
-        JCRMailbox mailbox = new JCRMailbox(dispatcher, (org.apache.james.imap.jcr.mail.model.JCRMailbox) mailboxRow, getRepository(), getWorkspace(), getScaling(), getLog());
-        return mailbox;
+    protected StoreMailbox<String> createMailbox(MailboxEventDispatcher dispatcher, Mailbox<String> mailboxRow, MailboxSession session) throws MailboxException{
+        try {
+            return new JCRMailbox(dispatcher, (org.apache.james.imap.jcr.mail.model.JCRMailbox) mailboxRow, repository.login(session), getScaling(), getLog());
+        } catch (RepositoryException e) {
+            throw new MailboxException(HumanReadableText.GENERIC_FAILURE_DURING_PROCESSING, e);
+        }
     }
 
     @Override
     protected MailboxMapper<String> createMailboxMapper(MailboxSession session) throws MailboxException {
 
-        Session jcrSession = getSession(session);
-        
-        JCRMailboxMapper mapper = new JCRMailboxMapper(jcrSession, getScaling(), getLog());
-        return mapper;
-
-    }
-
-    /**
-     * Return a new JCR Session for the given MailboxSession
-     * 
-     * @param s
-     * @return session
-     * @throws MailboxException
-     */
-    protected Session getSession(MailboxSession s) throws MailboxException {
-        PasswordAwareUser user = (PasswordAwareUser) s.getUser();
         try {
-            Session session =  repository.login(new SimpleCredentials(user.getUserName(), user.getPassword().toCharArray()), getWorkspace());
-            return session;
-        } catch (LoginException e) {
-            throw new MailboxException(HumanReadableText.INVALID_LOGIN, e);
-        } catch (NoSuchWorkspaceException e) {
-            throw new MailboxException(HumanReadableText.GENERIC_FAILURE_DURING_PROCESSING, e);
+            Session jcrSession = repository.login(session);
+            JCRMailboxMapper mapper = new JCRMailboxMapper(jcrSession, getScaling(), getLog());
+            return mapper;
         } catch (RepositoryException e) {
             throw new MailboxException(HumanReadableText.GENERIC_FAILURE_DURING_PROCESSING, e);
-
         }
+        
     }
 
     @Override
@@ -143,26 +120,4 @@ public class JCRMailboxManager extends StoreMailboxManager<String> implements JC
             throw new BadCredentialsException();
         }
     }
-    
-    
-    
-    /**
-     * Return the JCR workspace
-     * 
-     * @return workspace
-     */
-    protected String getWorkspace() {
-        return workspace;
-    }
-
-    /**
-     * Get the JCR Repository
-     * 
-     * @return repository
-     */
-    protected Repository getRepository() {
-        return repository;
-    }
-    
-    
 }

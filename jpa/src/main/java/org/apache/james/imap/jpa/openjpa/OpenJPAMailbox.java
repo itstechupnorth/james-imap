@@ -25,7 +25,7 @@ import java.util.Date;
 import java.util.List;
 
 import javax.mail.Flags;
-import javax.persistence.EntityManagerFactory;
+import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
 import javax.persistence.Query;
 
@@ -40,8 +40,6 @@ import org.apache.james.imap.store.mail.model.Header;
 import org.apache.james.imap.store.mail.model.Mailbox;
 import org.apache.james.imap.store.mail.model.MailboxMembership;
 import org.apache.james.imap.store.mail.model.PropertyBuilder;
-import org.apache.openjpa.persistence.OpenJPAEntityManager;
-import org.apache.openjpa.persistence.OpenJPAPersistence;
 
 /**
  * OpenJPA implementation of Mailbox
@@ -50,12 +48,12 @@ import org.apache.openjpa.persistence.OpenJPAPersistence;
 public class OpenJPAMailbox extends JPAMailbox{
 
     private final boolean useStreaming;
-    public OpenJPAMailbox(MailboxEventDispatcher dispatcher, Mailbox<Long> mailbox,  EntityManagerFactory entityManagerfactory) {
-		this(dispatcher, mailbox, entityManagerfactory, false);
+    public OpenJPAMailbox(MailboxEventDispatcher dispatcher, Mailbox<Long> mailbox,  EntityManager entityManager) {
+		this(dispatcher, mailbox, entityManager, false);
 	}
 
-    public OpenJPAMailbox(MailboxEventDispatcher dispatcher, Mailbox<Long> mailbox, EntityManagerFactory entityManagerfactory, final boolean useStreaming) {
-        super(dispatcher, mailbox, entityManagerfactory);
+    public OpenJPAMailbox(MailboxEventDispatcher dispatcher, Mailbox<Long> mailbox, EntityManager entityManager, final boolean useStreaming) {
+        super(dispatcher, mailbox, entityManager);
         this.useStreaming = useStreaming;
     }
 
@@ -86,17 +84,15 @@ public class OpenJPAMailbox extends JPAMailbox{
      * 
      */
     protected Mailbox<Long> reserveNextUid(MailboxSession session) throws MailboxException {
-        OpenJPAEntityManager oem = OpenJPAPersistence.cast(entityManagerFactory.createEntityManager());
-        oem.setOptimistic(false);
-        EntityTransaction transaction = oem.getTransaction();
+        EntityTransaction transaction = manager.getTransaction();
         transaction.begin();
-        Query query = oem.createNamedQuery("findMailboxById").setParameter("idParam", getMailboxId());
+        Query query = manager.createNamedQuery("findMailboxById").setParameter("idParam", getMailboxId());
         org.apache.james.imap.jpa.mail.model.JPAMailbox mailbox = (org.apache.james.imap.jpa.mail.model.JPAMailbox) query.getSingleResult();
         mailbox.consumeUid();
-        oem.persist(mailbox);
-        oem.flush();
+        manager.persist(mailbox);
+        manager.flush();
         transaction.commit();
-        oem.close();
+        //oem.close();
         return mailbox;
      
     }
