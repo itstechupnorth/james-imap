@@ -70,10 +70,12 @@
       <artifactId>commons-collections</artifactId>
     </dependency>
     
+    <!-- 
     <dependency>
       <groupId>javax.persistence</groupId>
       <artifactId>persistence-api</artifactId>
     </dependency>
+    -->
     <dependency>
       <groupId>org.apache.openjpa</groupId>
       <artifactId>openjpa</artifactId>
@@ -90,7 +92,7 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>openjpa-maven-plugin</artifactId>
-        <version>1.0</version>
+        <version>1.1</version>
         <configuration>
           <includes>org/apache/james/imap/jpa/*/model/**/*.class</includes>
           <addDefaultConstructor>true</addDefaultConstructor>
@@ -169,11 +171,6 @@
             <version>${version.commons-collections}</version>
           </dependency>
 
-          <dependency>
-            <groupId>javax.persistence</groupId>
-            <artifactId>persistence-api</artifactId>
-            <version>${version.javax.persistence}</version>
-          </dependency>
           <dependency>
             <groupId>org.apache.openjpa</groupId>
             <artifactId>openjpa</artifactId>

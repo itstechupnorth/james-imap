@@ -493,11 +493,6 @@
         START OpenJPA
       -->
       <dependency>
-        <groupId>javax.persistence</groupId>
-        <artifactId>persistence-api</artifactId>
-        <version>${version.javax.persistence}</version>
-      </dependency>
-      <dependency>
         <groupId>org.apache.openjpa</groupId>
         <artifactId>openjpa</artifactId>
         <version>${version.openjpa}</version>
@@ -578,7 +573,7 @@
     <javax.mail.groupId>javax.mail</javax.mail.groupId>
     <javax.mail.artifactId>mail</javax.mail.artifactId>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <version.openjpa>1.2.2</version.openjpa>
+    <version.openjpa>2.0.0</version.openjpa>
     <version.javax.persistence>1.0.2</version.javax.persistence>
     <version.commons-lang>2.4</version.commons-lang>
     <version.commons-collections>3.2.1</version.commons-collections>
