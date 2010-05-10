@@ -20,6 +20,7 @@ package org.apache.james.imap.functional.jpa;
 
 import java.util.HashMap;
 
+import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 
 import org.apache.commons.logging.impl.SimpleLog;
@@ -41,7 +42,8 @@ public class JPAStressTest extends AbstractStressTest{
 
     
     private OpenJPAMailboxManager mailboxManager;
-
+    private long locktimeout = 60000;
+    private EntityManagerFactory entityManagerFactory;
     
     @Before
     public void setUp() {
@@ -59,19 +61,27 @@ public class JPAStressTest extends AbstractStressTest{
                 "org.apache.james.imap.jpa.mail.model.JPAMessage;" +
                 "org.apache.james.imap.jpa.mail.model.JPAProperty;" +
                 "org.apache.james.imap.jpa.user.model.JPASubscription)");
-        /*
-        // persimistic locking..
-        properties.put("openjpa.LockManager", "pessimistic");
-        properties.put("openjpa.ReadLockLevel", "read");
-        properties.put("openjpa.WriteLockLevel", "write");
-        properties.put("openjpa.jdbc.TransactionIsolation", "repeatable-read");
-        */
-        EntityManagerFactory entityManagerFactory = OpenJPAPersistence.getEntityManagerFactory(properties);
+        properties.put("openjpa.LockTimeout", locktimeout + "");
+       
+        entityManagerFactory = OpenJPAPersistence.getEntityManagerFactory(properties);
         MailboxSessionEntityManagerFactory emf = new MailboxSessionEntityManagerFactory(entityManagerFactory);
         mailboxManager = new OpenJPAMailboxManager(null, new JPASubscriptionManager(emf), emf);
+        
+        // Set the lock timeout via SQL because of a bug in openJPA
+        // https://issues.apache.org/jira/browse/OPENJPA-1656
+        setH2LockTimeout();
     }
     
  
+    private void setH2LockTimeout() {
+        EntityManager manager = entityManagerFactory.createEntityManager();
+        manager.getTransaction().begin();
+        manager.createNativeQuery("SET DEFAULT_LOCK_TIMEOUT " + locktimeout).executeUpdate();
+        manager.getTransaction().commit();
+        manager.close();
+    }
+    
+    
     @After
     public void tearDown() {
         MailboxSession session = mailboxManager.createSystemSession("test", new SimpleLog("Test"));

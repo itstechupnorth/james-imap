@@ -406,7 +406,7 @@
       <dependency>
         <groupId>com.h2database</groupId>
         <artifactId>h2</artifactId>
-        <version>1.0.79</version>
+        <version>1.2.134</version>
         <scope>test</scope>
       </dependency>
       <dependency>

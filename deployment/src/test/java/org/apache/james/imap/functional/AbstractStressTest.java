@@ -36,13 +36,15 @@ import org.junit.Test;
 
 public abstract class AbstractStressTest {
 
+    private final static int APPEND_OPERATIONS = 1000;
+    
     protected abstract StoreMailboxManager<?> getMailboxManager();
     
     @Test
     public void testStessTest() throws InterruptedException, MailboxException {
        
-        final CountDownLatch latch = new CountDownLatch(1000);
-        final ExecutorService pool = Executors.newFixedThreadPool(500);
+        final CountDownLatch latch = new CountDownLatch(APPEND_OPERATIONS);
+        final ExecutorService pool = Executors.newFixedThreadPool(APPEND_OPERATIONS/2);
         
         MailboxSession session = getMailboxManager().createSystemSession("test", new SimpleLog("Test"));
         getMailboxManager().startProcessingRequest(session);
@@ -52,7 +54,7 @@ public abstract class AbstractStressTest {
         final AtomicBoolean fail = new AtomicBoolean(false);
         
         // fire of 1000 append operations
-        for (int i = 0 ; i < 1000; i++) {
+        for (int i = 0 ; i < APPEND_OPERATIONS; i++) {
             pool.execute(new Runnable() {
                 
                 public void run() {
