@@ -380,7 +380,9 @@ public abstract class StoreMailbox<Id> implements org.apache.james.imap.mailbox.
 
 
     /**
-     * Reserve the next Uid on the underlying {@link Mailbox} 
+     * Reserve the next Uid on the underlying {@link Mailbox}. Its important that the implementation guaranteer a thread-safe/atomic calculation of the 
+     * next uid. So be sure you don't use any caching etc.
+     * 
      * 
      * @return mailbox
      * @throws MailboxException

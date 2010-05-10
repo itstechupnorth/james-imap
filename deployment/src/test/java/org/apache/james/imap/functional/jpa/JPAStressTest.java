@@ -25,6 +25,7 @@ import javax.persistence.EntityManagerFactory;
 import org.apache.commons.logging.impl.SimpleLog;
 import org.apache.james.imap.functional.AbstractStressTest;
 import org.apache.james.imap.jpa.JPASubscriptionManager;
+import org.apache.james.imap.jpa.MailboxSessionEntityManagerFactory;
 import org.apache.james.imap.jpa.openjpa.OpenJPAMailboxManager;
 import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.MailboxSession;
@@ -58,17 +59,19 @@ public class JPAStressTest extends AbstractStressTest{
                 "org.apache.james.imap.jpa.mail.model.JPAMessage;" +
                 "org.apache.james.imap.jpa.mail.model.JPAProperty;" +
                 "org.apache.james.imap.jpa.user.model.JPASubscription)");
+        /*
         // persimistic locking..
         properties.put("openjpa.LockManager", "pessimistic");
         properties.put("openjpa.ReadLockLevel", "read");
         properties.put("openjpa.WriteLockLevel", "write");
         properties.put("openjpa.jdbc.TransactionIsolation", "repeatable-read");
+        */
         EntityManagerFactory entityManagerFactory = OpenJPAPersistence.getEntityManagerFactory(properties);
-        
-        //mailboxManager = new OpenJPAMailboxManager(null, new JPASubscriptionManager(entityManagerFactory), entityManagerFactory);
+        MailboxSessionEntityManagerFactory emf = new MailboxSessionEntityManagerFactory(entityManagerFactory);
+        mailboxManager = new OpenJPAMailboxManager(null, new JPASubscriptionManager(emf), emf);
     }
     
-    /*
+ 
     @After
     public void tearDown() {
         MailboxSession session = mailboxManager.createSystemSession("test", new SimpleLog("Test"));
@@ -78,11 +81,6 @@ public class JPAStressTest extends AbstractStressTest{
             e.printStackTrace();
         }
         session.close();
-    }
-*/
-    @Override
-    public void testStessTest() throws InterruptedException, MailboxException {
-        // 
     }
 
     @Override

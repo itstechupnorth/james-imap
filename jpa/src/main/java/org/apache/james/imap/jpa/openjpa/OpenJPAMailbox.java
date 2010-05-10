@@ -26,8 +26,6 @@ import java.util.List;
 
 import javax.mail.Flags;
 import javax.persistence.EntityManager;
-import javax.persistence.EntityTransaction;
-import javax.persistence.Query;
 
 import org.apache.james.imap.jpa.JPAMailbox;
 import org.apache.james.imap.jpa.mail.model.AbstractJPAMailboxMembership;
@@ -48,9 +46,10 @@ import org.apache.james.imap.store.mail.model.PropertyBuilder;
 public class OpenJPAMailbox extends JPAMailbox{
 
     private final boolean useStreaming;
-    public OpenJPAMailbox(MailboxEventDispatcher dispatcher, Mailbox<Long> mailbox,  EntityManager entityManager) {
-		this(dispatcher, mailbox, entityManager, false);
-	}
+
+    public OpenJPAMailbox(MailboxEventDispatcher dispatcher, Mailbox<Long> mailbox, EntityManager entityManager) {
+        this(dispatcher, mailbox, entityManager, false);
+    }
 
     public OpenJPAMailbox(MailboxEventDispatcher dispatcher, Mailbox<Long> mailbox, EntityManager entityManager, final boolean useStreaming) {
         super(dispatcher, mailbox, entityManager);
@@ -79,22 +78,5 @@ public class OpenJPAMailbox extends JPAMailbox{
         }
     }
     
-    /**
-     * Reserve next Uid in mailbox and return the mailbox. We use a transaction here to be sure we don't get any duplicates
-     * 
-     */
-    protected Mailbox<Long> reserveNextUid(MailboxSession session) throws MailboxException {
-        EntityTransaction transaction = manager.getTransaction();
-        transaction.begin();
-        Query query = manager.createNamedQuery("findMailboxById").setParameter("idParam", getMailboxId());
-        org.apache.james.imap.jpa.mail.model.JPAMailbox mailbox = (org.apache.james.imap.jpa.mail.model.JPAMailbox) query.getSingleResult();
-        mailbox.consumeUid();
-        manager.persist(mailbox);
-        manager.flush();
-        transaction.commit();
-        //oem.close();
-        return mailbox;
-     
-    }
 
 }

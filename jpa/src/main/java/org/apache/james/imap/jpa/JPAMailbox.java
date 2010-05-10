@@ -25,6 +25,8 @@ import java.util.List;
 
 import javax.mail.Flags;
 import javax.persistence.EntityManager;
+import javax.persistence.EntityTransaction;
+import javax.persistence.LockModeType;
 
 import org.apache.james.imap.jpa.mail.JPAMailboxMapper;
 import org.apache.james.imap.jpa.mail.JPAMessageMapper;
@@ -43,11 +45,12 @@ import org.apache.james.imap.store.mail.model.MailboxMembership;
 import org.apache.james.imap.store.mail.model.PropertyBuilder;
 
 /**
- * Abstract base class which should be used from JPA implementations
+ * Abstract base class which should be used from JPA 2.0 implementations
+ * 
  * 
  *
  */
-public abstract class JPAMailbox extends StoreMailbox<Long> {
+public class JPAMailbox extends StoreMailbox<Long> {
 
     protected final EntityManager manager;
     
@@ -83,6 +86,27 @@ public abstract class JPAMailbox extends StoreMailbox<Long> {
     protected MailboxMembership<Long> copyMessage(MailboxMembership<Long> originalMessage, long uid, MailboxSession session) throws MailboxException{
         final MailboxMembership<Long> newRow = new JPAMailboxMembership(getMailboxId(), uid, (AbstractJPAMailboxMembership) originalMessage);
         return newRow;
+    }
+    
+    /**
+     * Reserve next Uid in mailbox and return the mailbox. We use a PESSIMISTIC_WRITE lock here to be sure we don't see any duplicates here when
+     * accessing the database with many different threads / connections
+     * 
+     */
+    protected Mailbox<Long> reserveNextUid(MailboxSession session) throws MailboxException {
+
+        EntityTransaction transaction = manager.getTransaction();
+        transaction.begin();
+
+        // we need to set a persimistic write lock to be sure we don't get any problems with dirty reads etc
+        org.apache.james.imap.jpa.mail.model.JPAMailbox mailbox = manager.find(org.apache.james.imap.jpa.mail.model.JPAMailbox.class, getMailboxId(), LockModeType.PESSIMISTIC_WRITE);
+        manager.refresh(mailbox);
+        mailbox.consumeUid();
+        manager.persist(mailbox);
+        manager.flush();
+        transaction.commit();
+        return mailbox;
+
     }
     
     @Override
