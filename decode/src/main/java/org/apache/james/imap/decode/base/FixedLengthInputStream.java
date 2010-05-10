@@ -49,6 +49,12 @@ public class FixedLengthInputStream extends FilterInputStream {
     }
 
     public int read(byte b[]) throws IOException {
+       
+        return read(b, 0, b.length);
+    }
+
+    public int read(byte b[], int off, int len) throws IOException {
+        
 
         if (pos >= length) {   
             return -1;
@@ -58,21 +64,13 @@ public class FixedLengthInputStream extends FilterInputStream {
             int readLimit = (int) length - (int) pos;
             pos = length;
 
-            return super.read(b, 0, readLimit);
+            return super.read(b, off, readLimit);
         }
 
         pos += b.length;
 
-        return super.read(b);
-    }
-
-    public int read(byte b[], int off, int len) throws IOException {
-        byte[] tmpArray = new byte[len]; 
-        int a = in.read(tmpArray);
-        for (int i = 0; i < tmpArray.length; i++) {
-            b[off + i] = tmpArray[i];
-        }
-        return a;
+        return super.read(b, off, len);
+       
     }
 
     public long skip(long n) throws IOException {
@@ -88,7 +86,7 @@ public class FixedLengthInputStream extends FilterInputStream {
         // Don't do anything to the underlying stream.
     }
 
-    public synchronized void mark(int readlimit) {
+    public void mark(int readlimit) {
         // Don't do anything.
     }
 
