@@ -60,16 +60,17 @@ public class FixedLengthInputStream extends FilterInputStream {
             return -1;
         }
 
-        if (pos + b.length >= length) {
+        if (pos + len >= length) {
             int readLimit = (int) length - (int) pos;
             pos = length;
 
             return super.read(b, off, readLimit);
         }
 
-        pos += b.length;
 
-        return super.read(b, off, len);
+        int i =  super.read(b, off, len);
+        pos += i;
+        return i;
        
     }
 
