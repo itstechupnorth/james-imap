@@ -22,21 +22,28 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
 import javax.jcr.RepositoryException;
+import javax.mail.Flags;
 
 import org.apache.commons.logging.Log;
 import org.apache.jackrabbit.JcrConstants;
+import org.apache.jackrabbit.commons.JcrUtils;
 import org.apache.jackrabbit.util.Text;
+import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.jcr.JCRImapConstants;
 import org.apache.james.imap.jcr.Persistent;
+import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.store.StreamUtils;
 import org.apache.james.imap.store.mail.model.AbstractDocument;
 import org.apache.james.imap.store.mail.model.Document;
 import org.apache.james.imap.store.mail.model.Header;
+import org.apache.james.imap.store.mail.model.MailboxMembership;
 import org.apache.james.imap.store.mail.model.Property;
 import org.apache.james.imap.store.mail.model.PropertyBuilder;
 
@@ -44,21 +51,43 @@ import org.apache.james.imap.store.mail.model.PropertyBuilder;
  * JCR implementation of {@link Document}
  *
  */
-public class JCRMessage extends AbstractDocument implements JCRImapConstants, Persistent{
+public class JCRMessage extends AbstractDocument implements MailboxMembership<String>, JCRImapConstants, Persistent{
 
     private Node node;
     private final Log logger;
     private InputStream content;
     private List<JCRHeader> headers;
-    private long fullContentOctets;
     private String mediaType;
     private Long textualLineCount;
     private String subType;
     private List<JCRProperty> properties;
     private int bodyStartOctet;
     
+    private String mailboxUUID;
+    private long uid;
+    private Date internalDate;
+    private int size;
+    private boolean answered;
+    private boolean deleted;
+    private boolean draft;
+    private boolean flagged;
+    private boolean recent;
+    private boolean seen;
+    
+    private static final String TOSTRING_SEPARATOR = " ";
+
+    public final static String MAILBOX_UUID_PROPERTY = "imap:mailboxUUID";
+    public final static String UID_PROPERTY = "imap:uid";
+    public final static String SIZE_PROPERTY = "imap:size";
+    public final static String ANSWERED_PROPERTY = "imap:answered";
+    public final static String DELETED_PROPERTY = "imap:deleted";
+    public final static String DRAFT_PROPERTY =  "imap:draft";
+    public final static String FLAGGED_PROPERTY = "imap:flagged";
+    public final static String RECENT_PROPERTY = "imap:recent";
+    public final static String SEEN_PROPERTY = "imap:seen";
+    public final static String INTERNAL_DATE_PROPERTY = "imap:internalDate"; 
+    
     public final static String BODY_START_OCTET_PROPERTY = "imap:messageBodyStartOctet";
-    public final static String FULL_CONTENT_OCTETS_PROPERTY =  "imap:messageFullContentOctets";
     public final static String HEADERS_NODE_TYPE =  "imap:messageHeaders";
     public final static String HEADERS_NODE =  "messageHeaders";
 
@@ -73,11 +102,19 @@ public class JCRMessage extends AbstractDocument implements JCRImapConstants, Pe
         this.node = node;
     }
     
-    public JCRMessage(InputStream content, final long contentOctets, final int bodyStartOctet, final List<JCRHeader> headers, final PropertyBuilder propertyBuilder, Log logger) {
+    public JCRMessage(String mailboxUUID, long uid,
+            Date internalDate, int size, Flags flags, InputStream content,
+            int bodyStartOctet, final List<JCRHeader> headers,
+            final PropertyBuilder propertyBuilder, Log logger) {
         super();
+        this.mailboxUUID = mailboxUUID;
+        this.uid = uid;
+        this.internalDate = internalDate;
+        this.size = size;
         this.logger = logger;
+        setFlags(flags);
+    
         this.content = content;
-        this.fullContentOctets = contentOctets;
        
         this.bodyStartOctet = bodyStartOctet;
         this.headers = new ArrayList<JCRHeader>(headers);
@@ -100,11 +137,25 @@ public class JCRMessage extends AbstractDocument implements JCRImapConstants, Pe
      * @param message
      * @throws IOException 
      */
-    public JCRMessage(JCRMessage message, Log logger) throws IOException {
+    public JCRMessage(String mailboxUUID, long uid, JCRMessage message, Log logger) throws MailboxException {
+        this.mailboxUUID = mailboxUUID;
+        this.uid = uid;
+        this.internalDate = message.getInternalDate();
+        this.size = message.getSize();
+        this.answered = message.isAnswered();
+        this.deleted = message.isDeleted();
+        this.draft = message.isDraft();
+        this.flagged = message.isFlagged();
+        this.recent = message.isRecent();
+        this.seen = message.isSeen();
+        
         this.logger = logger;
-        this.content = new ByteArrayInputStream(StreamUtils.toByteArray(message.getFullContent()));
+        try {
+            this.content = new ByteArrayInputStream(StreamUtils.toByteArray(message.getFullContent()));
+        } catch (IOException e) {
+            throw new MailboxException(HumanReadableText.FAILURE_MAIL_PARSE,e);
+        }
        
-        this.fullContentOctets = message.getFullContentOctets();
         this.bodyStartOctet = (int) (message.getFullContentOctets() - message.getBodyOctets());
         this.headers = new ArrayList<JCRHeader>();
         
@@ -132,14 +183,14 @@ public class JCRMessage extends AbstractDocument implements JCRImapConstants, Pe
     public long getFullContentOctets() {
         if (isPersistent()) {
             try {
-                return node.getProperty(FULL_CONTENT_OCTETS_PROPERTY).getLong();
+                return node.getProperty(SIZE_PROPERTY).getLong();
             } catch (RepositoryException e) {
-                logger.error("Unable to retrieve property " + FULL_CONTENT_OCTETS_PROPERTY, e);
+                logger.error("Unable to retrieve property " + SIZE_PROPERTY, e);
 
             }
             return 0;
         }
-        return fullContentOctets;
+        return size;
     }
 
     /*
@@ -263,16 +314,32 @@ public class JCRMessage extends AbstractDocument implements JCRImapConstants, Pe
      * @see org.apache.james.imap.jcr.Persistent#merge(javax.jcr.Node)
      */
     public void merge(Node node) throws RepositoryException, IOException {
-        Node contentNode;
-        if (node.hasNode(JcrConstants.JCR_CONTENT) == false) {
-            contentNode = node.addNode(JcrConstants.JCR_CONTENT, JcrConstants.NT_RESOURCE);
-        } else {
-            contentNode = node.getNode(JcrConstants.JCR_CONTENT);
+        node.setProperty(MAILBOX_UUID_PROPERTY, getMailboxId());
+        node.setProperty(UID_PROPERTY, getUid());
+        node.setProperty(SIZE_PROPERTY, getSize());
+        node.setProperty(ANSWERED_PROPERTY, isAnswered());
+        node.setProperty(DELETED_PROPERTY, isDeleted());
+        node.setProperty(DRAFT_PROPERTY, isDraft());
+        node.setProperty(FLAGGED_PROPERTY, isFlagged());
+        node.setProperty(RECENT_PROPERTY, isRecent());
+        
+        node.setProperty(SEEN_PROPERTY, isSeen());
+        
+        if (getInternalDate() == null) {
+            internalDate = new Date();
         }
+        
+        Calendar cal = Calendar.getInstance();
+        
+        cal.setTime(getInternalDate());
+        node.setProperty(INTERNAL_DATE_PROPERTY, cal);
+
+              
+        Node contentNode = JcrUtils.getOrAddNode(node, JcrConstants.JCR_CONTENT, JcrConstants.NT_RESOURCE);
+       
         contentNode.setProperty(JcrConstants.JCR_DATA, getFullContent());
         contentNode.setProperty(JcrConstants.JCR_MIMETYPE, getMediaType());
 
-        node.setProperty(FULL_CONTENT_OCTETS_PROPERTY, getFullContentOctets());
         if (getTextualLineCount() != null) {
             node.setProperty(TEXTUAL_LINE_COUNT_PROPERTY, getTextualLineCount());
         }
@@ -368,14 +435,6 @@ public class JCRMessage extends AbstractDocument implements JCRImapConstants, Pe
     
 
     @Override
-    public int hashCode() {
-        final int PRIME = 31;
-        int result = 1;
-        result = PRIME * result + getUUID().hashCode();
-        return result;
-    }
-
-    @Override
     public boolean equals(Object obj) {
         if (this == obj)
             return true;
@@ -383,19 +442,17 @@ public class JCRMessage extends AbstractDocument implements JCRImapConstants, Pe
             return false;
         if (getClass() != obj.getClass())
             return false;
+        
         final JCRMessage other = (JCRMessage) obj;
         if (getUUID() != other.getUUID())
+            return false;
+        if (getMailboxId() != other.getMailboxId())
+            return false;
+        if (getId() != other.getId())
             return false;
         return true;
     }
 
-    public String toString() {
-        final String retValue = 
-            "message("
-            + "uuid = " + getUUID()
-            + " )";
-        return retValue;
-    }
 
     @Override
     protected InputStream getRawFullContent() {
@@ -412,4 +469,333 @@ public class JCRMessage extends AbstractDocument implements JCRImapConstants, Pe
         return content;
     }
 
+
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.store.mail.model.MailboxMembership#createFlags()
+     */
+    public Flags createFlags() {
+        final Flags flags = new Flags();
+
+        if (isAnswered()) {
+            flags.add(Flags.Flag.ANSWERED);
+        }
+        if (isDeleted()) {
+            flags.add(Flags.Flag.DELETED);
+        }
+        if (isDraft()) {
+            flags.add(Flags.Flag.DRAFT);
+        }
+        if (isFlagged()) {
+            flags.add(Flags.Flag.FLAGGED);
+        }
+        if (isRecent()) {
+            flags.add(Flags.Flag.RECENT);
+        }
+        if (isSeen()) {
+            flags.add(Flags.Flag.SEEN);
+        }
+        return flags;
+    }
+    
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * org.apache.james.imap.store.mail.model.MailboxMembership#getDocument()
+     */
+    public Document getDocument() {
+        if (isPersistent()) {
+            return new JCRMessage(node, logger);
+           
+        }
+        return this;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * org.apache.james.imap.store.mail.model.MailboxMembership#getInternalDate
+     * ()
+     */
+    public Date getInternalDate() {
+        if (isPersistent()) {
+            try {
+                return node.getProperty(INTERNAL_DATE_PROPERTY).getDate().getTime();
+
+            } catch (RepositoryException e) {
+                logger.error("Unable to access property " + FLAGGED_PROPERTY,
+                                e);
+            }
+            return null;
+        }
+        return internalDate;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * org.apache.james.imap.store.mail.model.MailboxMembership#getMailboxId()
+     */
+    public String getMailboxId() {
+        if (isPersistent()) {
+            try {
+                return node.getProperty(MAILBOX_UUID_PROPERTY).getString();
+            } catch (RepositoryException e) {
+                logger.error("Unable to access property "
+                        + MAILBOX_UUID_PROPERTY, e);
+            }
+        }
+        return mailboxUUID;
+    }
+
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.apache.james.imap.store.mail.model.MailboxMembership#getSize()
+     */
+    public int getSize() {
+        if (isPersistent()) {
+            try {
+                return new Long(node.getProperty(SIZE_PROPERTY).getLong())
+                        .intValue();
+
+            } catch (RepositoryException e) {
+                logger
+                        .error("Unable to access property " + SIZE_PROPERTY,
+                                e);
+            }
+            return 0;
+        }
+        return size;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.apache.james.imap.store.mail.model.MailboxMembership#getUid()
+     */
+    public long getUid() {
+        if (isPersistent()) {
+            try {
+                return node.getProperty(UID_PROPERTY).getLong();
+
+            } catch (RepositoryException e) {
+                logger.error("Unable to access property " + UID_PROPERTY, e);
+            }
+            return 0;
+        }
+        return uid;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * org.apache.james.imap.store.mail.model.MailboxMembership#isAnswered()
+     */
+    public boolean isAnswered() {
+        if (isPersistent()) {
+            try {
+                return node.getProperty(ANSWERED_PROPERTY).getBoolean();
+
+            } catch (RepositoryException e) {
+                logger.error("Unable to access property " + ANSWERED_PROPERTY,
+                        e);
+            }
+            return false;
+        }
+        return answered;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.apache.james.imap.store.mail.model.MailboxMembership#isDeleted()
+     */
+    public boolean isDeleted() {
+        if (isPersistent()) {
+            try {
+                return node.getProperty(DELETED_PROPERTY).getBoolean();
+
+            } catch (RepositoryException e) {
+                logger.error("Unable to access property " + DELETED_PROPERTY,
+                                e);
+            }
+            return false;
+        }
+        return deleted;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.apache.james.imap.store.mail.model.MailboxMembership#isDraft()
+     */
+    public boolean isDraft() {
+        if (isPersistent()) {
+            try {
+                return node.getProperty(DRAFT_PROPERTY).getBoolean();
+
+            } catch (RepositoryException e) {
+                logger.error("Unable to access property " + DRAFT_PROPERTY, e);
+            }
+            return false;
+        }
+        return draft;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.apache.james.imap.store.mail.model.MailboxMembership#isFlagged()
+     */
+    public boolean isFlagged() {
+        if (isPersistent()) {
+            try {
+                return node.getProperty(FLAGGED_PROPERTY).getBoolean();
+
+            } catch (RepositoryException e) {
+                logger.error("Unable to access property " + FLAGGED_PROPERTY,
+                                e);
+            }
+            return false;
+        }
+        return flagged;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.apache.james.imap.store.mail.model.MailboxMembership#isRecent()
+     */
+    public boolean isRecent() {
+        if (isPersistent()) {
+            try {
+                return node.getProperty(RECENT_PROPERTY).getBoolean();
+
+            } catch (RepositoryException e) {
+                logger.error("Unable to access property " + RECENT_PROPERTY, e);
+            }
+            return false;
+        }
+        return recent;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.apache.james.imap.store.mail.model.MailboxMembership#isSeen()
+     */
+    public boolean isSeen() {
+        if (isPersistent()) {
+            try {
+                return node.getProperty(SEEN_PROPERTY).getBoolean();
+
+            } catch (RepositoryException e) {
+                logger.error("Unable to access property " + SEEN_PROPERTY, e);
+            }
+            return false;
+        }
+        return seen;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * org.apache.james.imap.store.mail.model.MailboxMembership#setFlags(javax
+     * .mail.Flags)
+     */
+    public void setFlags(Flags flags) {
+        if (isPersistent()) {
+            try {
+                node.setProperty(ANSWERED_PROPERTY,
+                        flags.contains(Flags.Flag.ANSWERED));
+                node.setProperty(DELETED_PROPERTY,
+                        flags.contains(Flags.Flag.DELETED));
+                node.setProperty(DRAFT_PROPERTY,
+                        flags.contains(Flags.Flag.DRAFT));
+                node.setProperty(FLAGGED_PROPERTY,
+                        flags.contains(Flags.Flag.FLAGGED));
+                node.setProperty(RECENT_PROPERTY,
+                        flags.contains(Flags.Flag.RECENT));
+                node.setProperty(SEEN_PROPERTY,
+                        flags.contains(Flags.Flag.SEEN));
+            } catch (RepositoryException e) {
+                logger.error("Unable to set flags", e);
+            }
+        } else {
+            answered = flags.contains(Flags.Flag.ANSWERED);
+            deleted = flags.contains(Flags.Flag.DELETED);
+            draft = flags.contains(Flags.Flag.DRAFT);
+            flagged = flags.contains(Flags.Flag.FLAGGED);
+            recent = flags.contains(Flags.Flag.RECENT);
+            seen = flags.contains(Flags.Flag.SEEN);
+        }
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * org.apache.james.imap.store.mail.model.MailboxMembership#unsetRecent()
+     */
+    public void unsetRecent() {
+        if (isPersistent()) {
+            try {
+                node.setProperty(RECENT_PROPERTY, false);
+
+            } catch (RepositoryException e) {
+                logger.error("Unable to access property " + RECENT_PROPERTY, e);
+            }
+        } else {
+            recent = false;
+        }
+    }
+
+
+
+    public String getId() {
+        if (isPersistent()) {
+            try {
+                return node.getUUID();
+            } catch (RepositoryException e) {
+                logger.error("Unable to access property " + JcrConstants.JCR_UUID, e);
+            }
+        }
+        return null;      
+    }
+
+    @Override
+    public int hashCode() {
+        final int PRIME = 31;
+        int result = 1;
+        result = PRIME * result + getUUID().hashCode();
+        result = PRIME * result + getMailboxId().hashCode();
+        return result;
+    }
+
+
+    public String toString() {
+        final String retValue = 
+            "message("
+            + "uuid = " + getUUID()
+            + "mailboxUUID = " + this.getMailboxId() + TOSTRING_SEPARATOR
+            + "uuid = " + this.getId() + TOSTRING_SEPARATOR
+            + "internalDate = " + this.getInternalDate() + TOSTRING_SEPARATOR
+            + "size = " + this.getSize() + TOSTRING_SEPARATOR
+            + "answered = " + this.isAnswered() + TOSTRING_SEPARATOR
+            + "deleted = " + this.isDeleted() + TOSTRING_SEPARATOR
+            + "draft = " + this.isDraft() + TOSTRING_SEPARATOR
+            + "flagged = " + this.isFlagged() + TOSTRING_SEPARATOR
+            + "recent = " + this.isRecent() + TOSTRING_SEPARATOR
+            + "seen = " + this.isSeen() + TOSTRING_SEPARATOR
+            + " )";
+
+        return retValue;
+    }
 }

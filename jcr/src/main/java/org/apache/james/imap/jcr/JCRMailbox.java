@@ -30,7 +30,7 @@ import org.apache.commons.logging.Log;
 import org.apache.james.imap.jcr.mail.JCRMailboxMapper;
 import org.apache.james.imap.jcr.mail.JCRMessageMapper;
 import org.apache.james.imap.jcr.mail.model.JCRHeader;
-import org.apache.james.imap.jcr.mail.model.JCRMailboxMembership;
+import org.apache.james.imap.jcr.mail.model.JCRMessage;
 import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.MailboxSession;
 import org.apache.james.imap.mailbox.util.MailboxEventDispatcher;
@@ -60,7 +60,7 @@ public class JCRMailbox extends StoreMailbox<String>{
 
     @Override
     protected MailboxMembership<String> copyMessage(MailboxMembership<String> originalMessage, long uid, MailboxSession session) throws MailboxException {
-        MailboxMembership<String> newRow = new JCRMailboxMembership(getMailboxId(), uid, (JCRMailboxMembership) originalMessage, log);
+        MailboxMembership<String> newRow = new JCRMessage(getMailboxId(), uid, (JCRMessage) originalMessage, log);
         return newRow;
     }
 
@@ -75,7 +75,7 @@ public class JCRMailbox extends StoreMailbox<String>{
         for (Header header: headers) {
             jcrHeaders.add((JCRHeader) header);
         }
-        final MailboxMembership<String> message = new JCRMailboxMembership(getMailboxId(), uid, internalDate, 
+        final MailboxMembership<String> message = new JCRMessage(getMailboxId(), uid, internalDate, 
                 size, flags, document, bodyStartOctet, jcrHeaders, propertyBuilder, log);
         return message;       
         
