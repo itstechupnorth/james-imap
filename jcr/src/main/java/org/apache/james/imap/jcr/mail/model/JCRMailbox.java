@@ -64,6 +64,9 @@ public class JCRMailbox implements Mailbox<String>, JCRImapConstants, Persistent
         this.logger = logger;
     }
     
+    public Log getLog() {
+        return logger;
+    }
     
     /*
      * (non-Javadoc)

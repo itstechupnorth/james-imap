@@ -30,8 +30,8 @@ import javax.jcr.RepositoryException;
 
 import org.apache.commons.logging.Log;
 import org.apache.jackrabbit.JcrConstants;
+import org.apache.jackrabbit.util.Text;
 import org.apache.james.imap.jcr.JCRImapConstants;
-import org.apache.james.imap.jcr.JCRUtils;
 import org.apache.james.imap.jcr.Persistent;
 import org.apache.james.imap.store.StreamUtils;
 import org.apache.james.imap.store.mail.model.AbstractDocument;
@@ -333,7 +333,7 @@ public class JCRMessage extends AbstractDocument implements JCRImapConstants, Pe
         // store new properties
         for (int i = 0; i < newProperites.size(); i++) {
             JCRProperty prop = (JCRProperty)newProperites.get(i);
-            Node propNode = propertiesNode.addNode(JCRUtils.escapePath(String.valueOf(prop.getOrder())), "imap:messageProperty");
+            Node propNode = propertiesNode.addNode(Text.escapeIllegalJcrChars(String.valueOf(prop.getOrder())), "imap:messageProperty");
             prop.merge(propNode);
         }
       

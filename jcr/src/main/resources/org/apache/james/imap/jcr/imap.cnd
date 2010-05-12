@@ -32,14 +32,13 @@
     - imap:propertyValue(STRING) mandatory
     - imap:propertyOrder (Long) mandatory
    
-[imap:message] >  mix:referenceable, nt:base
+[imap:message] >  mix:referenceable, nt:file
     - imap:messageBodyStartOctet (LONG) mandatory
     - imap:messageFullContentOctets (LONG) mandatory
     - imap:messageTextualLineCount (LONG)
     - imap:messageSubType (String) mandatory
     + messageHeaders (imap:messageHeaders) 
     + messageProperties (imap:messageProperties)
-    + jcr:content (nt:resource) mandatory 
     
 [imap:messageHeaders] > nt:unstructured
     + imap:messageHeader multiple
@@ -51,9 +50,10 @@
     - imap:mailboxUidValidity (LONG) mandatory
     - imap:mailboxName (STRING) mandatory
     - imap:mailboxLastUid (LONG) mandatory
-    + mailboxMemberships (imap:mailboxMemberships) 
+    + *
+
  
-[imap:mailboxMembership] >  mix:referenceable, nt:base
+[imap:mailboxMembership] >  mix:referenceable, nt:hierarchyNode
     - imap:mailboxUUID (String) mandatory
     - imap:uid (LONG) mandatory
     - imap:size (LONG) mandatory
@@ -65,7 +65,3 @@
     - imap:seen (BOOLEAN) mandatory
     - imap:internalDate (DATE) mandatory
     + message (imap:message) mandatory
-
- [imap:mailboxMemberships] > nt:unstructured
-    + imap:mailboxMembership multiple   
-   

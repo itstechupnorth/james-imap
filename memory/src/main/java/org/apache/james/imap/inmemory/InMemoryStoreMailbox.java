@@ -39,6 +39,7 @@ import org.apache.james.imap.mailbox.StorageException;
 import org.apache.james.imap.mailbox.util.MailboxEventDispatcher;
 import org.apache.james.imap.store.MailboxMembershipComparator;
 import org.apache.james.imap.store.StoreMailbox;
+import org.apache.james.imap.store.UidConsumer;
 import org.apache.james.imap.store.mail.MailboxMapper;
 import org.apache.james.imap.store.mail.MessageMapper;
 import org.apache.james.imap.store.mail.model.Header;
@@ -52,8 +53,8 @@ public class InMemoryStoreMailbox extends StoreMailbox<Long> implements MessageM
     private Map<Long, MailboxMembership<Long>> membershipByUid;
     private InMemoryMailbox mailbox;
 
-    public InMemoryStoreMailbox(MailboxEventDispatcher dispatcher, InMemoryMailbox mailbox) {
-        super(dispatcher, mailbox);
+    public InMemoryStoreMailbox(MailboxEventDispatcher dispatcher, UidConsumer<Long> consumer, InMemoryMailbox mailbox) {
+        super(dispatcher, consumer, mailbox);
         this.mailbox = mailbox;
         this.membershipByUid = new ConcurrentHashMap<Long, MailboxMembership<Long>>(INITIAL_SIZE);
     }
@@ -97,14 +98,6 @@ public class InMemoryStoreMailbox extends StoreMailbox<Long> implements MessageM
     protected MessageMapper<Long> createMessageMapper(MailboxSession session) {
         return this;
     }
-
-
-    @Override
-    protected Mailbox<Long> reserveNextUid(MailboxSession session) throws MailboxException {
-        mailbox.consumeUid();
-        return mailbox;
-    }
-
     /*
      * (non-Javadoc)
      * @see org.apache.james.imap.store.mail.MessageMapper#countMessagesInMailbox()

@@ -40,7 +40,7 @@ public abstract class JPAMailboxManager extends StoreMailboxManager<Long> {
     protected final MailboxSessionEntityManagerFactory entityManagerFactory;
     public JPAMailboxManager(final Authenticator authenticator, final Subscriber subscriber, 
             final MailboxSessionEntityManagerFactory entityManagerFactory) {
-        super(authenticator, subscriber);
+        super(authenticator, subscriber,new JPAUidConsumer(entityManagerFactory));
         this.entityManagerFactory = entityManagerFactory;
     }
     

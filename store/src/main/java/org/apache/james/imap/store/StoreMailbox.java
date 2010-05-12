@@ -83,11 +83,14 @@ public abstract class StoreMailbox<Id> implements org.apache.james.imap.mailbox.
     private final Id mailboxId;
     
     private MailboxEventDispatcher dispatcher;
+
+    private UidConsumer<Id> consumer;
     
     
-    public StoreMailbox(final MailboxEventDispatcher dispatcher, final Mailbox<Id> mailbox) {
+    public StoreMailbox(final MailboxEventDispatcher dispatcher, UidConsumer<Id> consumer, final Mailbox<Id> mailbox) {
         this.mailboxId = mailbox.getMailboxId();
         this.dispatcher = dispatcher;
+        this.consumer = consumer;
     }
 
     /**
@@ -157,8 +160,7 @@ public abstract class StoreMailbox<Id> implements org.apache.james.imap.mailbox.
         // this will hold the uid after the transaction was complete
         final MessageMapper<Id> mapper = createMessageMapper(mailboxSession);
         
-        final Mailbox<Id> mailbox = reserveNextUid(mailboxSession);
-        final long uid = mailbox.getLastUid();
+        final long uid = consumer.reserveNextUid(getMailboxRow(mailboxSession), mailboxSession);
         
         
         File file = null;
@@ -378,16 +380,6 @@ public abstract class StoreMailbox<Id> implements org.apache.james.imap.mailbox.
      */
     protected abstract Header createHeader(int lineNumber, String name, String value);
 
-
-    /**
-     * Reserve the next Uid on the underlying {@link Mailbox}. Its important that the implementation guaranteer a thread-safe/atomic calculation of the 
-     * next uid. So be sure you don't use any caching etc.
-     * 
-     * 
-     * @return mailbox
-     * @throws MailboxException
-     */
-    protected abstract Mailbox<Id> reserveNextUid(MailboxSession session) throws  MailboxException;
 
     /*
      * (non-Javadoc)
@@ -623,8 +615,7 @@ public abstract class StoreMailbox<Id> implements org.apache.james.imap.mailbox.
             
 
             for (final MailboxMembership<Id> originalMessage:originalRows) {
-                final Mailbox<Id> mailbox = reserveNextUid(session );
-                final long uid = mailbox.getLastUid();
+                final long uid = consumer.reserveNextUid(getMailboxRow(session),session);
                 
                 mapper.execute(new TransactionalMapper.Transaction() {
 

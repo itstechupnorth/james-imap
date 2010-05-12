@@ -33,11 +33,12 @@ import org.apache.james.imap.store.Authenticator;
 import org.apache.james.imap.store.StoreMailbox;
 import org.apache.james.imap.store.StoreMailboxManager;
 import org.apache.james.imap.store.Subscriber;
+import org.apache.james.imap.store.UidConsumer;
 import org.apache.james.imap.store.mail.MailboxMapper;
 import org.apache.james.imap.store.mail.model.Mailbox;
 import org.apache.james.imap.store.transaction.TransactionalMapper;
 
-public class InMemoryMailboxManager extends StoreMailboxManager<Long> implements MailboxMapper<Long> {
+public class InMemoryMailboxManager extends StoreMailboxManager<Long> implements MailboxMapper<Long>{
 
     private static final int INITIAL_SIZE = 128;
     private Map<Long, InMemoryMailbox> mailboxesById;
@@ -46,17 +47,23 @@ public class InMemoryMailboxManager extends StoreMailboxManager<Long> implements
     private MailboxSession session;
 
     public InMemoryMailboxManager(Authenticator authenticator, Subscriber subscriber) {
-        super(authenticator, subscriber);
+        super(authenticator, subscriber, new UidConsumer<Long>() {
+
+            public long reserveNextUid(Mailbox<Long> mailbox, MailboxSession session) throws MailboxException {
+                mailbox.consumeUid();
+                return mailbox.getLastUid();
+            }
+        });
         mailboxesById = new ConcurrentHashMap<Long, InMemoryMailbox>(INITIAL_SIZE);
         storeMailboxByName = new ConcurrentHashMap<String, InMemoryStoreMailbox>(INITIAL_SIZE);
         idNameMap = new ConcurrentHashMap<Long, String>(INITIAL_SIZE);
     }
 
     @Override
-    protected StoreMailbox<Long> createMailbox(MailboxEventDispatcher dispatcher, Mailbox<Long> mailboxRow, MailboxSession session) {
+    protected StoreMailbox<Long> createMailbox(MailboxEventDispatcher dispatcher, UidConsumer<Long> consumer, Mailbox<Long> mailboxRow, MailboxSession session) {
         InMemoryStoreMailbox storeMailbox = storeMailboxByName.get(mailboxRow.getName());
         if (storeMailbox == null) {
-            storeMailbox = new InMemoryStoreMailbox(dispatcher, (InMemoryMailbox)mailboxRow);
+            storeMailbox = new InMemoryStoreMailbox(dispatcher, consumer, (InMemoryMailbox)mailboxRow);
             storeMailboxByName.put(mailboxRow.getName(), storeMailbox);
         }
         
@@ -207,6 +214,11 @@ public class InMemoryMailboxManager extends StoreMailboxManager<Long> implements
         });
         storeMailboxByName.clear();
         idNameMap.clear();
+    }
+
+    public long reserveNextUid(Mailbox<Long> mailbox, MailboxSession session) throws MailboxException {
+        // TODO Auto-generated method stub
+        return 0;
     }
 
     

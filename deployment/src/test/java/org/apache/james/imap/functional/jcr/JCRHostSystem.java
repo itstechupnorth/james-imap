@@ -28,7 +28,6 @@ import org.apache.james.imap.encode.main.DefaultImapEncoderFactory;
 import org.apache.james.imap.functional.ImapHostSystem;
 import org.apache.james.imap.functional.InMemoryUserManager;
 import org.apache.james.imap.jcr.GlobalMailboxSessionJCRRepository;
-import org.apache.james.imap.jcr.JCRImapConstants;
 import org.apache.james.imap.jcr.JCRMailboxManager;
 import org.apache.james.imap.jcr.JCRSubscriptionManager;
 import org.apache.james.imap.jcr.JCRUtils;
@@ -70,7 +69,7 @@ public class JCRHostSystem extends ImapHostSystem{
             userManager = new InMemoryUserManager();
 
             //TODO: Fix the scaling stuff so the tests will pass with max scaling too
-            mailboxManager = new JCRMailboxManager(userManager, new JCRSubscriptionManager(sessionRepos, JCRImapConstants.MIN_SCALING), sessionRepos, JCRImapConstants.MIN_SCALING);
+            mailboxManager = new JCRMailboxManager(userManager, new JCRSubscriptionManager(sessionRepos), sessionRepos);
 
             final DefaultImapProcessorFactory defaultImapProcessorFactory = new DefaultImapProcessorFactory();
             resetUserMetaData();

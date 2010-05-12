@@ -27,6 +27,7 @@ import org.apache.james.imap.mailbox.util.MailboxEventDispatcher;
 import org.apache.james.imap.store.Authenticator;
 import org.apache.james.imap.store.StoreMailbox;
 import org.apache.james.imap.store.Subscriber;
+import org.apache.james.imap.store.UidConsumer;
 import org.apache.james.imap.store.mail.model.Mailbox;
 
 /**
@@ -46,8 +47,8 @@ public class OpenJPAMailboxManager extends JPAMailboxManager {
         this(authenticator, subscriber, entityManagerFactory, false);
     }
 
-    protected StoreMailbox<Long> createMailbox(MailboxEventDispatcher dispatcher, Mailbox<Long> mailboxRow, MailboxSession session) {
-        StoreMailbox<Long> result =  new OpenJPAMailbox(dispatcher,mailboxRow, entityManagerFactory.createEntityManager(session), useStreaming);
+    protected StoreMailbox<Long> createMailbox(MailboxEventDispatcher dispatcher, UidConsumer<Long> consumer, Mailbox<Long> mailboxRow, MailboxSession session) {
+        StoreMailbox<Long> result =  new OpenJPAMailbox(dispatcher, consumer, mailboxRow,entityManagerFactory.createEntityManager(session), useStreaming);
         return result;
     }
 }

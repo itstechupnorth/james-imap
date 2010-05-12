@@ -37,6 +37,7 @@ import org.apache.james.imap.store.PasswordAwareMailboxSession;
 import org.apache.james.imap.store.StoreMailbox;
 import org.apache.james.imap.store.StoreMailboxManager;
 import org.apache.james.imap.store.Subscriber;
+import org.apache.james.imap.store.UidConsumer;
 import org.apache.james.imap.store.mail.MailboxMapper;
 import org.apache.james.imap.store.mail.model.Mailbox;
 import org.apache.james.imap.store.transaction.TransactionalMapper;
@@ -50,32 +51,17 @@ public class JCRMailboxManager extends StoreMailboxManager<String> implements JC
 
     private final MailboxSessionJCRRepository repository;
     private final Log logger = LogFactory.getLog(JCRMailboxManager.class);
-    private final int scaling;
-    
-    public JCRMailboxManager(final Authenticator authenticator, final Subscriber subscriber, final MailboxSessionJCRRepository repository, final int scaling) {
-        super(authenticator, subscriber);
-        this.repository = repository;
-        this.scaling = scaling;
-    }
-
     
     public JCRMailboxManager(final Authenticator authenticator, final Subscriber subscriber, final MailboxSessionJCRRepository repository) {
-        this(authenticator, subscriber, repository, MIN_SCALING);
+        super(authenticator, subscriber, new JCRUidConsumer(repository));
+        this.repository = repository;
     }
-    
-    /**
-     * Return the scaling depth
-     * 
-     * @return scaling
-     */
-    protected int getScaling() {
-        return scaling;
-    }
-    
+
+
     @Override
-    protected StoreMailbox<String> createMailbox(MailboxEventDispatcher dispatcher, Mailbox<String> mailboxRow, MailboxSession session) throws MailboxException{
+    protected StoreMailbox<String> createMailbox(MailboxEventDispatcher dispatcher, UidConsumer<String> consumer,Mailbox<String> mailboxRow, MailboxSession session) throws MailboxException{
         try {
-            return new JCRMailbox(dispatcher, (org.apache.james.imap.jcr.mail.model.JCRMailbox) mailboxRow, repository.login(session), getScaling(), getLog());
+            return new JCRMailbox(dispatcher, consumer, (org.apache.james.imap.jcr.mail.model.JCRMailbox) mailboxRow, repository.login(session), getLog());
         } catch (RepositoryException e) {
             throw new MailboxException(HumanReadableText.GENERIC_FAILURE_DURING_PROCESSING, e);
         }
@@ -86,7 +72,7 @@ public class JCRMailboxManager extends StoreMailboxManager<String> implements JC
 
         try {
             Session jcrSession = repository.login(session);
-            JCRMailboxMapper mapper = new JCRMailboxMapper(jcrSession, getScaling(), getLog());
+            JCRMailboxMapper mapper = new JCRMailboxMapper(jcrSession, getLog());
             return mapper;
         } catch (RepositoryException e) {
             throw new MailboxException(HumanReadableText.GENERIC_FAILURE_DURING_PROCESSING, e);

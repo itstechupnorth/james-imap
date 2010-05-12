@@ -26,10 +26,11 @@ import org.apache.commons.logging.impl.SimpleLog;
 import org.apache.jackrabbit.core.RepositoryImpl;
 import org.apache.jackrabbit.core.config.RepositoryConfig;
 import org.apache.james.imap.functional.AbstractStressTest;
-import org.apache.james.imap.jcr.JCRImapConstants;
+import org.apache.james.imap.jcr.GlobalMailboxSessionJCRRepository;
 import org.apache.james.imap.jcr.JCRMailboxManager;
+import org.apache.james.imap.jcr.JCRSubscriptionManager;
 import org.apache.james.imap.jcr.JCRUtils;
-import org.apache.james.imap.mailbox.MailboxException;
+import org.apache.james.imap.jcr.MailboxSessionJCRRepository;
 import org.apache.james.imap.mailbox.MailboxSession;
 import org.apache.james.imap.store.StoreMailboxManager;
 import org.junit.After;
@@ -64,35 +65,35 @@ public class JCRStressTest extends AbstractStressTest{
         // Register imap cnd file
         JCRUtils.registerCnd(repository, workspace, user, pass);
 
+        MailboxSessionJCRRepository sessionRepos = new GlobalMailboxSessionJCRRepository(repository, workspace, user, pass);
         // TODO: Fix the scaling stuff so the tests will pass with max scaling
         // too
-        //mailboxManager = new JCRGlobalUserMailboxManager(null, new JCRGlobalUserSubscriptionManager(repository, workspace, user, pass, JCRImapConstants.MIN_SCALING), repository, workspace, user, pass, JCRImapConstants.MIN_SCALING);
+        mailboxManager = new JCRMailboxManager(null, new JCRSubscriptionManager(sessionRepos), sessionRepos);
 
     }
     
-    /*
+    
     @After
     
     public void tearDown() {
         MailboxSession session = mailboxManager.createSystemSession("test", new SimpleLog("Test"));
+        /*
         try {
             //mailboxManager.deleteEverything(session);
         } catch (MailboxException e) {
             e.printStackTrace();
         }
+        */
         session.close();
         new File(JACKRABBIT_HOME).delete();
 
     }
-*/
+
     
     @Override
     protected StoreMailboxManager<?> getMailboxManager() {
         return mailboxManager;
     }
 
-    @Override
-    public void testStessTest() throws InterruptedException, MailboxException {
-        //
-    }
+ 
 }

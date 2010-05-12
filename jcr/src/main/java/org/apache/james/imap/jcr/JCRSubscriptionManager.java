@@ -40,34 +40,19 @@ import org.apache.james.imap.store.user.model.Subscription;
 public class JCRSubscriptionManager extends StoreSubscriptionManager implements JCRImapConstants{
     private final Log logger = LogFactory.getLog(JCRSubscriptionManager.class);
     private final MailboxSessionJCRRepository repository;
-    private final int scaling;
 
-    public JCRSubscriptionManager(final MailboxSessionJCRRepository repository, final int scaling) {
+    public JCRSubscriptionManager(final MailboxSessionJCRRepository repository ) {
         super();
-        this.scaling = scaling;
         this.repository = repository;
     }
 
 
-    public JCRSubscriptionManager(final MailboxSessionJCRRepository repository ) {
-        this(repository, MIN_SCALING);
-    }
-    
-
-    /**
-     * Return the scaling depth
-     * 
-     * @return scaling
-     */
-    protected int getScaling() {
-        return scaling;
-    }
     
     @Override
     protected SubscriptionMapper createMapper(MailboxSession session) throws SubscriptionException {
         try {
             Session jcrSession = repository.login(session);
-            JCRSubscriptionMapper mapper = new JCRSubscriptionMapper(jcrSession, getScaling(), logger);
+            JCRSubscriptionMapper mapper = new JCRSubscriptionMapper(jcrSession, logger);
 
             return mapper;
         } catch (RepositoryException e) {

@@ -71,16 +71,19 @@ public abstract class StoreMailboxManager<Id> extends AbstractLogEnabled impleme
     private final Authenticator authenticator;    
     private final Subscriber subscriber;    
     private final char delimiter;
+
+    private UidConsumer<Id> consumer;
     
-    public StoreMailboxManager(final Authenticator authenticator, final Subscriber subscriber) {
-        this(authenticator, subscriber, '.');
+    public StoreMailboxManager(final Authenticator authenticator, final Subscriber subscriber, final UidConsumer<Id> consumer) {
+        this(authenticator, subscriber, consumer, '.');
     }
 
     
-    public StoreMailboxManager(final Authenticator authenticator, final Subscriber subscriber, final char delimiter) {
+    public StoreMailboxManager(final Authenticator authenticator, final Subscriber subscriber, final UidConsumer<Id> consumer, final char delimiter) {
         this.authenticator = authenticator;
         this.subscriber = subscriber;
         this.delimiter = delimiter;
+        this.consumer = consumer;
     }
 
     /**
@@ -89,7 +92,7 @@ public abstract class StoreMailboxManager<Id> extends AbstractLogEnabled impleme
      * @param mailboxRow
      * @return storeMailbox
      */
-    protected abstract StoreMailbox<Id> createMailbox(MailboxEventDispatcher dispatcher, Mailbox<Id> mailboxRow, MailboxSession session) throws MailboxException;
+    protected abstract StoreMailbox<Id> createMailbox(MailboxEventDispatcher dispatcher, UidConsumer<Id> consumer, Mailbox<Id> mailboxRow, MailboxSession session) throws MailboxException;
     
     /**
      * Create the MailboxMapper
@@ -135,7 +138,7 @@ public abstract class StoreMailboxManager<Id> extends AbstractLogEnabled impleme
             } else {
                 getLog().debug("Loaded mailbox " + mailboxName);
 
-                StoreMailbox<Id> result = createMailbox(dispatcher, mailboxRow, session);
+                StoreMailbox<Id> result = createMailbox(dispatcher, consumer, mailboxRow, session);
                 result.addListener(delegatingListener);
                 return result;
             }

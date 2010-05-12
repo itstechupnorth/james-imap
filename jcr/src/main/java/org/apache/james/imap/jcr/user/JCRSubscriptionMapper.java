@@ -31,9 +31,9 @@ import javax.jcr.query.QueryManager;
 import javax.jcr.query.QueryResult;
 
 import org.apache.commons.logging.Log;
+import org.apache.jackrabbit.commons.JcrUtils;
 import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.jcr.AbstractJCRMapper;
-import org.apache.james.imap.jcr.JCRUtils;
 import org.apache.james.imap.jcr.user.model.JCRSubscription;
 import org.apache.james.imap.mailbox.SubscriptionException;
 import org.apache.james.imap.store.user.SubscriptionMapper;
@@ -45,12 +45,8 @@ import org.apache.james.imap.store.user.model.Subscription;
  */
 public class JCRSubscriptionMapper extends AbstractJCRMapper implements SubscriptionMapper {
 
-    private final Log log;
-    private final static String PATH =  "subscriptions";
-
-    public JCRSubscriptionMapper(final Session session, final int scaling,final Log log) {
-        super(session, scaling);
-        this.log = log;
+    public JCRSubscriptionMapper(final Session session, final Log log) {
+        super(session, log);
     }
 
     /*
@@ -85,14 +81,14 @@ public class JCRSubscriptionMapper extends AbstractJCRMapper implements Subscrip
      */
     public Subscription findFindMailboxSubscriptionForUser(String user, String mailbox) throws SubscriptionException {
         try {
-            String queryString = "//" + PATH + "//element(*,imap:subscription)[@" + JCRSubscription.USERNAME_PROPERTY + "='" + user + "'] AND [@" + JCRSubscription.MAILBOX_PROPERTY +"='" + mailbox + "']";
+            String queryString = "//" + SUBSCRIPTIONS_PATH + "//element(*,imap:subscription)[@" + JCRSubscription.USERNAME_PROPERTY + "='" + user + "'] AND [@" + JCRSubscription.MAILBOX_PROPERTY +"='" + mailbox + "']";
 
             QueryManager manager = getSession().getWorkspace().getQueryManager();
             QueryResult result = manager.createQuery(queryString, Query.XPATH).execute();
             
             NodeIterator nodeIt = result.getNodes();
             if (nodeIt.hasNext()) {
-                JCRSubscription sub = new JCRSubscription(nodeIt.nextNode(), log);
+                JCRSubscription sub = new JCRSubscription(nodeIt.nextNode(), getLogger());
                 return sub;
             }
             
@@ -115,14 +111,14 @@ public class JCRSubscriptionMapper extends AbstractJCRMapper implements Subscrip
     public List<Subscription> findSubscriptionsForUser(String user) throws SubscriptionException {
         List<Subscription> subList = new ArrayList<Subscription>();
         try {
-            String queryString = "//" + PATH + "//element(*,imap:subscription)[@" + JCRSubscription.USERNAME_PROPERTY + "='" + user + "']";
+            String queryString = "//" + SUBSCRIPTIONS_PATH + "//element(*,imap:subscription)[@" + JCRSubscription.USERNAME_PROPERTY + "='" + user + "']";
 
             QueryManager manager = getSession().getWorkspace().getQueryManager();
             QueryResult result = manager.createQuery(queryString, Query.XPATH).execute();
             
             NodeIterator nodeIt = result.getNodes();
             while (nodeIt.hasNext()) {
-                subList.add(new JCRSubscription(nodeIt.nextNode(), log));
+                subList.add(new JCRSubscription(nodeIt.nextNode(), getLogger()));
             }
         } catch (PathNotFoundException e) {
             // Do nothing just return the empty list later
@@ -153,9 +149,10 @@ public class JCRSubscriptionMapper extends AbstractJCRMapper implements Subscrip
             
             // its a new subscription
             if (sub == null) {
-                String nodePath = PATH + NODE_DELIMITER + JCRUtils.createScaledPath(new String[] {username, mailbox}, getScaling());
+                Node subscriptionsNode = JcrUtils.getOrAddNode(getSession().getRootNode(), SUBSCRIPTIONS_PATH);
                 
-                node = JCRUtils.createNodeRecursive(getSession().getRootNode(), nodePath, "imap:subscription");
+                Node userNode = JcrUtils.getOrAddNode(subscriptionsNode, username);
+                node = JcrUtils.getOrAddNode(userNode, mailbox, "imap:subscription");
             } else {
                 node = sub.getNode();
             }

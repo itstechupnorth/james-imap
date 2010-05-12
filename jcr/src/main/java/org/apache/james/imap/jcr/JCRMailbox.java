@@ -35,13 +35,11 @@ import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.MailboxSession;
 import org.apache.james.imap.mailbox.util.MailboxEventDispatcher;
 import org.apache.james.imap.store.StoreMailbox;
-import org.apache.james.imap.store.mail.MailboxMapper;
+import org.apache.james.imap.store.UidConsumer;
 import org.apache.james.imap.store.mail.MessageMapper;
 import org.apache.james.imap.store.mail.model.Header;
-import org.apache.james.imap.store.mail.model.Mailbox;
 import org.apache.james.imap.store.mail.model.MailboxMembership;
 import org.apache.james.imap.store.mail.model.PropertyBuilder;
-import org.apache.james.imap.store.transaction.TransactionalMapper;
 
 /**
  * JCR implementation of a {@link StoreMailbox}
@@ -51,27 +49,15 @@ public class JCRMailbox extends StoreMailbox<String>{
 
     private final Session jcrSession;
     private final Log log;
-    private final int scaling;
 
-    public JCRMailbox(final MailboxEventDispatcher dispatcher, final org.apache.james.imap.jcr.mail.model.JCRMailbox mailbox, final Session jcrSession, final int scaling, final Log log) {
-        super(dispatcher, mailbox);
+    public JCRMailbox(final MailboxEventDispatcher dispatcher, UidConsumer<String> consumer, final org.apache.james.imap.jcr.mail.model.JCRMailbox mailbox, final Session jcrSession, final Log log) {
+        super(dispatcher, consumer, mailbox);
         this.log = log;
-        this.scaling = scaling;
         this.jcrSession = jcrSession;
         
     }
 
-    /**
-     * Return the scaling depth
-     * 
-     * @return scaling
-     */
-    protected int getScaling() {
-        return scaling;
-    }
-    
 
-    
     @Override
     protected MailboxMembership<String> copyMessage(MailboxMembership<String> originalMessage, long uid, MailboxSession session) throws MailboxException {
         MailboxMembership<String> newRow = new JCRMailboxMembership(getMailboxId(), uid, (JCRMailboxMembership) originalMessage, log);
@@ -97,7 +83,7 @@ public class JCRMailbox extends StoreMailbox<String>{
 
     @Override
     protected MessageMapper<String> createMessageMapper(MailboxSession session) throws MailboxException {
-        JCRMessageMapper messageMapper = new JCRMessageMapper(jcrSession, getMailboxId(), getScaling(), log);
+        JCRMessageMapper messageMapper = new JCRMessageMapper(jcrSession, getMailboxId(), log);
         
         return messageMapper;
 
@@ -112,22 +98,8 @@ public class JCRMailbox extends StoreMailbox<String>{
      * @throws MailboxException
      */
     protected JCRMailboxMapper createMailboxMapper(MailboxSession session) throws MailboxException {
-        JCRMailboxMapper mapper = new JCRMailboxMapper(jcrSession, getScaling(), log);
+        JCRMailboxMapper mapper = new JCRMailboxMapper(jcrSession, log);
         return mapper;
 
-    }
-
-    @Override
-    protected Mailbox<String> reserveNextUid(MailboxSession session) throws MailboxException {
-        final MailboxMapper<String> mapper = createMailboxMapper(session);
-        final org.apache.james.imap.jcr.mail.model.JCRMailbox mailbox = (org.apache.james.imap.jcr.mail.model.JCRMailbox) mapper.findMailboxById(getMailboxId());
-        mapper.execute(new TransactionalMapper.Transaction() {
-
-            public void run() throws MailboxException {
-                mailbox.consumeUid();
-            }
-            
-        });
-        return mailbox;
     }
 }
