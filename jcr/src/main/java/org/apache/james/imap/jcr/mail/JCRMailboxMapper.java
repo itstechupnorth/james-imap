@@ -98,27 +98,9 @@ public class JCRMailboxMapper extends AbstractJCRMapper implements MailboxMapper
     public void delete(Mailbox<String> mailbox) throws StorageException {
         try {
             Node node = getSession().getNodeByUUID(((JCRMailbox) mailbox).getMailboxId());
+                   
+            node.remove();
             
-            // if the node has subnodes we need to just cleanup the properties and emails, because it 
-            // seems like it holding an other mailbox
-            if (node.hasNodes()) {
-                NodeIterator it = node.getNodes();
-                while(it.hasNext()) {
-                    Node n = it.nextNode();
-                    // check if we have nodes which hold emails, and if so delete the nodes
-                    if (n.isNodeType("imap:mailbox") == false && n.isNodeType("nt:folder")) {
-                        n.remove();
-                    }
-                    
-                }
-                // remove all imap specifc properties
-                PropertyIterator propIt = node.getProperties("imap:*");
-                while(propIt.hasNext()) {
-                    propIt.nextProperty().remove();
-                }
-            } else {
-                node.remove();
-            }
         } catch (PathNotFoundException e) {
             // mailbox does not exists..
         } catch (RepositoryException e) {
@@ -260,10 +242,10 @@ public class JCRMailboxMapper extends AbstractJCRMapper implements MailboxMapper
                         final String name = jcrMailbox.getName();
                         
                         //split the name so we can construct a nice node tree
-                        final String nameParts[] = name.split("\\" +String.valueOf(delimiter));
+                        final String nameParts[] = name.split("\\" +String.valueOf(delimiter),3);
                         
                         for (int i = 0; i < nameParts.length; i++) {                          
-                           node = JcrUtils.getOrAddNode(node, nameParts[i], "imap:mailbox");                           
+                           node = JcrUtils.getOrAddNode(node, nameParts[i], "imap:mailbox");    
                         }
                         jcrMailbox.merge(node);
 
