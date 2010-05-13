@@ -33,7 +33,6 @@
     - imap:propertyOrder (Long) mandatory
    
 [imap:message] >  mix:referenceable, nt:file
-    ORDERABLE
     - imap:mailboxUUID (String) mandatory
     - imap:uid (LONG) mandatory
     - imap:size (LONG) mandatory
@@ -49,7 +48,7 @@
     - imap:messageSubType (String) mandatory
     + messageHeader (imap:messageHeader)  multiple
     + messageProperty (imap:messageProperty) multiple
- 
+
 [imap:mailbox] >  mix:referenceable, mix:lockable, nt:folder
     - imap:mailboxUidValidity (LONG) 
     - imap:mailboxName (STRING) 

@@ -51,12 +51,10 @@ import org.apache.james.imap.store.mail.model.MailboxMembership;
 public class JCRMessageMapper extends AbstractJCRMapper implements MessageMapper<String> {
 
     private final String uuid;
-    private char delimiter;
 
-    public JCRMessageMapper(final Session session, final String uuid, final Log logger, char delimiter) {
+    public JCRMessageMapper(final Session session, final String uuid, final Log logger) {
         super(session, logger);
         this.uuid = uuid;
-        this.delimiter = delimiter;
     }
 
     /*

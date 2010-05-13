@@ -85,7 +85,7 @@ public class JCRMailbox extends StoreMailbox<String>{
 
     @Override
     protected MessageMapper<String> createMessageMapper(MailboxSession session) throws MailboxException {
-        JCRMessageMapper messageMapper = new JCRMessageMapper(jcrSession, getMailboxId(), log, delimiter);
+        JCRMessageMapper messageMapper = new JCRMessageMapper(jcrSession, getMailboxId(), log);
         
         return messageMapper;
 
