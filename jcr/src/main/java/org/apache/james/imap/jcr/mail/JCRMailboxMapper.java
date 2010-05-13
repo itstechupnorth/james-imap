@@ -47,8 +47,11 @@ import org.apache.james.imap.store.mail.model.Mailbox;
  */
 public class JCRMailboxMapper extends AbstractJCRMapper implements MailboxMapper<String> {
 
-    public JCRMailboxMapper(final Session session, final Log logger) {
+    private char delimiter;
+
+    public JCRMailboxMapper(final Session session, final Log logger, char delimiter) {
         super(session, logger);
+        this.delimiter = delimiter;
     }
 
     /*
@@ -230,4 +233,5 @@ public class JCRMailboxMapper extends AbstractJCRMapper implements MailboxMapper
             throw new StorageException(HumanReadableText.SAVE_FAILED, e);
         }
     }
+ 
 }

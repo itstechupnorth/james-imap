@@ -33,30 +33,25 @@
     - imap:propertyOrder (Long) mandatory
    
 [imap:message] >  mix:referenceable, nt:file
+    ORDERABLE
     - imap:mailboxUUID (String) mandatory
     - imap:uid (LONG) mandatory
     - imap:size (LONG) mandatory
-    - imap:answered (BOOLEAN) mandatory
-    - imap:deleted (BOOLEAN) mandatory
-    - imap:draft (BOOLEAN) mandatory
-    - imap:flagged (BOOLEAN) mandatory
-    - imap:recent (BOOLEAN) mandatory
-    - imap:seen (BOOLEAN) mandatory
-    - imap:internalDate (DATE) mandatory
+    - imap:answered (BOOLEAN) 
+    - imap:deleted (BOOLEAN) 
+    - imap:draft (BOOLEAN) 
+    - imap:flagged (BOOLEAN) 
+    - imap:recent (BOOLEAN) 
+    - imap:seen (BOOLEAN) 
+    - imap:internalDate (DATE) 
     - imap:messageBodyStartOctet (LONG) mandatory
     - imap:messageTextualLineCount (LONG)
     - imap:messageSubType (String) mandatory
-    + messageHeaders (imap:messageHeaders) 
-    + messageProperties (imap:messageProperties)
-    
-[imap:messageHeaders] > nt:unstructured
-    + imap:messageHeader multiple
-    
- [imap:messageProperties] > nt:unstructured
-    + imap:messageProperty multiple
-       
-[imap:mailbox] >  mix:referenceable, mix:lockable, nt:base
-    - imap:mailboxUidValidity (LONG) mandatory
-    - imap:mailboxName (STRING) mandatory
-    - imap:mailboxLastUid (LONG) mandatory
-    + * (nt:folder)
+    + messageHeader (imap:messageHeader)  multiple
+    + messageProperty (imap:messageProperty) multiple
+ 
+[imap:mailbox] >  mix:referenceable, mix:lockable, nt:folder
+    - imap:mailboxUidValidity (LONG) 
+    - imap:mailboxName (STRING) 
+    - imap:mailboxLastUid (LONG) 
+    + * (nt:folder) multiple

@@ -34,7 +34,6 @@ import javax.mail.Flags;
 import org.apache.commons.logging.Log;
 import org.apache.jackrabbit.JcrConstants;
 import org.apache.jackrabbit.commons.JcrUtils;
-import org.apache.jackrabbit.util.Text;
 import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.jcr.JCRImapConstants;
 import org.apache.james.imap.jcr.Persistent;
@@ -88,12 +87,9 @@ public class JCRMessage extends AbstractDocument implements MailboxMembership<St
     public final static String INTERNAL_DATE_PROPERTY = "imap:internalDate"; 
     
     public final static String BODY_START_OCTET_PROPERTY = "imap:messageBodyStartOctet";
-    public final static String HEADERS_NODE_TYPE =  "imap:messageHeaders";
-    public final static String HEADERS_NODE =  "messageHeaders";
+    public final static String HEADER_NODE_TYPE =  "imap:messageHeader";
 
-    public final static String PROPERTIES_NODE_TYPE =  "imap:messageProperties";
-    public final static String PROPERTIES_NODE =  "messageProperties";
-
+    public final static String PROPERTY_NODE_TYPE =  "imap:messageProperty";
     public final static String TEXTUAL_LINE_COUNT_PROPERTY  = "imap:messageTextualLineCount";
     public final static String SUBTYPE_PROPERTY  = "imap:messageSubType";
 
@@ -201,14 +197,13 @@ public class JCRMessage extends AbstractDocument implements MailboxMembership<St
         if (isPersistent()) {
             try {
                 List<Header> headers = new ArrayList<Header>();
-                Node headersNode = node.getNode(HEADERS_NODE);
-                NodeIterator nodeIt = headersNode.getNodes();
+                NodeIterator nodeIt = node.getNodes("messageHeader");
                 while (nodeIt.hasNext()) {
                     headers.add(new JCRHeader(nodeIt.nextNode(), logger));
                 }
                 return headers;
             } catch (RepositoryException e) {
-                logger.error("Unable to retrieve node " + HEADERS_NODE, e);
+                logger.error("Unable to retrieve nodes messageHeader", e);
             }
         }
         return new ArrayList<Header>(headers);
@@ -238,13 +233,13 @@ public class JCRMessage extends AbstractDocument implements MailboxMembership<St
         if (isPersistent()) {
             try {
                 List<Property> properties = new ArrayList<Property>();
-                NodeIterator nodeIt = node.getNode(PROPERTIES_NODE).getNodes();
+                NodeIterator nodeIt = node.getNodes("messageProperty");
                 while (nodeIt.hasNext()) {
                     properties.add(new JCRProperty(nodeIt.nextNode(), logger));
                 }
                 return properties;
             } catch (RepositoryException e) {
-                logger.error("Unable to retrieve node " + PROPERTIES_NODE, e);
+                logger.error("Unable to retrieve nodes messageProperty", e);
             }
         }
         return new ArrayList<Property>(properties);
@@ -273,9 +268,11 @@ public class JCRMessage extends AbstractDocument implements MailboxMembership<St
     public Long getTextualLineCount() {
         if (isPersistent()) {
             try {
-                return node.getProperty(TEXTUAL_LINE_COUNT_PROPERTY).getLong();
+                if (node.hasProperty(TEXTUAL_LINE_COUNT_PROPERTY)) {
+                    return node.getProperty(TEXTUAL_LINE_COUNT_PROPERTY).getLong();
+                } 
             } catch (RepositoryException e) {
-                //logger.error("Unable to retrieve property " + TEXTUAL_LINE_COUNT_PROPERTY, e);
+                logger.error("Unable to retrieve property " + TEXTUAL_LINE_COUNT_PROPERTY, e);
 
             }
             return null;
@@ -353,25 +350,17 @@ public class JCRMessage extends AbstractDocument implements MailboxMembership<St
             newHeaders.add(new JCRHeader(currentHeaders.get(i), logger));
         }
         
-        Node headersNode;
-        // check if some headers are already stored
-        if (node.hasNode(HEADERS_NODE)) {
-            
-            headersNode = node.getNode(HEADERS_NODE);
-            NodeIterator iterator = headersNode.getNodes();
-            // remove old headers
-            while(iterator.hasNext()) {
-                iterator.nextNode().remove();
-            }
-        } else {
-            headersNode = node.addNode(HEADERS_NODE, HEADERS_NODE_TYPE);
+           
+        NodeIterator iterator = node.getNodes("messageHeader");
+        // remove old headers
+        while (iterator.hasNext()) {
+            iterator.nextNode().remove();
         }
-        
-            
+      
         // add headers to the message again
         for (int i = 0; i < newHeaders.size(); i++) {
             JCRHeader header = (JCRHeader) newHeaders.get(i);
-            Node headerNode = headersNode.addNode(header.getFieldName(), "imap:messageHeader");
+            Node headerNode = node.addNode("messageHeader", HEADER_NODE_TYPE);
             header.merge(headerNode);
         }
       
@@ -380,27 +369,17 @@ public class JCRMessage extends AbstractDocument implements MailboxMembership<St
         for (int i = 0; i < currentProperties.size(); i++) {
             Property prop = currentProperties.get(i);
             newProperites.add(new JCRProperty(prop, i, logger));
-        }
-        Node propertiesNode;
-        
-        // check if some properties are already stored on this.
-        if (node.hasNode(PROPERTIES_NODE)) {
-            propertiesNode = node.getNode(PROPERTIES_NODE);
-            
+        }                    
             // remove old properties, we will add a bunch of new ones
-            NodeIterator iterator = propertiesNode.getNodes();
-            while(iterator.hasNext()) {
-                iterator.nextNode().remove();
-            }
-        } else {
-            propertiesNode = node.addNode(PROPERTIES_NODE, "imap:messageProperties");
+        iterator = node.getNodes("messageProperty");
+        while (iterator.hasNext()) {
+            iterator.nextNode().remove();
         }
-        
 
         // store new properties
         for (int i = 0; i < newProperites.size(); i++) {
             JCRProperty prop = (JCRProperty)newProperites.get(i);
-            Node propNode = propertiesNode.addNode(Text.escapeIllegalJcrChars(String.valueOf(prop.getOrder())), "imap:messageProperty");
+            Node propNode = node.addNode("messageProperty", PROPERTY_NODE_TYPE);
             prop.merge(propNode);
         }
       
@@ -522,7 +501,9 @@ public class JCRMessage extends AbstractDocument implements MailboxMembership<St
     public Date getInternalDate() {
         if (isPersistent()) {
             try {
-                return node.getProperty(INTERNAL_DATE_PROPERTY).getDate().getTime();
+                if (node.hasProperty(INTERNAL_DATE_PROPERTY)) {
+                    return node.getProperty(INTERNAL_DATE_PROPERTY).getDate().getTime();
+                }
 
             } catch (RepositoryException e) {
                 logger.error("Unable to access property " + FLAGGED_PROPERTY,
@@ -600,7 +581,9 @@ public class JCRMessage extends AbstractDocument implements MailboxMembership<St
     public boolean isAnswered() {
         if (isPersistent()) {
             try {
-                return node.getProperty(ANSWERED_PROPERTY).getBoolean();
+                if (node.hasProperty(ANSWERED_PROPERTY)) {
+                    return node.getProperty(ANSWERED_PROPERTY).getBoolean();
+                }
 
             } catch (RepositoryException e) {
                 logger.error("Unable to access property " + ANSWERED_PROPERTY,
@@ -619,7 +602,9 @@ public class JCRMessage extends AbstractDocument implements MailboxMembership<St
     public boolean isDeleted() {
         if (isPersistent()) {
             try {
-                return node.getProperty(DELETED_PROPERTY).getBoolean();
+                if (node.hasProperty(DELETED_PROPERTY)) {
+                    return node.getProperty(DELETED_PROPERTY).getBoolean();
+                }
 
             } catch (RepositoryException e) {
                 logger.error("Unable to access property " + DELETED_PROPERTY,
@@ -638,8 +623,9 @@ public class JCRMessage extends AbstractDocument implements MailboxMembership<St
     public boolean isDraft() {
         if (isPersistent()) {
             try {
-                return node.getProperty(DRAFT_PROPERTY).getBoolean();
-
+                if (node.hasProperty(DRAFT_PROPERTY)) {
+                    return node.getProperty(DRAFT_PROPERTY).getBoolean();
+                }
             } catch (RepositoryException e) {
                 logger.error("Unable to access property " + DRAFT_PROPERTY, e);
             }
@@ -656,8 +642,9 @@ public class JCRMessage extends AbstractDocument implements MailboxMembership<St
     public boolean isFlagged() {
         if (isPersistent()) {
             try {
-                return node.getProperty(FLAGGED_PROPERTY).getBoolean();
-
+                if (node.hasProperty(FLAGGED_PROPERTY)) {
+                    return node.getProperty(FLAGGED_PROPERTY).getBoolean();
+                }
             } catch (RepositoryException e) {
                 logger.error("Unable to access property " + FLAGGED_PROPERTY,
                                 e);
@@ -675,8 +662,9 @@ public class JCRMessage extends AbstractDocument implements MailboxMembership<St
     public boolean isRecent() {
         if (isPersistent()) {
             try {
-                return node.getProperty(RECENT_PROPERTY).getBoolean();
-
+                if (node.hasProperty(RECENT_PROPERTY)) {
+                    return node.getProperty(RECENT_PROPERTY).getBoolean();
+                }
             } catch (RepositoryException e) {
                 logger.error("Unable to access property " + RECENT_PROPERTY, e);
             }

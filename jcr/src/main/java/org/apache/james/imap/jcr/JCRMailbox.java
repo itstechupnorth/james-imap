@@ -49,11 +49,13 @@ public class JCRMailbox extends StoreMailbox<String>{
 
     private final Session jcrSession;
     private final Log log;
+    private char delimiter;
 
-    public JCRMailbox(final MailboxEventDispatcher dispatcher, UidConsumer<String> consumer, final org.apache.james.imap.jcr.mail.model.JCRMailbox mailbox, final Session jcrSession, final Log log) {
+    public JCRMailbox(final MailboxEventDispatcher dispatcher, UidConsumer<String> consumer, final org.apache.james.imap.jcr.mail.model.JCRMailbox mailbox, final Session jcrSession, final Log log, final char delimiter) {
         super(dispatcher, consumer, mailbox);
         this.log = log;
         this.jcrSession = jcrSession;
+        this.delimiter = delimiter;
         
     }
 
@@ -83,7 +85,7 @@ public class JCRMailbox extends StoreMailbox<String>{
 
     @Override
     protected MessageMapper<String> createMessageMapper(MailboxSession session) throws MailboxException {
-        JCRMessageMapper messageMapper = new JCRMessageMapper(jcrSession, getMailboxId(), log);
+        JCRMessageMapper messageMapper = new JCRMessageMapper(jcrSession, getMailboxId(), log, delimiter);
         
         return messageMapper;
 
@@ -98,7 +100,7 @@ public class JCRMailbox extends StoreMailbox<String>{
      * @throws MailboxException
      */
     protected JCRMailboxMapper createMailboxMapper(MailboxSession session) throws MailboxException {
-        JCRMailboxMapper mapper = new JCRMailboxMapper(jcrSession, log);
+        JCRMailboxMapper mapper = new JCRMailboxMapper(jcrSession, log, delimiter);
         return mapper;
 
     }

@@ -51,10 +51,12 @@ import org.apache.james.imap.store.mail.model.MailboxMembership;
 public class JCRMessageMapper extends AbstractJCRMapper implements MessageMapper<String> {
 
     private final String uuid;
+    private char delimiter;
 
-    public JCRMessageMapper(final Session session, final String uuid, final Log logger) {
+    public JCRMessageMapper(final Session session, final String uuid, final Log logger, char delimiter) {
         super(session, logger);
         this.uuid = uuid;
+        this.delimiter = delimiter;
     }
 
     /*
@@ -444,7 +446,7 @@ public class JCRMessageMapper extends AbstractJCRMapper implements MessageMapper
 
                     @Override
                     protected Object run(Node dayNode) throws RepositoryException {
-                        Node messageNode = dayNode.addNode("message-"+String.valueOf(membership.getUid()),"imap:message");
+                        Node messageNode = dayNode.addNode(String.valueOf(membership.getUid()),"imap:message");
                         try {
                             membership.merge(messageNode);
                         } catch (IOException e) {

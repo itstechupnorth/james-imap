@@ -61,7 +61,7 @@ public class JCRMailboxManager extends StoreMailboxManager<String> implements JC
     @Override
     protected StoreMailbox<String> createMailbox(MailboxEventDispatcher dispatcher, UidConsumer<String> consumer,Mailbox<String> mailboxRow, MailboxSession session) throws MailboxException{
         try {
-            return new JCRMailbox(dispatcher, consumer, (org.apache.james.imap.jcr.mail.model.JCRMailbox) mailboxRow, repository.login(session), getLog());
+            return new JCRMailbox(dispatcher, consumer, (org.apache.james.imap.jcr.mail.model.JCRMailbox) mailboxRow, repository.login(session), getLog(), getDelimiter());
         } catch (RepositoryException e) {
             throw new MailboxException(HumanReadableText.GENERIC_FAILURE_DURING_PROCESSING, e);
         }
@@ -72,7 +72,7 @@ public class JCRMailboxManager extends StoreMailboxManager<String> implements JC
 
         try {
             Session jcrSession = repository.login(session);
-            JCRMailboxMapper mapper = new JCRMailboxMapper(jcrSession, getLog());
+            JCRMailboxMapper mapper = new JCRMailboxMapper(jcrSession, getLog(), getDelimiter());
             return mapper;
         } catch (RepositoryException e) {
             throw new MailboxException(HumanReadableText.GENERIC_FAILURE_DURING_PROCESSING, e);
