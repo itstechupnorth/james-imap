@@ -22,6 +22,12 @@ import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.MailboxSession;
 import org.apache.james.imap.store.mail.model.Mailbox;
 
+/**
+ * Implementations of this interface take care of reserve / consume the next uid in a {@link Mailbox}.
+ * This need to be thread-safe for Mailboxes with the same id
+ *
+ * @param <Id>
+ */
 public interface UidConsumer<Id> {
 
     /**
