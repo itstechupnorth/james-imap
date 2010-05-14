@@ -31,9 +31,9 @@ import org.apache.james.imap.mailbox.MailboxSession;
 public class MailboxSessionEntityManagerFactory {
 
     protected final static String ENTITYMANAGER ="ENTITYMANAGER";
-    private EntityManagerFactory factory;
+    private final EntityManagerFactory factory;
     
-    public MailboxSessionEntityManagerFactory(EntityManagerFactory factory) {
+    public MailboxSessionEntityManagerFactory(final EntityManagerFactory factory) {
         this.factory = factory;
     }
     

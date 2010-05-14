@@ -47,6 +47,9 @@ public class GlobalMailboxSessionJCRRepository extends MailboxSessionJCRReposito
         }
     }
 
+    /**
+     * Login in the {@link Repository} with the global configured user and password
+     */
     @Override
     public Session login(MailboxSession session) throws RepositoryException {
         Session jcrSession = (Session) session.getAttributes().get(JCR_SESSION);

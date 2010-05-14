@@ -26,11 +26,16 @@ import org.apache.james.imap.mailbox.MailboxSession;
 import org.apache.james.imap.store.UidConsumer;
 import org.apache.james.imap.store.mail.model.Mailbox;
 
+/**
+ * Take care of consume/reserve the next uid for a {@link Mailbox}. This is done by using database locks
+ * 
+ *
+ */
 public class JPAUidConsumer implements UidConsumer<Long>{
 
-    private MailboxSessionEntityManagerFactory factory;
+    private final MailboxSessionEntityManagerFactory factory;
 
-    public JPAUidConsumer(MailboxSessionEntityManagerFactory factory) {
+    public JPAUidConsumer(final MailboxSessionEntityManagerFactory factory) {
         this.factory = factory;
     }
     

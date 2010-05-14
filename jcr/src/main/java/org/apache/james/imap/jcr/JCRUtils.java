@@ -55,14 +55,27 @@ public class JCRUtils implements JCRImapConstants{
                 }
                 session = repository.login(new SimpleCredentials(username, pass), workspace);
             }
-            // Register the custom node types defined in the CND file
-            InputStream is = Thread.currentThread().getContextClassLoader()
-                                  .getResourceAsStream("org/apache/james/imap/jcr/imap.cnd");
-            CndImporter.registerNodeTypes(new InputStreamReader(is), session);
+            registerCnd(session);
             session.logout();
         } catch (Exception e) {
             throw new RuntimeException("Unable to register cnd file", e);
         }    
+    }
+    
+    /**
+     * Register the imap CND file 
+     * 
+     * @param session
+     */
+    public static void registerCnd(Session session) {
+        // Register the custom node types defined in the CND file
+        InputStream is = Thread.currentThread().getContextClassLoader()
+                              .getResourceAsStream("org/apache/james/imap/jcr/imap.cnd");
+        try {
+            CndImporter.registerNodeTypes(new InputStreamReader(is), session);
+        } catch (Exception e) {
+            throw new RuntimeException("Unable to register cnd file", e);
+        }
     }
     
 }

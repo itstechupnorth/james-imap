@@ -23,6 +23,7 @@ import java.io.IOException;
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 
+
 public interface Persistent {
 
 	/**

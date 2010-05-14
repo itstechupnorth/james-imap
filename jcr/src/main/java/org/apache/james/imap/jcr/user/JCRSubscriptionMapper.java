@@ -151,7 +151,12 @@ public class JCRSubscriptionMapper extends AbstractJCRMapper implements Subscrip
             if (sub == null) {
                 Node subscriptionsNode = JcrUtils.getOrAddNode(getSession().getRootNode(), SUBSCRIPTIONS_PATH);
                 
-                Node userNode = JcrUtils.getOrAddNode(subscriptionsNode, username);
+                // this loop will create a structure like:
+                // /mailboxes/u/user/INBOX
+                //
+                // This is needed to minimize the child nodes a bit
+                Node userNode = JcrUtils.getOrAddNode(subscriptionsNode, String.valueOf(username.charAt(0)));
+                userNode = JcrUtils.getOrAddNode(userNode, String.valueOf(username));
                 node = JcrUtils.getOrAddNode(userNode, mailbox, "imap:subscription");
             } else {
                 node = sub.getNode();

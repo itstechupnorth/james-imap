@@ -24,13 +24,6 @@ package org.apache.james.imap.jcr;
  */
 public interface JCRImapConstants {
 
-    /**
-     * Node path scaling
-     */
-    public final static int MAX_SCALING = -1;
-
-    public final static int MIN_SCALING = 0;
-
     
 	/**
 	 * Delimiter for Nodes

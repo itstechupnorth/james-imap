@@ -48,6 +48,10 @@ import org.apache.james.imap.mailbox.SearchQuery.NumericRange;
 import org.apache.james.imap.store.mail.MessageMapper;
 import org.apache.james.imap.store.mail.model.MailboxMembership;
 
+/**
+ * JCR implementation of a {@link MessageMapper}
+ *
+ */
 public class JCRMessageMapper extends AbstractJCRMapper implements MessageMapper<String> {
 
     private final String uuid;
@@ -402,7 +406,7 @@ public class JCRMessageMapper extends AbstractJCRMapper implements MessageMapper
                 Calendar cal = Calendar.getInstance();
                 cal.setTime(date);
                 final String year = String.valueOf(cal.get(Calendar.YEAR));
-                final String month = String.valueOf(cal.get(Calendar.MONTH +1));
+                final String month = String.valueOf(cal.get(Calendar.MONTH) +1);
                 final String day = String.valueOf(cal.get(Calendar.DAY_OF_MONTH));
                
                 Node dayNode = null;
@@ -420,13 +424,13 @@ public class JCRMessageMapper extends AbstractJCRMapper implements MessageMapper
                         @Override
                         protected Object run(Node mailboxNode) throws RepositoryException {
 
-                            Node yearNode = JcrUtils.getOrAddFolder(mailboxNode, String.valueOf(year));
+                            Node yearNode = JcrUtils.getOrAddFolder(mailboxNode, year);
                             yearNode.addMixin(JcrConstants.MIX_LOCKABLE);
 
-                            Node monthNode = JcrUtils.getOrAddFolder(yearNode, String.valueOf(month));
+                            Node monthNode = JcrUtils.getOrAddFolder(yearNode, month);
                             monthNode.addMixin(JcrConstants.MIX_LOCKABLE);
 
-                            Node dayNode = JcrUtils.getOrAddFolder(monthNode, String.valueOf(day));
+                            Node dayNode = JcrUtils.getOrAddFolder(monthNode, day);
                             dayNode.addMixin(JcrConstants.MIX_LOCKABLE);
                             // save the folders for now
                             getSession().save();
