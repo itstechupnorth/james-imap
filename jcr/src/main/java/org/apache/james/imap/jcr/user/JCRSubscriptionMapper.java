@@ -81,7 +81,7 @@ public class JCRSubscriptionMapper extends AbstractJCRMapper implements Subscrip
      */
     public Subscription findFindMailboxSubscriptionForUser(String user, String mailbox) throws SubscriptionException {
         try {
-            String queryString = "//" + SUBSCRIPTIONS_PATH + "//element(*,imap:subscription)[@" + JCRSubscription.USERNAME_PROPERTY + "='" + user + "'] AND [@" + JCRSubscription.MAILBOX_PROPERTY +"='" + mailbox + "']";
+            String queryString = "//" + SUBSCRIPTIONS_PATH + "//element(*,jamesMailbox:subscription)[@" + JCRSubscription.USERNAME_PROPERTY + "='" + user + "'] AND [@" + JCRSubscription.MAILBOX_PROPERTY +"='" + mailbox + "']";
 
             QueryManager manager = getSession().getWorkspace().getQueryManager();
             QueryResult result = manager.createQuery(queryString, Query.XPATH).execute();
@@ -111,7 +111,7 @@ public class JCRSubscriptionMapper extends AbstractJCRMapper implements Subscrip
     public List<Subscription> findSubscriptionsForUser(String user) throws SubscriptionException {
         List<Subscription> subList = new ArrayList<Subscription>();
         try {
-            String queryString = "//" + SUBSCRIPTIONS_PATH + "//element(*,imap:subscription)[@" + JCRSubscription.USERNAME_PROPERTY + "='" + user + "']";
+            String queryString = "//" + SUBSCRIPTIONS_PATH + "//element(*,jamesMailbox:subscription)[@" + JCRSubscription.USERNAME_PROPERTY + "='" + user + "']";
 
             QueryManager manager = getSession().getWorkspace().getQueryManager();
             QueryResult result = manager.createQuery(queryString, Query.XPATH).execute();
@@ -157,7 +157,7 @@ public class JCRSubscriptionMapper extends AbstractJCRMapper implements Subscrip
                 // This is needed to minimize the child nodes a bit
                 Node userNode = JcrUtils.getOrAddNode(subscriptionsNode, String.valueOf(username.charAt(0)));
                 userNode = JcrUtils.getOrAddNode(userNode, String.valueOf(username));
-                node = JcrUtils.getOrAddNode(userNode, mailbox, "imap:subscription");
+                node = JcrUtils.getOrAddNode(userNode, mailbox, "jamesMailbox:subscription");
             } else {
                 node = sub.getNode();
             }

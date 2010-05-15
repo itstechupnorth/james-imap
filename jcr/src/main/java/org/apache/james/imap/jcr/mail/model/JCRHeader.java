@@ -35,9 +35,9 @@ import org.apache.james.imap.store.mail.model.Header;
 public class JCRHeader extends AbstractComparableHeader implements JCRImapConstants, Persistent{
     private static final String TOSTRING_SEP = " ";
 
-    public final static String FIELDNAME_PROPERTY = "imap:headerFieldName";
-    public final static String VALUE_PROPERTY = "imap:headerValue";
-    public final static String LINENUMBER_PROPERTY = "imap:headerLineNumber";
+    public final static String FIELDNAME_PROPERTY = "jamesMailbox:headerFieldName";
+    public final static String VALUE_PROPERTY = "jamesMailbox:headerValue";
+    public final static String LINENUMBER_PROPERTY = "jamesMailbox:headerLineNumber";
 
     private String fieldName;
     private String value;

@@ -75,23 +75,23 @@ public class JCRMessage extends AbstractDocument implements MailboxMembership<St
     
     private static final String TOSTRING_SEPARATOR = " ";
 
-    public final static String MAILBOX_UUID_PROPERTY = "imap:mailboxUUID";
-    public final static String UID_PROPERTY = "imap:uid";
-    public final static String SIZE_PROPERTY = "imap:size";
-    public final static String ANSWERED_PROPERTY = "imap:answered";
-    public final static String DELETED_PROPERTY = "imap:deleted";
-    public final static String DRAFT_PROPERTY =  "imap:draft";
-    public final static String FLAGGED_PROPERTY = "imap:flagged";
-    public final static String RECENT_PROPERTY = "imap:recent";
-    public final static String SEEN_PROPERTY = "imap:seen";
-    public final static String INTERNAL_DATE_PROPERTY = "imap:internalDate"; 
+    public final static String MAILBOX_UUID_PROPERTY = "jamesMailbox:mailboxUUID";
+    public final static String UID_PROPERTY = "jamesMailbox:uid";
+    public final static String SIZE_PROPERTY = "jamesMailbox:size";
+    public final static String ANSWERED_PROPERTY = "jamesMailbox:answered";
+    public final static String DELETED_PROPERTY = "jamesMailbox:deleted";
+    public final static String DRAFT_PROPERTY =  "jamesMailbox:draft";
+    public final static String FLAGGED_PROPERTY = "jamesMailbox:flagged";
+    public final static String RECENT_PROPERTY = "jamesMailbox:recent";
+    public final static String SEEN_PROPERTY = "jamesMailbox:seen";
+    public final static String INTERNAL_DATE_PROPERTY = "jamesMailbox:internalDate"; 
     
-    public final static String BODY_START_OCTET_PROPERTY = "imap:messageBodyStartOctet";
-    public final static String HEADER_NODE_TYPE =  "imap:messageHeader";
+    public final static String BODY_START_OCTET_PROPERTY = "jamesMailbox:messageBodyStartOctet";
+    public final static String HEADER_NODE_TYPE =  "jamesMailbox:messageHeader";
 
-    public final static String PROPERTY_NODE_TYPE =  "imap:messageProperty";
-    public final static String TEXTUAL_LINE_COUNT_PROPERTY  = "imap:messageTextualLineCount";
-    public final static String SUBTYPE_PROPERTY  = "imap:messageSubType";
+    public final static String PROPERTY_NODE_TYPE =  "jamesMailbox:messageProperty";
+    public final static String TEXTUAL_LINE_COUNT_PROPERTY  = "jamesMailbox:messageTextualLineCount";
+    public final static String SUBTYPE_PROPERTY  = "jamesMailbox:messageSubType";
 
     public JCRMessage(Node node, Log logger) {
         this.logger= logger;

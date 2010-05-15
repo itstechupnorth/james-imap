@@ -15,42 +15,42 @@
  * limitations under the License.
  */
 
-<imap = 'http://james.apache.org/imap/jcr/'>
+<jamesMailbox = 'http://james.apache.org/imap/jcr/'>
 
-[imap:subscription] > nt:base
-    - imap:subscriptionUsername (STRING) mandatory
-    - imap:subscriptionMailbox (STRING) mandatory
+[jamesMailbox:subscription] > nt:base
+    - jamesMailbox:subscriptionUsername (STRING) mandatory
+    - jamesMailbox:subscriptionMailbox (STRING) mandatory
 
-[imap:messageHeader] > nt:base
-    - imap:headerFieldName (STRING) mandatory
-    - imap:headerValue(STRING) mandatory
-    - imap:headerLineNumber (LONG) mandatory
+[jamesMailbox:messageHeader] > nt:base
+    - jamesMailbox:headerFieldName (STRING) mandatory
+    - jamesMailbox:headerValue(STRING) mandatory
+    - jamesMailbox:headerLineNumber (LONG) mandatory
 
-[imap:messageProperty] > nt:base
-    - imap:propertyNamespace (STRING) mandatory
-    - imap:propertyLocalName (STRING) mandatory
-    - imap:propertyValue(STRING) mandatory
-    - imap:propertyOrder (Long) mandatory
+[jamesMailbox:messageProperty] > nt:base
+    - jamesMailbox:propertyNamespace (STRING) mandatory
+    - jamesMailbox:propertyLocalName (STRING) mandatory
+    - jamesMailbox:propertyValue(STRING) mandatory
+    - jamesMailbox:propertyOrder (Long) mandatory
    
-[imap:message] >  mix:referenceable, nt:file
-    - imap:mailboxUUID (String) mandatory
-    - imap:uid (LONG) mandatory
-    - imap:size (LONG) mandatory
-    - imap:answered (BOOLEAN) 
-    - imap:deleted (BOOLEAN) 
-    - imap:draft (BOOLEAN) 
-    - imap:flagged (BOOLEAN) 
-    - imap:recent (BOOLEAN) 
-    - imap:seen (BOOLEAN) 
-    - imap:internalDate (DATE) 
-    - imap:messageBodyStartOctet (LONG) mandatory
-    - imap:messageTextualLineCount (LONG)
-    - imap:messageSubType (String) mandatory
-    + messageHeader (imap:messageHeader)  multiple
-    + messageProperty (imap:messageProperty) multiple
+[jamesMailbox:message] >  mix:referenceable, nt:file
+    - jamesMailbox:mailboxUUID (String) mandatory
+    - jamesMailbox:uid (LONG) mandatory
+    - jamesMailbox:size (LONG) mandatory
+    - jamesMailbox:answered (BOOLEAN) 
+    - jamesMailbox:deleted (BOOLEAN) 
+    - jamesMailbox:draft (BOOLEAN) 
+    - jamesMailbox:flagged (BOOLEAN) 
+    - jamesMailbox:recent (BOOLEAN) 
+    - jamesMailbox:seen (BOOLEAN) 
+    - jamesMailbox:internalDate (DATE) 
+    - jamesMailbox:messageBodyStartOctet (LONG) mandatory
+    - jamesMailbox:messageTextualLineCount (LONG)
+    - jamesMailbox:messageSubType (String) mandatory
+    + messageHeader (jamesMailbox:messageHeader)  multiple
+    + messageProperty (jamesMailbox:messageProperty) multiple
 
-[imap:mailbox] >  mix:referenceable, mix:lockable, nt:folder
-    - imap:mailboxUidValidity (LONG) 
-    - imap:mailboxName (STRING) 
-    - imap:mailboxLastUid (LONG) 
+[jamesMailbox:mailbox] >  mix:referenceable, mix:lockable, nt:folder
+    - jamesMailbox:mailboxUidValidity (LONG) 
+    - jamesMailbox:mailboxName (STRING) 
+    - jamesMailbox:mailboxLastUid (LONG) 
     + * (nt:folder) multiple

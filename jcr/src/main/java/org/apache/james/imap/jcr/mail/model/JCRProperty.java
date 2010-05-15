@@ -41,10 +41,10 @@ public class JCRProperty extends AbstractComparableProperty<JCRProperty> impleme
     private String value;
     private int order;
 
-    public final static String NAMESPACE_PROPERTY = "imap:propertyNamespace";
-    public final static String LOCALNAME_PROPERTY =  "imap:propertyLocalName";
-    public final static String VALUE_PROPERTY =  "imap:propertyValue";
-    public final static String ORDER_PROPERTY =  "imap:propertyOrder";
+    public final static String NAMESPACE_PROPERTY = "jamesMailbox:propertyNamespace";
+    public final static String LOCALNAME_PROPERTY =  "jamesMailbox:propertyLocalName";
+    public final static String VALUE_PROPERTY =  "jamesMailbox:propertyValue";
+    public final static String ORDER_PROPERTY =  "jamesMailbox:propertyOrder";
 
     public JCRProperty(final Node node, final Log logger) {
         this.node = node;

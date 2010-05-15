@@ -34,8 +34,8 @@ import org.apache.james.imap.store.user.model.Subscription;
 public class JCRSubscription implements Subscription, Persistent, JCRImapConstants {
     private static final String TOSTRING_SEPARATOR = " ";
 
-    public final static String USERNAME_PROPERTY = "imap:subscriptionUsername";
-    public final static String MAILBOX_PROPERTY =  "imap:subscriptionMailbox";
+    public final static String USERNAME_PROPERTY = "jamesMailbox:subscriptionUsername";
+    public final static String MAILBOX_PROPERTY =  "jamesMailbox:subscriptionMailbox";
     
     private Node node;
     private final Log log;
