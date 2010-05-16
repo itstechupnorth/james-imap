@@ -19,11 +19,7 @@
 package org.apache.james.imap.store;
 
 public interface StoreConstants {
-
-    public final static String MAILBOX_MAPPER = "MAILBOX_MAPPER"; 
     
-    public final static String MESSAGE_MAPPER = "MESSAGE_MAPPER";
-
     public static final String USER_NAMESPACE_PREFIX = "#mail";
 
 }

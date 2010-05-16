@@ -497,16 +497,17 @@ public abstract class StoreMailboxManager<Id> extends AbstractLogEnabled impleme
 
 
     /**
-     * End processing of Request for session. This will dispose all objects which belong to the current
-     * Request
+     * End processing of Request for session. Default is to do nothing.
+     * Implementations should override this if they need to do anything special
      */
     public void endProcessingRequest(MailboxSession session) {
+        // Default do nothing
     }
 
 
     /**
      * Start processing of Request for session. Default is to do nothing.
-     * Implementations should override this if they need todo anything special
+     * Implementations should override this if they need to do anything special
      */
     public void startProcessingRequest(MailboxSession session) {
         // Default do nothing

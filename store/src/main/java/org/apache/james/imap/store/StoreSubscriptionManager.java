@@ -67,7 +67,7 @@ public abstract class StoreSubscriptionManager implements Subscriber {
                 
             });
         } catch (MailboxException e) {
-            throw (SubscriptionException) e;
+            throw new SubscriptionException(e.getKey(), e);
         }
 
 
@@ -114,7 +114,7 @@ public abstract class StoreSubscriptionManager implements Subscriber {
 
             });
         } catch (MailboxException e) {
-            throw (SubscriptionException) e;
+            throw new SubscriptionException(e.getKey(), e);
         }
     }
 }
