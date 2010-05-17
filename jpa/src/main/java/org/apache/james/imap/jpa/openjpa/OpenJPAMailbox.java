@@ -25,7 +25,6 @@ import java.util.Date;
 import java.util.List;
 
 import javax.mail.Flags;
-import javax.persistence.EntityManager;
 
 import org.apache.james.imap.jpa.JPAMailbox;
 import org.apache.james.imap.jpa.MailboxSessionEntityManagerFactory;
