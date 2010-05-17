@@ -23,10 +23,11 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import javax.jcr.Session;
+import javax.jcr.RepositoryException;
 import javax.mail.Flags;
 
 import org.apache.commons.logging.Log;
+import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.jcr.mail.JCRMailboxMapper;
 import org.apache.james.imap.jcr.mail.JCRMessageMapper;
 import org.apache.james.imap.jcr.mail.model.JCRHeader;
@@ -47,14 +48,14 @@ import org.apache.james.imap.store.mail.model.PropertyBuilder;
  */
 public class JCRMailbox extends StoreMailbox<String>{
 
-    private final Session jcrSession;
+    private final MailboxSessionJCRRepository repos;
     private final Log log;
     private char delimiter;
 
-    public JCRMailbox(final MailboxEventDispatcher dispatcher, UidConsumer<String> consumer, final org.apache.james.imap.jcr.mail.model.JCRMailbox mailbox, final Session jcrSession, final Log log, final char delimiter) {
+    public JCRMailbox(final MailboxEventDispatcher dispatcher, UidConsumer<String> consumer, final org.apache.james.imap.jcr.mail.model.JCRMailbox mailbox, final MailboxSessionJCRRepository repos, final Log log, final char delimiter) {
         super(dispatcher, consumer, mailbox);
         this.log = log;
-        this.jcrSession = jcrSession;
+        this.repos = repos;
         this.delimiter = delimiter;
         
     }
@@ -85,10 +86,13 @@ public class JCRMailbox extends StoreMailbox<String>{
 
     @Override
     protected MessageMapper<String> createMessageMapper(MailboxSession session) throws MailboxException {
-        JCRMessageMapper messageMapper = new JCRMessageMapper(jcrSession, getMailboxId(), log);
+        try {
+            JCRMessageMapper messageMapper = new JCRMessageMapper(repos.login(session), getMailboxId(), log);
+            return messageMapper;
+        } catch (RepositoryException e) {
+            throw new MailboxException(HumanReadableText.GENERIC_FAILURE_DURING_PROCESSING, e);
+        }
         
-        return messageMapper;
-
     }
 
     /**
@@ -100,8 +104,14 @@ public class JCRMailbox extends StoreMailbox<String>{
      * @throws MailboxException
      */
     protected JCRMailboxMapper createMailboxMapper(MailboxSession session) throws MailboxException {
-        JCRMailboxMapper mapper = new JCRMailboxMapper(jcrSession, log, delimiter);
-        return mapper;
+        try {
+            JCRMailboxMapper mapper = new JCRMailboxMapper(repos.login(session), log, delimiter);
+            return mapper;
+
+        } catch (RepositoryException e) {
+            throw new MailboxException(HumanReadableText.GENERIC_FAILURE_DURING_PROCESSING, e);
+        }
+        
 
     }
 }

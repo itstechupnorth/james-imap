@@ -60,11 +60,7 @@ public class JCRMailboxManager extends StoreMailboxManager<String> implements JC
 
     @Override
     protected StoreMailbox<String> createMailbox(MailboxEventDispatcher dispatcher, UidConsumer<String> consumer,Mailbox<String> mailboxRow, MailboxSession session) throws MailboxException{
-        try {
-            return new JCRMailbox(dispatcher, consumer, (org.apache.james.imap.jcr.mail.model.JCRMailbox) mailboxRow, repository.login(session), getLog(), getDelimiter());
-        } catch (RepositoryException e) {
-            throw new MailboxException(HumanReadableText.GENERIC_FAILURE_DURING_PROCESSING, e);
-        }
+        return new JCRMailbox(dispatcher, consumer, (org.apache.james.imap.jcr.mail.model.JCRMailbox) mailboxRow, repository, getLog(), getDelimiter());    
     }
 
     @Override
@@ -93,11 +89,12 @@ public class JCRMailboxManager extends StoreMailboxManager<String> implements JC
         });
     }
 
-    /*
-     * (non-Javadoc)
+
+    /**
+     * Return a {@link PasswordAwareMailboxSession} if the login was successful
      * 
-     * @see org.apache.james.imap.mailbox.MailboxManager#login(java.lang.String,
-     * java.lang.String, org.apache.commons.logging.Log)
+     * (non-Javadoc)
+     * @see org.apache.james.imap.store.StoreMailboxManager#login(java.lang.String, java.lang.String, org.apache.commons.logging.Log)
      */
     public MailboxSession login(String userid, String passwd, Log log) throws BadCredentialsException, MailboxException {
         if (login(userid, passwd)) {

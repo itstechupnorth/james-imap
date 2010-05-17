@@ -48,7 +48,7 @@ public class OpenJPAMailboxManager extends JPAMailboxManager {
     }
 
     protected StoreMailbox<Long> createMailbox(MailboxEventDispatcher dispatcher, UidConsumer<Long> consumer, Mailbox<Long> mailboxRow, MailboxSession session) {
-        StoreMailbox<Long> result =  new OpenJPAMailbox(dispatcher, consumer, mailboxRow,entityManagerFactory.createEntityManager(session), useStreaming);
+        StoreMailbox<Long> result =  new OpenJPAMailbox(dispatcher, consumer, mailboxRow,entityManagerFactory, useStreaming);
         return result;
     }
 }
