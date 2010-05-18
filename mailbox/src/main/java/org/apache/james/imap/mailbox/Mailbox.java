@@ -31,6 +31,8 @@ import org.apache.james.imap.mailbox.MessageResult.FetchGroup;
 
 /**
  * Interface which represent a Mailbox
+ * 
+ * A {@link Mailbox} should be valid for the whole {@link MailboxSession}
  *
  */
 public interface Mailbox {
