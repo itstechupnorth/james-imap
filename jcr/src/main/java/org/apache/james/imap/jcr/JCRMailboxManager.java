@@ -103,4 +103,16 @@ public class JCRMailboxManager extends StoreMailboxManager<String> implements JC
             throw new BadCredentialsException();
         }
     }
+
+
+    /**
+     * Logout every open JCR Session
+     */
+    @Override
+    public void endProcessingRequest(MailboxSession session) {
+        repository.logout(session);
+        super.endProcessingRequest(session);
+    }
+    
+    
 }

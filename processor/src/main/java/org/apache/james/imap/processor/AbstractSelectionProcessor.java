@@ -198,11 +198,13 @@ abstract class AbstractSelectionProcessor extends AbstractMailboxProcessor {
         final SelectedMailbox sessionMailbox;
         final Iterator<MessageResult> it = mailbox.getMessages(MessageRange.all(),
                 FetchGroupImpl.MINIMAL, mailboxSession);
+
         final List<Long> uids = new ArrayList<Long>();
         while (it.hasNext()) {
-            final MessageResult result = (MessageResult) it.next();
-            uids.add(new Long(result.getUid()));
+            final MessageResult result = it.next();
+            uids.add(result.getUid());
         }
+        
         sessionMailbox = new SelectedMailboxImpl(getMailboxManager(), uids,
                 mailboxSession, name);
         session.selected(sessionMailbox);

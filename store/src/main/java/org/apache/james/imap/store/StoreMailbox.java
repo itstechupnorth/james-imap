@@ -27,7 +27,6 @@ import java.io.InputStream;
 import java.io.PushbackInputStream;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -394,16 +393,11 @@ public abstract class StoreMailbox<Id> implements org.apache.james.imap.mailbox.
     }
 
     private ResultIterator<Id> getMessages(FetchGroup result, UidRange range, List<MailboxMembership<Id>> messages) {
-        final Map<Long, Flags> flagsByIndex = new HashMap<Long, Flags>();
-        for (MailboxMembership<Id> member:messages) {
-            flagsByIndex.put(member.getUid(), member.createFlags());
-        }
         final ResultIterator<Id> results = getResults(result, messages);
         return results;
     }
 
     private ResultIterator<Id> getResults(FetchGroup result, List<MailboxMembership<Id>> messages) {
-        Collections.sort(messages, ResultUtils.getUidComparator());
         final ResultIterator<Id> results = new ResultIterator<Id>(messages,result);
         return results;
     }
@@ -452,6 +446,7 @@ public abstract class StoreMailbox<Id> implements org.apache.james.imap.mailbox.
     private Long getFirstUnseen(MailboxSession mailboxSession) throws MailboxException {
         try {
             final MessageMapper<Id> messageMapper = createMessageMapper(mailboxSession);
+            
             final List<MailboxMembership<Id>> members = messageMapper.findUnseenMessagesInMailbox();
             final Iterator<MailboxMembership<Id>> it = members.iterator();
             final Long result;
