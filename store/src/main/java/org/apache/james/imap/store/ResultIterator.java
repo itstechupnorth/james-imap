@@ -32,9 +32,12 @@ import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.MessageResult;
 import org.apache.james.imap.mailbox.MimeDescriptor;
 import org.apache.james.imap.mailbox.MessageResult.FetchGroup;
-import org.apache.james.imap.mailbox.util.FetchGroupImpl;
 import org.apache.james.imap.store.mail.model.MailboxMembership;
 
+/**
+ * {@link Iterator} implementations for {@link MessageResult}
+ *
+ */
 public class ResultIterator<Id> implements Iterator<MessageResult> {
 
     private final List<MailboxMembership<Id>> messages;
@@ -46,7 +49,7 @@ public class ResultIterator<Id> implements Iterator<MessageResult> {
         if (messages == null) {
             this.messages = new ArrayList<MailboxMembership<Id>>();
         } else {
-            this.messages = new ArrayList<MailboxMembership<Id>>(messages);
+            this.messages = messages;
         }
         this.fetchGroup = fetchGroup;
     }
@@ -60,12 +63,20 @@ public class ResultIterator<Id> implements Iterator<MessageResult> {
         return messages.iterator();
     }
 
+    /*
+     * (non-Javadoc)
+     * @see java.util.Iterator#hasNext()
+     */
     public boolean hasNext() {
         return !messages.isEmpty();
     }
 
+    /*
+     * (non-Javadoc)
+     * @see java.util.Iterator#next()
+     */
     public MessageResult next() {
-        if (messages.isEmpty()) {
+        if (hasNext() == false) {
             throw new NoSuchElementException("No such element.");
         }
         final MailboxMembership<Id> message = messages.get(0);
@@ -80,10 +91,18 @@ public class ResultIterator<Id> implements Iterator<MessageResult> {
         return result;
     }
 
+    /**
+     * Remove is not supported
+     */
     public void remove() {
         throw new UnsupportedOperationException("Read only iteration.");
     }
 
+    /**
+     * Return a List which contains {@link MessageResult} objects which are left in the {@link Iterator}
+     * 
+     * @return list
+     */
     public List<MessageResult> toList() {
         final List<MessageResult> results = new ArrayList<MessageResult>(messages.size());
         while(hasNext()) {
@@ -93,8 +112,6 @@ public class ResultIterator<Id> implements Iterator<MessageResult> {
     }
     
     private static final class UnloadedMessageResult<Id> implements MessageResult {
-        private static final FetchGroup FETCH_GROUP = FetchGroupImpl.MINIMAL;
-
         private final MailboxException exception;
 
         private final Date internalDate;
@@ -118,10 +135,6 @@ public class ResultIterator<Id> implements Iterator<MessageResult> {
 
         public Content getFullContent() throws MailboxException {
             throw exception;
-        }
-
-		public FetchGroup getIncludedResults() {
-            return FETCH_GROUP;
         }
 
         public Date getInternalDate() {

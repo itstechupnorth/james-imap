@@ -106,10 +106,18 @@ public class MailboxMetaData implements Mailbox.MetaData {
         return unseenCount;
     }
 
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.mailbox.Mailbox.MetaData#getFirstUnseen()
+     */
     public Long getFirstUnseen() {
         return firstUnseen;
     }
 
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.mailbox.Mailbox.MetaData#isWriteable()
+     */
     public boolean isWriteable() {
         return writeable;
     }

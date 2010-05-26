@@ -30,6 +30,10 @@ import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.MailboxManager;
 import org.apache.james.imap.mailbox.MailboxSession;
 
+/**
+ * Default implementation of {@link SelectedMailbox}
+ *
+ */
 public class SelectedMailboxImpl implements SelectedMailbox {
 
     private final MailboxEventAnalyser events;
@@ -61,10 +65,18 @@ public class SelectedMailboxImpl implements SelectedMailbox {
         events.close();
     }
 
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.api.process.SelectedMailbox#isSizeChanged()
+     */
     public boolean isSizeChanged() {
         return events.isSizeChanged();
     }
 
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.api.process.SelectedMailbox#msn(long)
+     */
     public int msn(long uid) {
         return converter.getMsn(uid);
     }
@@ -79,10 +91,18 @@ public class SelectedMailboxImpl implements SelectedMailbox {
         return events.isDeletedByOtherSession();
     }
 
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.api.process.SelectedMailbox#uid(int)
+     */
     public long uid(int msn) {
         return converter.getUid(msn);
     }
 
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.api.process.SelectedMailbox#removeRecent(long)
+     */
     public boolean removeRecent(long uid) {
         final boolean result = recentUids.remove(new Long(uid));
         if (result) {
@@ -91,21 +111,37 @@ public class SelectedMailboxImpl implements SelectedMailbox {
         return result;
     }
 
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.api.process.SelectedMailbox#addRecent(long)
+     */
     public boolean addRecent(long uid) {
         final boolean result = recentUids.add(new Long(uid));
         return result;
     }
 
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.api.process.SelectedMailbox#getRecent()
+     */
     public Collection<Long> getRecent() {
         checkExpungedRecents();
         return new ArrayList<Long>(recentUids);
     }
 
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.api.process.SelectedMailbox#recentCount()
+     */
     public int recentCount() {
         checkExpungedRecents();
         return recentUids.size();
     }
 
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.api.process.SelectedMailbox#getName()
+     */
     public String getName() {
         return events.getMailboxName();
     }
@@ -116,6 +152,10 @@ public class SelectedMailboxImpl implements SelectedMailbox {
         }
     }
 
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.api.process.SelectedMailbox#isRecent(long)
+     */
     public boolean isRecent(long uid) {
         boolean result = false;
         for (final Long recentUid: recentUids) {
@@ -127,28 +167,52 @@ public class SelectedMailboxImpl implements SelectedMailbox {
         return result;
     }
 
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.api.process.SelectedMailbox#isRecentUidRemoved()
+     */
     public boolean isRecentUidRemoved() {
         return recentUidRemoved;
     }
 
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.api.process.SelectedMailbox#resetRecentUidRemoved()
+     */
     public void resetRecentUidRemoved() {
         recentUidRemoved = false;
     }
 
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.api.process.SelectedMailbox#resetEvents()
+     */
     public void resetEvents() {
         events.reset();
     }
 
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.api.process.SelectedMailbox#expungedUids()
+     */
     public Collection<Long> expungedUids() {
         return events.expungedUids();
     }
 
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.api.process.SelectedMailbox#remove(java.lang.Long)
+     */
     public int remove(Long uid) {
         final int result = msn(uid);
         converter.expunge(uid);
         return result;
     }
 
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.api.process.SelectedMailbox#flagUpdateUids()
+     */
     public Collection<Long> flagUpdateUids() {
         return events.flagUpdateUids();
     }
