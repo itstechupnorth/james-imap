@@ -35,7 +35,7 @@ import org.apache.james.imap.jcr.mail.model.JCRMessage;
 import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.MailboxSession;
 import org.apache.james.imap.mailbox.util.MailboxEventDispatcher;
-import org.apache.james.imap.store.StoreMailbox;
+import org.apache.james.imap.store.StoreMessageManager;
 import org.apache.james.imap.store.UidConsumer;
 import org.apache.james.imap.store.mail.MessageMapper;
 import org.apache.james.imap.store.mail.model.Header;
@@ -43,16 +43,16 @@ import org.apache.james.imap.store.mail.model.MailboxMembership;
 import org.apache.james.imap.store.mail.model.PropertyBuilder;
 
 /**
- * JCR implementation of a {@link StoreMailbox}
+ * JCR implementation of a {@link StoreMessageManager}
  *
  */
-public class JCRMailbox extends StoreMailbox<String>{
+public class JCRMessageManager extends StoreMessageManager<String>{
 
     private final MailboxSessionJCRRepository repos;
     private final Log log;
     private char delimiter;
 
-    public JCRMailbox(final MailboxEventDispatcher dispatcher, UidConsumer<String> consumer, final org.apache.james.imap.jcr.mail.model.JCRMailbox mailbox, final MailboxSessionJCRRepository repos, final Log log, final char delimiter) {
+    public JCRMessageManager(final MailboxEventDispatcher dispatcher, UidConsumer<String> consumer, final org.apache.james.imap.jcr.mail.model.JCRMailbox mailbox, final MailboxSessionJCRRepository repos, final Log log, final char delimiter) {
         super(dispatcher, consumer, mailbox);
         this.log = log;
         this.repos = repos;

@@ -34,7 +34,7 @@ import org.apache.james.imap.mailbox.MailboxSession;
 import org.apache.james.imap.mailbox.util.MailboxEventDispatcher;
 import org.apache.james.imap.store.Authenticator;
 import org.apache.james.imap.store.PasswordAwareMailboxSession;
-import org.apache.james.imap.store.StoreMailbox;
+import org.apache.james.imap.store.StoreMessageManager;
 import org.apache.james.imap.store.StoreMailboxManager;
 import org.apache.james.imap.store.Subscriber;
 import org.apache.james.imap.store.UidConsumer;
@@ -59,8 +59,8 @@ public class JCRMailboxManager extends StoreMailboxManager<String> implements JC
 
 
     @Override
-    protected StoreMailbox<String> createMailbox(MailboxEventDispatcher dispatcher, UidConsumer<String> consumer,Mailbox<String> mailboxRow, MailboxSession session) throws MailboxException{
-        return new JCRMailbox(dispatcher, consumer, (org.apache.james.imap.jcr.mail.model.JCRMailbox) mailboxRow, repository, getLog(), getDelimiter());    
+    protected StoreMessageManager<String> createMailbox(MailboxEventDispatcher dispatcher, UidConsumer<String> consumer,Mailbox<String> mailboxRow, MailboxSession session) throws MailboxException{
+        return new JCRMessageManager(dispatcher, consumer, (org.apache.james.imap.jcr.mail.model.JCRMailbox) mailboxRow, repository, getLog(), getDelimiter());    
     }
 
     @Override

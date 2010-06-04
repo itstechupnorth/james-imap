@@ -38,7 +38,7 @@ import org.apache.james.imap.mailbox.SearchQuery;
 import org.apache.james.imap.mailbox.StorageException;
 import org.apache.james.imap.mailbox.util.MailboxEventDispatcher;
 import org.apache.james.imap.store.MailboxMembershipComparator;
-import org.apache.james.imap.store.StoreMailbox;
+import org.apache.james.imap.store.StoreMessageManager;
 import org.apache.james.imap.store.UidConsumer;
 import org.apache.james.imap.store.mail.MailboxMapper;
 import org.apache.james.imap.store.mail.MessageMapper;
@@ -47,13 +47,13 @@ import org.apache.james.imap.store.mail.model.Mailbox;
 import org.apache.james.imap.store.mail.model.MailboxMembership;
 import org.apache.james.imap.store.mail.model.PropertyBuilder;
 
-public class InMemoryStoreMailbox extends StoreMailbox<Long> implements MessageMapper<Long> {
+public class InMemoryStoreMessageManager extends StoreMessageManager<Long> implements MessageMapper<Long> {
     
     private static final int INITIAL_SIZE = 256;
     private Map<Long, MailboxMembership<Long>> membershipByUid;
     private InMemoryMailbox mailbox;
 
-    public InMemoryStoreMailbox(MailboxEventDispatcher dispatcher, UidConsumer<Long> consumer, InMemoryMailbox mailbox) {
+    public InMemoryStoreMessageManager(MailboxEventDispatcher dispatcher, UidConsumer<Long> consumer, InMemoryMailbox mailbox) {
         super(dispatcher, consumer, mailbox);
         this.mailbox = mailbox;
         this.membershipByUid = new ConcurrentHashMap<Long, MailboxMembership<Long>>(INITIAL_SIZE);
@@ -256,7 +256,7 @@ public class InMemoryStoreMailbox extends StoreMailbox<Long> implements MessageM
 
 
     @Override
-    protected Mailbox<Long> getMailboxRow(MailboxSession session) throws MailboxException {
+    protected Mailbox<Long> getMailboxEntity(MailboxSession session) throws MailboxException {
         return mailbox;
     }
 

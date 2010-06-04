@@ -30,7 +30,7 @@ import org.apache.james.imap.mailbox.MailboxSession;
 import org.apache.james.imap.mailbox.StorageException;
 import org.apache.james.imap.mailbox.util.MailboxEventDispatcher;
 import org.apache.james.imap.store.Authenticator;
-import org.apache.james.imap.store.StoreMailbox;
+import org.apache.james.imap.store.StoreMessageManager;
 import org.apache.james.imap.store.StoreMailboxManager;
 import org.apache.james.imap.store.Subscriber;
 import org.apache.james.imap.store.UidConsumer;
@@ -42,7 +42,7 @@ public class InMemoryMailboxManager extends StoreMailboxManager<Long> implements
 
     private static final int INITIAL_SIZE = 128;
     private Map<Long, InMemoryMailbox> mailboxesById;
-    private Map<String, InMemoryStoreMailbox> storeMailboxByName;
+    private Map<String, InMemoryStoreMessageManager> storeMailboxByName;
     private Map<Long, String> idNameMap;
     private MailboxSession session;
 
@@ -55,15 +55,15 @@ public class InMemoryMailboxManager extends StoreMailboxManager<Long> implements
             }
         });
         mailboxesById = new ConcurrentHashMap<Long, InMemoryMailbox>(INITIAL_SIZE);
-        storeMailboxByName = new ConcurrentHashMap<String, InMemoryStoreMailbox>(INITIAL_SIZE);
+        storeMailboxByName = new ConcurrentHashMap<String, InMemoryStoreMessageManager>(INITIAL_SIZE);
         idNameMap = new ConcurrentHashMap<Long, String>(INITIAL_SIZE);
     }
 
     @Override
-    protected StoreMailbox<Long> createMailbox(MailboxEventDispatcher dispatcher, UidConsumer<Long> consumer, Mailbox<Long> mailboxRow, MailboxSession session) {
-        InMemoryStoreMailbox storeMailbox = storeMailboxByName.get(mailboxRow.getName());
+    protected StoreMessageManager<Long> createMailbox(MailboxEventDispatcher dispatcher, UidConsumer<Long> consumer, Mailbox<Long> mailboxRow, MailboxSession session) {
+        InMemoryStoreMessageManager storeMailbox = storeMailboxByName.get(mailboxRow.getName());
         if (storeMailbox == null) {
-            storeMailbox = new InMemoryStoreMailbox(dispatcher, consumer, (InMemoryMailbox)mailboxRow);
+            storeMailbox = new InMemoryStoreMessageManager(dispatcher, consumer, (InMemoryMailbox)mailboxRow);
             storeMailboxByName.put(mailboxRow.getName(), storeMailbox);
         }
         
@@ -176,10 +176,10 @@ public class InMemoryMailboxManager extends StoreMailboxManager<Long> implements
         mailboxesById.put(mailbox.getMailboxId(), (InMemoryMailbox) mailbox);
         String name = idNameMap.remove(mailbox.getMailboxId());
         if (name != null) {
-            InMemoryStoreMailbox m = storeMailboxByName.remove(name);
+            InMemoryStoreMessageManager m = storeMailboxByName.remove(name);
             if (m!= null) {
                 try {
-                    m.getMailboxRow(session).setName(mailbox.getName());
+                    m.getMailboxEntity(session).setName(mailbox.getName());
                     storeMailboxByName.put(mailbox.getName(), m);
                 } catch (MailboxException e) {
                     throw new StorageException(e.getKey(), e);

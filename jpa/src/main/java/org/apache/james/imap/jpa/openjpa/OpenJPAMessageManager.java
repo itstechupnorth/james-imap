@@ -26,7 +26,7 @@ import java.util.List;
 
 import javax.mail.Flags;
 
-import org.apache.james.imap.jpa.JPAMailbox;
+import org.apache.james.imap.jpa.JPAMessageManager;
 import org.apache.james.imap.jpa.MailboxSessionEntityManagerFactory;
 import org.apache.james.imap.jpa.mail.model.AbstractJPAMailboxMembership;
 import org.apache.james.imap.jpa.mail.model.JPAHeader;
@@ -44,15 +44,15 @@ import org.apache.james.imap.store.mail.model.PropertyBuilder;
  * OpenJPA implementation of Mailbox
  *
  */
-public class OpenJPAMailbox extends JPAMailbox{
+public class OpenJPAMessageManager extends JPAMessageManager{
 
     private final boolean useStreaming;
 
-    public OpenJPAMailbox(MailboxEventDispatcher dispatcher, UidConsumer<Long> consumer, Mailbox<Long> mailbox, MailboxSessionEntityManagerFactory entityManagerFactory) {
+    public OpenJPAMessageManager(MailboxEventDispatcher dispatcher, UidConsumer<Long> consumer, Mailbox<Long> mailbox, MailboxSessionEntityManagerFactory entityManagerFactory) {
         this(dispatcher, consumer, mailbox, entityManagerFactory, false);
     }
 
-    public OpenJPAMailbox(MailboxEventDispatcher dispatcher, UidConsumer<Long> consumer, Mailbox<Long> mailbox, MailboxSessionEntityManagerFactory entityManagerFactory, final boolean useStreaming) {
+    public OpenJPAMessageManager(MailboxEventDispatcher dispatcher, UidConsumer<Long> consumer, Mailbox<Long> mailbox, MailboxSessionEntityManagerFactory entityManagerFactory, final boolean useStreaming) {
         super(dispatcher, consumer, mailbox, entityManagerFactory);
         this.useStreaming = useStreaming;
     }

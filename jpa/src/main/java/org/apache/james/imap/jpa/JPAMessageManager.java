@@ -33,7 +33,7 @@ import org.apache.james.imap.jpa.mail.model.JPAMailboxMembership;
 import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.MailboxSession;
 import org.apache.james.imap.mailbox.util.MailboxEventDispatcher;
-import org.apache.james.imap.store.StoreMailbox;
+import org.apache.james.imap.store.StoreMessageManager;
 import org.apache.james.imap.store.UidConsumer;
 import org.apache.james.imap.store.mail.MailboxMapper;
 import org.apache.james.imap.store.mail.MessageMapper;
@@ -48,11 +48,11 @@ import org.apache.james.imap.store.mail.model.PropertyBuilder;
  * 
  *
  */
-public class JPAMailbox extends StoreMailbox<Long> {
+public class JPAMessageManager extends StoreMessageManager<Long> {
 
     protected final MailboxSessionEntityManagerFactory entityManagerFactory;
     
-    public JPAMailbox(final MailboxEventDispatcher dispatcher, final UidConsumer<Long> consumer,final Mailbox<Long> mailbox, final MailboxSessionEntityManagerFactory entityManagerFactory) {
+    public JPAMessageManager(final MailboxEventDispatcher dispatcher, final UidConsumer<Long> consumer,final Mailbox<Long> mailbox, final MailboxSessionEntityManagerFactory entityManagerFactory) {
         super(dispatcher, consumer, mailbox);
         this.entityManagerFactory = entityManagerFactory;        
     }  

@@ -92,7 +92,7 @@ public abstract class StoreMailboxManager<Id> extends AbstractLogEnabled impleme
      * @param mailboxRow
      * @return storeMailbox
      */
-    protected abstract StoreMailbox<Id> createMailbox(MailboxEventDispatcher dispatcher, UidConsumer<Id> consumer, Mailbox<Id> mailboxRow, MailboxSession session) throws MailboxException;
+    protected abstract StoreMessageManager<Id> createMailbox(MailboxEventDispatcher dispatcher, UidConsumer<Id> consumer, Mailbox<Id> mailboxRow, MailboxSession session) throws MailboxException;
     
     /**
      * Create the MailboxMapper
@@ -126,7 +126,7 @@ public abstract class StoreMailboxManager<Id> extends AbstractLogEnabled impleme
      * @return mailbox the mailbox for the given name
      * @throws MailboxException get thrown if no Mailbox could be found for the given name
      */
-    private StoreMailbox<Id> doGetMailbox(String mailboxName, MailboxSession session) throws MailboxException {
+    private StoreMessageManager<Id> doGetMailbox(String mailboxName, MailboxSession session) throws MailboxException {
         synchronized (mutex) {
             final MailboxMapper<Id> mapper = createMailboxMapper(session);
             Mailbox<Id> mailboxRow = mapper.findMailboxByName(mailboxName);
@@ -138,7 +138,7 @@ public abstract class StoreMailboxManager<Id> extends AbstractLogEnabled impleme
             } else {
                 getLog().debug("Loaded mailbox " + mailboxName);
 
-                StoreMailbox<Id> result = createMailbox(dispatcher, consumer, mailboxRow, session);
+                StoreMessageManager<Id> result = createMailbox(dispatcher, consumer, mailboxRow, session);
                 result.addListener(delegatingListener);
                 return result;
             }
@@ -288,8 +288,8 @@ public abstract class StoreMailboxManager<Id> extends AbstractLogEnabled impleme
             MailboxSession session) throws MailboxException {
         synchronized (mutex) {
 
-        StoreMailbox<Id> toMailbox = doGetMailbox(to, session);
-        StoreMailbox<Id> fromMailbox = doGetMailbox(from, session);
+        StoreMessageManager<Id> toMailbox = doGetMailbox(to, session);
+        StoreMessageManager<Id> fromMailbox = doGetMailbox(from, session);
             fromMailbox.copyTo(set, toMailbox, session);
         }
     }
