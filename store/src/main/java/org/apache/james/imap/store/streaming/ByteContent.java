@@ -17,52 +17,44 @@
  * under the License.                                           *
  ****************************************************************/
 
-package org.apache.james.imap.inmemory;
-
-import java.util.concurrent.atomic.AtomicLong;
-
-import org.apache.james.imap.store.mail.model.Mailbox;
-
 /**
- * Mailbox data which is stored only in memory.
+ * 
  */
-public class InMemoryMailbox implements Mailbox<Long> {
+package org.apache.james.imap.store.streaming;
 
-    private final long id;    
-    private final long uidValidity;
-    private final AtomicLong nextUid;
-    private String name;
-    
-    public InMemoryMailbox(final long id, final String name, final long uidValidity) {
-        super();
-        this.nextUid = new AtomicLong(0);
-        this.id = id;
-        this.name = name;
-        this.uidValidity = uidValidity;
+import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.channels.WritableByteChannel;
+
+import org.apache.james.imap.mailbox.Content;
+
+public final class ByteContent implements Content {
+
+    private final ByteBuffer contents;
+
+    private final long size;
+
+    public ByteContent(final ByteBuffer contents) {
+        this.contents = contents;
+        size = contents.limit();
     }
 
-    public void consumeUid() {
-        nextUid.incrementAndGet();
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.mailbox.Content#size()
+     */
+    public long size() {
+        return size;
     }
 
-    public long getLastUid() {
-        return nextUid.get();
-    }
-
-    public Long getMailboxId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-
-    public long getUidValidity() {
-        return uidValidity;
-    }
-
-    public void setName(String name) {
-        this.name = name;
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.mailbox.Content#writeTo(java.nio.channels.WritableByteChannel)
+     */
+    public void writeTo(WritableByteChannel channel) throws IOException {
+        contents.rewind();
+        while (channel.write(contents) > 0) {
+            // write more
+        }
     }
 }

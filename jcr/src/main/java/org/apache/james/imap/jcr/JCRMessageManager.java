@@ -23,21 +23,17 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import javax.jcr.RepositoryException;
 import javax.mail.Flags;
 
 import org.apache.commons.logging.Log;
-import org.apache.james.imap.api.display.HumanReadableText;
-import org.apache.james.imap.jcr.mail.JCRMailboxMapper;
-import org.apache.james.imap.jcr.mail.JCRMessageMapper;
 import org.apache.james.imap.jcr.mail.model.JCRHeader;
+import org.apache.james.imap.jcr.mail.model.JCRMailbox;
 import org.apache.james.imap.jcr.mail.model.JCRMessage;
 import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.MailboxSession;
 import org.apache.james.imap.mailbox.util.MailboxEventDispatcher;
 import org.apache.james.imap.store.StoreMessageManager;
 import org.apache.james.imap.store.UidConsumer;
-import org.apache.james.imap.store.mail.MessageMapper;
 import org.apache.james.imap.store.mail.model.Header;
 import org.apache.james.imap.store.mail.model.MailboxMembership;
 import org.apache.james.imap.store.mail.model.PropertyBuilder;
@@ -46,20 +42,16 @@ import org.apache.james.imap.store.mail.model.PropertyBuilder;
  * JCR implementation of a {@link StoreMessageManager}
  *
  */
-public class JCRMessageManager extends StoreMessageManager<String>{
+public class JCRMessageManager extends StoreMessageManager<String> {
 
-    private final MailboxSessionJCRRepository repos;
     private final Log log;
-    private char delimiter;
 
-    public JCRMessageManager(final MailboxEventDispatcher dispatcher, UidConsumer<String> consumer, final org.apache.james.imap.jcr.mail.model.JCRMailbox mailbox, final MailboxSessionJCRRepository repos, final Log log, final char delimiter) {
-        super(dispatcher, consumer, mailbox);
+    public JCRMessageManager(JCRMailboxSessionMapperFactory mapperFactory,
+            final MailboxEventDispatcher dispatcher, UidConsumer<String> consumer,
+            final JCRMailbox mailbox, final Log log, final char delimiter, MailboxSession session) throws MailboxException {
+        super(mapperFactory, dispatcher, consumer, mailbox, session);
         this.log = log;
-        this.repos = repos;
-        this.delimiter = delimiter;
-        
     }
-
 
     @Override
     protected MailboxMembership<String> copyMessage(MailboxMembership<String> originalMessage, long uid, MailboxSession session) throws MailboxException {
@@ -80,38 +72,6 @@ public class JCRMessageManager extends StoreMessageManager<String>{
         }
         final MailboxMembership<String> message = new JCRMessage(getMailboxId(), uid, internalDate, 
                 size, flags, document, bodyStartOctet, jcrHeaders, propertyBuilder, log);
-        return message;       
-        
-    }
-
-    @Override
-    protected MessageMapper<String> createMessageMapper(MailboxSession session) throws MailboxException {
-        try {
-            JCRMessageMapper messageMapper = new JCRMessageMapper(repos.login(session), getMailboxId(), log);
-            return messageMapper;
-        } catch (RepositoryException e) {
-            throw new MailboxException(HumanReadableText.GENERIC_FAILURE_DURING_PROCESSING, e);
-        }
-        
-    }
-
-    /**
-     * Ceate a MailboxMapper for the given {@link MailboxSession} 
-     * 
-     * @param session
-     * @return mailboxMapper
-     * @throws MailboxException 
-     * @throws MailboxException
-     */
-    protected JCRMailboxMapper createMailboxMapper(MailboxSession session) throws MailboxException {
-        try {
-            JCRMailboxMapper mapper = new JCRMailboxMapper(repos.login(session), log, delimiter);
-            return mapper;
-
-        } catch (RepositoryException e) {
-            throw new MailboxException(HumanReadableText.GENERIC_FAILURE_DURING_PROCESSING, e);
-        }
-        
-
+        return message;
     }
 }

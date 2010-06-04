@@ -22,42 +22,41 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
 import javax.persistence.LockModeType;
 
+import org.apache.james.imap.jpa.mail.model.JPAMailbox;
 import org.apache.james.imap.mailbox.MailboxSession;
 import org.apache.james.imap.store.UidConsumer;
 import org.apache.james.imap.store.mail.model.Mailbox;
 
 /**
  * Take care of consume/reserve the next uid for a {@link Mailbox}. This is done by using database locks
- * 
  *
  */
 public class JPAUidConsumer implements UidConsumer<Long>{
 
-    private final MailboxSessionEntityManagerFactory factory;
+    private final JPAMailboxSessionMapperFactory factory;
 
-    public JPAUidConsumer(final MailboxSessionEntityManagerFactory factory) {
+    public JPAUidConsumer(final JPAMailboxSessionMapperFactory factory) {
         this.factory = factory;
     }
     
     /**
-     * 
      * Reserve next Uid in mailbox and return the mailbox. We use a PESSIMISTIC_WRITE lock here to be sure we don't see any duplicates here when
      * accessing the database with many different threads / connections
      * 
      * @see org.apache.james.imap.store.UidConsumer#reserveNextUid(org.apache.james.imap.store.mail.model.Mailbox, org.apache.james.imap.mailbox.MailboxSession)
      */
     public long reserveNextUid(Mailbox<Long> mailbox, MailboxSession session) {
-        EntityManager manager = factory.createEntityManager(session);
+        EntityManager manager = factory.createEntityManager();
         EntityTransaction transaction = manager.getTransaction();
         transaction.begin();
-
-        // we need to set a persimistic write lock to be sure we don't get any problems with dirty reads etc
-        org.apache.james.imap.jpa.mail.model.JPAMailbox m = manager.find(org.apache.james.imap.jpa.mail.model.JPAMailbox.class, mailbox.getMailboxId(), LockModeType.PESSIMISTIC_WRITE);
+        // we need to set a pessimistic write lock to be sure we don't get any problems with dirty reads etc.
+        JPAMailbox m = manager.find(JPAMailbox.class, mailbox.getMailboxId(), LockModeType.PESSIMISTIC_WRITE);
         manager.refresh(m);
         m.consumeUid();
         manager.persist(m);
         manager.flush();
         transaction.commit();
+        manager.close();
         return m.getLastUid();
     }
 

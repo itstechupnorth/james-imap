@@ -21,9 +21,9 @@ package org.apache.james.imap.store.mail.model;
 import java.io.IOException;
 import java.io.InputStream;
 
-import org.apache.james.imap.store.DelegatingRewindableInputStream;
-import org.apache.james.imap.store.LazySkippingInputStream;
-import org.apache.james.imap.store.RewindableInputStream;
+import org.apache.james.imap.store.streaming.DelegatingRewindableInputStream;
+import org.apache.james.imap.store.streaming.LazySkippingInputStream;
+import org.apache.james.imap.store.streaming.RewindableInputStream;
 
 
 /**

@@ -16,42 +16,71 @@
  * specific language governing permissions and limitations      *
  * under the License.                                           *
  ****************************************************************/
+/**
+ * 
+ */
+package org.apache.james.imap.store.streaming;
 
-package org.apache.james.imap.store;
-
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
 /**
- * Utility methods for messages.
+ * {@link InputStream} implementation which just consume the the wrapped {@link InputStream} and count
+ * the lines which are contained within the wrapped stream
  * 
+ *
  */
-public class StreamUtils {
+final public class CountingInputStream extends InputStream {
 
-    private static final int BYTE_STREAM_CAPACITY = 8182;
+    private final InputStream in;
 
-    private static final int BYTE_BUFFER_SIZE = 4096;
+    private int lineCount;
 
-    public static byte[] toByteArray(InputStream is) throws IOException {
-        ByteArrayOutputStream baos = out(is);
+    private int octetCount;
 
-        final byte[] bytes = baos.toByteArray();
-        return bytes;
+    public CountingInputStream(InputStream in) {
+        super();
+        this.in = in;
     }
 
-    public static ByteArrayOutputStream out(InputStream is) throws IOException {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream(
-                BYTE_STREAM_CAPACITY);
-        out(is, baos);
-        return baos;
-    }
-
-    public static void out(InputStream is, ByteArrayOutputStream baos) throws IOException {
-        byte[] buf = new byte[BYTE_BUFFER_SIZE];
-        int read;
-        while ((read = is.read(buf)) > 0) {
-            baos.write(buf, 0, read);
+    /*
+     * (non-Javadoc)
+     * @see java.io.InputStream#read()
+     */
+    public int read() throws IOException {
+        int next = in.read();
+        if (next > 0) {
+            octetCount++;
+            if (next == '\r') {
+                lineCount++;
+            }
         }
+        return next;
+    }
+
+    /**
+     * Return the line count 
+     * 
+     * @return lineCount
+     */
+    public final int getLineCount() {
+        return lineCount;
+    }
+
+    /**
+     * Return the octet count
+     * 
+     * @return octetCount
+     */
+    public final int getOctetCount() {
+        return octetCount;
+    }
+    
+    /**
+     * Reads - and discards - the rest of the stream
+     * @throws IOException
+     */
+    public void readAll() throws IOException {
+        while (read()>0);
     }
 }

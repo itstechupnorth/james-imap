@@ -28,8 +28,7 @@ import org.apache.james.imap.mailbox.MailboxSession;
 
 /**
  * 
- * Manager one JCR {@link Session} per {@link MailboxSession}. It will use one user and password 
- * for all 
+ * Manage JCR {@link Session}. It will use one user and password for all 
  *
  */
 public class GlobalMailboxSessionJCRRepository extends MailboxSessionJCRRepository{
@@ -52,12 +51,7 @@ public class GlobalMailboxSessionJCRRepository extends MailboxSessionJCRReposito
      */
     @Override
     public Session login(MailboxSession session) throws RepositoryException {
-        Session jcrSession = (Session) session.getAttributes().get(JCR_SESSION);
-        if (jcrSession == null) {
-            
-            jcrSession = getRepository().login(new SimpleCredentials(username, pass), getWorkspace());
-            session.getAttributes().put(JCR_SESSION, jcrSession);
-        }
+        Session jcrSession = getRepository().login(new SimpleCredentials(username, pass), getWorkspace());
         return jcrSession;
     }
 

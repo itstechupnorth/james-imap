@@ -25,6 +25,7 @@ import java.io.InputStream;
 
 import static org.junit.Assert.*;
 
+import org.apache.james.imap.store.streaming.RewindableInputStream;
 import org.junit.Before;
 import org.junit.Test;
 

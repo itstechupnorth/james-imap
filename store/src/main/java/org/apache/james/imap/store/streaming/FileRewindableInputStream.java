@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations      *
  * under the License.                                           *
  ****************************************************************/
-package org.apache.james.imap.store;
+package org.apache.james.imap.store.streaming;
 
 import java.io.File;
 import java.io.FileInputStream;

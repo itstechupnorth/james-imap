@@ -17,49 +17,52 @@
  * under the License.                                           *
  ****************************************************************/
 
-/**
- * 
- */
-package org.apache.james.imap.store;
+package org.apache.james.imap.inmemory.mail.model;
 
-import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.nio.channels.WritableByteChannel;
-import java.util.List;
+import java.util.concurrent.atomic.AtomicLong;
 
-import org.apache.james.imap.mailbox.MessageResult;
+import org.apache.james.imap.store.mail.model.Mailbox;
 
 /**
- * Content which holds the full content, including {@link Header} objets
- *
+ * Mailbox data which is stored only in memory.
  */
-public final class FullByteContent extends  AbstractFullContent {
-    private final ByteBuffer contents;
-    private final long size;
+public class InMemoryMailbox implements Mailbox<Long> {
 
-    public FullByteContent(final ByteBuffer contents, final List<MessageResult.Header> headers) throws IOException {
-        super(headers);
-        this.contents = contents;
-        this.size = caculateSize();
+    private final long id;    
+    private final long uidValidity;
+    private final AtomicLong nextUid;
+    private String name;
+    
+    public InMemoryMailbox(final long id, final String name, final long uidValidity) {
+        super();
+        this.nextUid = new AtomicLong(0);
+        this.id = id;
+        this.name = name;
+        this.uidValidity = uidValidity;
     }
 
-    /*
-     * (non-Javadoc)
-     * @see org.apache.james.imap.mailbox.Content#size()
-     */
-    public long size() {
-        return size;
+    public void consumeUid() {
+        nextUid.incrementAndGet();
     }
 
-    @Override
-    protected void bodyWriteTo(WritableByteChannel channel) throws IOException {
-        contents.rewind();
-        writeAll(channel, contents);        
+    public long getLastUid() {
+        return nextUid.get();
     }
 
-    @Override
-    protected long getBodySize() throws IOException {
-        return contents.limit();
+    public Long getMailboxId() {
+        return id;
     }
 
+    public String getName() {
+        return name;
+    }
+
+
+    public long getUidValidity() {
+        return uidValidity;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
 }

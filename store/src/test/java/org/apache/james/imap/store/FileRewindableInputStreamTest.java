@@ -21,6 +21,9 @@ package org.apache.james.imap.store;
 import java.io.IOException;
 import java.io.InputStream;
 
+import org.apache.james.imap.store.streaming.FileRewindableInputStream;
+import org.apache.james.imap.store.streaming.RewindableInputStream;
+
 public class FileRewindableInputStreamTest extends RewindableInputStreamTest{
 
     @Override

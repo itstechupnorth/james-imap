@@ -23,17 +23,17 @@ import org.apache.james.imap.encode.main.DefaultImapEncoderFactory;
 import org.apache.james.imap.functional.ImapHostSystem;
 import org.apache.james.imap.functional.InMemoryUserManager;
 import org.apache.james.imap.inmemory.InMemoryMailboxManager;
+import org.apache.james.imap.inmemory.InMemoryMailboxSessionMapperFactory;
 import org.apache.james.imap.inmemory.InMemorySubscriptionManager;
 import org.apache.james.imap.main.DefaultImapDecoderFactory;
 import org.apache.james.imap.processor.main.DefaultImapProcessorFactory;
-import org.apache.james.imap.store.StoreMailboxManager;
 import org.apache.james.test.functional.HostSystem;
 
 public class InMemoryHostSystem extends ImapHostSystem {
 
     private final InMemoryMailboxManager mailboxManager;
     private final InMemoryUserManager userManager; 
-    
+    private final InMemoryMailboxSessionMapperFactory factory;
     static HostSystem build() throws Exception {        
         InMemoryHostSystem host =  new InMemoryHostSystem();
         return host;
@@ -41,7 +41,8 @@ public class InMemoryHostSystem extends ImapHostSystem {
     
     private InMemoryHostSystem() {
         userManager = new InMemoryUserManager();
-        mailboxManager = new InMemoryMailboxManager(userManager, new InMemorySubscriptionManager());
+        factory = new InMemoryMailboxSessionMapperFactory();
+        mailboxManager = new InMemoryMailboxManager(factory, userManager, new InMemorySubscriptionManager(factory));
         final DefaultImapProcessorFactory defaultImapProcessorFactory = new DefaultImapProcessorFactory();
         defaultImapProcessorFactory.configure(mailboxManager);
         configure(new DefaultImapDecoderFactory().buildImapDecoder(),

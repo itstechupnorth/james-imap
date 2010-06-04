@@ -20,7 +20,7 @@ package org.apache.james.imap.jpa.user;
 
 import java.util.List;
 
-import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceException;
 
@@ -35,10 +35,9 @@ import org.apache.james.imap.store.user.model.Subscription;
  */
 public class JPASubscriptionMapper extends JPATransactionalMapper implements SubscriptionMapper {
 
-    public JPASubscriptionMapper(final EntityManager factory) {
-        super(factory);
+    public JPASubscriptionMapper(final EntityManagerFactory entityManagerFactory) {
+        super(entityManagerFactory);
     }
-
 
     /**
      * @throws SubscriptionException 
@@ -46,7 +45,7 @@ public class JPASubscriptionMapper extends JPATransactionalMapper implements Sub
      */
     public Subscription findFindMailboxSubscriptionForUser(final String user, final String mailbox) throws SubscriptionException {
         try {
-            return (Subscription) getManager().createNamedQuery("findFindMailboxSubscriptionForUser")
+            return (Subscription) getEntityManager().createNamedQuery("findFindMailboxSubscriptionForUser")
             .setParameter("userParam", user).setParameter("mailboxParam", mailbox).getSingleResult();
         } catch (NoResultException e) {
             return null;
@@ -61,7 +60,7 @@ public class JPASubscriptionMapper extends JPATransactionalMapper implements Sub
      */
     public void save(Subscription subscription) throws SubscriptionException {
         try {
-            getManager().persist(subscription);
+            getEntityManager().persist(subscription);
         } catch (PersistenceException e) {
             throw new SubscriptionException(HumanReadableText.SAVE_FAILED, e);
         }
@@ -74,7 +73,7 @@ public class JPASubscriptionMapper extends JPATransactionalMapper implements Sub
     @SuppressWarnings("unchecked")
     public List<Subscription> findSubscriptionsForUser(String user) throws SubscriptionException {
         try {
-            return (List<Subscription>) getManager().createNamedQuery("findSubscriptionsForUser").setParameter("userParam", user).getResultList();
+            return (List<Subscription>) getEntityManager().createNamedQuery("findSubscriptionsForUser").setParameter("userParam", user).getResultList();
         } catch (PersistenceException e) {
             throw new SubscriptionException(HumanReadableText.SEARCH_FAILED, e);
         }
@@ -86,7 +85,7 @@ public class JPASubscriptionMapper extends JPATransactionalMapper implements Sub
      */
     public void delete(Subscription subscription) throws SubscriptionException {
         try {
-            getManager().remove(subscription);
+            getEntityManager().remove(subscription);
         } catch (PersistenceException e) {
             throw new SubscriptionException(HumanReadableText.DELETED_FAILED, e);
         }

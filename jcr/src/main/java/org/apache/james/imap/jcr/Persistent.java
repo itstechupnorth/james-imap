@@ -26,25 +26,25 @@ import javax.jcr.RepositoryException;
 
 public interface Persistent {
 
-	/**
-	 * Merge the object with the node
-	 * 
-	 * @param node
-	 */
-	public void merge(Node node) throws RepositoryException,IOException;
+    /**
+     * Merge the object with the node
+     * 
+     * @param node
+     */
+    public void merge(Node node) throws RepositoryException, IOException;
 
-	/**
-	 * Return underlying Node
-	 * 
-	 * @return node
-	 */
-	public Node getNode();
+    /**
+     * Return underlying Node
+     * 
+     * @return node
+     */
+    public Node getNode();
 
-	/**
-	 * Return if the object is persistent
-	 * 
-	 * @return
-	 */
-	public boolean isPersistent();
+    /**
+     * Return if the object is persistent
+     * 
+     * @return
+     */
+    public boolean isPersistent();
 
 }

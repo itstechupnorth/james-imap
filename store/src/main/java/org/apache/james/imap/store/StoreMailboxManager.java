@@ -71,43 +71,36 @@ public abstract class StoreMailboxManager<Id> extends AbstractLogEnabled impleme
     private final Authenticator authenticator;    
     private final Subscriber subscriber;    
     private final char delimiter;
-
+    protected final MailboxSessionMapperFactory<Id> mailboxSessionMapperFactory;
     private UidConsumer<Id> consumer;
     
-    public StoreMailboxManager(final Authenticator authenticator, final Subscriber subscriber, final UidConsumer<Id> consumer) {
-        this(authenticator, subscriber, consumer, '.');
+    public StoreMailboxManager(MailboxSessionMapperFactory<Id> mailboxSessionMapperFactory, final Authenticator authenticator, final Subscriber subscriber, final UidConsumer<Id> consumer) {
+        this(mailboxSessionMapperFactory, authenticator, subscriber, consumer, '.');
     }
 
     
-    public StoreMailboxManager(final Authenticator authenticator, final Subscriber subscriber, final UidConsumer<Id> consumer, final char delimiter) {
+    public StoreMailboxManager(MailboxSessionMapperFactory<Id> mailboxSessionMapperFactory, final Authenticator authenticator, final Subscriber subscriber, final UidConsumer<Id> consumer, final char delimiter) {
         this.authenticator = authenticator;
         this.subscriber = subscriber;
         this.delimiter = delimiter;
         this.consumer = consumer;
+        this.mailboxSessionMapperFactory = mailboxSessionMapperFactory;
     }
-
     /**
-     * Create a StoreMailbox for the given Mailbox
+     * Create a {@link StoreMessageManager} for the given Mailbox
      * 
      * @param mailboxRow
      * @return storeMailbox
      */
-    protected abstract StoreMessageManager<Id> createMailbox(MailboxEventDispatcher dispatcher, UidConsumer<Id> consumer, Mailbox<Id> mailboxRow, MailboxSession session) throws MailboxException;
-    
-    /**
-     * Create the MailboxMapper
-     * 
-     * @return mailboxMapper
-     */
-    protected abstract MailboxMapper<Id> createMailboxMapper(MailboxSession session) throws MailboxException;
-    
+    protected abstract StoreMessageManager<Id> createMessageManager(MailboxEventDispatcher dispatcher, UidConsumer<Id> consumer, Mailbox<Id> mailboxRow, MailboxSession session) throws MailboxException;
+
     /**
      * Create a Mailbox for the given namespace and store it to the underlying storage
      * 
      * @param namespaceName
      * @throws MailboxException
      */
-    protected abstract void doCreate(String namespaceName, MailboxSession session) throws MailboxException;
+    protected abstract void doCreateMailbox(String namespaceName, MailboxSession session) throws MailboxException;
     
     
     /*
@@ -128,7 +121,7 @@ public abstract class StoreMailboxManager<Id> extends AbstractLogEnabled impleme
      */
     private StoreMessageManager<Id> doGetMailbox(String mailboxName, MailboxSession session) throws MailboxException {
         synchronized (mutex) {
-            final MailboxMapper<Id> mapper = createMailboxMapper(session);
+            final MailboxMapper<Id> mapper = mailboxSessionMapperFactory.getMailboxMapper(session);
             Mailbox<Id> mailboxRow = mapper.findMailboxByName(mailboxName);
             
             if (mailboxRow == null) {
@@ -138,7 +131,7 @@ public abstract class StoreMailboxManager<Id> extends AbstractLogEnabled impleme
             } else {
                 getLog().debug("Loaded mailbox " + mailboxName);
 
-                StoreMessageManager<Id> result = createMailbox(dispatcher, consumer, mailboxRow, session);
+                StoreMessageManager<Id> result = createMessageManager(dispatcher, consumer, mailboxRow, session);
                 result.addListener(delegatingListener);
                 return result;
             }
@@ -173,7 +166,7 @@ public abstract class StoreMailboxManager<Id> extends AbstractLogEnabled impleme
                         final String mailbox = namespaceName
                         .substring(0, index);
                         if (!mailboxExists(mailbox, mailboxSession)) {
-                            doCreate(mailbox, mailboxSession);
+                            doCreateMailbox(mailbox, mailboxSession);
                         }
                     }
                     index = namespaceName.indexOf(delimiter, ++index);
@@ -181,7 +174,7 @@ public abstract class StoreMailboxManager<Id> extends AbstractLogEnabled impleme
                 if (mailboxExists(namespaceName, mailboxSession)) {
                     throw new MailboxExistsException(namespaceName); 
                 } else {
-                    doCreate(namespaceName, mailboxSession);
+                	doCreateMailbox(namespaceName, mailboxSession);
                 }
             }
         }
@@ -197,7 +190,7 @@ public abstract class StoreMailboxManager<Id> extends AbstractLogEnabled impleme
         synchronized (mutex) {
             // TODO put this into a serilizable transaction
             
-            final MailboxMapper<Id> mapper = createMailboxMapper(session);
+            final MailboxMapper<Id> mapper = mailboxSessionMapperFactory.getMailboxMapper(session);
             
             mapper.execute(new TransactionalMapper.Transaction() {
 
@@ -228,7 +221,7 @@ public abstract class StoreMailboxManager<Id> extends AbstractLogEnabled impleme
                 throw new MailboxExistsException(to);
             }
 
-            final MailboxMapper<Id> mapper = createMailboxMapper(session);                
+            final MailboxMapper<Id> mapper = mailboxSessionMapperFactory.getMailboxMapper(session);                
             mapper.execute(new TransactionalMapper.Transaction() {
 
                 public void run() throws MailboxException {
@@ -314,7 +307,7 @@ public abstract class StoreMailboxManager<Id> extends AbstractLogEnabled impleme
                 delimiter).replace(freeWildcard, SQL_WILDCARD_CHAR)
                 .replace(localWildcard, SQL_WILDCARD_CHAR);
 
-        final MailboxMapper<Id> mapper = createMailboxMapper(session);
+        final MailboxMapper<Id> mapper = mailboxSessionMapperFactory.getMailboxMapper(session);
         final List<Mailbox<Id>> mailboxes = mapper.findMailboxWithNameLike(search);
         final List<MailboxMetaData> results = new ArrayList<MailboxMetaData>(mailboxes.size());
         for (Mailbox<Id> mailbox: mailboxes) {
@@ -354,7 +347,7 @@ public abstract class StoreMailboxManager<Id> extends AbstractLogEnabled impleme
      */
     public boolean mailboxExists(String mailboxName, MailboxSession session) throws MailboxException {
         synchronized (mutex) {
-            final MailboxMapper<Id> mapper = createMailboxMapper(session);
+            final MailboxMapper<Id> mapper = mailboxSessionMapperFactory.getMailboxMapper(session);
             final long count = mapper.countMailboxesWithName(mailboxName);
             if (count == 0) {
                 return false;
@@ -497,11 +490,10 @@ public abstract class StoreMailboxManager<Id> extends AbstractLogEnabled impleme
 
 
     /**
-     * End processing of Request for session. Default is to do nothing.
-     * Implementations should override this if they need to do anything special
+     * End processing of Request for session
      */
     public void endProcessingRequest(MailboxSession session) {
-        // Default do nothing
+        mailboxSessionMapperFactory.endRequest(session);
     }
 
 

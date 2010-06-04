@@ -31,9 +31,9 @@ import javax.persistence.FetchType;
 import org.apache.james.imap.jpa.mail.model.AbstractJPAMessage;
 import org.apache.james.imap.jpa.mail.model.JPAHeader;
 import org.apache.james.imap.jpa.mail.model.JPAMessage;
-import org.apache.james.imap.store.StreamUtils;
 import org.apache.james.imap.store.mail.model.Document;
 import org.apache.james.imap.store.mail.model.PropertyBuilder;
+import org.apache.james.imap.store.streaming.StreamUtils;
 import org.apache.openjpa.persistence.Persistent;
 
 /**

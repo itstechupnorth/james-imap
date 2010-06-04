@@ -25,7 +25,6 @@ import javax.jcr.Node;
 import javax.jcr.NodeIterator;
 import javax.jcr.PathNotFoundException;
 import javax.jcr.RepositoryException;
-import javax.jcr.Session;
 import javax.jcr.query.Query;
 import javax.jcr.query.QueryManager;
 import javax.jcr.query.QueryResult;
@@ -36,8 +35,10 @@ import org.apache.jackrabbit.commons.JcrUtils;
 import org.apache.jackrabbit.util.Locked;
 import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.jcr.AbstractJCRMapper;
+import org.apache.james.imap.jcr.MailboxSessionJCRRepository;
 import org.apache.james.imap.jcr.mail.model.JCRMailbox;
 import org.apache.james.imap.mailbox.MailboxNotFoundException;
+import org.apache.james.imap.mailbox.MailboxSession;
 import org.apache.james.imap.mailbox.StorageException;
 import org.apache.james.imap.store.mail.MailboxMapper;
 import org.apache.james.imap.store.mail.model.Mailbox;
@@ -51,8 +52,8 @@ public class JCRMailboxMapper extends AbstractJCRMapper implements MailboxMapper
 
     private char delimiter;
 
-    public JCRMailboxMapper(final Session session, final Log logger, char delimiter) {
-        super(session, logger);
+    public JCRMailboxMapper(final MailboxSessionJCRRepository repos, MailboxSession session, final Log logger, char delimiter) {
+        super(repos, session, logger);
         this.delimiter = delimiter;
     }
 
@@ -143,7 +144,6 @@ public class JCRMailboxMapper extends AbstractJCRMapper implements MailboxMapper
             throw new StorageException(HumanReadableText.SEARCH_FAILED, e);
         }
     }
-
 
     /*
      * (non-Javadoc)
@@ -241,7 +241,7 @@ public class JCRMailboxMapper extends AbstractJCRMapper implements MailboxMapper
                         final String name = jcrMailbox.getName();
                         
                         //split the name so we can construct a nice node tree
-                        final String nameParts[] = name.split("\\" +String.valueOf(delimiter),3);
+                        final String nameParts[] = name.split("\\" + String.valueOf(delimiter), 3);
                         
                         // this loop will create a structure like:
                         // /mailboxes/u/user/INBOX

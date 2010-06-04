@@ -27,7 +27,6 @@ import java.util.List;
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
 import javax.jcr.RepositoryException;
-import javax.jcr.Session;
 import javax.jcr.query.Query;
 import javax.jcr.query.QueryManager;
 import javax.jcr.query.QueryResult;
@@ -38,7 +37,9 @@ import org.apache.jackrabbit.commons.JcrUtils;
 import org.apache.jackrabbit.util.Locked;
 import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.jcr.AbstractJCRMapper;
+import org.apache.james.imap.jcr.MailboxSessionJCRRepository;
 import org.apache.james.imap.jcr.mail.model.JCRMessage;
+import org.apache.james.imap.mailbox.MailboxSession;
 import org.apache.james.imap.mailbox.MessageRange;
 import org.apache.james.imap.mailbox.SearchQuery;
 import org.apache.james.imap.mailbox.StorageException;
@@ -54,11 +55,8 @@ import org.apache.james.imap.store.mail.model.MailboxMembership;
  */
 public class JCRMessageMapper extends AbstractJCRMapper implements MessageMapper<String> {
 
-    private final String uuid;
-
-    public JCRMessageMapper(final Session session, final String uuid, final Log logger) {
-        super(session, logger);
-        this.uuid = uuid;
+    public JCRMessageMapper(final MailboxSessionJCRRepository repos, MailboxSession session, final Log logger) {
+        super(repos, session, logger);
     }
 
     /*
@@ -67,7 +65,7 @@ public class JCRMessageMapper extends AbstractJCRMapper implements MessageMapper
      * @see
      * org.apache.james.imap.store.mail.MessageMapper#countMessagesInMailbox()
      */
-    public long countMessagesInMailbox() throws StorageException {
+    public long countMessagesInMailbox(String uuid) throws StorageException {
         try {
             // we use order by because without it count will always be 0 in jackrabbit
             String queryString = "//" + MAILBOXES_PATH + "//element(*,jamesMailbox:message)[@" + JCRMessage.MAILBOX_UUID_PROPERTY +"='" + uuid +"'] order by @" + JCRMessage.UID_PROPERTY;
@@ -97,7 +95,7 @@ public class JCRMessageMapper extends AbstractJCRMapper implements MessageMapper
      * org.apache.james.imap.store.mail.MessageMapper#countUnseenMessagesInMailbox
      * ()
      */
-    public long countUnseenMessagesInMailbox() throws StorageException {
+    public long countUnseenMessagesInMailbox(String uuid) throws StorageException {
         
         try {
             // we use order by because without it count will always be 0 in jackrabbit
@@ -124,12 +122,9 @@ public class JCRMessageMapper extends AbstractJCRMapper implements MessageMapper
 
     /*
      * (non-Javadoc)
-     * 
-     * @see
-     * org.apache.james.imap.store.mail.MessageMapper#delete(org.apache.james
-     * .imap.store.mail.model.MailboxMembership)
+     * @see org.apache.james.imap.store.mail.MessageMapper#delete(java.lang.Object, org.apache.james.imap.store.mail.model.MailboxMembership)
      */
-    public void delete(MailboxMembership<String> message) throws StorageException {
+    public void delete(String uuid, MailboxMembership<String> message) throws StorageException {
         JCRMessage membership = (JCRMessage) message;
         if (membership.isPersistent()) {
             try {
@@ -149,7 +144,7 @@ public class JCRMessageMapper extends AbstractJCRMapper implements MessageMapper
      * org.apache.james.imap.store.mail.MessageMapper#findInMailbox(org.apache
      * .james.imap.mailbox.MessageRange)
      */
-    public List<MailboxMembership<String>> findInMailbox(MessageRange set) throws StorageException {
+    public List<MailboxMembership<String>> findInMailbox(String uuid, MessageRange set) throws StorageException {
         try {
             final List<MailboxMembership<String>> results;
             final long from = set.getUidFrom();
@@ -300,7 +295,7 @@ public class JCRMessageMapper extends AbstractJCRMapper implements MessageMapper
      * org.apache.james.imap.store.mail.MessageMapper#findMarkedForDeletionInMailbox
      * (org.apache.james.imap.mailbox.MessageRange)
      */
-    public List<MailboxMembership<String>> findMarkedForDeletionInMailbox(MessageRange set) throws StorageException {
+    public List<MailboxMembership<String>> findMarkedForDeletionInMailbox(String uuid, MessageRange set) throws StorageException {
         try {
             final List<MailboxMembership<String>> results;
             final long from = set.getUidFrom();
@@ -335,7 +330,7 @@ public class JCRMessageMapper extends AbstractJCRMapper implements MessageMapper
      * org.apache.james.imap.store.mail.MessageMapper#findRecentMessagesInMailbox
      * ()
      */
-    public List<MailboxMembership<String>> findRecentMessagesInMailbox() throws StorageException {
+    public List<MailboxMembership<String>> findRecentMessagesInMailbox(String uuid) throws StorageException {
         
         try {
             List<MailboxMembership<String>> list = new ArrayList<MailboxMembership<String>>();
@@ -360,7 +355,7 @@ public class JCRMessageMapper extends AbstractJCRMapper implements MessageMapper
      * (non-Javadoc)
      * @see org.apache.james.imap.store.mail.MessageMapper#findUnseenMessagesInMailbox()
      */
-    public List<MailboxMembership<String>> findUnseenMessagesInMailbox() throws StorageException {
+    public List<MailboxMembership<String>> findUnseenMessagesInMailbox(String uuid) throws StorageException {
         try {
             List<MailboxMembership<String>> list = new ArrayList<MailboxMembership<String>>();
             String queryString = "//" + MAILBOXES_PATH + "//element(*,jamesMailbox:message)[@" + JCRMessage.MAILBOX_UUID_PROPERTY +"='" + uuid +"'] AND [@" + JCRMessage.SEEN_PROPERTY +"='false'] order by @" + JCRMessage.UID_PROPERTY;
@@ -386,7 +381,7 @@ public class JCRMessageMapper extends AbstractJCRMapper implements MessageMapper
      * org.apache.james.imap.store.mail.MessageMapper#save(org.apache.james.
      * imap.store.mail.model.MailboxMembership)
      */
-    public void save(MailboxMembership<String> message) throws StorageException {
+    public void save(String uuid, MailboxMembership<String> message) throws StorageException {
         final JCRMessage membership = (JCRMessage) message;
         try {
             //JCRUtils.createNodeRecursive(getSession().getRootNode(), mailboxN);
@@ -483,7 +478,7 @@ public class JCRMessageMapper extends AbstractJCRMapper implements MessageMapper
      * org.apache.james.imap.store.mail.MessageMapper#searchMailbox(org.apache
      * .james.imap.mailbox.SearchQuery)
      */
-    public List<MailboxMembership<String>> searchMailbox(SearchQuery query) throws StorageException {
+    public List<MailboxMembership<String>> searchMailbox(String uuid, SearchQuery query) throws StorageException {
         try {
             List<MailboxMembership<String>> list = new ArrayList<MailboxMembership<String>>();
             final String xpathQuery = formulateXPath(uuid, query);

@@ -27,7 +27,7 @@ import org.apache.james.imap.mailbox.MailboxSession;
 import org.apache.james.imap.store.PasswordAwareUser;
 
 /**
- * Manage JCR {@link Session} per {@link MailboxSession}. It use the username and the password of 
+ * Manage JCR {@link Session}. It use the username and the password of 
  * the logged in IMAP user to access the {@link Repository}
  *
  */
@@ -35,13 +35,11 @@ public class MailboxSessionJCRRepository {
     
     private Repository repository;
     private String workspace;
-    protected final static String JCR_SESSION = "JCR_SESSION";
     
     public MailboxSessionJCRRepository(Repository repository ,String workspace) {
         this.repository = repository;
         this.workspace = workspace;
     }
-
 
     /**
      * If no {@link Session} exists for the {@link MailboxSession} one will get created.
@@ -52,35 +50,17 @@ public class MailboxSessionJCRRepository {
      * @throws RepositoryException
      */
     public Session login(MailboxSession session) throws RepositoryException {
-        Session jcrSession = (Session) session.getAttributes().get(JCR_SESSION);
-        if (jcrSession == null) {
-            PasswordAwareUser user = (PasswordAwareUser) session.getUser();
-            String username = user.getUserName();
-            String password = user.getPassword();
-            char[] pass = null;
-            if (password != null) {
-                pass = password.toCharArray();
-            }
-            jcrSession = repository.login(new SimpleCredentials(username, pass), workspace);
-            session.getAttributes().put(JCR_SESSION, jcrSession);
+        PasswordAwareUser user = (PasswordAwareUser) session.getUser();
+        String username = user.getUserName();
+        String password = user.getPassword();
+        char[] pass = null;
+        if (password != null) {
+            pass = password.toCharArray();
         }
-        return jcrSession;
+        return repository.login(new SimpleCredentials(username, pass),
+                workspace);
     }
-    
-    /**
-     * Logout the {@link Session} which exists for the {@link MailboxSession}
-     * 
-     * @param session
-     */
-    public void logout(MailboxSession session) {
-        if (session != null) {
-            Session jcrSession = (Session) session.getAttributes().remove(JCR_SESSION);
-            if (jcrSession != null && jcrSession.isLive()) {
-                jcrSession.logout();
-            }
-        }
-    }
-    
+
     /**
      * Return the {@link Repository} 
      * 
@@ -89,7 +69,6 @@ public class MailboxSessionJCRRepository {
     protected Repository getRepository() {
         return repository;
     }
-    
     
     /**
      * Return the workspace

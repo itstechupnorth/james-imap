@@ -16,47 +16,58 @@
  * specific language governing permissions and limitations      *
  * under the License.                                           *
  ****************************************************************/
-package org.apache.james.imap.store;
+package org.apache.james.imap.store.streaming;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
+import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 
 /**
- * {@link RewindableInputStream} implementations which stores the data into a {@link ByteArrayOutputStream}. This is
- * only useful for small data, because it is complete handled in memory
+ * {@link FilterInputStream} which support the get rewinded.
  * 
+ * The rewinding will get delayed as long as possible. So if you call
+ * rewind, it will only get performed when needed
+ * 
+ * Be sure to call {@link #close()} to cleanup temporary data when you 
+ * are done with reading from the stream
+ * 
+ *
  */
-public class InMemoryRewindableInputStream extends AbstractRewindableInputStream{
+public abstract class RewindableInputStream extends FilterInputStream{
 
-    private ByteArrayOutputStream out;
-    private ByteArrayInputStream in;
-    public InMemoryRewindableInputStream(InputStream wrappedIn) throws IOException {
-        super(wrappedIn);
-        this.out = new ByteArrayOutputStream();
-        this.in = new ByteArrayInputStream(out.toByteArray());
+    private boolean rewind;
+
+    protected RewindableInputStream(InputStream in) {
+        super(in);
     }
 
-    @Override
-    protected void afterRewindComplete() throws IOException {
-        in = new ByteArrayInputStream(out.toByteArray());
+    /**
+     * Return if the stream needs to get rewinded
+     * 
+     * @return needsRewind
+     */
+    public final boolean needsRewind() {
+        return rewind;
+    }
+    
+    /**
+     * Rewind was done
+     */
+    protected final void rewindDone() {
+        this.rewind = false;
+    }
+    
+    /**
+     * Mark the stream for rewind. The rewind itself should get delayed as long as possible
+     */
+    public final void rewind() {
+        this.rewind = true;
     }
 
-    @Override
-    protected void dispose() throws IOException {
-        // nothing todo
-    }
-
-    @Override
-    protected InputStream getRewindInputStream() {
-        return in;
-    }
-
-    @Override
-    protected OutputStream getRewindOutputStream() {
-        return out;
-    }
+    /**
+     * Perform the actual rewind 
+     * @throws IOException
+     */
+    protected abstract void rewindIfNeeded() throws IOException;
 
 }

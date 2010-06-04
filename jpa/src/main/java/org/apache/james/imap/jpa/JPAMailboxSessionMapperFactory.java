@@ -21,51 +21,49 @@ package org.apache.james.imap.jpa;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 
+import org.apache.james.imap.jpa.mail.JPAMailboxMapper;
+import org.apache.james.imap.jpa.mail.JPAMessageMapper;
+import org.apache.james.imap.jpa.user.JPASubscriptionMapper;
 import org.apache.james.imap.mailbox.MailboxSession;
+import org.apache.james.imap.store.MailboxSessionMapperFactory;
+import org.apache.james.imap.store.mail.MailboxMapper;
+import org.apache.james.imap.store.mail.MessageMapper;
+import org.apache.james.imap.store.user.SubscriptionMapper;
 
 /**
- * Maintain {@link EntityManager} instances by {@link MailboxSession}. So only one {@link EntityManager} instance is used
- * in a {@link MailboxSession}. 
+ * JPA implementation of {@link MailboxSessionMapperFactory}
  *
  */
-public class MailboxSessionEntityManagerFactory {
+public class JPAMailboxSessionMapperFactory extends MailboxSessionMapperFactory<Long> {
 
-    protected final static String ENTITYMANAGER ="ENTITYMANAGER";
-    private final EntityManagerFactory factory;
-    
-    public MailboxSessionEntityManagerFactory(final EntityManagerFactory factory) {
-        this.factory = factory;
+    private final EntityManagerFactory entityManagerFactory;
+
+    public JPAMailboxSessionMapperFactory(EntityManagerFactory entityManagerFactory) {
+        this.entityManagerFactory = entityManagerFactory;
     }
-    
-    
+
+    @Override
+    public MailboxMapper<Long> createMailboxMapper(MailboxSession session) {
+        return new JPAMailboxMapper(entityManagerFactory);
+    }
+
+    @Override
+    public MessageMapper<Long> createMessageMapper(MailboxSession session) {
+        return new JPAMessageMapper(entityManagerFactory);
+    }
+
+    @Override
+    public SubscriptionMapper createSubscriptionMapper(MailboxSession session) {
+        return new JPASubscriptionMapper(entityManagerFactory);
+    }
+
     /**
-     * Create a {@link EntityManager} instance of return the one which exists for the {@link MailboxSession} already
+     * Return a new {@link EntityManager} instance
      * 
-     * @param session
      * @return manager
      */
-    public EntityManager createEntityManager(MailboxSession session) {
-        EntityManager manager = (EntityManager) session.getAttributes().get(ENTITYMANAGER);
-        
-        if (manager == null) {
-            manager = factory.createEntityManager();
-            session.getAttributes().put(ENTITYMANAGER, manager);
-        }
-        
-        return manager;
+    public EntityManager createEntityManager() {
+        return entityManagerFactory.createEntityManager();
     }
-    
-    /**
-     * Close the {@link EntityManager} which exists for the {@link MailboxSession}
-     * 
-     * @param session
-     */
-    public void closeEntityManager(MailboxSession session) {
-        if (session != null) {
-            EntityManager manager = (EntityManager) session.getAttributes().remove(ENTITYMANAGER);
-            if (manager != null && manager.isOpen()) {
-                manager.close();
-            }
-        }
-    }
+
 }

@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations      *
  * under the License.                                           *
  ****************************************************************/
-package org.apache.james.imap.store;
+package org.apache.james.imap.store.streaming;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -27,13 +27,14 @@ import java.util.List;
 import org.apache.james.imap.mailbox.Content;
 import org.apache.james.imap.mailbox.MessageResult;
 import org.apache.james.imap.mailbox.MessageResult.Header;
+import org.apache.james.imap.store.ResultUtils;
 
 /**
  * Abstract base class for {@link Content} implementations which hold the headers and 
  * the body a email
  *
  */
-public abstract class AbstractFullContent implements Content{
+public abstract class AbstractFullContent implements Content {
 
 
     private List<Header> headers;

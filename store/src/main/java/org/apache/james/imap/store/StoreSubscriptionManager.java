@@ -32,28 +32,22 @@ import org.apache.james.imap.store.user.model.Subscription;
 /**
  * Manages subscriptions.
  */
-public abstract class StoreSubscriptionManager implements Subscriber {
+public abstract class StoreSubscriptionManager<Id> implements Subscriber {
 
     private static final int INITIAL_SIZE = 32;
     
-    public StoreSubscriptionManager() {
-        super();
-    }
-
-    /**
-     * Create the SubscriptionMapper to use
-     * 
-     * @return mapper
-     */
-    protected abstract SubscriptionMapper createMapper(MailboxSession session) throws SubscriptionException;
+    protected MailboxSessionMapperFactory<Id> mapperFactory;
     
+    public StoreSubscriptionManager(final MailboxSessionMapperFactory<Id> mapperFactory) {
+        this.mapperFactory = mapperFactory;
+    }
 
     /*
      * (non-Javadoc)
      * @see org.apache.james.imap.store.Subscriber#subscribe(org.apache.james.imap.mailbox.MailboxSession, java.lang.String)
      */
     public void subscribe(final MailboxSession session, final String mailbox) throws SubscriptionException {
-        final SubscriptionMapper mapper = createMapper(session);
+        final SubscriptionMapper mapper = mapperFactory.getSubscriptionMapper(session);
         try {
             mapper.execute(new TransactionalMapper.Transaction() {
 
@@ -69,8 +63,6 @@ public abstract class StoreSubscriptionManager implements Subscriber {
         } catch (MailboxException e) {
             throw new SubscriptionException(e.getKey(), e);
         }
-
-
     }
 
     /**
@@ -80,14 +72,14 @@ public abstract class StoreSubscriptionManager implements Subscriber {
      * @param mailbox
      * @return subscription 
      */
-    protected abstract Subscription createSubscription(final MailboxSession sonessi, final String mailbox);
+    protected abstract Subscription createSubscription(final MailboxSession session, final String mailbox);
 
     /*
      * (non-Javadoc)
      * @see org.apache.james.imap.store.Subscriber#subscriptions(org.apache.james.imap.mailbox.MailboxSession)
      */
     public Collection<String> subscriptions(final MailboxSession session) throws SubscriptionException {
-        final SubscriptionMapper mapper = createMapper(session);
+        final SubscriptionMapper mapper = mapperFactory.getSubscriptionMapper(session);
         final List<Subscription> subscriptions = mapper.findSubscriptionsForUser(session.getUser().getUserName());
         final Collection<String> results = new HashSet<String>(INITIAL_SIZE);
         for (Subscription subscription:subscriptions) {
@@ -101,7 +93,7 @@ public abstract class StoreSubscriptionManager implements Subscriber {
      * @see org.apache.james.imap.store.Subscriber#unsubscribe(java.lang.String, java.lang.String)
      */
     public void unsubscribe(final MailboxSession session, final String mailbox) throws SubscriptionException {
-        final SubscriptionMapper mapper = createMapper(session);
+        final SubscriptionMapper mapper = mapperFactory.getSubscriptionMapper(session);
         try {
             mapper.execute(new TransactionalMapper.Transaction() {
 

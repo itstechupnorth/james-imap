@@ -28,6 +28,7 @@ import org.apache.jackrabbit.core.config.RepositoryConfig;
 import org.apache.james.imap.functional.AbstractStressTest;
 import org.apache.james.imap.jcr.GlobalMailboxSessionJCRRepository;
 import org.apache.james.imap.jcr.JCRMailboxManager;
+import org.apache.james.imap.jcr.JCRMailboxSessionMapperFactory;
 import org.apache.james.imap.jcr.JCRSubscriptionManager;
 import org.apache.james.imap.jcr.JCRUtils;
 import org.apache.james.imap.jcr.MailboxSessionJCRRepository;
@@ -38,18 +39,13 @@ import org.junit.Before;
 import org.xml.sax.InputSource;
 
 public class JCRStressTest extends AbstractStressTest{
-
     
     private JCRMailboxManager mailboxManager;
-
-
 
     private static final String JACKRABBIT_HOME = "deployment/target/jackrabbit";
     public static final String META_DATA_DIRECTORY = "target/user-meta-data";
     private RepositoryImpl repository;
-
-
-    
+   
     
     @Before
     public void setUp() throws RepositoryException {
@@ -66,9 +62,8 @@ public class JCRStressTest extends AbstractStressTest{
         JCRUtils.registerCnd(repository, workspace, user, pass);
 
         MailboxSessionJCRRepository sessionRepos = new GlobalMailboxSessionJCRRepository(repository, workspace, user, pass);
-        // TODO: Fix the scaling stuff so the tests will pass with max scaling
-        // too
-        mailboxManager = new JCRMailboxManager(null, new JCRSubscriptionManager(sessionRepos), sessionRepos);
+        JCRMailboxSessionMapperFactory mf = new JCRMailboxSessionMapperFactory(sessionRepos);
+        mailboxManager = new JCRMailboxManager(mf, null, new JCRSubscriptionManager(mf));
 
     }
     
@@ -77,14 +72,8 @@ public class JCRStressTest extends AbstractStressTest{
     
     public void tearDown() {
         MailboxSession session = mailboxManager.createSystemSession("test", new SimpleLog("Test"));
-        /*
-        try {
-            //mailboxManager.deleteEverything(session);
-        } catch (MailboxException e) {
-            e.printStackTrace();
-        }
-        */
         session.close();
+        repository.shutdown();
         new File(JACKRABBIT_HOME).delete();
 
     }

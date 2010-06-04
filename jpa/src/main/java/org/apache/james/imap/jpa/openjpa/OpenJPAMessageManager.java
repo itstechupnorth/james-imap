@@ -26,8 +26,8 @@ import java.util.List;
 
 import javax.mail.Flags;
 
+import org.apache.james.imap.jpa.JPAMailboxSessionMapperFactory;
 import org.apache.james.imap.jpa.JPAMessageManager;
-import org.apache.james.imap.jpa.MailboxSessionEntityManagerFactory;
 import org.apache.james.imap.jpa.mail.model.AbstractJPAMailboxMembership;
 import org.apache.james.imap.jpa.mail.model.JPAHeader;
 import org.apache.james.imap.jpa.mail.model.openjpa.JPAStreamingMailboxMembership;
@@ -44,16 +44,20 @@ import org.apache.james.imap.store.mail.model.PropertyBuilder;
  * OpenJPA implementation of Mailbox
  *
  */
-public class OpenJPAMessageManager extends JPAMessageManager{
+public class OpenJPAMessageManager extends JPAMessageManager {
 
     private final boolean useStreaming;
 
-    public OpenJPAMessageManager(MailboxEventDispatcher dispatcher, UidConsumer<Long> consumer, Mailbox<Long> mailbox, MailboxSessionEntityManagerFactory entityManagerFactory) {
-        this(dispatcher, consumer, mailbox, entityManagerFactory, false);
+    public OpenJPAMessageManager(JPAMailboxSessionMapperFactory mapperFactory,
+            MailboxEventDispatcher dispatcher, UidConsumer<Long> consumer,
+            Mailbox<Long> mailbox, MailboxSession session) throws MailboxException {
+        this(mapperFactory, dispatcher, consumer, mailbox, session, false);
     }
 
-    public OpenJPAMessageManager(MailboxEventDispatcher dispatcher, UidConsumer<Long> consumer, Mailbox<Long> mailbox, MailboxSessionEntityManagerFactory entityManagerFactory, final boolean useStreaming) {
-        super(dispatcher, consumer, mailbox, entityManagerFactory);
+    public OpenJPAMessageManager(JPAMailboxSessionMapperFactory mapperFactory,
+            MailboxEventDispatcher dispatcher, UidConsumer<Long> consumer,
+            Mailbox<Long> mailbox, MailboxSession session, final boolean useStreaming) throws MailboxException {
+        super(mapperFactory, dispatcher, consumer, mailbox, session);
         this.useStreaming = useStreaming;
     }
 
@@ -78,6 +82,5 @@ public class OpenJPAMessageManager extends JPAMessageManager{
             return super.createMessage(internalDate, uid, size, bodyStartOctet, document, flags, headers, propertyBuilder);
         }
     }
-    
 
 }

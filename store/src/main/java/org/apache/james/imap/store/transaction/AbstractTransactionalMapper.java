@@ -26,7 +26,7 @@ import org.apache.james.imap.mailbox.MailboxException;
  * Run Transaction and handle begin, commit and rollback in the right order
  *
  */
-public abstract class AbstractTransactionalMapper implements TransactionalMapper{
+public abstract class AbstractTransactionalMapper implements TransactionalMapper {
 
     /*
      * (non-Javadoc)
@@ -41,7 +41,6 @@ public abstract class AbstractTransactionalMapper implements TransactionalMapper
             rollback();
             throw e;
         }
-        
     }
     
     /**
@@ -58,13 +57,11 @@ public abstract class AbstractTransactionalMapper implements TransactionalMapper
      */
     protected abstract void commit() throws MailboxException;
     
-    
     /**
      * Rollback transaction
      * 
      * @throws StorageException
      */
     protected abstract void rollback() throws MailboxException;
-    
 
 }

@@ -20,7 +20,7 @@ package org.apache.james.imap.jpa.mail;
 
 import java.util.List;
 
-import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceException;
 
 import org.apache.james.imap.api.display.HumanReadableText;
@@ -40,18 +40,15 @@ import org.apache.james.imap.store.mail.model.MailboxMembership;
  *
  */
 public class JPAMessageMapper extends JPATransactionalMapper implements MessageMapper<Long> {
-
-    private final long mailboxId;
     
-    public JPAMessageMapper(final EntityManager factory, final long mailboxId) {
-        super(factory);
-        this.mailboxId = mailboxId;
+    public JPAMessageMapper(final EntityManagerFactory entityManagerFactory) {
+        super(entityManagerFactory);
     }
 
     /**
      * @see org.apache.james.imap.store.mail.MessageMapper#findInMailbox(org.apache.james.imap.mailbox.MessageRange)
      */
-    public List<MailboxMembership<Long>> findInMailbox(MessageRange set) throws StorageException {
+    public List<MailboxMembership<Long>> findInMailbox(Long mailboxId, MessageRange set) throws StorageException {
         try {
             final List<MailboxMembership<Long>> results;
             final long from = set.getUidFrom();
@@ -79,36 +76,36 @@ public class JPAMessageMapper extends JPATransactionalMapper implements MessageM
     }
 
     @SuppressWarnings("unchecked")
-    private List<MailboxMembership<Long>> findMessagesInMailboxAfterUID(long mailboxId, long uid) {
-        return getManager().createNamedQuery("findMessagesInMailboxAfterUID")
+    private List<MailboxMembership<Long>> findMessagesInMailboxAfterUID(Long mailboxId, long uid) {
+        return getEntityManager().createNamedQuery("findMessagesInMailboxAfterUID")
         .setParameter("idParam", mailboxId)
         .setParameter("uidParam", uid).getResultList();
     }
 
     @SuppressWarnings("unchecked")
-    private List<MailboxMembership<Long>> findMessagesInMailboxWithUID(long mailboxId, long uid) {
-        return getManager().createNamedQuery("findMessagesInMailboxWithUID")
+    private List<MailboxMembership<Long>> findMessagesInMailboxWithUID(Long mailboxId, long uid) {
+        return getEntityManager().createNamedQuery("findMessagesInMailboxWithUID")
         .setParameter("idParam", mailboxId)
         .setParameter("uidParam", uid).getResultList();
     }
 
     @SuppressWarnings("unchecked")
-    private List<MailboxMembership<Long>> findMessagesInMailboxBetweenUIDs(long mailboxId, long from, long to) {
-        return getManager().createNamedQuery("findMessagesInMailboxBetweenUIDs")
+    private List<MailboxMembership<Long>> findMessagesInMailboxBetweenUIDs(Long mailboxId, long from, long to) {
+        return getEntityManager().createNamedQuery("findMessagesInMailboxBetweenUIDs")
         .setParameter("idParam", mailboxId)
         .setParameter("fromParam", from)
         .setParameter("toParam", to).getResultList();
     }
 
     @SuppressWarnings("unchecked")
-    private List<MailboxMembership<Long>> findMessagesInMailbox(long mailboxId) {
-        return getManager().createNamedQuery("findMessagesInMailbox").setParameter("idParam", mailboxId).getResultList();
+    private List<MailboxMembership<Long>> findMessagesInMailbox(Long mailboxId) {
+        return getEntityManager().createNamedQuery("findMessagesInMailbox").setParameter("idParam", mailboxId).getResultList();
     }
 
     /**
      * @see org.apache.james.imap.store.mail.MessageMapper#findMarkedForDeletionInMailbox(org.apache.james.imap.mailbox.MessageRange)
      */
-    public List<MailboxMembership<Long>> findMarkedForDeletionInMailbox(final MessageRange set) throws StorageException {
+    public List<MailboxMembership<Long>> findMarkedForDeletionInMailbox(Long mailboxId, final MessageRange set) throws StorageException {
         try {
             final List<MailboxMembership<Long>> results;
             final long from = set.getUidFrom();
@@ -135,27 +132,27 @@ public class JPAMessageMapper extends JPATransactionalMapper implements MessageM
     }
 
     @SuppressWarnings("unchecked")
-    private List<MailboxMembership<Long>> findDeletedMessagesInMailbox(long mailboxId) {
-        return getManager().createNamedQuery("findDeletedMessagesInMailbox").setParameter("idParam", mailboxId).getResultList();
+    private List<MailboxMembership<Long>> findDeletedMessagesInMailbox(Long mailboxId) {
+        return getEntityManager().createNamedQuery("findDeletedMessagesInMailbox").setParameter("idParam", mailboxId).getResultList();
     }
 
     @SuppressWarnings("unchecked")
-    private List<MailboxMembership<Long>> findDeletedMessagesInMailboxAfterUID(long mailboxId, long uid) {
-        return getManager().createNamedQuery("findDeletedMessagesInMailboxAfterUID")
+    private List<MailboxMembership<Long>> findDeletedMessagesInMailboxAfterUID(Long mailboxId, long uid) {
+        return getEntityManager().createNamedQuery("findDeletedMessagesInMailboxAfterUID")
         .setParameter("idParam", mailboxId)
         .setParameter("uidParam", uid).getResultList();
     }
 
     @SuppressWarnings("unchecked")
-    private List<MailboxMembership<Long>> findDeletedMessagesInMailboxWithUID(long mailboxId, long uid) {
-        return getManager().createNamedQuery("findDeletedMessagesInMailboxWithUID")
+    private List<MailboxMembership<Long>> findDeletedMessagesInMailboxWithUID(Long mailboxId, long uid) {
+        return getEntityManager().createNamedQuery("findDeletedMessagesInMailboxWithUID")
         .setParameter("idParam", mailboxId)
         .setParameter("uidParam", uid).getResultList();
     }
 
     @SuppressWarnings("unchecked")
-    private List<MailboxMembership<Long>> findDeletedMessagesInMailboxBetweenUIDs(long mailboxId, long from, long to) {
-        return getManager().createNamedQuery("findDeletedMessagesInMailboxBetweenUIDs")
+    private List<MailboxMembership<Long>> findDeletedMessagesInMailboxBetweenUIDs(Long mailboxId, long from, long to) {
+        return getEntityManager().createNamedQuery("findDeletedMessagesInMailboxBetweenUIDs")
         .setParameter("idParam", mailboxId)
         .setParameter("fromParam", from)
         .setParameter("toParam", to).getResultList();
@@ -164,9 +161,9 @@ public class JPAMessageMapper extends JPATransactionalMapper implements MessageM
     /**
      * @see org.apache.james.imap.store.mail.MessageMapper#countMessagesInMailbox()
      */
-    public long countMessagesInMailbox() throws StorageException {
+    public long countMessagesInMailbox(Long mailboxId) throws StorageException {
         try {
-            return (Long) getManager().createNamedQuery("countMessagesInMailbox").setParameter("idParam", mailboxId).getSingleResult();
+            return (Long) getEntityManager().createNamedQuery("countMessagesInMailbox").setParameter("idParam", mailboxId).getSingleResult();
         } catch (PersistenceException e) {
             throw new StorageException(HumanReadableText.COUNT_FAILED, e);
         }
@@ -175,9 +172,9 @@ public class JPAMessageMapper extends JPATransactionalMapper implements MessageM
     /**
      * @see org.apache.james.imap.store.mail.MessageMapper#countUnseenMessagesInMailbox()
      */
-    public long countUnseenMessagesInMailbox() throws StorageException {
+    public long countUnseenMessagesInMailbox(Long mailboxId) throws StorageException {
         try {
-            return (Long) getManager().createNamedQuery("countUnseenMessagesInMailbox").setParameter("idParam", mailboxId).getSingleResult();
+            return (Long) getEntityManager().createNamedQuery("countUnseenMessagesInMailbox").setParameter("idParam", mailboxId).getSingleResult();
         } catch (PersistenceException e) {
             throw new StorageException(HumanReadableText.COUNT_FAILED, e);
         }
@@ -187,16 +184,16 @@ public class JPAMessageMapper extends JPATransactionalMapper implements MessageM
      * @see org.apache.james.imap.store.mail.MessageMapper#searchMailbox(org.apache.james.imap.mailbox.SearchQuery)
      */
     @SuppressWarnings("unchecked")
-    public List<MailboxMembership<Long>> searchMailbox(SearchQuery query) throws StorageException {
+    public List<MailboxMembership<Long>> searchMailbox(Long mailboxId, SearchQuery query) throws StorageException {
         try {
             final String jql = formulateJQL(mailboxId, query);
-            return getManager().createQuery(jql).getResultList();
+            return getEntityManager().createQuery(jql).getResultList();
         } catch (PersistenceException e) {
             throw new StorageException(HumanReadableText.SEARCH_FAILED, e);
         }
     }
 
-    private String formulateJQL(long mailboxId, SearchQuery query) {
+    private String formulateJQL(Long mailboxId, SearchQuery query) {
         final StringBuilder queryBuilder = new StringBuilder(50);
         queryBuilder.append("SELECT membership FROM Membership membership WHERE membership.mailboxId = ").append(mailboxId);
         final List<Criterion> criteria = query.getCriterias();
@@ -223,12 +220,13 @@ public class JPAMessageMapper extends JPATransactionalMapper implements MessageM
         return jql;
     }
 
-    /**
-     * @see org.apache.james.imap.store.mail.MessageMapper#delete(MailboxMembership)
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.store.mail.MessageMapper#delete(java.lang.Object, org.apache.james.imap.store.mail.model.MailboxMembership)
      */
-    public void delete(MailboxMembership<Long> message) throws StorageException {
+    public void delete(Long uid, MailboxMembership<Long> message) throws StorageException {
         try {
-            getManager().remove(message);
+            getEntityManager().remove(message);
         } catch (PersistenceException e) {
             throw new StorageException(HumanReadableText.DELETED_FAILED, e);
         }
@@ -239,9 +237,9 @@ public class JPAMessageMapper extends JPATransactionalMapper implements MessageM
      * @see org.apache.james.imap.store.mail.MessageMapper#findUnseenMessagesInMailbox()
      */
     @SuppressWarnings("unchecked")
-    public List<MailboxMembership<Long>> findUnseenMessagesInMailbox()  throws StorageException {
+    public List<MailboxMembership<Long>> findUnseenMessagesInMailbox(Long mailboxId)  throws StorageException {
         try {
-            return getManager().createNamedQuery("findUnseenMessagesInMailboxOrderByUid").setParameter("idParam", mailboxId).getResultList();
+            return getEntityManager().createNamedQuery("findUnseenMessagesInMailboxOrderByUid").setParameter("idParam", mailboxId).getResultList();
         } catch (PersistenceException e) {
             throw new StorageException(HumanReadableText.SEARCH_FAILED, e);
         }
@@ -251,9 +249,9 @@ public class JPAMessageMapper extends JPATransactionalMapper implements MessageM
      * @see org.apache.james.imap.store.mail.MessageMapper#findRecentMessagesInMailbox()
      */
     @SuppressWarnings("unchecked")
-    public List<MailboxMembership<Long>> findRecentMessagesInMailbox() throws StorageException {
+    public List<MailboxMembership<Long>> findRecentMessagesInMailbox(Long mailboxId) throws StorageException {
         try {
-            return getManager().createNamedQuery("findRecentMessagesInMailbox").setParameter("idParam", mailboxId).getResultList();
+            return getEntityManager().createNamedQuery("findRecentMessagesInMailbox").setParameter("idParam", mailboxId).getResultList();
         } catch (PersistenceException e) {
             throw new StorageException(HumanReadableText.SEARCH_FAILED, e);
         }
@@ -262,9 +260,9 @@ public class JPAMessageMapper extends JPATransactionalMapper implements MessageM
     /**
      * @see org.apache.james.imap.store.mail.MessageMapper#save(MailboxMembership)
      */
-    public void save(MailboxMembership<Long> message) throws StorageException {
+    public void save(Long mailboxId, MailboxMembership<Long> message) throws StorageException {
         try {
-            getManager().persist(message);
+            getEntityManager().persist(message);
         } catch (PersistenceException e) {
             throw new StorageException(HumanReadableText.SAVE_FAILED, e);
         }

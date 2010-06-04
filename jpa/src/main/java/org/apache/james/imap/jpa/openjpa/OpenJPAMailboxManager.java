@@ -21,7 +21,8 @@ package org.apache.james.imap.jpa.openjpa;
 
 
 import org.apache.james.imap.jpa.JPAMailboxManager;
-import org.apache.james.imap.jpa.MailboxSessionEntityManagerFactory;
+import org.apache.james.imap.jpa.JPAMailboxSessionMapperFactory;
+import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.MailboxSession;
 import org.apache.james.imap.mailbox.util.MailboxEventDispatcher;
 import org.apache.james.imap.store.Authenticator;
@@ -38,17 +39,18 @@ public class OpenJPAMailboxManager extends JPAMailboxManager {
 
     private boolean useStreaming;
 
-    public OpenJPAMailboxManager(Authenticator authenticator, Subscriber subscriber, MailboxSessionEntityManagerFactory entityManagerFactory, boolean useStreaming) {
-        super(authenticator, subscriber, entityManagerFactory);
+    public OpenJPAMailboxManager(JPAMailboxSessionMapperFactory mapperFactory, Authenticator authenticator, Subscriber subscriber, boolean useStreaming) {
+        super(mapperFactory, authenticator, subscriber);
         this.useStreaming = useStreaming;
     }
 
-    public OpenJPAMailboxManager(Authenticator authenticator, Subscriber subscriber, MailboxSessionEntityManagerFactory entityManagerFactory) {
-        this(authenticator, subscriber, entityManagerFactory, false);
+    public OpenJPAMailboxManager(JPAMailboxSessionMapperFactory mapperFactory, Authenticator authenticator, Subscriber subscriber) {
+        this(mapperFactory, authenticator, subscriber, false);
     }
 
-    protected StoreMessageManager<Long> createMailbox(MailboxEventDispatcher dispatcher, UidConsumer<Long> consumer, Mailbox<Long> mailboxRow, MailboxSession session) {
-        StoreMessageManager<Long> result =  new OpenJPAMessageManager(dispatcher, consumer, mailboxRow,entityManagerFactory, useStreaming);
+    @Override
+    protected StoreMessageManager<Long> createMessageManager(MailboxEventDispatcher dispatcher, UidConsumer<Long> consumer, Mailbox<Long> mailboxRow, MailboxSession session) throws MailboxException {
+        StoreMessageManager<Long> result =  new OpenJPAMessageManager((JPAMailboxSessionMapperFactory) mailboxSessionMapperFactory, dispatcher, consumer, mailboxRow, session, useStreaming);
         return result;
     }
 }

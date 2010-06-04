@@ -29,9 +29,9 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Lob;
 
-import org.apache.james.imap.store.StreamUtils;
 import org.apache.james.imap.store.mail.model.Document;
 import org.apache.james.imap.store.mail.model.PropertyBuilder;
+import org.apache.james.imap.store.streaming.StreamUtils;
 
 @Entity(name="Message")
 public class JPAMessage extends AbstractJPAMessage{

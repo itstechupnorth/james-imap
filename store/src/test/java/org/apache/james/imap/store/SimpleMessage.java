@@ -29,6 +29,8 @@ import java.util.List;
 import org.apache.james.imap.store.mail.model.Document;
 import org.apache.james.imap.store.mail.model.Header;
 import org.apache.james.imap.store.mail.model.Property;
+import org.apache.james.imap.store.streaming.InMemoryRewindableInputStream;
+import org.apache.james.imap.store.streaming.RewindableInputStream;
 
 public class SimpleMessage implements Document {
     

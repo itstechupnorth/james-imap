@@ -28,33 +28,35 @@ import org.apache.commons.logging.Log;
  * 
  *
  */
-public class PasswordAwareMailboxSession extends SimpleMailboxSession implements PasswordAwareUser{
+// TODO: Why does a session implement a user? This is not needed, I think.
+public class PasswordAwareMailboxSession extends SimpleMailboxSession implements
+        PasswordAwareUser {
 
-	private final String password;
+    private final String password;
 
-	public PasswordAwareMailboxSession(long sessionId, String userName,String password,
-			Log log, char deliminator, List<Locale> localePreferences) {
-		super(sessionId, userName, log, deliminator, localePreferences);
-		this.password = password;
-	}
-	
+    public PasswordAwareMailboxSession(long sessionId, String userName,
+            String password, Log log, char deliminator,
+            List<Locale> localePreferences) {
+        super(sessionId, userName, log, deliminator, localePreferences);
+        this.password = password;
+    }
 
-	/**
-	 * Return the User which is bound the the MailboxSession. This User is in fact an
-	 * instance of PasswordAwareUser. 
-	 * 
-	 * return user
-	 */
-	public User getUser() {
-		return this;
-	}
-	
-	/**
-	 * Return the Password for the logged in user
-	 * 
-	 * @return password
-	 */
-	public String getPassword() {
-		return password;
-	}
+    /**
+     * Return the User which is bound the the MailboxSession. This User is in
+     * fact an instance of PasswordAwareUser.
+     * 
+     * return user
+     */
+    public User getUser() {
+        return this;
+    }
+
+    /**
+     * Return the Password for the logged in user
+     * 
+     * @return password
+     */
+    public String getPassword() {
+        return password;
+    }
 }

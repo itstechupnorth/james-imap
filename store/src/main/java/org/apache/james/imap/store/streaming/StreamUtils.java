@@ -17,40 +17,41 @@
  * under the License.                                           *
  ****************************************************************/
 
-package org.apache.james.imap.inmemory;
+package org.apache.james.imap.store.streaming;
 
-import org.apache.james.imap.store.mail.model.AbstractComparableHeader;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 
-public class SimpleHeader extends AbstractComparableHeader {
+/**
+ * Utility methods for messages.
+ * 
+ */
+public class StreamUtils {
 
-    public String field;
-    public int lineNumber;
-    public String value;
-    
-    public SimpleHeader() {}
-    
-    public SimpleHeader(SimpleHeader header) {
-        this.field = header.field;
-        this.lineNumber = header.lineNumber;
-        this.value = header.value;
-    }
-    
-    public SimpleHeader(String field, int lineNumber, String value) {
-        super();
-        this.field = field;
-        this.lineNumber = lineNumber;
-        this.value = value;
+    private static final int BYTE_STREAM_CAPACITY = 8182;
+
+    private static final int BYTE_BUFFER_SIZE = 4096;
+
+    public static byte[] toByteArray(InputStream is) throws IOException {
+        ByteArrayOutputStream baos = out(is);
+
+        final byte[] bytes = baos.toByteArray();
+        return bytes;
     }
 
-    public String getFieldName() {
-        return field;
+    public static ByteArrayOutputStream out(InputStream is) throws IOException {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream(
+                BYTE_STREAM_CAPACITY);
+        out(is, baos);
+        return baos;
     }
 
-    public int getLineNumber() {
-        return lineNumber;
-    }
-
-    public String getValue() {
-        return value;
+    public static void out(InputStream is, ByteArrayOutputStream baos) throws IOException {
+        byte[] buf = new byte[BYTE_BUFFER_SIZE];
+        int read;
+        while ((read = is.read(buf)) > 0) {
+            baos.write(buf, 0, read);
+        }
     }
 }

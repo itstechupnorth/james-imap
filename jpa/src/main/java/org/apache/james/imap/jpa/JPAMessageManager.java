@@ -25,8 +25,6 @@ import java.util.List;
 
 import javax.mail.Flags;
 
-import org.apache.james.imap.jpa.mail.JPAMailboxMapper;
-import org.apache.james.imap.jpa.mail.JPAMessageMapper;
 import org.apache.james.imap.jpa.mail.model.AbstractJPAMailboxMembership;
 import org.apache.james.imap.jpa.mail.model.JPAHeader;
 import org.apache.james.imap.jpa.mail.model.JPAMailboxMembership;
@@ -35,8 +33,6 @@ import org.apache.james.imap.mailbox.MailboxSession;
 import org.apache.james.imap.mailbox.util.MailboxEventDispatcher;
 import org.apache.james.imap.store.StoreMessageManager;
 import org.apache.james.imap.store.UidConsumer;
-import org.apache.james.imap.store.mail.MailboxMapper;
-import org.apache.james.imap.store.mail.MessageMapper;
 import org.apache.james.imap.store.mail.model.Header;
 import org.apache.james.imap.store.mail.model.Mailbox;
 import org.apache.james.imap.store.mail.model.MailboxMembership;
@@ -44,27 +40,13 @@ import org.apache.james.imap.store.mail.model.PropertyBuilder;
 
 /**
  * Abstract base class which should be used from JPA 2.0 implementations
- * 
- * 
- *
  */
 public class JPAMessageManager extends StoreMessageManager<Long> {
-
-    protected final MailboxSessionEntityManagerFactory entityManagerFactory;
     
-    public JPAMessageManager(final MailboxEventDispatcher dispatcher, final UidConsumer<Long> consumer,final Mailbox<Long> mailbox, final MailboxSessionEntityManagerFactory entityManagerFactory) {
-        super(dispatcher, consumer, mailbox);
-        this.entityManagerFactory = entityManagerFactory;        
-    }  
-
-
-
-    
-    @Override
-    protected MessageMapper<Long> createMessageMapper(MailboxSession session) {                
-        JPAMessageMapper mapper = new JPAMessageMapper(entityManagerFactory.createEntityManager(session), getMailboxId());
-       
-        return mapper;
+    public JPAMessageManager(JPAMailboxSessionMapperFactory mapperFactory,
+            final MailboxEventDispatcher dispatcher, final UidConsumer<Long> consumer,
+            final Mailbox<Long> mailbox, MailboxSession session) throws MailboxException {
+        super(mapperFactory, dispatcher, consumer, mailbox, session);     
     }
     
     @Override
@@ -76,8 +58,6 @@ public class JPAMessageManager extends StoreMessageManager<Long> {
         }
         final MailboxMembership<Long> message = new JPAMailboxMembership(getMailboxId(), uid, internalDate, size, flags, document, bodyStartOctet, jpaHeaders, propertyBuilder);
         return message;
-
-       
     }
     
     @Override
@@ -86,20 +66,10 @@ public class JPAMessageManager extends StoreMessageManager<Long> {
         return newRow;
     }
     
-    
     @Override
     protected Header createHeader(int lineNumber, String name, String value) {
         final Header header = new JPAHeader(lineNumber, name, value);
         return header;
     }
-
-
-
-
-    @Override
-    protected MailboxMapper<Long> createMailboxMapper(MailboxSession session) {
-        return new JPAMailboxMapper(entityManagerFactory.createEntityManager(session));
-    }
-    
     
 }

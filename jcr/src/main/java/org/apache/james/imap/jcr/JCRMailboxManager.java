@@ -21,24 +21,20 @@ package org.apache.james.imap.jcr;
 import java.util.ArrayList;
 import java.util.Locale;
 
-import javax.jcr.RepositoryException;
-import javax.jcr.Session;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.jcr.mail.JCRMailboxMapper;
+import org.apache.james.imap.jcr.mail.model.JCRMailbox;
 import org.apache.james.imap.mailbox.BadCredentialsException;
 import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.MailboxSession;
 import org.apache.james.imap.mailbox.util.MailboxEventDispatcher;
 import org.apache.james.imap.store.Authenticator;
 import org.apache.james.imap.store.PasswordAwareMailboxSession;
-import org.apache.james.imap.store.StoreMessageManager;
 import org.apache.james.imap.store.StoreMailboxManager;
+import org.apache.james.imap.store.StoreMessageManager;
 import org.apache.james.imap.store.Subscriber;
 import org.apache.james.imap.store.UidConsumer;
-import org.apache.james.imap.store.mail.MailboxMapper;
 import org.apache.james.imap.store.mail.model.Mailbox;
 import org.apache.james.imap.store.transaction.TransactionalMapper;
 
@@ -49,37 +45,24 @@ import org.apache.james.imap.store.transaction.TransactionalMapper;
  */
 public class JCRMailboxManager extends StoreMailboxManager<String> implements JCRImapConstants{
 
-    private final MailboxSessionJCRRepository repository;
-    private final Log logger = LogFactory.getLog(JCRMailboxManager.class);
+	private final JCRMailboxSessionMapperFactory mapperFactory;    
+	private final Log logger = LogFactory.getLog(JCRMailboxManager.class);
     
-    public JCRMailboxManager(final Authenticator authenticator, final Subscriber subscriber, final MailboxSessionJCRRepository repository) {
-        super(authenticator, subscriber, new JCRUidConsumer(repository));
-        this.repository = repository;
+    public JCRMailboxManager(JCRMailboxSessionMapperFactory mapperFactory, final Authenticator authenticator, final Subscriber subscriber) {
+	    super(mapperFactory, authenticator, subscriber, new JCRUidConsumer(mapperFactory.getRepository()));
+		this.mapperFactory = mapperFactory;
     }
 
 
     @Override
-    protected StoreMessageManager<String> createMailbox(MailboxEventDispatcher dispatcher, UidConsumer<String> consumer,Mailbox<String> mailboxRow, MailboxSession session) throws MailboxException{
-        return new JCRMessageManager(dispatcher, consumer, (org.apache.james.imap.jcr.mail.model.JCRMailbox) mailboxRow, repository, getLog(), getDelimiter());    
+    protected StoreMessageManager<String> createMessageManager(MailboxEventDispatcher dispatcher, UidConsumer<String> consumer, Mailbox<String> mailboxEntity, MailboxSession session) throws MailboxException{
+        return new JCRMessageManager(mapperFactory, dispatcher, consumer, (JCRMailbox) mailboxEntity, logger, getDelimiter(), session);
     }
 
     @Override
-    protected MailboxMapper<String> createMailboxMapper(MailboxSession session) throws MailboxException {
-
-        try {
-            Session jcrSession = repository.login(session);
-            JCRMailboxMapper mapper = new JCRMailboxMapper(jcrSession, getLog(), getDelimiter());
-            return mapper;
-        } catch (RepositoryException e) {
-            throw new MailboxException(HumanReadableText.GENERIC_FAILURE_DURING_PROCESSING, e);
-        }
-        
-    }
-
-    @Override
-    protected void doCreate(String namespaceName, MailboxSession session) throws MailboxException {
+    protected void doCreateMailbox(String namespaceName, MailboxSession session) throws MailboxException {
         final Mailbox<String> mailbox = new org.apache.james.imap.jcr.mail.model.JCRMailbox(namespaceName, randomUidValidity(), logger);
-        final JCRMailboxMapper mapper = (JCRMailboxMapper)createMailboxMapper(session);
+        final JCRMailboxMapper mapper = (JCRMailboxMapper) mapperFactory.getMailboxMapper(session);
         mapper.execute(new TransactionalMapper.Transaction() {
 
             public void run() throws MailboxException {
@@ -110,7 +93,6 @@ public class JCRMailboxManager extends StoreMailboxManager<String> implements JC
      */
     @Override
     public void endProcessingRequest(MailboxSession session) {
-        repository.logout(session);
         super.endProcessingRequest(session);
     }
     

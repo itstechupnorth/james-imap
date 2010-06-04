@@ -18,34 +18,19 @@
  ****************************************************************/
 package org.apache.james.imap.jpa;
 
-import org.apache.james.imap.jpa.user.JPASubscriptionMapper;
 import org.apache.james.imap.jpa.user.model.JPASubscription;
 import org.apache.james.imap.mailbox.MailboxSession;
 import org.apache.james.imap.store.StoreSubscriptionManager;
-import org.apache.james.imap.store.user.SubscriptionMapper;
 import org.apache.james.imap.store.user.model.Subscription;
 
 /**
  * JPA implementation of {@link StoreSubscriptionManager}
- * 
  *
  */
-public class JPASubscriptionManager extends StoreSubscriptionManager {
-    private final MailboxSessionEntityManagerFactory factory;
+public class JPASubscriptionManager extends StoreSubscriptionManager<Long> {
     
-    public JPASubscriptionManager(final MailboxSessionEntityManagerFactory factory) {
-        super();
-        this.factory = factory;
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see org.apache.james.imap.store.StoreSubscriptionManager#createMapper(org.apache.james.imap.mailbox.MailboxSession)
-     */
-    protected SubscriptionMapper createMapper(MailboxSession session) {                
-        JPASubscriptionMapper  mapper = new JPASubscriptionMapper(factory.createEntityManager(session));
-        
-        return mapper;
+    public JPASubscriptionManager(final JPAMailboxSessionMapperFactory mapperFactory) {
+        super(mapperFactory);
     }
     
     /*

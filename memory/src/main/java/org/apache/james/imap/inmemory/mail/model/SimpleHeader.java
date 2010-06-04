@@ -16,14 +16,41 @@
  * specific language governing permissions and limitations      *
  * under the License.                                           *
  ****************************************************************/
-package org.apache.james.imap.store;
 
-import org.apache.james.mime4j.parser.MimeEntityConfig;
-import org.apache.james.mime4j.parser.MimeTokenStream;
+package org.apache.james.imap.inmemory.mail.model;
 
-public class ConfigurableMimeTokenStream extends MimeTokenStream {
+import org.apache.james.imap.store.mail.model.AbstractComparableHeader;
+
+public class SimpleHeader extends AbstractComparableHeader {
+
+    public String field;
+    public int lineNumber;
+    public String value;
     
-    public ConfigurableMimeTokenStream(MimeEntityConfig config) {
-        super(config);
+    public SimpleHeader() {}
+    
+    public SimpleHeader(SimpleHeader header) {
+        this.field = header.field;
+        this.lineNumber = header.lineNumber;
+        this.value = header.value;
+    }
+    
+    public SimpleHeader(String field, int lineNumber, String value) {
+        super();
+        this.field = field;
+        this.lineNumber = lineNumber;
+        this.value = value;
+    }
+
+    public String getFieldName() {
+        return field;
+    }
+
+    public int getLineNumber() {
+        return lineNumber;
+    }
+
+    public String getValue() {
+        return value;
     }
 }

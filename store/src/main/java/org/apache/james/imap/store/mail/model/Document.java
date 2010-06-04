@@ -21,7 +21,7 @@ package org.apache.james.imap.store.mail.model;
 import java.io.IOException;
 import java.util.List;
 
-import org.apache.james.imap.store.RewindableInputStream;
+import org.apache.james.imap.store.streaming.RewindableInputStream;
 
 /**
  * A MIME documents, consisting of meta-data (including MIME headers)

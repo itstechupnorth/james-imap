@@ -29,11 +29,14 @@ import org.apache.james.imap.functional.ImapHostSystem;
 import org.apache.james.imap.functional.InMemoryUserManager;
 import org.apache.james.imap.jcr.GlobalMailboxSessionJCRRepository;
 import org.apache.james.imap.jcr.JCRMailboxManager;
+import org.apache.james.imap.jcr.JCRMailboxSessionMapperFactory;
 import org.apache.james.imap.jcr.JCRSubscriptionManager;
 import org.apache.james.imap.jcr.JCRUtils;
 import org.apache.james.imap.mailbox.MailboxSession;
 import org.apache.james.imap.main.DefaultImapDecoderFactory;
 import org.apache.james.imap.processor.main.DefaultImapProcessorFactory;
+import org.apache.james.imap.store.Authenticator;
+import org.apache.james.imap.store.Subscriber;
 import org.apache.james.test.functional.HostSystem;
 import org.xml.sax.InputSource;
 
@@ -67,10 +70,10 @@ public class JCRHostSystem extends ImapHostSystem{
             JCRUtils.registerCnd(repository, workspace, user, pass);
             
             userManager = new InMemoryUserManager();
+            JCRMailboxSessionMapperFactory mf = new JCRMailboxSessionMapperFactory(sessionRepos);
 
             //TODO: Fix the scaling stuff so the tests will pass with max scaling too
-            mailboxManager = new JCRMailboxManager(userManager, new JCRSubscriptionManager(sessionRepos), sessionRepos);
-
+            mailboxManager = new JCRMailboxManager(mf, userManager, new JCRSubscriptionManager(mf));
             final DefaultImapProcessorFactory defaultImapProcessorFactory = new DefaultImapProcessorFactory();
             resetUserMetaData();
             MailboxSession session = mailboxManager.createSystemSession("test", new SimpleLog("TestLog"));

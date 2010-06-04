@@ -24,9 +24,8 @@ import javax.jcr.Session;
 import org.apache.commons.logging.Log;
 import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.mailbox.MailboxException;
+import org.apache.james.imap.mailbox.MailboxSession;
 import org.apache.james.imap.store.transaction.AbstractTransactionalMapper;
-
-
 
 /**
  * Abstract Mapper base class for Level 1 Implementations of JCR. So no real transaction management is used. 
@@ -34,18 +33,20 @@ import org.apache.james.imap.store.transaction.AbstractTransactionalMapper;
  * The Session.save() will get called on commit() method,  session.refresh(false) on rollback, and session.refresh(true) on begin()
  *
  */
-public abstract class AbstractJCRMapper extends AbstractTransactionalMapper implements JCRImapConstants{
+public abstract class AbstractJCRMapper extends AbstractTransactionalMapper implements JCRImapConstants {
     public final static String MAILBOXES_PATH =  "mailboxes";
     public final static String SUBSCRIPTIONS_PATH =  "subscriptions";
 
-    private final Session session;
+    private Session session;
     private final Log logger;
+	private final MailboxSessionJCRRepository repository;
+	private final MailboxSession mSession;
 
-    public AbstractJCRMapper(final Session session, Log logger) {
-        this.session = session;
+    public AbstractJCRMapper(final MailboxSessionJCRRepository repository, MailboxSession mSession, Log logger) {
+        this.repository = repository;
+        this.mSession = mSession;
         this.logger = logger;
     }
-    
 
     /**
      * Return the logger
@@ -61,22 +62,23 @@ public abstract class AbstractJCRMapper extends AbstractTransactionalMapper impl
      * 
      * @return session
      */
-    protected Session getSession() {
+    protected Session getSession() throws RepositoryException{
+    	if (session == null) {
+    		session = repository.login(mSession);
+    	}
         return session;
     }
-
 
     /**
      * Begin is not supported by level 1 JCR implementations, however we refresh the session
      */
     protected void begin() throws MailboxException {  
         try {
-            session.refresh(true);
+            getSession().refresh(true);
         } catch (RepositoryException e) {
             // do nothin on refresh
         }
         // Do nothing
-        
     }
 
     /**
@@ -84,13 +86,12 @@ public abstract class AbstractJCRMapper extends AbstractTransactionalMapper impl
      */
     protected void commit() throws MailboxException {
         try {
-            if (session.hasPendingChanges()) {
-                session.save();
+            if (getSession().hasPendingChanges()) {
+                getSession().save();
             }
         } catch (RepositoryException e) {
             throw new MailboxException(HumanReadableText.COMMIT_TRANSACTION_FAILED, e);
         }
-
     }
 
     /**
@@ -99,10 +100,23 @@ public abstract class AbstractJCRMapper extends AbstractTransactionalMapper impl
     protected void rollback() throws MailboxException {
         try {
             // just refresh session and discard all pending changes
-            session.refresh(false);
+            getSession().refresh(false);
         } catch (RepositoryException e) {
             // just catch on rollback by now
         }
     }
+
+    /**
+     * Logout from open JCR Session
+     */
+    public void endRequest() {
+        if (session != null) {
+            if (session.isLive())
+                session.logout();
+            session = null;
+        }
+    }
         
+    
+
 }

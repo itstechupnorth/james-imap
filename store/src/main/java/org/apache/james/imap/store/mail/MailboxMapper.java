@@ -30,7 +30,7 @@ import org.apache.james.imap.store.transaction.TransactionalMapper;
  * to the end of the request.
  *
  */
-public interface MailboxMapper<Id> extends TransactionalMapper{
+public interface MailboxMapper<Id> extends TransactionalMapper {
     
     /**
      * Save the give {@link Mailbox} to the underlying storage

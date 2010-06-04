@@ -23,10 +23,14 @@ import org.apache.james.imap.mailbox.MailboxException;
 
 /**
  * Mapper which execute units of work in a {@link Transaction}
- * @author norman
  *
  */
 public interface TransactionalMapper {
+    
+    /**
+     * IMAP Request was complete. Cleanup all Request scoped stuff
+     */
+    public void endRequest();
     
     /**
      * Execute the given Transaction

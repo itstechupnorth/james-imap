@@ -16,71 +16,50 @@
  * specific language governing permissions and limitations      *
  * under the License.                                           *
  ****************************************************************/
+
 /**
  * 
  */
-package org.apache.james.imap.store;
+package org.apache.james.imap.store.streaming;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.nio.ByteBuffer;
+import java.nio.channels.WritableByteChannel;
+import java.util.List;
+
+import org.apache.james.imap.mailbox.MessageResult;
 
 /**
- * {@link InputStream} implementation which just consume the the wrapped {@link InputStream} and count
- * the lines which are contained within the wrapped stream
- * 
+ * Content which holds the full content, including {@link Header} objets
  *
  */
-final class CountingInputStream extends InputStream {
+public final class FullByteContent extends  AbstractFullContent {
+    private final ByteBuffer contents;
+    private final long size;
 
-    private final InputStream in;
-
-    private int lineCount;
-
-    private int octetCount;
-
-    CountingInputStream(InputStream in) {
-        super();
-        this.in = in;
+    public FullByteContent(final ByteBuffer contents, final List<MessageResult.Header> headers) throws IOException {
+        super(headers);
+        this.contents = contents;
+        this.size = caculateSize();
     }
 
     /*
      * (non-Javadoc)
-     * @see java.io.InputStream#read()
+     * @see org.apache.james.imap.mailbox.Content#size()
      */
-    public int read() throws IOException {
-        int next = in.read();
-        if (next > 0) {
-            octetCount++;
-            if (next == '\r') {
-                lineCount++;
-            }
-        }
-        return next;
+    public long size() {
+        return size;
     }
 
-    /**
-     * Return the line count 
-     * 
-     * @return lineCount
-     */
-    public final int getLineCount() {
-        return lineCount;
+    @Override
+    protected void bodyWriteTo(WritableByteChannel channel) throws IOException {
+        contents.rewind();
+        writeAll(channel, contents);        
     }
 
-    /**
-     * Return the octet count
-     * 
-     * @return octetCount
-     */
-    public final int getOctetCount() {
-        return octetCount;
+    @Override
+    protected long getBodySize() throws IOException {
+        return contents.limit();
     }
-    
-    /**
-     * Reads - and discards - the rest of the stream
-     * @throws IOException
-     */
-    public void readAll() throws IOException {
-        while (read()>0);
-    }
+
 }

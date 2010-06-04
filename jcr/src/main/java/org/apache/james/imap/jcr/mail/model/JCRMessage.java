@@ -38,13 +38,13 @@ import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.jcr.JCRImapConstants;
 import org.apache.james.imap.jcr.Persistent;
 import org.apache.james.imap.mailbox.MailboxException;
-import org.apache.james.imap.store.StreamUtils;
 import org.apache.james.imap.store.mail.model.AbstractDocument;
 import org.apache.james.imap.store.mail.model.Document;
 import org.apache.james.imap.store.mail.model.Header;
 import org.apache.james.imap.store.mail.model.MailboxMembership;
 import org.apache.james.imap.store.mail.model.Property;
 import org.apache.james.imap.store.mail.model.PropertyBuilder;
+import org.apache.james.imap.store.streaming.StreamUtils;
 
 /**
  * JCR implementation of {@link Document}
@@ -485,6 +485,7 @@ public class JCRMessage extends AbstractDocument implements MailboxMembership<St
      */
     public Document getDocument() {
         if (isPersistent()) {
+        	//TODO: Why not "this"?
             return new JCRMessage(node, logger);
            
         }

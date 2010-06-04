@@ -17,7 +17,7 @@
  * under the License.                                           *
  ****************************************************************/
 
-package org.apache.james.imap.inmemory;
+package org.apache.james.imap.inmemory.mail.model;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -26,15 +26,15 @@ import java.util.List;
 
 import javax.mail.Flags;
 
-import org.apache.james.imap.store.DelegatingRewindableInputStream;
-import org.apache.james.imap.store.LazySkippingInputStream;
-import org.apache.james.imap.store.RewindableInputStream;
 import org.apache.james.imap.store.mail.model.AbstractMailboxMembership;
 import org.apache.james.imap.store.mail.model.Document;
 import org.apache.james.imap.store.mail.model.Header;
 import org.apache.james.imap.store.mail.model.MailboxMembership;
 import org.apache.james.imap.store.mail.model.Property;
 import org.apache.james.imap.store.mail.model.PropertyBuilder;
+import org.apache.james.imap.store.streaming.DelegatingRewindableInputStream;
+import org.apache.james.imap.store.streaming.LazySkippingInputStream;
+import org.apache.james.imap.store.streaming.RewindableInputStream;
 
 public class SimpleMailboxMembership extends AbstractMailboxMembership<Long> implements Document, Comparable<MailboxMembership<Long>> {
 

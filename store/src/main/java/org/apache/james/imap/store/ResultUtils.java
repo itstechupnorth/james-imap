@@ -40,6 +40,10 @@ import org.apache.james.imap.mailbox.MessageResult.MimePath;
 import org.apache.james.imap.mailbox.util.MessageResultImpl;
 import org.apache.james.imap.store.mail.model.Header;
 import org.apache.james.imap.store.mail.model.MailboxMembership;
+import org.apache.james.imap.store.streaming.DelegatingRewindableInputStream;
+import org.apache.james.imap.store.streaming.InputStreamContent;
+import org.apache.james.imap.store.streaming.PartContentBuilder;
+import org.apache.james.imap.store.streaming.RewindableInputStream;
 import org.apache.james.mime4j.MimeException;
 
 /**

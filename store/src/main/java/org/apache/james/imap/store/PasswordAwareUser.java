@@ -27,12 +27,12 @@ import org.apache.james.imap.mailbox.MailboxSession;
  */
 public interface PasswordAwareUser extends MailboxSession.User {
 	
-	/**
-	 * Return the Password for the logged in user
-	 * 
-	 * @return password
-	 */
-	public String getPassword();
+    /**
+     * Return the Password for the logged in user
+     * 
+     * @return password
+     */
+    public String getPassword();
 	
 	
 }

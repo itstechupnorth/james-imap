@@ -18,48 +18,22 @@
  ****************************************************************/
 package org.apache.james.imap.jcr;
 
-import javax.jcr.RepositoryException;
-import javax.jcr.Session;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.james.imap.api.display.HumanReadableText;
-import org.apache.james.imap.jcr.user.JCRSubscriptionMapper;
 import org.apache.james.imap.jcr.user.model.JCRSubscription;
 import org.apache.james.imap.mailbox.MailboxSession;
-import org.apache.james.imap.mailbox.SubscriptionException;
 import org.apache.james.imap.store.StoreSubscriptionManager;
-import org.apache.james.imap.store.user.SubscriptionMapper;
 import org.apache.james.imap.store.user.model.Subscription;
 
 /**
  * JCR implementation of a SubscriptionManager
- * 
- * 
  */
-public class JCRSubscriptionManager extends StoreSubscriptionManager implements JCRImapConstants{
-    private final Log logger = LogFactory.getLog(JCRSubscriptionManager.class);
-    private final MailboxSessionJCRRepository repository;
-
-    public JCRSubscriptionManager(final MailboxSessionJCRRepository repository ) {
-        super();
-        this.repository = repository;
-    }
-
-
+public class JCRSubscriptionManager extends StoreSubscriptionManager<String> implements JCRImapConstants {
     
-    @Override
-    protected SubscriptionMapper createMapper(MailboxSession session) throws SubscriptionException {
-        try {
-            Session jcrSession = repository.login(session);
-            JCRSubscriptionMapper mapper = new JCRSubscriptionMapper(jcrSession, logger);
+    private final Log logger = LogFactory.getLog(JCRSubscriptionManager.class);
 
-            return mapper;
-        } catch (RepositoryException e) {
-            throw new SubscriptionException(HumanReadableText.GENERIC_SUBSCRIPTION_FAILURE, e);
-        }        
-        
-      
+    public JCRSubscriptionManager(JCRMailboxSessionMapperFactory mapperFactory) {
+        super(mapperFactory);
     }
 
     @Override

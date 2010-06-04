@@ -16,45 +16,14 @@
  * specific language governing permissions and limitations      *
  * under the License.                                           *
  ****************************************************************/
+package org.apache.james.imap.store.streaming;
 
-/**
- * 
- */
-package org.apache.james.imap.store;
+import org.apache.james.mime4j.parser.MimeEntityConfig;
+import org.apache.james.mime4j.parser.MimeTokenStream;
 
-import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.nio.channels.WritableByteChannel;
-
-import org.apache.james.imap.mailbox.Content;
-
-public final class ByteContent implements Content {
-
-    private final ByteBuffer contents;
-
-    private final long size;
-
-    public ByteContent(final ByteBuffer contents) {
-        this.contents = contents;
-        size = contents.limit();
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see org.apache.james.imap.mailbox.Content#size()
-     */
-    public long size() {
-        return size;
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see org.apache.james.imap.mailbox.Content#writeTo(java.nio.channels.WritableByteChannel)
-     */
-    public void writeTo(WritableByteChannel channel) throws IOException {
-        contents.rewind();
-        while (channel.write(contents) > 0) {
-            // write more
-        }
+public class ConfigurableMimeTokenStream extends MimeTokenStream {
+    
+    public ConfigurableMimeTokenStream(MimeEntityConfig config) {
+        super(config);
     }
 }
