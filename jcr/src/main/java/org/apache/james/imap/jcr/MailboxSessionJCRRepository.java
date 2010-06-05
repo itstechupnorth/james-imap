@@ -24,7 +24,7 @@ import javax.jcr.Session;
 import javax.jcr.SimpleCredentials;
 
 import org.apache.james.imap.mailbox.MailboxSession;
-import org.apache.james.imap.store.PasswordAwareUser;
+import org.apache.james.imap.mailbox.MailboxSession.User;
 
 /**
  * Manage JCR {@link Session}. It use the username and the password of 
@@ -50,7 +50,7 @@ public class MailboxSessionJCRRepository {
      * @throws RepositoryException
      */
     public Session login(MailboxSession session) throws RepositoryException {
-        PasswordAwareUser user = (PasswordAwareUser) session.getUser();
+        User user = session.getUser();
         String username = user.getUserName();
         String password = user.getPassword();
         char[] pass = null;

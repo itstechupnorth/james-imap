@@ -369,7 +369,7 @@ public abstract class StoreMailboxManager<Id> extends AbstractLogEnabled impleme
      * @see org.apache.james.imap.mailbox.MailboxManager#createSystemSession(java.lang.String, org.apache.commons.logging.Log)
      */
     public MailboxSession createSystemSession(String userName, Log log) {
-        return createSession(userName, log);
+        return createSession(userName, null, log);
     }
 
 
@@ -380,8 +380,8 @@ public abstract class StoreMailboxManager<Id> extends AbstractLogEnabled impleme
      * @param log
      * @return session
      */
-    private SimpleMailboxSession createSession(String userName, Log log) {
-        return new SimpleMailboxSession(randomId(), userName, log, delimiter, new ArrayList<Locale>());
+    private SimpleMailboxSession createSession(String userName, String password, Log log) {
+        return new SimpleMailboxSession(randomId(), userName, password, log, delimiter, new ArrayList<Locale>());
     }
 
 
@@ -459,7 +459,7 @@ public abstract class StoreMailboxManager<Id> extends AbstractLogEnabled impleme
      */
     public MailboxSession login(String userid, String passwd, Log log) throws BadCredentialsException, MailboxException {
         if (login(userid, passwd)) {
-            return createSession(userid, log);
+            return createSession(userid, passwd, log);
         } else {
             throw new BadCredentialsException();
         }

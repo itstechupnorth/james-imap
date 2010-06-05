@@ -18,19 +18,14 @@
  ****************************************************************/
 package org.apache.james.imap.jcr;
 
-import java.util.ArrayList;
-import java.util.Locale;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.james.imap.jcr.mail.JCRMailboxMapper;
 import org.apache.james.imap.jcr.mail.model.JCRMailbox;
-import org.apache.james.imap.mailbox.BadCredentialsException;
 import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.MailboxSession;
 import org.apache.james.imap.mailbox.util.MailboxEventDispatcher;
 import org.apache.james.imap.store.Authenticator;
-import org.apache.james.imap.store.PasswordAwareMailboxSession;
 import org.apache.james.imap.store.StoreMailboxManager;
 import org.apache.james.imap.store.StoreMessageManager;
 import org.apache.james.imap.store.Subscriber;
@@ -72,29 +67,4 @@ public class JCRMailboxManager extends StoreMailboxManager<String> implements JC
         });
     }
 
-
-    /**
-     * Return a {@link PasswordAwareMailboxSession} if the login was successful
-     * 
-     * (non-Javadoc)
-     * @see org.apache.james.imap.store.StoreMailboxManager#login(java.lang.String, java.lang.String, org.apache.commons.logging.Log)
-     */
-    public MailboxSession login(String userid, String passwd, Log log) throws BadCredentialsException, MailboxException {
-        if (login(userid, passwd)) {
-            return new PasswordAwareMailboxSession(randomId(), userid, passwd, log, getDelimiter(), new ArrayList<Locale>());
-        } else {
-            throw new BadCredentialsException();
-        }
-    }
-
-
-    /**
-     * Logout every open JCR Session
-     */
-    @Override
-    public void endProcessingRequest(MailboxSession session) {
-        super.endProcessingRequest(session);
-    }
-    
-    
 }

@@ -48,18 +48,21 @@ public class SimpleMailboxSession implements MailboxSession, MailboxSession.User
 
     private final String userName;
     
+    private final String password;
+    
     private boolean open;
 
     private final List<Locale> localePreferences;
 
     private final Map<Object, Object> attributes;
 
-    public SimpleMailboxSession(final long sessionId, final String userName, final Log log, char deliminator,
+    public SimpleMailboxSession(final long sessionId, final String userName, final String password, final Log log, char deliminator,
             final List<Locale> localePreferences) {
         super();
         this.sessionId = sessionId;
         this.log = log;
         this.userName = userName;
+        this.password = password;
         sharedSpaces = new ArrayList<Namespace>();
         otherUsersSpace = null;
         personalSpace = new SimpleMailboxNamespace(deliminator, "");
@@ -163,6 +166,14 @@ public class SimpleMailboxSession implements MailboxSession, MailboxSession.User
      */
     public Map<Object, Object> getAttributes() {
         return attributes;
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.mailbox.MailboxSession.User#getPassword()
+     */
+    public String getPassword() {
+        return password;
     }
 
 }

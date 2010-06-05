@@ -360,11 +360,11 @@ public class TorqueMailboxManager implements MailboxManager {
     }
 
     public MailboxSession createSystemSession(String userName, Log log) {
-        return createSession(userName, log);
+        return createSession(userName, null, log);
     }
 
-    private MailboxSession createSession(String userName, Log log) {
-        return new SimpleMailboxSession(random.nextLong(), userName, log, delimiter, new ArrayList<Locale>());
+    private MailboxSession createSession(String userName, String password, Log log) {
+        return new SimpleMailboxSession(random.nextLong(), userName, password, log, delimiter, new ArrayList<Locale>());
     }
 
     public String resolve(final String userName, String mailboxPath) {
@@ -401,7 +401,7 @@ public class TorqueMailboxManager implements MailboxManager {
 
     public MailboxSession login(String userid, String passwd, Log log) throws BadCredentialsException, MailboxException {
         if (login(userid, passwd)) {
-            return createSession(userid, log);
+            return createSession(userid, passwd, log);
         } else {
             throw new BadCredentialsException();
         }

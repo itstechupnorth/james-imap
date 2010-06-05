@@ -74,6 +74,13 @@ public interface MailboxSession {
         public String getUserName();
         
         /**
+         * Return the Password for the logged in user
+         * 
+         * @return password
+         */
+        public String getPassword();
+        
+        /**
          * Gets acceptable localisation for this user in preference order.
          * When localising a phrase, each <code>Locale</code> should be 
          * tried in order until an appropriate translation is obtained.
