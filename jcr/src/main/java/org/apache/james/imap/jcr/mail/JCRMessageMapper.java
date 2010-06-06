@@ -38,6 +38,7 @@ import org.apache.jackrabbit.util.Locked;
 import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.jcr.AbstractJCRMapper;
 import org.apache.james.imap.jcr.MailboxSessionJCRRepository;
+import org.apache.james.imap.jcr.NodeLocker;
 import org.apache.james.imap.jcr.mail.model.JCRMessage;
 import org.apache.james.imap.mailbox.MailboxSession;
 import org.apache.james.imap.mailbox.MessageRange;
@@ -55,8 +56,8 @@ import org.apache.james.imap.store.mail.model.MailboxMembership;
  */
 public class JCRMessageMapper extends AbstractJCRMapper implements MessageMapper<String> {
 
-    public JCRMessageMapper(final MailboxSessionJCRRepository repos, MailboxSession session, final Log logger) {
-        super(repos, session, logger);
+    public JCRMessageMapper(final MailboxSessionJCRRepository repos, MailboxSession session, NodeLocker locker, final Log logger) {
+        super(repos, session, locker, logger);
     }
 
     /*

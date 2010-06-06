@@ -41,9 +41,11 @@ import org.apache.james.imap.store.mail.model.Mailbox;
 public class JCRUidConsumer implements UidConsumer<String>{
 
     private MailboxSessionJCRRepository repos;
+    private NodeLocker locker;
     
-    public JCRUidConsumer(MailboxSessionJCRRepository repos) {
+    public JCRUidConsumer(MailboxSessionJCRRepository repos, NodeLocker locker) {
         this.repos = repos;
+        this.locker = locker;
     }
     
     /*
@@ -54,10 +56,9 @@ public class JCRUidConsumer implements UidConsumer<String>{
         try {
             Session jcrSession = repos.login(session);
             Node node = jcrSession.getNodeByIdentifier(mailbox.getMailboxId());
-            return (Long) new Locked() {
-                
-                @Override
-                protected Object run(Node node) throws RepositoryException {
+            long result = locker.execute(new NodeLocker.NodeLockedExecution<Long>() {
+
+                public Long execute(Node node) throws RepositoryException {
                     Property uidProp = node.getProperty(JCRMailbox.LASTUID_PROPERTY);
                     long uid = uidProp.getLong();
                     uid++;
@@ -65,7 +66,13 @@ public class JCRUidConsumer implements UidConsumer<String>{
                     uidProp.getSession().save();
                     return uid;
                 }
-            }.with(node, false);
+
+                public boolean isDeepLocked() {
+                    return true;
+                }
+                
+            }, node, Long.class);
+            return result;
             
          
         } catch (RepositoryException e) {

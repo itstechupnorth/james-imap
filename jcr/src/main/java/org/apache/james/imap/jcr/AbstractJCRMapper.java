@@ -41,13 +41,19 @@ public abstract class AbstractJCRMapper extends AbstractTransactionalMapper impl
     private final Log logger;
 	private final MailboxSessionJCRRepository repository;
 	private final MailboxSession mSession;
+    private final NodeLocker locker;
 
-    public AbstractJCRMapper(final MailboxSessionJCRRepository repository, MailboxSession mSession, Log logger) {
+    public AbstractJCRMapper(final MailboxSessionJCRRepository repository, MailboxSession mSession, NodeLocker locker, Log logger) {
         this.repository = repository;
         this.mSession = mSession;
         this.logger = logger;
+        this.locker = locker;
     }
 
+    public NodeLocker getNodeLocker() {
+        return locker;
+    }
+    
     /**
      * Return the logger
      * 

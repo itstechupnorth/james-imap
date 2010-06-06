@@ -34,6 +34,7 @@ import org.apache.jackrabbit.commons.JcrUtils;
 import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.jcr.AbstractJCRMapper;
 import org.apache.james.imap.jcr.MailboxSessionJCRRepository;
+import org.apache.james.imap.jcr.NodeLocker;
 import org.apache.james.imap.jcr.user.model.JCRSubscription;
 import org.apache.james.imap.mailbox.MailboxSession;
 import org.apache.james.imap.mailbox.SubscriptionException;
@@ -46,8 +47,8 @@ import org.apache.james.imap.store.user.model.Subscription;
  */
 public class JCRSubscriptionMapper extends AbstractJCRMapper implements SubscriptionMapper {
 
-    public JCRSubscriptionMapper(final MailboxSessionJCRRepository repos, MailboxSession session, final Log log) {
-        super(repos,session, log);
+    public JCRSubscriptionMapper(final MailboxSessionJCRRepository repos, MailboxSession session, final NodeLocker locker, final Log log) {
+        super(repos,session, locker, log);
     }
 
     /*

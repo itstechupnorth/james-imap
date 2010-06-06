@@ -42,28 +42,30 @@ public class JCRMailboxSessionMapperFactory extends MailboxSessionMapperFactory<
     private MailboxSessionJCRRepository repository;
     private Log logger;
     private char delimiter;
+    private NodeLocker locker;
 
-    public JCRMailboxSessionMapperFactory(final MailboxSessionJCRRepository repository) {
+    public JCRMailboxSessionMapperFactory(final MailboxSessionJCRRepository repository, final NodeLocker locker) {
         this.repository = repository;
         this.logger = LogFactory.getLog(JCRSubscriptionManager.class);
         this.delimiter = '.';
+        this.locker = locker;;
     }
 
     @Override
     public MailboxMapper<String> createMailboxMapper(MailboxSession session) throws MailboxException {
-        JCRMailboxMapper mapper = new JCRMailboxMapper(repository, session, logger, delimiter);
+        JCRMailboxMapper mapper = new JCRMailboxMapper(repository, session, locker, logger, delimiter);
         return mapper;
     }
 
     @Override
     public MessageMapper<String> createMessageMapper(MailboxSession session) throws MailboxException {
-        JCRMessageMapper messageMapper = new JCRMessageMapper(repository, session, logger);
+        JCRMessageMapper messageMapper = new JCRMessageMapper(repository, session, locker, logger);
         return messageMapper;
     }
 
     @Override
     public SubscriptionMapper createSubscriptionMapper(MailboxSession session) throws SubscriptionException {
-        JCRSubscriptionMapper mapper = new JCRSubscriptionMapper(repository, session, logger);
+        JCRSubscriptionMapper mapper = new JCRSubscriptionMapper(repository, session, locker, logger);
         return mapper;
     }
     

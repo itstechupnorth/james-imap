@@ -36,6 +36,7 @@ import org.apache.jackrabbit.util.Locked;
 import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.jcr.AbstractJCRMapper;
 import org.apache.james.imap.jcr.MailboxSessionJCRRepository;
+import org.apache.james.imap.jcr.NodeLocker;
 import org.apache.james.imap.jcr.mail.model.JCRMailbox;
 import org.apache.james.imap.mailbox.MailboxNotFoundException;
 import org.apache.james.imap.mailbox.MailboxSession;
@@ -52,8 +53,8 @@ public class JCRMailboxMapper extends AbstractJCRMapper implements MailboxMapper
 
     private char delimiter;
 
-    public JCRMailboxMapper(final MailboxSessionJCRRepository repos, MailboxSession session, final Log logger, char delimiter) {
-        super(repos, session, logger);
+    public JCRMailboxMapper(final MailboxSessionJCRRepository repos, MailboxSession session, final NodeLocker locker, final Log logger, char delimiter) {
+        super(repos, session, locker, logger);
         this.delimiter = delimiter;
     }
 

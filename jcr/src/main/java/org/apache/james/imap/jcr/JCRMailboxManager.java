@@ -40,15 +40,19 @@ import org.apache.james.imap.store.transaction.TransactionalMapper;
  */
 public class JCRMailboxManager extends StoreMailboxManager<String> implements JCRImapConstants{
 
-	private final JCRMailboxSessionMapperFactory mapperFactory;    
-	private final Log logger = LogFactory.getLog(JCRMailboxManager.class);
+    private final JCRMailboxSessionMapperFactory mapperFactory;
+    private final Log logger = LogFactory.getLog(JCRMailboxManager.class);
     
     public JCRMailboxManager(JCRMailboxSessionMapperFactory mapperFactory, final Authenticator authenticator, final Subscriber subscriber) {
-	    super(mapperFactory, authenticator, subscriber, new JCRUidConsumer(mapperFactory.getRepository()));
-		this.mapperFactory = mapperFactory;
+	    this(mapperFactory, authenticator, subscriber, new JCRVmNodeLocker());
     }
 
+    public JCRMailboxManager(JCRMailboxSessionMapperFactory mapperFactory, final Authenticator authenticator, final Subscriber subscriber, final NodeLocker locker) {
+        super(mapperFactory, authenticator, subscriber, new JCRUidConsumer(mapperFactory.getRepository(), locker));
+        this.mapperFactory = mapperFactory;
+    }
 
+    
     @Override
     protected StoreMessageManager<String> createMessageManager(MailboxEventDispatcher dispatcher, UidConsumer<String> consumer, Mailbox<String> mailboxEntity, MailboxSession session) throws MailboxException{
         return new JCRMessageManager(mapperFactory, dispatcher, consumer, (JCRMailbox) mailboxEntity, logger, getDelimiter(), session);
