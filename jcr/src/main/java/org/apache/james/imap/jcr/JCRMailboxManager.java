@@ -44,11 +44,11 @@ public class JCRMailboxManager extends StoreMailboxManager<String> implements JC
     private final Log logger = LogFactory.getLog(JCRMailboxManager.class);
     
     public JCRMailboxManager(JCRMailboxSessionMapperFactory mapperFactory, final Authenticator authenticator, final Subscriber subscriber) {
-	    this(mapperFactory, authenticator, subscriber, new JCRVmNodeLocker());
+	    this(mapperFactory, authenticator, subscriber, new JCRVmNodeLocker(), new JCRUidConsumer(mapperFactory.getRepository(),  new JCRVmNodeLocker()));
     }
 
-    public JCRMailboxManager(JCRMailboxSessionMapperFactory mapperFactory, final Authenticator authenticator, final Subscriber subscriber, final NodeLocker locker) {
-        super(mapperFactory, authenticator, subscriber, new JCRUidConsumer(mapperFactory.getRepository(), locker));
+    public JCRMailboxManager(JCRMailboxSessionMapperFactory mapperFactory, final Authenticator authenticator, final Subscriber subscriber, final NodeLocker locker, final UidConsumer<String> consumer) {
+        super(mapperFactory, authenticator, subscriber, consumer);
         this.mapperFactory = mapperFactory;
     }
 
