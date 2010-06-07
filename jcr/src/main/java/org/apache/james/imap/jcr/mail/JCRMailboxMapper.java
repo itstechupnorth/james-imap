@@ -32,11 +32,11 @@ import javax.jcr.query.QueryResult;
 import org.apache.commons.logging.Log;
 import org.apache.jackrabbit.JcrConstants;
 import org.apache.jackrabbit.commons.JcrUtils;
-import org.apache.jackrabbit.util.Locked;
 import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.jcr.AbstractJCRMapper;
 import org.apache.james.imap.jcr.MailboxSessionJCRRepository;
 import org.apache.james.imap.jcr.NodeLocker;
+import org.apache.james.imap.jcr.NodeLocker.NodeLockedExecution;
 import org.apache.james.imap.jcr.mail.model.JCRMailbox;
 import org.apache.james.imap.mailbox.MailboxNotFoundException;
 import org.apache.james.imap.mailbox.MailboxSession;
@@ -136,11 +136,15 @@ public class JCRMailboxMapper extends AbstractJCRMapper implements MailboxMapper
      */
     public boolean existsMailboxStartingWith(String mailboxName) throws StorageException {
         try {
-        	QueryManager manager = getSession().getWorkspace().getQueryManager();
-        	String queryString =  "//"+ MAILBOXES_PATH + "//element(*,jamesMailbox:mailbox)[jcr:like(@" + JCRMailbox.NAME_PROPERTY + ",'" +mailboxName+"%')]";
-        	QueryResult result = manager.createQuery(queryString, Query.XPATH).execute();
-        	NodeIterator it = result.getNodes();
-        	return it.hasNext();
+            QueryManager manager = getSession().getWorkspace()
+                    .getQueryManager();
+            String queryString = "//" + MAILBOXES_PATH
+                    + "//element(*,jamesMailbox:mailbox)[jcr:like(@"
+                    + JCRMailbox.NAME_PROPERTY + ",'" + mailboxName + "%')]";
+            QueryResult result = manager.createQuery(queryString, Query.XPATH)
+                    .execute();
+            NodeIterator it = result.getNodes();
+            return it.hasNext();
         } catch (RepositoryException e) {
             throw new StorageException(HumanReadableText.SEARCH_FAILED, e);
         }
@@ -235,10 +239,10 @@ public class JCRMailboxMapper extends AbstractJCRMapper implements MailboxMapper
                 } else {
                     mailboxNode = rootNode.getNode(MAILBOXES_PATH);
                 }
-                new Locked() {
+                NodeLocker locker = getNodeLocker();
+                locker.execute(new NodeLockedExecution<Void>() {
 
-                    @Override
-                    protected Object run(Node node) throws RepositoryException {
+                    public Void execute(Node node) throws RepositoryException {
                         final String name = jcrMailbox.getName();
                         
                         //split the name so we can construct a nice node tree
@@ -262,8 +266,12 @@ public class JCRMailboxMapper extends AbstractJCRMapper implements MailboxMapper
                         getSession().save();
                         return null;
                     }
+
+                    public boolean isDeepLocked() {
+                        return true;
+                    }
                     
-                }.with(mailboxNode, true);
+                }, mailboxNode, Void.class);
                 
            } else {
                jcrMailbox.merge(node);

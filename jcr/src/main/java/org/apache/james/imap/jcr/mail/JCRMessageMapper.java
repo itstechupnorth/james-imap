@@ -34,11 +34,11 @@ import javax.jcr.query.QueryResult;
 import org.apache.commons.logging.Log;
 import org.apache.jackrabbit.JcrConstants;
 import org.apache.jackrabbit.commons.JcrUtils;
-import org.apache.jackrabbit.util.Locked;
 import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.jcr.AbstractJCRMapper;
 import org.apache.james.imap.jcr.MailboxSessionJCRRepository;
 import org.apache.james.imap.jcr.NodeLocker;
+import org.apache.james.imap.jcr.NodeLocker.NodeLockedExecution;
 import org.apache.james.imap.jcr.mail.model.JCRMessage;
 import org.apache.james.imap.mailbox.MailboxSession;
 import org.apache.james.imap.mailbox.MessageRange;
@@ -410,17 +410,19 @@ public class JCRMessageMapper extends AbstractJCRMapper implements MessageMapper
                 String dayNodePath = year + NODE_DELIMITER + month + NODE_DELIMITER + day;
                 boolean found = mailboxNode.hasNode(dayNodePath);
                 
+                NodeLocker locker = getNodeLocker();
+                
                 // check if the node for the day already exists. if not we need to create the structure
                 if (found == false) {
+                    
                     // we lock the whole mailbox with all its childs while
                     // adding the folder structure for the date
                     // TODO: Maybe we should just lock the last child folder
-                    dayNode = (Node) new Locked() {
+                    dayNode = locker.execute(new NodeLocker.NodeLockedExecution<Node>() {
 
-                        @Override
-                        protected Object run(Node mailboxNode) throws RepositoryException {
+                        public Node execute(Node node) throws RepositoryException {
 
-                            Node yearNode = JcrUtils.getOrAddFolder(mailboxNode, year);
+                            Node yearNode = JcrUtils.getOrAddFolder(node, year);
                             yearNode.addMixin(JcrConstants.MIX_LOCKABLE);
 
                             Node monthNode = JcrUtils.getOrAddFolder(yearNode, month);
@@ -432,7 +434,12 @@ public class JCRMessageMapper extends AbstractJCRMapper implements MessageMapper
                             getSession().save();
                             return dayNode;
                         }
-                    }.with(mailboxNode, true);
+
+                        public boolean isDeepLocked() {
+                            return true;
+                        }
+                    }, mailboxNode, Node.class);
+                   
                 } else {
                     
                     dayNode = mailboxNode.getNode(dayNodePath);
@@ -440,11 +447,10 @@ public class JCRMessageMapper extends AbstractJCRMapper implements MessageMapper
                 
                 
                 // lock the day node and add the message
-                new Locked() {
+                locker.execute(new NodeLockedExecution<Void>() {
 
-                    @Override
-                    protected Object run(Node dayNode) throws RepositoryException {
-                        Node messageNode = dayNode.addNode(String.valueOf(membership.getUid()),"jamesMailbox:message");
+                    public Void execute(Node node) throws RepositoryException {
+                        Node messageNode = node.addNode(String.valueOf(membership.getUid()),"jamesMailbox:message");
                         try {
                             membership.merge(messageNode);
                         } catch (IOException e) {
@@ -455,10 +461,12 @@ public class JCRMessageMapper extends AbstractJCRMapper implements MessageMapper
 
                         return null;
                     }
-                    
-                }.with(dayNode,false);
+
+                    public boolean isDeepLocked() {
+                        return true;
+                    }
+                }, dayNode, Void.class);
                 
-              
             } else {
                 membership.merge(messageNode);
             }
