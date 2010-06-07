@@ -130,7 +130,7 @@ public class JCRMessageMapper extends AbstractJCRMapper implements MessageMapper
         if (membership.isPersistent()) {
             try {
 
-                getSession().getNodeByUUID(membership.getId()).remove();
+                getSession().getNodeByIdentifier(membership.getId()).remove();
             } catch (RepositoryException e) {
                 e.printStackTrace();
                 throw new StorageException(HumanReadableText.DELETED_FAILED, e);
@@ -389,7 +389,7 @@ public class JCRMessageMapper extends AbstractJCRMapper implements MessageMapper
             Node messageNode = null;
             
             if (membership.isPersistent()) {
-                messageNode = getSession().getNodeByUUID(membership.getId());
+                messageNode = getSession().getNodeByIdentifier(membership.getId());
             }
 
             if (messageNode == null) {
@@ -406,7 +406,7 @@ public class JCRMessageMapper extends AbstractJCRMapper implements MessageMapper
                 final String day = String.valueOf(cal.get(Calendar.DAY_OF_MONTH));
                
                 Node dayNode = null;
-                Node mailboxNode = getSession().getNodeByUUID(uuid);
+                Node mailboxNode = getSession().getNodeByIdentifier(uuid);
                 String dayNodePath = year + NODE_DELIMITER + month + NODE_DELIMITER + day;
                 boolean found = mailboxNode.hasNode(dayNodePath);
                 

@@ -26,6 +26,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import javax.jcr.Binary;
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
 import javax.jcr.RepositoryException;
@@ -299,13 +300,14 @@ public class JCRMessage extends AbstractDocument implements MailboxMembership<St
     public String getUUID() {
         if (isPersistent()) {
             try {
-                return node.getUUID();
+                return node.getIdentifier();
             } catch (RepositoryException e) {
                 logger.error("Unable to access UUID", e);
             }
         }
         return null;
     }
+    
     /*
      * (non-Javadoc)
      * @see org.apache.james.imap.jcr.Persistent#merge(javax.jcr.Node)
@@ -333,8 +335,8 @@ public class JCRMessage extends AbstractDocument implements MailboxMembership<St
 
               
         Node contentNode = JcrUtils.getOrAddNode(node, JcrConstants.JCR_CONTENT, JcrConstants.NT_RESOURCE);
-       
-        contentNode.setProperty(JcrConstants.JCR_DATA, getFullContent());
+        Binary binaryContent = contentNode.getSession().getValueFactory().createBinary(getFullContent());
+        contentNode.setProperty(JcrConstants.JCR_DATA, binaryContent);
         contentNode.setProperty(JcrConstants.JCR_MIMETYPE, getMediaType());
 
         if (getTextualLineCount() != null) {
@@ -438,7 +440,7 @@ public class JCRMessage extends AbstractDocument implements MailboxMembership<St
         if (isPersistent()) {
             try {
                 //TODO: Maybe we should cache this somehow...
-                InputStream contentStream = node.getNode(JcrConstants.JCR_CONTENT).getProperty(JcrConstants.JCR_DATA).getStream();
+                InputStream contentStream = node.getNode(JcrConstants.JCR_CONTENT).getProperty(JcrConstants.JCR_DATA).getBinary().getStream();
                 return contentStream;
             } catch (RepositoryException e) {
                 logger.error("Unable to retrieve property " + JcrConstants.JCR_CONTENT, e);
@@ -751,7 +753,7 @@ public class JCRMessage extends AbstractDocument implements MailboxMembership<St
     public String getId() {
         if (isPersistent()) {
             try {
-                return node.getUUID();
+                return node.getIdentifier();
             } catch (RepositoryException e) {
                 logger.error("Unable to access property " + JcrConstants.JCR_UUID, e);
             }

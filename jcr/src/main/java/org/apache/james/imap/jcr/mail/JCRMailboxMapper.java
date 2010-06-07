@@ -98,7 +98,7 @@ public class JCRMailboxMapper extends AbstractJCRMapper implements MailboxMapper
      */
     public void delete(Mailbox<String> mailbox) throws StorageException {
         try {
-            Node node = getSession().getNodeByUUID(((JCRMailbox) mailbox).getMailboxId());
+            Node node = getSession().getNodeByIdentifier(((JCRMailbox) mailbox).getMailboxId());
                    
             node.remove();
             
@@ -156,7 +156,7 @@ public class JCRMailboxMapper extends AbstractJCRMapper implements MailboxMapper
      */
     public Mailbox<String> findMailboxById(String mailboxId) throws StorageException, MailboxNotFoundException {
         try {
-            return new JCRMailbox(getSession().getNodeByUUID(mailboxId), getLogger());
+            return new JCRMailbox(getSession().getNodeByIdentifier(mailboxId), getLogger());
         } catch (PathNotFoundException e) {
             throw new MailboxNotFoundException(mailboxId);
         } catch (RepositoryException e) {
@@ -227,7 +227,7 @@ public class JCRMailboxMapper extends AbstractJCRMapper implements MailboxMapper
             Node node = null;
 
             if (jcrMailbox.isPersistent()) {
-                node = getSession().getNodeByUUID(jcrMailbox.getMailboxId());
+                node = getSession().getNodeByIdentifier(jcrMailbox.getMailboxId());
             }
             if (node == null) {
                 Node rootNode = getSession().getRootNode();
