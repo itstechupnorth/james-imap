@@ -36,7 +36,7 @@ import org.junit.Test;
 
 public abstract class AbstractStressTest {
 
-    private final static int APPEND_OPERATIONS = 500;
+    private final static int APPEND_OPERATIONS = 200;
     
     
     protected abstract StoreMailboxManager<?> getMailboxManager();
