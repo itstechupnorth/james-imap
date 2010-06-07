@@ -28,7 +28,7 @@ import org.apache.james.imap.mailbox.MailboxSession.User;
 
 /**
  * Manage JCR {@link Session}. It use the username and the password of 
- * the logged in IMAP user to access the {@link Repository}
+ * the logged in IMAP user to obtain a JCR {@link Session} from the {@link Repository}
  *
  */
 public class MailboxSessionJCRRepository {
@@ -66,7 +66,7 @@ public class MailboxSessionJCRRepository {
      * 
      * @return repository
      */
-    protected Repository getRepository() {
+    public Repository getRepository() {
         return repository;
     }
     
@@ -75,7 +75,7 @@ public class MailboxSessionJCRRepository {
      * 
      * @return workspace
      */
-    protected String getWorkspace() {
+    public String getWorkspace() {
         return workspace;
     }
 }
