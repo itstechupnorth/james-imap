@@ -36,7 +36,6 @@ import org.apache.james.imap.store.transaction.AbstractTransactionalMapper;
 public abstract class AbstractJCRMapper extends AbstractTransactionalMapper implements JCRImapConstants {
     public final static String MAILBOXES_PATH =  "mailboxes";
     public final static String SUBSCRIPTIONS_PATH =  "subscriptions";
-    private final static String JCR_SESSION = "JCR_SESSION";
 
     private final Log logger;
     private final MailboxSessionJCRRepository repository;
@@ -69,12 +68,7 @@ public abstract class AbstractJCRMapper extends AbstractTransactionalMapper impl
      * @return session
      */
     protected Session getSession() throws RepositoryException{
-        Session session = (Session) mSession.getAttributes().get(JCR_SESSION);
-    	if (session == null) {
-    		session = repository.login(mSession);
-    		mSession.getAttributes().put(JCR_SESSION, session);
-    	}
-        return session;
+        return repository.login(mSession);
     }
 
     /**
@@ -118,13 +112,7 @@ public abstract class AbstractJCRMapper extends AbstractTransactionalMapper impl
      * Logout from open JCR Session
      */
     public void endRequest() {
-        Session session = (Session) mSession.getAttributes().remove(JCR_SESSION);
-
-        if (session != null) {
-            if (session.isLive())
-                session.logout();
-            session = null;
-        }
+       repository.logout(mSession);
     }
         
     

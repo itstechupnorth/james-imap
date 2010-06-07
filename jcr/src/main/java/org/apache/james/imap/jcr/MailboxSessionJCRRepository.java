@@ -32,7 +32,7 @@ import org.apache.james.imap.mailbox.MailboxSession.User;
  *
  */
 public class MailboxSessionJCRRepository {
-    
+    private final static String JCR_SESSION = "JCR_SESSION";
     private Repository repository;
     private String workspace;
     
@@ -57,10 +57,40 @@ public class MailboxSessionJCRRepository {
         if (password != null) {
             pass = password.toCharArray();
         }
-        return repository.login(new SimpleCredentials(username, pass),
-                workspace);
+        return login(session, username, pass);
     }
 
+
+
+    protected Session login(MailboxSession mSession, String username,
+            char[] pass) throws RepositoryException {
+        Session session = (Session) mSession.getAttributes().get(JCR_SESSION);
+        if (session == null) {
+            session = repository.login(new SimpleCredentials(username, pass),
+                    workspace);
+            mSession.getAttributes().put(JCR_SESSION, session);
+        }
+        return session;
+    }
+    
+    /**
+     * Logout the JCR {@link Session} if one exists
+     * 
+     * @param mSession
+     */
+    public void logout(MailboxSession mSession) {
+        if (mSession == null) return;
+        
+        Session session = (Session) mSession.getAttributes().remove(JCR_SESSION);
+
+        if (session != null) {
+            if (session.isLive())
+                session.logout();
+            session = null;
+        }
+    }
+    
+    
     /**
      * Return the {@link Repository} 
      * 

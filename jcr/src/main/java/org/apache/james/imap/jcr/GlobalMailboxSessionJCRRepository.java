@@ -21,7 +21,6 @@ package org.apache.james.imap.jcr;
 import javax.jcr.Repository;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
-import javax.jcr.SimpleCredentials;
 
 import org.apache.james.imap.mailbox.MailboxSession;
 
@@ -51,8 +50,7 @@ public class GlobalMailboxSessionJCRRepository extends MailboxSessionJCRReposito
      */
     @Override
     public Session login(MailboxSession session) throws RepositoryException {
-        Session jcrSession = getRepository().login(new SimpleCredentials(username, pass), getWorkspace());
-        return jcrSession;
+        return login(session, username, pass);
     }
 
 }
