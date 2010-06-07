@@ -29,7 +29,9 @@ import java.nio.charset.UnsupportedCharsetException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.james.imap.store.streaming.ConfigurableMimeTokenStream;
 import org.apache.james.mime4j.MimeException;
+import org.apache.james.mime4j.parser.MimeEntityConfig;
 import org.apache.james.mime4j.parser.MimeTokenStream;
 
 /**
@@ -152,8 +154,10 @@ public class MessageSearcher {
             final CharBuffer buffer) throws IOException, MimeException {
         try {
             boolean result = false;
-            MimeTokenStream parser = new MimeTokenStream();
-            parser.parse(input);
+            MimeEntityConfig config = new MimeEntityConfig();
+            config.setMaxLineLen(-1);
+
+            ConfigurableMimeTokenStream parser = new ConfigurableMimeTokenStream(config);            parser.parse(input);
             while (!result && parser.next() != MimeTokenStream.T_END_OF_STREAM) {
                 final int state = parser.getState();
                 switch (state) {

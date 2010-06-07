@@ -31,20 +31,24 @@ import org.apache.james.imap.mailbox.MessageResult;
 import org.apache.james.imap.mailbox.MessageResult.Header;
 import org.apache.james.imap.store.ResultHeader;
 import org.apache.james.mime4j.MimeException;
+import org.apache.james.mime4j.parser.MimeEntityConfig;
 import org.apache.james.mime4j.parser.MimeTokenStream;
 
 public class PartContentBuilder {
 
     private static final byte[] EMPTY = {};
 
-    private MimeTokenStream parser;
+    private ConfigurableMimeTokenStream parser;
 
     private boolean empty = false;
 
     private boolean topLevel = true;
 
     public PartContentBuilder() {
-        parser = new MimeTokenStream();
+        MimeEntityConfig config = new MimeEntityConfig();
+        config.setMaxLineLen(-1);
+
+        parser = new ConfigurableMimeTokenStream(config);
     }
 
     public void markEmpty() {
@@ -52,6 +56,7 @@ public class PartContentBuilder {
     }
 
     public void parse(final InputStream in) {
+        
         parser.setRecursionMode(MimeTokenStream.M_RECURSE);
         parser.parse(in);
         topLevel = true;
