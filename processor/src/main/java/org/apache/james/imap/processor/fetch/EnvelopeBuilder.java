@@ -39,6 +39,7 @@ import org.apache.james.mime4j.field.address.DomainList;
 import org.apache.james.mime4j.field.address.Group;
 import org.apache.james.mime4j.field.address.MailboxList;
 import org.apache.james.mime4j.field.address.parser.ParseException;
+import org.apache.james.mime4j.util.MimeUtil;
 
 final class EnvelopeBuilder {
     private final Log logger;
@@ -117,10 +118,16 @@ final class EnvelopeBuilder {
         if (header == null) {
             results = null;
         } else {
-            final String value = header.getValue();
+            
+            // We need to unfold the header line.
+            // See https://issues.apache.org/jira/browse/IMAP-154
+            String value = MimeUtil.unfold(header.getValue());
+           
+
             if ("".equals(value.trim())) {
                 results = null;
             } else {
+               
                 final AddressList addressList = AddressList.parse(value);
                 final int size = addressList.size();
                 final List<FetchResponse.Envelope.Address> addresses = new ArrayList<FetchResponse.Envelope.Address>(size);
