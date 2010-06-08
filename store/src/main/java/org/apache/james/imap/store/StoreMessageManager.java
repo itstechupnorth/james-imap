@@ -65,8 +65,6 @@ import org.apache.james.mime4j.descriptor.MaximalBodyDescriptor;
 import org.apache.james.mime4j.parser.MimeEntityConfig;
 import org.apache.james.mime4j.parser.MimeTokenStream;
 
-import com.sun.mail.imap.protocol.MessageSet;
-
 /**
  * Abstract base class for {@link org.apache.james.imap.mailbox.Mailbox} implementations.
  * 
@@ -656,5 +654,4 @@ public abstract class StoreMessageManager<Id> implements org.apache.james.imap.m
         }
         return new MailboxMetaData(recent, permanentFlags, uidValidity, uidNext, messageCount, unseenCount, firstUnseen, isWriteable());
     }
-
 }

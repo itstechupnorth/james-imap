@@ -43,6 +43,8 @@ public class DecodingException extends IOException {
     private static final long serialVersionUID = 8719349386686261422L;
 
     private final HumanReadableText key;
+
+    private Throwable t;
     
     /**
      * Constructs a decoding exception
@@ -61,8 +63,9 @@ public class DecodingException extends IOException {
      * @param t cause, not null
      */
     public DecodingException(final HumanReadableText key, final String s, final Throwable t) {
-        super(s, t);
+        super(s);
         this.key = key;
+        this.t = t;
     }
 
     /**
@@ -80,5 +83,11 @@ public class DecodingException extends IOException {
         }
         return key;
     }
+
+    public Throwable getCause() {
+        return t;
+    }
+    
+    
 
 }
