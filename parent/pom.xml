@@ -40,20 +40,6 @@
   </scm>
 
 <repositories>
-    <!-- local repos -->
-    <repository>
-      <id>module-local</id>
-      <name>Local Repository</name>
-      <url>file://stage</url>
-      <layout>legacy</layout>
-      <snapshots>
-          <enabled>true</enabled>
-      </snapshots>
-      <releases>
-          <enabled>true</enabled>
-      </releases>
-    </repository>
-    
     <!-- needed for javamail -->
     <repository>
       <id>maven2-repository.dev.java.net</id>
@@ -389,8 +375,14 @@
         <groupId>junit</groupId>
         <artifactId>junit</artifactId>
         <version>4.8.1</version>
+        <scope>test</scope>
       </dependency>
-
+      <dependency>
+        <groupId>junit</groupId>
+        <artifactId>junit-dep</artifactId>
+        <version>4.4</version>
+        <scope>test</scope>
+      </dependency>
       <dependency>
         <groupId>org.jmock</groupId>
         <artifactId>jmock</artifactId>

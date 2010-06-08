@@ -64,9 +64,8 @@
       <artifactId>commons-io</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.apache.james</groupId>
-      <artifactId>apache-james-imap-api</artifactId>
-      <type>test-jar</type>
+      <groupId>junit</groupId>
+      <artifactId>junit-dep</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
