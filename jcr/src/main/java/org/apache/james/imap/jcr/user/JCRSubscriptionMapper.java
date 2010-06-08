@@ -159,7 +159,8 @@ public class JCRSubscriptionMapper extends AbstractJCRMapper implements Subscrip
                 // This is needed to minimize the child nodes a bit
                 Node userNode = JcrUtils.getOrAddNode(subscriptionsNode, String.valueOf(username.charAt(0)));
                 userNode = JcrUtils.getOrAddNode(userNode, String.valueOf(username));
-                node = JcrUtils.getOrAddNode(userNode, mailbox, "jamesMailbox:subscription");
+                node = JcrUtils.getOrAddNode(userNode, mailbox, "nt:unstructured");
+                node.addMixin("jamesMailbox:subscription");
             } else {
                 node = sub.getNode();
             }

@@ -362,7 +362,8 @@ public class JCRMessage extends AbstractDocument implements MailboxMembership<St
         // add headers to the message again
         for (int i = 0; i < newHeaders.size(); i++) {
             JCRHeader header = (JCRHeader) newHeaders.get(i);
-            Node headerNode = node.addNode("messageHeader", HEADER_NODE_TYPE);
+            Node headerNode = node.addNode("messageHeader", "nt:unstructured");
+            headerNode.addMixin(HEADER_NODE_TYPE);
             header.merge(headerNode);
         }
       
@@ -381,7 +382,8 @@ public class JCRMessage extends AbstractDocument implements MailboxMembership<St
         // store new properties
         for (int i = 0; i < newProperites.size(); i++) {
             JCRProperty prop = (JCRProperty)newProperites.get(i);
-            Node propNode = node.addNode("messageProperty", PROPERTY_NODE_TYPE);
+            Node propNode = node.addNode("messageProperty", "nt:unstructured");
+            propNode.addMixin(PROPERTY_NODE_TYPE);
             prop.merge(propNode);
         }
       

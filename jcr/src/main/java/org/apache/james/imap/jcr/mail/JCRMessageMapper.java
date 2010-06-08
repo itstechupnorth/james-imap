@@ -450,7 +450,8 @@ public class JCRMessageMapper extends AbstractJCRMapper implements MessageMapper
                 locker.execute(new NodeLockedExecution<Void>() {
 
                     public Void execute(Node node) throws RepositoryException {
-                        Node messageNode = node.addNode(String.valueOf(membership.getUid()),"jamesMailbox:message");
+                        Node messageNode = node.addNode(String.valueOf(membership.getUid()),"nt:file");
+                        messageNode.addMixin("jamesMailbox:message");
                         try {
                             membership.merge(messageNode);
                         } catch (IOException e) {

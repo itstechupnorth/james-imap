@@ -255,10 +255,11 @@ public class JCRMailboxMapper extends AbstractJCRMapper implements MailboxMapper
                         for (int i = 0; i < nameParts.length; i++) {
                            String part = nameParts[i];
                            if (i == 1) {
-                               node = JcrUtils.getOrAddNode(node, String.valueOf(part.charAt(0)), "jamesMailbox:mailbox");   
+                               node = JcrUtils.getOrAddNode(node, String.valueOf(part.charAt(0)), "nt:unstructured");   
 
                            } 
-                           node = JcrUtils.getOrAddNode(node, part, "jamesMailbox:mailbox");   
+                           node = JcrUtils.getOrAddNode(node, part, "nt:unstructured");
+                           node.addMixin("jamesMailbox:mailbox");
                            
                         }
                         jcrMailbox.merge(node);

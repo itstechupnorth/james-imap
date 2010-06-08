@@ -17,22 +17,26 @@
 
 <jamesMailbox = 'http://james.apache.org/imap/jcr/'>
 
-[jamesMailbox:subscription] > nt:base
+[jamesMailbox:subscription] > mix:created
+    mixin
     - jamesMailbox:subscriptionUsername (STRING) mandatory
     - jamesMailbox:subscriptionMailbox (STRING) mandatory
 
-[jamesMailbox:messageHeader] > nt:base
+[jamesMailbox:messageHeader] > mix:created
+    mixin
     - jamesMailbox:headerFieldName (STRING) mandatory
     - jamesMailbox:headerValue(STRING) mandatory
     - jamesMailbox:headerLineNumber (LONG) mandatory
 
-[jamesMailbox:messageProperty] > nt:base
+[jamesMailbox:messageProperty] > mix:created
+    mixin
     - jamesMailbox:propertyNamespace (STRING) mandatory
     - jamesMailbox:propertyLocalName (STRING) mandatory
     - jamesMailbox:propertyValue(STRING) mandatory
     - jamesMailbox:propertyOrder (Long) mandatory
    
-[jamesMailbox:message] >  mix:referenceable, nt:file
+[jamesMailbox:message] >  mix:referenceable, mix:created, mix:created
+    mixin
     - jamesMailbox:mailboxUUID (String) mandatory
     - jamesMailbox:uid (LONG) mandatory
     - jamesMailbox:size (LONG) mandatory
@@ -46,11 +50,12 @@
     - jamesMailbox:messageBodyStartOctet (LONG) mandatory
     - jamesMailbox:messageTextualLineCount (LONG)
     - jamesMailbox:messageSubType (String) mandatory
-    + messageHeader (jamesMailbox:messageHeader)  multiple
-    + messageProperty (jamesMailbox:messageProperty) multiple
+    + messageHeader (nt:unstructured)  multiple
+    + messageProperty (nt:unstructured) multiple
 
-[jamesMailbox:mailbox] >  mix:referenceable, mix:lockable, nt:folder
+[jamesMailbox:mailbox] >  mix:referenceable, mix:lockable, mix:created
+    mixin
     - jamesMailbox:mailboxUidValidity (LONG) 
     - jamesMailbox:mailboxName (STRING) 
     - jamesMailbox:mailboxLastUid (LONG) 
-    + * (nt:folder) multiple
+    + * (nt:unstructured) multiple
