@@ -39,19 +39,11 @@ import org.apache.james.imap.store.mail.model.Mailbox;
 public class JPAMailboxMapper extends JPATransactionalMapper implements MailboxMapper<Long> {
 
     private static final char SQL_WILDCARD_CHAR = '%';
+    private final char delimiter;
     
-    public JPAMailboxMapper(EntityManagerFactory entityManagerFactory) {
+    public JPAMailboxMapper(EntityManagerFactory entityManagerFactory, char delimiter) {
         super(entityManagerFactory);
-    }
-
-    /**
-     * @see org.apache.james.imap.store.mail.MailboxMapper#hasChildren
-     */
-    public boolean existsMailboxStartingWith(String mailboxName) throws StorageException {
-        
-        final String name = mailboxName + SQL_WILDCARD_CHAR; 
-        final Long numberOfChildMailboxes = (Long) getEntityManager().createNamedQuery("countMailboxesWithNameLike").setParameter("nameParam", name).getSingleResult();
-        return numberOfChildMailboxes != null && numberOfChildMailboxes > 0;
+        this.delimiter = delimiter;
     }
 
     /**
@@ -135,5 +127,15 @@ public class JPAMailboxMapper extends JPATransactionalMapper implements MailboxM
         } catch (PersistenceException e) {
             throw new StorageException(HumanReadableText.SEARCH_FAILED, e);
         } 
+    }
+
+    /**
+     * @see org.apache.james.imap.store.mail.MailboxMapper#hasChildren(java.lang.String)
+     */
+    public boolean hasChildren(Mailbox<Long> mailbox) throws StorageException,
+            MailboxNotFoundException {
+        final String name = mailbox.getName() + delimiter + SQL_WILDCARD_CHAR; 
+        final Long numberOfChildMailboxes = (Long) getEntityManager().createNamedQuery("countMailboxesWithNameLike").setParameter("nameParam", name).getSingleResult();
+        return numberOfChildMailboxes != null && numberOfChildMailboxes > 0;
     }
 }

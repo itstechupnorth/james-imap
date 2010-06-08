@@ -40,7 +40,6 @@ import org.apache.james.imap.mailbox.MailboxQuery;
 import org.apache.james.imap.mailbox.MailboxSession;
 import org.apache.james.imap.mailbox.MessageRange;
 import org.apache.james.imap.mailbox.StandardMailboxMetaDataComparator;
-import org.apache.james.imap.mailbox.StorageException;
 import org.apache.james.imap.mailbox.SubscriptionException;
 import org.apache.james.imap.mailbox.MailboxMetaData.Selectability;
 import org.apache.james.imap.mailbox.util.MailboxEventDispatcher;
@@ -75,7 +74,7 @@ public abstract class StoreMailboxManager<Id> extends AbstractLogEnabled impleme
     private UidConsumer<Id> consumer;
     
     public StoreMailboxManager(MailboxSessionMapperFactory<Id> mailboxSessionMapperFactory, final Authenticator authenticator, final Subscriber subscriber, final UidConsumer<Id> consumer) {
-        this(mailboxSessionMapperFactory, authenticator, subscriber, consumer, '.');
+        this(mailboxSessionMapperFactory, authenticator, subscriber, consumer, DEFAULT_FOLDER_DELIMITER);
     }
 
     
@@ -316,7 +315,7 @@ public abstract class StoreMailboxManager<Id> extends AbstractLogEnabled impleme
                 final String match = name.substring(baseLength);
                 if (mailboxExpression.isExpressionMatch(match, delimiter)) {
                     final MailboxMetaData.Children inferiors; 
-                    if (hasChildren(name, mapper)) {
+                    if (mapper.hasChildren(mailbox)) {
                         inferiors = MailboxMetaData.Children.HAS_CHILDREN;
                     } else {
                         inferiors = MailboxMetaData.Children.HAS_NO_CHILDREN;
@@ -328,17 +327,6 @@ public abstract class StoreMailboxManager<Id> extends AbstractLogEnabled impleme
         Collections.sort(results, new StandardMailboxMetaDataComparator());
         return results;
 
-    }
-
-    /**
-     * Does the mailbox with the given name have inferior child mailboxes?
-     * @param name not null
-     * @return true when the mailbox has children, false otherwise
-     * @throws StorageException 
-     * @throws TorqueException
-     */
-    private boolean hasChildren(String name, final MailboxMapper<Id> mapper) throws StorageException {
-        return mapper.existsMailboxStartingWith(name + delimiter);
     }
 
     /*

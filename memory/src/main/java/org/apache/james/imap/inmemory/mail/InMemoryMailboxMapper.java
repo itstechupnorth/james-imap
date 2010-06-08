@@ -33,10 +33,12 @@ import org.apache.james.imap.store.mail.model.Mailbox;
 public class InMemoryMailboxMapper implements MailboxMapper<Long> {
     
     private static final int INITIAL_SIZE = 128;
-    private Map<Long, InMemoryMailbox> mailboxesById;
+    private final Map<Long, InMemoryMailbox> mailboxesById;
+    private final char delimiter;
 
-    public InMemoryMailboxMapper() {
+    public InMemoryMailboxMapper(char delimiter) {
         mailboxesById = new ConcurrentHashMap<Long, InMemoryMailbox>(INITIAL_SIZE);
+        this.delimiter = delimiter;
     }
 
     /*
@@ -110,21 +112,6 @@ public class InMemoryMailboxMapper implements MailboxMapper<Long> {
 
     /*
      * (non-Javadoc)
-     * @see org.apache.james.imap.store.mail.MailboxMapper#existsMailboxStartingWith(java.lang.String)
-     */
-    public boolean existsMailboxStartingWith(String mailboxName) throws StorageException {
-        boolean result = false;
-        for (final InMemoryMailbox mailbox:mailboxesById.values()) {
-            if (mailbox.getName().startsWith(mailboxName)) {
-                result = true;
-                break;
-            }
-        }
-        return result;
-    }
-
-    /*
-     * (non-Javadoc)
      * @see org.apache.james.imap.store.mail.MailboxMapper#save(org.apache.james.imap.store.mail.model.Mailbox)
      */
     public void save(Mailbox<Long> mailbox) throws StorageException {
@@ -142,6 +129,21 @@ public class InMemoryMailboxMapper implements MailboxMapper<Long> {
     public void endRequest() {
         // TODO Auto-generated method stub
         
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.store.mail.MailboxMapper#hasChildren(org.apache.james.imap.store.mail.model.Mailbox)
+     */
+    public boolean hasChildren(Mailbox<Long> mailbox) throws StorageException,
+            MailboxNotFoundException {
+        String mailboxName = mailbox.getName() + delimiter;
+        for (final InMemoryMailbox box:mailboxesById.values()) {
+            if (box.getName().startsWith(mailboxName)) {
+                return true;
+            }
+        }
+        return false;
     }
     
 }

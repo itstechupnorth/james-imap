@@ -39,26 +39,6 @@ public interface MailboxMapper<Id> extends TransactionalMapper {
      * @throws StorageException
      */
     public abstract void save(Mailbox<Id> mailbox) throws StorageException;
-
-    /**
-     * Return the {@link Mailbox} for the given name
-     * 
-     * @param name 
-     * @return mailbox
-     * @throws StorageException
-     * @throws MailboxNotFoundException
-     */
-    public abstract Mailbox<Id> findMailboxByName(String name)
-            throws StorageException, MailboxNotFoundException;
-
-    /**
-     * Return if the given {@link Mailbox} has children
-     * 
-     * @param mailboxName not null
-     * @return true when the mailbox has children, false otherwise
-     * @throws StorageException
-     */
-    public abstract boolean existsMailboxStartingWith(String mailboxName) throws StorageException;
     
     /**
      * Delete the given {@link Mailbox} from the underlying storage
@@ -67,16 +47,6 @@ public interface MailboxMapper<Id> extends TransactionalMapper {
      * @throws StorageException
      */
     public abstract void delete(Mailbox<Id> mailbox) throws StorageException;
-
-    /**
-     * Return a List of {@link Mailbox} which name is like the given name
-     * 
-     * @param name
-     * @return mailboxList
-     * @throws StorageException
-     */
-    public abstract List<Mailbox<Id>> findMailboxWithNameLike(String name)
-            throws StorageException;
 
     /**
      * Delete all {@link Mailbox} objects from the underlying storage
@@ -96,6 +66,27 @@ public interface MailboxMapper<Id> extends TransactionalMapper {
             throws StorageException;
 
     /**
+     * Return the {@link Mailbox} for the given name
+     * 
+     * @param name 
+     * @return mailbox
+     * @throws StorageException
+     * @throws MailboxNotFoundException
+     */
+    public abstract Mailbox<Id> findMailboxByName(String mailboxName)
+            throws StorageException, MailboxNotFoundException;
+
+    /**
+     * Return a List of {@link Mailbox} which name is like the given name
+     * 
+     * @param name
+     * @return mailboxList
+     * @throws StorageException
+     */
+    public abstract List<Mailbox<Id>> findMailboxWithNameLike(String mailboxName)
+            throws StorageException;
+
+    /**
      * Return the {@link Mailbox} for the given id
      * 
      * @param mailboxId
@@ -104,5 +95,16 @@ public interface MailboxMapper<Id> extends TransactionalMapper {
      * @throws MailboxNotFoundException
      */
     public abstract Mailbox<Id> findMailboxById(Id mailboxId)
+            throws StorageException, MailboxNotFoundException;
+
+    /**
+     * Return if the given {@link Mailbox} has children
+     * 
+     * @param mailbox not null
+     * @return true when the mailbox has children, false otherwise
+     * @throws StorageException
+     * @throws MailboxNotFoundException
+     */
+    public abstract boolean hasChildren(Mailbox<Id> mailbox)
             throws StorageException, MailboxNotFoundException;
 }

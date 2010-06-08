@@ -28,6 +28,7 @@ import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.MailboxSession;
 import org.apache.james.imap.mailbox.SubscriptionException;
 import org.apache.james.imap.store.MailboxSessionMapperFactory;
+import org.apache.james.imap.store.StoreConstants;
 import org.apache.james.imap.store.mail.MailboxMapper;
 import org.apache.james.imap.store.mail.MessageMapper;
 import org.apache.james.imap.store.user.SubscriptionMapper;
@@ -37,20 +38,25 @@ import org.apache.james.imap.store.user.SubscriptionMapper;
  * 
  *
  */
-public class JCRMailboxSessionMapperFactory extends MailboxSessionMapperFactory<String> {
+public class JCRMailboxSessionMapperFactory extends MailboxSessionMapperFactory<String> implements StoreConstants{
 
-    private MailboxSessionJCRRepository repository;
-    private Log logger;
-    private char delimiter;
-    private NodeLocker locker;
+    private final MailboxSessionJCRRepository repository;
+    private final Log logger;
+    private final char delimiter;
+    private final NodeLocker locker;
 
     public JCRMailboxSessionMapperFactory(final MailboxSessionJCRRepository repository, final NodeLocker locker) {
+        this(repository, locker, DEFAULT_FOLDER_DELIMITER);
+    }
+
+    public JCRMailboxSessionMapperFactory(final MailboxSessionJCRRepository repository, final NodeLocker locker, final char delimiter) {
         this.repository = repository;
         this.logger = LogFactory.getLog(JCRSubscriptionManager.class);
-        this.delimiter = '.';
+        this.delimiter = delimiter;
         this.locker = locker;;
     }
 
+    
     @Override
     public MailboxMapper<String> createMailboxMapper(MailboxSession session) throws MailboxException {
         JCRMailboxMapper mapper = new JCRMailboxMapper(repository, session, locker, logger, delimiter);

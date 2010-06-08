@@ -127,30 +127,6 @@ public class JCRMailboxMapper extends AbstractJCRMapper implements MailboxMapper
     }
 
     /*
-     * 
-     * (non-Javadoc)
-     * 
-     * @see
-     * org.apache.james.imap.store.mail.MailboxMapper#existsMailboxStartingWith
-     * (java.lang.String)
-     */
-    public boolean existsMailboxStartingWith(String mailboxName) throws StorageException {
-        try {
-            QueryManager manager = getSession().getWorkspace()
-                    .getQueryManager();
-            String queryString = "//" + MAILBOXES_PATH
-                    + "//element(*,jamesMailbox:mailbox)[jcr:like(@"
-                    + JCRMailbox.NAME_PROPERTY + ",'" + mailboxName + "%')]";
-            QueryResult result = manager.createQuery(queryString, Query.XPATH)
-                    .execute();
-            NodeIterator it = result.getNodes();
-            return it.hasNext();
-        } catch (RepositoryException e) {
-            throw new StorageException(HumanReadableText.SEARCH_FAILED, e);
-        }
-    }
-
-    /*
      * (non-Javadoc)
      * @see org.apache.james.imap.store.mail.MailboxMapper#findMailboxById(java.lang.Object)
      */
@@ -282,6 +258,29 @@ public class JCRMailboxMapper extends AbstractJCRMapper implements MailboxMapper
             throw new StorageException(HumanReadableText.SAVE_FAILED, e);
         } catch (InterruptedException e) {
             throw new StorageException(HumanReadableText.SAVE_FAILED, e);
+        }
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.apache.james.imap.store.mail.MailboxMapper#hasChildren(org.apache.james.
+     * imap.store.mail.model.Mailbox)
+     */
+    public boolean hasChildren(Mailbox<String> mailbox)
+            throws StorageException, MailboxNotFoundException {
+        try {
+            QueryManager manager = getSession().getWorkspace()
+                    .getQueryManager();
+            String queryString = "//" + MAILBOXES_PATH
+                    + "//element(*,jamesMailbox:mailbox)[jcr:like(@"
+                    + JCRMailbox.NAME_PROPERTY + ",'" + mailbox.getName() + delimiter + "%')]";
+            QueryResult result = manager.createQuery(queryString, Query.XPATH)
+                    .execute();
+            NodeIterator it = result.getNodes();
+            return it.hasNext();
+        } catch (RepositoryException e) {
+            throw new StorageException(HumanReadableText.SEARCH_FAILED, e);
         }
     }
  

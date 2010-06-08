@@ -20,6 +20,8 @@ package org.apache.james.imap.store;
 
 public interface StoreConstants {
     
+    public static final char DEFAULT_FOLDER_DELIMITER = '.';
+
     public static final String USER_NAMESPACE_PREFIX = "#mail";
 
 }
