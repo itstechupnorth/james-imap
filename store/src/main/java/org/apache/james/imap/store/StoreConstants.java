@@ -18,10 +18,21 @@
  ****************************************************************/
 package org.apache.james.imap.store;
 
+/**
+ * Constants which are used in the Store module
+ * 
+ *
+ */
 public interface StoreConstants {
-    
+
+    /**
+     * The default delimiter used to seperated parent/child folders
+     */
     public static final char DEFAULT_FOLDER_DELIMITER = '.';
 
+    /**
+     * Prefix which mark the user namespace
+     */
     public static final String USER_NAMESPACE_PREFIX = "#mail";
 
 }

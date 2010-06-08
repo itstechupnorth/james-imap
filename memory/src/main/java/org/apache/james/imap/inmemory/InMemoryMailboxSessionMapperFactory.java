@@ -46,34 +46,20 @@ public class InMemoryMailboxSessionMapperFactory extends MailboxSessionMapperFac
     public InMemoryMailboxSessionMapperFactory() {
         this(DEFAULT_FOLDER_DELIMITER);
     }
-    
-    public MailboxMapper<Long> getMailboxMapper(MailboxSession session) throws MailboxException {
-        return mailboxMapper;
-    }
-    
-    @Override
-    public MailboxMapper<Long> createMailboxMapper(MailboxSession session) throws MailboxException {
-        return null;
-    }
 
     @Override
-    public MessageMapper<Long> getMessageMapper(MailboxSession session) throws MailboxException {
-        return messageMapper;
+    public MailboxMapper<Long> createMailboxMapper(MailboxSession session) throws MailboxException {
+        return mailboxMapper;
     }
 
     @Override
     public MessageMapper<Long> createMessageMapper(MailboxSession session) throws MailboxException {
-        return null;
-    }
-
-    @Override
-    public SubscriptionMapper getSubscriptionMapper(MailboxSession session) throws SubscriptionException {
-        return subscriptionMapper;
+        return messageMapper;
     }
 
     @Override
     public SubscriptionMapper createSubscriptionMapper(MailboxSession session) throws SubscriptionException {
-        return null;
+        return subscriptionMapper;
     }
     
     public void deleteAll() throws MailboxException {
