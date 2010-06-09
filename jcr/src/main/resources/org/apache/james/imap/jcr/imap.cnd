@@ -17,12 +17,14 @@
 
 <jamesMailbox = 'http://james.apache.org/imap/jcr/'>
 
-[jamesMailbox:subscription] > mix:created
+[jamesMailbox:user] > mix:created
     mixin
-    - jamesMailbox:subscriptionUsername (STRING) mandatory
-    - jamesMailbox:subscriptionMailbox (STRING) mandatory
+    - jamesMailbox:user (String)
+    - jamesMailbox:subscriptionMailboxes (STRING) multiple
+    + * (nt:unstructured) multiple
+    
 
-[jamesMailbox:messageHeader] > mix:created
+[jamesMailbox:messageHeader] > mix:created, mix:lockable
     mixin
     - jamesMailbox:headerFieldName (STRING) mandatory
     - jamesMailbox:headerValue(STRING) mandatory

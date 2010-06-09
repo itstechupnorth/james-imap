@@ -35,7 +35,6 @@ import org.apache.james.imap.store.transaction.AbstractTransactionalMapper;
  */
 public abstract class AbstractJCRMapper extends AbstractTransactionalMapper implements JCRImapConstants {
     public final static String MAILBOXES_PATH =  "mailboxes";
-    public final static String SUBSCRIPTIONS_PATH =  "subscriptions";
 
     private final Log logger;
     private final MailboxSessionJCRRepository repository;

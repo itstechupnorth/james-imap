@@ -24,7 +24,9 @@ import java.util.List;
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
 import javax.jcr.PathNotFoundException;
+import javax.jcr.Property;
 import javax.jcr.RepositoryException;
+import javax.jcr.Value;
 import javax.jcr.query.Query;
 import javax.jcr.query.QueryManager;
 import javax.jcr.query.QueryResult;
@@ -65,7 +67,20 @@ public class JCRSubscriptionMapper extends AbstractJCRMapper implements Subscrip
 
             Node node = sub.getNode();
             if (node != null) {
-                node.remove();
+                Property prop = node.getProperty(JCRSubscription.MAILBOXES_PROPERTY);
+                Value[] values = prop.getValues();
+                List<String> newValues = new ArrayList<String>();
+                for (int i = 0; i < values.length; i++) {
+                    String m = values[i].getString();
+                    if (m.equals(sub.getMailbox()) == false) {
+                        newValues.add(m);
+                    }
+                }
+                if (newValues.isEmpty() == false) {
+                    prop.setValue(newValues.toArray(new String[newValues.size()]));
+                } else {
+                    prop.remove();
+                }
             }
         } catch (PathNotFoundException e) {
             // do nothing
@@ -83,14 +98,14 @@ public class JCRSubscriptionMapper extends AbstractJCRMapper implements Subscrip
      */
     public Subscription findFindMailboxSubscriptionForUser(String user, String mailbox) throws SubscriptionException {
         try {
-            String queryString = "//" + SUBSCRIPTIONS_PATH + "//element(*,jamesMailbox:subscription)[@" + JCRSubscription.USERNAME_PROPERTY + "='" + user + "'] AND [@" + JCRSubscription.MAILBOX_PROPERTY +"='" + mailbox + "']";
+            String queryString = "//" + MAILBOXES_PATH + "//element(*,jamesMailbox:user)[@" + JCRSubscription.USERNAME_PROPERTY + "='" + user + "'] AND [@" + JCRSubscription.MAILBOXES_PROPERTY +"='" + mailbox + "']";
 
             QueryManager manager = getSession().getWorkspace().getQueryManager();
             QueryResult result = manager.createQuery(queryString, Query.XPATH).execute();
             
             NodeIterator nodeIt = result.getNodes();
             if (nodeIt.hasNext()) {
-                JCRSubscription sub = new JCRSubscription(nodeIt.nextNode(), getLogger());
+                JCRSubscription sub = new JCRSubscription(nodeIt.nextNode(), mailbox, getLogger());
                 return sub;
             }
             
@@ -113,14 +128,20 @@ public class JCRSubscriptionMapper extends AbstractJCRMapper implements Subscrip
     public List<Subscription> findSubscriptionsForUser(String user) throws SubscriptionException {
         List<Subscription> subList = new ArrayList<Subscription>();
         try {
-            String queryString = "//" + SUBSCRIPTIONS_PATH + "//element(*,jamesMailbox:subscription)[@" + JCRSubscription.USERNAME_PROPERTY + "='" + user + "']";
+            String queryString = "//" + MAILBOXES_PATH + "//element(*,jamesMailbox:user)[@" + JCRSubscription.USERNAME_PROPERTY + "='" + user + "']";
 
             QueryManager manager = getSession().getWorkspace().getQueryManager();
             QueryResult result = manager.createQuery(queryString, Query.XPATH).execute();
             
             NodeIterator nodeIt = result.getNodes();
             while (nodeIt.hasNext()) {
-                subList.add(new JCRSubscription(nodeIt.nextNode(), getLogger()));
+                Node node = nodeIt.nextNode();
+                if (node.hasProperty(JCRSubscription.MAILBOXES_PROPERTY)) {
+                    Value[] values = node.getProperty(JCRSubscription.MAILBOXES_PROPERTY).getValues();
+                    for (int i = 0; i < values.length; i++) {
+                        subList.add(new JCRSubscription(node, values[i].getString(), getLogger()));
+                    }
+                }
             }
         } catch (PathNotFoundException e) {
             // Do nothing just return the empty list later
@@ -151,24 +172,24 @@ public class JCRSubscriptionMapper extends AbstractJCRMapper implements Subscrip
             
             // its a new subscription
             if (sub == null) {
-                Node subscriptionsNode = JcrUtils.getOrAddNode(getSession().getRootNode(), SUBSCRIPTIONS_PATH);
+                Node subscriptionsNode = JcrUtils.getOrAddNode(getSession().getRootNode(), MAILBOXES_PATH);
                 
                 // this loop will create a structure like:
-                // /mailboxes/u/user/INBOX
+                // /mailboxes/u/user
                 //
                 // This is needed to minimize the child nodes a bit
                 Node userNode = JcrUtils.getOrAddNode(subscriptionsNode, String.valueOf(username.charAt(0)));
                 userNode = JcrUtils.getOrAddNode(userNode, String.valueOf(username));
                 node = JcrUtils.getOrAddNode(userNode, mailbox, "nt:unstructured");
-                node.addMixin("jamesMailbox:subscription");
+                node.addMixin("jamesMailbox:user");
             } else {
                 node = sub.getNode();
             }
+            
             // Copy new properties to the node
             ((JCRSubscription)subscription).merge(node);
 
         } catch (RepositoryException e) {
-            e.printStackTrace();
             throw new SubscriptionException(HumanReadableText.SAVE_FAILED, e);
         }
     }

@@ -19,8 +19,13 @@
 
 package org.apache.james.imap.jcr.user.model;
 
+
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
+import javax.jcr.Value;
 
 import org.apache.commons.logging.Log;
 import org.apache.james.imap.jcr.Persistent;
@@ -28,14 +33,13 @@ import org.apache.james.imap.jcr.JCRImapConstants;
 import org.apache.james.imap.store.user.model.Subscription;
 
 /**
- * JCR implementation of a {@link Subscription}
- * 
+ * JCR implementation of a {@link Subscription}.
  */
 public class JCRSubscription implements Subscription, Persistent, JCRImapConstants {
     private static final String TOSTRING_SEPARATOR = " ";
 
-    public final static String USERNAME_PROPERTY = "jamesMailbox:subscriptionUsername";
-    public final static String MAILBOX_PROPERTY =  "jamesMailbox:subscriptionMailbox";
+    public final static String USERNAME_PROPERTY = "jamesMailbox:user";
+    public final static String MAILBOXES_PROPERTY =  "jamesMailbox:subscriptionMailboxes";
     
     private Node node;
     private final Log log;
@@ -43,9 +47,10 @@ public class JCRSubscription implements Subscription, Persistent, JCRImapConstan
     private String username;
 
     
-    public JCRSubscription(Node node, Log log) {
+    public JCRSubscription(Node node, String mailbox, Log log) {
         this.node = node;
         this.log = log;
+        this.mailbox = mailbox;
     }
 
     public JCRSubscription(String username, String mailbox, Log log) {
@@ -60,14 +65,6 @@ public class JCRSubscription implements Subscription, Persistent, JCRImapConstan
      * @see org.apache.james.imap.store.user.model.Subscription#getMailbox()
      */
     public String getMailbox() {
-        if (isPersistent()) {
-            try {
-                return node.getProperty(MAILBOX_PROPERTY).getString();
-            } catch (RepositoryException e) {
-                log.error("Unable to access Property " + MAILBOX_PROPERTY, e);
-            }
-            return null;
-        }
         return mailbox;
     }
 
@@ -112,13 +109,23 @@ public class JCRSubscription implements Subscription, Persistent, JCRImapConstan
      */
     public void merge(Node node) throws RepositoryException{
         node.setProperty(USERNAME_PROPERTY, getUser());
-        node.setProperty(MAILBOX_PROPERTY, getMailbox());
-        this.node = node;
+        if (node.hasProperty(MAILBOXES_PROPERTY)) {
+            Value[] mailboxes = node.getProperty(MAILBOXES_PROPERTY).getValues();
+            List<String>newMailboxes = new ArrayList<String>();
+            for (int i = 0; i< mailboxes.length; i++) {
+                String m = mailboxes[i].getString();
+                newMailboxes.add(m);
+            }
+            if (newMailboxes.contains(getMailbox()) == false) {
+                newMailboxes.add(getMailbox());
 
-        /*
-        mailbox = null;
-        username = null;
-        */
+            }
+            
+            node.setProperty(MAILBOXES_PROPERTY, newMailboxes.toArray(new String[newMailboxes.size()]));
+        } else {
+            node.setProperty(MAILBOXES_PROPERTY, new String[] {getMailbox()});
+        }
+        this.node = node;
     }
     
     @Override
