@@ -60,9 +60,13 @@ public class JPAMessage extends AbstractJPAMessage{
         
     }
 
-    @Override
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.store.mail.model.AbstractDocument#getRawFullContent()
+     */
     protected InputStream getRawFullContent() {
         return new ByteArrayInputStream(content);
     }
+
 
 }

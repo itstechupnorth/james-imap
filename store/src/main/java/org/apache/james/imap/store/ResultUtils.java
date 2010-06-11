@@ -19,6 +19,7 @@
 
 package org.apache.james.imap.store;
 
+import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
@@ -40,7 +41,6 @@ import org.apache.james.imap.mailbox.MessageResult.MimePath;
 import org.apache.james.imap.mailbox.util.MessageResultImpl;
 import org.apache.james.imap.store.mail.model.Header;
 import org.apache.james.imap.store.mail.model.MailboxMembership;
-import org.apache.james.imap.store.streaming.DelegatingRewindableInputStream;
 import org.apache.james.imap.store.streaming.InputStreamContent;
 import org.apache.james.imap.store.streaming.PartContentBuilder;
 import org.apache.james.imap.store.streaming.RewindableInputStream;
@@ -264,27 +264,24 @@ public class ResultUtils {
         }
         headersToString.append("\r\n");
         final RewindableInputStream bodyContent = document.getBodyContent();
-        final MessageInputStream stream = new MessageInputStream(headersToString, bodyContent, document.getFullContentOctets());
+        final MessageInputStream stream = new MessageInputStream(headersToString, bodyContent);
         return stream;
     }
 
 
-    private static final class MessageInputStream extends DelegatingRewindableInputStream {
+    private static final class MessageInputStream extends FilterInputStream {
         private final StringBuffer headers;
         private int headerPosition = 0;
 
         public MessageInputStream(final StringBuffer headers,
-                final RewindableInputStream bodyContent, long bodySize) throws IOException{
-            super(bodyContent, bodySize);
+                final RewindableInputStream bodyContent) throws IOException{
+            super(bodyContent);
             
             this.headers = headers;
             bodyContent.rewind();
         }
 
         public int read() throws IOException {
-            if (needsRewind()) {
-                rewind();
-            }
             final int result;
             if (headerPosition < headers.length()) {
                 result = headers.charAt(headerPosition++);
@@ -296,10 +293,6 @@ public class ResultUtils {
 
         @Override
         public int read(byte[] b, int off, int len) throws IOException {
-            if (needsRewind()) {
-                rewind();
-            }
-            
             if (headerPosition < headers.length()) {
                 int headersLeft = headers.length() - headerPosition;
                 if (len > headersLeft) {
@@ -332,8 +325,6 @@ public class ResultUtils {
         public int read(byte[] b) throws IOException {
             return read(b, 0, b.length);
         }
-        
-        
     }
   
     private static final int[] path(MimePath mimePath) {

@@ -32,7 +32,6 @@ import org.apache.james.imap.store.mail.model.Header;
 import org.apache.james.imap.store.mail.model.MailboxMembership;
 import org.apache.james.imap.store.mail.model.Property;
 import org.apache.james.imap.store.mail.model.PropertyBuilder;
-import org.apache.james.imap.store.streaming.DelegatingRewindableInputStream;
 import org.apache.james.imap.store.streaming.LazySkippingInputStream;
 import org.apache.james.imap.store.streaming.RewindableInputStream;
 
@@ -152,8 +151,13 @@ public class SimpleMailboxMembership extends AbstractMailboxMembership<Long> imp
     }
 
     public RewindableInputStream getBodyContent() throws IOException {
-        return new DelegatingRewindableInputStream(new LazySkippingInputStream(new ByteArrayInputStream(document),bodyStartOctet), getFullContentOctets());
-       
+        return new RewindableInputStream(new LazySkippingInputStream(new ByteArrayInputStream(document),bodyStartOctet)) {
+            
+            @Override
+            protected void rewindIfNeeded() throws IOException {
+                in = new LazySkippingInputStream(new ByteArrayInputStream(document),bodyStartOctet);
+            }
+        };       
     }
 
     public long getBodyOctets() {
@@ -161,7 +165,14 @@ public class SimpleMailboxMembership extends AbstractMailboxMembership<Long> imp
     }
 
     public RewindableInputStream getFullContent() throws IOException {
-        return new DelegatingRewindableInputStream(new ByteArrayInputStream(document), getFullContentOctets());
+        return new RewindableInputStream(new ByteArrayInputStream(document)) {
+
+            @Override
+            protected void rewindIfNeeded() throws IOException {
+                in = new ByteArrayInputStream(document);
+            }
+            
+        };
     }
 
     public long getFullContentOctets() {

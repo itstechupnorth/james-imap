@@ -29,7 +29,6 @@ import java.util.List;
 import org.apache.james.imap.store.mail.model.Document;
 import org.apache.james.imap.store.mail.model.Header;
 import org.apache.james.imap.store.mail.model.Property;
-import org.apache.james.imap.store.streaming.InMemoryRewindableInputStream;
 import org.apache.james.imap.store.streaming.RewindableInputStream;
 
 public class SimpleMessage implements Document {
@@ -90,7 +89,7 @@ public class SimpleMessage implements Document {
      * @see org.apache.james.imap.jpa.mail.model.Document#getBodyContent()
      */
     public RewindableInputStream getBodyContent() throws IOException {
-        return new InMemoryRewindableInputStream(new ByteArrayInputStream(body));
+        return new ByteArrayRewindableInputStream(body);
     }
 
     /**
@@ -99,7 +98,7 @@ public class SimpleMessage implements Document {
      * @throws IOException 
      */
     public RewindableInputStream getFullContent() throws IOException {
-        return new InMemoryRewindableInputStream(new ByteArrayInputStream(fullContent));
+        return new ByteArrayRewindableInputStream(fullContent);
     }
     
     /**
@@ -131,5 +130,19 @@ public class SimpleMessage implements Document {
 
     public long getFullContentOctets() {
         return fullContent.length;
+    }
+    
+    private final class ByteArrayRewindableInputStream extends RewindableInputStream {
+
+        private byte[] content;
+        public ByteArrayRewindableInputStream(byte[] content) {
+            super(new ByteArrayInputStream(content));
+            this.content = content;
+        }
+        @Override
+        protected void rewindIfNeeded() throws IOException {
+            in = new ByteArrayInputStream(content);
+        }
+        
     }
 }

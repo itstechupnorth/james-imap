@@ -389,17 +389,6 @@ public class JCRMessage extends AbstractDocument implements MailboxMembership<St
       
         this.node = node;
 
-        /*
-        content = null;
-        headers = new ArrayList<JCRHeader>();
-        fullContentOctets = 0;
-        mediaType = null;
-        textualLineCount = null;
-        subType = null;
-        properties = null;
-        bodyStartOctet = 0;
-        */
-
     }
     
     @Override
@@ -437,7 +426,10 @@ public class JCRMessage extends AbstractDocument implements MailboxMembership<St
     }
 
 
-    @Override
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.store.mail.model.AbstractDocument#getRawFullContent()
+     */
     protected InputStream getRawFullContent() {
         if (isPersistent()) {
             try {
@@ -480,6 +472,7 @@ public class JCRMessage extends AbstractDocument implements MailboxMembership<St
         }
         return flags;
     }
+    
     
     /*
      * (non-Javadoc)
