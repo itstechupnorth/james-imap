@@ -121,7 +121,7 @@ public class InMemoryMessageMapper implements MessageMapper<Long> {
      * (non-Javadoc)
      * @see org.apache.james.imap.store.mail.MessageMapper#findRecentMessagesInMailbox()
      */
-    public List<MailboxMembership<Long>> findRecentMessagesInMailbox(Long mailboxId) throws StorageException {
+    public List<MailboxMembership<Long>> findRecentMessagesInMailbox(Long mailboxId,int limit) throws StorageException {
         final List<MailboxMembership<Long>> results = new ArrayList<MailboxMembership<Long>>();
         for(MailboxMembership<Long> member:getMembershipByUidForMailbox(mailboxId).values()) {
             if (member.isRecent()) {
@@ -129,6 +129,9 @@ public class InMemoryMessageMapper implements MessageMapper<Long> {
             }
         }
         Collections.sort(results, MailboxMembershipComparator.INSTANCE);
+        if (limit > 0 && limit > results.size()) {
+            return results.subList(0, limit -1);
+        } 
         return results;
     }
 
@@ -136,7 +139,7 @@ public class InMemoryMessageMapper implements MessageMapper<Long> {
      * (non-Javadoc)
      * @see org.apache.james.imap.store.mail.MessageMapper#findUnseenMessagesInMailbox()
      */
-    public List<MailboxMembership<Long>> findUnseenMessagesInMailbox(Long mailboxId) throws StorageException {
+    public List<MailboxMembership<Long>> findUnseenMessagesInMailbox(Long mailboxId, int limit) throws StorageException {
         final List<MailboxMembership<Long>> results = new ArrayList<MailboxMembership<Long>>();
         for(MailboxMembership<Long> member:getMembershipByUidForMailbox(mailboxId).values()) {
             if (!member.isSeen()) {
@@ -144,6 +147,9 @@ public class InMemoryMessageMapper implements MessageMapper<Long> {
             }
         }
         Collections.sort(results, MailboxMembershipComparator.INSTANCE);
+        if (limit > 0 && limit > results.size()) {
+            return results.subList(0, limit -1);
+        } 
         return results;
     }
 
@@ -175,8 +181,7 @@ public class InMemoryMessageMapper implements MessageMapper<Long> {
     }
 
     public void endRequest() {
-        // TODO Auto-generated method stub
-        
+        // Do nothing
     }
     
 }

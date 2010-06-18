@@ -414,7 +414,7 @@ public abstract class StoreMessageManager<Id> implements org.apache.james.imap.m
         messageMapper.execute(new TransactionalMapper.Transaction() {
 
             public void run() throws MailboxException {
-                final List<MailboxMembership<Id>> members = messageMapper.findRecentMessagesInMailbox(getMailboxId());
+                final List<MailboxMembership<Id>> members = messageMapper.findRecentMessagesInMailbox(getMailboxId(), -1);
 
                 for (MailboxMembership<Id> member:members) {
                     results.add(member.getUid());
@@ -432,7 +432,7 @@ public abstract class StoreMessageManager<Id> implements org.apache.james.imap.m
 
     private Long getFirstUnseen(MailboxSession mailboxSession) throws MailboxException {
         try {
-            final List<MailboxMembership<Id>> members = messageMapper.findUnseenMessagesInMailbox(getMailboxId());
+            final List<MailboxMembership<Id>> members = messageMapper.findUnseenMessagesInMailbox(getMailboxId(),1);
             final Iterator<MailboxMembership<Id>> it = members.iterator();
             final Long result;
             if (it.hasNext()) {

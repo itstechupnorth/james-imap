@@ -325,17 +325,24 @@ public class JCRMessageMapper extends AbstractJCRMapper implements MessageMapper
     }
 
     /*
+     * 
+     * TODO: Maybe we should better use an ItemVisitor and just traverse through the child nodes. This could be a way faster
+     * 
      * (non-Javadoc)
      * 
      * @see
      * org.apache.james.imap.store.mail.MessageMapper#findRecentMessagesInMailbox
      * ()
      */
-    public List<MailboxMembership<String>> findRecentMessagesInMailbox(String uuid) throws StorageException {
+    public List<MailboxMembership<String>> findRecentMessagesInMailbox(String uuid, int limit) throws StorageException {
         
         try {
+ 
             List<MailboxMembership<String>> list = new ArrayList<MailboxMembership<String>>();
             String queryString = "//" + MAILBOXES_PATH + "//element(*,jamesMailbox:message)[@" + JCRMessage.MAILBOX_UUID_PROPERTY +"='" + uuid +"'] AND [@" + JCRMessage.RECENT_PROPERTY +"='true'] order by @" + JCRMessage.UID_PROPERTY;
+            if (limit > 0) {
+                queryString = queryString + " limit " + limit;
+            }
             
             QueryManager manager = getSession().getWorkspace().getQueryManager();
             QueryResult result = manager.createQuery(queryString, Query.XPATH).execute();
@@ -345,6 +352,7 @@ public class JCRMessageMapper extends AbstractJCRMapper implements MessageMapper
                 list.add(new JCRMessage(iterator.nextNode(), getLogger()));
             }
             return list;
+
         } catch (RepositoryException e) {
             e.printStackTrace();
             throw new StorageException(HumanReadableText.SEARCH_FAILED, e);
@@ -353,14 +361,20 @@ public class JCRMessageMapper extends AbstractJCRMapper implements MessageMapper
 
 
     /*
+     * TODO: Maybe we should better use an ItemVisitor and just traverse through the child nodes. This could be a way faster
+     * 
      * (non-Javadoc)
      * @see org.apache.james.imap.store.mail.MessageMapper#findUnseenMessagesInMailbox()
      */
-    public List<MailboxMembership<String>> findUnseenMessagesInMailbox(String uuid) throws StorageException {
+    public List<MailboxMembership<String>> findUnseenMessagesInMailbox(String uuid, int limit) throws StorageException {
         try {
+  
             List<MailboxMembership<String>> list = new ArrayList<MailboxMembership<String>>();
             String queryString = "//" + MAILBOXES_PATH + "//element(*,jamesMailbox:message)[@" + JCRMessage.MAILBOX_UUID_PROPERTY +"='" + uuid +"'] AND [@" + JCRMessage.SEEN_PROPERTY +"='false'] order by @" + JCRMessage.UID_PROPERTY;
           
+            if (limit > 0) {
+                queryString = queryString + " limit " + limit;
+            }
             QueryManager manager = getSession().getWorkspace().getQueryManager();
             QueryResult result = manager.createQuery(queryString, Query.XPATH).execute();
             
@@ -417,7 +431,7 @@ public class JCRMessageMapper extends AbstractJCRMapper implements MessageMapper
                     
                     // we lock the whole mailbox with all its childs while
                     // adding the folder structure for the date
-                    // TODO: Maybe we should just lock the last child folder
+                    // TODO: Maybe we should just lock the last child folder to improve performance
                     dayNode = locker.execute(new NodeLocker.NodeLockedExecution<Node>() {
 
                         public Node execute(Node node) throws RepositoryException {
@@ -541,4 +555,5 @@ public class JCRMessageMapper extends AbstractJCRMapper implements MessageMapper
         final String jql = queryBuilder.toString();
         return jql;
     }
+
 }

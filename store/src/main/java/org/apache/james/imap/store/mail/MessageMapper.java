@@ -94,20 +94,28 @@ public interface MessageMapper<Id> extends TransactionalMapper {
     /**
      * Return a List of {@link MailboxMembership} which are unseen. 
      * The list must be ordered by the {@link Document} uid.
+     * If a limit was given the list will maximal be the size of the limit. Id a 
+     * limit smaller then 1 is given the List must contain all messages
      * 
+     * @param mailboxId
+     * @param limit
      * @return list
      * @throws StorageException
      */
-    public abstract List<MailboxMembership<Id>> findUnseenMessagesInMailbox(Id mailboxId) throws StorageException;
+    public abstract List<MailboxMembership<Id>> findUnseenMessagesInMailbox(Id mailboxId, int limit) throws StorageException;
 
     /**
      * Return a List of {@link MailboxMembership} which are recent.
-     * The list must be ordered by the {@link Document} uid
+     * The list must be ordered by the {@link Document} uid. 
+     * If a limit was given the list will maximal be the size of the limit. Id a 
+     * limit smaller then 1 is given the List must contain all messages
      * 
+     * @param mailboxId
+     * @param limit
      * @return recentList
      * @throws StorageException
      */
-    public abstract List<MailboxMembership<Id>> findRecentMessagesInMailbox(Id mailboxId) throws StorageException;
+    public abstract List<MailboxMembership<Id>> findRecentMessagesInMailbox(Id mailboxId, int limit) throws StorageException;
 
 
     /**

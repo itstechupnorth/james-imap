@@ -22,6 +22,7 @@ import java.util.List;
 
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceException;
+import javax.persistence.Query;
 
 import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.jpa.JPATransactionalMapper;
@@ -237,9 +238,13 @@ public class JPAMessageMapper extends JPATransactionalMapper implements MessageM
      * @see org.apache.james.imap.store.mail.MessageMapper#findUnseenMessagesInMailbox()
      */
     @SuppressWarnings("unchecked")
-    public List<MailboxMembership<Long>> findUnseenMessagesInMailbox(Long mailboxId)  throws StorageException {
+    public List<MailboxMembership<Long>> findUnseenMessagesInMailbox(Long mailboxId, int limit)  throws StorageException {
         try {
-            return getEntityManager().createNamedQuery("findUnseenMessagesInMailboxOrderByUid").setParameter("idParam", mailboxId).getResultList();
+            Query query = getEntityManager().createNamedQuery("findUnseenMessagesInMailbox").setParameter("idParam", mailboxId);
+            if (limit > 0) {
+                query = query.setMaxResults(limit);
+            }
+            return query.getResultList();
         } catch (PersistenceException e) {
             throw new StorageException(HumanReadableText.SEARCH_FAILED, e);
         }
@@ -249,9 +254,13 @@ public class JPAMessageMapper extends JPATransactionalMapper implements MessageM
      * @see org.apache.james.imap.store.mail.MessageMapper#findRecentMessagesInMailbox()
      */
     @SuppressWarnings("unchecked")
-    public List<MailboxMembership<Long>> findRecentMessagesInMailbox(Long mailboxId) throws StorageException {
+    public List<MailboxMembership<Long>> findRecentMessagesInMailbox(Long mailboxId, int limit) throws StorageException {
         try {
-            return getEntityManager().createNamedQuery("findRecentMessagesInMailbox").setParameter("idParam", mailboxId).getResultList();
+            Query query = getEntityManager().createNamedQuery("findRecentMessagesInMailbox").setParameter("idParam", mailboxId);
+            if (limit > 0) {
+                query = query.setMaxResults(limit);
+            }
+            return query.getResultList();
         } catch (PersistenceException e) {
             throw new StorageException(HumanReadableText.SEARCH_FAILED, e);
         }
