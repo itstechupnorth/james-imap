@@ -240,7 +240,7 @@ public class JPAMessageMapper extends JPATransactionalMapper implements MessageM
     @SuppressWarnings("unchecked")
     public List<MailboxMembership<Long>> findUnseenMessagesInMailbox(Long mailboxId, int limit)  throws StorageException {
         try {
-            Query query = getEntityManager().createNamedQuery("findUnseenMessagesInMailbox").setParameter("idParam", mailboxId);
+            Query query = getEntityManager().createNamedQuery("findUnseenMessagesInMailboxOrderByUid").setParameter("idParam", mailboxId);
             if (limit > 0) {
                 query = query.setMaxResults(limit);
             }
