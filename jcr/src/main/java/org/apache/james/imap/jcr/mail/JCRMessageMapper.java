@@ -24,6 +24,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import javax.jcr.ItemNotFoundException;
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
 import javax.jcr.RepositoryException;
@@ -34,6 +35,8 @@ import javax.jcr.query.QueryResult;
 import org.apache.commons.logging.Log;
 import org.apache.jackrabbit.JcrConstants;
 import org.apache.jackrabbit.commons.JcrUtils;
+import org.apache.jackrabbit.util.ISO9075;
+import org.apache.jackrabbit.util.Text;
 import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.jcr.AbstractJCRMapper;
 import org.apache.james.imap.jcr.MailboxSessionJCRRepository;
@@ -60,6 +63,19 @@ public class JCRMessageMapper extends AbstractJCRMapper implements MessageMapper
         super(repos, session, locker, logger);
     }
 
+    /**
+     * Return the path to the mailbox. This path is escaped to be able to use it in xpath queries
+     * 
+     * See http://wiki.apache.org/jackrabbit/EncodingAndEscaping
+     * 
+     * @param uuid
+     * @return
+     * @throws ItemNotFoundException
+     * @throws RepositoryException
+     */
+    private String getMailboxPath(String uuid) throws ItemNotFoundException, RepositoryException {
+        return ISO9075.encodePath(getSession().getNodeByIdentifier(uuid).getPath());
+    }
     /*
      * (non-Javadoc)
      * 
@@ -69,7 +85,7 @@ public class JCRMessageMapper extends AbstractJCRMapper implements MessageMapper
     public long countMessagesInMailbox(String uuid) throws StorageException {
         try {
             // we use order by because without it count will always be 0 in jackrabbit
-            String queryString = "//" + MAILBOXES_PATH + "//element(*,jamesMailbox:message)[@" + JCRMessage.MAILBOX_UUID_PROPERTY +"='" + uuid +"'] order by @" + JCRMessage.UID_PROPERTY;
+            String queryString = "/" + getMailboxPath(uuid) + "//element(*,jamesMailbox:message)[@" + JCRMessage.MAILBOX_UUID_PROPERTY +"='" + uuid +"'] order by @" + JCRMessage.UID_PROPERTY;
             QueryManager manager = getSession().getWorkspace().getQueryManager();
             QueryResult result = manager.createQuery(queryString, Query.XPATH).execute();
             NodeIterator nodes = result.getNodes();
@@ -100,7 +116,7 @@ public class JCRMessageMapper extends AbstractJCRMapper implements MessageMapper
         
         try {
             // we use order by because without it count will always be 0 in jackrabbit
-            String queryString = "//" + MAILBOXES_PATH + "//element(*,jamesMailbox:message)[@" + JCRMessage.MAILBOX_UUID_PROPERTY +"='" + uuid +"'] AND [@" + JCRMessage.SEEN_PROPERTY +"='false'] order by @" + JCRMessage.UID_PROPERTY;
+            String queryString = "/" + getMailboxPath(uuid) + "//element(*,jamesMailbox:message)[@" + JCRMessage.MAILBOX_UUID_PROPERTY +"='" + uuid +"'] AND [@" + JCRMessage.SEEN_PROPERTY +"='false'] order by @" + JCRMessage.UID_PROPERTY;
             QueryManager manager = getSession().getWorkspace().getQueryManager();
             QueryResult result = manager.createQuery(queryString, Query.XPATH).execute();
             NodeIterator nodes = result.getNodes();
@@ -175,7 +191,7 @@ public class JCRMessageMapper extends AbstractJCRMapper implements MessageMapper
 
     private List<MailboxMembership<String>> findMessagesInMailboxAfterUID(String uuid, long uid) throws RepositoryException {
         List<MailboxMembership<String>> list = new ArrayList<MailboxMembership<String>>();
-        String queryString = "//" + MAILBOXES_PATH + "//element(*,jamesMailbox:message)[@" + JCRMessage.MAILBOX_UUID_PROPERTY + "='" + uuid + "'] AND [@" + JCRMessage.UID_PROPERTY + ">=" + uid + "] order by @" + JCRMessage.UID_PROPERTY;
+        String queryString = "/" + getMailboxPath(uuid) + "//element(*,jamesMailbox:message)[@" + JCRMessage.MAILBOX_UUID_PROPERTY + "='" + uuid + "'] AND [@" + JCRMessage.UID_PROPERTY + ">=" + uid + "] order by @" + JCRMessage.UID_PROPERTY;
 
         QueryManager manager = getSession().getWorkspace().getQueryManager();
         QueryResult result = manager.createQuery(queryString, Query.XPATH).execute();
@@ -189,7 +205,7 @@ public class JCRMessageMapper extends AbstractJCRMapper implements MessageMapper
 
     private List<MailboxMembership<String>> findMessagesInMailboxWithUID(String uuid, long uid) throws RepositoryException  {
         List<MailboxMembership<String>> list = new ArrayList<MailboxMembership<String>>();
-        String queryString = "//" + MAILBOXES_PATH + "//element(*,jamesMailbox:message)[@" + JCRMessage.MAILBOX_UUID_PROPERTY + "='" + uuid + "'] AND [@" + JCRMessage.UID_PROPERTY + "=" + uid + "] order by @" + JCRMessage.UID_PROPERTY;
+        String queryString = "/" + getMailboxPath(uuid) + "//element(*,jamesMailbox:message)[@" + JCRMessage.MAILBOX_UUID_PROPERTY + "='" + uuid + "'] AND [@" + JCRMessage.UID_PROPERTY + "=" + uid + "] order by @" + JCRMessage.UID_PROPERTY;
 
         QueryManager manager = getSession().getWorkspace().getQueryManager();
         QueryResult result = manager.createQuery(queryString, Query.XPATH).execute();
@@ -203,7 +219,7 @@ public class JCRMessageMapper extends AbstractJCRMapper implements MessageMapper
 
     private List<MailboxMembership<String>> findMessagesInMailboxBetweenUIDs(String uuid, long from, long to) throws RepositoryException {
         List<MailboxMembership<String>> list = new ArrayList<MailboxMembership<String>>();
-        String queryString = "//" + MAILBOXES_PATH + "//element(*,jamesMailbox:message)[@" + JCRMessage.MAILBOX_UUID_PROPERTY + "='" + uuid + "'] AND [@" + JCRMessage.UID_PROPERTY + ">=" + from + "] AND [@" + JCRMessage.UID_PROPERTY + "<=" + to + "] order by @" + JCRMessage.UID_PROPERTY;
+        String queryString = "/" + getMailboxPath(uuid) + "//element(*,jamesMailbox:message)[@" + JCRMessage.MAILBOX_UUID_PROPERTY + "='" + uuid + "'] AND [@" + JCRMessage.UID_PROPERTY + ">=" + from + "] AND [@" + JCRMessage.UID_PROPERTY + "<=" + to + "] order by @" + JCRMessage.UID_PROPERTY;
         
         QueryManager manager = getSession().getWorkspace().getQueryManager();
         QueryResult result = manager.createQuery(queryString, Query.XPATH).execute();
@@ -218,7 +234,7 @@ public class JCRMessageMapper extends AbstractJCRMapper implements MessageMapper
     private List<MailboxMembership<String>> findMessagesInMailbox(String uuid) throws RepositoryException {        
         List<MailboxMembership<String>> list = new ArrayList<MailboxMembership<String>>();
         
-        String queryString = "//" + MAILBOXES_PATH + "//element(*,jamesMailbox:message)[@" + JCRMessage.MAILBOX_UUID_PROPERTY +"='" + uuid +"'] order by @" + JCRMessage.UID_PROPERTY;
+        String queryString = "/" + getMailboxPath(uuid) + "//element(*,jamesMailbox:message)[@" + JCRMessage.MAILBOX_UUID_PROPERTY +"='" + uuid +"'] order by @" + JCRMessage.UID_PROPERTY;
         QueryManager manager = getSession().getWorkspace().getQueryManager();
         QueryResult result = manager.createQuery(queryString, Query.XPATH).execute();
 
@@ -233,7 +249,7 @@ public class JCRMessageMapper extends AbstractJCRMapper implements MessageMapper
     
     private List<MailboxMembership<String>> findDeletedMessagesInMailboxAfterUID(String uuid, long uid) throws RepositoryException {
         List<MailboxMembership<String>> list = new ArrayList<MailboxMembership<String>>();
-        String queryString = "//" + MAILBOXES_PATH + "//element(*,jamesMailbox:message)[@" + JCRMessage.MAILBOX_UUID_PROPERTY + "='" + uuid + "'] AND [@" + JCRMessage.UID_PROPERTY + ">=" + uid + "] AND [@" + JCRMessage.DELETED_PROPERTY+ "='true'] order by @" + JCRMessage.UID_PROPERTY;
+        String queryString = "/" + getMailboxPath(uuid) + "//element(*,jamesMailbox:message)[@" + JCRMessage.MAILBOX_UUID_PROPERTY + "='" + uuid + "'] AND [@" + JCRMessage.UID_PROPERTY + ">=" + uid + "] AND [@" + JCRMessage.DELETED_PROPERTY+ "='true'] order by @" + JCRMessage.UID_PROPERTY;
  
         QueryManager manager = getSession().getWorkspace().getQueryManager();
         QueryResult result = manager.createQuery(queryString, Query.XPATH).execute();
@@ -247,7 +263,7 @@ public class JCRMessageMapper extends AbstractJCRMapper implements MessageMapper
 
     private List<MailboxMembership<String>> findDeletedMessagesInMailboxWithUID(String uuid, long uid) throws RepositoryException  {
         List<MailboxMembership<String>> list = new ArrayList<MailboxMembership<String>>();
-        String queryString = "//" + MAILBOXES_PATH + "//element(*,jamesMailbox:message)[@" + JCRMessage.MAILBOX_UUID_PROPERTY + "='" + uuid + "'] AND [@" + JCRMessage.UID_PROPERTY + "=" + uid + "] AND [@" + JCRMessage.DELETED_PROPERTY+ "='true']  order by @" + JCRMessage.UID_PROPERTY;
+        String queryString = "/" + getMailboxPath(uuid) + "//element(*,jamesMailbox:message)[@" + JCRMessage.MAILBOX_UUID_PROPERTY + "='" + uuid + "'] AND [@" + JCRMessage.UID_PROPERTY + "=" + uid + "] AND [@" + JCRMessage.DELETED_PROPERTY+ "='true']  order by @" + JCRMessage.UID_PROPERTY;
         QueryManager manager = getSession().getWorkspace().getQueryManager();
         QueryResult result = manager.createQuery(queryString, Query.XPATH).execute();
 
@@ -261,7 +277,7 @@ public class JCRMessageMapper extends AbstractJCRMapper implements MessageMapper
 
     private List<MailboxMembership<String>> findDeletedMessagesInMailboxBetweenUIDs(String uuid, long from, long to) throws RepositoryException {
         List<MailboxMembership<String>> list = new ArrayList<MailboxMembership<String>>();
-        String queryString = "//" + MAILBOXES_PATH + "//element(*,jamesMailbox:message)[@" + JCRMessage.MAILBOX_UUID_PROPERTY + "='" + uuid + "'] AND [@" + JCRMessage.UID_PROPERTY + ">=" + from + "] AND [@" + JCRMessage.UID_PROPERTY + "<=" + to + "] AND [@" + JCRMessage.DELETED_PROPERTY+ "='true'] order by @" + JCRMessage.UID_PROPERTY;
+        String queryString = "/" + getMailboxPath(uuid) + "//element(*,jamesMailbox:message)[@" + JCRMessage.MAILBOX_UUID_PROPERTY + "='" + uuid + "'] AND [@" + JCRMessage.UID_PROPERTY + ">=" + from + "] AND [@" + JCRMessage.UID_PROPERTY + "<=" + to + "] AND [@" + JCRMessage.DELETED_PROPERTY+ "='true'] order by @" + JCRMessage.UID_PROPERTY;
        
         QueryManager manager = getSession().getWorkspace().getQueryManager();
         QueryResult result = manager.createQuery(queryString, Query.XPATH).execute();
@@ -276,7 +292,7 @@ public class JCRMessageMapper extends AbstractJCRMapper implements MessageMapper
     private List<MailboxMembership<String>> findDeletedMessagesInMailbox(String uuid) throws RepositoryException {
         
         List<MailboxMembership<String>> list = new ArrayList<MailboxMembership<String>>();
-        String queryString = "//" + MAILBOXES_PATH + "//element(*,jamesMailbox:message)[@" + JCRMessage.MAILBOX_UUID_PROPERTY +"='" + uuid +"'] AND [@" + JCRMessage.DELETED_PROPERTY+ "='true'] order by @" + JCRMessage.UID_PROPERTY;
+        String queryString = "/" + getMailboxPath(uuid) + "//element(*,jamesMailbox:message)[@" + JCRMessage.MAILBOX_UUID_PROPERTY +"='" + uuid +"'] AND [@" + JCRMessage.DELETED_PROPERTY+ "='true'] order by @" + JCRMessage.UID_PROPERTY;
         
         QueryManager manager = getSession().getWorkspace().getQueryManager();
         QueryResult result = manager.createQuery(queryString, Query.XPATH).execute();
@@ -339,7 +355,7 @@ public class JCRMessageMapper extends AbstractJCRMapper implements MessageMapper
         try {
  
             List<MailboxMembership<String>> list = new ArrayList<MailboxMembership<String>>();
-            String queryString = "//" + MAILBOXES_PATH + "//element(*,jamesMailbox:message)[@" + JCRMessage.MAILBOX_UUID_PROPERTY +"='" + uuid +"'] AND [@" + JCRMessage.RECENT_PROPERTY +"='true'] order by @" + JCRMessage.UID_PROPERTY;
+            String queryString = "/" + getMailboxPath(uuid) + "//element(*,jamesMailbox:message)[@" + JCRMessage.MAILBOX_UUID_PROPERTY +"='" + uuid +"'] AND [@" + JCRMessage.RECENT_PROPERTY +"='true'] order by @" + JCRMessage.UID_PROPERTY;
             if (limit > 0) {
                 queryString = queryString + " limit " + limit;
             }
@@ -370,7 +386,7 @@ public class JCRMessageMapper extends AbstractJCRMapper implements MessageMapper
         try {
   
             List<MailboxMembership<String>> list = new ArrayList<MailboxMembership<String>>();
-            String queryString = "//" + MAILBOXES_PATH + "//element(*,jamesMailbox:message)[@" + JCRMessage.MAILBOX_UUID_PROPERTY +"='" + uuid +"'] AND [@" + JCRMessage.SEEN_PROPERTY +"='false'] order by @" + JCRMessage.UID_PROPERTY;
+            String queryString = "/" + getMailboxPath(uuid) + "//element(*,jamesMailbox:message)[@" + JCRMessage.MAILBOX_UUID_PROPERTY +"='" + uuid +"'] AND [@" + JCRMessage.SEEN_PROPERTY +"='false'] order by @" + JCRMessage.UID_PROPERTY;
           
             if (limit > 0) {
                 queryString = queryString + " limit " + limit;
@@ -527,10 +543,12 @@ public class JCRMessageMapper extends AbstractJCRMapper implements MessageMapper
      * @param uuid
      * @param query
      * @return xpathQuery
+     * @throws RepositoryException 
+     * @throws ItemNotFoundException 
      */
-    private String formulateXPath(String uuid, SearchQuery query) {
+    private String formulateXPath(String uuid, SearchQuery query) throws ItemNotFoundException, RepositoryException {
         final StringBuilder queryBuilder = new StringBuilder(50);
-        queryBuilder.append("//" + MAILBOXES_PATH + "//element(*,jamesMailbox:message)[@" + JCRMessage.MAILBOX_UUID_PROPERTY +"='" + uuid +"'] ");
+        queryBuilder.append("/" + getMailboxPath(uuid) + "//element(*,jamesMailbox:message)[@" + JCRMessage.MAILBOX_UUID_PROPERTY +"='" + uuid +"'] ");
         final List<Criterion> criteria = query.getCriterias();
         if (criteria.size() == 1) {
             final Criterion firstCriterion = criteria.get(0);
