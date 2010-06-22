@@ -62,7 +62,9 @@ import org.apache.james.imap.store.mail.model.PropertyBuilder;
     @NamedQuery(name="countUnseenMessagesInMailbox",
             query="SELECT COUNT(membership) FROM Membership membership WHERE membership.mailboxId = :idParam AND membership.seen=FALSE"),                     
     @NamedQuery(name="countMessagesInMailbox",
-            query="SELECT COUNT(membership) FROM Membership membership WHERE membership.mailboxId = :idParam")                     
+            query="SELECT COUNT(membership) FROM Membership membership WHERE membership.mailboxId = :idParam"),                    
+    @NamedQuery(name="deleteMessages",
+            query="DELETE FROM Membership membership WHERE membership.mailboxId = :idParam") 
 })
 public abstract class AbstractJPAMailboxMembership extends AbstractMailboxMembership<Long> {
 

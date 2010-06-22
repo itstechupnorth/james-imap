@@ -77,6 +77,7 @@ public class JPAMailboxMapper extends JPATransactionalMapper implements MailboxM
     public void delete(Mailbox<Long> mailbox) throws StorageException {
         try {  
             getEntityManager().remove(mailbox);
+            getEntityManager().createNamedQuery("deleteMessages").setParameter("idParam", mailbox.getMailboxId()).executeUpdate();
         } catch (PersistenceException e) {
             throw new StorageException(HumanReadableText.DELETED_FAILED, e);
         } 
