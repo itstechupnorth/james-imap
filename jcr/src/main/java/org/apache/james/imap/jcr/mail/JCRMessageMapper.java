@@ -394,9 +394,7 @@ public class JCRMessageMapper extends AbstractJCRMapper implements MessageMapper
             if (limit > 0) {
                 query.setLimit(limit);
             }
-            System.out.println("execute query " + queryString);
             QueryResult result = query.execute();
-            System.out.println("complete query " + queryString);
 
             NodeIterator iterator = result.getNodes();
             while(iterator.hasNext()) {
