@@ -420,8 +420,10 @@ public abstract class StoreMessageManager<Id> implements org.apache.james.imap.m
                     results.add(member.getUid());
                     if (reset) {
                         member.unsetRecent();
+                        
+                        // only call save if we need to
+                        messageMapper.save(getMailboxId(), member);
                     }
-                    messageMapper.save(getMailboxId(), member);
                 }
             }
             
