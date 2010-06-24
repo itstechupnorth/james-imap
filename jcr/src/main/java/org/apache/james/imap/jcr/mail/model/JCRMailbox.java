@@ -23,6 +23,7 @@ import javax.jcr.RepositoryException;
 
 import org.apache.commons.logging.Log;
 import org.apache.jackrabbit.JcrConstants;
+import org.apache.jackrabbit.util.Text;
 import org.apache.james.imap.jcr.JCRImapConstants;
 import org.apache.james.imap.jcr.Persistent;
 import org.apache.james.imap.store.mail.model.Mailbox;
@@ -140,6 +141,9 @@ public class JCRMailbox implements Mailbox<String>, JCRImapConstants, Persistent
         if (isPersistent()) {
             try {
                 node.setProperty(NAME_PROPERTY, name);
+                // move the node 
+                // See https://issues.apache.org/jira/browse/IMAP-162
+                node.getSession().move(node.getPath(), node.getParent().getPath() + NODE_DELIMITER + Text.escapePath(name));
             } catch (RepositoryException e) {
                 logger.error("Unable to access property " + NAME_PROPERTY, e);
             }
@@ -175,12 +179,6 @@ public class JCRMailbox implements Mailbox<String>, JCRImapConstants, Persistent
         node.setProperty(LASTUID_PROPERTY, getLastUid());   
         
         this.node = node;
-        /*
-        id = 0;
-        lastUid = 0;
-        name = null;
-        uidValidity = 0;
-        */
     }
     
     @Override
