@@ -69,7 +69,7 @@ public class JCRMailboxMapper extends AbstractJCRMapper implements MailboxMapper
 
         try {
             QueryManager manager = getSession().getWorkspace().getQueryManager();
-            String queryString =  "//"+ MAILBOXES_PATH + "//element(*,jamesMailbox:mailbox)[@" + JCRMailbox.NAME_PROPERTY + "='" + name + "'] order by @"+ JCRMailbox.NAME_PROPERTY;
+            String queryString =  "/jcr:root/"+ MAILBOXES_PATH + "//element(*,jamesMailbox:mailbox)[@" + JCRMailbox.NAME_PROPERTY + "='" + name + "'] order by @"+ JCRMailbox.NAME_PROPERTY;
             QueryResult result = manager.createQuery(queryString, Query.XPATH).execute();
             NodeIterator it = result.getNodes();
             long resultSize = it.getSize();
@@ -150,7 +150,7 @@ public class JCRMailboxMapper extends AbstractJCRMapper implements MailboxMapper
     public Mailbox<String> findMailboxByName(String name) throws StorageException, MailboxNotFoundException {
         try {
             QueryManager manager = getSession().getWorkspace().getQueryManager();
-            String queryString = "//" + MAILBOXES_PATH + "//element(*,jamesMailbox:mailbox)[@" + JCRMailbox.NAME_PROPERTY + "='" + name + "']";
+            String queryString = "/jcr:root/" + MAILBOXES_PATH + "//element(*,jamesMailbox:mailbox)[@" + JCRMailbox.NAME_PROPERTY + "='" + name + "']";
             QueryResult result = manager.createQuery(queryString, Query.XPATH).execute();
             NodeIterator it = result.getNodes();
             if (it.hasNext()) {
@@ -175,7 +175,7 @@ public class JCRMailboxMapper extends AbstractJCRMapper implements MailboxMapper
         List<Mailbox<String>> mailboxList = new ArrayList<Mailbox<String>>();
         try {
             QueryManager manager = getSession().getWorkspace().getQueryManager();
-            String queryString = "//" + MAILBOXES_PATH + "//element(*,jamesMailbox:mailbox)[jcr:like(@" + JCRMailbox.NAME_PROPERTY + ",'%" + name + "%')]";
+            String queryString = "/jcr:root/" + MAILBOXES_PATH + "//element(*,jamesMailbox:mailbox)[jcr:like(@" + JCRMailbox.NAME_PROPERTY + ",'%" + name + "%')]";
             QueryResult result = manager.createQuery(queryString, Query.XPATH).execute();
             NodeIterator it = result.getNodes();
             while (it.hasNext()) {
@@ -272,7 +272,7 @@ public class JCRMailboxMapper extends AbstractJCRMapper implements MailboxMapper
         try {
             QueryManager manager = getSession().getWorkspace()
                     .getQueryManager();
-            String queryString = "//" + MAILBOXES_PATH
+            String queryString = "/jcr:root/" + MAILBOXES_PATH
                     + "//element(*,jamesMailbox:mailbox)[jcr:like(@"
                     + JCRMailbox.NAME_PROPERTY + ",'" + mailbox.getName() + delimiter + "%')]";
             QueryResult result = manager.createQuery(queryString, Query.XPATH)
