@@ -313,80 +313,84 @@ public class JCRMessage extends AbstractDocument implements MailboxMembership<St
      * @see org.apache.james.imap.jcr.Persistent#merge(javax.jcr.Node)
      */
     public void merge(Node node) throws RepositoryException, IOException {
-        node.setProperty(MAILBOX_UUID_PROPERTY, getMailboxId());
-        node.setProperty(UID_PROPERTY, getUid());
-        node.setProperty(SIZE_PROPERTY, getSize());
+
+        // update the flags 
         node.setProperty(ANSWERED_PROPERTY, isAnswered());
         node.setProperty(DELETED_PROPERTY, isDeleted());
         node.setProperty(DRAFT_PROPERTY, isDraft());
         node.setProperty(FLAGGED_PROPERTY, isFlagged());
         node.setProperty(RECENT_PROPERTY, isRecent());
-        
         node.setProperty(SEEN_PROPERTY, isSeen());
-        
-        if (getInternalDate() == null) {
-            internalDate = new Date();
-        }
-        
-        Calendar cal = Calendar.getInstance();
-        
-        cal.setTime(getInternalDate());
-        node.setProperty(INTERNAL_DATE_PROPERTY, cal);
 
-              
-        Node contentNode = JcrUtils.getOrAddNode(node, JcrConstants.JCR_CONTENT, JcrConstants.NT_RESOURCE);
-        Binary binaryContent = contentNode.getSession().getValueFactory().createBinary(getFullContent());
-        contentNode.setProperty(JcrConstants.JCR_DATA, binaryContent);
-        contentNode.setProperty(JcrConstants.JCR_MIMETYPE, getMediaType());
+        // This stuff is only ever changed on a new message
+        // so if it is persistent we don'T need to set all the of this.
+        //
+        // This also fix https://issues.apache.org/jira/browse/IMAP-159
+        if (isPersistent() == false) {
+            node.setProperty(SIZE_PROPERTY, getSize());
+            node.setProperty(MAILBOX_UUID_PROPERTY, getMailboxId());
+            node.setProperty(UID_PROPERTY, getUid());
+            if (getInternalDate() == null) {
+                internalDate = new Date();
+            }
 
-        if (getTextualLineCount() != null) {
-            node.setProperty(TEXTUAL_LINE_COUNT_PROPERTY, getTextualLineCount());
-        }
-        node.setProperty(SUBTYPE_PROPERTY, getSubType());
-        node.setProperty(BODY_START_OCTET_PROPERTY, getBodyStartOctet());
+            Calendar cal = Calendar.getInstance();
 
-        // copy the headers and store them in memory as pure pojos
-        List<Header> currentHeaders = getHeaders();
-        List<Header> newHeaders = new ArrayList<Header>();
-        for (int i = 0 ; i < currentHeaders.size(); i++) {
-            newHeaders.add(new JCRHeader(currentHeaders.get(i), logger));
-        }
-        
-           
-        NodeIterator iterator = node.getNodes("messageHeader");
-        // remove old headers
-        while (iterator.hasNext()) {
-            iterator.nextNode().remove();
-        }
-      
-        // add headers to the message again
-        for (int i = 0; i < newHeaders.size(); i++) {
-            JCRHeader header = (JCRHeader) newHeaders.get(i);
-            Node headerNode = node.addNode("messageHeader", "nt:unstructured");
-            headerNode.addMixin(HEADER_NODE_TYPE);
-            header.merge(headerNode);
-        }
-      
-        List<Property> currentProperties = getProperties();
-        List<Property> newProperites = new ArrayList<Property>();
-        for (int i = 0; i < currentProperties.size(); i++) {
-            Property prop = currentProperties.get(i);
-            newProperites.add(new JCRProperty(prop, i, logger));
-        }                    
+            cal.setTime(getInternalDate());
+            node.setProperty(INTERNAL_DATE_PROPERTY, cal);
+
+            Node contentNode = JcrUtils.getOrAddNode(node, JcrConstants.JCR_CONTENT, JcrConstants.NT_RESOURCE);
+            Binary binaryContent = contentNode.getSession().getValueFactory().createBinary(getFullContent());
+            contentNode.setProperty(JcrConstants.JCR_DATA, binaryContent);
+            contentNode.setProperty(JcrConstants.JCR_MIMETYPE, getMediaType());
+
+            if (getTextualLineCount() != null) {
+                node.setProperty(TEXTUAL_LINE_COUNT_PROPERTY, getTextualLineCount());
+            }
+            node.setProperty(SUBTYPE_PROPERTY, getSubType());
+            node.setProperty(BODY_START_OCTET_PROPERTY, getBodyStartOctet());
+
+            // copy the headers and store them in memory as pure pojos
+            List<Header> currentHeaders = getHeaders();
+            List<Header> newHeaders = new ArrayList<Header>();
+            for (int i = 0; i < currentHeaders.size(); i++) {
+                newHeaders.add(new JCRHeader(currentHeaders.get(i), logger));
+            }
+
+            NodeIterator iterator = node.getNodes("messageHeader");
+            // remove old headers
+            while (iterator.hasNext()) {
+                iterator.nextNode().remove();
+            }
+
+            // add headers to the message again
+            for (int i = 0; i < newHeaders.size(); i++) {
+                JCRHeader header = (JCRHeader) newHeaders.get(i);
+                Node headerNode = node.addNode("messageHeader", "nt:unstructured");
+                headerNode.addMixin(HEADER_NODE_TYPE);
+                header.merge(headerNode);
+            }
+
+            List<Property> currentProperties = getProperties();
+            List<Property> newProperites = new ArrayList<Property>();
+            for (int i = 0; i < currentProperties.size(); i++) {
+                Property prop = currentProperties.get(i);
+                newProperites.add(new JCRProperty(prop, i, logger));
+            }
             // remove old properties, we will add a bunch of new ones
-        iterator = node.getNodes("messageProperty");
-        while (iterator.hasNext()) {
-            iterator.nextNode().remove();
-        }
+            iterator = node.getNodes("messageProperty");
+            while (iterator.hasNext()) {
+                iterator.nextNode().remove();
+            }
 
-        // store new properties
-        for (int i = 0; i < newProperites.size(); i++) {
-            JCRProperty prop = (JCRProperty)newProperites.get(i);
-            Node propNode = node.addNode("messageProperty", "nt:unstructured");
-            propNode.addMixin(PROPERTY_NODE_TYPE);
-            prop.merge(propNode);
+            // store new properties
+            for (int i = 0; i < newProperites.size(); i++) {
+                JCRProperty prop = (JCRProperty) newProperites.get(i);
+                Node propNode = node.addNode("messageProperty", "nt:unstructured");
+                propNode.addMixin(PROPERTY_NODE_TYPE);
+                prop.merge(propNode);
+            }
         }
-      
         this.node = node;
 
     }
