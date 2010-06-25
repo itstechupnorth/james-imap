@@ -74,7 +74,6 @@ public class JCRMailboxMapper extends AbstractJCRMapper implements MailboxMapper
         } catch (PathNotFoundException e) {
             // mailbox does not exists..
         } catch (RepositoryException e) {
-            e.printStackTrace();
             throw new StorageException(HumanReadableText.DELETED_FAILED, e);
         }
     }

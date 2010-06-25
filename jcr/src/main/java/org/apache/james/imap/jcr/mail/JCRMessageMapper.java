@@ -98,7 +98,6 @@ public class JCRMessageMapper extends AbstractJCRMapper implements MessageMapper
             } 
             return count;
         } catch (RepositoryException e) {
-            e.printStackTrace();
             throw new StorageException(HumanReadableText.COUNT_FAILED, e);
         }
        
@@ -131,7 +130,6 @@ public class JCRMessageMapper extends AbstractJCRMapper implements MessageMapper
             } 
             return count;
         } catch (RepositoryException e) {
-            e.printStackTrace();
             throw new StorageException(HumanReadableText.COUNT_FAILED, e);
         }
     }
@@ -147,7 +145,6 @@ public class JCRMessageMapper extends AbstractJCRMapper implements MessageMapper
 
                 getSession().getNodeByIdentifier(membership.getId()).remove();
             } catch (RepositoryException e) {
-                e.printStackTrace();
                 throw new StorageException(HumanReadableText.DELETED_FAILED, e);
             }
         }
@@ -183,7 +180,6 @@ public class JCRMessageMapper extends AbstractJCRMapper implements MessageMapper
             }
             return results;
         } catch (RepositoryException e) {
-            e.printStackTrace();
             throw new StorageException(HumanReadableText.SEARCH_FAILED, e);
         }
     }
@@ -334,7 +330,6 @@ public class JCRMessageMapper extends AbstractJCRMapper implements MessageMapper
             }
             return results;
         } catch (RepositoryException e) {
-            e.printStackTrace();
             throw new StorageException(HumanReadableText.SEARCH_FAILED, e);
         }
     }
@@ -370,7 +365,6 @@ public class JCRMessageMapper extends AbstractJCRMapper implements MessageMapper
             return list;
 
         } catch (RepositoryException e) {
-            e.printStackTrace();
             throw new StorageException(HumanReadableText.SEARCH_FAILED, e);
         }
     }
@@ -402,7 +396,6 @@ public class JCRMessageMapper extends AbstractJCRMapper implements MessageMapper
             }
             return list;
         } catch (RepositoryException e) {
-            e.printStackTrace();
             throw new StorageException(HumanReadableText.SEARCH_FAILED, e);
         }
     }
@@ -534,7 +527,6 @@ public class JCRMessageMapper extends AbstractJCRMapper implements MessageMapper
             }
             return list;
         } catch (RepositoryException e) {
-            e.printStackTrace();
             throw new StorageException(HumanReadableText.SEARCH_FAILED, e);
         }
     }
