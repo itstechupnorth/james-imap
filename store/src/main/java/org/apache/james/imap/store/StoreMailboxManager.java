@@ -28,7 +28,6 @@ import java.util.Random;
 
 import org.apache.commons.logging.Log;
 import org.apache.james.imap.api.AbstractLogEnabled;
-import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.mailbox.BadCredentialsException;
 import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.MailboxExistsException;
@@ -335,23 +334,17 @@ public abstract class StoreMailboxManager<Id> extends AbstractLogEnabled impleme
      */
     public boolean mailboxExists(String mailboxName, MailboxSession session) throws MailboxException {
         synchronized (mutex) {
-            final MailboxMapper<Id> mapper = mailboxSessionMapperFactory.getMailboxMapper(session);
-            final long count = mapper.countMailboxesWithName(mailboxName);
-            if (count == 0) {
+            try {
+                final MailboxMapper<Id> mapper = mailboxSessionMapperFactory.getMailboxMapper(session);
+                mapper.findMailboxByName(mailboxName);
+                return true;
+            }
+            catch (MailboxNotFoundException e) {
                 return false;
-            } else {
-                if (count == 1) {
-                    return true;
-                } else {
-                    throw new MailboxException(HumanReadableText.DUPLICATE_MAILBOXES, 
-                            "Expected one mailbox but found " + count + " mailboxes");
-                }
             }
         }
     }
 
-  
-    
     /*
      * (non-Javadoc)
      * @see org.apache.james.imap.mailbox.MailboxManager#createSystemSession(java.lang.String, org.apache.commons.logging.Log)
@@ -359,7 +352,6 @@ public abstract class StoreMailboxManager<Id> extends AbstractLogEnabled impleme
     public MailboxSession createSystemSession(String userName, Log log) {
         return createSession(userName, null, log);
     }
-
 
     /**
      * Create Session 
@@ -371,7 +363,6 @@ public abstract class StoreMailboxManager<Id> extends AbstractLogEnabled impleme
     private SimpleMailboxSession createSession(String userName, String password, Log log) {
         return new SimpleMailboxSession(randomId(), userName, password, log, delimiter, new ArrayList<Locale>());
     }
-
 
     /**
      * Generate and return the next id to use
@@ -440,7 +431,6 @@ public abstract class StoreMailboxManager<Id> extends AbstractLogEnabled impleme
         delegatingListener.addListener(mailboxName, listener);
     }
 
-
     /*
      * (non-Javadoc)
      * @see org.apache.james.imap.mailbox.MailboxManager#login(java.lang.String, java.lang.String, org.apache.commons.logging.Log)
@@ -476,14 +466,12 @@ public abstract class StoreMailboxManager<Id> extends AbstractLogEnabled impleme
         return USER_NAMESPACE_PREFIX;
     }
 
-
     /**
      * End processing of Request for session
      */
     public void endProcessingRequest(MailboxSession session) {
         mailboxSessionMapperFactory.endRequest(session);
     }
-
 
     /**
      * Start processing of Request for session. Default is to do nothing.
@@ -492,6 +480,5 @@ public abstract class StoreMailboxManager<Id> extends AbstractLogEnabled impleme
     public void startProcessingRequest(MailboxSession session) {
         // Default do nothing
     }
-    
-    
+
 }

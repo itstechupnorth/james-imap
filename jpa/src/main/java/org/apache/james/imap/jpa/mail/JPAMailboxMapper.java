@@ -92,7 +92,7 @@ public class JPAMailboxMapper extends JPATransactionalMapper implements MailboxM
             return getEntityManager().createNamedQuery("findMailboxWithNameLike").setParameter("nameParam", SQL_WILDCARD_CHAR + name + SQL_WILDCARD_CHAR).getResultList();
         } catch (PersistenceException e) {
             throw new StorageException(HumanReadableText.SEARCH_FAILED, e);
-        } 
+        }
     }
 
     /**
@@ -103,17 +103,6 @@ public class JPAMailboxMapper extends JPATransactionalMapper implements MailboxM
             getEntityManager().createNamedQuery("deleteAll").executeUpdate();
         } catch (PersistenceException e) {
             throw new StorageException(HumanReadableText.DELETED_FAILED, e);
-        } 
-    }
-
-    /**
-     * @see org.apache.james.imap.store.mail.MailboxMapper#countMailboxesWithName(java.lang.String)
-     */
-    public long countMailboxesWithName(String name) throws StorageException {
-        try {
-            return (Long) getEntityManager().createNamedQuery("countMailboxesWithName").setParameter("nameParam", name).getSingleResult();
-        } catch (PersistenceException e) {
-            throw new StorageException(HumanReadableText.COUNT_FAILED, e);
         } 
     }
 

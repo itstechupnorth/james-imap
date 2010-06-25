@@ -33,8 +33,6 @@ import org.apache.james.imap.store.mail.model.Mailbox;
         query="SELECT mailbox FROM Mailbox mailbox WHERE mailbox.mailboxId = :idParam"),
     @NamedQuery(name="findMailboxByName",
         query="SELECT mailbox FROM Mailbox mailbox WHERE mailbox.name = :nameParam"),
-    @NamedQuery(name="countMailboxesWithName",
-        query="SELECT COUNT(mailbox) FROM Mailbox mailbox WHERE mailbox.name = :nameParam"),
     @NamedQuery(name="deleteAll",
                 query="DELETE FROM Mailbox mailbox"),
     @NamedQuery(name="findMailboxWithNameLike",

@@ -62,37 +62,6 @@ public class JCRMailboxMapper extends AbstractJCRMapper implements MailboxMapper
      * (non-Javadoc)
      * 
      * @see
-     * org.apache.james.imap.store.mail.MailboxMapper#countMailboxesWithName
-     * (java.lang.String)
-     */
-    public long countMailboxesWithName(String name) throws StorageException {
-
-        try {
-            QueryManager manager = getSession().getWorkspace().getQueryManager();
-            String queryString =  "/jcr:root/"+ MAILBOXES_PATH + "//element(*,jamesMailbox:mailbox)[@" + JCRMailbox.NAME_PROPERTY + "='" + name + "'] order by @"+ JCRMailbox.NAME_PROPERTY;
-            QueryResult result = manager.createQuery(queryString, Query.XPATH).execute();
-            NodeIterator it = result.getNodes();
-            long resultSize = it.getSize();
-            if (resultSize == -1) {
-                resultSize = 0;
-                while (it.hasNext()) {
-                    it.nextNode();
-                    resultSize++;
-                }
-            }
-            return resultSize;
-        } catch (PathNotFoundException e) {
-            // not found
-        } catch (RepositoryException e) {
-            throw new StorageException(HumanReadableText.COUNT_FAILED, e);
-        }
-        return 0;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
      * org.apache.james.imap.store.mail.MailboxMapper#delete(org.apache.james
      * .imap.store.mail.model.Mailbox)
      */

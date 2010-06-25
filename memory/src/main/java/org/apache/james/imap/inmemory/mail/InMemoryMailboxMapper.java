@@ -43,20 +43,6 @@ public class InMemoryMailboxMapper implements MailboxMapper<Long> {
 
     /*
      * (non-Javadoc)
-     * @see org.apache.james.imap.store.mail.MailboxMapper#countMailboxesWithName(java.lang.String)
-     */
-    public long countMailboxesWithName(String name) throws StorageException {
-        int total = 0;
-        for (final InMemoryMailbox mailbox:mailboxesById.values()) {
-            if (mailbox.getName().equals(name)) {
-                total++;
-            }
-        }
-        return total;
-    }
-
-    /*
-     * (non-Javadoc)
      * @see org.apache.james.imap.store.mail.MailboxMapper#delete(org.apache.james.imap.store.mail.model.Mailbox)
      */
     public void delete(Mailbox<Long> mailbox) throws StorageException {

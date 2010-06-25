@@ -56,16 +56,6 @@ public interface MailboxMapper<Id> extends TransactionalMapper {
     public abstract void deleteAll() throws StorageException;
 
     /**
-     * Return the count of {@link Mailbox} objects with the given name
-     * 
-     * @param name
-     * @return count
-     * @throws StorageException
-     */
-    public abstract long countMailboxesWithName(String name)
-            throws StorageException;
-
-    /**
      * Return the {@link Mailbox} for the given name
      * 
      * @param name 
