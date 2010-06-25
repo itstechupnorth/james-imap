@@ -46,12 +46,7 @@ public class InMemoryStoreMessageManager extends StoreMessageManager<Long> {
             MailboxSession session) throws MailboxException {
         super(mapperFactory, dispatcher, consumer, mailbox, session);
     }
-
-    @Override
-    protected MailboxMembership<Long> copyMessage(MailboxMembership<Long> originalMessage, long uid, MailboxSession session) {
-        return new SimpleMailboxMembership(getMailboxId(), uid, (SimpleMailboxMembership) originalMessage);
-    }
-
+    
     @Override
     protected Header createHeader(int lineNumber, String name, String value) {
         return new SimpleHeader(name, lineNumber, value);

@@ -125,5 +125,17 @@ public interface MessageMapper<Id> extends TransactionalMapper {
      * @throws StorageException
      */
     public abstract void save(Id mailboxId, MailboxMembership<Id> message) throws StorageException;
+    
+    
+    /**
+     * Copy the given {@link MailboxMembership} to a new mailbox
+     * 
+     * @param mailboxId the id of the mailbox to copy to
+     * @param uid the uid to use for the new mailboxmembership
+     * @param original the original to copy
+     * @return membership. The copied instance
+     * @throws StorageException
+     */
+    public abstract MailboxMembership<Id> copy(Id mailboxId, long uid, MailboxMembership<Id> original) throws StorageException;
 
 }

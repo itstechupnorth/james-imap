@@ -54,12 +54,6 @@ public class JCRMessageManager extends StoreMessageManager<String> {
     }
 
     @Override
-    protected MailboxMembership<String> copyMessage(MailboxMembership<String> originalMessage, long uid, MailboxSession session) throws MailboxException {
-        MailboxMembership<String> newRow = new JCRMessage(getMailboxId(), uid, (JCRMessage) originalMessage, log);
-        return newRow;
-    }
-
-    @Override
     protected Header createHeader(int lineNumber, String name, String value) {
         return new JCRHeader(lineNumber, name, value, log);
     }

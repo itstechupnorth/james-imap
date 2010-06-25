@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.apache.james.imap.inmemory.mail.model.SimpleMailboxMembership;
 import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.MessageRange;
 import org.apache.james.imap.mailbox.SearchQuery;
@@ -182,6 +183,16 @@ public class InMemoryMessageMapper implements MessageMapper<Long> {
 
     public void endRequest() {
         // Do nothing
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.store.mail.MessageMapper#copy(java.lang.Object, long, org.apache.james.imap.store.mail.model.MailboxMembership)
+     */
+    public MailboxMembership<Long> copy(Long mailboxId, long uid, MailboxMembership<Long> original) throws StorageException {
+        SimpleMailboxMembership membership = new SimpleMailboxMembership(mailboxId, uid, (SimpleMailboxMembership) original);
+        save(mailboxId, membership);
+        return membership;
     }
     
 }

@@ -575,5 +575,22 @@ public class JCRMessageMapper extends AbstractJCRMapper implements MessageMapper
         final String jql = queryBuilder.toString();
         return jql;
     }
+    
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.store.mail.MessageMapper#copy(java.lang.Object, long, org.apache.james.imap.store.mail.model.MailboxMembership)
+     */
+    public MailboxMembership<String> copy(String uuid, long uid, MailboxMembership<String> oldmessage) throws StorageException{
+        try {
+            String newMessagePath = getSession().getNodeByIdentifier(uuid).getPath() + NODE_DELIMITER + String.valueOf(uid);
+            getSession().getWorkspace().copy(((JCRMessage)oldmessage).getNode().getPath(), getSession().getNodeByIdentifier(uuid).getPath() + NODE_DELIMITER + String.valueOf(uid));
+            Node node = getSession().getNode(newMessagePath);
+            node.setProperty(JCRMessage.MAILBOX_UUID_PROPERTY, uuid);
+            node.setProperty(JCRMessage.UID_PROPERTY, uid);
+            return new JCRMessage(node,getLogger());
+        } catch (RepositoryException e) {
+            throw new StorageException(HumanReadableText.SAVE_FAILED, e);
+        }
+    }
 
 }

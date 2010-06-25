@@ -25,7 +25,6 @@ import java.util.List;
 
 import javax.mail.Flags;
 
-import org.apache.james.imap.jpa.mail.model.AbstractJPAMailboxMembership;
 import org.apache.james.imap.jpa.mail.model.JPAHeader;
 import org.apache.james.imap.jpa.mail.model.JPAMailboxMembership;
 import org.apache.james.imap.mailbox.MailboxException;
@@ -59,12 +58,7 @@ public class JPAMessageManager extends StoreMessageManager<Long> {
         final MailboxMembership<Long> message = new JPAMailboxMembership(getMailboxId(), uid, internalDate, size, flags, document, bodyStartOctet, jpaHeaders, propertyBuilder);
         return message;
     }
-    
-    @Override
-    protected MailboxMembership<Long> copyMessage(MailboxMembership<Long> originalMessage, long uid, MailboxSession session) throws MailboxException{
-        final MailboxMembership<Long> newRow = new JPAMailboxMembership(getMailboxId(), uid, (AbstractJPAMailboxMembership) originalMessage);
-        return newRow;
-    }
+
     
     @Override
     protected Header createHeader(int lineNumber, String name, String value) {

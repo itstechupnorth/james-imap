@@ -28,7 +28,6 @@ import javax.mail.Flags;
 
 import org.apache.james.imap.jpa.JPAMailboxSessionMapperFactory;
 import org.apache.james.imap.jpa.JPAMessageManager;
-import org.apache.james.imap.jpa.mail.model.AbstractJPAMailboxMembership;
 import org.apache.james.imap.jpa.mail.model.JPAHeader;
 import org.apache.james.imap.jpa.mail.model.openjpa.JPAStreamingMailboxMembership;
 import org.apache.james.imap.mailbox.MailboxException;
@@ -59,15 +58,6 @@ public class OpenJPAMessageManager extends JPAMessageManager {
             Mailbox<Long> mailbox, MailboxSession session, final boolean useStreaming) throws MailboxException {
         super(mapperFactory, dispatcher, consumer, mailbox, session);
         this.useStreaming = useStreaming;
-    }
-
-    @Override
-    protected MailboxMembership<Long> copyMessage(MailboxMembership<Long> originalMessage, long uid, MailboxSession session) throws MailboxException {
-        if (useStreaming) {
-            return  new JPAStreamingMailboxMembership(getMailboxId(), uid, (AbstractJPAMailboxMembership) originalMessage);
-        } else {
-            return super.copyMessage(originalMessage, uid, session);
-        }
     }
 
     @Override

@@ -94,6 +94,10 @@ public abstract class StoreMessageManager<Id> implements org.apache.james.imap.m
         this.messageMapper = mapperFactory.getMessageMapper(session);
     }
 
+    protected MessageMapper<Id> getMessageMapper() {
+        return messageMapper;
+    }
+    
     /**
      * Return the {@link MailboxEventDispatcher} for this Mailbox
      * 
@@ -102,15 +106,6 @@ public abstract class StoreMessageManager<Id> implements org.apache.james.imap.m
     protected MailboxEventDispatcher getDispatcher() {
         return dispatcher;
     }
-    
-    /**
-     * Copy the given {@link MailboxMembership} to a new instance with the given uid
-     * 
-     * @param originalMessage
-     * @param uid
-     * @return membershipCopy
-     */
-    protected abstract MailboxMembership<Id> copyMessage(MailboxMembership<Id> originalMessage, long uid, MailboxSession session) throws MailboxException;
     
     /**
      * Return the underlying {@link Mailbox}
@@ -593,8 +588,7 @@ public abstract class StoreMessageManager<Id> implements org.apache.james.imap.m
                 messageMapper.execute(new TransactionalMapper.Transaction() {
 
                     public void run() throws MailboxException {
-                        final MailboxMembership<Id> newRow = copyMessage(originalMessage, uid, session);
-                        messageMapper.save(getMailboxId(), newRow);
+                        final MailboxMembership<Id> newRow = messageMapper.copy(getMailboxId(), uid, originalMessage);
                         copiedRows.add(newRow);
                     }
                     

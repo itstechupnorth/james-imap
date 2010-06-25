@@ -26,6 +26,10 @@ import javax.persistence.Query;
 
 import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.jpa.JPATransactionalMapper;
+import org.apache.james.imap.jpa.mail.model.AbstractJPAMailboxMembership;
+import org.apache.james.imap.jpa.mail.model.JPAMailboxMembership;
+import org.apache.james.imap.jpa.mail.model.openjpa.JPAStreamingMailboxMembership;
+import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.MessageRange;
 import org.apache.james.imap.mailbox.SearchQuery;
 import org.apache.james.imap.mailbox.StorageException;
@@ -274,6 +278,25 @@ public class JPAMessageMapper extends JPATransactionalMapper implements MessageM
             getEntityManager().persist(message);
         } catch (PersistenceException e) {
             throw new StorageException(HumanReadableText.SAVE_FAILED, e);
+        }
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.store.mail.MessageMapper#copy(java.lang.Object, long, org.apache.james.imap.store.mail.model.MailboxMembership)
+     */
+    public MailboxMembership<Long> copy(Long mailboxId, long uid, MailboxMembership<Long> original) throws StorageException {
+        try {
+            MailboxMembership<Long> copy;
+            if (original instanceof JPAStreamingMailboxMembership) {
+                copy = new JPAStreamingMailboxMembership(mailboxId, uid, (AbstractJPAMailboxMembership) original);
+            } else {
+                copy = new JPAMailboxMembership(mailboxId, uid, (AbstractJPAMailboxMembership)original);
+            }
+            save(mailboxId, copy);
+            return copy;
+        } catch (MailboxException e) {
+            throw new StorageException(e.getKey(),e);
         }
     }
 }
