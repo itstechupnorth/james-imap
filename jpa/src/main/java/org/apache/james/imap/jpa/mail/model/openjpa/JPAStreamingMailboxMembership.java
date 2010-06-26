@@ -64,7 +64,7 @@ public class JPAStreamingMailboxMembership extends AbstractJPAMailboxMembership{
         try {
             this.message = new JPAStreamingMessage(original.getDocument());
         } catch (IOException e) {
-            throw new MailboxException(HumanReadableText.FAILURE_MAILBOX_EXISTS,e);
+            throw new MailboxException(HumanReadableText.FAILURE_MAIL_PARSE,e);
         }
     }
     

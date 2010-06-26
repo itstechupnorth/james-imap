@@ -54,7 +54,7 @@ public class JPAMailboxMembership extends AbstractJPAMailboxMembership{
         try {
             this.message = new JPAMessage(content, size, bodyStartOctet, headers, propertyBuilder);
         } catch (IOException e) {
-            throw new MailboxException(HumanReadableText.FAILURE_MAILBOX_EXISTS,e);
+            throw new MailboxException(HumanReadableText.FAILURE_MAIL_PARSE,e);
         }
     }
 
@@ -63,7 +63,7 @@ public class JPAMailboxMembership extends AbstractJPAMailboxMembership{
         try {
             this.message = new JPAMessage((JPAMessage) original.getDocument());
         } catch (IOException e) {
-            throw new MailboxException(HumanReadableText.FAILURE_MAILBOX_EXISTS,e);
+            throw new MailboxException(HumanReadableText.FAILURE_MAIL_PARSE,e);
         }
     }
     
