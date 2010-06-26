@@ -19,6 +19,7 @@
 package org.apache.james.imap.jpa.mail.model;
 
 import javax.persistence.Basic;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -48,7 +49,7 @@ public class JPAMailbox implements Mailbox<Long> {
     @Id @GeneratedValue private long mailboxId;
     
     /** The value for the name field */
-    @Basic(optional=false) private String name;
+    @Basic(optional=false) @Column(unique = true)  private String name;
 
     /** The value for the uidValidity field */
     @Basic(optional=false) private long uidValidity;

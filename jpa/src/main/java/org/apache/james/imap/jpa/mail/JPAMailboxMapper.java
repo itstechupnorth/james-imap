@@ -21,13 +21,17 @@ package org.apache.james.imap.jpa.mail;
 
 import java.util.List;
 
+import javax.persistence.EntityExistsException;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceException;
+import javax.persistence.RollbackException;
 
 import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.jpa.JPATransactionalMapper;
 import org.apache.james.imap.jpa.mail.model.JPAMailbox;
+import org.apache.james.imap.mailbox.MailboxException;
+import org.apache.james.imap.mailbox.MailboxExistsException;
 import org.apache.james.imap.mailbox.MailboxNotFoundException;
 import org.apache.james.imap.mailbox.StorageException;
 import org.apache.james.imap.store.mail.MailboxMapper;
@@ -40,6 +44,7 @@ public class JPAMailboxMapper extends JPATransactionalMapper implements MailboxM
 
     private static final char SQL_WILDCARD_CHAR = '%';
     private final char delimiter;
+    private String lastMailboxName;
     
     public JPAMailboxMapper(EntityManagerFactory entityManagerFactory, char delimiter) {
         super(entityManagerFactory);
@@ -47,10 +52,31 @@ public class JPAMailboxMapper extends JPATransactionalMapper implements MailboxM
     }
 
     /**
+     * Commit the transaction. If the commit fails due a conflict in a unique key constraint a {@link MailboxExistsException}
+     * will get thrown
+     */
+    @Override
+    protected void commit() throws MailboxException {
+        try {
+            getEntityManager().getTransaction().commit();
+        } catch (PersistenceException e) {
+            if (e instanceof EntityExistsException)
+                throw new MailboxExistsException(lastMailboxName);
+            if (e instanceof RollbackException) {
+                Throwable t = e.getCause();
+                if (t != null && t instanceof EntityExistsException)
+                    throw new MailboxExistsException(lastMailboxName);
+            }
+            throw new StorageException(HumanReadableText.COMMIT_TRANSACTION_FAILED, e);
+        }
+    }
+    
+    /**
      * @see org.apache.james.imap.store.mail.MailboxMapper#save(Mailbox)
      */
     public void save(Mailbox<Long> mailbox) throws StorageException {
         try {
+            this.lastMailboxName = mailbox.getName();
             getEntityManager().persist(mailbox);
         } catch (PersistenceException e) {
             throw new StorageException(HumanReadableText.SAVE_FAILED, e);
