@@ -24,5 +24,10 @@ package org.apache.james.imap.api.process;
  */
 public interface ImapProcessorFactory {
 
+    /**
+     * Build a new instance of a {@link ImapProcessor}
+     * 
+     * @return processor
+     */
     public ImapProcessor buildImapProcessor();
 }

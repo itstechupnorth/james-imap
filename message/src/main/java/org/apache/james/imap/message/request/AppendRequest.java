@@ -24,8 +24,14 @@ import java.util.Date;
 import javax.mail.Flags;
 
 import org.apache.james.imap.api.ImapCommand;
+import org.apache.james.imap.api.message.request.ImapRequest;
 
 
+/**
+ * {@link ImapRequest} which request the append of a message to a mailbox
+ * 
+ *
+ */
 public class AppendRequest extends AbstractImapRequest {
     private final String mailboxName;
 
@@ -44,18 +50,38 @@ public class AppendRequest extends AbstractImapRequest {
         this.message = message;
     }
 
+    /**
+     * Return the Date used for the append
+     * 
+     * @return date
+     */
     public Date getDatetime() {
         return datetime;
     }
 
+    /**
+     * Return Flags for the Message
+     * 
+     * @return flags
+     */
     public Flags getFlags() {
         return flags;
     }
 
+    /**
+     * Return the name of the mailbox we want to append to
+     * 
+     * @return mailboxName
+     */
     public String getMailboxName() {
         return mailboxName;
     }
 
+    /**
+     * Return the message to append as {@link InputStream}
+     * 
+     * @return message
+     */
     public InputStream getMessage() {
         return message;
     }

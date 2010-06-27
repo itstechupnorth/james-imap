@@ -19,7 +19,13 @@
 package org.apache.james.imap.message.request;
 
 import org.apache.james.imap.api.ImapCommand;
+import org.apache.james.imap.api.message.request.ImapRequest;
 
+/**
+ * {@link ImapRequest} which requests the login of a user
+ * 
+ *
+ */
 public class LoginRequest extends AbstractImapRequest {
     private final String userid;
 
@@ -32,10 +38,20 @@ public class LoginRequest extends AbstractImapRequest {
         this.password = password;
     }
 
+    /**
+     * Return the password
+     * 
+     * @return pass
+     */
     public final String getPassword() {
         return password;
     }
 
+    /**
+     * Return the username
+     * 
+     * @return user
+     */
     public final String getUserid() {
         return userid;
     }

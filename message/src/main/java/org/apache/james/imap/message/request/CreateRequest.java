@@ -19,7 +19,13 @@
 package org.apache.james.imap.message.request;
 
 import org.apache.james.imap.api.ImapCommand;
+import org.apache.james.imap.api.message.request.ImapRequest;
 
+/**
+ * {@link ImapRequest} which request the creation of a mailbox
+ * 
+ *
+ */
 public class CreateRequest extends AbstractImapRequest {
     private final String mailboxName;
 
@@ -29,6 +35,11 @@ public class CreateRequest extends AbstractImapRequest {
         this.mailboxName = mailboxName;
     }
 
+    /**
+     * Return the name of the mailbox to create
+     * 
+     * @return mailboxName
+     */
     public final String getMailboxName() {
         return mailboxName;
     }

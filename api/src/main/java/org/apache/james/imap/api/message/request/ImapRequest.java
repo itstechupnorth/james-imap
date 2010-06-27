@@ -21,6 +21,10 @@ package org.apache.james.imap.api.message.request;
 
 import org.apache.james.imap.api.ImapCommand;
 
+/**
+ * The actual Imap request
+ *
+ */
 public interface ImapRequest {
 
     /**

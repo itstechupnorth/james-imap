@@ -20,7 +20,12 @@
 package org.apache.james.imap.message.request;
 
 import org.apache.james.imap.api.ImapCommand;
+import org.apache.james.imap.api.message.request.ImapRequest;
 
+/**
+ * {@link ImapRequest} which selects a Mailbox
+ *
+ */
 public abstract class AbstractMailboxSelectionRequest extends
         AbstractImapRequest {
     private final String mailboxName;
@@ -31,6 +36,11 @@ public abstract class AbstractMailboxSelectionRequest extends
         this.mailboxName = mailboxName;
     }
 
+    /**
+     * Return the mailbox to select
+     * 
+     * @return mailboxName
+     */
     public final String getMailboxName() {
         return mailboxName;
     }

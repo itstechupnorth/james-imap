@@ -27,8 +27,18 @@ import org.apache.james.imap.api.process.ImapSession;
 import org.apache.james.imap.encode.ImapEncoder;
 import org.apache.james.imap.encode.ImapResponseComposer;
 
+/**
+ * {@link ImapEncoder} which should get added to the end of the encoder chain. It will handle the response
+ * to the client about the unknown {@link ImapMessage}
+ * 
+ *
+ */
 public class EndImapEncoder implements ImapEncoder {
 
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.encode.ImapEncoder#encode(org.apache.james.imap.api.ImapMessage, org.apache.james.imap.encode.ImapResponseComposer, org.apache.james.imap.api.process.ImapSession)
+     */
     public void encode(ImapMessage message, ImapResponseComposer composer, ImapSession session)
             throws IOException {
         final Log logger = session.getLog();

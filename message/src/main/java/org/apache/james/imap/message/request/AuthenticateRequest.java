@@ -20,6 +20,7 @@ package org.apache.james.imap.message.request;
 
 import org.apache.james.imap.api.ImapCommand;
 
+
 public class AuthenticateRequest extends AbstractImapRequest {
 
     private final String authType;

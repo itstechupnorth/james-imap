@@ -338,6 +338,10 @@ public class ImapResponseComposerImpl implements ImapConstants, ImapResponseComp
         end();
     }
 
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.encode.ImapResponseComposer#listResponse(java.lang.String, java.util.List, java.lang.String, java.lang.String)
+     */
     public void listResponse(String typeName, List<String> attributes,
             String hierarchyDelimiter, String name) throws IOException {
         untagged();
@@ -362,20 +366,36 @@ public class ImapResponseComposerImpl implements ImapConstants, ImapResponseComp
         end();
     }
 
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.encode.ImapResponseComposer#quote(java.lang.String)
+     */
     public void quote(String message) throws IOException {
         writer.quote(message);
     }
 
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.encode.ImapResponseComposer#closeParen()
+     */
     public ImapResponseComposer closeParen() throws IOException {
         writer.closeParen();
         return this;
     }
 
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.encode.ImapResponseComposer#openParen()
+     */
     public ImapResponseComposer openParen() throws IOException {
         writer.openParen();
         return this;
     }
 
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.encode.ImapResponseComposer#searchResponse(long[])
+     */
     public void searchResponse(long[] ids) throws IOException {
         untagged();
         message(ImapConstants.SEARCH_RESPONSE_NAME);
@@ -393,6 +413,10 @@ public class ImapResponseComposerImpl implements ImapConstants, ImapResponseComp
         }
     }
 
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.encode.ImapResponseComposer#flags(javax.mail.Flags)
+     */
     public void flags(Flags flags) throws IOException {
         message(FLAGS);
         openParen();
@@ -417,11 +441,19 @@ public class ImapResponseComposerImpl implements ImapConstants, ImapResponseComp
         closeParen();
     }
 
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.encode.ImapResponseComposer#closeFetchResponse()
+     */
     public void closeFetchResponse() throws IOException {
         closeParen();
         end();
     }
 
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.encode.ImapResponseComposer#openFetchResponse(long)
+     */
     public void openFetchResponse(long msn) throws IOException {
         untagged();
         message(msn);
@@ -429,10 +461,18 @@ public class ImapResponseComposerImpl implements ImapConstants, ImapResponseComp
         openParen();
     }
 
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.encode.ImapResponseComposer#literal(org.apache.james.imap.message.response.Literal)
+     */
     public void literal(Literal literal) throws IOException {
         writer.literal(literal);
     }
 
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.encode.ImapResponseComposer#address(java.lang.String, java.lang.String, java.lang.String, java.lang.String)
+     */
     public void address(String name, String domainList, String mailbox,
             String host) throws IOException {
         skipNextSpace();
@@ -444,10 +484,18 @@ public class ImapResponseComposerImpl implements ImapConstants, ImapResponseComp
         closeParen();
     }
 
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.encode.ImapResponseComposer#endAddresses()
+     */
     public void endAddresses() throws IOException {
         closeParen();
     }
 
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.encode.ImapResponseComposer#endEnvelope(java.lang.String, java.lang.String)
+     */
     public void endEnvelope(String inReplyTo, String messageId)
             throws IOException {
         nillableQuote(inReplyTo);
@@ -455,14 +503,26 @@ public class ImapResponseComposerImpl implements ImapConstants, ImapResponseComp
         closeParen();
     }
 
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.encode.ImapResponseComposer#nil()
+     */
     public void nil() throws IOException {
         message(NIL);
     }
 
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.encode.ImapResponseComposer#startAddresses()
+     */
     public void startAddresses() throws IOException {
         openParen();
     }
 
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.encode.ImapResponseComposer#startEnvelope(java.lang.String, java.lang.String, boolean)
+     */
     public void startEnvelope(String date, String subject,
             boolean prefixWithName) throws IOException {
         if (prefixWithName) {
@@ -473,6 +533,10 @@ public class ImapResponseComposerImpl implements ImapConstants, ImapResponseComp
         nillableQuote(subject);
     }
 
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.encode.ImapResponseComposer#nillableQuote(java.lang.String)
+     */
     public ImapResponseComposer nillableQuote(String message)
             throws IOException {
         if (message == null) {
@@ -483,6 +547,10 @@ public class ImapResponseComposerImpl implements ImapConstants, ImapResponseComp
         return this;
     }
 
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.encode.ImapResponseComposer#skipNextSpace()
+     */
     public void skipNextSpace() throws IOException {
         writer.skipNextSpace();
     }
@@ -495,6 +563,10 @@ public class ImapResponseComposerImpl implements ImapConstants, ImapResponseComp
         writer.openSquareBracket();
     }
 
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.encode.ImapResponseComposer#nillableComposition(java.lang.String, java.util.List)
+     */
     public ImapResponseComposer nillableComposition(String masterQuote,
             List<String> quotes) throws IOException {
         if (masterQuote == null) {
@@ -508,6 +580,10 @@ public class ImapResponseComposerImpl implements ImapConstants, ImapResponseComp
         return this;
     }
 
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.encode.ImapResponseComposer#nillableQuotes(java.util.List)
+     */
     public ImapResponseComposer nillableQuotes(List<String> quotes)
             throws IOException {
         if (quotes == null || quotes.size() == 0) {
@@ -522,6 +598,10 @@ public class ImapResponseComposerImpl implements ImapConstants, ImapResponseComp
         return this;
     }
 
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.encode.ImapResponseComposer#upperCaseAscii(java.lang.String)
+     */
     public ImapResponseComposer upperCaseAscii(String message)
             throws IOException {
         if (message == null) {
@@ -532,6 +612,10 @@ public class ImapResponseComposerImpl implements ImapConstants, ImapResponseComp
         return this;
     }
 
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.encode.ImapResponseComposer#quoteUpperCaseAscii(java.lang.String)
+     */
     public ImapResponseComposer quoteUpperCaseAscii(String message)
             throws IOException {
         if (message == null) {
@@ -542,6 +626,10 @@ public class ImapResponseComposerImpl implements ImapConstants, ImapResponseComp
         return this;
     }
 
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.encode.ImapResponseComposer#capabilities(java.util.List)
+     */
     public ImapResponseComposer capabilities(List<String> capabilities) throws IOException {
         untagged();
         message(CAPABILITY_COMMAND_NAME);

@@ -19,7 +19,12 @@
 package org.apache.james.imap.message.request;
 
 import org.apache.james.imap.api.ImapCommand;
+import org.apache.james.imap.api.message.request.ImapRequest;
 
+/**
+ * {@link ImapRequest} which requests expunge of deleted messages
+ *
+ */
 public class ExpungeRequest extends AbstractImapRequest {
 
     public ExpungeRequest(final ImapCommand command, final String tag) {

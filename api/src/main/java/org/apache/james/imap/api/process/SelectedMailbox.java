@@ -22,24 +22,74 @@ package org.apache.james.imap.api.process;
 import java.util.Collection;
 
 
+/**
+ * Interface which represent a selected Mailbox during the selected state
+ *
+ */
 public interface SelectedMailbox {
 
+    /**
+     * Deselect the Mailbox
+     */
     public abstract void deselect();
 
+    /**
+     * Return the msg index of the given uid
+     * 
+     * @param uid
+     * @return index
+     */
     public int msn(long uid);
 
-    public abstract long uid(int i);
+    /**
+     * Return the uid of the message for the given index
+     * @param index
+     * @return uid
+     */
+    public abstract long uid(int index);
 
+    /**
+     * Add a recent uid
+     * 
+     * @param uid
+     * @return true if it was successfully
+     */
     public boolean addRecent(long uid);
 
+    /**
+     * Remove a recent uid
+     * @param uid
+     * @return true if it was successfully
+     */
     public boolean removeRecent(long uid);
 
+    /**
+     * Return a Collection of all recent uids
+     * 
+     * @return recentUids
+     */
     public Collection<Long> getRecent();
 
+    /**
+     * Return the count of all recent uids
+     * 
+     * @return recentCount
+     */
     public int recentCount();
 
+    /**
+     * Return the name of the selected Mailbox
+     * 
+     * @return mailboxName
+     */
     public String getName();
 
+    /**
+     * Is the given uid recent ?
+     * 
+     * @param uid
+     * @return true if the given uid is recent
+     */
     public boolean isRecent(long uid);
 
     /**
@@ -50,14 +100,35 @@ public interface SelectedMailbox {
      */
     public boolean isDeletedByOtherSession();
 
+    /**
+     * Is the size of the mailbox changed ?
+     * 
+     * @return true if the mailbox size was changed
+     */
     public boolean isSizeChanged();
 
+    /**
+     * Was the recent uid removed ?
+     * 
+     * @return true if the recent uid for this mailbox was removed
+     */
     public boolean isRecentUidRemoved();
 
+    /**
+     * 
+     */
     public void resetRecentUidRemoved();
 
+    /**
+     * Reset all events
+     */
     public void resetEvents();
 
+    /**
+     * Return a Collection which holds all uids which were expunged
+     * 
+     * @return expungedUids
+     */
     public Collection<Long> expungedUids();
 
     /**
@@ -68,5 +139,10 @@ public interface SelectedMailbox {
      */
     public int remove(Long uid);
 
+    /**
+     * Return a Collection which holds all uids reflecting the Messages which flags were updated
+     * 
+     * @return flagsUids
+     */
     public Collection<Long> flagUpdateUids();
 }
