@@ -30,13 +30,17 @@ import org.apache.james.imap.decode.ImapRequestLineReader;
 import org.apache.james.imap.decode.DecodingException;
 import org.apache.james.imap.decode.base.AbstractImapCommandParser;
 
-class UidCommandParser extends AbstractImapCommandParser implements
+/**
+ * Parse UID commands
+ *
+ */
+public class UidCommandParser extends AbstractImapCommandParser implements
         DelegatingImapCommandParser {
-	
-	private ImapCommandParserFactory parserFactory;
+
+    private ImapCommandParserFactory parserFactory;
 
     public UidCommandParser() {
-    	super(ImapCommand.selectedStateCommand(ImapConstants.UID_COMMAND_NAME));
+        super(ImapCommand.selectedStateCommand(ImapConstants.UID_COMMAND_NAME));
     }
 
     /**
@@ -52,7 +56,12 @@ class UidCommandParser extends AbstractImapCommandParser implements
     public void setParserFactory(ImapCommandParserFactory imapCommandFactory) {
         this.parserFactory = imapCommandFactory;
     }
+    
 
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.decode.base.AbstractImapCommandParser#decode(org.apache.james.imap.api.ImapCommand, org.apache.james.imap.decode.ImapRequestLineReader, java.lang.String, org.apache.commons.logging.Log)
+     */
     protected ImapMessage decode(ImapCommand command,
             ImapRequestLineReader request, String tag, Log logger) throws DecodingException {
         // TODO: check the logic against the specification:

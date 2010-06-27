@@ -34,7 +34,6 @@ import org.apache.james.imap.decode.MessagingImapCommandParser;
  * A factory for ImapCommand instances, provided based on the command name.
  * Command instances are created on demand, when first accessed.
  * 
- * @version $Revision: 109034 $
  */
 public class ImapParserFactory implements
         ImapCommandParserFactory {
@@ -141,7 +140,7 @@ public class ImapParserFactory implements
         try {
             ImapCommandParser cmd = (ImapCommandParser) commandClass
                     .newInstance();
-            initialiseParser(commandClass, cmd);
+            initialiseParser(cmd);
             return cmd;
         } catch (Exception e) {
             // TODO: would probably be better to manage this in protocol
@@ -151,7 +150,7 @@ public class ImapParserFactory implements
         }
     }
 
-    protected void initialiseParser(Class<?> commandClass, ImapCommandParser cmd) {
+    protected void initialiseParser(ImapCommandParser cmd) {
         
         if (cmd instanceof DelegatingImapCommandParser) {
             ((DelegatingImapCommandParser) cmd).setParserFactory(this);

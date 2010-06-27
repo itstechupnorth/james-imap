@@ -29,12 +29,20 @@ import org.apache.james.imap.api.message.IdRange;
 import org.apache.james.imap.decode.ImapRequestLineReader;
 import org.apache.james.imap.decode.DecodingException;
 
-class StoreCommandParser extends AbstractUidCommandParser  {
-	
+/**
+ * Parse STORE commands
+ *
+ */
+public class StoreCommandParser extends AbstractUidCommandParser  {
+
     public StoreCommandParser() {
-    	super(ImapCommand.selectedStateCommand(ImapConstants.STORE_COMMAND_NAME));
+        super(ImapCommand.selectedStateCommand(ImapConstants.STORE_COMMAND_NAME));
     }
 
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.decode.parser.AbstractUidCommandParser#decode(org.apache.james.imap.api.ImapCommand, org.apache.james.imap.decode.ImapRequestLineReader, java.lang.String, boolean, org.apache.commons.logging.Log)
+     */
     protected ImapMessage decode(ImapCommand command,
             ImapRequestLineReader request, String tag, boolean useUids, Log logger)
             throws DecodingException {

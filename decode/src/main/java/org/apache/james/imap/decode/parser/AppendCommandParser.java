@@ -32,7 +32,11 @@ import org.apache.james.imap.decode.DecodingException;
 import org.apache.james.imap.decode.base.AbstractImapCommandParser;
 import org.apache.james.imap.decode.base.EolInputStream;
 
-class AppendCommandParser extends AbstractImapCommandParser {
+/**
+ * Parses APPEND command
+ *
+ */
+public class AppendCommandParser extends AbstractImapCommandParser {
 
     public AppendCommandParser() {
     	super(ImapCommand.authenticatedStateCommand(ImapConstants.APPEND_COMMAND_NAME));
@@ -67,6 +71,10 @@ class AppendCommandParser extends AbstractImapCommandParser {
         }
     }
 
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.decode.base.AbstractImapCommandParser#decode(org.apache.james.imap.api.ImapCommand, org.apache.james.imap.decode.ImapRequestLineReader, java.lang.String, org.apache.commons.logging.Log)
+     */
     protected ImapMessage decode(ImapCommand command,
             ImapRequestLineReader request, String tag, Log logger) throws DecodingException {
         String mailboxName = mailbox(request);

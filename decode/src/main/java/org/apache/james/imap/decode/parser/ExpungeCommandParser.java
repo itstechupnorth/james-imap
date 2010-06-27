@@ -27,12 +27,20 @@ import org.apache.james.imap.decode.ImapRequestLineReader;
 import org.apache.james.imap.decode.DecodingException;
 import org.apache.james.imap.decode.base.AbstractImapCommandParser;
 
-class ExpungeCommandParser extends AbstractImapCommandParser {
+/**
+ * Parse EXPUNGE commands
+ *
+ */
+public class ExpungeCommandParser extends AbstractImapCommandParser {
 
     public ExpungeCommandParser() {
-    	super(ImapCommand.selectedStateCommand(ImapConstants.EXPUNGE_COMMAND_NAME));
+        super(ImapCommand.selectedStateCommand(ImapConstants.EXPUNGE_COMMAND_NAME));
     }
 
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.decode.base.AbstractImapCommandParser#decode(org.apache.james.imap.api.ImapCommand, org.apache.james.imap.decode.ImapRequestLineReader, java.lang.String, org.apache.commons.logging.Log)
+     */
     protected ImapMessage decode(ImapCommand command,
             ImapRequestLineReader request, String tag, Log logger) throws DecodingException {
         endLine(request);

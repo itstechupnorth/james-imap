@@ -26,15 +26,19 @@ import org.apache.james.imap.api.ImapMessage;
 import org.apache.james.imap.decode.ImapRequestLineReader;
 import org.apache.james.imap.decode.DecodingException;
 
-class ListCommandParser extends AbstractUidCommandParser {
+/**
+ * Parse LIST commands
+ *
+ */
+public class ListCommandParser extends AbstractUidCommandParser {
 
-	public ListCommandParser() {
-    	super(ImapCommand.authenticatedStateCommand(ImapConstants.LIST_COMMAND_NAME));
+    public ListCommandParser() {
+        super(ImapCommand.authenticatedStateCommand(ImapConstants.LIST_COMMAND_NAME));
     }
-	
-	protected ListCommandParser(final ImapCommand command) {
-		super(command);
-	}
+
+    protected ListCommandParser(final ImapCommand command) {
+        super(command);
+    }
 
 
     /**
@@ -66,6 +70,10 @@ class ListCommandParser extends AbstractUidCommandParser {
         }
     }
 
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.decode.parser.AbstractUidCommandParser#decode(org.apache.james.imap.api.ImapCommand, org.apache.james.imap.decode.ImapRequestLineReader, java.lang.String, boolean, org.apache.commons.logging.Log)
+     */
     protected ImapMessage decode(ImapCommand command,
             ImapRequestLineReader request, String tag, boolean useUids, Log logger)
             throws DecodingException {

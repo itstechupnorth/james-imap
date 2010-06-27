@@ -27,12 +27,21 @@ import org.apache.james.imap.decode.ImapRequestLineReader;
 import org.apache.james.imap.decode.DecodingException;
 import org.apache.james.imap.decode.base.AbstractImapCommandParser;
 
+/**
+ * 
+ *  Parse CLOSE commands
+ *
+ */
 class CloseCommandParser extends AbstractImapCommandParser  {
     
     public CloseCommandParser() {
     	super(ImapCommand.selectedStateCommand(ImapConstants.CLOSE_COMMAND_NAME));
     }
 
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.decode.base.AbstractImapCommandParser#decode(org.apache.james.imap.api.ImapCommand, org.apache.james.imap.decode.ImapRequestLineReader, java.lang.String, org.apache.commons.logging.Log)
+     */
     protected ImapMessage decode(ImapCommand command,
             ImapRequestLineReader request, String tag, Log logger) throws DecodingException {
         endLine(request);

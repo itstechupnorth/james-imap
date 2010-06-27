@@ -27,12 +27,21 @@ import org.apache.james.imap.decode.ImapRequestLineReader;
 import org.apache.james.imap.decode.DecodingException;
 import org.apache.james.imap.decode.base.AbstractImapCommandParser;
 
-class AuthenticateCommandParser extends AbstractImapCommandParser {
-	
+/**
+ * 
+ * Parses AUTHENTICATE commands
+ *
+ */
+public class AuthenticateCommandParser extends AbstractImapCommandParser {
+
     public AuthenticateCommandParser() {
     	super(ImapCommand.nonAuthenticatedStateCommand(ImapConstants.AUTHENTICATE_COMMAND_NAME));
     }
 
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.decode.base.AbstractImapCommandParser#decode(org.apache.james.imap.api.ImapCommand, org.apache.james.imap.decode.ImapRequestLineReader, java.lang.String, org.apache.commons.logging.Log)
+     */
     protected ImapMessage decode(ImapCommand command,
             ImapRequestLineReader request, String tag, Log logger) throws DecodingException {
         String authType = astring(request);

@@ -33,13 +33,24 @@ import org.apache.james.imap.decode.FetchPartPathDecoder;
 import org.apache.james.imap.decode.ImapRequestLineReader;
 import org.apache.james.imap.decode.DecodingException;
 
-class FetchCommandParser extends AbstractUidCommandParser {
+/**
+ * Parse FETCH commands
+ *
+ */
+public class FetchCommandParser extends AbstractUidCommandParser {
 
-	public FetchCommandParser() {
-    	super(ImapCommand.selectedStateCommand(ImapConstants.FETCH_COMMAND_NAME));
+    public FetchCommandParser() {
+        super(ImapCommand.selectedStateCommand(ImapConstants.FETCH_COMMAND_NAME));
     }
 
-    public FetchData fetchRequest(ImapRequestLineReader request)
+    /**
+     * Create a {@link FetchData} by reading from the {@link ImapRequestLineReader}
+     * 
+     * @param request
+     * @return fetchData
+     * @throws DecodingException
+     */
+    protected FetchData fetchRequest(ImapRequestLineReader request)
             throws DecodingException {
         FetchData fetch = new FetchData();
 
@@ -216,6 +227,10 @@ class FetchCommandParser extends AbstractUidCommandParser {
         return next;
     }
 
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.decode.parser.AbstractUidCommandParser#decode(org.apache.james.imap.api.ImapCommand, org.apache.james.imap.decode.ImapRequestLineReader, java.lang.String, boolean, org.apache.commons.logging.Log)
+     */
     protected ImapMessage decode(ImapCommand command,
             ImapRequestLineReader request, String tag, boolean useUids, Log logger)
             throws DecodingException {

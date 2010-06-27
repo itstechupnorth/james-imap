@@ -22,12 +22,20 @@ import org.apache.james.imap.api.ImapCommand;
 import org.apache.james.imap.api.ImapConstants;
 import org.apache.james.imap.api.ImapMessage;
 
-class LsubCommandParser extends ListCommandParser {
-	
+/**
+ * Parse LSUB commands
+ *
+ */
+public class LsubCommandParser extends ListCommandParser {
+
     public LsubCommandParser() {
-    	super(ImapCommand.authenticatedStateCommand(ImapConstants.LSUB_COMMAND_NAME));
+        super(ImapCommand.authenticatedStateCommand(ImapConstants.LSUB_COMMAND_NAME));
     }
 
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.decode.parser.ListCommandParser#createMessage(org.apache.james.imap.api.ImapCommand, java.lang.String, java.lang.String, java.lang.String)
+     */
     protected ImapMessage createMessage(ImapCommand command,
             String referenceName, String mailboxPattern, String tag) {
         final ImapMessage result = getMessageFactory().createLsubMessage(

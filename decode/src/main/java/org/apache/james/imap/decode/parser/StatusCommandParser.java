@@ -29,10 +29,13 @@ import org.apache.james.imap.decode.ImapRequestLineReader;
 import org.apache.james.imap.decode.DecodingException;
 import org.apache.james.imap.decode.base.AbstractImapCommandParser;
 
-class StatusCommandParser extends AbstractImapCommandParser {
-	
+/**
+ * Parse STATUS commands
+ *
+ */
+public class StatusCommandParser extends AbstractImapCommandParser {
     public StatusCommandParser() {
-    	super(ImapCommand.authenticatedStateCommand(ImapConstants.STATUS_COMMAND_NAME));
+        super(ImapCommand.authenticatedStateCommand(ImapConstants.STATUS_COMMAND_NAME));
     }
 
     StatusDataItems statusDataItems(ImapRequestLineReader request)
@@ -75,6 +78,10 @@ class StatusCommandParser extends AbstractImapCommandParser {
         }
     }
 
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.decode.base.AbstractImapCommandParser#decode(org.apache.james.imap.api.ImapCommand, org.apache.james.imap.decode.ImapRequestLineReader, java.lang.String, org.apache.commons.logging.Log)
+     */
     protected ImapMessage decode(ImapCommand command,
             ImapRequestLineReader request, String tag, Log logger) throws DecodingException {
         final String mailboxName = mailbox(request);

@@ -42,13 +42,17 @@ import org.apache.james.imap.api.message.response.StatusResponse.ResponseCode;
 import org.apache.james.imap.decode.ImapRequestLineReader;
 import org.apache.james.imap.decode.DecodingException;
 
-class SearchCommandParser extends AbstractUidCommandParser {
-	
+/**
+ * Parse SEARCH commands
+ *
+ */
+public class SearchCommandParser extends AbstractUidCommandParser {
+
     /** Lazy loaded */
     private Collection<String> charsetNames;
 
     public SearchCommandParser() {
-    	super(ImapCommand.selectedStateCommand(ImapConstants.SEARCH_COMMAND_NAME));
+        super(ImapCommand.selectedStateCommand(ImapConstants.SEARCH_COMMAND_NAME));
     }
 
     /**
@@ -61,7 +65,7 @@ class SearchCommandParser extends AbstractUidCommandParser {
      * @param isFirstToken
      *            true when this is the first token read, false otherwise
      */
-    public SearchKey searchKey(ImapRequestLineReader request, Charset charset,
+    protected SearchKey searchKey(ImapRequestLineReader request, Charset charset,
             boolean isFirstToken) throws DecodingException,
             IllegalCharsetNameException, UnsupportedCharsetException {
         final char next = request.nextChar();
