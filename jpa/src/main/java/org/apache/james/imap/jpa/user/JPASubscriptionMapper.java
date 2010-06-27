@@ -39,11 +39,12 @@ public class JPASubscriptionMapper extends JPATransactionalMapper implements Sub
         super(entityManagerFactory);
     }
 
-    /**
-     * @throws SubscriptionException 
-     * @see org.apache.james.imap.store.user.SubscriptionMapper#findFindMailboxSubscriptionForUser(java.lang.String, java.lang.String)
+    
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.store.user.SubscriptionMapper#findMailboxSubscriptionForUser(java.lang.String, java.lang.String)
      */
-    public Subscription findFindMailboxSubscriptionForUser(final String user, final String mailbox) throws SubscriptionException {
+    public Subscription findMailboxSubscriptionForUser(final String user, final String mailbox) throws SubscriptionException {
         try {
             return (Subscription) getEntityManager().createNamedQuery("findFindMailboxSubscriptionForUser")
             .setParameter("userParam", user).setParameter("mailboxParam", mailbox).getSingleResult();

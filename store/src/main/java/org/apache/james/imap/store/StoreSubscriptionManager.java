@@ -52,7 +52,7 @@ public abstract class StoreSubscriptionManager<Id> implements Subscriber {
             mapper.execute(new TransactionalMapper.Transaction() {
 
                 public void run() throws MailboxException {
-                    final Subscription subscription = mapper.findFindMailboxSubscriptionForUser(session.getUser().getUserName(), mailbox);
+                    final Subscription subscription = mapper.findMailboxSubscriptionForUser(session.getUser().getUserName(), mailbox);
                     if (subscription == null) {
                         final Subscription newSubscription = createSubscription(session, mailbox);
                         mapper.save(newSubscription);
@@ -98,7 +98,7 @@ public abstract class StoreSubscriptionManager<Id> implements Subscriber {
             mapper.execute(new TransactionalMapper.Transaction() {
 
                 public void run() throws MailboxException {
-                    final Subscription subscription = mapper.findFindMailboxSubscriptionForUser(session.getUser().getUserName(), mailbox);
+                    final Subscription subscription = mapper.findMailboxSubscriptionForUser(session.getUser().getUserName(), mailbox);
                     if (subscription != null) {
                         mapper.delete(subscription);
                     }

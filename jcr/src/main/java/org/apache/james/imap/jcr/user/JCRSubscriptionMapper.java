@@ -90,13 +90,13 @@ public class JCRSubscriptionMapper extends AbstractJCRMapper implements Subscrip
 
     }
 
+
+
     /*
      * (non-Javadoc)
-     * 
-     * @see org.apache.james.imap.store.user.SubscriptionMapper#
-     * findFindMailboxSubscriptionForUser(java.lang.String, java.lang.String)
+     * @see org.apache.james.imap.store.user.SubscriptionMapper#findMailboxSubscriptionForUser(java.lang.String, java.lang.String)
      */
-    public Subscription findFindMailboxSubscriptionForUser(String user, String mailbox) throws SubscriptionException {
+    public Subscription findMailboxSubscriptionForUser(String user, String mailbox) throws SubscriptionException {
         try {
             String queryString = "/jcr:root/" + MAILBOXES_PATH + "//element(*,jamesMailbox:user)[@" + JCRSubscription.USERNAME_PROPERTY + "='" + user + "'] AND [@" + JCRSubscription.MAILBOXES_PROPERTY +"='" + mailbox + "']";
 
@@ -168,7 +168,7 @@ public class JCRSubscriptionMapper extends AbstractJCRMapper implements Subscrip
 
             Node node = null;
          
-            JCRSubscription sub = (JCRSubscription) findFindMailboxSubscriptionForUser(username, mailbox);
+            JCRSubscription sub = (JCRSubscription) findMailboxSubscriptionForUser(username, mailbox);
             
             // its a new subscription
             if (sub == null) {

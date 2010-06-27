@@ -133,12 +133,6 @@ public interface MimeDescriptor extends Headers {
      */
     public MimeDescriptor embeddedMessage();
 
-    /**
-     * Gets headers.
-     * 
-     * @return <code>Header</code> <code>Iterator</code>, not null
-     */
-    public Iterator<Header> headers();
 
     /**
      * Gets MIME body parameters parsed from <code>Content-Type</code>.

@@ -37,6 +37,10 @@ public class InMemorySubscriptionMapper implements SubscriptionMapper {
         subscriptionsByUser = new ConcurrentHashMap<String, List<Subscription>>(INITIAL_SIZE);
     }
 
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.store.user.SubscriptionMapper#delete(org.apache.james.imap.store.user.model.Subscription)
+     */
     public synchronized void delete(Subscription subscription) {
         final String user = subscription.getUser();
         final List<Subscription> subscriptions = subscriptionsByUser.get(user);
@@ -45,7 +49,11 @@ public class InMemorySubscriptionMapper implements SubscriptionMapper {
         }
     }
 
-    public Subscription findFindMailboxSubscriptionForUser(String user, String mailbox) {
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.store.user.SubscriptionMapper#findMailboxSubscriptionForUser(java.lang.String, java.lang.String)
+     */
+    public Subscription findMailboxSubscriptionForUser(String user, String mailbox) {
         final List<Subscription> subscriptions = subscriptionsByUser.get(user);
         Subscription result = null;
         if (subscriptions != null) {
@@ -59,6 +67,10 @@ public class InMemorySubscriptionMapper implements SubscriptionMapper {
         return result;
     }
 
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.store.user.SubscriptionMapper#findSubscriptionsForUser(java.lang.String)
+     */
     @SuppressWarnings("unchecked")
     public List<Subscription> findSubscriptionsForUser(String user) {
         final List<Subscription> subcriptions = subscriptionsByUser.get(user);
@@ -72,6 +84,10 @@ public class InMemorySubscriptionMapper implements SubscriptionMapper {
         return results;
     }
 
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.store.user.SubscriptionMapper#save(org.apache.james.imap.store.user.model.Subscription)
+     */
     public synchronized void save(Subscription subscription) {
         final String user = subscription.getUser();
         final List<Subscription> subscriptions = subscriptionsByUser.get(user);
@@ -84,6 +100,10 @@ public class InMemorySubscriptionMapper implements SubscriptionMapper {
         }
     }
 
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.store.transaction.TransactionalMapper#execute(org.apache.james.imap.store.transaction.TransactionalMapper.Transaction)
+     */
     public void execute(Transaction transaction) throws MailboxException {
         transaction.run();
     }
@@ -92,8 +112,11 @@ public class InMemorySubscriptionMapper implements SubscriptionMapper {
         subscriptionsByUser.clear();
     }
 
+    /**
+     * Do nothing
+     */
     public void endRequest() {
-        // TODO Auto-generated method stub
+        // nothing todo
         
     }
 

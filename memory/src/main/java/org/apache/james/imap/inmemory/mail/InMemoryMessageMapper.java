@@ -64,6 +64,10 @@ public class InMemoryMessageMapper implements MessageMapper<Long> {
         getMembershipByUidForMailbox(mailboxId).remove(message.getUid());
     }
 
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.store.mail.MessageMapper#findInMailbox(java.lang.Object, org.apache.james.imap.mailbox.MessageRange)
+     */
     @SuppressWarnings("unchecked")
     public List<MailboxMembership<Long>> findInMailbox(Long mailboxId, MessageRange set) throws StorageException {
         final List<MailboxMembership<Long>> results;
@@ -181,6 +185,9 @@ public class InMemoryMessageMapper implements MessageMapper<Long> {
         mailboxByUid.clear();
     }
 
+    /**
+     * Do nothing
+     */
     public void endRequest() {
         // Do nothing
     }

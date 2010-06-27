@@ -112,9 +112,11 @@ public class InMemoryMailboxMapper implements MailboxMapper<Long> {
         transaction.run();
     }
 
+    /**
+     * Do nothing
+     */
     public void endRequest() {
-        // TODO Auto-generated method stub
-        
+        // Do nothing
     }
 
     /*

@@ -38,7 +38,7 @@ public interface SubscriptionMapper extends TransactionalMapper{
      * @return <code>Subscription</code>, 
      * or null when the user is not subscribed to the given mailbox
      */
-    public abstract Subscription findFindMailboxSubscriptionForUser(
+    public abstract Subscription findMailboxSubscriptionForUser(
             final String user, final String mailbox) throws SubscriptionException;
 
     /**

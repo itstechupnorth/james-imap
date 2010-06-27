@@ -26,6 +26,7 @@ public interface Authenticator {
 
     /**
      * Is the given user authentic?
+     * 
      * @param userid not null
      * @param passwd not null
      * @return true when the user is authentic,

@@ -119,6 +119,11 @@ public interface MailboxSession {
     public Collection<Namespace> getSharedSpaces();
     
     
+    /**
+     * Return the stored attributes for this {@link MailboxSession}.
+     * 
+     * @return attributes
+     */
     public Map<Object,Object> getAttributes();
     
     /**
