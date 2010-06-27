@@ -455,7 +455,7 @@ public abstract class StoreMailboxManager<Id> extends AbstractLogEnabled impleme
      * @see org.apache.james.imap.mailbox.MailboxManager#getDelimiter()
      */
     public char getDelimiter() {
-    	return delimiter;
+        return delimiter;
     }
 
     /*

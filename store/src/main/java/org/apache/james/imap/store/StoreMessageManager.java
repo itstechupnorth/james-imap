@@ -269,7 +269,7 @@ public abstract class StoreMessageManager<Id> implements org.apache.james.imap.m
             messageMapper.execute(new TransactionalMapper.Transaction() {
                 
                 public void run() throws MailboxException {
-                	messageMapper.save(getMailboxId(), message);
+                    messageMapper.save(getMailboxId(), message);
                 }
             });
            
