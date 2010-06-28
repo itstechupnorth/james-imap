@@ -114,5 +114,13 @@ public interface ImapSession {
      */
     public boolean startTLS();
     
+    /**
+     * Support startTLS ? 
+     * 
+     * @return true if startTLS is supported
+     */
+    public boolean supportStartTLS();
+    
+    
     
 }

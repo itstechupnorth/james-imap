@@ -153,4 +153,9 @@ public class ImapSessionImpl implements ImapSession, ImapConstants {
     public boolean startTLS() {
         return false;
     }
+
+
+    public boolean supportStartTLS() {
+        return false;
+    }
 }

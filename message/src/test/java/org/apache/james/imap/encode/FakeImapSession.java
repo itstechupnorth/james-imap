@@ -98,4 +98,8 @@ public class FakeImapSession implements ImapSession {
         return false;
     }
 
+    public boolean supportStartTLS() {
+        return false;
+    }
+
 }
