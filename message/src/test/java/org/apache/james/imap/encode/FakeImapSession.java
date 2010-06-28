@@ -93,4 +93,9 @@ public class FakeImapSession implements ImapSession {
         return LOG;
     }
 
+    
+    public boolean startTLS() {
+        return false;
+    }
+
 }

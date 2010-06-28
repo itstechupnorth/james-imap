@@ -31,6 +31,11 @@ import org.apache.james.imap.decode.ImapRequestLineReader;
 import org.apache.james.imap.decode.DecodingException;
 import org.apache.james.imap.decode.base.AbstractImapCommandParser;
 
+/**
+ * {@link ImapDecoder} implementation which parse the data via lookup the right {@link ImapCommandParser} via an {@link ImapCommandParserFactory}. The 
+ * response will get generated via the {@link ImapMessageFactory}.
+ *
+ */
 public class DefaultImapDecoder implements ImapDecoder {
 
     private final ImapMessageFactory messageFactory;
@@ -43,6 +48,10 @@ public class DefaultImapDecoder implements ImapDecoder {
         this.imapCommands = imapCommands;
     }
     
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.decode.ImapDecoder#decode(org.apache.james.imap.decode.ImapRequestLineReader, org.apache.james.imap.api.process.ImapSession)
+     */
     public ImapMessage decode(ImapRequestLineReader request, ImapSession session) {
         ImapMessage message;
         final Log logger = session.getLog();
@@ -62,6 +71,7 @@ public class DefaultImapDecoder implements ImapDecoder {
         return message;
     }
 
+    
     private ImapMessage decodeCommandTagged(
             final ImapRequestLineReader request, final Log logger,
             final String tag, final ImapSession session) {

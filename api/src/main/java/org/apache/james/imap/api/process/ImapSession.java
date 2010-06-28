@@ -106,4 +106,13 @@ public interface ImapSession {
      *            unvalued
      */
     public void setAttribute(String key, Object value);
+    
+    /**
+     * Start TLS encryption of the session
+     * 
+     * @return true if the encryption of the session was successfully
+     */
+    public boolean startTLS();
+    
+    
 }

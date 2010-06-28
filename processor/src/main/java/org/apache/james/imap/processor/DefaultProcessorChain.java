@@ -38,6 +38,13 @@ public class DefaultProcessorChain {
             final ImapProcessor chainEndProcessor,
             final MailboxManager mailboxManager,
             final StatusResponseFactory statusResponseFactory) {
+        return createStartTLSSupportingChain(chainEndProcessor, mailboxManager, statusResponseFactory, false);
+    }
+    
+    public static final ImapProcessor createStartTLSSupportingChain(
+            final ImapProcessor chainEndProcessor,
+            final MailboxManager mailboxManager,
+            final StatusResponseFactory statusResponseFactory, final boolean supportStartTLS) {
         final SystemMessageProcessor systemProcessor = new SystemMessageProcessor(chainEndProcessor, mailboxManager);
         final LogoutProcessor logoutProcessor = new LogoutProcessor(
                 systemProcessor, mailboxManager, statusResponseFactory);
@@ -46,6 +53,9 @@ public class DefaultProcessorChain {
         capabilities.add(SUPPORTS_LITERAL_PLUS);
         capabilities.add(SUPPORTS_NAMESPACES);
         capabilities.add(SUPPORTS_RFC3348);
+        if (supportStartTLS) {
+            capabilities.add(STARTTLS);
+        }
         final CapabilityProcessor capabilityProcessor = new CapabilityProcessor(
                 logoutProcessor, mailboxManager, statusResponseFactory, capabilities);
         final CheckProcessor checkProcessor = new CheckProcessor(
@@ -93,8 +103,14 @@ public class DefaultProcessorChain {
                 searchProcessor, mailboxManager, statusResponseFactory);
         final NamespaceProcessor namespaceProcessor = new NamespaceProcessor(
                 selectProcessor, mailboxManager, statusResponseFactory);
-        final ImapProcessor result = new FetchProcessor(namespaceProcessor,
+        final ImapProcessor fetchProcessor = new FetchProcessor(namespaceProcessor,
                 mailboxManager, statusResponseFactory);
-        return result;
+        if (supportStartTLS) {
+            final ImapProcessor startTLSProcessor = new StartTLSProcessor(fetchProcessor, statusResponseFactory);
+            return startTLSProcessor;
+        } else {
+            return fetchProcessor;
+        }
+        
     }
 }

@@ -128,4 +128,6 @@ public interface ImapMessageFactory {
             final String mailboxName, final String tag);
     
     public ImapMessage createNamespaceMessage(final ImapCommand command, final String tag);
+    
+    public ImapMessage createStartTLSMessage(final ImapCommand command, final String tag);
 }

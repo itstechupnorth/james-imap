@@ -274,7 +274,15 @@ public class BaseImap4Rev1MessageFactory implements ImapMessageFactory {
      * (non-Javadoc)
      * @see org.apache.james.imap.api.ImapMessageFactory#createNamespaceMessage(org.apache.james.imap.api.ImapCommand, java.lang.String)
      */
-	public ImapMessage createNamespaceMessage(ImapCommand command, String tag) {
-		return new NamespaceRequest(command, tag);
-	}
+    public ImapMessage createNamespaceMessage(ImapCommand command, String tag) {
+        return new NamespaceRequest(command, tag);
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.api.ImapMessageFactory#createStartTLSMessage(org.apache.james.imap.api.ImapCommand, java.lang.String)
+     */
+    public ImapMessage createStartTLSMessage(ImapCommand command, String tag) {
+        return new StartTLSRequest(tag, command);
+    }
 }

@@ -59,6 +59,10 @@ public class DefaultImapProcessorFactory implements ImapProcessorFactory {
         this.mailboxManager = mailboxManager;
     }
 
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.api.process.ImapProcessorFactory#buildImapProcessor()
+     */
     public ImapProcessor buildImapProcessor() {
         return createDefaultProcessor(mailboxManager);
     }

@@ -16,41 +16,43 @@
  * specific language governing permissions and limitations      *
  * under the License.                                           *
  ****************************************************************/
-package org.apache.james.imap.encode;
-
-import java.io.IOException;
+package org.apache.james.imap.processor;
 
 import org.apache.james.imap.api.ImapMessage;
+import org.apache.james.imap.api.display.HumanReadableText;
+import org.apache.james.imap.api.message.request.ImapRequest;
+import org.apache.james.imap.api.message.response.StatusResponseFactory;
+import org.apache.james.imap.api.process.ImapProcessor;
 import org.apache.james.imap.api.process.ImapSession;
-import org.apache.james.imap.encode.base.AbstractChainedImapEncoder;
-import org.apache.james.imap.message.response.CapabilityResponse;
+import org.apache.james.imap.message.request.StartTLSRequest;
+import org.apache.james.imap.processor.base.AbstractChainedProcessor;
 
 /**
- * Encodes <code>CAPABILITY</code> response.
- * See <code>7.2.1</code> of 
- * <a href='http://james.apache.org/server/rfclist/imap4/rfc2060.txt' rel='tag'>RFC2060</a>.
+ *
+ * Processing STARTLS commands
+ *
  */
-public class CapabilityResponseEncoder extends AbstractChainedImapEncoder {
+public class StartTLSProcessor extends AbstractChainedProcessor{
 
-    public CapabilityResponseEncoder(ImapEncoder next) {
+    private StatusResponseFactory factory;
+
+    public StartTLSProcessor(final ImapProcessor next, final StatusResponseFactory factory) {
         super(next);
+        this.factory = factory;
     }
 
-    /*
-     * (non-Javadoc)
-     * @see org.apache.james.imap.encode.base.AbstractChainedImapEncoder#doEncode(org.apache.james.imap.api.ImapMessage, org.apache.james.imap.encode.ImapResponseComposer, org.apache.james.imap.api.process.ImapSession)
-     */
-    protected void doEncode(ImapMessage acceptableMessage,
-            ImapResponseComposer composer, ImapSession session) throws IOException {
-        final CapabilityResponse response = (CapabilityResponse) acceptableMessage;
-        composer.capabilities(response.getCapabilities());
+    @Override
+    protected void doProcess(ImapMessage acceptableMessage,
+            Responder responder, ImapSession session) {
+        ImapRequest request = (ImapRequest) acceptableMessage;       
+        responder.respond(factory.taggedOk(request.getTag(), request.getCommand(), HumanReadableText.STARTTLS));
+        session.startTLS();
+
     }
 
-    /*
-     * (non-Javadoc)
-     * @see org.apache.james.imap.encode.base.AbstractChainedImapEncoder#isAcceptable(org.apache.james.imap.api.ImapMessage)
-     */
+    @Override
     protected boolean isAcceptable(ImapMessage message) {
-        return (message instanceof CapabilityResponse);
+        return message instanceof StartTLSRequest;
     }
+
 }

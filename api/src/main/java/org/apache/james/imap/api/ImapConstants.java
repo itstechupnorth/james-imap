@@ -242,4 +242,6 @@ public interface ImapConstants {
     public static final String FETCH_BODY_STRUCTURE = "BODYSTRUCTURE";
 
     public static final String FETCH_BODY = "BODY";
+    
+    public static final String STARTTLS = "STARTTLS";
 }
