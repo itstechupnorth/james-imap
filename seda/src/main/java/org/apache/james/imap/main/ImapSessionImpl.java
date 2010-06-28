@@ -30,7 +30,8 @@ import org.apache.james.imap.api.process.ImapSession;
 import org.apache.james.imap.api.process.SelectedMailbox;
 
 /**
- * Implements a session.
+ * Implements a session which not support STARTTLS. If you want to support STARTTLS you need to override
+ * the {@link #supportStartTLS()} and the {@link #startTLS()} method
  */
 public class ImapSessionImpl implements ImapSession, ImapConstants {
     private static final Log IMAP_LOG = LogFactory.getLog("org.apache.james.imap");
@@ -155,6 +156,11 @@ public class ImapSessionImpl implements ImapSession, ImapConstants {
     }
 
 
+    /**
+     * This implementation does not support STARTTLS. 
+     * 
+     * @return false
+     */
     public boolean supportStartTLS() {
         return false;
     }
