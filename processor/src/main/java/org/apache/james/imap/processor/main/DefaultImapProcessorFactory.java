@@ -38,8 +38,8 @@ public class DefaultImapProcessorFactory implements ImapProcessorFactory {
         final UnknownRequestProcessor unknownRequestImapProcessor = new UnknownRequestProcessor(
                 statusResponseFactory);
         final ImapProcessor imap4rev1Chain = DefaultProcessorChain
-                .createDefaultChain(unknownRequestImapProcessor,
-                        mailboxManager, statusResponseFactory);
+                .createStartTLSSupportingChain(unknownRequestImapProcessor,
+                        mailboxManager, statusResponseFactory, true);
         final ImapProcessor result = new ImapResponseMessageProcessor(
                 imap4rev1Chain);
         return result;
