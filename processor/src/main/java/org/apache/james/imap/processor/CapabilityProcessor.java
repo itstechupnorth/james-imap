@@ -19,9 +19,11 @@
 
 package org.apache.james.imap.processor;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.james.imap.api.ImapCommand;
+import org.apache.james.imap.api.ImapConstants;
 import org.apache.james.imap.api.ImapMessage;
 import org.apache.james.imap.api.message.request.ImapRequest;
 import org.apache.james.imap.api.message.response.ImapResponseMessage;
@@ -58,7 +60,11 @@ public class CapabilityProcessor extends AbstractMailboxProcessor {
 
     private ImapResponseMessage doProcess(CapabilityRequest request,
             ImapSession session, String tag, ImapCommand command) {
-        final CapabilityResponse result = new CapabilityResponse(capabilities);
+        List<String> caps = new ArrayList<String>(capabilities);
+        if (session.supportStartTLS()) {
+            caps.add(ImapConstants.STARTTLS);
+        }
+        final CapabilityResponse result = new CapabilityResponse(caps);
         return result;
     }
 }

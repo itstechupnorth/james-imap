@@ -121,6 +121,7 @@ public class ImapParserFactory implements
                 StoreCommandParser.class);
         _imapCommands.put(ImapConstants.UID_COMMAND_NAME,
                 UidCommandParser.class);
+        _imapCommands.put(ImapConstants.STARTTLS, StartTLSCommandParser.class);
     }
 
     /**

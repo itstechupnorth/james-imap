@@ -44,9 +44,13 @@ public class StartTLSProcessor extends AbstractChainedProcessor{
     @Override
     protected void doProcess(ImapMessage acceptableMessage,
             Responder responder, ImapSession session) {
-        ImapRequest request = (ImapRequest) acceptableMessage;       
-        responder.respond(factory.taggedOk(request.getTag(), request.getCommand(), HumanReadableText.STARTTLS));
-        session.startTLS();
+        ImapRequest request = (ImapRequest) acceptableMessage;     
+        if (session.supportStartTLS()) {
+            responder.respond(factory.taggedOk(request.getTag(), request.getCommand(), HumanReadableText.STARTTLS));
+            session.startTLS();
+        } else {
+            responder.respond(factory.taggedBad(request.getTag(), request.getCommand(), HumanReadableText.INVALID_COMMAND));
+        }
 
     }
 
