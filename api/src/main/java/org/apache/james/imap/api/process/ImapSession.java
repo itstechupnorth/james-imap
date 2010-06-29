@@ -108,7 +108,8 @@ public interface ImapSession {
     public void setAttribute(String key, Object value);
     
     /**
-     * Start TLS encryption of the session
+     * Start TLS encryption of the session after the next response was written. So you must make sure 
+     * the next response will get send in clear text
      * 
      * @return true if the encryption of the session was successfully
      */

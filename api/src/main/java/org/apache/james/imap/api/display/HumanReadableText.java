@@ -29,7 +29,7 @@ import org.apache.james.imap.api.ImapConstants;
 public class HumanReadableText {
 
     public static final HumanReadableText STARTTLS = new HumanReadableText(
-            "org.apache.james.imap.STARTTLS", "OK Begin TLS negotiation now.");
+            "org.apache.james.imap.STARTTLS", "Begin TLS negotiation now.");
     
     public static final HumanReadableText SELECT = new HumanReadableText(
             "org.apache.james.imap.SELECT", "completed.");
