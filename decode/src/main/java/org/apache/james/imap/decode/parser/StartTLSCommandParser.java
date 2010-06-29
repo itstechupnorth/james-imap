@@ -38,6 +38,7 @@ public class StartTLSCommandParser extends AbstractImapCommandParser{
 
     @Override
     protected ImapMessage decode(ImapCommand command, ImapRequestLineReader request, String tag, Log logger) throws DecodingException {
+        endLine(request);
         return getMessageFactory().createStartTLSMessage(command, tag);
     }
 
