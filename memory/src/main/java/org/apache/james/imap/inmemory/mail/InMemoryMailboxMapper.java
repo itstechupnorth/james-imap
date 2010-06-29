@@ -63,7 +63,12 @@ public class InMemoryMailboxMapper implements MailboxMapper<Long> {
      * @see org.apache.james.imap.store.mail.MailboxMapper#findMailboxById(java.lang.Object)
      */
     public Mailbox<Long> findMailboxById(Long mailboxId) throws StorageException, MailboxNotFoundException {
-        return mailboxesById.get(mailboxesById);
+        Mailbox<Long> mailbox = mailboxesById.get(mailboxesById);
+        if (mailbox == null) {
+            throw new MailboxNotFoundException(mailboxId);
+        } else {
+            return mailbox;
+        }
     }
 
     /*
@@ -78,7 +83,11 @@ public class InMemoryMailboxMapper implements MailboxMapper<Long> {
                 break;
             }
         }
-        return result;
+        if (result == null) {
+            throw new MailboxNotFoundException(name);
+        } else {
+            return result;
+        }
     }
 
     /*

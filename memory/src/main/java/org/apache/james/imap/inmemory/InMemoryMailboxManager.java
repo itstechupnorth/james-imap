@@ -30,9 +30,7 @@ import org.apache.james.imap.store.StoreMailboxManager;
 import org.apache.james.imap.store.StoreMessageManager;
 import org.apache.james.imap.store.Subscriber;
 import org.apache.james.imap.store.UidConsumer;
-import org.apache.james.imap.store.mail.MailboxMapper;
 import org.apache.james.imap.store.mail.model.Mailbox;
-import org.apache.james.imap.store.transaction.TransactionalMapper;
 
 public class InMemoryMailboxManager extends StoreMailboxManager<Long> {
 
@@ -70,10 +68,6 @@ public class InMemoryMailboxManager extends StoreMailboxManager<Long> {
         ((InMemoryMailboxSessionMapperFactory) mailboxSessionMapperFactory).deleteAll();
     }
 
-    public long reserveNextUid(Mailbox<Long> mailbox, MailboxSession session) throws MailboxException {
-        // TODO Auto-generated method stub
-        return 0;
-    }
 
     
 }
