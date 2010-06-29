@@ -72,6 +72,9 @@ public class MessageRange {
         if (to == Long.MAX_VALUE || to < from) {
             to = NOT_A_UID;
             result = from(from);
+        } else if (from == to){ 
+            // from and to is the same so no need to construct a real range
+            result = one(from);
         } else {
             result = new MessageRange(Type.RANGE, from, to);
         }
