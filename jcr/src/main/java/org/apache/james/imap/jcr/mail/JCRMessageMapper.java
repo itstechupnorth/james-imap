@@ -172,7 +172,7 @@ public class JCRMessageMapper extends AbstractJCRMapper implements MessageMapper
                     results = findMessagesInMailboxAfterUID(uuid, from);
                     break;
                 case ONE:
-                    results = findMessagesInMailboxWithUID(uuid, from);
+                    results = findMessageInMailboxWithUID(uuid, from);
                     break;
                 case RANGE:
                     results = findMessagesInMailboxBetweenUIDs(uuid, from, to);
@@ -198,13 +198,14 @@ public class JCRMessageMapper extends AbstractJCRMapper implements MessageMapper
         return list;
     }
 
-    private List<MailboxMembership<String>> findMessagesInMailboxWithUID(String uuid, long uid) throws RepositoryException  {
+    private List<MailboxMembership<String>> findMessageInMailboxWithUID(String uuid, long uid) throws RepositoryException  {
         List<MailboxMembership<String>> list = new ArrayList<MailboxMembership<String>>();
-        String queryString = "/jcr:root" + getMailboxPath(uuid) + "//element(*,jamesMailbox:message)[@" + JCRMessage.UID_PROPERTY + "=" + uid + "] order by @" + JCRMessage.UID_PROPERTY;
+        String queryString = "/jcr:root" + getMailboxPath(uuid) + "//element(*,jamesMailbox:message)[@" + JCRMessage.UID_PROPERTY + "=" + uid + "]";
 
         QueryManager manager = getSession().getWorkspace().getQueryManager();
-        QueryResult result = manager.createQuery(queryString, Query.XPATH).execute();
-
+        Query query = manager.createQuery(queryString, Query.XPATH);
+        query.setLimit(1);
+        QueryResult result = query.execute();
         NodeIterator iterator = result.getNodes();
         while (iterator.hasNext()) {
             list.add(new JCRMessage(iterator.nextNode(), getLogger()));
@@ -256,11 +257,13 @@ public class JCRMessageMapper extends AbstractJCRMapper implements MessageMapper
         return list;
     }
 
-    private List<MailboxMembership<String>> findDeletedMessagesInMailboxWithUID(String uuid, long uid) throws RepositoryException  {
+    private List<MailboxMembership<String>> findDeletedMessageInMailboxWithUID(String uuid, long uid) throws RepositoryException  {
         List<MailboxMembership<String>> list = new ArrayList<MailboxMembership<String>>();
-        String queryString = "/jcr:root" + getMailboxPath(uuid) + "//element(*,jamesMailbox:message)[@" + JCRMessage.UID_PROPERTY + "=" + uid + " and @" + JCRMessage.DELETED_PROPERTY+ "='true']  order by @" + JCRMessage.UID_PROPERTY;
+        String queryString = "/jcr:root" + getMailboxPath(uuid) + "//element(*,jamesMailbox:message)[@" + JCRMessage.UID_PROPERTY + "=" + uid + " and @" + JCRMessage.DELETED_PROPERTY+ "='true']";
         QueryManager manager = getSession().getWorkspace().getQueryManager();
-        QueryResult result = manager.createQuery(queryString, Query.XPATH).execute();
+        Query query = manager.createQuery(queryString, Query.XPATH);
+        query.setLimit(1);
+        QueryResult result = query.execute();
 
         NodeIterator iterator = result.getNodes();
         while (iterator.hasNext()) {
@@ -322,7 +325,7 @@ public class JCRMessageMapper extends AbstractJCRMapper implements MessageMapper
                     results = findDeletedMessagesInMailboxAfterUID(uuid, from);
                     break;
                 case ONE:
-                    results = findDeletedMessagesInMailboxWithUID(uuid, from);
+                    results = findDeletedMessageInMailboxWithUID(uuid, from);
                     break;
                 case RANGE:
                     results = findDeletedMessagesInMailboxBetweenUIDs(uuid, from, to);
@@ -545,6 +548,7 @@ public class JCRMessageMapper extends AbstractJCRMapper implements MessageMapper
         queryBuilder.append("/jcr:root" + getMailboxPath(uuid) + "//element(*,jamesMailbox:message)");
         final List<Criterion> criteria = query.getCriterias();
         boolean crit = false;
+        boolean range = false;
         if (criteria.size() == 1) {
             final Criterion firstCriterion = criteria.get(0);
             if (firstCriterion instanceof SearchQuery.UidCriterion) {
@@ -560,17 +564,23 @@ public class JCRMessageMapper extends AbstractJCRMapper implements MessageMapper
                         queryBuilder.append("[");
                     }
                     if (low == Long.MAX_VALUE) {
+                        range = true;
                         queryBuilder.append("@" + JCRMessage.UID_PROPERTY +"<=").append(high);
                     } else if (low == high) {
+                        range = false;
                         queryBuilder.append("@" + JCRMessage.UID_PROPERTY +"=").append(low);
                     } else {
+                        range = true;
                         queryBuilder.append("@" + JCRMessage.UID_PROPERTY +"<=").append(high).append(" and @" + JCRMessage.UID_PROPERTY + ">=").append(low);
                     }
                 }
             }
         }
         if (crit) queryBuilder.append("]");
-        queryBuilder.append(" order by @" + JCRMessage.UID_PROPERTY);
+        
+        if (crit == false || (crit && range)) {
+            queryBuilder.append(" order by @" + JCRMessage.UID_PROPERTY);
+        }
         final String jql = queryBuilder.toString();
         return jql;
     }
