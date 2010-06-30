@@ -519,10 +519,9 @@ public class JCRMessageMapper extends AbstractJCRMapper implements MessageMapper
     public List<MailboxMembership<String>> searchMailbox(String uuid, SearchQuery query) throws StorageException {
         try {
             List<MailboxMembership<String>> list = new ArrayList<MailboxMembership<String>>();
-            final String xpathQuery = formulateXPath(uuid, query);
+            final Query xQuery = formulateXPath(uuid, query);
             
-            QueryManager manager = getSession().getWorkspace().getQueryManager();
-            QueryResult result = manager.createQuery(xpathQuery, Query.XPATH).execute();
+            QueryResult result = xQuery.execute();
             
             NodeIterator it = result.getNodes();
             while (it.hasNext()) {
@@ -543,18 +542,18 @@ public class JCRMessageMapper extends AbstractJCRMapper implements MessageMapper
      * @throws RepositoryException 
      * @throws ItemNotFoundException 
      */
-    private String formulateXPath(String uuid, SearchQuery query) throws ItemNotFoundException, RepositoryException {
+    private Query formulateXPath(String uuid, SearchQuery query) throws ItemNotFoundException, RepositoryException {
         final StringBuilder queryBuilder = new StringBuilder();
         queryBuilder.append("/jcr:root" + getMailboxPath(uuid) + "//element(*,jamesMailbox:message)");
         final List<Criterion> criteria = query.getCriterias();
-        boolean crit = false;
         boolean range = false;
+        int rangeLength = -1;
         if (criteria.size() == 1) {
             final Criterion firstCriterion = criteria.get(0);
             if (firstCriterion instanceof SearchQuery.UidCriterion) {
                 final SearchQuery.UidCriterion uidCriterion = (SearchQuery.UidCriterion) firstCriterion;
                 final NumericRange[] ranges = uidCriterion.getOperator().getRange();
-                crit = ranges.length > 0;
+                rangeLength = ranges.length;
                 for (int i = 0; i < ranges.length; i++) {
                     final long low = ranges[i].getLowValue();
                     final long high = ranges[i].getHighValue();
@@ -576,13 +575,20 @@ public class JCRMessageMapper extends AbstractJCRMapper implements MessageMapper
                 }
             }
         }
-        if (crit) queryBuilder.append("]");
+        if (rangeLength > 0) queryBuilder.append("]");
         
-        if (crit == false || (crit && range)) {
+        if (rangeLength != 0 || range) {
             queryBuilder.append(" order by @" + JCRMessage.UID_PROPERTY);
         }
-        final String jql = queryBuilder.toString();
-        return jql;
+        
+        QueryManager manager = getSession().getWorkspace().getQueryManager();
+        Query xQuery = manager.createQuery(queryBuilder.toString(), Query.XPATH);
+        
+        // Check if we only need to fetch 1 message, if so we can set a limit to speed up things
+        if (rangeLength == 1 && range == false) {
+            xQuery.setLimit(1);
+        }
+        return xQuery;
     }
     
     /*

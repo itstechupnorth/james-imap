@@ -191,38 +191,55 @@ public class JPAMessageMapper extends JPATransactionalMapper implements MessageM
     @SuppressWarnings("unchecked")
     public List<MailboxMembership<Long>> searchMailbox(Long mailboxId, SearchQuery query) throws StorageException {
         try {
-            final String jql = formulateJQL(mailboxId, query);
-            return getEntityManager().createQuery(jql).getResultList();
+            final Query jQuery = formulateJQL(mailboxId, query);
+            return jQuery.getResultList();
         } catch (PersistenceException e) {
             throw new StorageException(HumanReadableText.SEARCH_FAILED, e);
         }
     }
 
-    private String formulateJQL(Long mailboxId, SearchQuery query) {
+    private Query formulateJQL(Long mailboxId, SearchQuery query) {
         final StringBuilder queryBuilder = new StringBuilder(50);
         queryBuilder.append("SELECT membership FROM Membership membership WHERE membership.mailboxId = ").append(mailboxId);
         final List<Criterion> criteria = query.getCriterias();
+        boolean range = false;
+        int rangeLength = -1;
+        
         if (criteria.size() == 1) {
             final Criterion firstCriterion = criteria.get(0);
             if (firstCriterion instanceof SearchQuery.UidCriterion) {
                 final SearchQuery.UidCriterion uidCriterion = (SearchQuery.UidCriterion) firstCriterion;
                 final NumericRange[] ranges = uidCriterion.getOperator().getRange();
+                rangeLength = ranges.length;
+
                 for (int i = 0; i < ranges.length; i++) {
                     final long low = ranges[i].getLowValue();
                     final long high = ranges[i].getHighValue();
 
                     if (low == Long.MAX_VALUE) {
                         queryBuilder.append(" AND membership.uid<=").append(high);
+                        range = true;
                     } else if (low == high) {
                         queryBuilder.append(" AND membership.uid=").append(low);
+                        range = false;
                     } else {
                         queryBuilder.append(" AND membership.uid BETWEEN ").append(low).append(" AND ").append(high);
+                        range = true;
                     }
                 }
             }
+        }        
+        if (rangeLength != 0 || range) {
+            queryBuilder.append(" order by membership.uid");
         }
-        final String jql = queryBuilder.toString();
-        return jql;
+        
+        Query jQuery = getEntityManager().createQuery(queryBuilder.toString());
+
+        // Check if we only need to fetch 1 message, if so we can set a limit to speed up things
+        if (rangeLength == 1 && range == false) {
+            jQuery.setMaxResults(1);
+        }
+        return jQuery;
     }
 
     /*
