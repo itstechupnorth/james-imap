@@ -18,10 +18,12 @@
  ****************************************************************/
 package org.apache.james.imap.jcr;
 
+import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 
 import org.apache.commons.logging.Log;
+import org.apache.jackrabbit.commons.JcrUtils;
 import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.MailboxSession;
@@ -40,12 +42,15 @@ public abstract class AbstractJCRMapper extends AbstractTransactionalMapper impl
     private final MailboxSessionJCRRepository repository;
     private final MailboxSession mSession;
     private final NodeLocker locker;
-
-    public AbstractJCRMapper(final MailboxSessionJCRRepository repository, MailboxSession mSession, NodeLocker locker, Log logger) {
+    private final int scaling;
+    private final static char PAD ='_';
+    
+    public AbstractJCRMapper(final MailboxSessionJCRRepository repository, MailboxSession mSession, NodeLocker locker, int scaling, Log logger) {
         this.repository = repository;
         this.mSession = mSession;
         this.logger = logger;
         this.locker = locker;
+        this.scaling = scaling;
     }
 
     public NodeLocker getNodeLocker() {
@@ -114,6 +119,70 @@ public abstract class AbstractJCRMapper extends AbstractTransactionalMapper impl
        repository.logout(mSession);
     }
         
-    
+    /**
+     * Construct the user node path part, using the specified scaling factor.
+     * If the username is not long enough it will fill it with {@link #PAD}
+     * 
+     * So if you use a scaling of 2 it will look like:
+     * 
+     * foo:
+     *     f/fo/foo
+     *     
+     * fo:
+     *     f/fo/fo
+     * 
+     * f: 
+     *    f/f_/fo
+     * 
+     * @param username
+     * @return path
+     */
+    protected String constructUserPathPart(String username) {
+        StringBuffer sb = new StringBuffer();
+        for (int i = 0 ; i < scaling; i++) {
+            if (username.length() > i) {
+                sb.append(username.substring(0,i+1));
+            } else {
+                sb.append(username);
+                int a = i - username.length();
+                for (int b = 0; b < a; b++) {
+                    sb.append(PAD);
+                }
+            }
+            sb.append(NODE_DELIMITER);
+        }
+        sb.append(username);
+        return sb.toString();
+
+    }
+
+    /**
+     * Create the needed Node structure for the given username using the given Node as parent.
+     * 
+     * The method will use {@link #constructUserPathPart(String)} for create the needed node path and split
+     * it when a NODE_DELIMITER was found
+     * 
+     * @param parent
+     * @param username
+     * @return userNode
+     * @throws RepositoryException
+     */
+    protected Node createUserPathStructure(Node parent, String username)
+            throws RepositoryException {
+        String userpath = constructUserPathPart(username);
+
+        String[] userPathParts = userpath.split(NODE_DELIMITER);
+        for (int a = 0; a < userPathParts.length; a++) {
+            parent = JcrUtils.getOrAddNode(parent, userPathParts[a],
+                    "nt:unstructured");
+
+            // thats the last user node so add the right mixin type
+            if (a + 1 == userPathParts.length)
+                parent.addMixin("jamesMailbox:user");
+        }
+
+        return parent;
+
+    }
 
 }

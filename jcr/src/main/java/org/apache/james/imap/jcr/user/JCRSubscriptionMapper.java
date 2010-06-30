@@ -49,8 +49,8 @@ import org.apache.james.imap.store.user.model.Subscription;
  */
 public class JCRSubscriptionMapper extends AbstractJCRMapper implements SubscriptionMapper {
 
-    public JCRSubscriptionMapper(final MailboxSessionJCRRepository repos, MailboxSession session, final NodeLocker locker, final Log log) {
-        super(repos,session, locker, log);
+    public JCRSubscriptionMapper(final MailboxSessionJCRRepository repos, MailboxSession session, final NodeLocker locker, final int scaling, final Log log) {
+        super(repos,session, locker, scaling, log);
     }
 
     /*
@@ -174,14 +174,8 @@ public class JCRSubscriptionMapper extends AbstractJCRMapper implements Subscrip
             if (sub == null) {
                 Node subscriptionsNode = JcrUtils.getOrAddNode(getSession().getRootNode(), MAILBOXES_PATH);
                 
-                // this loop will create a structure like:
-                // /mailboxes/u/user
-                //
                 // This is needed to minimize the child nodes a bit
-                Node userNode = JcrUtils.getOrAddNode(subscriptionsNode, String.valueOf(username.charAt(0)));
-                userNode = JcrUtils.getOrAddNode(userNode, String.valueOf(username));
-                node = JcrUtils.getOrAddNode(userNode, mailbox, "nt:unstructured");
-                node.addMixin("jamesMailbox:user");
+                node = createUserPathStructure(subscriptionsNode, username);
             } else {
                 node = sub.getNode();
             }

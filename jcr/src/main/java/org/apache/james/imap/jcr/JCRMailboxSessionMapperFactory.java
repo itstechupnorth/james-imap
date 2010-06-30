@@ -44,6 +44,7 @@ public class JCRMailboxSessionMapperFactory extends MailboxSessionMapperFactory<
     private final Log logger;
     private final char delimiter;
     private final NodeLocker locker;
+    private final int DEFAULT_SCALING = 2;
 
     public JCRMailboxSessionMapperFactory(final MailboxSessionJCRRepository repository, final NodeLocker locker) {
         this(repository, locker, DEFAULT_FOLDER_DELIMITER);
@@ -59,19 +60,19 @@ public class JCRMailboxSessionMapperFactory extends MailboxSessionMapperFactory<
     
     @Override
     public MailboxMapper<String> createMailboxMapper(MailboxSession session) throws MailboxException {
-        JCRMailboxMapper mapper = new JCRMailboxMapper(repository, session, locker, logger, delimiter);
+        JCRMailboxMapper mapper = new JCRMailboxMapper(repository, session, locker, DEFAULT_SCALING, logger, delimiter);
         return mapper;
     }
 
     @Override
     public MessageMapper<String> createMessageMapper(MailboxSession session) throws MailboxException {
-        JCRMessageMapper messageMapper = new JCRMessageMapper(repository, session, locker, logger);
+        JCRMessageMapper messageMapper = new JCRMessageMapper(repository, session, locker, DEFAULT_SCALING, logger);
         return messageMapper;
     }
 
     @Override
     public SubscriptionMapper createSubscriptionMapper(MailboxSession session) throws SubscriptionException {
-        JCRSubscriptionMapper mapper = new JCRSubscriptionMapper(repository, session, locker, logger);
+        JCRSubscriptionMapper mapper = new JCRSubscriptionMapper(repository, session, locker, DEFAULT_SCALING, logger);
         return mapper;
     }
     

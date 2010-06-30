@@ -53,8 +53,8 @@ public class JCRMailboxMapper extends AbstractJCRMapper implements MailboxMapper
 
     private char delimiter;
 
-    public JCRMailboxMapper(final MailboxSessionJCRRepository repos, MailboxSession session, final NodeLocker locker, final Log logger, char delimiter) {
-        super(repos, session, locker, logger);
+    public JCRMailboxMapper(final MailboxSessionJCRRepository repos, MailboxSession session, final NodeLocker locker, final int scaling, final Log logger, char delimiter) {
+        super(repos, session, locker, scaling, logger);
         this.delimiter = delimiter;
     }
 
@@ -191,21 +191,12 @@ public class JCRMailboxMapper extends AbstractJCRMapper implements MailboxMapper
                         
                         //split the name so we can construct a nice node tree
                         final String nameParts[] = name.split("\\" + String.valueOf(delimiter), 3);
+                        node = JcrUtils.getOrAddNode(node, nameParts[0], "nt:unstructured");
+                        node = createUserPathStructure(node, nameParts[1]);
+                        node = JcrUtils.getOrAddNode(node, nameParts[2], "nt:unstructured");
+                        node.addMixin("jamesMailbox:mailbox");
                         
-                        // this loop will create a structure like:
-                        // /mailboxes/u/user/INBOX
-                        //
-                        // This is needed to minimize the child nodes a bit
-                        for (int i = 0; i < nameParts.length; i++) {
-                           String part = nameParts[i];
-                           if (i == 1) {
-                               node = JcrUtils.getOrAddNode(node, String.valueOf(part.charAt(0)), "nt:unstructured");   
-
-                           } 
-                           node = JcrUtils.getOrAddNode(node, part, "nt:unstructured");
-                           node.addMixin("jamesMailbox:mailbox");
-                           
-                        }
+                        
                         jcrMailbox.merge(node);
 
                         getSession().save();
@@ -223,6 +214,7 @@ public class JCRMailboxMapper extends AbstractJCRMapper implements MailboxMapper
            }
             
         } catch (RepositoryException e) {
+            e.printStackTrace();
             throw new StorageException(HumanReadableText.SAVE_FAILED, e);
         } catch (InterruptedException e) {
             throw new StorageException(HumanReadableText.SAVE_FAILED, e);

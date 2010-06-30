@@ -58,8 +58,8 @@ import org.apache.james.imap.store.mail.model.MailboxMembership;
  */
 public class JCRMessageMapper extends AbstractJCRMapper implements MessageMapper<String> {
 
-    public JCRMessageMapper(final MailboxSessionJCRRepository repos, MailboxSession session, NodeLocker locker, final Log logger) {
-        super(repos, session, locker, logger);
+    public JCRMessageMapper(final MailboxSessionJCRRepository repos, MailboxSession session, NodeLocker locker, final int scaling, final Log logger) {
+        super(repos, session, locker, scaling, logger);
     }
 
     /**
