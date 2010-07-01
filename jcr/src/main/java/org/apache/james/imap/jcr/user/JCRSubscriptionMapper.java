@@ -33,6 +33,7 @@ import javax.jcr.query.QueryResult;
 
 import org.apache.commons.logging.Log;
 import org.apache.jackrabbit.commons.JcrUtils;
+import org.apache.jackrabbit.util.Text;
 import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.jcr.AbstractJCRScalingMapper;
 import org.apache.james.imap.jcr.JCRImapConstants;
@@ -175,10 +176,10 @@ public class JCRSubscriptionMapper extends AbstractJCRScalingMapper implements S
             // its a new subscription
             if (sub == null) {
                 node = JcrUtils.getOrAddNode(getSession().getRootNode(), MAILBOXES_PATH);
-                node = JcrUtils.getOrAddNode(node, StoreConstants.USER_NAMESPACE_PREFIX);
+                node = JcrUtils.getOrAddNode(node, Text.escapeIllegalJcrChars(StoreConstants.USER_NAMESPACE_PREFIX));
 
                 // This is needed to minimize the child nodes a bit
-                node = createUserPathStructure(node, username);
+                node = createUserPathStructure(node, Text.escapeIllegalJcrChars(username));
             } else {
                 node = sub.getNode();
             }

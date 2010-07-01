@@ -32,6 +32,7 @@ import javax.jcr.query.QueryResult;
 import org.apache.commons.logging.Log;
 import org.apache.jackrabbit.JcrConstants;
 import org.apache.jackrabbit.commons.JcrUtils;
+import org.apache.jackrabbit.util.Text;
 import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.jcr.AbstractJCRScalingMapper;
 import org.apache.james.imap.jcr.MailboxSessionJCRRepository;
@@ -191,9 +192,9 @@ public class JCRMailboxMapper extends AbstractJCRScalingMapper implements Mailbo
                         
                         //split the name so we can construct a nice node tree
                         final String nameParts[] = name.split("\\" + String.valueOf(delimiter), 3);
-                        node = JcrUtils.getOrAddNode(node, nameParts[0], "nt:unstructured");
-                        node = createUserPathStructure(node, nameParts[1]);
-                        node = JcrUtils.getOrAddNode(node, nameParts[2], "nt:unstructured");
+                        node = JcrUtils.getOrAddNode(node, Text.escapeIllegalJcrChars(nameParts[0]), "nt:unstructured");
+                        node = createUserPathStructure(node, Text.escapeIllegalJcrChars(nameParts[1]));
+                        node = JcrUtils.getOrAddNode(node, Text.escapeIllegalJcrChars(nameParts[2]), "nt:unstructured");
                         node.addMixin("jamesMailbox:mailbox");
                         
                         
