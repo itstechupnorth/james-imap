@@ -33,7 +33,7 @@ import org.apache.commons.logging.Log;
 import org.apache.jackrabbit.JcrConstants;
 import org.apache.jackrabbit.commons.JcrUtils;
 import org.apache.james.imap.api.display.HumanReadableText;
-import org.apache.james.imap.jcr.AbstractJCRMapper;
+import org.apache.james.imap.jcr.AbstractJCRScalingMapper;
 import org.apache.james.imap.jcr.MailboxSessionJCRRepository;
 import org.apache.james.imap.jcr.NodeLocker;
 import org.apache.james.imap.jcr.NodeLocker.NodeLockedExecution;
@@ -49,7 +49,7 @@ import org.apache.james.imap.store.mail.model.Mailbox;
  * 
  * 
  */
-public class JCRMailboxMapper extends AbstractJCRMapper implements MailboxMapper<String> {
+public class JCRMailboxMapper extends AbstractJCRScalingMapper implements MailboxMapper<String> {
 
     private char delimiter;
 
@@ -214,7 +214,6 @@ public class JCRMailboxMapper extends AbstractJCRMapper implements MailboxMapper
            }
             
         } catch (RepositoryException e) {
-            e.printStackTrace();
             throw new StorageException(HumanReadableText.SAVE_FAILED, e);
         } catch (InterruptedException e) {
             throw new StorageException(HumanReadableText.SAVE_FAILED, e);

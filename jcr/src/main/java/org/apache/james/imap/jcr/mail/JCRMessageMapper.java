@@ -58,10 +58,71 @@ import org.apache.james.imap.store.mail.model.MailboxMembership;
  */
 public class JCRMessageMapper extends AbstractJCRMapper implements MessageMapper<String> {
 
-    public JCRMessageMapper(final MailboxSessionJCRRepository repos, MailboxSession session, NodeLocker locker, final int scaling, final Log logger) {
-        super(repos, session, locker, scaling, logger);
+    /**
+     * Store the messages directly in the mailbox:
+     * .../mailbox/
+     */
+    public final static int MESSAGE_SCALE_NONE = 0;
+    
+    /**
+     * Store the messages under a year directory in the mailbox:
+     * .../mailbox/2010/
+     */
+    public final static int MESSAGE_SCALE_YEAR = 1;
+    
+    /**
+     * Store the messages under a year/month directory in the mailbox:
+     * .../mailbox/2010/05/
+     */
+    public final static int MESSAGE_SCALE_MONTH = 2;
+    
+    /**
+     * Store the messages under a year/month/day directory in the mailbox:
+     * .../mailbox/2010/05/01/
+     */
+    public final static int MESSAGE_SCALE_DAY = 3;
+    
+    /**
+     * Store the messages under a year/month/day/hour directory in the mailbox:
+     * .../mailbox/2010/05/02/11
+     */
+    public final static int MESSAGE_SCALE_HOUR = 4;
+    
+    
+    /**
+     * Store the messages under a year/month/day/hour/min directory in the mailbox:
+     * .../mailbox/2010/05/02/11/59
+     */
+    public final static int MESSAGE_SCALE_MINUTE = 5;
+
+    private final int scaleType;
+    
+
+    /**
+     * 
+     * @see #JCRMessageMapper(MailboxSessionJCRRepository, MailboxSession, NodeLocker, Log, int)
+     * 
+     * In this case {@link #MESSAGE_SCALE_DAY} is used
+     */
+    public JCRMessageMapper(final MailboxSessionJCRRepository repos, MailboxSession session, NodeLocker locker, final Log logger) {
+        this(repos, session, locker, logger, MESSAGE_SCALE_DAY);
     }
 
+    /**
+     * Construct a new {@link JCRMessageMapper} instance
+     * 
+     * @param repos {@link MailboxSessionJCRRepository} to use
+     * @param session {@link MailboxSession} to which the mapper is bound
+     * @param locker {@link NodeLocker} for locking Nodes
+     * @param logger Lo
+     * @param scaleType the scale type to use when storing messages. See {@link #MESSAGE_SCALE_NONE}, {@link #MESSAGE_SCALE_YEAR}, {@link #MESSAGE_SCALE_MONTH}, {@link #MESSAGE_SCALE_DAY},
+     *                  {@link #MESSAGE_SCALE_HOUR}, {@link #MESSAGE_SCALE_MINUTE}  
+     */
+    public JCRMessageMapper(final MailboxSessionJCRRepository repos, MailboxSession session, NodeLocker locker, final Log logger, int scaleType) {
+        super(repos, session, locker, logger);
+        this.scaleType = scaleType;
+    }
+    
     /**
      * Return the path to the mailbox. This path is escaped to be able to use it in xpath queries
      * 
@@ -413,9 +474,9 @@ public class JCRMessageMapper extends AbstractJCRMapper implements MessageMapper
     public void save(String uuid, MailboxMembership<String> message) throws StorageException {
         final JCRMessage membership = (JCRMessage) message;
         try {
-            //JCRUtils.createNodeRecursive(getSession().getRootNode(), mailboxN);
+
             Node messageNode = null;
-            
+
             if (membership.isPersistent()) {
                 messageNode = getSession().getNodeByIdentifier(membership.getId());
             }
@@ -425,67 +486,82 @@ public class JCRMessageMapper extends AbstractJCRMapper implements MessageMapper
                 if (date == null) {
                     date = new Date();
                 }
-                
-                // extracte the date from the message to create node structure later
+
+                // extracte the date from the message to create node structure
+                // later
                 Calendar cal = Calendar.getInstance();
                 cal.setTime(date);
-                final String year = String.valueOf(cal.get(Calendar.YEAR));
-                final String month = String.valueOf(cal.get(Calendar.MONTH) +1);
-                final String day = String.valueOf(cal.get(Calendar.DAY_OF_MONTH));
-               
-                Node dayNode = null;
+                final String year = convertIntToString(cal.get(Calendar.YEAR));
+                final String month = convertIntToString(cal.get(Calendar.MONTH) + 1);
+                final String day = convertIntToString(cal.get(Calendar.DAY_OF_MONTH));
+                final String hour = convertIntToString(cal.get(Calendar.HOUR_OF_DAY));
+                final String min = convertIntToString(cal.get(Calendar.MINUTE));
+
+                Node node = null;
                 Node mailboxNode = getSession().getNodeByIdentifier(uuid);
-                String dayNodePath = year + NODE_DELIMITER + month + NODE_DELIMITER + day;
-                boolean found = mailboxNode.hasNode(dayNodePath);
-                
+
                 NodeLocker locker = getNodeLocker();
-                
-                // check if the node for the day already exists. if not we need to create the structure
-                if (found == false) {
-                    
+
+                if (scaleType > MESSAGE_SCALE_NONE) {
                     // we lock the whole mailbox with all its childs while
                     // adding the folder structure for the date
-                    // TODO: Maybe we should just lock the last child folder to improve performance
-                    dayNode = locker.execute(new NodeLocker.NodeLockedExecution<Node>() {
+                    
+                    // TODO: Maybe we should just lock the last child folder to
+                    // improve performance
+                    node = locker.execute(new NodeLocker.NodeLockedExecution<Node>() {
 
                         public Node execute(Node node) throws RepositoryException {
 
-                            Node yearNode = JcrUtils.getOrAddFolder(node, year);
-                            yearNode.addMixin(JcrConstants.MIX_LOCKABLE);
+                            if (scaleType >= MESSAGE_SCALE_YEAR) {
+                                node = JcrUtils.getOrAddFolder(node, year);
+                                node.addMixin(JcrConstants.MIX_LOCKABLE);
 
-                            Node monthNode = JcrUtils.getOrAddFolder(yearNode, month);
-                            monthNode.addMixin(JcrConstants.MIX_LOCKABLE);
+                                if (scaleType >= MESSAGE_SCALE_MONTH) {
+                                    node = JcrUtils.getOrAddFolder(node, month);
+                                    node.addMixin(JcrConstants.MIX_LOCKABLE);
 
-                            Node dayNode = JcrUtils.getOrAddFolder(monthNode, day);
-                            dayNode.addMixin(JcrConstants.MIX_LOCKABLE);
+                                    if (scaleType >= MESSAGE_SCALE_DAY) {
+                                        node = JcrUtils.getOrAddFolder(node, day);
+                                        node.addMixin(JcrConstants.MIX_LOCKABLE);
+
+                                        if (scaleType >= MESSAGE_SCALE_HOUR) {
+                                            node = JcrUtils.getOrAddFolder(node, hour);
+                                            node.addMixin(JcrConstants.MIX_LOCKABLE);
+
+                                            if (scaleType >= MESSAGE_SCALE_MINUTE) {
+                                                node = JcrUtils.getOrAddFolder(node, min);
+                                                node.addMixin(JcrConstants.MIX_LOCKABLE);
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+
                             // save the folders for now
                             getSession().save();
-                            return dayNode;
+                            return node;
                         }
 
                         public boolean isDeepLocked() {
                             return true;
                         }
                     }, mailboxNode, Node.class);
-                   
                 } else {
-                    
-                    dayNode = mailboxNode.getNode(dayNodePath);
+                    node = mailboxNode;
                 }
-                
-                
+
                 // lock the day node and add the message
                 locker.execute(new NodeLockedExecution<Void>() {
 
                     public Void execute(Node node) throws RepositoryException {
-                        Node messageNode = node.addNode(String.valueOf(membership.getUid()),"nt:file");
+                        Node messageNode = node.addNode(String.valueOf(membership.getUid()), "nt:file");
                         messageNode.addMixin("jamesMailbox:message");
                         try {
                             membership.merge(messageNode);
                         } catch (IOException e) {
                             throw new RepositoryException("Unable to merge message in to tree", e);
                         }
-                        // save the message 
+                        // save the message
                         getSession().save();
 
                         return null;
@@ -494,8 +570,8 @@ public class JCRMessageMapper extends AbstractJCRMapper implements MessageMapper
                     public boolean isDeepLocked() {
                         return true;
                     }
-                }, dayNode, Void.class);
-                
+                }, node, Void.class);
+
             } else {
                 membership.merge(messageNode);
             }
@@ -509,6 +585,19 @@ public class JCRMessageMapper extends AbstractJCRMapper implements MessageMapper
 
     }
 
+    /**
+     * Convert the given int value to a String. If the int value is smaller then 9 it will prefix the String with 0.
+     * 
+     * @param value
+     * @return stringValue
+     */
+    private String convertIntToString(int value) {
+        if (value <= 9) {
+            return "0" +String.valueOf(value);
+        } else {
+            return String.valueOf(value);
+        }
+    }
     /*
      * (non-Javadoc)
      * 

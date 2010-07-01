@@ -54,7 +54,7 @@ public class JCRMailboxSessionMapperFactory extends MailboxSessionMapperFactory<
         this.repository = repository;
         this.logger = LogFactory.getLog(JCRSubscriptionManager.class);
         this.delimiter = delimiter;
-        this.locker = locker;;
+        this.locker = locker;
     }
 
     
@@ -66,7 +66,7 @@ public class JCRMailboxSessionMapperFactory extends MailboxSessionMapperFactory<
 
     @Override
     public MessageMapper<String> createMessageMapper(MailboxSession session) throws MailboxException {
-        JCRMessageMapper messageMapper = new JCRMessageMapper(repository, session, locker, DEFAULT_SCALING, logger);
+        JCRMessageMapper messageMapper = new JCRMessageMapper(repository, session, locker, logger);
         return messageMapper;
     }
 
