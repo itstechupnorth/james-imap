@@ -57,14 +57,6 @@ public class JPAMailbox implements Mailbox<Long> {
     
     /** The value for the lastUid field */
     @Basic(optional=false) private long lastUid = 0;
-
-    
-    /** The value for the messageCount field */
-    @Basic(optional=false) private int messageCount = 0;
-
-    
-    /** The value for the size field */
-    @Basic(optional=false) private long size = 0;
     
     /**
      * JPA only
@@ -95,25 +87,12 @@ public class JPAMailbox implements Mailbox<Long> {
     }
 
     /**
-     * @see org.apache.james.imap.store.mail.model.Mailbox#getMessageCount()
-     */
-    public int getMessageCount() {
-        return messageCount;
-    }
-
-    /**
      * @see org.apache.james.imap.store.mail.model.Mailbox#getName()
      */
     public String getName() {
         return name;
     }
 
-    /**
-     * @see org.apache.james.imap.store.mail.model.Mailbox#getSize()
-     */
-    public long getSize() {
-        return size;
-    }
 
     /**
      * @see org.apache.james.imap.store.mail.model.Mailbox#getUidValidity()
@@ -144,8 +123,6 @@ public class JPAMailbox implements Mailbox<Long> {
             + "name = " + this.name + TAB
             + "uidValidity = " + this.uidValidity + TAB
             + "lastUid = " + this.lastUid + TAB
-            + "messageCount = " + this.messageCount + TAB
-            + "size = " + this.size + TAB
             + " )";
         return retValue;
     }
