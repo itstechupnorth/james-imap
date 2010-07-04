@@ -44,29 +44,32 @@ public class JCRMailboxSessionMapperFactory extends MailboxSessionMapperFactory<
     private final Log logger;
     private final char delimiter;
     private final NodeLocker locker;
-    private final int DEFAULT_SCALING = 2;
+    private final static int DEFAULT_SCALING = 2;
+    private int scaling;
+    private int messageScaling;
 
     public JCRMailboxSessionMapperFactory(final MailboxSessionJCRRepository repository, final NodeLocker locker) {
-        this(repository, locker, DEFAULT_FOLDER_DELIMITER);
+        this(repository, locker, DEFAULT_FOLDER_DELIMITER, DEFAULT_SCALING, JCRMessageMapper.MESSAGE_SCALE_DAY);
     }
 
-    public JCRMailboxSessionMapperFactory(final MailboxSessionJCRRepository repository, final NodeLocker locker, final char delimiter) {
+    public JCRMailboxSessionMapperFactory(final MailboxSessionJCRRepository repository, final NodeLocker locker, final char delimiter, final int scaling, final int messageScaling) {
         this.repository = repository;
         this.logger = LogFactory.getLog(JCRSubscriptionManager.class);
         this.delimiter = delimiter;
         this.locker = locker;
+        this.scaling = scaling;
+        this.messageScaling = messageScaling;
     }
-
     
     @Override
     public MailboxMapper<String> createMailboxMapper(MailboxSession session) throws MailboxException {
-        JCRMailboxMapper mapper = new JCRMailboxMapper(repository, session, locker, DEFAULT_SCALING, logger, delimiter);
+        JCRMailboxMapper mapper = new JCRMailboxMapper(repository, session, locker, scaling, logger, delimiter);
         return mapper;
     }
 
     @Override
     public MessageMapper<String> createMessageMapper(MailboxSession session) throws MailboxException {
-        JCRMessageMapper messageMapper = new JCRMessageMapper(repository, session, locker, logger);
+        JCRMessageMapper messageMapper = new JCRMessageMapper(repository, session, locker, logger, messageScaling);
         return messageMapper;
     }
 
