@@ -69,19 +69,13 @@ public abstract class StoreMailboxManager<Id> extends AbstractLogEnabled impleme
     private final DelegatingMailboxListener delegatingListener = new DelegatingMailboxListener();
     private final Authenticator authenticator;    
     private final Subscriber subscriber;    
-    private final char delimiter;
     protected final MailboxSessionMapperFactory<Id> mailboxSessionMapperFactory;
     private UidConsumer<Id> consumer;
     
-    public StoreMailboxManager(MailboxSessionMapperFactory<Id> mailboxSessionMapperFactory, final Authenticator authenticator, final Subscriber subscriber, final UidConsumer<Id> consumer) {
-        this(mailboxSessionMapperFactory, authenticator, subscriber, consumer, MailboxConstants.DEFAULT_DELIMITER);
-    }
-
     
-    public StoreMailboxManager(MailboxSessionMapperFactory<Id> mailboxSessionMapperFactory, final Authenticator authenticator, final Subscriber subscriber, final UidConsumer<Id> consumer, final char delimiter) {
+    public StoreMailboxManager(MailboxSessionMapperFactory<Id> mailboxSessionMapperFactory, final Authenticator authenticator, final Subscriber subscriber, final UidConsumer<Id> consumer) {
         this.authenticator = authenticator;
         this.subscriber = subscriber;
-        this.delimiter = delimiter;
         this.consumer = consumer;
         this.mailboxSessionMapperFactory = mailboxSessionMapperFactory;
     }
@@ -147,14 +141,14 @@ public abstract class StoreMailboxManager<Id> extends AbstractLogEnabled impleme
         final int length = namespaceName.length();
         if (length == 0) {
             getLog().warn("Ignoring mailbox with empty name");
-        } else if (namespaceName.charAt(length - 1) == delimiter) {
+        } else if (namespaceName.charAt(length - 1) == MailboxConstants.DEFAULT_DELIMITER) {
             createMailbox(namespaceName.substring(0, length - 1), mailboxSession);
         } else {
             synchronized (mutex) {
                 // Create root first
                 // If any creation fails then mailbox will not be created
                 // TODO: transaction
-                int index = namespaceName.indexOf(delimiter);
+                int index = namespaceName.indexOf(MailboxConstants.DEFAULT_DELIMITER);
                 int count = 0;
                 while (index >= 0) {
                     // Until explicit namespace support is added,
@@ -168,7 +162,7 @@ public abstract class StoreMailboxManager<Id> extends AbstractLogEnabled impleme
                             doCreateMailbox(mailbox, mailboxSession);
                         }
                     }
-                    index = namespaceName.indexOf(delimiter, ++index);
+                    index = namespaceName.indexOf(MailboxConstants.DEFAULT_DELIMITER, ++index);
                 }
                 if (mailboxExists(namespaceName, mailboxSession)) {
                     throw new MailboxExistsException(namespaceName); 
@@ -236,7 +230,7 @@ public abstract class StoreMailboxManager<Id> extends AbstractLogEnabled impleme
                     changeMailboxName(from, to, session);
 
                     // rename submailbox
-                    final List<Mailbox<Id>> subMailboxes = mapper.findMailboxWithNameLike(from + delimiter + "%");
+                    final List<Mailbox<Id>> subMailboxes = mapper.findMailboxWithNameLike(from + MailboxConstants.DEFAULT_DELIMITER + "%");
                     for (Mailbox<Id> sub:subMailboxes) {
                         final String subOriginalName = sub.getName();
                         final String subNewName = to + subOriginalName.substring(from.length());
@@ -303,7 +297,7 @@ public abstract class StoreMailboxManager<Id> extends AbstractLogEnabled impleme
         }
 
         final String search = mailboxExpression.getCombinedName(
-                delimiter).replace(freeWildcard, SQL_WILDCARD_CHAR)
+                MailboxConstants.DEFAULT_DELIMITER).replace(freeWildcard, SQL_WILDCARD_CHAR)
                 .replace(localWildcard, SQL_WILDCARD_CHAR);
 
         final MailboxMapper<Id> mapper = mailboxSessionMapperFactory.getMailboxMapper(session);
@@ -313,7 +307,7 @@ public abstract class StoreMailboxManager<Id> extends AbstractLogEnabled impleme
             final String name = mailbox.getName();
             if (name.startsWith(base)) {
                 final String match = name.substring(baseLength);
-                if (mailboxExpression.isExpressionMatch(match, delimiter)) {
+                if (mailboxExpression.isExpressionMatch(match, MailboxConstants.DEFAULT_DELIMITER)) {
                     final MailboxMetaData.Children inferiors; 
                     if (mapper.hasChildren(mailbox)) {
                         inferiors = MailboxMetaData.Children.HAS_CHILDREN;
@@ -362,7 +356,7 @@ public abstract class StoreMailboxManager<Id> extends AbstractLogEnabled impleme
      * @return session
      */
     private SimpleMailboxSession createSession(String userName, String password, Log log) {
-        return new SimpleMailboxSession(randomId(), userName, password, log, delimiter, new ArrayList<Locale>());
+        return new SimpleMailboxSession(randomId(), userName, password, log, MailboxConstants.DEFAULT_DELIMITER, new ArrayList<Locale>());
     }
 
     /**
@@ -379,10 +373,10 @@ public abstract class StoreMailboxManager<Id> extends AbstractLogEnabled impleme
      * @see org.apache.james.imap.mailbox.MailboxManager#resolve(java.lang.String, java.lang.String)
      */
     public String resolve(final String userName, String mailboxPath) {
-        if (mailboxPath.length() > 0 && mailboxPath.charAt(0) != delimiter) {
-            mailboxPath = delimiter + mailboxPath;
+        if (mailboxPath.length() > 0 && mailboxPath.charAt(0) != MailboxConstants.DEFAULT_DELIMITER) {
+            mailboxPath = MailboxConstants.DEFAULT_DELIMITER + mailboxPath;
         }
-        final String result = MailboxConstants.USER_NAMESPACE + delimiter + userName
+        final String result = MailboxConstants.USER_NAMESPACE + MailboxConstants.DEFAULT_DELIMITER + userName
         + mailboxPath;
         return result;
     }
@@ -455,8 +449,8 @@ public abstract class StoreMailboxManager<Id> extends AbstractLogEnabled impleme
      * (non-Javadoc)
      * @see org.apache.james.imap.mailbox.MailboxManager#getDelimiter()
      */
-    public char getDelimiter() {
-        return delimiter;
+    public final char getDelimiter() {
+        return MailboxConstants.DEFAULT_DELIMITER;
     }
 
     /**

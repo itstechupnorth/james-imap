@@ -36,6 +36,7 @@ import org.apache.commons.logging.impl.SimpleLog;
 import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.mailbox.BadCredentialsException;
 import org.apache.james.imap.mailbox.Mailbox;
+import org.apache.james.imap.mailbox.MailboxConstants;
 import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.MailboxExistsException;
 import org.apache.james.imap.mailbox.MailboxListener;
@@ -59,8 +60,6 @@ import org.apache.torque.util.CountHelper;
 import org.apache.torque.util.Criteria;
 
 public class TorqueMailboxManager implements MailboxManager {
-
-    public static final String USER_NAMESPACE_PREFIX = "#private";
     
     private static final char SQL_WILDCARD_CHAR = '%';
 
@@ -371,7 +370,7 @@ public class TorqueMailboxManager implements MailboxManager {
         if (mailboxPath.charAt(0) != delimiter) {
             mailboxPath = delimiter + mailboxPath;
         }
-        final String result = USER_NAMESPACE_PREFIX + delimiter + userName
+        final String result = MailboxConstants.USER_NAMESPACE + delimiter + userName
                 + mailboxPath;
         return result;
     }
@@ -431,14 +430,6 @@ public class TorqueMailboxManager implements MailboxManager {
      */
     public char getDelimiter() {
         return delimiter;
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see org.apache.james.imap.mailbox.MailboxManager#getUserNameSpacePrefix()
-     */
-    public String getUserNameSpacePrefix() {
-        return USER_NAMESPACE_PREFIX;
     }
 
 }
