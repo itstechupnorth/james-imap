@@ -36,13 +36,12 @@ import org.apache.jackrabbit.commons.JcrUtils;
 import org.apache.jackrabbit.util.Text;
 import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.jcr.AbstractJCRScalingMapper;
-import org.apache.james.imap.jcr.JCRImapConstants;
 import org.apache.james.imap.jcr.MailboxSessionJCRRepository;
 import org.apache.james.imap.jcr.NodeLocker;
 import org.apache.james.imap.jcr.user.model.JCRSubscription;
+import org.apache.james.imap.mailbox.MailboxConstants;
 import org.apache.james.imap.mailbox.MailboxSession;
 import org.apache.james.imap.mailbox.SubscriptionException;
-import org.apache.james.imap.store.StoreConstants;
 import org.apache.james.imap.store.user.SubscriptionMapper;
 import org.apache.james.imap.store.user.model.Subscription;
 
@@ -50,7 +49,7 @@ import org.apache.james.imap.store.user.model.Subscription;
  * JCR implementation of a SubscriptionManager
  * 
  */
-public class JCRSubscriptionMapper extends AbstractJCRScalingMapper implements SubscriptionMapper, StoreConstants {
+public class JCRSubscriptionMapper extends AbstractJCRScalingMapper implements SubscriptionMapper {
 
     public JCRSubscriptionMapper(final MailboxSessionJCRRepository repos, MailboxSession session, final NodeLocker locker, final int scaling, final Log log) {
         super(repos,session, locker, scaling, log);
@@ -176,7 +175,7 @@ public class JCRSubscriptionMapper extends AbstractJCRScalingMapper implements S
             // its a new subscription
             if (sub == null) {
                 node = JcrUtils.getOrAddNode(getSession().getRootNode(), MAILBOXES_PATH);
-                node = JcrUtils.getOrAddNode(node, Text.escapeIllegalJcrChars(StoreConstants.USER_NAMESPACE_PREFIX));
+                node = JcrUtils.getOrAddNode(node, Text.escapeIllegalJcrChars(MailboxConstants.USER_NAMESPACE));
 
                 // This is needed to minimize the child nodes a bit
                 node = createUserPathStructure(node, Text.escapeIllegalJcrChars(username));

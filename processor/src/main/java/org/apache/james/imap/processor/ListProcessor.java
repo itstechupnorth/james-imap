@@ -30,6 +30,7 @@ import org.apache.james.imap.api.message.response.ImapResponseMessage;
 import org.apache.james.imap.api.message.response.StatusResponseFactory;
 import org.apache.james.imap.api.process.ImapProcessor;
 import org.apache.james.imap.api.process.ImapSession;
+import org.apache.james.imap.mailbox.MailboxConstants;
 import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.MailboxManager;
 import org.apache.james.imap.mailbox.MailboxMetaData;
@@ -79,7 +80,7 @@ public class ListProcessor extends AbstractMailboxProcessor {
             final List<MailboxMetaData> results;
 
             final String user = ImapSessionUtils.getUserName(session);
-            final String personalNamespace = ImapConstants.USER_NAMESPACE
+            final String personalNamespace = MailboxConstants.USER_NAMESPACE
                     + ImapConstants.HIERARCHY_DELIMITER_CHAR + user;
 
             if (mailboxPattern.length() == 0) {

@@ -29,6 +29,7 @@ import java.util.Random;
 import org.apache.commons.logging.Log;
 import org.apache.james.imap.api.AbstractLogEnabled;
 import org.apache.james.imap.mailbox.BadCredentialsException;
+import org.apache.james.imap.mailbox.MailboxConstants;
 import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.MailboxExistsException;
 import org.apache.james.imap.mailbox.MailboxListener;
@@ -56,7 +57,7 @@ import org.apache.james.imap.store.transaction.TransactionalMapper;
  *
  * @param <Id>
  */
-public abstract class StoreMailboxManager<Id> extends AbstractLogEnabled implements MailboxManager, StoreConstants {
+public abstract class StoreMailboxManager<Id> extends AbstractLogEnabled implements MailboxManager {
     
     public static final char SQL_WILDCARD_CHAR = '%';
 
@@ -73,7 +74,7 @@ public abstract class StoreMailboxManager<Id> extends AbstractLogEnabled impleme
     private UidConsumer<Id> consumer;
     
     public StoreMailboxManager(MailboxSessionMapperFactory<Id> mailboxSessionMapperFactory, final Authenticator authenticator, final Subscriber subscriber, final UidConsumer<Id> consumer) {
-        this(mailboxSessionMapperFactory, authenticator, subscriber, consumer, DEFAULT_FOLDER_DELIMITER);
+        this(mailboxSessionMapperFactory, authenticator, subscriber, consumer, MailboxConstants.DEFAULT_DELIMITER);
     }
 
     
@@ -381,7 +382,7 @@ public abstract class StoreMailboxManager<Id> extends AbstractLogEnabled impleme
         if (mailboxPath.length() > 0 && mailboxPath.charAt(0) != delimiter) {
             mailboxPath = delimiter + mailboxPath;
         }
-        final String result = USER_NAMESPACE_PREFIX + delimiter + userName
+        final String result = MailboxConstants.USER_NAMESPACE + delimiter + userName
         + mailboxPath;
         return result;
     }
@@ -456,14 +457,6 @@ public abstract class StoreMailboxManager<Id> extends AbstractLogEnabled impleme
      */
     public char getDelimiter() {
         return delimiter;
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see org.apache.james.imap.mailbox.MailboxManager#getUserNameSpacePrefix()
-     */
-    public String getUserNameSpacePrefix() {
-        return USER_NAMESPACE_PREFIX;
     }
 
     /**

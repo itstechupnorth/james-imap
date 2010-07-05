@@ -68,13 +68,6 @@ public interface MailboxManager {
     char getDelimiter();
     
     /**
-     * Return the prefix for the namespace
-     * 
-     * @return namespacePrefix
-     */
-    String getUserNameSpacePrefix();
-    
-    /**
      * <p>
      * Resolves a path for the given user.
      * </p>

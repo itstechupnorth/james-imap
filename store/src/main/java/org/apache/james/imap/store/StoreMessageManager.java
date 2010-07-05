@@ -72,7 +72,7 @@ import org.apache.james.mime4j.parser.MimeTokenStream;
  * 
  *
  */
-public abstract class StoreMessageManager<Id> implements org.apache.james.imap.mailbox.Mailbox, StoreConstants {
+public abstract class StoreMessageManager<Id> implements org.apache.james.imap.mailbox.Mailbox {
 
     private static final int INITIAL_SIZE_FLAGS = 32;
 

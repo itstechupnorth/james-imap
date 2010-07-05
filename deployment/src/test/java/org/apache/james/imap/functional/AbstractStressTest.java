@@ -29,6 +29,7 @@ import javax.mail.Flags;
 
 import org.apache.commons.logging.impl.SimpleLog;
 import org.apache.james.imap.mailbox.Mailbox;
+import org.apache.james.imap.mailbox.MailboxConstants;
 import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.MailboxSession;
 import org.apache.james.imap.store.StoreMailboxManager;
@@ -49,7 +50,7 @@ public abstract class AbstractStressTest {
         
         MailboxSession session = getMailboxManager().createSystemSession("test", new SimpleLog("Test"));
         getMailboxManager().startProcessingRequest(session);
-        getMailboxManager().createMailbox(StoreMailboxManager.USER_NAMESPACE_PREFIX +".username.INBOX", session);
+        getMailboxManager().createMailbox(MailboxConstants.USER_NAMESPACE +".username.INBOX", session);
         getMailboxManager().endProcessingRequest(session);
         getMailboxManager().logout(session, false);
         final AtomicBoolean fail = new AtomicBoolean(false);
@@ -68,7 +69,7 @@ public abstract class AbstractStressTest {
 
                     try {
                         getMailboxManager().startProcessingRequest(session);
-                        Mailbox m = getMailboxManager().getMailbox(StoreMailboxManager.USER_NAMESPACE_PREFIX +".username.INBOX", session);
+                        Mailbox m = getMailboxManager().getMailbox(MailboxConstants.USER_NAMESPACE +".username.INBOX", session);
                         
                         System.out.println("Append message with uid=" + m.appendMessage(new ByteArrayInputStream("Subject: test\r\n\r\ntestmail".getBytes()), new Date(), session, false, new Flags()));
                         getMailboxManager().endProcessingRequest(session);

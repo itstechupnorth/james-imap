@@ -60,7 +60,7 @@ import org.apache.torque.util.Criteria;
 
 public class TorqueMailboxManager implements MailboxManager {
 
-    public static final String USER_NAMESPACE_PREFIX = "#mail";
+    public static final String USER_NAMESPACE_PREFIX = "#private";
     
     private static final char SQL_WILDCARD_CHAR = '%';
 

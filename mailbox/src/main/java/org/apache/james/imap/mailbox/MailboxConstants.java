@@ -16,23 +16,23 @@
  * specific language governing permissions and limitations      *
  * under the License.                                           *
  ****************************************************************/
-package org.apache.james.imap.store;
 
-/**
- * Constants which are used in the Store module
- * 
- *
- */
-public interface StoreConstants {
+package org.apache.james.imap.mailbox;
+
+public interface MailboxConstants {
+
+    public final long UID_INFINITY = -1;
+
+    public final int MSN_INFINITY = -1;
+    
+    /**
+     * The namespace used for store user inboxes
+     */
+    public static final String USER_NAMESPACE = "#private";
 
     /**
      * The default delimiter used to seperated parent/child folders
      */
-    public static final char DEFAULT_FOLDER_DELIMITER = '.';
-
-    /**
-     * Prefix which mark the user namespace
-     */
-    public static final String USER_NAMESPACE_PREFIX = "#mail";
+    public static final char DEFAULT_DELIMITER = '.';
 
 }

@@ -30,13 +30,13 @@ import java.util.TreeSet;
 
 import javax.mail.Flags;
 
-import org.apache.james.imap.mailbox.Constants;
+import org.apache.james.imap.mailbox.MailboxConstants;
 import org.apache.james.imap.mailbox.Mailbox;
 import org.apache.james.imap.mailbox.MailboxListener;
 import org.apache.james.imap.mailbox.util.MailboxEventDispatcher;
 import org.apache.james.imap.mailbox.util.UidRange;
 
-public class UidChangeTracker implements Constants {
+public class UidChangeTracker implements MailboxConstants {
 
     private final MailboxEventDispatcher eventDispatcher;
 

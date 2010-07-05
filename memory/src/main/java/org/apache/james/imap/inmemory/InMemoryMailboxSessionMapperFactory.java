@@ -21,17 +21,17 @@ package org.apache.james.imap.inmemory;
 import org.apache.james.imap.inmemory.mail.InMemoryMailboxMapper;
 import org.apache.james.imap.inmemory.mail.InMemoryMessageMapper;
 import org.apache.james.imap.inmemory.user.InMemorySubscriptionMapper;
+import org.apache.james.imap.mailbox.MailboxConstants;
 import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.MailboxSession;
 import org.apache.james.imap.mailbox.SubscriptionException;
 import org.apache.james.imap.store.MailboxSessionMapperFactory;
-import org.apache.james.imap.store.StoreConstants;
 import org.apache.james.imap.store.mail.MailboxMapper;
 import org.apache.james.imap.store.mail.MessageMapper;
 import org.apache.james.imap.store.transaction.TransactionalMapper;
 import org.apache.james.imap.store.user.SubscriptionMapper;
 
-public class InMemoryMailboxSessionMapperFactory extends MailboxSessionMapperFactory<Long> implements StoreConstants {
+public class InMemoryMailboxSessionMapperFactory extends MailboxSessionMapperFactory<Long> {
 
     private MailboxMapper<Long> mailboxMapper;
     private MessageMapper<Long> messageMapper;
@@ -44,7 +44,7 @@ public class InMemoryMailboxSessionMapperFactory extends MailboxSessionMapperFac
     }
     
     public InMemoryMailboxSessionMapperFactory() {
-        this(DEFAULT_FOLDER_DELIMITER);
+        this(MailboxConstants.DEFAULT_DELIMITER);
     }
 
     @Override

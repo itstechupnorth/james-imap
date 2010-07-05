@@ -36,9 +36,8 @@ import org.apache.james.imap.store.transaction.TransactionalMapper;
 /**
  * JCR implementation of a MailboxManager
  * 
- * 
  */
-public class JCRMailboxManager extends StoreMailboxManager<String> implements JCRImapConstants{
+public class JCRMailboxManager extends StoreMailboxManager<String> implements JCRImapConstants {
 
     private final JCRMailboxSessionMapperFactory mapperFactory;
     private final Log logger = LogFactory.getLog(JCRMailboxManager.class);

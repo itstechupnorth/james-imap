@@ -21,17 +21,17 @@ package org.apache.james.imap.api;
 
 public interface ImapConstants {
     // Basic response types
-    String OK = "OK";
+    public static final String OK = "OK";
 
-    String NO = "NO";
+    public static final String NO = "NO";
 
-    String BAD = "BAD";
+    public static final String BAD = "BAD";
 
-    String BYE = "BYE";
+    public static final String BYE = "BYE";
 
-    String UNTAGGED = "*";
+    public static final String UNTAGGED = "*";
 
-    String SP = " ";
+    public static final String SP = " ";
 
     public static final String NIL = "NIL";
 
@@ -95,61 +95,59 @@ public interface ImapConstants {
 
     public static final char DQUOTE = '\"';
 
-    String VERSION = "IMAP4rev1";
+    public static final String VERSION = "IMAP4rev1";
 
-    String SUPPORTS_LITERAL_PLUS = "LITERAL+";
+    public static final String SUPPORTS_LITERAL_PLUS = "LITERAL+";
     
     public static final String SUPPORTS_RFC3348 = "CHILDREN";
     
     public static final String SUPPORTS_NAMESPACES = "NAMESPACE";
 
-    String USER_NAMESPACE = "#mail";
+    public static final char HIERARCHY_DELIMITER_CHAR = '.';
 
-    char HIERARCHY_DELIMITER_CHAR = '.';
+    public static final char NAMESPACE_PREFIX_CHAR = '#';
 
-    final char NAMESPACE_PREFIX_CHAR = '#';
+    public static final String HIERARCHY_DELIMITER = String.valueOf(HIERARCHY_DELIMITER_CHAR);
 
-    String HIERARCHY_DELIMITER = String.valueOf(HIERARCHY_DELIMITER_CHAR);
+    public static final String NAMESPACE_PREFIX = String.valueOf(NAMESPACE_PREFIX_CHAR);
 
-    final String NAMESPACE_PREFIX = String.valueOf(NAMESPACE_PREFIX_CHAR);
+    public static final String INBOX_NAME = "INBOX";
 
-    String INBOX_NAME = "INBOX";
+    public static final String MIME_TYPE_TEXT = "TEXT";
 
-    public String MIME_TYPE_TEXT = "TEXT";
+    public static final String MIME_TYPE_MULTIPART = "MULTIPART";
 
-    public String MIME_TYPE_MULTIPART = "MULTIPART";
+    public static final String MIME_SUBTYPE_PLAIN = "PLAIN";
 
-    public String MIME_SUBTYPE_PLAIN = "PLAIN";
+    public static final String MIME_TYPE_MESSAGE = "MESSAGE";
 
-    public String MIME_TYPE_MESSAGE = "MESSAGE";
-
-    public String MIME_SUBTYPE_RFC822 = "RFC822";
+    public static final String MIME_SUBTYPE_RFC822 = "RFC822";
 
     // RFC822 CONSTANTS:
     // TODO: Consider switching to standard case
-    public String RFC822_BCC = "Bcc";
+    public static final String RFC822_BCC = "Bcc";
 
-    public String RFC822_CC = "Cc";
+    public static final String RFC822_CC = "Cc";
 
-    public String RFC822_FROM = "From";
+    public static final String RFC822_FROM = "From";
 
-    public String RFC822_DATE = "Date";
+    public static final String RFC822_DATE = "Date";
 
-    public String RFC822_SUBJECT = "Subject";
+    public static final String RFC822_SUBJECT = "Subject";
 
-    public String RFC822_TO = "To";
+    public static final String RFC822_TO = "To";
 
-    public String RFC822_SENDER = "Sender";
+    public static final String RFC822_SENDER = "Sender";
 
-    public String RFC822_REPLY_TO = "Reply-To";
+    public static final String RFC822_REPLY_TO = "Reply-To";
 
-    public String RFC822_IN_REPLY_TO = "In-Reply-To";
+    public static final String RFC822_IN_REPLY_TO = "In-Reply-To";
 
-    public String RFC822_MESSAGE_ID = "Message-ID";
+    public static final String RFC822_MESSAGE_ID = "Message-ID";
 
-    public String NAME_ATTRIBUTE_HAS_CHILDREN = "\\HasChildren";
+    public static final String NAME_ATTRIBUTE_HAS_CHILDREN = "\\HasChildren";
 
-    public String NAME_ATTRIBUTE_HAS_NO_CHILDREN = "\\HasNoChildren";
+    public static final String NAME_ATTRIBUTE_HAS_NO_CHILDREN = "\\HasNoChildren";
 
     public static final String NAMESPACE_COMMAND_NAME = "NAMESPACE";
 

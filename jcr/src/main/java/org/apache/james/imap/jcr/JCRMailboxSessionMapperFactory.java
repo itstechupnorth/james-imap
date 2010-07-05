@@ -24,11 +24,11 @@ import org.apache.james.imap.jcr.mail.JCRMailboxMapper;
 import org.apache.james.imap.jcr.mail.JCRMessageMapper;
 import org.apache.james.imap.jcr.user.JCRSubscriptionMapper;
 
+import org.apache.james.imap.mailbox.MailboxConstants;
 import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.MailboxSession;
 import org.apache.james.imap.mailbox.SubscriptionException;
 import org.apache.james.imap.store.MailboxSessionMapperFactory;
-import org.apache.james.imap.store.StoreConstants;
 import org.apache.james.imap.store.mail.MailboxMapper;
 import org.apache.james.imap.store.mail.MessageMapper;
 import org.apache.james.imap.store.user.SubscriptionMapper;
@@ -38,7 +38,7 @@ import org.apache.james.imap.store.user.SubscriptionMapper;
  * 
  *
  */
-public class JCRMailboxSessionMapperFactory extends MailboxSessionMapperFactory<String> implements StoreConstants{
+public class JCRMailboxSessionMapperFactory extends MailboxSessionMapperFactory<String> {
 
     private final MailboxSessionJCRRepository repository;
     private final Log logger;
@@ -49,7 +49,7 @@ public class JCRMailboxSessionMapperFactory extends MailboxSessionMapperFactory<
     private int messageScaling;
 
     public JCRMailboxSessionMapperFactory(final MailboxSessionJCRRepository repository, final NodeLocker locker) {
-        this(repository, locker, DEFAULT_FOLDER_DELIMITER, DEFAULT_SCALING, JCRMessageMapper.MESSAGE_SCALE_DAY);
+        this(repository, locker, MailboxConstants.DEFAULT_DELIMITER, DEFAULT_SCALING, JCRMessageMapper.MESSAGE_SCALE_DAY);
     }
 
     public JCRMailboxSessionMapperFactory(final MailboxSessionJCRRepository repository, final NodeLocker locker, final char delimiter, final int scaling, final int messageScaling) {
