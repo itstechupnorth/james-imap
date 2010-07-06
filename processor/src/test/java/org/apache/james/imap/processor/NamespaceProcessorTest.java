@@ -62,39 +62,30 @@ public class NamespaceProcessorTest {
     StatusResponseFactory statusResponseStub;
     ImapSession imapSessionStub;
     MailboxSession mailboxSessionStub;
-    MailboxSession.Namespace personalSpaceStub;
-    MailboxSession.Namespace usersSpaceStub;
-    MailboxSession.Namespace sharedSpaceStub;
+    String personalSpaceStub;
+    String usersSpaceStub;
+    String sharedSpaceStub;
     NamespaceRequest namespaceRequest;
-    Collection<MailboxSession.Namespace> sharedSpaces;
+    Collection<String> sharedSpaces;
     
     Mockery mockery = new JUnit4Mockery();
     
     @Before
     public void setUp() throws Exception {
-        sharedSpaces = new ArrayList<MailboxSession.Namespace>();
+        sharedSpaces = new ArrayList<String>();
         statusResponseStub = mockery.mock(StatusResponseFactory.class);
         final MailboxManager mailboxManagerStub = mockery.mock(MailboxManager.class);
         subject = new NamespaceProcessor(mockery.mock(ImapProcessor.class), mailboxManagerStub, statusResponseStub);
         imapSessionStub = mockery.mock(ImapSession.class);
         mailboxSessionStub = mockery.mock(MailboxSession.class);
-        personalSpaceStub = mockery.mock(MailboxSession.Namespace.class, "PersonalNamespace");
-        usersSpaceStub = mockery.mock(MailboxSession.Namespace.class, "UsersNamespace");
-        sharedSpaceStub = mockery.mock(MailboxSession.Namespace.class, "SharedNamespace");
      
         namespaceRequest = new NamespaceRequest(ImapCommand.anyStateCommand("Name"), "TAG");
         
         mockery.checking (new Expectations() {{
             allowing(imapSessionStub).getAttribute(ImapSessionUtils.MAILBOX_SESSION_ATTRIBUTE_SESSION_KEY); will(returnValue(mailboxSessionStub));
-            allowing(personalSpaceStub).getDeliminator(); will(returnValue(PERSONAL_DELIMINATOR));
-            allowing(personalSpaceStub).getPrefix(); will(returnValue(PERSONAL_PREFIX));
-            allowing(usersSpaceStub).getDeliminator(); will(returnValue(USERS_DELIMINATOR));
-            allowing(usersSpaceStub).getPrefix(); will(returnValue(USERS_PREFIX));
-            allowing(sharedSpaceStub).getDeliminator(); will(returnValue(SHARED_SPACE_DELIMINATOR));
-            allowing(sharedSpaceStub).getPrefix(); will(returnValue(SHARED_PREFIX));
-            allowing(mailboxSessionStub).getPersonalSpace(); will(returnValue(personalSpaceStub));
-            allowing(mailboxSessionStub).getOtherUsersSpace(); will(returnValue(usersSpaceStub));
-            allowing(mailboxSessionStub).getSharedSpaces();will(returnValue(sharedSpaces));
+            allowing(mailboxSessionStub).getPersonalSpace(); will(returnValue("PersonalNamespace"));
+            allowing(mailboxSessionStub).getOtherUsersSpace(); will(returnValue("UsersNamespace"));
+            allowing(mailboxSessionStub).getSharedSpaces();will(returnValue("SharedNamespace"));
             allowing(imapSessionStub).getState();will(returnValue(ImapSessionState.AUTHENTICATED));
             allowing(statusResponseStub).taggedOk(
                     with(any(String.class)), with(any(ImapCommand.class)), 

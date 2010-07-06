@@ -98,7 +98,7 @@ public interface MailboxSession {
      * use cases emerge.
      * @return Personal Namespace, not null
      */
-    public Namespace getPersonalSpace();
+    public String getPersonalSpace();
     
     /**
      * Gets the <a href='http://www.isi.edu/in-notes/rfc2342.txt' rel='tag'>RFC 2342</a> 
@@ -109,14 +109,14 @@ public interface MailboxSession {
      * @return Other Users Namespace 
      * or null when there is non available
      */
-    public Namespace getOtherUsersSpace();
+    public String getOtherUsersSpace();
     
     /**
      * Iterates the <a href='http://www.isi.edu/in-notes/rfc2342.txt' rel='tag'>RFC 2342</a>
      * Shared Namespaces available for the current session.
      * @return not null though possibly empty
      */
-    public Collection<Namespace> getSharedSpaces();
+    public Collection<String> getSharedSpaces();
     
     
     /**
@@ -125,25 +125,6 @@ public interface MailboxSession {
      * @return attributes
      */
     public Map<Object,Object> getAttributes();
-    
-    /**
-     * Describes a <a href='http://www.isi.edu/in-notes/rfc2342.txt' rel='tag'>RFC 2342</a> namespace.
-     */
-    public interface Namespace {
-        
-        /**
-         * Gets the hierachy deliminator for this namespace.
-         * @return character that delimits this hierarchy
-         */
-        public char getDeliminator();
-        
-        /**
-         * Gets the prefix for this namespace.
-         * Clients will prefix 
-         * @return not null, though may be empty
-         */
-        public String getPrefix();
-    }
     
     
 }

@@ -356,7 +356,7 @@ public class TorqueMailboxManager implements MailboxManager {
     }
 
     private MailboxSession createSession(String userName, String password, Log log) {
-        return new SimpleMailboxSession(random.nextLong(), userName, password, log, MailboxConstants.DEFAULT_DELIMITER, new ArrayList<Locale>());
+        return new SimpleMailboxSession(random.nextLong(), userName, password, log, new ArrayList<Locale>());
     }
 
     public String resolve(final String userName, String mailboxPath) {

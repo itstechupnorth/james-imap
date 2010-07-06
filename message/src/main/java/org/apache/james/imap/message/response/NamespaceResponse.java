@@ -74,21 +74,21 @@ public class NamespaceResponse implements ImapResponseMessage {
     public static final class Namespace {
         private final String prefix;
 
-        private final char deliminator;
+        private final char delimiter;
 
-        public Namespace(final String prefix, final char deliminator) {
+        public Namespace(final String prefix, final char delimiter) {
             super();
             this.prefix = prefix;
-            this.deliminator = deliminator;
+            this.delimiter = delimiter;
         }
 
         /**
-         * Gets the deliminator used to separate mailboxes.
+         * Gets the delimiter used to separate mailboxes.
          * 
          * @return not null
          */
-        public char getDeliminator() {
-            return deliminator;
+        public char getDelimiter() {
+            return delimiter;
         }
 
         /**
@@ -103,7 +103,7 @@ public class NamespaceResponse implements ImapResponseMessage {
         public int hashCode() {
             final int PRIME = 31;
             int result = 1;
-            result = PRIME * result + deliminator;
+            result = PRIME * result + delimiter;
             result = PRIME * result + ((prefix == null) ? 0 : prefix.hashCode());
             return result;
         }
@@ -117,7 +117,7 @@ public class NamespaceResponse implements ImapResponseMessage {
             if (getClass() != obj.getClass())
                 return false;
             final Namespace other = (Namespace) obj;
-            if (deliminator != other.deliminator)
+            if (delimiter != other.delimiter)
                 return false;
             if (prefix == null) {
                 if (other.prefix != null)
@@ -129,7 +129,7 @@ public class NamespaceResponse implements ImapResponseMessage {
         
         @Override
         public String toString() {
-            return "Namespace [prefix=" + prefix + ", delim=" + deliminator + "]";
+            return "Namespace [prefix=" + prefix + ", delim=" + delimiter + "]";
         }
     }
 

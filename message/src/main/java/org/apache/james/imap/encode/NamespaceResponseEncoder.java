@@ -73,7 +73,7 @@ public class NamespaceResponseEncoder extends AbstractChainedImapEncoder {
             throws IOException {
         composer.openParen();
         composer.quote(namespace.getPrefix());
-        composer.quote(Character.toString(namespace.getDeliminator()));
+        composer.quote(Character.toString(namespace.getDelimiter()));
         composer.closeParen();
     }
 

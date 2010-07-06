@@ -356,7 +356,7 @@ public abstract class StoreMailboxManager<Id> extends AbstractLogEnabled impleme
      * @return session
      */
     private SimpleMailboxSession createSession(String userName, String password, Log log) {
-        return new SimpleMailboxSession(randomId(), userName, password, log, MailboxConstants.DEFAULT_DELIMITER, new ArrayList<Locale>());
+        return new SimpleMailboxSession(randomId(), userName, password, log, new ArrayList<Locale>());
     }
 
     /**
