@@ -20,15 +20,10 @@
 package org.apache.james.imap.store;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.Locale;
-import java.util.Random;
 
 import org.apache.commons.logging.Log;
-import org.apache.james.imap.api.AbstractLogEnabled;
-import org.apache.james.imap.mailbox.BadCredentialsException;
 import org.apache.james.imap.mailbox.MailboxConstants;
 import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.MailboxExistsException;
@@ -40,7 +35,6 @@ import org.apache.james.imap.mailbox.MailboxQuery;
 import org.apache.james.imap.mailbox.MailboxSession;
 import org.apache.james.imap.mailbox.MessageRange;
 import org.apache.james.imap.mailbox.StandardMailboxMetaDataComparator;
-import org.apache.james.imap.mailbox.SubscriptionException;
 import org.apache.james.imap.mailbox.MailboxMetaData.Selectability;
 import org.apache.james.imap.mailbox.util.MailboxEventDispatcher;
 import org.apache.james.imap.mailbox.util.SimpleMailboxMetaData;
@@ -57,25 +51,20 @@ import org.apache.james.imap.store.transaction.TransactionalMapper;
  *
  * @param <Id>
  */
-public abstract class StoreMailboxManager<Id> extends AbstractLogEnabled implements MailboxManager {
+public abstract class StoreMailboxManager<Id> extends DelegatingMailboxManager {
     
     public static final char SQL_WILDCARD_CHAR = '%';
 
     private final Object mutex = new Object();
     
-    private final static Random random = new Random();
-
     private final MailboxEventDispatcher dispatcher = new MailboxEventDispatcher();
-    private final DelegatingMailboxListener delegatingListener = new DelegatingMailboxListener();
-    private final Authenticator authenticator;    
-    private final Subscriber subscriber;    
+    private final DelegatingMailboxListener delegatingListener = new DelegatingMailboxListener();   
     protected final MailboxSessionMapperFactory<Id> mailboxSessionMapperFactory;
     private UidConsumer<Id> consumer;
     
     
     public StoreMailboxManager(MailboxSessionMapperFactory<Id> mailboxSessionMapperFactory, final Authenticator authenticator, final Subscriber subscriber, final UidConsumer<Id> consumer) {
-        this.authenticator = authenticator;
-        this.subscriber = subscriber;
+        super(authenticator, subscriber);
         this.consumer = consumer;
         this.mailboxSessionMapperFactory = mailboxSessionMapperFactory;
     }
@@ -248,15 +237,7 @@ public abstract class StoreMailboxManager<Id> extends AbstractLogEnabled impleme
         }
     }
 
-    /**
-     * Generate an return the next uid validity 
-     * 
-     * @return uidValidity
-     */
-    protected int randomUidValidity() {
-        return Math.abs(random.nextInt());
-    }
-    
+ 
     /**
      * Changes the name of the mailbox instance in the cache.
      * @param from not null
@@ -342,130 +323,10 @@ public abstract class StoreMailboxManager<Id> extends AbstractLogEnabled impleme
 
     /*
      * (non-Javadoc)
-     * @see org.apache.james.imap.mailbox.MailboxManager#createSystemSession(java.lang.String, org.apache.commons.logging.Log)
-     */
-    public MailboxSession createSystemSession(String userName, Log log) {
-        return createSession(userName, null, log);
-    }
-
-    /**
-     * Create Session 
-     * 
-     * @param userName
-     * @param log
-     * @return session
-     */
-    private SimpleMailboxSession createSession(String userName, String password, Log log) {
-        return new SimpleMailboxSession(randomId(), userName, password, log, new ArrayList<Locale>());
-    }
-
-    /**
-     * Generate and return the next id to use
-     * 
-     * @return id
-     */
-    protected long randomId() {
-        return random.nextLong();
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see org.apache.james.imap.mailbox.MailboxManager#resolve(java.lang.String, java.lang.String)
-     */
-    public String resolve(final String userName, String mailboxPath) {
-        if (mailboxPath.length() > 0 && mailboxPath.charAt(0) != MailboxConstants.DEFAULT_DELIMITER) {
-            mailboxPath = MailboxConstants.DEFAULT_DELIMITER + mailboxPath;
-        }
-        final String result = MailboxConstants.USER_NAMESPACE + MailboxConstants.DEFAULT_DELIMITER + userName
-        + mailboxPath;
-        return result;
-    }
-
-    /**
-     * Log in the user with the given userid and password
-     * 
-     * @param userid the username
-     * @param passwd the password
-     * @return success true if login success false otherwise
-     */
-    public boolean login(String userid, String passwd) {
-        return authenticator.isAuthentic(userid, passwd);
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see org.apache.james.imap.mailbox.MailboxManager#subscribe(org.apache.james.imap.mailbox.MailboxSession, java.lang.String)
-     */
-    public void subscribe(MailboxSession session, String mailbox)
-    throws SubscriptionException {
-        subscriber.subscribe(session, mailbox);
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see org.apache.james.imap.mailbox.MailboxManager#subscriptions(org.apache.james.imap.mailbox.MailboxSession)
-     */
-    public Collection<String> subscriptions(MailboxSession session) throws SubscriptionException {
-        return subscriber.subscriptions(session);
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see org.apache.james.imap.mailbox.MailboxManager#unsubscribe(org.apache.james.imap.mailbox.MailboxSession, java.lang.String)
-     */
-    public void unsubscribe(MailboxSession session, String mailbox)
-    throws SubscriptionException {
-        subscriber.unsubscribe(session, mailbox);
-    }
-
-    /*
-     * (non-Javadoc)
      * @see org.apache.james.imap.mailbox.MailboxManager#addListener(java.lang.String, org.apache.james.imap.mailbox.MailboxListener, org.apache.james.imap.mailbox.MailboxSession)
      */
     public void addListener(String mailboxName, MailboxListener listener, MailboxSession session) throws MailboxException {
         delegatingListener.addListener(mailboxName, listener);
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see org.apache.james.imap.mailbox.MailboxManager#login(java.lang.String, java.lang.String, org.apache.commons.logging.Log)
-     */
-    public MailboxSession login(String userid, String passwd, Log log) throws BadCredentialsException, MailboxException {
-        if (login(userid, passwd)) {
-            return createSession(userid, passwd, log);
-        } else {
-            throw new BadCredentialsException();
-        }
-    }
-    
-    /**
-     * Default do nothing. Should be overriden by subclass if needed
-     */
-    public void logout(MailboxSession session, boolean force) throws MailboxException {
-        // Do nothing by default
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see org.apache.james.imap.mailbox.MailboxManager#getDelimiter()
-     */
-    public final char getDelimiter() {
-        return MailboxConstants.DEFAULT_DELIMITER;
-    }
-
-    /**
-     * End processing of Request for session
-     */
-    public void endProcessingRequest(MailboxSession session) {
-        mailboxSessionMapperFactory.endRequest(session);
-    }
-
-    /**
-     * Start processing of Request for session. Default is to do nothing.
-     * Implementations should override this if they need to do anything special
-     */
-    public void startProcessingRequest(MailboxSession session) {
-        // Default do nothing
     }
 
 }

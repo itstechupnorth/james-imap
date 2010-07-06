@@ -20,38 +20,29 @@
 package org.apache.james.mailboxmanager.torque;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
-import java.util.Random;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.commons.logging.impl.SimpleLog;
 import org.apache.james.imap.api.display.HumanReadableText;
-import org.apache.james.imap.mailbox.BadCredentialsException;
 import org.apache.james.imap.mailbox.Mailbox;
 import org.apache.james.imap.mailbox.MailboxConstants;
 import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.MailboxExistsException;
 import org.apache.james.imap.mailbox.MailboxListener;
-import org.apache.james.imap.mailbox.MailboxManager;
 import org.apache.james.imap.mailbox.MailboxMetaData;
 import org.apache.james.imap.mailbox.MailboxNotFoundException;
 import org.apache.james.imap.mailbox.MailboxQuery;
 import org.apache.james.imap.mailbox.MailboxSession;
 import org.apache.james.imap.mailbox.MessageRange;
 import org.apache.james.imap.mailbox.StandardMailboxMetaDataComparator;
-import org.apache.james.imap.mailbox.SubscriptionException;
 import org.apache.james.imap.mailbox.MailboxMetaData.Selectability;
 import org.apache.james.imap.mailbox.util.SimpleMailboxMetaData;
 import org.apache.james.imap.store.Authenticator;
-import org.apache.james.imap.store.SimpleMailboxSession;
+import org.apache.james.imap.store.DelegatingMailboxManager;
 import org.apache.james.imap.store.Subscriber;
 import org.apache.james.mailboxmanager.torque.om.MailboxRow;
 import org.apache.james.mailboxmanager.torque.om.MailboxRowPeer;
@@ -59,27 +50,18 @@ import org.apache.torque.TorqueException;
 import org.apache.torque.util.CountHelper;
 import org.apache.torque.util.Criteria;
 
-public class TorqueMailboxManager implements MailboxManager {
+public class TorqueMailboxManager extends DelegatingMailboxManager {
     
     private static final char SQL_WILDCARD_CHAR = '%';
-
-    private final static Random random = new Random();
-
-    protected Log log = LogFactory.getLog(TorqueMailboxManager.class);
 
     private final ReentrantReadWriteLock lock;
 
     private final Map<String, TorqueMailbox> mailboxes;
-
-    private final Authenticator authenticator;
-
-    private final Subscriber subscriper;
     
     public TorqueMailboxManager(final Authenticator authenticator, final Subscriber subscriper) {
+        super(authenticator, subscriper);
         this.lock = new ReentrantReadWriteLock();
         mailboxes = new HashMap<String, TorqueMailbox>();
-        this.authenticator = authenticator;
-        this.subscriper = subscriper;
     }
 
     public Mailbox getMailbox(String mailboxName, MailboxSession session)
@@ -157,7 +139,7 @@ public class TorqueMailboxManager implements MailboxManager {
         MailboxRow mr = new MailboxRow();
         mr.setName(namespaceName);
         mr.setLastUid(0);
-        mr.setUidValidity(Math.abs(random.nextInt()));
+        mr.setUidValidity(randomUidValidity());
         try {
             mr.save();
         } catch (TorqueException e) {
@@ -344,85 +326,9 @@ public class TorqueMailboxManager implements MailboxManager {
         }
     }
 
-    protected Log getLog() {
-        if (log == null) {
-            log = new SimpleLog("TorqueMailboxManager");
-        }
-        return log;
-    }
-
-    public MailboxSession createSystemSession(String userName, Log log) {
-        return createSession(userName, null, log);
-    }
-
-    private MailboxSession createSession(String userName, String password, Log log) {
-        return new SimpleMailboxSession(random.nextLong(), userName, password, log, new ArrayList<Locale>());
-    }
-
-    public String resolve(final String userName, String mailboxPath) {
-        if (mailboxPath.charAt(0) != MailboxConstants.DEFAULT_DELIMITER) {
-            mailboxPath = MailboxConstants.DEFAULT_DELIMITER + mailboxPath;
-        }
-        final String result = MailboxConstants.USER_NAMESPACE + MailboxConstants.DEFAULT_DELIMITER + userName
-                + mailboxPath;
-        return result;
-    }
-
-    public boolean login(String userid, String passwd) {
-        return authenticator.isAuthentic(userid, passwd);
-    }
-
-    public void subscribe(MailboxSession session, String mailbox)
-            throws SubscriptionException {
-        subscriper.subscribe(session, mailbox);
-    }
-
-    public Collection<String> subscriptions(MailboxSession session) throws SubscriptionException {
-        return subscriper.subscriptions(session);
-    }
-
-    public void unsubscribe(MailboxSession session, String mailbox)
-            throws SubscriptionException {
-        subscriper.unsubscribe(session, mailbox);
-    }
-
     public void addListener(String mailboxName, MailboxListener listener, MailboxSession session) throws MailboxException {
         final TorqueMailbox mailbox = doGetMailbox(mailboxName);
         mailbox.addListener(listener);
-    }
-
-    public MailboxSession login(String userid, String passwd, Log log) throws BadCredentialsException, MailboxException {
-        if (login(userid, passwd)) {
-            return createSession(userid, passwd, log);
-        } else {
-            throw new BadCredentialsException();
-        }
-    }
-
-    public void logout(MailboxSession session, boolean force) throws MailboxException {
-        // fine
-    }
-
-    /**
-     * Do nothing
-     */
-    public void endProcessingRequest(MailboxSession session) {
-        // Do nothing 
-    }
-
-    /**
-     * Do nothing
-     */
-    public void startProcessingRequest(MailboxSession session) {
-        // Do nothing        
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see org.apache.james.imap.mailbox.MailboxManager#getDelimiter()
-     */
-    public final char getDelimiter() {
-        return MailboxConstants.DEFAULT_DELIMITER;
     }
 
 }
