@@ -27,7 +27,6 @@ import java.util.Locale;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
-import org.apache.james.imap.mailbox.MailboxConstants;
 import org.apache.james.imap.mailbox.MailboxSession;
 
 /**

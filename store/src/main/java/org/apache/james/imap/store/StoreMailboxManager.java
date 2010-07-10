@@ -329,4 +329,11 @@ public abstract class StoreMailboxManager<Id> extends DelegatingMailboxManager {
         delegatingListener.addListener(mailboxName, listener);
     }
 
+     /**
+     * End processing of Request for session
+     */
+    public void endProcessingRequest(MailboxSession session) {
+        mailboxSessionMapperFactory.endRequest(session);
+    }
+
 }
