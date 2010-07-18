@@ -23,6 +23,7 @@ import java.util.Collection;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
+import org.apache.james.imap.api.MailboxPath;
 
 
 /**
@@ -41,7 +42,7 @@ import org.apache.commons.logging.Log;
  * <p>
  * Internally MailboxManager deals with named repositories that could have
  * different implementations. E.g. JDBC connections to different hosts or
- * Maildir / Mbox like stores. This repositories are identified by its names and
+ * Maildir / Mbox like stores. These repositories are identified by their names and
  * maybe are configured in config.xml. The names of the mailboxes have to be
  * mapped to the corresponding repository name. For user mailboxes this could be
  * done by a "User.getRepositoryName()" property. It is imaginable that
@@ -66,21 +67,11 @@ public interface MailboxManager {
      * @return delimiter
      */
     char getDelimiter();
-    
-    /**
-     * <p>
-     * Resolves a path for the given user.
-     * </p>
-     * TODO: Think about replacing this operation TODO: More elegant to pass in
-     * the username TODO: Or switch to URLs
-     */
-    String resolve(String userName, String mailboxPath);
 
     /**
      * Gets an session suitable for IMAP.
      * 
-     * @param mailboxName
-     *            the name of the mailbox, not null
+     * @param mailboxPath the Path of the mailbox, not null
      * @param session the context for this call, not null
      * @return <code>ImapMailboxSession</code>, not null
      * @throws MailboxException
@@ -88,35 +79,34 @@ public interface MailboxManager {
      * @throws MailboxNotFoundException
      *             when the given mailbox does not exist
      */
-    Mailbox getMailbox(String mailboxName, MailboxSession session) throws MailboxException;
+    Mailbox getMailbox(MailboxPath mailboxPath, MailboxSession session) throws MailboxException;
 
     /**
      * Creates a new mailbox. Any intermediary mailboxes missing from the
      * hierarchy should be created.
      * 
-     * @param mailboxName
-     *            name, not null
+     * @param mailboxPath
      * @param mailboxSession the context for this call, not null
      * @throws MailboxException when creation fails
      */
-    void createMailbox(String mailboxName, MailboxSession mailboxSession) throws MailboxException;
+    void createMailbox(MailboxPath mailboxPath, MailboxSession mailboxSession) throws MailboxException;
 
     /**
      * Delete the mailbox with the name
      * 
-     * @param mailboxName
+     * @param mailboxPath
      * @param session
      * @throws MailboxException
      */
-    void deleteMailbox(String mailboxName, MailboxSession session) throws MailboxException;
+    void deleteMailbox(MailboxPath mailboxPath, MailboxSession session) throws MailboxException;
 
     /**
      * Renames a mailbox.
      * 
      * @param from
-     *            original name for the mailbox
+     *            original mailbox
      * @param to
-     *            new name for the mailbox
+     *            new mailbox
      * @param session the context for this call, not nul
      * @throws MailboxException otherwise
      * @throws MailboxExistsException
@@ -124,7 +114,7 @@ public interface MailboxManager {
      * @throws MailboxNotFound
      *             when the <code>from</code> mailbox does not exist
      */
-    void renameMailbox(String from, String to, MailboxSession session) throws MailboxException;
+    void renameMailbox(MailboxPath from, MailboxPath to, MailboxSession session) throws MailboxException;
 
     /**
      * this is done by the MailboxRepository because maybe this operation could
@@ -139,8 +129,7 @@ public interface MailboxManager {
      * @param session
      *            <code>MailboxSession</code>, not null
      */
-    void copyMessages(MessageRange set, String from, String to,
-            MailboxSession session) throws MailboxException;
+    void copyMessages(MessageRange set, MailboxPath from, MailboxPath to, MailboxSession session) throws MailboxException;
 
     /**
      * Searches for mailboxes matching the given query.
@@ -157,7 +146,7 @@ public interface MailboxManager {
      * @return true when the mailbox exists and is accessible for the given user, false otherwise
      * @throws MailboxException
      */
-    boolean mailboxExists(String mailboxName, MailboxSession session) throws MailboxException;
+    boolean mailboxExists(MailboxPath mailboxPath, MailboxSession session) throws MailboxException;
 
     /**
      * Creates a new system session.
@@ -245,12 +234,12 @@ public interface MailboxManager {
      * Listeners should return true from {@link MailboxListener#isClosed()}
      * when they are ready to be removed.
      * </p>
-     * @param mailboxName not null
+     * @param mailboxPath not null
      * @param listener not null
      * @param session not null
      * @throws MailboxException
      */
-    void addListener(String mailboxName, MailboxListener listener, MailboxSession session) throws MailboxException;
+    void addListener(MailboxPath mailboxPath, MailboxListener listener, MailboxSession session) throws MailboxException;
     
     /**
      * Start the processing of a request for the given MailboxSession. If the user is not logged in already then the MailboxSession will be null

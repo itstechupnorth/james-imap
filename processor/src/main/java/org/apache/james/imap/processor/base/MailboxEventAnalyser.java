@@ -27,13 +27,13 @@ import java.util.TreeSet;
 
 import javax.mail.Flags;
 
+import org.apache.james.imap.api.MailboxPath;
 import org.apache.james.imap.mailbox.MailboxListener;
 
 /**
  * {@link MailboxListener} implementation which will listen for {@link Event} notifications and 
- * analyze these. It will only act on {@link Event} notifications whiche are send for the registered
- * Mailbox name
- *
+ * analyze these. It will only act on {@link Event} notifications which are sent for the registered
+ * MailboxPath
  */
 public class MailboxEventAnalyser implements MailboxListener {
 
@@ -45,16 +45,16 @@ public class MailboxEventAnalyser implements MailboxListener {
     private boolean isDeletedByOtherSession = false;
     private boolean sizeChanged = false;
     private boolean silentFlagChanges = false;
-    private String mailboxName;
+    private MailboxPath mailboxPath;
     private boolean closed = false;
 
-    public MailboxEventAnalyser(final long sessionId, final String mailboxName) {
+    public MailboxEventAnalyser(final long sessionId, final MailboxPath mailboxPath) {
         super();
         this.sessionId = sessionId;
         flagUpdateUids = new TreeSet<Long>();
         expungedUids = new TreeSet<Long>();
         uninterestingFlag = Flags.Flag.RECENT;
-        this.mailboxName = mailboxName;
+        this.mailboxPath = mailboxPath;
     }
     
     /**
@@ -62,8 +62,8 @@ public class MailboxEventAnalyser implements MailboxListener {
      * 
      * @return name
      */
-    public String getMailboxName() {
-        return mailboxName;
+    public MailboxPath getMailboxPath() {
+        return mailboxPath;
     }
 
     /**
@@ -71,8 +71,8 @@ public class MailboxEventAnalyser implements MailboxListener {
      * 
      * @param mailboxName
      */
-    public void setMailboxName(String mailboxName) {
-        this.mailboxName = mailboxName;
+    public void setMailboxPath(MailboxPath mailboxPath) {
+        this.mailboxPath = mailboxPath;
     }
 
     /**
@@ -82,34 +82,34 @@ public class MailboxEventAnalyser implements MailboxListener {
      * @see org.apache.james.imap.mailbox.MailboxListener#event(org.apache.james.imap.mailbox.MailboxListener.Event)
      */
     public void event(Event event) {
-        
+
         // Check if the event was for the mailbox we are observing
-        if (event.getMailboxName().equals(mailboxName)) {
-        final long eventSessionId = event.getSessionId();
-        if (event instanceof MessageEvent) {
-            final MessageEvent messageEvent = (MessageEvent) event;
-            final long uid = messageEvent.getSubjectUid();
-            if (messageEvent instanceof Added) {
-                sizeChanged = true;
-            } else if (messageEvent instanceof FlagsUpdated) {
-                FlagsUpdated updated = (FlagsUpdated) messageEvent;
-                if (interestingFlags(updated)
-                        && (sessionId != eventSessionId || !silentFlagChanges)) {
+        if (event.getMailboxPath().equals(mailboxPath)) {
+            final long eventSessionId = event.getSessionId();
+            if (event instanceof MessageEvent) {
+                final MessageEvent messageEvent = (MessageEvent) event;
+                final long uid = messageEvent.getSubjectUid();
+                if (messageEvent instanceof Added) {
+                    sizeChanged = true;
+                } else if (messageEvent instanceof FlagsUpdated) {
+                    FlagsUpdated updated = (FlagsUpdated) messageEvent;
+                    if (interestingFlags(updated)
+                            && (sessionId != eventSessionId || !silentFlagChanges)) {
+                        final Long uidObject = new Long(uid);
+                        flagUpdateUids.add(uidObject);
+                    }
+                } else if (messageEvent instanceof Expunged) {
                     final Long uidObject = new Long(uid);
-                    flagUpdateUids.add(uidObject);
+                    expungedUids.add(uidObject);
                 }
-            } else if (messageEvent instanceof Expunged) {
-                final Long uidObject = new Long(uid);
-                expungedUids.add(uidObject);
+            } else if (event instanceof MailboxDeletionEvent) {
+                if (eventSessionId != sessionId) {
+                    isDeletedByOtherSession = true;
+                }
+            } else if (event instanceof MailboxRenamed) {
+                final MailboxRenamed mailboxRenamed = (MailboxRenamed) event;
+                setMailboxPath(mailboxRenamed.getNewPath());
             }
-        } else if (event instanceof MailboxDeletionEvent) {
-            if (eventSessionId != sessionId) {
-                isDeletedByOtherSession = true;
-            }
-        } else if (event instanceof MailboxRenamed) {
-            final MailboxRenamed mailboxRenamed = (MailboxRenamed) event;
-            setMailboxName(mailboxRenamed.getNewName());
-        }
         }
     }
 

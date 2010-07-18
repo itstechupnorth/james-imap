@@ -19,6 +19,8 @@
 
 package org.apache.james.imap.message.response;
 
+import org.apache.james.imap.api.ImapConstants;
+
 /**
  * <code>LIST</code> and <code>LSUB</code> return identical data.
  */
@@ -36,14 +38,14 @@ public abstract class AbstractListingResponse {
 
     private final boolean unmarked;
 
-    private final String hierarchyDelimiter;
+    private final String hierarchyDelimiter = ImapConstants.HIERARCHY_DELIMITER;
 
     private final String name;
 
     public AbstractListingResponse(final boolean noInferiors,
             final boolean noSelect, final boolean marked,
             final boolean unmarked, boolean hasChildren,
-            boolean hasNoChildren, final String hierarchyDelimiter, final String name) {
+            boolean hasNoChildren, final String name) {
         super();
         this.noInferiors = noInferiors;
         this.noSelect = noSelect;
@@ -51,7 +53,6 @@ public abstract class AbstractListingResponse {
         this.unmarked = unmarked;
         this.children = hasChildren;
         this.noChildren = hasNoChildren;
-        this.hierarchyDelimiter = hierarchyDelimiter;
         this.name = name;
     }
 

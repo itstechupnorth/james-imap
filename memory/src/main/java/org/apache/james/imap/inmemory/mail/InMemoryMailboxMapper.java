@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.apache.james.imap.api.MailboxPath;
 import org.apache.james.imap.inmemory.mail.model.InMemoryMailbox;
 import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.MailboxNotFoundException;
@@ -75,16 +76,17 @@ public class InMemoryMailboxMapper implements MailboxMapper<Long> {
      * (non-Javadoc)
      * @see org.apache.james.imap.store.mail.MailboxMapper#findMailboxByName(java.lang.String)
      */
-    public synchronized Mailbox<Long> findMailboxByName(String name) throws StorageException, MailboxNotFoundException {
+    public synchronized Mailbox<Long> findMailboxByPath(MailboxPath path) throws StorageException, MailboxNotFoundException {
         Mailbox<Long> result = null;
         for (final InMemoryMailbox mailbox:mailboxesById.values()) {
-            if (mailbox.getName().equals(name)) {
+            MailboxPath mp = new MailboxPath(mailbox.getNamespace(), mailbox.getUser(), mailbox.getName());
+            if (mp.equals(path)) {
                 result = mailbox;
                 break;
             }
         }
         if (result == null) {
-            throw new MailboxNotFoundException(name);
+            throw new MailboxNotFoundException(path);
         } else {
             return result;
         }
@@ -94,8 +96,8 @@ public class InMemoryMailboxMapper implements MailboxMapper<Long> {
      * (non-Javadoc)
      * @see org.apache.james.imap.store.mail.MailboxMapper#findMailboxWithNameLike(java.lang.String)
      */
-    public List<Mailbox<Long>> findMailboxWithNameLike(String name) throws StorageException {
-        final String regex = name.replace("%", ".*");
+    public List<Mailbox<Long>> findMailboxWithPathLike(MailboxPath path) throws StorageException {
+        final String regex = path.getName().replace("%", ".*");
         List<Mailbox<Long>> results = new ArrayList<Mailbox<Long>>();
         for (final InMemoryMailbox mailbox:mailboxesById.values()) {
             if (mailbox.getName().matches(regex)) {

@@ -41,6 +41,30 @@ public interface Mailbox<Id> {
     public abstract Id getMailboxId();
 
     /**
+     * Gets the current namespace for this mailbox.
+     * @return not null
+     */
+    public abstract String getNamespace();
+    
+    /**
+     * Sets the current namespace for this mailbox.
+     * @param name not null
+     */
+    public abstract void setNamespace(String namespace);
+
+    /**
+     * Gets the current user for this mailbox.
+     * @return not null
+     */
+    public abstract String getUser();
+    
+    /**
+     * Sets the current user for this mailbox.
+     * @param name not null
+     */
+    public abstract void setuser(String user);
+
+    /**
      * Gets the current name for this mailbox.
      * @return not null
      */

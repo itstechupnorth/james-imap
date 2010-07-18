@@ -21,6 +21,7 @@ package org.apache.james.imap.processor;
 
 import org.apache.james.imap.api.ImapCommand;
 import org.apache.james.imap.api.ImapMessage;
+import org.apache.james.imap.api.MailboxPath;
 import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.api.message.request.ImapRequest;
 import org.apache.james.imap.api.message.response.StatusResponseFactory;
@@ -66,16 +67,15 @@ public class LoginProcessor extends AbstractMailboxProcessor {
             try {
                 final MailboxSession mailboxSession = mailboxManager.login(userid, passwd, session.getLog());
                 session.authenticated();
-                session.setAttribute(
-                        ImapSessionUtils.MAILBOX_SESSION_ATTRIBUTE_SESSION_KEY,
-                        mailboxSession);
-                final String inboxName = buildFullName(session, INBOX);
-                if (mailboxManager.mailboxExists(inboxName, mailboxSession)) {
+                session.setAttribute(ImapSessionUtils.MAILBOX_SESSION_ATTRIBUTE_SESSION_KEY,
+                                        mailboxSession);
+                final MailboxPath inboxPath = buildFullPath(session, INBOX);
+                if (mailboxManager.mailboxExists(inboxPath, mailboxSession)) {
                     session.getLog().debug("INBOX exists. No need to create it.");
                 } else {
                     try {
                         session.getLog().debug("INBOX does not exist. Creating it.");
-                        mailboxManager.createMailbox(inboxName, mailboxSession);
+                        mailboxManager.createMailbox(inboxPath, mailboxSession);
                     } catch (MailboxExistsException e) {
                         session.getLog().debug("Mailbox created by concurrent call. Safe to ignore this exception.");
                     }

@@ -26,6 +26,7 @@ import java.util.List;
 import javax.mail.Flags;
 import javax.mail.Flags.Flag;
 
+import org.apache.james.imap.api.MailboxPath;
 import org.apache.james.imap.mailbox.MailboxListener.FlagsUpdated;
 
 public class FakeMailboxListenerFlagsUpdate extends FlagsUpdated {
@@ -37,8 +38,8 @@ public class FakeMailboxListenerFlagsUpdate extends FlagsUpdated {
     public Flags newFlags;
 
     public FakeMailboxListenerFlagsUpdate(long subjectUid, Flags newFlags,
-            long sessionId, String name) {
-        super(sessionId, name);
+            long sessionId, MailboxPath path) {
+        super(sessionId, path);
         this.subjectUid = subjectUid;
         this.newFlags = newFlags;
     }

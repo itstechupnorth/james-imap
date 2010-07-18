@@ -273,7 +273,7 @@ public abstract class StoreMessageManager<Id> implements org.apache.james.imap.m
                 }
             });
            
-            dispatcher.added(uid, mailboxSession.getSessionId(), getMailboxEntity().getName());
+            dispatcher.added(uid, mailboxSession.getSessionId(), new StoreMailboxPath<Id>(getMailboxEntity()));
             return uid;
         } catch (IOException e) {
             e.printStackTrace();
@@ -475,7 +475,7 @@ public abstract class StoreMessageManager<Id> implements org.apache.james.imap.m
         
         Iterator<Long> uidIt = uids.iterator();
         while(uidIt.hasNext()) {
-            dispatcher.expunged(uidIt.next(), mailboxSession.getSessionId(), getMailboxEntity().getName());
+            dispatcher.expunged(uidIt.next(), mailboxSession.getSessionId(), new StoreMailboxPath<Id>(getMailboxEntity()));
         }
         return uids.iterator();
     }
@@ -520,7 +520,7 @@ public abstract class StoreMessageManager<Id> implements org.apache.james.imap.m
         Iterator<Long> it = newFlagsByUid.keySet().iterator();
         while (it.hasNext()) {
             Long uid = it.next();
-            dispatcher.flagsUpdated(uid, mailboxSession.getSessionId(), getMailboxEntity().getName(), originalFlagsByUid.get(uid), newFlagsByUid.get(uid));
+            dispatcher.flagsUpdated(uid, mailboxSession.getSessionId(), new StoreMailboxPath<Id>(getMailboxEntity()), originalFlagsByUid.get(uid), newFlagsByUid.get(uid));
 
         }
         return newFlagsByUid;
@@ -596,7 +596,7 @@ public abstract class StoreMessageManager<Id> implements org.apache.james.imap.m
             }
             // Wait until commit before issuing events
             for (MailboxMembership<Id> newMember:copiedRows) {
-                dispatcher.added(newMember.getUid(), session.getSessionId(), getMailboxEntity().getName());
+                dispatcher.added(newMember.getUid(), session.getSessionId(), new StoreMailboxPath<Id>(getMailboxEntity()));
             }
         } catch (MessagingException e) {
             throw new MailboxException(HumanReadableText.FAILURE_MAIL_PARSE, e);

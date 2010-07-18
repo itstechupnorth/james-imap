@@ -23,6 +23,8 @@ import java.util.Iterator;
 
 import javax.mail.Flags;
 
+import org.apache.james.imap.api.MailboxPath;
+
 /**
  * Listens to <code>Mailbox</code> events.
  * Note that listeners may be removed asynchronously.
@@ -49,12 +51,12 @@ public interface MailboxListener {
     /**
      * A mailbox event.
      */
-    public abstract class Event {
+    public class Event {
         private final long sessionId;
-        private final String name;
-        public Event(final long sessionId, final String name) {
+        private final MailboxPath path;
+        public Event(final long sessionId, final MailboxPath path) {
             this.sessionId = sessionId;
-            this.name = name;
+            this.path = path;
         }
         
         /**
@@ -67,22 +69,22 @@ public interface MailboxListener {
         }
         
         /**
-         * Return the name of the Mailbox this event belongs to. 
+         * Return the path of the Mailbox this event belongs to. 
          * 
-         * @return name
+         * @return path
          */
-        public String getMailboxName() {
-            return name;
+        public MailboxPath getMailboxPath() {
+            return path;
         }
     }
 
     /**
      * Indicates that mailbox has been deleted.
      */
-    public abstract class MailboxDeletionEvent extends Event {
+    public class MailboxDeletionEvent extends Event {
 
-        public MailboxDeletionEvent(long sessionId, String name) {
-            super(sessionId, name);
+        public MailboxDeletionEvent(long sessionId, MailboxPath path) {
+            super(sessionId, path);
         }
     }
     
@@ -91,15 +93,15 @@ public interface MailboxListener {
      * Indicates that a mailbox has been renamed.
      */
     public abstract class MailboxRenamed extends Event {
-        public MailboxRenamed(long sessionId, String name) {
-            super(sessionId, name);
+        public MailboxRenamed(long sessionId, MailboxPath path) {
+            super(sessionId, path);
         }
         /**
          * Gets the new name for this mailbox.
          * 
          * @return name, not null
          */
-        public abstract String getNewName();
+        public abstract MailboxPath getNewPath();
     }
 
     /**
@@ -107,8 +109,8 @@ public interface MailboxListener {
      */
     public abstract class MessageEvent extends Event {
 
-        public MessageEvent(long sessionId, String name) {
-            super(sessionId, name);
+        public MessageEvent(long sessionId, MailboxPath path) {
+            super(sessionId, path);
         }
 
         /**
@@ -121,8 +123,8 @@ public interface MailboxListener {
 
     public abstract class Expunged extends MessageEvent {
 
-        public Expunged(long sessionId, String name) {
-            super(sessionId, name);
+        public Expunged(long sessionId, MailboxPath path) {
+            super(sessionId, path);
         }
     }
 
@@ -133,8 +135,8 @@ public interface MailboxListener {
      */
     public abstract class FlagsUpdated extends MessageEvent {
 
-        public FlagsUpdated(long sessionId, String name) {
-            super(sessionId, name);
+        public FlagsUpdated(long sessionId, MailboxPath path) {
+            super(sessionId, path);
         }
 
         /**
@@ -157,8 +159,8 @@ public interface MailboxListener {
      */
     public abstract class Added extends MessageEvent {
 
-        public Added(long sessionId, String name) {
-            super(sessionId, name);
+        public Added(long sessionId, MailboxPath path) {
+            super(sessionId, path);
         }
     }
 

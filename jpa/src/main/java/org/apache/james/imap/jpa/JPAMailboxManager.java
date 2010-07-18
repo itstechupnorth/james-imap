@@ -18,6 +18,7 @@
  ****************************************************************/
 package org.apache.james.imap.jpa;
 
+import org.apache.james.imap.api.MailboxPath;
 import org.apache.james.imap.jpa.mail.model.JPAMailbox;
 import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.MailboxSession;
@@ -39,8 +40,8 @@ public abstract class JPAMailboxManager extends StoreMailboxManager<Long> {
     }
     
     @Override
-    protected void doCreateMailbox(String namespaceName, MailboxSession session) throws MailboxException {
-        final Mailbox<Long> mailbox = new JPAMailbox(namespaceName, randomUidValidity());
+    protected void doCreateMailbox(MailboxPath path, MailboxSession session) throws MailboxException {
+        final Mailbox<Long> mailbox = new JPAMailbox(path, randomUidValidity());
         final MailboxMapper<Long> mapper = mailboxSessionMapperFactory.getMailboxMapper(session);
         mapper.execute(new TransactionalMapper.Transaction(){
 

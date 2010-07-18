@@ -20,6 +20,7 @@ package org.apache.james.imap.store.mail;
 
 import java.util.List;
 
+import org.apache.james.imap.api.MailboxPath;
 import org.apache.james.imap.mailbox.MailboxNotFoundException;
 import org.apache.james.imap.mailbox.StorageException;
 import org.apache.james.imap.store.mail.model.Mailbox;
@@ -63,7 +64,7 @@ public interface MailboxMapper<Id> extends TransactionalMapper {
      * @throws StorageException
      * @throws MailboxNotFoundException
      */
-    public abstract Mailbox<Id> findMailboxByName(String mailboxName)
+    public abstract Mailbox<Id> findMailboxByPath(MailboxPath mailboxName)
             throws StorageException, MailboxNotFoundException;
 
     /**
@@ -73,7 +74,7 @@ public interface MailboxMapper<Id> extends TransactionalMapper {
      * @return mailboxList
      * @throws StorageException
      */
-    public abstract List<Mailbox<Id>> findMailboxWithNameLike(String mailboxName)
+    public abstract List<Mailbox<Id>> findMailboxWithPathLike(MailboxPath mailboxPath)
             throws StorageException;
 
     /**

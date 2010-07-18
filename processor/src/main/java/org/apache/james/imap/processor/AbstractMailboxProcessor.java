@@ -18,8 +18,6 @@
  ****************************************************************/
 package org.apache.james.imap.processor;
 
-import static org.apache.james.imap.api.ImapConstants.NAMESPACE_PREFIX;
-
 import java.util.Collection;
 import java.util.Iterator;
 
@@ -28,7 +26,9 @@ import javax.mail.MessagingException;
 
 import org.apache.commons.logging.Log;
 import org.apache.james.imap.api.ImapCommand;
+import org.apache.james.imap.api.ImapConstants;
 import org.apache.james.imap.api.ImapMessage;
+import org.apache.james.imap.api.MailboxPath;
 import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.api.message.request.ImapRequest;
 import org.apache.james.imap.api.message.response.ImapResponseMessage;
@@ -38,6 +38,7 @@ import org.apache.james.imap.api.process.ImapProcessor;
 import org.apache.james.imap.api.process.ImapSession;
 import org.apache.james.imap.api.process.SelectedMailbox;
 import org.apache.james.imap.mailbox.Mailbox;
+import org.apache.james.imap.mailbox.MailboxConstants;
 import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.MailboxExistsException;
 import org.apache.james.imap.mailbox.MailboxManager;
@@ -229,9 +230,8 @@ abstract public class AbstractMailboxProcessor extends AbstractChainedProcessor 
     }
 
     private Mailbox getMailbox(final ImapSession session, final SelectedMailbox selected) throws MailboxException {
-        final String fullMailboxName = buildFullName(session, selected.getName());
         final MailboxManager mailboxManager = getMailboxManager();
-        final Mailbox mailbox = mailboxManager.getMailbox(fullMailboxName, ImapSessionUtils.getMailboxSession(session));
+        final Mailbox mailbox = mailboxManager.getMailbox(selected.getPath(), ImapSessionUtils.getMailboxSession(session));
         return mailbox;
     }
 
@@ -311,13 +311,57 @@ abstract public class AbstractMailboxProcessor extends AbstractChainedProcessor 
             ImapSession session, String tag, ImapCommand command,
             Responder responder);
 
-    public String buildFullName(final ImapSession session, String mailboxName)
-            throws MailboxException {
-        final String user = ImapSessionUtils.getUserName(session);
-        if (!mailboxName.startsWith(NAMESPACE_PREFIX)) {
-            mailboxName = getMailboxManager().resolve(user, mailboxName);
+    public MailboxPath buildFullPath(final ImapSession session, String mailboxName) {
+        String namespace = null;
+        String name = null;
+        if (mailboxName.charAt(0) == ImapConstants.NAMESPACE_PREFIX_CHAR) {
+            int namespaceLength = mailboxName.indexOf(MailboxConstants.DEFAULT_DELIMITER);
+            if (namespaceLength > -1) {
+                namespace = mailboxName.substring(0, namespaceLength);
+                if (mailboxName.length() > namespaceLength)
+                    name = mailboxName.substring(++namespaceLength);
+            }
+            else {
+                namespace = mailboxName;
+            }
         }
-        return mailboxName;
+        else {
+            namespace = MailboxConstants.USER_NAMESPACE;
+            name = mailboxName;
+        }
+        final String user = ImapSessionUtils.getUserName(session);
+        return new MailboxPath(namespace, user, name);
+    }
+    
+    /**
+     * Joins the elements of a mailboxPath together and returns them as a string
+     * @param mailboxPath
+     * @return
+     */
+    public String joinMailboxPath(MailboxPath mailboxPath) {
+        StringBuffer sb = new StringBuffer("");
+        if (mailboxPath.getNamespace() != null && !mailboxPath.getNamespace().equals("")) {
+            sb.append(mailboxPath.getNamespace());
+        }
+        if (mailboxPath.getUser() != null && !mailboxPath.getUser().equals("")) {
+            if (sb.length() > 0)
+                sb.append(MailboxConstants.DEFAULT_DELIMITER);
+            sb.append(mailboxPath.getUser());
+        }
+        if (mailboxPath.getName() != null && !mailboxPath.getName().equals("")) {
+            if (sb.length() > 0)
+                sb.append(MailboxConstants.DEFAULT_DELIMITER);
+            sb.append(mailboxPath.getName());
+        }
+        return sb.toString();
+    }
+
+    public String mailboxName(final boolean relative, final MailboxPath path) {
+        if (relative) {
+            return path.getName();
+        } else {
+            return joinMailboxPath(path);
+        }
     }
     
     public MailboxManager getMailboxManager() {
@@ -330,9 +374,8 @@ abstract public class AbstractMailboxProcessor extends AbstractChainedProcessor 
         if (selectedMailbox == null) {
             result = null;
         } else {
-            final String mailboxName = selectedMailbox.getName();
             final MailboxManager mailboxManager = getMailboxManager();
-            result = mailboxManager.getMailbox(mailboxName, ImapSessionUtils.getMailboxSession(session));
+            result = mailboxManager.getMailbox(selectedMailbox.getPath(), ImapSessionUtils.getMailboxSession(session));
         }
         return result;
     }

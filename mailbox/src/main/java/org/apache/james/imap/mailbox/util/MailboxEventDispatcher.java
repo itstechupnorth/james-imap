@@ -29,6 +29,7 @@ import java.util.concurrent.CopyOnWriteArraySet;
 import javax.mail.Flags;
 import javax.mail.Flags.Flag;
 
+import org.apache.james.imap.api.MailboxPath;
 import org.apache.james.imap.mailbox.MailboxListener;
 
 public class MailboxEventDispatcher implements MailboxListener {
@@ -52,20 +53,20 @@ public class MailboxEventDispatcher implements MailboxListener {
         listeners.add(mailboxListener);
     }
 
-    public void added(long uid, long sessionId, String name) {
+    public void added(long uid, long sessionId, MailboxPath path) {
         pruneClosed();
-        final AddedImpl added = new AddedImpl(sessionId, name, uid);
+        final AddedImpl added = new AddedImpl(sessionId, path, uid);
         event(added);
     }
 
-    public void expunged(final long uid, long sessionId, String name) {
-        final ExpungedImpl expunged = new ExpungedImpl(sessionId, name, uid);
+    public void expunged(final long uid, long sessionId, MailboxPath path) {
+        final ExpungedImpl expunged = new ExpungedImpl(sessionId, path, uid);
         event(expunged);
     }
 
-    public void flagsUpdated(final long uid, long sessionId, final String name,
+    public void flagsUpdated(final long uid, long sessionId, final MailboxPath path,
             final Flags original, final Flags updated) {
-        final FlagsUpdatedImpl flags = new FlagsUpdatedImpl(sessionId, name, uid,
+        final FlagsUpdatedImpl flags = new FlagsUpdatedImpl(sessionId, path, uid,
                 original, updated);
         event(flags);
     }
@@ -85,7 +86,7 @@ public class MailboxEventDispatcher implements MailboxListener {
         return listeners.size();
     }
     
-    public void mailboxRenamed(String from, String to, long sessionId) {
+    public void mailboxRenamed(MailboxPath from, MailboxPath to, long sessionId) {
         event(new MailboxRenamedEventImpl(from, to, sessionId));
     }
 
@@ -93,8 +94,8 @@ public class MailboxEventDispatcher implements MailboxListener {
 
         private final long subjectUid;
 
-        public AddedImpl(final long sessionId, final String name, final long subjectUid) {
-            super(sessionId, name);
+        public AddedImpl(final long sessionId, final MailboxPath path, final long subjectUid) {
+            super(sessionId, path);
             this.subjectUid = subjectUid;
         }
 
@@ -111,8 +112,8 @@ public class MailboxEventDispatcher implements MailboxListener {
 
         private final long subjectUid;
 
-        public ExpungedImpl(final long sessionId, final String name, final long subjectUid) {
-            super(sessionId, name);
+        public ExpungedImpl(final long sessionId, final MailboxPath path, final long subjectUid) {
+            super(sessionId, path);
             this.subjectUid = subjectUid;
         }
 
@@ -142,9 +143,9 @@ public class MailboxEventDispatcher implements MailboxListener {
 
         private final Flags newFlags;
 
-        public FlagsUpdatedImpl(final long sessionId, final String name, final long subjectUid,
+        public FlagsUpdatedImpl(final long sessionId, final MailboxPath path, final long subjectUid,
                 final Flags original, final Flags updated) {
-            this(sessionId, name, subjectUid, updated, isChanged(original, updated,
+            this(sessionId, path, subjectUid, updated, isChanged(original, updated,
                     Flags.Flag.ANSWERED), isChanged(original, updated,
                     Flags.Flag.DELETED), isChanged(original, updated,
                     Flags.Flag.DRAFT), isChanged(original, updated,
@@ -153,12 +154,12 @@ public class MailboxEventDispatcher implements MailboxListener {
                     Flags.Flag.SEEN));
         }
 
-        public FlagsUpdatedImpl(final long sessionId, final String name, final long subjectUid,
+        public FlagsUpdatedImpl(final long sessionId, final MailboxPath path, final long subjectUid,
                 final Flags newFlags, boolean answeredUpdated,
                 boolean deletedUpdated, boolean draftUpdated,
                 boolean flaggedUpdated, boolean recentUpdated,
                 boolean seenUpdated) {
-            super(sessionId, name);
+            super(sessionId, path);
             this.subjectUid = subjectUid;
             this.modifiedFlags = new boolean[NUMBER_OF_SYSTEM_FLAGS];
             this.modifiedFlags[0] = answeredUpdated;
@@ -242,33 +243,33 @@ public class MailboxEventDispatcher implements MailboxListener {
         }
     }
 
-    public void mailboxDeleted(long sessionId, String name) {
+    public void mailboxDeleted(long sessionId, MailboxPath path) {
         final MailboxDeletionEventImpl event = new MailboxDeletionEventImpl(
-                sessionId, name);
+                sessionId, path);
         event(event);
     }
 
     private static final class MailboxDeletionEventImpl extends
             MailboxListener.MailboxDeletionEvent {
-        public MailboxDeletionEventImpl(final long sessionId, String name) {
-            super(sessionId, name);
+        public MailboxDeletionEventImpl(final long sessionId, MailboxPath path) {
+            super(sessionId, path);
         }
     }
 
     private static final class MailboxRenamedEventImpl extends MailboxListener.MailboxRenamed {
-        private final String newName;
+        private final MailboxPath newPath;
 
-        public MailboxRenamedEventImpl(final String name, final String newName, final long sessionId) {
-            super(sessionId, name);
-            this.newName = newName;
+        public MailboxRenamedEventImpl(final MailboxPath path, final MailboxPath newPath, final long sessionId) {
+            super(sessionId, path);
+            this.newPath = newPath;
         }
 
         /*
          * (non-Javadoc)
          * @see org.apache.james.imap.mailbox.MailboxListener.MailboxRenamed#getNewName()
          */
-        public String getNewName() {
-            return newName;
+        public MailboxPath getNewPath() {
+            return newPath;
         }
     }
 

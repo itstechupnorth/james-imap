@@ -21,6 +21,7 @@ package org.apache.james.imap.inmemory.mail.model;
 
 import java.util.concurrent.atomic.AtomicLong;
 
+import org.apache.james.imap.api.MailboxPath;
 import org.apache.james.imap.store.mail.model.Mailbox;
 
 /**
@@ -28,16 +29,20 @@ import org.apache.james.imap.store.mail.model.Mailbox;
  */
 public class InMemoryMailbox implements Mailbox<Long> {
 
-    private final long id;    
+    private final long id;
     private final long uidValidity;
     private final AtomicLong nextUid;
+    private String namespace;
+    private String user;
     private String name;
     
-    public InMemoryMailbox(final long id, final String name, final long uidValidity) {
+    public InMemoryMailbox(final long id, final MailboxPath path, final long uidValidity) {
         super();
         this.nextUid = new AtomicLong(0);
         this.id = id;
-        this.name = name;
+        this.namespace = path.getNamespace();
+        this.user = path.getUser();
+        this.name = path.getName();
         this.uidValidity = uidValidity;
     }
 
@@ -53,16 +58,31 @@ public class InMemoryMailbox implements Mailbox<Long> {
         return id;
     }
 
+    public String getNamespace() {
+        return namespace;
+    }
+
+    public void setNamespace(String namespace) {
+        this.namespace = namespace;
+    }
+
+    public String getUser() {
+        return user;
+    }
+
+    public void setuser(String user) {
+        this.user = user;
+    }
+
     public String getName() {
         return name;
     }
 
+    public void setName(String name) {
+        this.name = name;
+    }
 
     public long getUidValidity() {
         return uidValidity;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 }

@@ -19,12 +19,14 @@
 
 package org.apache.james.imap.mailbox;
 
+import org.apache.james.imap.api.MailboxPath;
+
 /**
  * Expresses select criteria for mailboxes.
  */
 public class MailboxQuery {
 
-    private final String base;
+    private final MailboxPath base;
 
     private final String expression;
 
@@ -47,14 +49,12 @@ public class MailboxQuery {
      *            matches any sequence of characters up to the next hierarchy
      *            delimiter
      */
-    public MailboxQuery(final String base, final String expression,
+    public MailboxQuery(final MailboxPath base, final String expression,
             final char freeWildcard, final char localWildcard) {
         super();
-        if (base == null) {
-            this.base = "";
-        } else {
-            this.base = base;
-        }
+        this.base = base;
+        if (base.getName() == null)
+            this.base.setName("");
         if (expression == null) {
             this.expression = "";
         } else {
@@ -66,11 +66,11 @@ public class MailboxQuery {
     }
 
     /**
-     * Gets the base reference name for the search.
+     * Gets the base reference for the search.
      * 
      * @return the base
      */
-    public final String getBase() {
+    public final MailboxPath getBase() {
         return base;
     }
 
@@ -112,13 +112,13 @@ public class MailboxQuery {
      *            mailbox hierarchy delimiter
      * @return true if the given name matches this expression, false otherwise
      */
-    public final boolean isExpressionMatch(String name, char hierarchyDelimiter) {
+    public final boolean isExpressionMatch(String name) {
         final boolean result;
         if (isWild()) {
             if (name == null) {
                 result = false;
             } else {
-                result = isWildcardMatch(name, 0, 0, hierarchyDelimiter);
+                result = isWildcardMatch(name, 0, 0);
             }
         } else {
             result = expression.equals(name);
@@ -127,23 +127,20 @@ public class MailboxQuery {
     }
 
     private final boolean isWildcardMatch(final String name,
-            final int nameIndex, final int expressionIndex,
-            final char hierarchyDelimiter) {
+            final int nameIndex, final int expressionIndex) {
         final boolean result;
         if (expressionIndex < expressionLength) {
             final char expressionNext = expression.charAt(expressionIndex);
             if (expressionNext == freeWildcard) {
-                result = isFreeWildcardMatch(name, nameIndex, expressionIndex,
-                        hierarchyDelimiter);
+                result = isFreeWildcardMatch(name, nameIndex, expressionIndex);
             } else if (expressionNext == localWildcard) {
-                result = isLocalWildcardMatch(name, nameIndex, expressionIndex,
-                        hierarchyDelimiter);
+                result = isLocalWildcardMatch(name, nameIndex, expressionIndex);
             } else {
                 if (nameIndex < name.length()) {
                     final char nameNext = name.charAt(nameIndex);
                     if (nameNext == expressionNext) {
                         result = isWildcardMatch(name, nameIndex + 1,
-                                expressionIndex + 1, hierarchyDelimiter);
+                                expressionIndex + 1);
                     } else {
                         result = false;
                     }
@@ -161,26 +158,23 @@ public class MailboxQuery {
     }
 
     private boolean isLocalWildcardMatch(final String name,
-            final int nameIndex, final int expressionIndex,
-            final char hierarchyDelimiter) {
+            final int nameIndex, final int expressionIndex) {
         final boolean result;
         if (expressionIndex < expressionLength) {
             final char expressionNext = expression.charAt(expressionIndex);
             if (expressionNext == localWildcard) {
                 result = isLocalWildcardMatch(name, nameIndex,
-                        expressionIndex + 1, hierarchyDelimiter);
+                        expressionIndex + 1);
             } else if (expressionNext == freeWildcard) {
-                result = isFreeWildcardMatch(name, nameIndex,
-                        expressionIndex + 1, hierarchyDelimiter);
+                result = isFreeWildcardMatch(name, nameIndex, expressionIndex + 1);
             } else {
                 boolean matchRest = false;
                 for (int i = nameIndex; i < name.length(); i++) {
                     final char tasteNextName = name.charAt(i);
                     if (expressionNext == tasteNextName) {
-                        matchRest = isLocalWildcardMatch(name, i + 1, expressionIndex + 1,
-                                hierarchyDelimiter);
+                        matchRest = isLocalWildcardMatch(name, i + 1, expressionIndex + 1);
                         break;
-                    } else if (tasteNextName == hierarchyDelimiter) {
+                    } else if (tasteNextName == MailboxConstants.DEFAULT_DELIMITER) {
                         matchRest = false;
                         break;
                     }
@@ -191,7 +185,7 @@ public class MailboxQuery {
             boolean containsDelimiter = false;
             for (int i = nameIndex; i < name.length(); i++) {
                 final char nextRemaining = name.charAt(i);
-                if (nextRemaining == hierarchyDelimiter) {
+                if (nextRemaining == MailboxConstants.DEFAULT_DELIMITER) {
                     containsDelimiter = true;
                     break;
                 }
@@ -206,7 +200,7 @@ public class MailboxQuery {
     }
 
     private boolean isFreeWildcardMatch(final String name, final int nameIndex,
-            final int expressionIndex, final char hierarchyDelimiter) {
+            final int expressionIndex) {
         final boolean result;
         int nextNormal = expressionIndex;
         while (nextNormal < expressionLength
@@ -219,7 +213,7 @@ public class MailboxQuery {
             for (int i = nameIndex; i < name.length(); i++) {
                 final char tasteNextName = name.charAt(i);
                 if (expressionNextNormal == tasteNextName) {
-                    if (isWildcardMatch(name, i, nextNormal, hierarchyDelimiter)) {
+                    if (isWildcardMatch(name, i, nextNormal)) {
                         matchRest = true;
                         break;
                     }
@@ -234,39 +228,35 @@ public class MailboxQuery {
     }
 
     /**
-     * Get combined name formed by adding expression to base using the given
+     * Get combined name formed by adding the expression to the base using the given
      * hierarchy delimiter. Note that the wildcards are retained in the combined
      * name.
      * 
-     * @param hierarchyDelimiter
-     *            delimiter for mailbox hierarchy
-     * @return {@link #getBase()} combined with {@link #getExpression()}, not
-     *         null
+     * @return {@link #getBase()} combined with {@link #getExpression()}, notnull
      */
-    public String getCombinedName(char hierarchyDelimiter) {
+    public String getCombinedName() {
         final String result;
-        final int baseLength = base.length();
-        if (base != null && baseLength > 0) {
-            final int lastChar = baseLength - 1;
-            if (base.charAt(lastChar) == hierarchyDelimiter) {
+        if (base != null && base.getName() != null && base.getName().length() > 0) {
+            final int baseLength = base.getName().length();
+            if (base.getName().charAt(baseLength - 1) == MailboxConstants.DEFAULT_DELIMITER) {
                 if (expression != null && expression.length() > 0) {
-                    if (expression.charAt(0) == hierarchyDelimiter) {
-                        result = base + expression.substring(1);
+                    if (expression.charAt(0) == MailboxConstants.DEFAULT_DELIMITER) {
+                        result = base.getName() + expression.substring(1);
                     } else {
-                        result = base + expression;
+                        result = base.getName() + expression;
                     }
                 } else {
-                    result = base;
+                    result = base.getName();
                 }
             } else {
                 if (expression != null && expression.length() > 0) {
-                    if (expression.charAt(0) == hierarchyDelimiter) {
-                        result = base + expression;
+                    if (expression.charAt(0) == MailboxConstants.DEFAULT_DELIMITER) {
+                        result = base.getName() + expression;
                     } else {
-                        result = base + hierarchyDelimiter + expression;
+                        result = base.getName() + MailboxConstants.DEFAULT_DELIMITER + expression;
                     }
                 } else {
-                    result = base;
+                    result = base.getName();
                 }
             }
         } else {
@@ -282,26 +272,21 @@ public class MailboxQuery {
      */
     public boolean isWild() {
         return expression != null
-                && (expression.indexOf(freeWildcard) >= 0 || expression
-                        .indexOf(localWildcard) >= 0);
+                && (expression.indexOf(freeWildcard) >= 0
+                    || expression.indexOf(localWildcard) >= 0);
     }
 
     /**
-     * Renders a string sutable for logging.
+     * Renders a string suitable for logging.
      * 
      * @return a <code>String</code> representation of this object.
      */
     public String toString() {
         final String TAB = " ";
-
-        String retValue = "";
-
-        retValue = "MailboxExpression [ " + "base = " + this.base + TAB
+        return "MailboxExpression [ " + "base = " + this.base + TAB
                 + "expression = " + this.expression + TAB + "freeWildcard = "
                 + this.freeWildcard + TAB + "localWildcard = "
                 + this.localWildcard + TAB + " ]";
-
-        return retValue;
     }
 
 }

@@ -37,7 +37,7 @@ import org.apache.james.imap.mailbox.SubscriptionException;
  * Abstract {@link MailboxManager} which delegates various stuff to the {@link Authenticator} and {@link Subscriber}
  *
  */
-public abstract class DelegatingMailboxManager extends AbstractLogEnabled implements MailboxManager{
+public abstract class DelegatingMailboxManager extends AbstractLogEnabled implements MailboxManager {
 
     private final Authenticator authenticator;
     private final Subscriber subscriper;
@@ -91,19 +91,6 @@ public abstract class DelegatingMailboxManager extends AbstractLogEnabled implem
      */
     public final char getDelimiter() {
         return MailboxConstants.DEFAULT_DELIMITER;
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see org.apache.james.imap.mailbox.MailboxManager#resolve(java.lang.String, java.lang.String)
-     */
-    public String resolve(final String userName, String mailboxPath) {
-        if (mailboxPath.length() > 0 && mailboxPath.charAt(0) != MailboxConstants.DEFAULT_DELIMITER) {
-            mailboxPath = MailboxConstants.DEFAULT_DELIMITER + mailboxPath;
-        }
-        final String result = MailboxConstants.USER_NAMESPACE + MailboxConstants.DEFAULT_DELIMITER + userName
-        + mailboxPath;
-        return result;
     }
 
     /**

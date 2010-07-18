@@ -20,6 +20,7 @@ package org.apache.james.imap.jcr;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.james.imap.api.MailboxPath;
 import org.apache.james.imap.jcr.mail.JCRMailboxMapper;
 import org.apache.james.imap.jcr.mail.model.JCRMailbox;
 import org.apache.james.imap.mailbox.MailboxException;
@@ -58,8 +59,8 @@ public class JCRMailboxManager extends StoreMailboxManager<String> implements JC
     }
 
     @Override
-    protected void doCreateMailbox(String namespaceName, MailboxSession session) throws MailboxException {
-        final Mailbox<String> mailbox = new org.apache.james.imap.jcr.mail.model.JCRMailbox(namespaceName, randomUidValidity(), logger);
+    protected void doCreateMailbox(MailboxPath path, MailboxSession session) throws MailboxException {
+        final Mailbox<String> mailbox = new org.apache.james.imap.jcr.mail.model.JCRMailbox(path, randomUidValidity(), logger);
         final JCRMailboxMapper mapper = (JCRMailboxMapper) mapperFactory.getMailboxMapper(session);
         mapper.execute(new TransactionalMapper.Transaction() {
 

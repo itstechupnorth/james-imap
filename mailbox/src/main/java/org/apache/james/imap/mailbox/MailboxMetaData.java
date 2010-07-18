@@ -19,6 +19,8 @@
 
 package org.apache.james.imap.mailbox;
 
+import org.apache.james.imap.api.MailboxPath;
+
 
 /**
  * Returned by the list method of MailboxRepository and others
@@ -70,7 +72,7 @@ public interface MailboxMetaData {
     String getHierarchyDelimiter();
 
     /**
-     * @return full namespace-name
+     * @return full mailbox path
      */
-    String getName();
+    MailboxPath getPath();
 }

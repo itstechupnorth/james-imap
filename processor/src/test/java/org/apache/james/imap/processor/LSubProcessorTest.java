@@ -21,6 +21,8 @@ package org.apache.james.imap.processor;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
+import java.util.Locale;
 
 import org.apache.james.imap.api.ImapCommand;
 import org.apache.james.imap.api.ImapConstants;
@@ -114,8 +116,7 @@ public class LSubProcessorTest {
         subscriptions.add(MAILBOX_C);
         mockery.checking(new Expectations() {{
             oneOf(responder).respond(with(
-                    equal(new LSubResponse("",
-                            ImapConstants.HIERARCHY_DELIMITER, true))));
+                    equal(new LSubResponse("", true))));
         }});
 
         expectOk();
@@ -136,11 +137,9 @@ public class LSubProcessorTest {
 
         mockery.checking(new Expectations() {{
             oneOf(responder).respond(with(
-                    equal(new LSubResponse(CHILD_ONE,
-                            ImapConstants.HIERARCHY_DELIMITER, false))));
+                    equal(new LSubResponse(CHILD_ONE, false))));
             oneOf(responder).respond(with(
-                    equal(new LSubResponse(CHILD_TWO,
-                                    ImapConstants.HIERARCHY_DELIMITER, false))));
+                    equal(new LSubResponse(CHILD_TWO, false))));
         }});
 
         expectSubscriptions();
@@ -163,7 +162,7 @@ public class LSubProcessorTest {
 
         mockery.checking(new Expectations() {{
             oneOf(responder).respond(with(
-                    equal(new LSubResponse(PARENT, ImapConstants.HIERARCHY_DELIMITER, true))));
+                    equal(new LSubResponse(PARENT, true))));
         }});
 
         expectSubscriptions();
@@ -187,8 +186,7 @@ public class LSubProcessorTest {
 
         mockery.checking(new Expectations() {{
             oneOf(responder).respond(with(
-                    equal(new LSubResponse(PARENT, ImapConstants.HIERARCHY_DELIMITER,
-                            false))));
+                    equal(new LSubResponse(PARENT, false))));
         }});
 
         expectSubscriptions();
@@ -204,13 +202,11 @@ public class LSubProcessorTest {
     public void testSelectAll() throws Exception {
         mockery.checking(new Expectations() {{
             oneOf(responder).respond(with(equal(
-                    new LSubResponse(MAILBOX_A, ImapConstants.HIERARCHY_DELIMITER, false))));
+                    new LSubResponse(MAILBOX_A, false))));
             oneOf(responder).respond(with(equal(
-                    new LSubResponse(MAILBOX_B,
-                            ImapConstants.HIERARCHY_DELIMITER, false))));
+                    new LSubResponse(MAILBOX_B, false))));
             oneOf(responder).respond(with(equal(
-                    new LSubResponse(MAILBOX_C,
-                            ImapConstants.HIERARCHY_DELIMITER, false))));
+                    new LSubResponse(MAILBOX_C, false))));
         }});
         subscriptions.add(MAILBOX_A);
         subscriptions.add(MAILBOX_B);
@@ -239,6 +235,33 @@ public class LSubProcessorTest {
         mockery.checking(new Expectations() {{
             oneOf(session).getAttribute(ImapSessionUtils.MAILBOX_SESSION_ATTRIBUTE_SESSION_KEY);
                     will(returnValue(mailboxSession));
+            oneOf(mailboxSession).getUser(); will(returnValue(new MailboxSession.User() {
+
+                /*
+                 * (non-Javadoc)
+                 * @see org.apache.james.imap.mailbox.MailboxSession.User#getLocalePreferences()
+                 */
+                public List<Locale> getLocalePreferences() {
+                    return new ArrayList<Locale>();
+                }
+
+                /*
+                 * (non-Javadoc)
+                 * @see org.apache.james.imap.mailbox.MailboxSession.User#getPassword()
+                 */
+                public String getPassword() {
+                    return "test";
+                }
+
+                /*
+                 * (non-Javadoc)
+                 * @see org.apache.james.imap.mailbox.MailboxSession.User#getUserName()
+                 */
+                public String getUserName() {
+                    return "test";
+                }
+                
+            }));     
             oneOf(manager).subscriptions(with(same(mailboxSession)));will(returnValue(subscriptions));     
         }});
     }

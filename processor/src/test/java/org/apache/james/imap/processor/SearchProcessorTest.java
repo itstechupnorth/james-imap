@@ -27,6 +27,7 @@ import javax.mail.Flags.Flag;
 
 import org.apache.james.imap.api.ImapCommand;
 import org.apache.james.imap.api.ImapConstants;
+import org.apache.james.imap.api.MailboxPath;
 import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.api.message.IdRange;
 import org.apache.james.imap.api.message.request.DayMonthYear;
@@ -81,6 +82,8 @@ public class SearchProcessorTest {
     private static final SearchQuery.NumericRange[] RANGES = {
             new SearchQuery.NumericRange(1),
             new SearchQuery.NumericRange(42, 1048) };
+    
+    private static final MailboxPath mailboxPath = new MailboxPath("namespace", "user", "name");
 
     SearchProcessor processor;
 
@@ -194,13 +197,12 @@ public class SearchProcessorTest {
 
     private void expectsGetSelectedMailbox() throws Exception {
         mockery.checking(new Expectations() {{
-            atMost(1).of(mailboxManager).resolve(with(equal("user")), with(equal("name")));will(returnValue("user"));
-            atMost(1).of(mailboxManager).getMailbox(with(equal("user")),  with(same(mailboxSession)));will(returnValue(mailbox));
-            atMost(1).of(mailboxManager).getMailbox(with(equal("MailboxName")), with(same(mailboxSession)));will(returnValue(mailbox));
+            atMost(1).of(mailboxManager).getMailbox(with(equal(mailboxPath)),  with(same(mailboxSession)));will(returnValue(mailbox));
+            atMost(1).of(mailboxManager).getMailbox(with(equal(mailboxPath)), with(same(mailboxSession)));will(returnValue(mailbox));
             allowing(session).getSelected();will(returnValue(selectedMailbox));
             atMost(1).of(selectedMailbox).isRecentUidRemoved();will(returnValue(false));
             atLeast(1).of(selectedMailbox).isSizeChanged();will(returnValue(false));
-            atLeast(1).of(selectedMailbox).getName();will(returnValue("MailboxName"));
+            atLeast(1).of(selectedMailbox).getPath();will(returnValue(mailboxPath));
             atMost(1).of(selectedMailbox).flagUpdateUids();will(returnValue(Collections.EMPTY_LIST));
             atMost(1).of(selectedMailbox).resetEvents();
             oneOf(selectedMailbox).getRecent();will(returnValue(new ArrayList<Long>()));

@@ -24,7 +24,6 @@ import org.apache.james.imap.jcr.mail.JCRMailboxMapper;
 import org.apache.james.imap.jcr.mail.JCRMessageMapper;
 import org.apache.james.imap.jcr.user.JCRSubscriptionMapper;
 
-import org.apache.james.imap.mailbox.MailboxConstants;
 import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.MailboxSession;
 import org.apache.james.imap.mailbox.SubscriptionException;
@@ -42,20 +41,18 @@ public class JCRMailboxSessionMapperFactory extends MailboxSessionMapperFactory<
 
     private final MailboxSessionJCRRepository repository;
     private final Log logger;
-    private final char delimiter;
     private final NodeLocker locker;
     private final static int DEFAULT_SCALING = 2;
     private int scaling;
     private int messageScaling;
 
     public JCRMailboxSessionMapperFactory(final MailboxSessionJCRRepository repository, final NodeLocker locker) {
-        this(repository, locker, MailboxConstants.DEFAULT_DELIMITER, DEFAULT_SCALING, JCRMessageMapper.MESSAGE_SCALE_DAY);
+        this(repository, locker, DEFAULT_SCALING, JCRMessageMapper.MESSAGE_SCALE_DAY);
     }
 
-    public JCRMailboxSessionMapperFactory(final MailboxSessionJCRRepository repository, final NodeLocker locker, final char delimiter, final int scaling, final int messageScaling) {
+    public JCRMailboxSessionMapperFactory(final MailboxSessionJCRRepository repository, final NodeLocker locker, final int scaling, final int messageScaling) {
         this.repository = repository;
         this.logger = LogFactory.getLog(JCRSubscriptionManager.class);
-        this.delimiter = delimiter;
         this.locker = locker;
         this.scaling = scaling;
         this.messageScaling = messageScaling;
@@ -63,7 +60,7 @@ public class JCRMailboxSessionMapperFactory extends MailboxSessionMapperFactory<
     
     @Override
     public MailboxMapper<String> createMailboxMapper(MailboxSession session) throws MailboxException {
-        JCRMailboxMapper mapper = new JCRMailboxMapper(repository, session, locker, scaling, logger, delimiter);
+        JCRMailboxMapper mapper = new JCRMailboxMapper(repository, session, locker, scaling, logger);
         return mapper;
     }
 

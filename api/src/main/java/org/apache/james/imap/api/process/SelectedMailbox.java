@@ -21,6 +21,8 @@ package org.apache.james.imap.api.process;
 
 import java.util.Collection;
 
+import org.apache.james.imap.api.MailboxPath;
+
 
 /**
  * Interface which represent a selected Mailbox during the selected state
@@ -78,11 +80,11 @@ public interface SelectedMailbox {
     public int recentCount();
 
     /**
-     * Return the name of the selected Mailbox
+     * Return the path of the selected Mailbox
      * 
-     * @return mailboxName
+     * @return path
      */
-    public String getName();
+    public MailboxPath getPath();
 
     /**
      * Is the given uid recent ?

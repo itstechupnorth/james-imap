@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
+import org.apache.james.imap.api.MailboxPath;
 import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.mailbox.Mailbox;
 import org.apache.james.imap.mailbox.MailboxConstants;
@@ -64,11 +65,23 @@ public class TorqueMailboxManager extends DelegatingMailboxManager {
         mailboxes = new HashMap<String, TorqueMailbox>();
     }
 
-    public Mailbox getMailbox(String mailboxName, MailboxSession session)
+    public Mailbox getMailbox(MailboxPath path, MailboxSession session)
             throws MailboxException {
-        return doGetMailbox(mailboxName);
+        return doGetMailbox(getName(path));
     }
 
+    private String getName(MailboxPath path) {
+        StringBuffer sb = new StringBuffer();
+        sb.append(path.getNamespace());
+        sb.append(MailboxConstants.DEFAULT_DELIMITER);
+
+        if (path.getUser() != null) {
+            sb.append(path.getUser());
+            sb.append(MailboxConstants.DEFAULT_DELIMITER);
+        }
+        sb.append(path.getName());
+        return sb.toString();
+    }
     private TorqueMailbox doGetMailbox(String mailboxName)
             throws MailboxException {
         try {
@@ -97,8 +110,14 @@ public class TorqueMailboxManager extends DelegatingMailboxManager {
         }
     }
 
-    public void createMailbox(String namespaceName, MailboxSession mailboxSession)
+    public void createMailbox(MailboxPath path, MailboxSession mailboxSession)
             throws MailboxException {
+        String namespaceName = getName(path);
+        createMailbox(namespaceName, mailboxSession);
+        
+    }
+    
+    private void createMailbox(String namespaceName, MailboxSession mailboxSession) throws MailboxException {
         getLog().debug("createMailbox " + namespaceName);
         final int length = namespaceName.length();
         if (length == 0) {
@@ -120,13 +139,13 @@ public class TorqueMailboxManager extends DelegatingMailboxManager {
                     if (index > 0 && count++ > 1) {
                         final String mailbox = namespaceName
                                 .substring(0, index);
-                        if (!mailboxExists(mailbox, mailboxSession)) {
+                        if (!mailboxExists(getMailboxPath(mailbox), mailboxSession)) {
                             doCreate(mailbox);
                         }
                     }
                     index = namespaceName.indexOf(MailboxConstants.DEFAULT_DELIMITER, ++index);
                 }
-                if (mailboxExists(namespaceName, mailboxSession)) {
+                if (mailboxExists(getMailboxPath(namespaceName), mailboxSession)) {
                     throw new MailboxExistsException(namespaceName); 
                 } else {
                     doCreate(namespaceName);
@@ -147,8 +166,10 @@ public class TorqueMailboxManager extends DelegatingMailboxManager {
         }
     }
 
-    public void deleteMailbox(String mailboxName, MailboxSession session)
+    public void deleteMailbox(MailboxPath path, MailboxSession session)
             throws MailboxException {
+        String mailboxName = getName(path);
+
         getLog().info("deleteMailbox " + mailboxName);
         synchronized (mailboxes) {
             try {
@@ -170,12 +191,15 @@ public class TorqueMailboxManager extends DelegatingMailboxManager {
     }
 
     @SuppressWarnings("unchecked")
-    public void renameMailbox(String from, String to, MailboxSession session)
+    public void renameMailbox(MailboxPath fromPath, MailboxPath toPath, MailboxSession session)
             throws MailboxException {
+        String from = getName(fromPath);
+        String to = getName(toPath);
+
         getLog().debug("renameMailbox " + from + " to " + to);
         try {
             synchronized (mailboxes) {
-                if (mailboxExists(to, session)) {
+                if (mailboxExists(toPath, session)) {
                     throw new MailboxExistsException(to);
                 }
                 // TODO put this into a serilizable transaction
@@ -222,10 +246,10 @@ public class TorqueMailboxManager extends DelegatingMailboxManager {
         }
     }
 
-    public void copyMessages(MessageRange set, String from, String to,
+    public void copyMessages(MessageRange set, MailboxPath from, MailboxPath to,
             MailboxSession session) throws MailboxException {
-        TorqueMailbox toMailbox = doGetMailbox(to);
-        TorqueMailbox fromMailbox = doGetMailbox(from);
+        TorqueMailbox toMailbox = doGetMailbox(getName(to));
+        TorqueMailbox fromMailbox = doGetMailbox(getName(from));
         fromMailbox.copyTo(set, toMailbox, session);
     }
 
@@ -234,36 +258,37 @@ public class TorqueMailboxManager extends DelegatingMailboxManager {
             throws MailboxException {
         final char localWildcard = mailboxExpression.getLocalWildcard();
         final char freeWildcard = mailboxExpression.getFreeWildcard();
-        final String base = mailboxExpression.getBase();
+        final String baseName = mailboxExpression.getBase().getName();
         final int baseLength;
-        if (base == null) {
+        if (baseName == null) {
             baseLength = 0;
         } else {
-            baseLength = base.length();
+            baseLength = baseName.length();
         }
-
-        final String search = mailboxExpression.getCombinedName(
-                MailboxConstants.DEFAULT_DELIMITER).replace(freeWildcard, SQL_WILDCARD_CHAR)
-                .replace(localWildcard, SQL_WILDCARD_CHAR);
+        final String combinedName = mailboxExpression.getCombinedName()
+                                    .replace(freeWildcard, SQL_WILDCARD_CHAR)
+                                    .replace(localWildcard, SQL_WILDCARD_CHAR);
+        final MailboxPath search = new MailboxPath(mailboxExpression.getBase(), combinedName);
 
         Criteria criteria = new Criteria();
-        criteria.add(MailboxRowPeer.NAME, (Object) (search), Criteria.LIKE);
+        criteria.add(MailboxRowPeer.NAME, (Object) getName(search), Criteria.LIKE);
         try {
             List mailboxRows = MailboxRowPeer.doSelect(criteria);
             List<MailboxMetaData> results = new ArrayList<MailboxMetaData>(mailboxRows.size());
             for (Iterator iter = mailboxRows.iterator(); iter.hasNext();) {
                 final MailboxRow mailboxRow = (MailboxRow) iter.next();
-                final String name = mailboxRow.getName();
-                if (name.startsWith(base)) {
+                final MailboxPath sPath = getMailboxPath(mailboxRow.getName());
+                final String name = sPath.getName();
+                if (name.startsWith(baseName)) {
                     final String match = name.substring(baseLength);
-                    if (mailboxExpression.isExpressionMatch(match, MailboxConstants.DEFAULT_DELIMITER)) {
+                    if (mailboxExpression.isExpressionMatch(match)) {
                         final MailboxMetaData.Children inferiors; 
-                        if (hasChildren(name)) {
+                        if (hasChildren(mailboxRow.getName())) {
                             inferiors = MailboxMetaData.Children.HAS_CHILDREN;
                         } else {
                             inferiors = MailboxMetaData.Children.HAS_NO_CHILDREN;
                         }
-                        results.add(new SimpleMailboxMetaData(name, ".", inferiors, Selectability.NONE));
+                        results.add(new SimpleMailboxMetaData(sPath, MailboxConstants.DEFAULT_DELIMITER_STRING, inferiors, Selectability.NONE));
                     }
                 }
             }
@@ -289,9 +314,10 @@ public class TorqueMailboxManager extends DelegatingMailboxManager {
         return !mailboxes.isEmpty();
     }
     
-    public boolean mailboxExists(String mailboxName, MailboxSession session)
+    public boolean mailboxExists(MailboxPath path, MailboxSession session)
             throws MailboxException {
         Criteria c = new Criteria();
+        String mailboxName = getName(path);
         c.add(MailboxRowPeer.NAME, mailboxName);
         CountHelper countHelper = new CountHelper();
         int count;
@@ -315,6 +341,14 @@ public class TorqueMailboxManager extends DelegatingMailboxManager {
         }
     }
 
+    public MailboxPath getMailboxPath(String name) {
+        String nameParts[] = name.split("\\" +MailboxConstants.DEFAULT_DELIMITER_STRING,3);
+        if (nameParts.length < 3) {
+            return new MailboxPath(nameParts[0], null, nameParts[1]);
+        }
+        return new MailboxPath(nameParts[0], nameParts[1], nameParts[2]);
+
+    }
     public void deleteEverything() throws MailboxException {
         try {
             MailboxRowPeer.doDelete(new Criteria().and(
@@ -326,8 +360,8 @@ public class TorqueMailboxManager extends DelegatingMailboxManager {
         }
     }
 
-    public void addListener(String mailboxName, MailboxListener listener, MailboxSession session) throws MailboxException {
-        final TorqueMailbox mailbox = doGetMailbox(mailboxName);
+    public void addListener(MailboxPath path, MailboxListener listener, MailboxSession session) throws MailboxException {
+        final TorqueMailbox mailbox = doGetMailbox(getName(path));
         mailbox.addListener(listener);
     }
 

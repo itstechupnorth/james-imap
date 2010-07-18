@@ -60,4 +60,6 @@
     - jamesMailbox:mailboxUidValidity (LONG) 
     - jamesMailbox:mailboxName (STRING) 
     - jamesMailbox:mailboxLastUid (LONG) 
+    - jamesMailbox:mailboxNamespace (STRING) 
+    - jamesMailbox:mailboxUser (STRING) 
     + * (nt:unstructured) multiple

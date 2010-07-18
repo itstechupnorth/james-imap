@@ -37,10 +37,8 @@ public class ListingEncodingUtils {
         final List<String> attributes = getNameAttributes(response);
 
         final String name = response.getName();
-        final String hierarchyDelimiter = response.getHierarchyDelimiter();
 
-        composer.listResponse(responseTypeName, attributes, hierarchyDelimiter,
-                name);
+        composer.listResponse(responseTypeName, attributes, ImapConstants.HIERARCHY_DELIMITER, name);
     }
 
     private static List<String> getNameAttributes(final AbstractListingResponse response) {

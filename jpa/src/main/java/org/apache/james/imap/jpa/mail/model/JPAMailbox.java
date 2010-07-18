@@ -26,6 +26,7 @@ import javax.persistence.Id;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 
+import org.apache.james.imap.api.MailboxPath;
 import org.apache.james.imap.store.mail.model.Mailbox;
 
 @Entity(name="Mailbox")
@@ -33,13 +34,19 @@ import org.apache.james.imap.store.mail.model.Mailbox;
     @NamedQuery(name="findMailboxById",
         query="SELECT mailbox FROM Mailbox mailbox WHERE mailbox.mailboxId = :idParam"),
     @NamedQuery(name="findMailboxByName",
-        query="SELECT mailbox FROM Mailbox mailbox WHERE mailbox.name = :nameParam"),
+        query="SELECT mailbox FROM Mailbox mailbox WHERE mailbox.name = :nameParam and mailbox.user is NULL and mailbox.namespace= :namespaceParam"),
+    @NamedQuery(name="findMailboxByNameWithUser",
+        query="SELECT mailbox FROM Mailbox mailbox WHERE mailbox.name = :nameParam and mailbox.user= :userParam and mailbox.namespace= :namespaceParam"),
     @NamedQuery(name="deleteAll",
                 query="DELETE FROM Mailbox mailbox"),
+    @NamedQuery(name="findMailboxWithNameLikeWithUser",
+                query="SELECT mailbox FROM Mailbox mailbox WHERE mailbox.name LIKE :nameParam and mailbox.user= :userParam and mailbox.namespace= :namespaceParam"),
     @NamedQuery(name="findMailboxWithNameLike",
-                query="SELECT mailbox FROM Mailbox mailbox WHERE mailbox.name LIKE :nameParam"),
+                query="SELECT mailbox FROM Mailbox mailbox WHERE mailbox.name LIKE :nameParam and mailbox.user is NULL and mailbox.namespace= :namespaceParam"),
+    @NamedQuery(name="countMailboxesWithNameLikeWithUser",
+                query="SELECT COUNT(mailbox) FROM Mailbox mailbox WHERE mailbox.name LIKE :nameParam and mailbox.user= :userParam and mailbox.namespace= :namespaceParam"),
     @NamedQuery(name="countMailboxesWithNameLike",
-                query="SELECT COUNT(mailbox) FROM Mailbox mailbox WHERE mailbox.name LIKE :nameParam")     
+                query="SELECT COUNT(mailbox) FROM Mailbox mailbox WHERE mailbox.name LIKE :nameParam and mailbox.user is NULL and mailbox.namespace= :namespaceParam")     
 })
 public class JPAMailbox implements Mailbox<Long> {
     
@@ -49,7 +56,7 @@ public class JPAMailbox implements Mailbox<Long> {
     @Id @GeneratedValue private long mailboxId;
     
     /** The value for the name field */
-    @Basic(optional=false) @Column(unique = true)  private String name;
+    @Basic(optional=false) @Column(nullable = false) private String name;
 
     /** The value for the uidValidity field */
     @Basic(optional=false) private long uidValidity;
@@ -58,6 +65,9 @@ public class JPAMailbox implements Mailbox<Long> {
     /** The value for the lastUid field */
     @Basic(optional=false) private long lastUid = 0;
     
+    @Basic(optional=false) @Column(nullable = true)  private String user;
+    @Basic(optional=false) @Column(nullable = false) private String namespace;
+
     /**
      * JPA only
      */
@@ -66,9 +76,11 @@ public class JPAMailbox implements Mailbox<Long> {
         super();
     }
     
-    public JPAMailbox(String name, int uidValidity) {
+    public JPAMailbox(MailboxPath path, int uidValidity) {
         this();
-        this.name= name;
+        this.name = path.getName();
+        this.user = path.getUser();
+        this.namespace = path.getNamespace();
         this.uidValidity = uidValidity;
     }
 
@@ -147,5 +159,37 @@ public class JPAMailbox implements Mailbox<Long> {
         if (mailboxId != other.mailboxId)
             return false;
         return true;
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.store.mail.model.Mailbox#getNamespace()
+     */
+    public String getNamespace() {
+        return namespace;
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.store.mail.model.Mailbox#getUser()
+     */
+    public String getUser() {
+        return user;
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.store.mail.model.Mailbox#setNamespace(java.lang.String)
+     */
+    public void setNamespace(String namespace) {
+        this.namespace = namespace;
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.store.mail.model.Mailbox#setuser(java.lang.String)
+     */
+    public void setuser(String user) {
+        this.user = user;
     }
 }

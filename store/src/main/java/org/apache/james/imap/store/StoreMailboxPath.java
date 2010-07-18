@@ -17,25 +17,27 @@
  * under the License.                                           *
  ****************************************************************/
 
-package org.apache.james.imap.processor.base;
+package org.apache.james.imap.store;
 
 import org.apache.james.imap.api.MailboxPath;
-import org.apache.james.imap.mailbox.MailboxListener;
+import org.apache.james.imap.store.mail.model.Mailbox;
 
-public class FakeMailboxListenerAdded extends MailboxListener.Added {
+public class StoreMailboxPath<Id> extends MailboxPath {
 
-    public long subjectUid;
-
-    public long sessionId;
-
-    public FakeMailboxListenerAdded(long subjectUid, long sessionId, MailboxPath path) {
-        super(sessionId, path);
-        this.subjectUid = subjectUid;
+    public StoreMailboxPath(String namespace, String user, String name) {
+        super(namespace, user, name);
     }
 
-    public long getSubjectUid() {
-        return subjectUid;
+    public StoreMailboxPath(MailboxPath mailboxPath) {
+        super(mailboxPath);
     }
 
+    public StoreMailboxPath(MailboxPath mailboxPath, String name) {
+        super(mailboxPath, name);
+    }
+    
+    public StoreMailboxPath(Mailbox<Id> mailbox) {
+        super(mailbox.getNamespace(), mailbox.getUser(), mailbox.getName());
+    }
 
 }

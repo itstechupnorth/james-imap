@@ -20,10 +20,10 @@
 package org.apache.james.imap.store;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
+import org.apache.james.imap.api.MailboxPath;
+import org.apache.james.imap.api.MailboxPathHashMap;
 import org.apache.james.imap.mailbox.MailboxListener;
 
 /**
@@ -32,13 +32,13 @@ import org.apache.james.imap.mailbox.MailboxListener;
  */
 public class DelegatingMailboxListener implements MailboxListener{
 
-    private Map<String,List<MailboxListener>> listeners = new HashMap<String, List<MailboxListener>>();
+    private MailboxPathHashMap<List<MailboxListener>> listeners = new MailboxPathHashMap<List<MailboxListener>>();
 
-    public synchronized void addListener(String name, MailboxListener listener) {
-        List<MailboxListener> mListeners = listeners.get(name);
+    public synchronized void addListener(MailboxPath path, MailboxListener listener) {
+        List<MailboxListener> mListeners = listeners.get(path);
         if (mListeners == null) {
             mListeners = new ArrayList<MailboxListener>();
-            listeners.put(name, mListeners);
+            listeners.put(path, mListeners);
         }
         if (mListeners.contains(listener) == false) {
             mListeners.add(listener);
@@ -51,7 +51,7 @@ public class DelegatingMailboxListener implements MailboxListener{
      * @see org.apache.james.imap.mailbox.MailboxListener#event(org.apache.james.imap.mailbox.MailboxListener.Event)
      */
     public void event(Event event) {
-        List<MailboxListener> mListeners = listeners.get(event.getMailboxName());
+        List<MailboxListener> mListeners = listeners.get(event.getMailboxPath());
         if (mListeners != null && mListeners.isEmpty() == false) {
             for (int i = 0; i < mListeners.size(); i++) {
                 MailboxListener l = mListeners.get(i);

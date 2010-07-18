@@ -19,16 +19,17 @@
 
 package org.apache.james.imap.mailbox.util;
 
+import org.apache.james.imap.api.MailboxPath;
 import org.apache.james.imap.mailbox.MailboxMetaData;
 import org.apache.james.imap.mailbox.StandardMailboxMetaDataComparator;
 
 public class SimpleMailboxMetaData implements MailboxMetaData, Comparable<MailboxMetaData> {
 
-    public static MailboxMetaData createNoSelect(String name, String delimiter) {
-        return new SimpleMailboxMetaData(name, delimiter, Children.CHILDREN_ALLOWED_BUT_UNKNOWN, Selectability.NOSELECT);
+    public static MailboxMetaData createNoSelect(MailboxPath path, String delimiter) {
+        return new SimpleMailboxMetaData(path, delimiter, Children.CHILDREN_ALLOWED_BUT_UNKNOWN, Selectability.NOSELECT);
     }
 
-    private final String name;
+    private final MailboxPath path;
 
     private final String delimiter;
 
@@ -36,14 +37,14 @@ public class SimpleMailboxMetaData implements MailboxMetaData, Comparable<Mailbo
 
     private final Selectability selectability;
 
-    public SimpleMailboxMetaData(String name, String delimiter) {
-        this(name, delimiter, Children.CHILDREN_ALLOWED_BUT_UNKNOWN, Selectability.NONE);
+    public SimpleMailboxMetaData(MailboxPath path, String delimiter) {
+        this(path, delimiter, Children.CHILDREN_ALLOWED_BUT_UNKNOWN, Selectability.NONE);
     }
 
-    public SimpleMailboxMetaData(final String name, final String delimiter,
+    public SimpleMailboxMetaData(final MailboxPath path, final String delimiter,
             final Children inferiors, final Selectability selectability) {
         super();
-        this.name = name;
+        this.path = path;
         this.delimiter = delimiter;
         this.inferiors = inferiors;
         this.selectability = selectability;
@@ -75,10 +76,10 @@ public class SimpleMailboxMetaData implements MailboxMetaData, Comparable<Mailbo
 
     /*
      * (non-Javadoc)
-     * @see org.apache.james.imap.mailbox.MailboxMetaData#getName()
+     * @see org.apache.james.imap.mailbox.MailboxMetaData#getPath()
      */
-    public String getName() {
-        return name;
+    public MailboxPath getPath() {
+        return path;
     }
 
     /*
@@ -86,7 +87,7 @@ public class SimpleMailboxMetaData implements MailboxMetaData, Comparable<Mailbo
      * @see java.lang.Object#toString()
      */
     public String toString() {
-        return "ListResult: " + name;
+        return "ListResult: " + path;
     }
 
     /**
@@ -95,7 +96,7 @@ public class SimpleMailboxMetaData implements MailboxMetaData, Comparable<Mailbo
     public int hashCode() {
         final int PRIME = 31;
         int result = 1;
-        result = PRIME * result + ((name == null) ? 0 : name.hashCode());
+        result = PRIME * result + ((path == null) ? 0 : path.hashCode());
         return result;
     }
 
@@ -110,10 +111,10 @@ public class SimpleMailboxMetaData implements MailboxMetaData, Comparable<Mailbo
         if (getClass() != obj.getClass())
             return false;
         final SimpleMailboxMetaData other = (SimpleMailboxMetaData) obj;
-        if (name == null) {
-            if (other.name != null)
+        if (path == null) {
+            if (other.path != null)
                 return false;
-        } else if (!name.equals(other.name))
+        } else if (!path.equals(other.path))
             return false;
         return true;
     }

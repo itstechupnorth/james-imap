@@ -26,6 +26,7 @@ import java.util.List;
 import javax.mail.Flags;
 
 import org.apache.james.imap.api.ImapCommand;
+import org.apache.james.imap.api.MailboxPath;
 import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.api.message.request.ImapRequest;
 import org.apache.james.imap.api.message.response.StatusResponse;
@@ -79,8 +80,8 @@ abstract class AbstractSelectionProcessor extends AbstractMailboxProcessor {
         final AbstractMailboxSelectionRequest request = (AbstractMailboxSelectionRequest) message;
         final String mailboxName = request.getMailboxName();
         try {
-            final String fullMailboxName = buildFullName(session, mailboxName);
-            final Mailbox.MetaData metaData = selectMailbox(fullMailboxName, session);
+            final MailboxPath fullMailboxPath = buildFullPath(session, mailboxName);
+            final Mailbox.MetaData metaData = selectMailbox(fullMailboxPath, session);
             respond(tag, command, session, metaData, responder);
         } catch (MailboxNotFoundException e) {
             responder.respond(statusResponseFactory.taggedNo(tag, command,
@@ -172,18 +173,17 @@ abstract class AbstractSelectionProcessor extends AbstractMailboxProcessor {
         responder.respond(existsResponse);
     }
 
-    private Mailbox.MetaData  selectMailbox(String mailboxName, ImapSession session)
+    private Mailbox.MetaData  selectMailbox(MailboxPath mailboxPath, ImapSession session)
             throws MailboxException {
         final MailboxManager mailboxManager = getMailboxManager();
         final MailboxSession mailboxSession = ImapSessionUtils.getMailboxSession(session);
-        final Mailbox mailbox = mailboxManager.getMailbox(mailboxName, mailboxSession);
+        final Mailbox mailbox = mailboxManager.getMailbox(mailboxPath, mailboxSession);
 
         final SelectedMailbox sessionMailbox;
         final SelectedMailbox currentMailbox = session.getSelected();
         if (currentMailbox == null
-                || !currentMailbox.getName().equals(mailboxName)) {
-            sessionMailbox = createNewSelectedMailbox(mailbox, mailboxSession,
-                    session, mailboxName);
+                || !currentMailbox.getPath().equals(mailboxPath)) {
+            sessionMailbox = createNewSelectedMailbox(mailbox, mailboxSession, session, mailboxPath);
         } else {
             sessionMailbox = currentMailbox;
         }
@@ -193,9 +193,8 @@ abstract class AbstractSelectionProcessor extends AbstractMailboxProcessor {
     }
 
     private SelectedMailbox createNewSelectedMailbox(final Mailbox mailbox,
-            final MailboxSession mailboxSession, ImapSession session, String name)
+            final MailboxSession mailboxSession, ImapSession session, MailboxPath path)
             throws MailboxException {
-        final SelectedMailbox sessionMailbox;
         final Iterator<MessageResult> it = mailbox.getMessages(MessageRange.all(),
                 FetchGroupImpl.MINIMAL, mailboxSession);
 
@@ -205,8 +204,8 @@ abstract class AbstractSelectionProcessor extends AbstractMailboxProcessor {
             uids.add(result.getUid());
         }
         
-        sessionMailbox = new SelectedMailboxImpl(getMailboxManager(), uids,
-                mailboxSession, name);
+        final SelectedMailbox sessionMailbox = new SelectedMailboxImpl(getMailboxManager(), uids,
+                                                                        mailboxSession, path);
         session.selected(sessionMailbox);
         return sessionMailbox;
     }

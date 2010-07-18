@@ -44,9 +44,11 @@ import javax.mail.Flags;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 
+import org.apache.james.imap.api.MailboxPath;
 import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.mailbox.LockException;
 import org.apache.james.imap.mailbox.Mailbox;
+import org.apache.james.imap.mailbox.MailboxConstants;
 import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.MailboxListener;
 import org.apache.james.imap.mailbox.MailboxSession;
@@ -92,7 +94,7 @@ public class TorqueMailbox implements Mailbox {
     TorqueMailbox(final MailboxRow mailboxRow, final ReentrantReadWriteLock lock) {
         this.searches = new MessageSearches();
         this.mailboxRow = mailboxRow;
-        this.tracker = new UidChangeTracker(mailboxRow.getLastUid(), mailboxRow.getName());
+        this.tracker = new UidChangeTracker(mailboxRow.getLastUid(), getMailboxPath(mailboxRow.getName()));
         this.lock = lock;
     }
 
@@ -805,10 +807,18 @@ public class TorqueMailbox implements Mailbox {
     }
 
     public void reportRenamed(String from, MailboxRow mailboxRow) {
-        tracker.reportRenamed(mailboxRow.getName());
+        tracker.reportRenamed(getMailboxPath(mailboxRow.getName()));
         this.mailboxRow = mailboxRow;
     }
 
+    public MailboxPath getMailboxPath(String name) {
+        String nameParts[] = name.split("\\" +MailboxConstants.DEFAULT_DELIMITER_STRING,3);
+        if (nameParts.length < 3) {
+            return new MailboxPath(nameParts[0], null, nameParts[1]);
+        }
+        return new MailboxPath(nameParts[0], nameParts[1], nameParts[2]);
+
+    }
     /**
      * @see org.apache.james.imap.mailbox.Mailbox#getMetaData(boolean, MailboxSession, org.apache.james.imap.mailbox.Mailbox.MetaData.FetchGroup)
      */

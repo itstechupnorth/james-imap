@@ -21,6 +21,7 @@ package org.apache.james.imap.processor;
 
 import org.apache.james.imap.api.ImapCommand;
 import org.apache.james.imap.api.ImapMessage;
+import org.apache.james.imap.api.MailboxPath;
 import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.api.message.request.ImapRequest;
 import org.apache.james.imap.api.message.response.StatusResponseFactory;
@@ -48,23 +49,17 @@ public class RenameProcessor extends AbstractMailboxProcessor {
     protected void doProcess(ImapRequest message, ImapSession session,
             String tag, ImapCommand command, Responder responder) {
         final RenameRequest request = (RenameRequest) message;
-        final String existingName = request.getExistingName();
-        final String newName = request.getNewName();
+        final MailboxPath existingPath = buildFullPath(session, request.getExistingName());
+        final MailboxPath newPath = buildFullPath(session, request.getNewName());
         try {
-
-            final String fullExistingName = buildFullName(session, existingName);
-            final String fullNewName = buildFullName(session, newName);
             final MailboxManager mailboxManager = getMailboxManager();
-            mailboxManager.renameMailbox(fullExistingName, fullNewName, ImapSessionUtils.getMailboxSession(session));
+            mailboxManager.renameMailbox(existingPath, newPath, ImapSessionUtils.getMailboxSession(session));
             okComplete(command, tag, responder);
             unsolicitedResponses(session, responder, false);
-
         } catch (MailboxExistsException e) {
-            no(command, tag, responder,
-                    HumanReadableText.FAILURE_MAILBOX_EXISTS);
+            no(command, tag, responder, HumanReadableText.FAILURE_MAILBOX_EXISTS);
         } catch (MailboxNotFoundException e) {
-            no(command, tag, responder,
-                    HumanReadableText.FAILURE_NO_SUCH_MAILBOX);
+            no(command, tag, responder, HumanReadableText.FAILURE_NO_SUCH_MAILBOX);
         } catch (MailboxException e) {
             no(command, tag, responder, e, session);
         }

@@ -22,6 +22,7 @@ package org.apache.james.imap.processor;
 import org.apache.commons.logging.Log;
 import org.apache.james.imap.api.ImapCommand;
 import org.apache.james.imap.api.ImapMessage;
+import org.apache.james.imap.api.MailboxPath;
 import org.apache.james.imap.api.message.StatusDataItems;
 import org.apache.james.imap.api.message.request.ImapRequest;
 import org.apache.james.imap.api.message.response.StatusResponseFactory;
@@ -50,22 +51,19 @@ public class StatusProcessor extends AbstractMailboxProcessor {
     protected void doProcess(ImapRequest message, ImapSession session,
             String tag, ImapCommand command, Responder responder) {
         final StatusRequest request = (StatusRequest) message;
-        final String mailboxName = request.getMailboxName();
+        final MailboxPath mailboxPath = buildFullPath(session, request.getMailboxName());
         final StatusDataItems statusDataItems = request.getStatusDataItems();
         final Log logger = session.getLog();
-        final MailboxSession mailboxSession = ImapSessionUtils
-                .getMailboxSession(session);
+        final MailboxSession mailboxSession = ImapSessionUtils.getMailboxSession(session);
 
         try {
-            String fullMailboxName = buildFullName(session, mailboxName);
-
             if (logger != null && logger.isDebugEnabled()) {
-                logger.debug("Status called on mailbox named " + mailboxName
-                        + " (" + fullMailboxName + ")");
+                logger.debug("Status called on mailbox named " + mailboxPath
+                        + " (" + mailboxPath + ")");
             }
 
             final MailboxManager mailboxManager = getMailboxManager();
-            final Mailbox mailbox = mailboxManager.getMailbox(fullMailboxName, ImapSessionUtils.getMailboxSession(session));
+            final Mailbox mailbox = mailboxManager.getMailbox(mailboxPath, ImapSessionUtils.getMailboxSession(session));
             final Mailbox.MetaData.FetchGroup fetchGroup;
             if (statusDataItems.isUnseen()) {
                 fetchGroup = Mailbox.MetaData.FetchGroup.UNSEEN_COUNT;
@@ -81,7 +79,7 @@ public class StatusProcessor extends AbstractMailboxProcessor {
             final Long unseen = unseen(statusDataItems, metaData);
 
             final MailboxStatusResponse response = new MailboxStatusResponse(messages,
-                    recent, uidNext, uidValidity, unseen, mailboxName);
+                    recent, uidNext, uidValidity, unseen, request.getMailboxName());
             responder.respond(response);
             unsolicitedResponses(session, responder, false);
             okComplete(command, tag, responder);

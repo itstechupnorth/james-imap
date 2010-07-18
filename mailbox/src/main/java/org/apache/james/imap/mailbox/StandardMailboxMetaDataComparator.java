@@ -33,9 +33,9 @@ public class StandardMailboxMetaDataComparator implements
      * @return {@link Comparator#compare(Object, Object)}
      */
     public static int order(MailboxMetaData one, MailboxMetaData two) {
-        final String nameTwo = two.getName();
+        final String nameTwo = two.getPath().getName();
         final int result;
-        final String nameOne = one.getName();
+        final String nameOne = one.getPath().getName();
         if (INBOX.equals(nameOne)) {
             result = INBOX.equals(nameTwo) ? 0 : -1;
         } else if (INBOX.equals(nameTwo)) {

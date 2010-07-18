@@ -27,6 +27,7 @@ import javax.persistence.NoResultException;
 import javax.persistence.PersistenceException;
 import javax.persistence.RollbackException;
 
+import org.apache.james.imap.api.MailboxPath;
 import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.jpa.JPATransactionalMapper;
 import org.apache.james.imap.jpa.mail.model.JPAMailbox;
@@ -84,13 +85,17 @@ public class JPAMailboxMapper extends JPATransactionalMapper implements MailboxM
     }
 
     /**
-     * @see org.apache.james.imap.store.mail.MailboxMapper#findMailboxByName(java.lang.String)
+     * @see org.apache.james.imap.store.mail.MailboxMapper#findMailboxByPath(java.lang.String)
      */
-    public Mailbox<Long> findMailboxByName(String name) throws StorageException, MailboxNotFoundException {
+    public Mailbox<Long> findMailboxByPath(MailboxPath mailboxPath) throws StorageException, MailboxNotFoundException {
         try {
-            return (JPAMailbox) getEntityManager().createNamedQuery("findMailboxByName").setParameter("nameParam", name).getSingleResult();
+            if (mailboxPath.getUser() == null) {
+                return (JPAMailbox) getEntityManager().createNamedQuery("findMailboxByName").setParameter("nameParam", mailboxPath.getName()).setParameter("namespaceParam", mailboxPath.getNamespace()).getSingleResult();
+            } else {
+                return (JPAMailbox) getEntityManager().createNamedQuery("findMailboxByNameWithUser").setParameter("nameParam", mailboxPath.getName()).setParameter("namespaceParam", mailboxPath.getNamespace()).setParameter("userParam", mailboxPath.getUser()).getSingleResult();
+            }
         } catch (NoResultException e) {
-            throw new MailboxNotFoundException(name);
+            throw new MailboxNotFoundException(mailboxPath);
             
         } catch (PersistenceException e) {
             throw new StorageException(HumanReadableText.SEARCH_FAILED, e);
@@ -109,13 +114,18 @@ public class JPAMailboxMapper extends JPATransactionalMapper implements MailboxM
         } 
     }
 
-    /**
-     * @see org.apache.james.imap.store.mail.MailboxMapper#findMailboxWithNameLike(java.lang.String)
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.store.mail.MailboxMapper#findMailboxWithPathLike(org.apache.james.imap.api.MailboxPath)
      */
     @SuppressWarnings("unchecked")
-    public List<Mailbox<Long>> findMailboxWithNameLike(String name) throws StorageException {
+    public List<Mailbox<Long>> findMailboxWithPathLike(MailboxPath path) throws StorageException {
         try {
-            return getEntityManager().createNamedQuery("findMailboxWithNameLike").setParameter("nameParam", SQL_WILDCARD_CHAR + name + SQL_WILDCARD_CHAR).getResultList();
+            if (path.getUser() == null) {
+                return getEntityManager().createNamedQuery("findMailboxWithNameLike").setParameter("nameParam", SQL_WILDCARD_CHAR + path.getName() + SQL_WILDCARD_CHAR).setParameter("namespaceParam", path.getNamespace()).getResultList();
+            } else {
+                return getEntityManager().createNamedQuery("findMailboxWithNameLikeWithUser").setParameter("nameParam", SQL_WILDCARD_CHAR + path.getName() + SQL_WILDCARD_CHAR).setParameter("namespaceParam", path.getNamespace()).setParameter("userParam", path.getUser()).getResultList();
+            }
         } catch (PersistenceException e) {
             throw new StorageException(HumanReadableText.SEARCH_FAILED, e);
         }
@@ -151,7 +161,12 @@ public class JPAMailboxMapper extends JPATransactionalMapper implements MailboxM
     public boolean hasChildren(Mailbox<Long> mailbox) throws StorageException,
             MailboxNotFoundException {
         final String name = mailbox.getName() + delimiter + SQL_WILDCARD_CHAR; 
-        final Long numberOfChildMailboxes = (Long) getEntityManager().createNamedQuery("countMailboxesWithNameLike").setParameter("nameParam", name).getSingleResult();
+        final Long numberOfChildMailboxes;
+        if (mailbox.getUser() == null) {
+            numberOfChildMailboxes = (Long) getEntityManager().createNamedQuery("countMailboxesWithNameLike").setParameter("nameParam", name).setParameter("namespaceParam", mailbox.getNamespace()).getSingleResult();
+        } else {
+            numberOfChildMailboxes = (Long) getEntityManager().createNamedQuery("countMailboxesWithNameLikeWithUser").setParameter("nameParam", name).setParameter("namespaceParam", mailbox.getNamespace()).setParameter("userParam", mailbox.getUser()).getSingleResult();
+        }
         return numberOfChildMailboxes != null && numberOfChildMailboxes > 0;
     }
 }

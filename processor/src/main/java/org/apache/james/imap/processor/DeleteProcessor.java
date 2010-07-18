@@ -21,6 +21,7 @@ package org.apache.james.imap.processor;
 
 import org.apache.james.imap.api.ImapCommand;
 import org.apache.james.imap.api.ImapMessage;
+import org.apache.james.imap.api.MailboxPath;
 import org.apache.james.imap.api.message.request.ImapRequest;
 import org.apache.james.imap.api.message.response.StatusResponseFactory;
 import org.apache.james.imap.api.process.ImapProcessor;
@@ -46,19 +47,16 @@ public class DeleteProcessor extends AbstractMailboxProcessor {
     protected void doProcess(ImapRequest message, ImapSession session,
             String tag, ImapCommand command, Responder responder) {
         final DeleteRequest request = (DeleteRequest) message;
-        final String mailboxName = request.getMailboxName();
+        final MailboxPath mailboxPath = buildFullPath(session, request.getMailboxName());
         try {
-            final String fullMailboxName = buildFullName(session, mailboxName);
             final SelectedMailbox selected = session.getSelected();
-            if (selected != null && selected.getName().equals(fullMailboxName)) {
+            if (selected != null && selected.getPath().equals(mailboxPath)) {
                 session.deselect();
             }
             final MailboxManager mailboxManager = getMailboxManager();
-            mailboxManager.deleteMailbox(fullMailboxName, ImapSessionUtils
-                    .getMailboxSession(session));
+            mailboxManager.deleteMailbox(mailboxPath, ImapSessionUtils.getMailboxSession(session));
             unsolicitedResponses(session, responder, false);
             okComplete(command, tag, responder);
-
         } catch (MailboxException e) {
             no(command, tag, responder, e, session);
         }

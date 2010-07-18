@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
+import org.apache.james.imap.api.MailboxPath;
 import org.apache.james.imap.api.process.SelectedMailbox;
 import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.MailboxManager;
@@ -45,16 +46,16 @@ public class SelectedMailboxImpl implements SelectedMailbox {
     private boolean recentUidRemoved;
 
     public SelectedMailboxImpl(final MailboxManager mailboxManager, final List<Long> uids,
-            final MailboxSession mailboxSession, final String name) throws MailboxException {
+            final MailboxSession mailboxSession, final MailboxPath path) throws MailboxException {
         recentUids = new TreeSet<Long>();
         recentUidRemoved = false;
         final long sessionId = mailboxSession.getSessionId();
-        events = new MailboxEventAnalyser(sessionId, name);
+        events = new MailboxEventAnalyser(sessionId, path);
         // Ignore events from our session
         events.setSilentFlagChanges(true);
-        mailboxManager.addListener(name, events, mailboxSession);
+        mailboxManager.addListener(path, events, mailboxSession);
         converter = new UidToMsnConverter(uids);
-        mailboxManager.addListener(name, converter, mailboxSession);
+        mailboxManager.addListener(path, converter, mailboxSession);
     }
 
     /**
@@ -138,12 +139,11 @@ public class SelectedMailboxImpl implements SelectedMailbox {
         return recentUids.size();
     }
 
-    /*
-     * (non-Javadoc)
-     * @see org.apache.james.imap.api.process.SelectedMailbox#getName()
+    /* (non-Javadoc)
+     * @see org.apache.james.imap.api.process.SelectedMailbox#getPath()
      */
-    public String getName() {
-        return events.getMailboxName();
+    public MailboxPath getPath() {
+        return events.getMailboxPath();
     }
 
     private void checkExpungedRecents() {

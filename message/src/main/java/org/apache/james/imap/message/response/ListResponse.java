@@ -28,7 +28,7 @@ public final class ListResponse extends AbstractListingResponse implements
     
     public ListResponse(final boolean noInferiors, final boolean noSelect,
             final boolean marked, final boolean unmarked,
-            boolean hasChildren, boolean hasNoChildren, final String hierarchyDelimiter, final String name) {
-        super(noInferiors, noSelect, marked, unmarked, hasChildren, hasNoChildren, hierarchyDelimiter, name);
+            boolean hasChildren, boolean hasNoChildren, final String name) {
+        super(noInferiors, noSelect, marked, unmarked, hasChildren, hasNoChildren, name);
     }
 }

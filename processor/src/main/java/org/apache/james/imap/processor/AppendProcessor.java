@@ -28,6 +28,7 @@ import javax.mail.Flags;
 import org.apache.commons.logging.Log;
 import org.apache.james.imap.api.ImapCommand;
 import org.apache.james.imap.api.ImapMessage;
+import org.apache.james.imap.api.MailboxPath;
 import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.api.message.request.ImapRequest;
 import org.apache.james.imap.api.message.response.StatusResponse;
@@ -68,11 +69,11 @@ public class AppendProcessor extends AbstractMailboxProcessor {
         final Flags flags = request.getFlags();
         try {
 
-            final String fullMailboxName = buildFullName(session, mailboxName);
+            final MailboxPath mailboxPath = buildFullPath(session, mailboxName);
             final MailboxManager mailboxManager = getMailboxManager();
-            final Mailbox mailbox = mailboxManager.getMailbox(fullMailboxName, ImapSessionUtils.getMailboxSession(session));
+            final Mailbox mailbox = mailboxManager.getMailbox(mailboxPath, ImapSessionUtils.getMailboxSession(session));
             appendToMailbox(messageIn, datetime, flags, session, tag,
-                    command, mailbox, responder, fullMailboxName);
+                    command, mailbox, responder, mailboxPath);
         } catch (MailboxNotFoundException e) {
             // consume message on exception
             cosume(messageIn);
@@ -122,18 +123,16 @@ public class AppendProcessor extends AbstractMailboxProcessor {
         no(command, tag, responder,
                 HumanReadableText.FAILURE_NO_SUCH_MAILBOX,
                 StatusResponse.ResponseCode.tryCreate());
-       
     }
 
     private void appendToMailbox(final InputStream message, final Date datetime,
             final Flags flagsToBeSet, final ImapSession session, final String tag,
-            final ImapCommand command, final Mailbox mailbox, Responder responder, final String fullMailboxName) {
+            final ImapCommand command, final Mailbox mailbox, Responder responder, final MailboxPath mailboxPath) {
         try {
-            final MailboxSession mailboxSession = ImapSessionUtils
-                    .getMailboxSession(session);
+            final MailboxSession mailboxSession = ImapSessionUtils.getMailboxSession(session);
             final SelectedMailbox selectedMailbox = session.getSelected();
             final boolean isSelectedMailbox = selectedMailbox != null
-                    && fullMailboxName.equals(selectedMailbox.getName());
+                    && selectedMailbox.getPath().equals(mailboxPath);
             final long uid  = mailbox.appendMessage(message, datetime, mailboxSession, 
                     !isSelectedMailbox, flagsToBeSet);
             if (isSelectedMailbox) {
@@ -152,4 +151,6 @@ public class AppendProcessor extends AbstractMailboxProcessor {
             no(command, tag, responder, e, session);
         }
     }
+    
+    
 }

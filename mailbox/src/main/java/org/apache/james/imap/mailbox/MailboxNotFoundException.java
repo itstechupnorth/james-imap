@@ -19,6 +19,7 @@
 
 package org.apache.james.imap.mailbox;
 
+import org.apache.james.imap.api.MailboxPath;
 import org.apache.james.imap.api.display.HumanReadableText;
 
 /**
@@ -57,6 +58,16 @@ public class MailboxNotFoundException extends MailboxException {
     public MailboxNotFoundException(String mailboxName) {
         super(HumanReadableText.MAILBOX_NOT_FOUND, message(mailboxName));
         this.mailboxName = mailboxName;
+        this.id = 0;
+    }
+    
+    /**
+     * @param mailboxPath
+     *            name of the mailbox, not null
+     */
+    public MailboxNotFoundException(MailboxPath mailboxPath) {
+        super(HumanReadableText.MAILBOX_NOT_FOUND, message(mailboxPath.toString()));
+        this.mailboxName = mailboxPath.toString();
         this.id = 0;
     }
 

@@ -35,4 +35,9 @@ public interface MailboxConstants {
      */
     public static final char DEFAULT_DELIMITER = '.';
 
+    /**
+     * The default delimiter used to seperated parent/child folders
+     */
+    public static final String DEFAULT_DELIMITER_STRING = ".";
+
 }

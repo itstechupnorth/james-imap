@@ -24,6 +24,7 @@ import javax.jcr.RepositoryException;
 import org.apache.commons.logging.Log;
 import org.apache.jackrabbit.JcrConstants;
 import org.apache.jackrabbit.util.Text;
+import org.apache.james.imap.api.MailboxPath;
 import org.apache.james.imap.jcr.JCRImapConstants;
 import org.apache.james.imap.jcr.Persistent;
 import org.apache.james.imap.store.mail.model.Mailbox;
@@ -37,6 +38,8 @@ public class JCRMailbox implements Mailbox<String>, JCRImapConstants, Persistent
     private static final String TAB = " ";
 
     
+    public final static String USER_PROPERTY = "jamesMailbox:mailboxUser";
+    public final static String NAMESPACE_PROPERTY = "jamesMailbox:mailboxNamespace";
     public final static String NAME_PROPERTY = "jamesMailbox:mailboxName";
     public final static String UIDVALIDITY_PROPERTY = "jamesMailbox:mailboxUidValidity";
     public final static String LASTUID_PROPERTY = "jamesMailbox:mailboxLastUid";
@@ -46,16 +49,20 @@ public class JCRMailbox implements Mailbox<String>, JCRImapConstants, Persistent
     private long lastUid = 0;
     private final Log logger;
     private Node node;
+
+
+    private String namespace;
+    private String user;
     
-    public JCRMailbox(final String name, final long uidValidity, final long lastUid, Log logger) {
-        this.name = name;
-        this.uidValidity = uidValidity;
+    public JCRMailbox(final MailboxPath path, final long uidValidity, final long lastUid, Log logger) {
+        this(path, uidValidity, logger);
         this.lastUid = lastUid;
-        this.logger = logger;
     }
     
-    public JCRMailbox( final String name, final long uidValidity, Log logger) {
-        this.name = name;
+    public JCRMailbox( final MailboxPath path, final long uidValidity, Log logger) {
+        this.name = path.getName();
+        this.namespace = path.getNamespace();
+        this.user = path.getUser();
         this.uidValidity = uidValidity;
         this.logger = logger;
     }
@@ -177,7 +184,12 @@ public class JCRMailbox implements Mailbox<String>, JCRImapConstants, Persistent
         node.setProperty(NAME_PROPERTY, getName());
         node.setProperty(UIDVALIDITY_PROPERTY, getUidValidity());
         node.setProperty(LASTUID_PROPERTY, getLastUid());   
-        
+        String user = getUser();
+        if (user == null) {
+            user = "";
+        }
+        node.setProperty(USER_PROPERTY, user);
+        node.setProperty(NAMESPACE_PROPERTY, getNamespace());
         this.node = node;
     }
     
@@ -227,6 +239,76 @@ public class JCRMailbox implements Mailbox<String>, JCRImapConstants, Persistent
             }
         }
         return null;      
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.store.mail.model.Mailbox#getNamespace()
+     */
+    public String getNamespace() {
+        if (isPersistent()) {
+            try {
+                return node.getProperty(NAMESPACE_PROPERTY).getString();
+            } catch (RepositoryException e) {
+                logger.error("Unable to access property " + NAMESPACE_PROPERTY, e);
+            }
+        }
+        return namespace;
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.store.mail.model.Mailbox#getUser()
+     */
+    public String getUser() {
+        if (isPersistent()) {
+            try {
+                String user = node.getProperty(USER_PROPERTY).getString();
+                if (user.trim().length() == 0) {
+                    return null;
+                } else {
+                    return user;
+                }
+            } catch (RepositoryException e) {
+                logger.error("Unable to access property " + USER_PROPERTY, e);
+            }
+        }
+        return user;
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.store.mail.model.Mailbox#setNamespace(java.lang.String)
+     */
+    public void setNamespace(String namespace) {
+        if (isPersistent()) {
+            try {
+                node.setProperty(NAMESPACE_PROPERTY, namespace);
+            } catch (RepositoryException e) {
+                logger.error("Unable to access property " + NAMESPACE_PROPERTY, e);
+            }
+        } else {
+            this.namespace = namespace;
+        }                
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.store.mail.model.Mailbox#setuser(java.lang.String)
+     */
+    public void setuser(String user) {
+        if (isPersistent()) {
+            try {
+                if (user == null) {
+                    user = "";
+                }
+                node.setProperty(USER_PROPERTY, user);
+            } catch (RepositoryException e) {
+                logger.error("Unable to access property " + NAME_PROPERTY, e);
+            }
+        } else {
+            this.user = user;
+        }        
     }
 
 }

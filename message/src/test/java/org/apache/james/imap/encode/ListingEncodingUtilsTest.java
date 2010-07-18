@@ -33,7 +33,6 @@ import org.junit.runner.RunWith;
 @RunWith(JMock.class)
 public class ListingEncodingUtilsTest  {
 
-    final String deliminatorParameter = ".";
     final String nameParameter = "LIST";
     final String typeNameParameters = "A Type Name";
     
@@ -50,7 +49,7 @@ public class ListingEncodingUtilsTest  {
         
         context.checking (new Expectations() {{
             oneOf(mock).listResponse(with(equal(typeNameParameters)), with(equal(attributesOutput)), 
-                    with(equal(deliminatorParameter)), with(equal(nameParameter)));
+                    with(equal(".")), with(equal(nameParameter)));
         }});
     }
 
@@ -58,7 +57,7 @@ public class ListingEncodingUtilsTest  {
     public void testShouldAddHasChildrenToAttributes() throws Exception {
         // Setup 
         attributesOutput.add("\\HasChildren");
-        ListResponse input = new ListResponse(false, false, false, false, true, false, deliminatorParameter, nameParameter);
+        ListResponse input = new ListResponse(false, false, false, false, true, false, nameParameter);
             
         // Exercise
         ListingEncodingUtils.encodeListingResponse(typeNameParameters, mock, input);
@@ -68,7 +67,7 @@ public class ListingEncodingUtilsTest  {
     public void testShouldAddHasNoChildrenToAttributes() throws Exception {
         // Setup 
         attributesOutput.add("\\HasNoChildren");
-        ListResponse input = new ListResponse(false, false, false, false, false, true, deliminatorParameter, nameParameter);
+        ListResponse input = new ListResponse(false, false, false, false, false, true, nameParameter);
             
         // Exercise
         ListingEncodingUtils.encodeListingResponse(typeNameParameters, mock, input);
