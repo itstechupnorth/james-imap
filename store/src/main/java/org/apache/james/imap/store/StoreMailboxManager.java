@@ -199,7 +199,7 @@ public abstract class StoreMailboxManager<Id> extends DelegatingMailboxManager {
                         throw new MailboxNotFoundException(from);
                     }
                     mailbox.setNamespace(to.getNamespace());
-                    mailbox.setuser(to.getUser());
+                    mailbox.setUser(to.getUser());
                     mailbox.setName(to.getName());
                     mapper.save(mailbox);
 

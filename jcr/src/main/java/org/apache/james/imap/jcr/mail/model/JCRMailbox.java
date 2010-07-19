@@ -292,11 +292,12 @@ public class JCRMailbox implements Mailbox<String>, JCRImapConstants, Persistent
         }                
     }
 
+
     /*
      * (non-Javadoc)
-     * @see org.apache.james.imap.store.mail.model.Mailbox#setuser(java.lang.String)
+     * @see org.apache.james.imap.store.mail.model.Mailbox#setUser(java.lang.String)
      */
-    public void setuser(String user) {
+    public void setUser(String user) {
         if (isPersistent()) {
             try {
                 if (user == null) {

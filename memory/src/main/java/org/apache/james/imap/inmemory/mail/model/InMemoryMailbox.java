@@ -70,7 +70,7 @@ public class InMemoryMailbox implements Mailbox<Long> {
         return user;
     }
 
-    public void setuser(String user) {
+    public void setUser(String user) {
         this.user = user;
     }
 

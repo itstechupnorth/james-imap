@@ -62,7 +62,7 @@ public interface Mailbox<Id> {
      * Sets the current user for this mailbox.
      * @param name not null
      */
-    public abstract void setuser(String user);
+    public abstract void setUser(String user);
 
     /**
      * Gets the current name for this mailbox.

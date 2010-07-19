@@ -185,11 +185,12 @@ public class JPAMailbox implements Mailbox<Long> {
         this.namespace = namespace;
     }
 
+
     /*
      * (non-Javadoc)
-     * @see org.apache.james.imap.store.mail.model.Mailbox#setuser(java.lang.String)
+     * @see org.apache.james.imap.store.mail.model.Mailbox#setUser(java.lang.String)
      */
-    public void setuser(String user) {
+    public void setUser(String user) {
         this.user = user;
     }
 }
