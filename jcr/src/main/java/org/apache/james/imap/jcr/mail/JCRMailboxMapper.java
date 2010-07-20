@@ -32,6 +32,7 @@ import javax.jcr.query.QueryResult;
 import org.apache.commons.logging.Log;
 import org.apache.jackrabbit.JcrConstants;
 import org.apache.jackrabbit.commons.JcrUtils;
+import org.apache.jackrabbit.util.ISO9075;
 import org.apache.jackrabbit.util.Text;
 import org.apache.james.imap.api.MailboxPath;
 import org.apache.james.imap.api.display.HumanReadableText;
@@ -125,7 +126,7 @@ public class JCRMailboxMapper extends AbstractJCRScalingMapper implements Mailbo
             
             QueryManager manager = getSession().getWorkspace().getQueryManager();
 
-            String queryString = "/jcr:root/" + MAILBOXES_PATH + "//element(*,jamesMailbox:mailbox)[@" + JCRMailbox.NAME_PROPERTY + "='" + name+ "' and @" + JCRMailbox.NAMESPACE_PROPERTY +"='" + namespace + "' and @" + JCRMailbox.USER_PROPERTY + "='" + user + "']";
+            String queryString = "/jcr:root/" + MAILBOXES_PATH + "/" + ISO9075.encodePath(path.getNamespace())  + "//element(*,jamesMailbox:mailbox)[@" + JCRMailbox.NAME_PROPERTY + "='" + name+ "' and @" + JCRMailbox.NAMESPACE_PROPERTY +"='" + namespace + "' and @" + JCRMailbox.USER_PROPERTY + "='" + user + "']";
             QueryResult result = manager.createQuery(queryString, Query.XPATH).execute();
             NodeIterator it = result.getNodes();
             if (it.hasNext()) {
@@ -135,6 +136,8 @@ public class JCRMailboxMapper extends AbstractJCRScalingMapper implements Mailbo
         } catch (PathNotFoundException e) {
             throw new MailboxNotFoundException(path);
         } catch (RepositoryException e) {
+            e.printStackTrace();
+
             throw new StorageException(HumanReadableText.SEARCH_FAILED, e);
         }
     }
@@ -156,7 +159,7 @@ public class JCRMailboxMapper extends AbstractJCRScalingMapper implements Mailbo
             String namespace = Text.escapeIllegalXpathSearchChars(path.getNamespace());
             
             QueryManager manager = getSession().getWorkspace().getQueryManager();
-            String queryString = "/jcr:root/" + MAILBOXES_PATH + "//element(*,jamesMailbox:mailbox)[jcr:like(@" + JCRMailbox.NAME_PROPERTY + ",'%" + name + "%') and @" + JCRMailbox.NAMESPACE_PROPERTY +"='" + namespace + "' and @" + JCRMailbox.USER_PROPERTY + "='" + user + "']";
+            String queryString = "/jcr:root/" + MAILBOXES_PATH + "/" + ISO9075.encodePath(path.getNamespace()) + "//element(*,jamesMailbox:mailbox)[jcr:like(@" + JCRMailbox.NAME_PROPERTY + ",'%" + name + "%') and @" + JCRMailbox.NAMESPACE_PROPERTY +"='" + namespace + "' and @" + JCRMailbox.USER_PROPERTY + "='" + user + "']";
             QueryResult result = manager.createQuery(queryString, Query.XPATH).execute();
             NodeIterator it = result.getNodes();
             while (it.hasNext()) {
@@ -165,6 +168,8 @@ public class JCRMailboxMapper extends AbstractJCRScalingMapper implements Mailbo
         } catch (PathNotFoundException e) {
             // nothing todo
         } catch (RepositoryException e) {
+            e.printStackTrace();
+
             throw new StorageException(HumanReadableText.SEARCH_FAILED, e);
         }
         return mailboxList;
@@ -251,7 +256,7 @@ public class JCRMailboxMapper extends AbstractJCRScalingMapper implements Mailbo
             
             QueryManager manager = getSession().getWorkspace()
                     .getQueryManager();
-            String queryString = "/jcr:root/" + MAILBOXES_PATH
+            String queryString = "/jcr:root/" + MAILBOXES_PATH + "/" + ISO9075.encodePath(mailbox.getNamespace()) 
                     + "//element(*,jamesMailbox:mailbox)[jcr:like(@"
                     + JCRMailbox.NAME_PROPERTY + ",'" + name + MailboxConstants.DEFAULT_DELIMITER_STRING + "%') and @" + JCRMailbox.NAMESPACE_PROPERTY +"='" + namespace + "' and @" + JCRMailbox.USER_PROPERTY + "='" + user + "']";
             QueryResult result = manager.createQuery(queryString, Query.XPATH)
@@ -259,6 +264,7 @@ public class JCRMailboxMapper extends AbstractJCRScalingMapper implements Mailbo
             NodeIterator it = result.getNodes();
             return it.hasNext();
         } catch (RepositoryException e) {
+            e.printStackTrace();
             throw new StorageException(HumanReadableText.SEARCH_FAILED, e);
         }
     }
