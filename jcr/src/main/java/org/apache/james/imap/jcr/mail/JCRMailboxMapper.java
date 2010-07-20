@@ -136,8 +136,6 @@ public class JCRMailboxMapper extends AbstractJCRScalingMapper implements Mailbo
         } catch (PathNotFoundException e) {
             throw new MailboxNotFoundException(path);
         } catch (RepositoryException e) {
-            e.printStackTrace();
-
             throw new StorageException(HumanReadableText.SEARCH_FAILED, e);
         }
     }
@@ -168,8 +166,6 @@ public class JCRMailboxMapper extends AbstractJCRScalingMapper implements Mailbo
         } catch (PathNotFoundException e) {
             // nothing todo
         } catch (RepositoryException e) {
-            e.printStackTrace();
-
             throw new StorageException(HumanReadableText.SEARCH_FAILED, e);
         }
         return mailboxList;
@@ -264,7 +260,6 @@ public class JCRMailboxMapper extends AbstractJCRScalingMapper implements Mailbo
             NodeIterator it = result.getNodes();
             return it.hasNext();
         } catch (RepositoryException e) {
-            e.printStackTrace();
             throw new StorageException(HumanReadableText.SEARCH_FAILED, e);
         }
     }
