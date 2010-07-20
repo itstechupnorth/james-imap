@@ -26,6 +26,11 @@ import org.apache.james.mailboxmanager.torque.om.MessageHeaderPeer;
 import org.apache.james.mailboxmanager.torque.om.MessageRowPeer;
 import org.apache.torque.util.Criteria;
 
+/**
+ * 
+ * @deprecated Torque implementation will get removed in the next release
+ */
+@Deprecated()
 class TorqueCriteriaBuilder {
 
     private final Criteria masterCriteria;

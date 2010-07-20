@@ -25,7 +25,10 @@ import org.apache.james.imap.mailbox.Mailbox;
 
 /**
  * Describes the current state of a mailbox.
+ * 
+ * @deprecated Torque implementation will get removed in the next release
  */
+@Deprecated()
 public class MailboxMetaData implements Mailbox.MetaData {
 
     private final int recentCount;

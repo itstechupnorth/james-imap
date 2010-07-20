@@ -41,6 +41,10 @@ import org.apache.james.mailboxmanager.torque.om.MessageRow;
 import org.apache.james.mime4j.MimeException;
 import org.apache.torque.TorqueException;
 
+/**
+ * @deprecated Torque implementation will get removed in the next release
+ */
+@Deprecated()
 public class TorqueResultIterator implements Iterator {
 
     private final Buffer messageRows;

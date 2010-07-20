@@ -50,6 +50,10 @@ import org.apache.james.mailboxmanager.torque.om.MessageRow;
 import org.apache.james.mime4j.MimeException;
 import org.apache.torque.TorqueException;
 
+/**
+* @deprecated Torque implementation will get removed in the next release
+ */
+@Deprecated()
 public class MessageRowUtils {
 
     public static final byte[] BYTES_NEW_LINE = { 0x0D, 0x0A };

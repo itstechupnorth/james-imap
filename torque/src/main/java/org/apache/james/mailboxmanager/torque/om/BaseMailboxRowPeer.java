@@ -29,7 +29,9 @@ import com.workingdogs.village.Record;
  * 
  * [Sun Dec 09 17:45:09 GMT 2007]
  * 
+ * @deprecated Torque implementation will get removed in the next release
  */
+@Deprecated()
 public abstract class BaseMailboxRowPeer extends BasePeer {
     /** Serial version */
     private static final long serialVersionUID = 1197222309712L;

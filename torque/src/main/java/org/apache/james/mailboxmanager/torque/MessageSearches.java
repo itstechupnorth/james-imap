@@ -48,7 +48,10 @@ import org.apache.torque.TorqueException;
 
 /**
  * Uility methods to help perform search operations.
+ * 
+ * @deprecated Torque implementation will get removed in the next release
  */
+@Deprecated()
 class MessageSearches {
 
     private Log log;

@@ -51,6 +51,11 @@ import org.apache.torque.TorqueException;
 import org.apache.torque.util.CountHelper;
 import org.apache.torque.util.Criteria;
 
+/**
+ * 
+ * @deprecated Torque implementation will get removed in the next release
+ */
+@Deprecated()
 public class TorqueMailboxManager extends DelegatingMailboxManager {
     
     private static final char SQL_WILDCARD_CHAR = '%';

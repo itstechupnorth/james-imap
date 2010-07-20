@@ -26,7 +26,9 @@ import java.io.InputStream;
 /**
  * Utility methods for messages.
  * 
+ * @deprecated Torque implementation will get removed in the next release
  */
+@Deprecated()
 public class MessageUtils {
 
     private static final int BYTE_STREAM_CAPACITY = 8182;

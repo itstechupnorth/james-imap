@@ -37,6 +37,11 @@ import org.apache.james.imap.mailbox.MailboxListener;
 import org.apache.james.imap.mailbox.util.MailboxEventDispatcher;
 import org.apache.james.imap.mailbox.util.UidRange;
 
+/**
+ * 
+ * @deprecated Torque implementation will get removed in the next release
+ */
+@Deprecated()
 public class UidChangeTracker implements MailboxConstants {
 
     private final MailboxEventDispatcher eventDispatcher;

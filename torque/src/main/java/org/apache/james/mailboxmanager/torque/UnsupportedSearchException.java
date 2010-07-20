@@ -23,7 +23,10 @@ import org.apache.torque.TorqueException;
 
 /**
  * Indicates that the requested search is not supported by this implementation.
+ * 
+ * @deprecated Torque implementation will get removed in the next release
  */
+@Deprecated()
 public class UnsupportedSearchException extends TorqueException {
 
     private static final long serialVersionUID = -7442949630563672557L;

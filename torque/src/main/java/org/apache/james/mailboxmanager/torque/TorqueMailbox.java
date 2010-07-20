@@ -77,6 +77,11 @@ import org.apache.torque.util.Criteria;
 
 import com.workingdogs.village.DataSetException;
 
+/**
+ * 
+ * @deprecated Torque implementation will get removed in the next release
+ */
+@Deprecated()
 public class TorqueMailbox implements Mailbox {
 
     private static final int LOCK_TIMEOUT = 10;

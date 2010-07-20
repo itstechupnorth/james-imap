@@ -29,7 +29,10 @@ import org.apache.james.imap.mailbox.MessageResult;
 
 /**
  * Represents the flags for a message.
+ * 
+ * @deprecated Torque implementation will get removed in the next release
  */
+@Deprecated()
 public class MessageFlags {
 
     /**

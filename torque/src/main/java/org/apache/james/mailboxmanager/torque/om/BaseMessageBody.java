@@ -22,7 +22,10 @@ import org.apache.torque.util.Transaction;
  * 
  * You should not use this class directly. It should not even be extended all
  * references should be to MessageBody
+ * 
+ * @deprecated Torque implementation will get removed in the next release
  */
+@Deprecated()
 public abstract class BaseMessageBody extends BaseObject {
     /** Serial version */
     private static final long serialVersionUID = 1197222309712L;
