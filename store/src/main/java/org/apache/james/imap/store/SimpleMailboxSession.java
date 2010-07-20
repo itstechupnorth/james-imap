@@ -27,6 +27,7 @@ import java.util.Locale;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
+import org.apache.james.imap.mailbox.MailboxConstants;
 import org.apache.james.imap.mailbox.MailboxSession;
 
 /**
@@ -56,17 +57,28 @@ public class SimpleMailboxSession implements MailboxSession, MailboxSession.User
 
     public SimpleMailboxSession(final long sessionId, final String userName, final String password,
             final Log log, final List<Locale> localePreferences) {
+        this(sessionId, userName, password, log, localePreferences, new ArrayList<String>(), null);
+    }
+
+    public SimpleMailboxSession(final long sessionId, final String userName, final String password,
+            final Log log, final List<Locale> localePreferences, List<String> sharedSpaces, String otherUsersSpace) {
         this.sessionId = sessionId;
         this.log = log;
         this.userName = userName;
         this.password = password;
-        this.personalSpace = "";
-        this.otherUsersSpace = null;
-        this.sharedSpaces = new ArrayList<String>();
+        this.otherUsersSpace = otherUsersSpace;
+        this.sharedSpaces = sharedSpaces;
+
+        if (otherUsersSpace == null && (sharedSpaces == null || sharedSpaces.isEmpty())) {
+            this.personalSpace = "";
+        } else {
+            this.personalSpace = MailboxConstants.USER_NAMESPACE;
+        }
+
         this.localePreferences = localePreferences;
         this.attributes = new HashMap<Object, Object>();
     }
-
+    
     /*
      * (non-Javadoc)
      * @see org.apache.james.imap.mailbox.MailboxSession#getLog()
@@ -107,7 +119,7 @@ public class SimpleMailboxSession implements MailboxSession, MailboxSession.User
     public String toString() {
         final String TAB = " ";
 
-        String retValue = "TorqueMailboxSession ( " + "sessionId = "
+        String retValue = "MailboxSession ( " + "sessionId = "
                 + this.sessionId + TAB + "open = " + this.open + TAB + " )";
 
         return retValue;
@@ -123,11 +135,12 @@ public class SimpleMailboxSession implements MailboxSession, MailboxSession.User
     
     /**
      * Gets the name of the user executing this session.
+     * 
      * @return not null
      */
-	public String getUserName() {
-		return userName;
-	}
+    public String getUserName() {
+        return userName;
+    }
 
     /**
      * @see org.apache.james.imap.mailbox.MailboxSession#getOtherUsersSpace()
