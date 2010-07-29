@@ -105,7 +105,7 @@ public class SelectedMailboxImpl implements SelectedMailbox {
      * @see org.apache.james.imap.api.process.SelectedMailbox#removeRecent(long)
      */
     public boolean removeRecent(long uid) {
-        final boolean result = recentUids.remove(new Long(uid));
+        final boolean result = recentUids.remove(uid);
         if (result) {
             recentUidRemoved = true;
         }
@@ -117,8 +117,7 @@ public class SelectedMailboxImpl implements SelectedMailbox {
      * @see org.apache.james.imap.api.process.SelectedMailbox#addRecent(long)
      */
     public boolean addRecent(long uid) {
-        final boolean result = recentUids.add(new Long(uid));
-        return result;
+        return recentUids.add(uid);
     }
 
     /*
@@ -147,8 +146,8 @@ public class SelectedMailboxImpl implements SelectedMailbox {
     }
 
     private void checkExpungedRecents() {
-        for (final Long uid: events.expungedUids()) {
-            removeRecent(uid.longValue());
+        for (final long uid: events.expungedUids()) {
+            removeRecent(uid);
         }
     }
 
@@ -157,14 +156,7 @@ public class SelectedMailboxImpl implements SelectedMailbox {
      * @see org.apache.james.imap.api.process.SelectedMailbox#isRecent(long)
      */
     public boolean isRecent(long uid) {
-        boolean result = false;
-        for (final Long recentUid: recentUids) {
-            if (recentUid.longValue() == uid) {
-                result = true;
-                break;
-            }
-        }
-        return result;
+        return recentUids.contains(uid);
     }
 
     /*
