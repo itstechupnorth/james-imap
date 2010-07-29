@@ -26,7 +26,7 @@ import java.util.List;
 import javax.mail.Flags;
 
 import org.apache.james.imap.jpa.mail.model.JPAHeader;
-import org.apache.james.imap.jpa.mail.model.JPAMailboxMembership;
+import org.apache.james.imap.jpa.mail.model.openjpa.JPAMailboxMembership;
 import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.MailboxSession;
 import org.apache.james.imap.mailbox.util.MailboxEventDispatcher;

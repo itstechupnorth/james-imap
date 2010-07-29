@@ -104,7 +104,7 @@
             </property>   
             <property>
               <name>metaDataFactory</name>
-              <value>jpa(Types=org.apache.james.imap.jpa.mail.model.JPAHeader;org.apache.james.imap.jpa.mail.model.JPAMailbox;org.apache.james.imap.jpa.mail.model.AbstractJPAMailboxMembership;org.apache.james.imap.jpa.mail.model.JPAMailboxMembership;org.apache.james.imap.jpa.mail.model.openjpa.JPAStreamingMailboxMembership;org.apache.james.imap.jpa.mail.model.AbstractJPAMessage;org.apache.james.imap.jpa.mail.model.JPAMessage;org.apache.james.imap.jpa.mail.model.openjpa.JPAStreamingMessage;org.apache.james.imap.jpa.mail.model.JPAProperty;org.apache.james.imap.jpa.user.model.JPASubscription)</value>
+              <value>jpa(Types=org.apache.james.imap.jpa.mail.model.JPAHeader;org.apache.james.imap.jpa.mail.model.JPAMailbox;org.apache.james.imap.jpa.mail.model.openjpa.AbstractJPAMailboxMembership;org.apache.james.imap.jpa.mail.model.openjpa.JPAMailboxMembership;org.apache.james.imap.jpa.mail.model.openjpa.JPAStreamingMailboxMembership;org.apache.james.imap.jpa.mail.model.openjpa.AbstractJPAMessage;org.apache.james.imap.jpa.mail.model.openjpa.JPAMessage;org.apache.james.imap.jpa.mail.model.openjpa.JPAStreamingMessage;org.apache.james.imap.jpa.mail.model.JPAProperty;org.apache.james.imap.jpa.user.model.JPASubscription)</value>
             </property>           
           </toolProperties>
         </configuration>

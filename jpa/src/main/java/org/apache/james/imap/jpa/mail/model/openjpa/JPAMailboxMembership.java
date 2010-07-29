@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations      *
  * under the License.                                           *
  ****************************************************************/
-package org.apache.james.imap.jpa.mail.model;
+package org.apache.james.imap.jpa.mail.model.openjpa;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -30,7 +30,7 @@ import javax.persistence.FetchType;
 import javax.persistence.ManyToOne;
 
 import org.apache.james.imap.api.display.HumanReadableText;
-import org.apache.james.imap.jpa.mail.model.openjpa.AbstractJPAMailboxMembership;
+import org.apache.james.imap.jpa.mail.model.JPAHeader;
 import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.store.mail.model.Document;
 import org.apache.james.imap.store.mail.model.PropertyBuilder;
