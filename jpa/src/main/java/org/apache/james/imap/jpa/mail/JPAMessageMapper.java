@@ -26,8 +26,8 @@ import javax.persistence.Query;
 
 import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.jpa.JPATransactionalMapper;
-import org.apache.james.imap.jpa.mail.model.AbstractJPAMailboxMembership;
 import org.apache.james.imap.jpa.mail.model.JPAMailboxMembership;
+import org.apache.james.imap.jpa.mail.model.openjpa.AbstractJPAMailboxMembership;
 import org.apache.james.imap.jpa.mail.model.openjpa.JPAStreamingMailboxMembership;
 import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.MessageRange;

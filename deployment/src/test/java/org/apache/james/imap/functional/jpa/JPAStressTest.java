@@ -27,7 +27,14 @@ import org.apache.commons.logging.impl.SimpleLog;
 import org.apache.james.imap.functional.AbstractStressTest;
 import org.apache.james.imap.jpa.JPAMailboxSessionMapperFactory;
 import org.apache.james.imap.jpa.JPASubscriptionManager;
+import org.apache.james.imap.jpa.mail.model.JPAMailbox;
+import org.apache.james.imap.jpa.mail.model.JPAMailboxMembership;
+import org.apache.james.imap.jpa.mail.model.JPAMessage;
+import org.apache.james.imap.jpa.mail.model.JPAProperty;
+import org.apache.james.imap.jpa.mail.model.openjpa.AbstractJPAMailboxMembership;
+import org.apache.james.imap.jpa.mail.model.openjpa.AbstractJPAMessage;
 import org.apache.james.imap.jpa.openjpa.OpenJPAMailboxManager;
+import org.apache.james.imap.jpa.user.model.JPASubscription;
 import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.MailboxSession;
 import org.apache.james.imap.store.StoreMailboxManager;
@@ -54,13 +61,13 @@ public class JPAStressTest extends AbstractStressTest{
         properties.put("openjpa.ConnectionFactoryProperties", "PrettyPrint=true, PrettyPrintLineLength=72");
         properties.put("openjpa.jdbc.SynchronizeMappings", "buildSchema(ForeignKeys=true)");
         properties.put("openjpa.MetaDataFactory", "jpa(Types=org.apache.james.imap.jpa.mail.model.JPAHeader;" +
-                "org.apache.james.imap.jpa.mail.model.JPAMailbox;" +
-                "org.apache.james.imap.jpa.mail.model.AbstractJPAMailboxMembership;" +
-                "org.apache.james.imap.jpa.mail.model.JPAMailboxMembership;" +
-                "org.apache.james.imap.jpa.mail.model.AbstractJPAMessage;" +
-                "org.apache.james.imap.jpa.mail.model.JPAMessage;" +
-                "org.apache.james.imap.jpa.mail.model.JPAProperty;" +
-                "org.apache.james.imap.jpa.user.model.JPASubscription)");
+                JPAMailbox.class.getName() + ";" +
+                AbstractJPAMailboxMembership.class.getName() + ";" +
+                JPAMailboxMembership.class.getName() + ";" +
+                AbstractJPAMessage.class.getName() + ";" +
+                JPAMessage.class.getName() + ";" +
+                JPAProperty.class.getName() + ";" +
+                JPASubscription.class.getName() + ")");
         properties.put("openjpa.LockTimeout", locktimeout + "");
        
         entityManagerFactory = OpenJPAPersistence.getEntityManagerFactory(properties);

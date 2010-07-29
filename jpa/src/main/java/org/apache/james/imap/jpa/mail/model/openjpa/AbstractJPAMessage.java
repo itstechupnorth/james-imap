@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations      *
  * under the License.                                           *
  ****************************************************************/
-package org.apache.james.imap.jpa.mail.model;
+package org.apache.james.imap.jpa.mail.model.openjpa;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,11 +30,14 @@ import javax.persistence.MappedSuperclass;
 import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
 
+import org.apache.james.imap.jpa.mail.model.JPAHeader;
+import org.apache.james.imap.jpa.mail.model.JPAProperty;
 import org.apache.james.imap.store.mail.model.AbstractDocument;
 import org.apache.james.imap.store.mail.model.Document;
 import org.apache.james.imap.store.mail.model.Header;
 import org.apache.james.imap.store.mail.model.Property;
 import org.apache.james.imap.store.mail.model.PropertyBuilder;
+import org.apache.openjpa.persistence.jdbc.ElementJoinColumn;
 
 /**
  * Abstract base class for JPA based implementations of {@link AbstractDocument}
@@ -46,7 +49,7 @@ public abstract class AbstractJPAMessage extends AbstractDocument{
     @Id@GeneratedValue private long id;
 
     /** Headers for this message */
-    @OneToMany(cascade = CascadeType.ALL, fetch=FetchType.LAZY) private List<JPAHeader> headers;
+    @OneToMany(cascade = CascadeType.ALL, fetch=FetchType.LAZY) @ElementJoinColumn(name="MESSAGE_ID") private List<JPAHeader> headers;
     /** The first body octet */
     @Basic(optional=false) private int bodyStartOctet;
     /** Number of octets in the full document content */
@@ -56,7 +59,7 @@ public abstract class AbstractJPAMessage extends AbstractDocument{
     /** MIME sub type */
     @Basic(optional=true) private String subType;
     /** Meta data for this message */
-    @OneToMany(cascade = CascadeType.ALL, fetch=FetchType.LAZY) @OrderBy("line") private List<JPAProperty> properties;
+    @OneToMany(cascade = CascadeType.ALL, fetch=FetchType.LAZY) @OrderBy("line") @ElementJoinColumn(name="MESSAGE_ID") private List<JPAProperty> properties;
     /** THE CRFL count when this document is textual, null otherwise */
     @Basic(optional=true) private Long textualLineCount;
     

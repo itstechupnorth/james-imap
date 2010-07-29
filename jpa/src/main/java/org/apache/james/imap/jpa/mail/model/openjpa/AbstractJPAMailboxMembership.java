@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations      *
  * under the License.                                           *
  ****************************************************************/
-package org.apache.james.imap.jpa.mail.model;
+package org.apache.james.imap.jpa.mail.model.openjpa;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -31,10 +31,12 @@ import javax.persistence.MappedSuperclass;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 
+import org.apache.james.imap.jpa.mail.model.JPAHeader;
 import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.store.mail.model.AbstractMailboxMembership;
 import org.apache.james.imap.store.mail.model.MailboxMembership;
 import org.apache.james.imap.store.mail.model.PropertyBuilder;
+import org.apache.openjpa.persistence.jdbc.Index;
 
 @MappedSuperclass
 @IdClass(AbstractJPAMailboxMembership.MailboxIdUidKey.class)
@@ -122,7 +124,7 @@ public abstract class AbstractJPAMailboxMembership extends AbstractMailboxMember
     @Basic(optional=false) private boolean answered = false;
 
     /** The value for the deleted field */
-    @Basic(optional=false) private boolean deleted = false;
+    @Basic(optional=false) @Index private boolean deleted = false;
 
     /** The value for the draft field */
     @Basic(optional=false) private boolean draft = false;
@@ -131,10 +133,10 @@ public abstract class AbstractJPAMailboxMembership extends AbstractMailboxMember
     @Basic(optional=false) private boolean flagged = false;
 
     /** The value for the recent field */
-    @Basic(optional=false) private boolean recent = false;
+    @Basic(optional=false) @Index private boolean recent = false;
 
     /** The value for the seen field */
-    @Basic(optional=false) private boolean seen = false;
+    @Basic(optional=false) @Index private boolean seen = false;
 
     
     /**

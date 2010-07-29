@@ -30,6 +30,7 @@ import javax.persistence.FetchType;
 import javax.persistence.ManyToOne;
 
 import org.apache.james.imap.api.display.HumanReadableText;
+import org.apache.james.imap.jpa.mail.model.openjpa.AbstractJPAMailboxMembership;
 import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.store.mail.model.Document;
 import org.apache.james.imap.store.mail.model.PropertyBuilder;
