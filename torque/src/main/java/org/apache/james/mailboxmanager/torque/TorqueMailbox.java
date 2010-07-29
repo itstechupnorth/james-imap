@@ -713,7 +713,11 @@ public class TorqueMailbox implements Mailbox {
         }
     }
 
-    public boolean isWriteable() {
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.mailbox.Mailbox#isWriteable(org.apache.james.imap.mailbox.MailboxSession)
+     */
+    public boolean isWriteable(MailboxSession session) {
         return true;
     }
 
@@ -850,6 +854,6 @@ public class TorqueMailbox implements Mailbox {
             break;
         }
 
-        return new MailboxMetaData(recent, permanentFlags, uidValidity, uidNext, messageCount, unseenCount, firstUnseen, isWriteable());
+        return new MailboxMetaData(recent, permanentFlags, uidValidity, uidNext, messageCount, unseenCount, firstUnseen, isWriteable(mailboxSession));
     }
 }

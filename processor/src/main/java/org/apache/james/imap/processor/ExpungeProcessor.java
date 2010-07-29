@@ -32,6 +32,7 @@ import org.apache.james.imap.api.process.SelectedMailbox;
 import org.apache.james.imap.mailbox.Mailbox;
 import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.MailboxManager;
+import org.apache.james.imap.mailbox.MailboxSession;
 import org.apache.james.imap.mailbox.MessageRange;
 import org.apache.james.imap.message.request.ExpungeRequest;
 import org.apache.james.imap.processor.base.ImapSessionUtils;
@@ -52,19 +53,18 @@ public class ExpungeProcessor extends AbstractMailboxProcessor {
             String tag, ImapCommand command, Responder responder) {
         try {
             final Mailbox mailbox = getSelectedMailbox(session);
-            if (!mailbox.isWriteable()) {
+            final MailboxSession mailboxSession = ImapSessionUtils.getMailboxSession(session);
+            
+            if (!mailbox.isWriteable(mailboxSession)) {
                 no(command, tag, responder,
                         HumanReadableText.MAILBOX_IS_READ_ONLY);
             } else {
-                final Iterator<Long> it = mailbox.expunge(MessageRange.all(),
-                        ImapSessionUtils
-                        .getMailboxSession(session));
-                final SelectedMailbox mailboxSession = session
-                .getSelected();
+                final Iterator<Long> it = mailbox.expunge(MessageRange.all(), mailboxSession);
+                final SelectedMailbox selected = session.getSelected();
                 if (mailboxSession != null) {
                     while (it.hasNext()) {
                         final long uid = it.next();
-                        mailboxSession.removeRecent(uid);
+                        selected.removeRecent(uid);
                     }
                 }
                 unsolicitedResponses(session, responder, false);

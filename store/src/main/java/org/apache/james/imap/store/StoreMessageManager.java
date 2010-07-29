@@ -575,7 +575,7 @@ public abstract class StoreMessageManager<Id> implements org.apache.james.imap.m
     /**
      * This mailbox is writable
      */
-    public boolean isWriteable() {
+    public boolean isWriteable(MailboxSession session) {
         return true;
     }
 
@@ -648,6 +648,6 @@ public abstract class StoreMessageManager<Id> implements org.apache.james.imap.m
                 unseenCount = 0;
                 break;
         }
-        return new MailboxMetaData(recent, permanentFlags, uidValidity, uidNext, messageCount, unseenCount, firstUnseen, isWriteable());
+        return new MailboxMetaData(recent, permanentFlags, uidValidity, uidNext, messageCount, unseenCount, firstUnseen, isWriteable(mailboxSession));
     }
 }

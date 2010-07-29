@@ -51,9 +51,10 @@ public interface Mailbox {
     /**
      * Return if the Mailbox is writable
      * 
+     * @param session
      * @return writable
      */
-    boolean isWriteable();
+    boolean isWriteable(MailboxSession session);
 
     /**
      * Searches for messages matching the given query.

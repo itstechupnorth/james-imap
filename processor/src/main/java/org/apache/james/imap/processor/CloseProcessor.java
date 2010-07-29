@@ -48,10 +48,10 @@ public class CloseProcessor extends AbstractMailboxProcessor {
             String tag, ImapCommand command, Responder responder) {
         try {
             Mailbox mailbox = getSelectedMailbox(session);
-            if (mailbox.isWriteable()) {
+            final MailboxSession mailboxSession = ImapSessionUtils.getMailboxSession(session);
+            if (mailbox.isWriteable(mailboxSession)) {
                 
-                    final MailboxSession mailboxSession = ImapSessionUtils
-                            .getMailboxSession(session);
+
                     mailbox.expunge(MessageRange.all(), mailboxSession);
                     session.deselect();
                     // TODO: the following comment was present in the code before
