@@ -60,6 +60,7 @@ public abstract class StoreMailboxManager<Id> extends DelegatingMailboxManager {
     
     private final MailboxEventDispatcher dispatcher = new MailboxEventDispatcher();
     private final DelegatingMailboxListener delegatingListener = new DelegatingMailboxListener();   
+    
     protected final MailboxSessionMapperFactory<Id> mailboxSessionMapperFactory;
     private UidConsumer<Id> consumer;
     
@@ -68,6 +69,9 @@ public abstract class StoreMailboxManager<Id> extends DelegatingMailboxManager {
         super(authenticator, subscriber);
         this.consumer = consumer;
         this.mailboxSessionMapperFactory = mailboxSessionMapperFactory;
+        
+        // The dispatcher need to have the delegating listener added
+        dispatcher.addMailboxListener(delegatingListener);
     }
     
     /**
@@ -114,9 +118,7 @@ public abstract class StoreMailboxManager<Id> extends DelegatingMailboxManager {
             } else {
                 getLog().debug("Loaded mailbox " + mailboxPath);
 
-                StoreMessageManager<Id> result = createMessageManager(dispatcher, consumer, mailboxRow, session);
-                result.addListener(delegatingListener);
-                return result;
+                return createMessageManager(dispatcher, consumer, mailboxRow, session);
             }
         }
     }
@@ -302,8 +304,7 @@ public abstract class StoreMailboxManager<Id> extends DelegatingMailboxManager {
                 final MailboxMapper<Id> mapper = mailboxSessionMapperFactory.getMailboxMapper(session);
                 mapper.findMailboxByPath(mailboxPath);
                 return true;
-            }
-            catch (MailboxNotFoundException e) {
+            } catch (MailboxNotFoundException e) {
                 return false;
             }
         }
