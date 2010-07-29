@@ -67,7 +67,7 @@ public class OpenJPAMessageManager extends JPAMessageManager {
             for (Header header: headers) {
                 jpaHeaders.add((JPAHeader) header);
             }
-            return new JPAStreamingMailboxMembership(getMailboxId(), uid, internalDate, size, flags, document, bodyStartOctet, jpaHeaders, propertyBuilder);
+            return new JPAStreamingMailboxMembership(mailbox.getMailboxId(), uid, internalDate, size, flags, document, bodyStartOctet, jpaHeaders, propertyBuilder);
         } else {
             return super.createMessage(internalDate, uid, size, bodyStartOctet, document, flags, headers, propertyBuilder);
         }

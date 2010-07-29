@@ -64,7 +64,7 @@ public class JCRMessageManager extends StoreMessageManager<String> {
         for (Header header: headers) {
             jcrHeaders.add((JCRHeader) header);
         }
-        final MailboxMembership<String> message = new JCRMessage(getMailboxId(), uid, internalDate, 
+        final MailboxMembership<String> message = new JCRMessage(mailbox.getMailboxId(), uid, internalDate, 
                 size, flags, document, bodyStartOctet, jcrHeaders, propertyBuilder, log);
         return message;
     }

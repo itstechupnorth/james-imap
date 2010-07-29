@@ -20,16 +20,16 @@ package org.apache.james.imap.store.mail;
 
 import java.util.List;
 
-import org.apache.james.imap.mailbox.Mailbox;
 import org.apache.james.imap.mailbox.MessageRange;
 import org.apache.james.imap.mailbox.SearchQuery;
 import org.apache.james.imap.mailbox.StorageException;
 import org.apache.james.imap.store.mail.model.Document;
+import org.apache.james.imap.store.mail.model.Mailbox;
 import org.apache.james.imap.store.mail.model.MailboxMembership;
 import org.apache.james.imap.store.transaction.TransactionalMapper;
 
 /**
- * Maps {@link Document} in a {@link Mailbox}. A {@link MessageMapper} has a lifecycle from the start of a request 
+ * Maps {@link Document} in a {@link org.apache.james.imap.mailbox.Mailbox}. A {@link MessageMapper} has a lifecycle from the start of a request 
  * to the end of the request.
  */
 public interface MessageMapper<Id> extends TransactionalMapper {
@@ -38,58 +38,64 @@ public interface MessageMapper<Id> extends TransactionalMapper {
      * Return a List of {@link MailboxMembership} which represent the given {@link MessageRange}
      * The list must be ordered by the {@link Document} uid
      * 
+     * @param mailbox The mailbox to search
      * @param set
      * @return list
      * @throws StorageException
      */
-    public abstract List<MailboxMembership<Id>> findInMailbox(Id mailboxId, MessageRange set)
+    public abstract List<MailboxMembership<Id>> findInMailbox(Mailbox<Id> mailbox, MessageRange set)
             throws StorageException;
 
     /**
      * Return a List of {@link MailboxMembership} for the given {@link MessageRange} which are marked for deletion
      * The list must be ordered by the {@link Document} uid
+     * @param mailbox
      * @param set 
      * @return list
      * @throws StorageException
      */
     public abstract List<MailboxMembership<Id>> findMarkedForDeletionInMailbox(
-            Id mailboxId, final MessageRange set)
+            Mailbox<Id> mailbox, final MessageRange set)
             throws StorageException;
 
     /**
      * Return the count of messages in the mailbox
      * 
+     * @param mailbox
      * @return count
      * @throws StorageException
      */
-    public abstract long countMessagesInMailbox(Id mailboxId)
+    public abstract long countMessagesInMailbox(Mailbox<Id> mailbox)
             throws StorageException;
 
     /**
      * Return the count of unseen messages in the mailbox
      * 
+     * @param mailbox
      * @return unseenCount
      * @throws StorageException
      */
-    public abstract long countUnseenMessagesInMailbox(Id mailboxId)
+    public abstract long countUnseenMessagesInMailbox(Mailbox<Id> mailbox)
             throws StorageException;
 
     /**
      * Return a List of {@link MailboxMembership} which matched the {@link SearchQuery}
      * The list must be ordered by the {@link Document} uid
+     * @param mailbox
      * @param query
      * @return
      * @throws StorageException
      */
-    public abstract List<MailboxMembership<Id>> searchMailbox(Id mailboxId, SearchQuery query) throws StorageException;
+    public abstract List<MailboxMembership<Id>> searchMailbox(Mailbox<Id> mailbox, SearchQuery query) throws StorageException;
 
     /**
      * Delete the given {@link MailboxMembership}
      * 
+     * @param mailbox
      * @param message
      * @throws StorageException
      */
-    public abstract void delete(Id mailboxId, MailboxMembership<Id> message) throws StorageException;
+    public abstract void delete(Mailbox<Id> mailbox, MailboxMembership<Id> message) throws StorageException;
 
     /**
      * Return a List of {@link MailboxMembership} which are unseen. 
@@ -97,12 +103,12 @@ public interface MessageMapper<Id> extends TransactionalMapper {
      * If a limit was given the list will maximal be the size of the limit. Id a 
      * limit smaller then 1 is given the List must contain all messages
      * 
-     * @param mailboxId
+     * @param mailbox
      * @param limit
      * @return list
      * @throws StorageException
      */
-    public abstract List<MailboxMembership<Id>> findUnseenMessagesInMailbox(Id mailboxId, int limit) throws StorageException;
+    public abstract List<MailboxMembership<Id>> findUnseenMessagesInMailbox(Mailbox<Id> mailbox, int limit) throws StorageException;
 
     /**
      * Return a List of {@link MailboxMembership} which are recent.
@@ -110,32 +116,33 @@ public interface MessageMapper<Id> extends TransactionalMapper {
      * If a limit was given the list will maximal be the size of the limit. Id a 
      * limit smaller then 1 is given the List must contain all messages
      * 
-     * @param mailboxId
+     * @param mailbox
      * @param limit
      * @return recentList
      * @throws StorageException
      */
-    public abstract List<MailboxMembership<Id>> findRecentMessagesInMailbox(Id mailboxId, int limit) throws StorageException;
+    public abstract List<MailboxMembership<Id>> findRecentMessagesInMailbox(Mailbox<Id> mailbox, int limit) throws StorageException;
 
 
     /**
      * Save the given {@link MailboxMembership} to the underlying storage
      * 
+     * @param mailbox
      * @param message
      * @throws StorageException
      */
-    public abstract void save(Id mailboxId, MailboxMembership<Id> message) throws StorageException;
+    public abstract void save(Mailbox<Id> mailbox, MailboxMembership<Id> message) throws StorageException;
     
     
     /**
      * Copy the given {@link MailboxMembership} to a new mailbox
      * 
-     * @param mailboxId the id of the mailbox to copy to
-     * @param uid the uid to use for the new mailboxmembership
+     * @param mailbox the Mailbox to copy to
+     * @param uid the uid to use for the new MailboxMembership
      * @param original the original to copy
-     * @return membership. The copied instance
+     * @return The copied instance
      * @throws StorageException
      */
-    public abstract MailboxMembership<Id> copy(Id mailboxId, long uid, MailboxMembership<Id> original) throws StorageException;
+    public abstract MailboxMembership<Id> copy(Mailbox<Id> mailbox, long uid, MailboxMembership<Id> original) throws StorageException;
 
 }

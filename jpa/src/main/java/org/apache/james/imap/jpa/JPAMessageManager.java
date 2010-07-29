@@ -55,7 +55,7 @@ public class JPAMessageManager extends StoreMessageManager<Long> {
         for (Header header: headers) {
             jpaHeaders.add((JPAHeader) header);
         }
-        final MailboxMembership<Long> message = new JPAMailboxMembership(getMailboxId(), uid, internalDate, size, flags, document, bodyStartOctet, jpaHeaders, propertyBuilder);
+        final MailboxMembership<Long> message = new JPAMailboxMembership(mailbox.getMailboxId(), uid, internalDate, size, flags, document, bodyStartOctet, jpaHeaders, propertyBuilder);
         return message;
     }
 

@@ -71,7 +71,7 @@ public class InMemoryStoreMessageManager extends StoreMessageManager<Long> {
             e.printStackTrace();
             byteContent = new byte[0];
         }
-        return new SimpleMailboxMembership(internalDate, uid, size, bodyStartOctet, byteContent, flags, headers, propertyBuilder, getMailboxId());
+        return new SimpleMailboxMembership(internalDate, uid, size, bodyStartOctet, byteContent, flags, headers, propertyBuilder, mailbox.getMailboxId());
     }
     
 }
