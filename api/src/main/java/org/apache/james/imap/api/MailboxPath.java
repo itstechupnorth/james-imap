@@ -133,6 +133,8 @@ public class MailboxPath {
      */
     @Override
     public boolean equals(Object mailboxPath) {
+        if (this == mailboxPath) return true;
+        
         if (!(mailboxPath instanceof MailboxPath))
             return false;
         MailboxPath mp = (MailboxPath) mailboxPath;
@@ -156,5 +158,15 @@ public class MailboxPath {
                 return false;
         return true;
     }
+
+    @Override
+    public int hashCode() {
+        final int PRIME = 31;
+        int result = 1;
+        if (getName() != null) result = PRIME * result + getName().hashCode();
+        if  (getUser() != null) result = PRIME * result + getUser().hashCode();  
+        if  (getNamespace() != null) result = PRIME * result + getNamespace().hashCode();  
+        return result;
+   }
     
 }

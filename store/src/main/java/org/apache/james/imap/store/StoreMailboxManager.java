@@ -58,7 +58,7 @@ public abstract class StoreMailboxManager<Id> extends DelegatingMailboxManager {
     
     private final MailboxEventDispatcher dispatcher = new MailboxEventDispatcher();
     private final DelegatingMailboxListener delegatingListener = new DelegatingMailboxListener();   
-    
+    private final MailboxPathLock lock = new MailboxPathLock();
     protected final MailboxSessionMapperFactory<Id> mailboxSessionMapperFactory;
     private UidConsumer<Id> consumer;
     
@@ -138,9 +138,14 @@ public abstract class StoreMailboxManager<Id> extends DelegatingMailboxManager {
             // If any creation fails then the mailbox will not be created
             // TODO: transaction
             for (MailboxPath mailbox : mailboxPath.getHierarchyLevels(MailboxConstants.DEFAULT_DELIMITER))
-                if (!mailboxExists(mailbox, mailboxSession))
-                    doCreateMailbox(mailbox, mailboxSession);
-
+                if (!mailboxExists(mailbox, mailboxSession)) {
+                    try {
+                        lock.lock(mailbox);
+                        doCreateMailbox(mailbox, mailboxSession);
+                    } finally {
+                        lock.unlock(mailbox);
+                    }
+                }
         }
     }
 
@@ -198,18 +203,24 @@ public abstract class StoreMailboxManager<Id> extends DelegatingMailboxManager {
 
                 // rename submailboxes
                 MailboxPath children = new MailboxPath(MailboxConstants.USER_NAMESPACE, from.getUser(), from.getName() + MailboxConstants.DEFAULT_DELIMITER + "%");
-                final List<Mailbox<Id>> subMailboxes = mapper.findMailboxWithPathLike(children);
-                for (Mailbox<Id> sub : subMailboxes) {
-                    final String subOriginalName = sub.getName();
-                    final String subNewName = to.getName() + subOriginalName.substring(from.getName().length());
-                    sub.setName(subNewName);
-                    mapper.save(sub);
+                try {
+                    lock.lock(children);
+                    final List<Mailbox<Id>> subMailboxes = mapper.findMailboxWithPathLike(children);
+                    for (Mailbox<Id> sub : subMailboxes) {
+                        final String subOriginalName = sub.getName();
+                        final String subNewName = to.getName() + subOriginalName.substring(from.getName().length());
+                        sub.setName(subNewName);
+                        mapper.save(sub);
 
-                    changeMailboxName(new MailboxPath(children, subOriginalName), new MailboxPath(children, subNewName), session);
+                        changeMailboxName(new MailboxPath(children, subOriginalName), new MailboxPath(children, subNewName), session);
 
-                    if (log.isDebugEnabled())
-                        log.debug("Rename mailbox sub-mailbox " + subOriginalName + " to " + subNewName);
+                        if (log.isDebugEnabled())
+                            log.debug("Rename mailbox sub-mailbox " + subOriginalName + " to " + subNewName);
+                    }
+                } finally {
+                    lock.unlock(children);
                 }
+                
             }
 
         });

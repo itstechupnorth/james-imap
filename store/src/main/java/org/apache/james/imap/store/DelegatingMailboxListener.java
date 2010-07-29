@@ -20,10 +20,11 @@
 package org.apache.james.imap.store;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.james.imap.api.MailboxPath;
-import org.apache.james.imap.api.MailboxPathHashMap;
 import org.apache.james.imap.mailbox.MailboxListener;
 
 /**
@@ -32,7 +33,7 @@ import org.apache.james.imap.mailbox.MailboxListener;
  */
 public class DelegatingMailboxListener implements MailboxListener{
 
-    private MailboxPathHashMap<List<MailboxListener>> listeners = new MailboxPathHashMap<List<MailboxListener>>();
+    private Map<MailboxPath, List<MailboxListener>> listeners = new HashMap<MailboxPath, List<MailboxListener>>();
 
     public synchronized void addListener(MailboxPath path, MailboxListener listener) {
         List<MailboxListener> mListeners = listeners.get(path);
