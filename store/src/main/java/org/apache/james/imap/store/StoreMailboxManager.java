@@ -55,8 +55,6 @@ import org.apache.james.imap.store.transaction.TransactionalMapper;
 public abstract class StoreMailboxManager<Id> extends DelegatingMailboxManager {
     
     public static final char SQL_WILDCARD_CHAR = '%';
-
-    private final Object mutex = new Object();
     
     private final MailboxEventDispatcher dispatcher = new MailboxEventDispatcher();
     private final DelegatingMailboxListener delegatingListener = new DelegatingMailboxListener();   
@@ -107,19 +105,17 @@ public abstract class StoreMailboxManager<Id> extends DelegatingMailboxManager {
      * @throws MailboxException get thrown if no Mailbox could be found for the given name
      */
     private StoreMessageManager<Id> doGetMailbox(MailboxPath mailboxPath, MailboxSession session) throws MailboxException {
-        synchronized (mutex) {
-            final MailboxMapper<Id> mapper = mailboxSessionMapperFactory.getMailboxMapper(session);
-            Mailbox<Id> mailboxRow = mapper.findMailboxByPath(mailboxPath);
-            
-            if (mailboxRow == null) {
-                getLog().info("Mailbox '" + mailboxPath + "' not found.");
-                throw new MailboxNotFoundException(mailboxPath);
+        final MailboxMapper<Id> mapper = mailboxSessionMapperFactory.getMailboxMapper(session);
+        Mailbox<Id> mailboxRow = mapper.findMailboxByPath(mailboxPath);
 
-            } else {
-                getLog().debug("Loaded mailbox " + mailboxPath);
+        if (mailboxRow == null) {
+            getLog().info("Mailbox '" + mailboxPath + "' not found.");
+            throw new MailboxNotFoundException(mailboxPath);
 
-                return createMessageManager(dispatcher, consumer, mailboxRow, session);
-            }
+        } else {
+            getLog().debug("Loaded mailbox " + mailboxPath);
+
+            return createMessageManager(dispatcher, consumer, mailboxRow, session);
         }
     }
 
@@ -133,20 +129,18 @@ public abstract class StoreMailboxManager<Id> extends DelegatingMailboxManager {
         final int length = mailboxPath.getName().length();
         if (length == 0) {
             getLog().warn("Ignoring mailbox with empty name");
-        }
-        else {
+        } else {
             if (mailboxPath.getName().charAt(length - 1) == MailboxConstants.DEFAULT_DELIMITER)
                 mailboxPath.setName(mailboxPath.getName().substring(0, length - 1));
             if (mailboxExists(mailboxPath, mailboxSession))
-                throw new MailboxExistsException(mailboxPath.toString()); 
-            synchronized (mutex) {
-                // Create parents first
-                // If any creation fails then the mailbox will not be created
-                // TODO: transaction
-                for (MailboxPath mailbox : mailboxPath.getHierarchyLevels(MailboxConstants.DEFAULT_DELIMITER))
-                    if (!mailboxExists(mailbox, mailboxSession))
-                        doCreateMailbox(mailbox, mailboxSession);
-            }
+                throw new MailboxExistsException(mailboxPath.toString());
+            // Create parents first
+            // If any creation fails then the mailbox will not be created
+            // TODO: transaction
+            for (MailboxPath mailbox : mailboxPath.getHierarchyLevels(MailboxConstants.DEFAULT_DELIMITER))
+                if (!mailboxExists(mailbox, mailboxSession))
+                    doCreateMailbox(mailbox, mailboxSession);
+
         }
     }
 
@@ -154,80 +148,73 @@ public abstract class StoreMailboxManager<Id> extends DelegatingMailboxManager {
      * (non-Javadoc)
      * @see org.apache.james.imap.mailbox.MailboxManager#deleteMailbox(org.apache.james.imap.api.MailboxPath, org.apache.james.imap.mailbox.MailboxSession)
      */
-    public void deleteMailbox(final MailboxPath mailboxPath, final MailboxSession session)
-    throws MailboxException {
+    public void deleteMailbox(final MailboxPath mailboxPath, final MailboxSession session) throws MailboxException {
         session.getLog().info("deleteMailbox " + mailboxPath);
-        synchronized (mutex) {
-            // TODO put this into a serilizable transaction
-            
-            final MailboxMapper<Id> mapper = mailboxSessionMapperFactory.getMailboxMapper(session);
-            
-            mapper.execute(new TransactionalMapper.Transaction() {
+        final MailboxMapper<Id> mapper = mailboxSessionMapperFactory.getMailboxMapper(session);
 
-                public void run() throws MailboxException {
-                    Mailbox<Id> mailbox = mapper.findMailboxByPath(mailboxPath);
-                    if (mailbox == null) {
-                        throw new MailboxNotFoundException("Mailbox not found");
-                    }
-                    mapper.delete(mailbox);
+        mapper.execute(new TransactionalMapper.Transaction() {
+
+            public void run() throws MailboxException {
+                Mailbox<Id> mailbox = mapper.findMailboxByPath(mailboxPath);
+                if (mailbox == null) {
+                    throw new MailboxNotFoundException("Mailbox not found");
                 }
-                
-            });
-            
-            dispatcher.mailboxDeleted(session.getSessionId(), mailboxPath);
-        }
+                mapper.delete(mailbox);
+            }
+
+        });
+
+        dispatcher.mailboxDeleted(session.getSessionId(), mailboxPath);
+
     }
 
     /*
      * (non-Javadoc)
      * @see org.apache.james.imap.mailbox.MailboxManager#renameMailbox(org.apache.james.imap.api.MailboxPath, org.apache.james.imap.api.MailboxPath, org.apache.james.imap.mailbox.MailboxSession)
      */
-    public void renameMailbox(final MailboxPath from, final MailboxPath to, final MailboxSession session)
-    throws MailboxException {
+    public void renameMailbox(final MailboxPath from, final MailboxPath to, final MailboxSession session) throws MailboxException {
         final Log log = getLog();
-        if (log.isDebugEnabled()) log.debug("renameMailbox " + from + " to " + to);
-        synchronized (mutex) {
-            if (mailboxExists(to, session)) {
-                throw new MailboxExistsException(to.toString());
+        if (log.isDebugEnabled())
+            log.debug("renameMailbox " + from + " to " + to);
+        if (mailboxExists(to, session)) {
+            throw new MailboxExistsException(to.toString());
+        }
+
+        final MailboxMapper<Id> mapper = mailboxSessionMapperFactory.getMailboxMapper(session);
+        mapper.execute(new TransactionalMapper.Transaction() {
+
+            public void run() throws MailboxException {
+                // TODO put this into a serilizable transaction
+                final Mailbox<Id> mailbox = mapper.findMailboxByPath(from);
+                if (mailbox == null) {
+                    throw new MailboxNotFoundException(from);
+                }
+                mailbox.setNamespace(to.getNamespace());
+                mailbox.setUser(to.getUser());
+                mailbox.setName(to.getName());
+                mapper.save(mailbox);
+
+                changeMailboxName(from, to, session);
+
+                // rename submailboxes
+                MailboxPath children = new MailboxPath(MailboxConstants.USER_NAMESPACE, from.getUser(), from.getName() + MailboxConstants.DEFAULT_DELIMITER + "%");
+                final List<Mailbox<Id>> subMailboxes = mapper.findMailboxWithPathLike(children);
+                for (Mailbox<Id> sub : subMailboxes) {
+                    final String subOriginalName = sub.getName();
+                    final String subNewName = to.getName() + subOriginalName.substring(from.getName().length());
+                    sub.setName(subNewName);
+                    mapper.save(sub);
+
+                    changeMailboxName(new MailboxPath(children, subOriginalName), new MailboxPath(children, subNewName), session);
+
+                    if (log.isDebugEnabled())
+                        log.debug("Rename mailbox sub-mailbox " + subOriginalName + " to " + subNewName);
+                }
             }
 
-            final MailboxMapper<Id> mapper = mailboxSessionMapperFactory.getMailboxMapper(session);                
-            mapper.execute(new TransactionalMapper.Transaction() {
+        });
 
-                public void run() throws MailboxException {
-                    // TODO put this into a serilizable transaction
-                    final Mailbox<Id> mailbox = mapper.findMailboxByPath(from);
-                    if (mailbox == null) {
-                        throw new MailboxNotFoundException(from);
-                    }
-                    mailbox.setNamespace(to.getNamespace());
-                    mailbox.setUser(to.getUser());
-                    mailbox.setName(to.getName());
-                    mapper.save(mailbox);
-
-                    changeMailboxName(from, to, session);
-
-                    // rename submailboxes
-                    MailboxPath children = new MailboxPath(MailboxConstants.USER_NAMESPACE, from.getUser(), from.getName() + MailboxConstants.DEFAULT_DELIMITER + "%");
-                    final List<Mailbox<Id>> subMailboxes = mapper.findMailboxWithPathLike(children);
-                    for (Mailbox<Id> sub:subMailboxes) {
-                        final String subOriginalName = sub.getName();
-                        final String subNewName = to.getName() + subOriginalName.substring(from.getName().length());
-                        sub.setName(subNewName);
-                        mapper.save(sub);
-
-                        changeMailboxName(new MailboxPath(children, subOriginalName),
-                                new MailboxPath(children, subNewName), session);
-
-                        if (log.isDebugEnabled()) log.debug("Rename mailbox sub-mailbox " + subOriginalName + " to "
-                                + subNewName);
-                    }
-                }
-                
-            });
-        }
     }
-
  
     /**
      * Changes the name of the mailbox instance in the cache.
@@ -242,13 +229,11 @@ public abstract class StoreMailboxManager<Id> extends DelegatingMailboxManager {
      * (non-Javadoc)
      * @see org.apache.james.imap.mailbox.MailboxManager#copyMessages(org.apache.james.imap.mailbox.MessageRange, org.apache.james.imap.api.MailboxPath, org.apache.james.imap.api.MailboxPath, org.apache.james.imap.mailbox.MailboxSession)
      */
-    public void copyMessages(MessageRange set, MailboxPath from, MailboxPath to, MailboxSession session)
-    throws MailboxException {
-        synchronized (mutex) {
-            StoreMessageManager<Id> toMailbox = doGetMailbox(to, session);
-            StoreMessageManager<Id> fromMailbox = doGetMailbox(from, session);
-            fromMailbox.copyTo(set, toMailbox, session);
-        }
+    public void copyMessages(MessageRange set, MailboxPath from, MailboxPath to, MailboxSession session) throws MailboxException {
+        StoreMessageManager<Id> toMailbox = doGetMailbox(to, session);
+        StoreMessageManager<Id> fromMailbox = doGetMailbox(from, session);
+        fromMailbox.copyTo(set, toMailbox, session);
+
     }
 
     /*
@@ -299,15 +284,14 @@ public abstract class StoreMailboxManager<Id> extends DelegatingMailboxManager {
      * @see org.apache.james.imap.mailbox.MailboxManager#mailboxExists(org.apache.james.imap.api.MailboxPath, org.apache.james.imap.mailbox.MailboxSession)
      */
     public boolean mailboxExists(MailboxPath mailboxPath, MailboxSession session) throws MailboxException {
-        synchronized (mutex) {
-            try {
-                final MailboxMapper<Id> mapper = mailboxSessionMapperFactory.getMailboxMapper(session);
-                mapper.findMailboxByPath(mailboxPath);
-                return true;
-            } catch (MailboxNotFoundException e) {
-                return false;
-            }
+        try {
+            final MailboxMapper<Id> mapper = mailboxSessionMapperFactory.getMailboxMapper(session);
+            mapper.findMailboxByPath(mailboxPath);
+            return true;
+        } catch (MailboxNotFoundException e) {
+            return false;
         }
+
     }
 
 
