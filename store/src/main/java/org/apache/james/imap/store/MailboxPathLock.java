@@ -41,7 +41,8 @@ public final class MailboxPathLock {
     private final Map<MailboxPath, ReentrantLock> paths = new HashMap<MailboxPath, ReentrantLock>();
     
     /**
-     * Obtain a {@link Lock} for the given path
+     * Obtain a {@link Lock} for the given path. It will block if the lock for the {@link MailboxPath} is
+     * already held by some other thread 
      * 
      * @param path
      */
@@ -64,11 +65,12 @@ public final class MailboxPathLock {
      * @param path
      */
     public void unlock(MailboxPath path) {
+        ReentrantLock lock;
         synchronized (paths) {
-            ReentrantLock lock = paths.remove(path);
-            if (lock != null) {
-                lock.unlock();
-            }
+            lock = paths.remove(path);
+        }
+        if (lock != null) {
+            lock.unlock();
         }
     }
 }
