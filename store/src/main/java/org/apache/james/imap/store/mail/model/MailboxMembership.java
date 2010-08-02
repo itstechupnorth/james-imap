@@ -37,13 +37,6 @@ public interface MailboxMembership<Id> {
     public abstract Id getMailboxId();
 
     /**
-     * Return the size
-     * 
-     * @return size
-     */
-    public abstract int getSize();
-
-    /**
      * Return the uid
      * 
      * @return uid

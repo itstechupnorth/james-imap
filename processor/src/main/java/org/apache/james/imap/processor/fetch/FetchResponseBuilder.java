@@ -58,7 +58,7 @@ final class FetchResponseBuilder {
 
     private Date internalDate;
 
-    private Integer size;
+    private Long size;
 
     private List<FetchResponse.BodyElement> elements;
 
@@ -85,7 +85,7 @@ final class FetchResponseBuilder {
     }
 
     public void setUid(long uid) {
-        this.uid = new Long(uid);
+        this.uid = uid;
     }
 
     public void setFlags(Flags flags) {
@@ -184,8 +184,8 @@ final class FetchResponseBuilder {
         return envelopeBuilder.buildEnvelope(result);
     }
 
-    private void setSize(int size) {
-        this.size = new Integer(size);
+    private void setSize(long size) {
+        this.size = size;
     }
 
     public void setInternalDate(Date internalDate) {

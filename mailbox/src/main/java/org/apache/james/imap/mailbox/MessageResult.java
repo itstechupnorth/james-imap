@@ -166,7 +166,7 @@ public interface MessageResult extends Comparable<MessageResult>, Headers {
      */
     Flags getFlags() throws MailboxException;
 
-    int getSize();
+    long getSize();
 
     /**
      * Gets headers for the message.

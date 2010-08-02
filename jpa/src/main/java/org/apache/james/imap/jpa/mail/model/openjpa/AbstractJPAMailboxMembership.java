@@ -117,9 +117,6 @@ public abstract class AbstractJPAMailboxMembership extends AbstractMailboxMember
     /** The value for the internalDate field */
     @Basic(optional=false) private Date internalDate;
 
-    /** The value for the size field */
-    @Basic(optional=false) private int size = 0;
-
     /** The value for the answered field */
     @Basic(optional=false) private boolean answered = false;
 
@@ -145,12 +142,11 @@ public abstract class AbstractJPAMailboxMembership extends AbstractMailboxMember
     @Deprecated
     public AbstractJPAMailboxMembership() {}
 
-    public AbstractJPAMailboxMembership(long mailboxId, long uid, Date internalDate, int size, Flags flags, int bodyStartOctet, final List<JPAHeader> headers, final PropertyBuilder propertyBuilder) throws MailboxException {
+    public AbstractJPAMailboxMembership(long mailboxId, long uid, Date internalDate, Flags flags, int bodyStartOctet, final List<JPAHeader> headers, final PropertyBuilder propertyBuilder) throws MailboxException {
         super();
         this.mailboxId = mailboxId;
         this.uid = uid;
         this.internalDate = internalDate;
-        this.size = size;
        
         setFlags(flags);
     }
@@ -168,7 +164,6 @@ public abstract class AbstractJPAMailboxMembership extends AbstractMailboxMember
         this.mailboxId = mailboxId;
         this.uid = uid;
         this.internalDate = original.getInternalDate();
-        this.size = original.getSize();
         this.answered = original.isAnswered();
         this.deleted = original.isDeleted();
         this.draft = original.isDraft();
@@ -189,13 +184,6 @@ public abstract class AbstractJPAMailboxMembership extends AbstractMailboxMember
      */
     public Long getMailboxId() {
         return mailboxId;
-    }
-
-    /**
-     * @see org.apache.james.imap.store.mail.model.MailboxMembership#getSize()
-     */
-    public int getSize() {
-        return size;
     }
 
     /**
@@ -301,7 +289,6 @@ public abstract class AbstractJPAMailboxMembership extends AbstractMailboxMember
             + "mailboxId = " + this.mailboxId + TOSTRING_SEPARATOR
             + "uid = " + this.uid + TOSTRING_SEPARATOR
             + "internalDate = " + this.internalDate + TOSTRING_SEPARATOR
-            + "size = " + this.size + TOSTRING_SEPARATOR
             + "answered = " + this.answered + TOSTRING_SEPARATOR
             + "deleted = " + this.deleted + TOSTRING_SEPARATOR
             + "draft = " + this.draft + TOSTRING_SEPARATOR

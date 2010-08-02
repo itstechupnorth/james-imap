@@ -109,7 +109,7 @@ public class MessageResultImpl implements MessageResult {
      * (non-Javadoc)
      * @see org.apache.james.imap.mailbox.MessageResult#getSize()
      */
-    public int getSize() {
+    public long getSize() {
         return size;
     }
 

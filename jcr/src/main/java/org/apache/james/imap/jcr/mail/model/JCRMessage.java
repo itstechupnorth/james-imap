@@ -66,7 +66,7 @@ public class JCRMessage extends AbstractDocument implements MailboxMembership<St
     private String mailboxUUID;
     private long uid;
     private Date internalDate;
-    private int size;
+    private long size;
     private boolean answered;
     private boolean deleted;
     private boolean draft;
@@ -138,7 +138,7 @@ public class JCRMessage extends AbstractDocument implements MailboxMembership<St
         this.mailboxUUID = mailboxUUID;
         this.uid = uid;
         this.internalDate = message.getInternalDate();
-        this.size = message.getSize();
+        this.size = message.getFullContentOctets();
         this.answered = message.isAnswered();
         this.deleted = message.isDeleted();
         this.draft = message.isDraft();
@@ -327,7 +327,7 @@ public class JCRMessage extends AbstractDocument implements MailboxMembership<St
         //
         // This also fix https://issues.apache.org/jira/browse/IMAP-159
         if (isPersistent() == false) {
-            node.setProperty(SIZE_PROPERTY, getSize());
+            node.setProperty(SIZE_PROPERTY, getFullContentOctets());
             node.setProperty(MAILBOX_UUID_PROPERTY, getMailboxId());
             node.setProperty(UID_PROPERTY, getUid());
             if (getInternalDate() == null) {
@@ -534,27 +534,6 @@ public class JCRMessage extends AbstractDocument implements MailboxMembership<St
         return mailboxUUID;
     }
 
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.apache.james.imap.store.mail.model.MailboxMembership#getSize()
-     */
-    public int getSize() {
-        if (isPersistent()) {
-            try {
-                return new Long(node.getProperty(SIZE_PROPERTY).getLong())
-                        .intValue();
-
-            } catch (RepositoryException e) {
-                logger
-                        .error("Unable to access property " + SIZE_PROPERTY,
-                                e);
-            }
-            return 0;
-        }
-        return size;
-    }
 
     /*
      * (non-Javadoc)
@@ -777,7 +756,7 @@ public class JCRMessage extends AbstractDocument implements MailboxMembership<St
             + "mailboxUUID = " + this.getMailboxId() + TOSTRING_SEPARATOR
             + "uuid = " + this.getId() + TOSTRING_SEPARATOR
             + "internalDate = " + this.getInternalDate() + TOSTRING_SEPARATOR
-            + "size = " + this.getSize() + TOSTRING_SEPARATOR
+            + "size = " + this.getFullContentOctets() + TOSTRING_SEPARATOR
             + "answered = " + this.isAnswered() + TOSTRING_SEPARATOR
             + "deleted = " + this.isDeleted() + TOSTRING_SEPARATOR
             + "draft = " + this.isDraft() + TOSTRING_SEPARATOR

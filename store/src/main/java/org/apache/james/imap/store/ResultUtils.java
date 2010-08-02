@@ -121,7 +121,7 @@ public class ResultUtils {
         if (fetchGroup != null) {
             int content = fetchGroup.content();
             messageResult.setFlags(message.createFlags());
-            messageResult.setSize(message.getSize());
+            messageResult.setSize((int)message.getDocument().getFullContentOctets());
             messageResult.setInternalDate(message.getInternalDate());
 
             try {

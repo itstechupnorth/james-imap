@@ -376,7 +376,7 @@ public class MessageSearches {
     private boolean matches(SearchQuery.SizeCriterion criterion, MailboxMembership<?> message)
             throws UnsupportedSearchException {
         final SearchQuery.NumericOperator operator = criterion.getOperator();
-        final int size = message.getSize();
+        final long size = message.getDocument().getFullContentOctets();
         final long value = operator.getValue();
         switch (operator.getType()) {
             case LESS_THAN:

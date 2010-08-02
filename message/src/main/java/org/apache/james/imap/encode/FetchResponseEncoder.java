@@ -277,7 +277,7 @@ public class FetchResponseEncoder extends AbstractChainedImapEncoder {
 
     private void encodeSize(ImapResponseComposer composer,
             final FetchResponse fetchResponse) throws IOException {
-        final Integer size = fetchResponse.getSize();
+        final Long size = fetchResponse.getSize();
         if (size != null) {
             // TODO: add method to composer
             composer.message("RFC822.SIZE");

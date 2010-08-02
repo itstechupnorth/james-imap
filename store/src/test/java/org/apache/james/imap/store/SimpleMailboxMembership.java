@@ -50,7 +50,7 @@ public class SimpleMailboxMembership implements MailboxMembership<Long> {
         this.uid = uid;
         this.internalDate = internalDate;
         this.size = size;
-        this.message = new SimpleMessage(body, new ArrayList<SimpleHeader>(headers));
+        this.message = new SimpleMessage(body, size, new ArrayList<SimpleHeader>(headers));
         setFlags(flags);
     }
 
@@ -66,7 +66,6 @@ public class SimpleMailboxMembership implements MailboxMembership<Long> {
         this.mailboxId = mailboxId;
         this.uid = uid;
         this.internalDate = original.getInternalDate();
-        this.size = original.getSize();
         this.answered = original.isAnswered();
         this.deleted = original.isDeleted();
         this.draft = original.isDraft();
@@ -89,14 +88,7 @@ public class SimpleMailboxMembership implements MailboxMembership<Long> {
     public Long getMailboxId() {
         return mailboxId;
     }
-
-    /**
-     * @see org.apache.james.imap.jpa.mail.model.Document#getSize()
-     */
-    public int getSize() {
-        return size;
-    }
-
+    
     /**
      * @see org.apache.james.imap.jpa.mail.model.Document#getUid()
      */

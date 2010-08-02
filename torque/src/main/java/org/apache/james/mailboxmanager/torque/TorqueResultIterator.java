@@ -158,7 +158,7 @@ public class TorqueResultIterator implements Iterator {
             return 0;
         }
 
-        public int getSize() {
+        public long getSize() {
             return size;
         }
 

@@ -124,6 +124,7 @@ public class JCRHostSystem extends ImapHostSystem{
     private void delete(File home) throws Exception{
         if (home.exists()) {
             File[] files = home.listFiles();
+            if (files == null) return;
             for (int i = 0;i < files.length; i++) {
                 File f = files[i];
                 if (f.isDirectory()) {

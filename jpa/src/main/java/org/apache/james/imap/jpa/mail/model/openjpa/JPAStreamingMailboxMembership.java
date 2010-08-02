@@ -52,7 +52,7 @@ public class JPAStreamingMailboxMembership extends AbstractJPAMailboxMembership{
 
     public JPAStreamingMailboxMembership(long mailboxId, long uid, Date internalDate, int size, Flags flags, 
             InputStream content, int bodyStartOctet, final List<JPAHeader> headers, final PropertyBuilder propertyBuilder) throws MailboxException {
-        super(mailboxId, uid, internalDate, size, flags, bodyStartOctet, headers, propertyBuilder);  
+        super(mailboxId, uid, internalDate, flags, bodyStartOctet, headers, propertyBuilder);  
         this.message = new JPAStreamingMessage(content, size, bodyStartOctet, headers, propertyBuilder);
         
        

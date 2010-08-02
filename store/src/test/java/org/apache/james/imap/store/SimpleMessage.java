@@ -43,7 +43,9 @@ public class SimpleMessage implements Document {
     public String mediaType = null;
     public Long textualLineCount = null;
 
-    public SimpleMessage(byte[] body, final List<SimpleHeader> headers) throws Exception {
+	private int size;
+
+    public SimpleMessage(byte[] body, int size, final List<SimpleHeader> headers) throws Exception {
         super();
         this.body = body;
         this.headers = new ArrayList<SimpleHeader>(headers);
@@ -60,6 +62,7 @@ public class SimpleMessage implements Document {
         baos.write(body);
         baos.flush();
         fullContent = baos.toByteArray();
+        this.size = size;
     }
     
     /**
@@ -129,7 +132,7 @@ public class SimpleMessage implements Document {
     }
 
     public long getFullContentOctets() {
-        return fullContent.length;
+        return size;
     }
     
     private final class ByteArrayRewindableInputStream extends RewindableInputStream {

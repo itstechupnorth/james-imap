@@ -39,7 +39,7 @@ public final class FetchResponse implements ImapResponseMessage {
 
     private final Date internalDate;
 
-    private final Integer size;
+    private final Long size;
 
     private final List<BodyElement> elements;
 
@@ -50,7 +50,7 @@ public final class FetchResponse implements ImapResponseMessage {
     private final Structure bodystructure;
 
     public FetchResponse(final int messageNumber, final Flags flags,
-            final Long uid, final Date internalDate, final Integer size,
+            final Long uid, final Date internalDate, final Long size,
             final Envelope envelope, final Structure body,
             final Structure bodystructure, List<BodyElement> elements) {
         super();
@@ -130,7 +130,7 @@ public final class FetchResponse implements ImapResponseMessage {
      * @return the size, or null if the <code>FETCH</code> did not include
      *         <code>SIZE</code>
      */
-    public final Integer getSize() {
+    public final Long getSize() {
         return size;
     }
 
