@@ -20,8 +20,7 @@
 package org.apache.james.imap.processor.base;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.SortedMap;
 import java.util.TreeMap;
@@ -41,14 +40,15 @@ public class UidToMsnConverter implements MailboxListener {
 
     private boolean closed = false;
 
-    public UidToMsnConverter(final Collection<Long> uids) {
+    public UidToMsnConverter(final Iterator<Long> uids) {
+    	
         msnToUid = new TreeMap<Integer, Long>();
         uidToMsn = new TreeMap<Long, Integer>();
         if (uids != null) {
             int msn = 1;
-            final List<Long> uidsInOrder = new ArrayList<Long>(uids);
-            Collections.sort(uidsInOrder);
-            for (final Long uid:uidsInOrder) {
+            while (uids.hasNext()) {
+            	final Long uid = uids.next();
+            	
                 highestUid = uid.longValue();
                 highestMsn = msn;
                 final Integer msnInteger = new Integer(msn);
@@ -138,6 +138,10 @@ public class UidToMsnConverter implements MailboxListener {
         closed = true;
     }
     
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.mailbox.MailboxListener#isClosed()
+     */
     public boolean isClosed() {
         return closed;
     }

@@ -19,9 +19,7 @@
 
 package org.apache.james.imap.processor;
 
-import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
 
 import javax.mail.Flags;
 
@@ -198,14 +196,20 @@ abstract class AbstractSelectionProcessor extends AbstractMailboxProcessor {
         final Iterator<MessageResult> it = mailbox.getMessages(MessageRange.all(),
                 FetchGroupImpl.MINIMAL, mailboxSession);
 
-        final List<Long> uids = new ArrayList<Long>();
-        while (it.hasNext()) {
-            final MessageResult result = it.next();
-            uids.add(result.getUid());
-        }
-        
-        final SelectedMailbox sessionMailbox = new SelectedMailboxImpl(getMailboxManager(), uids,
-                                                                        mailboxSession, path);
+        final SelectedMailbox sessionMailbox = new SelectedMailboxImpl(getMailboxManager(), new Iterator<Long>() {
+
+			public boolean hasNext() {
+				return it.hasNext();
+			}
+
+			public Long next() {
+				return it.next().getUid();
+			}
+
+			public void remove() {
+				throw new UnsupportedOperationException("Read-only iterator");
+			}
+		}, mailboxSession, path);
         session.selected(sessionMailbox);
         return sessionMailbox;
     }

@@ -51,7 +51,6 @@ import org.apache.james.imap.mailbox.MessageResult;
 import org.apache.james.imap.mailbox.SearchQuery;
 import org.apache.james.imap.mailbox.MessageResult.FetchGroup;
 import org.apache.james.imap.mailbox.util.MailboxEventDispatcher;
-import org.apache.james.imap.mailbox.util.UidRange;
 import org.apache.james.imap.store.mail.MessageMapper;
 import org.apache.james.imap.store.mail.model.Header;
 import org.apache.james.imap.store.mail.model.Mailbox;
@@ -361,29 +360,11 @@ public abstract class StoreMessageManager<Id> implements org.apache.james.imap.m
      */
     public Iterator<MessageResult> getMessages(final MessageRange set, FetchGroup fetchGroup,
             MailboxSession mailboxSession) throws MailboxException {
-        UidRange range = uidRangeForMessageSet(set);
-        final List<MailboxMembership<Id>> rows = new ArrayList<MailboxMembership<Id>>(messageMapper.findInMailbox(mailbox, set));
-        return getMessages(fetchGroup, range, rows);
+        final List<MailboxMembership<Id>> rows = messageMapper.findInMailbox(mailbox, set);
+        return new ResultIterator<Id>(rows, fetchGroup);
     }
 
-    private ResultIterator<Id> getMessages(FetchGroup result, UidRange range, List<MailboxMembership<Id>> messages) {
-        final ResultIterator<Id> results = getResults(result, messages);
-        return results;
-    }
-
-    private ResultIterator<Id> getResults(FetchGroup result, List<MailboxMembership<Id>> messages) {
-        final ResultIterator<Id> results = new ResultIterator<Id>(messages,result);
-        return results;
-    }
-
-    private static UidRange uidRangeForMessageSet(MessageRange set) throws MailboxException {
-        if (set.getType().equals(MessageRange.Type.ALL)) {
-            return new UidRange(1, -1);
-        } else {
-            return new UidRange(set.getUidFrom(), set.getUidTo());
-        }
-    }
-
+ 
     private Flags getPermanentFlags() {
         Flags permanentFlags = new Flags();
         permanentFlags.add(Flags.Flag.ANSWERED);
@@ -608,7 +589,6 @@ public abstract class StoreMessageManager<Id> implements org.apache.james.imap.m
             toMailbox.copy(originalRows, session);
 
         } catch (MessagingException e) {
-            e.printStackTrace();
             throw new MailboxException(HumanReadableText.FAILURE_MAIL_PARSE, e);
         }
     }
