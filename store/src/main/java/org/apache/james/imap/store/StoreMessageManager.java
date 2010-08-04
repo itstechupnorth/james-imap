@@ -361,7 +361,7 @@ public abstract class StoreMessageManager<Id> implements org.apache.james.imap.m
     public Iterator<MessageResult> getMessages(final MessageRange set, FetchGroup fetchGroup,
             MailboxSession mailboxSession) throws MailboxException {
         final List<MailboxMembership<Id>> rows = messageMapper.findInMailbox(mailbox, set);
-        return new ResultIterator<Id>(rows, fetchGroup);
+        return new ResultIterator<Id>(rows.iterator(), fetchGroup);
     }
 
  
@@ -425,13 +425,8 @@ public abstract class StoreMessageManager<Id> implements org.apache.james.imap.m
      * (non-Javadoc)
      * @see org.apache.james.imap.mailbox.Mailbox#expunge(org.apache.james.imap.mailbox.MessageRange, org.apache.james.imap.mailbox.MailboxSession)
      */
-    public Iterator<Long> expunge(MessageRange set, MailboxSession mailboxSession) throws MailboxException {
-        return doExpunge(set, mailboxSession);
-    }
-
-    private Iterator<Long> doExpunge(final MessageRange set, MailboxSession mailboxSession)
-    throws MailboxException {
-        final Collection<Long> uids = new TreeSet<Long>();
+    public Iterator<Long> expunge(final MessageRange set, MailboxSession mailboxSession) throws MailboxException {
+    	final Collection<Long> uids = new TreeSet<Long>();
         
         messageMapper.execute(new TransactionalMapper.Transaction() {
 
@@ -449,21 +444,16 @@ public abstract class StoreMessageManager<Id> implements org.apache.james.imap.m
         while(uidIt.hasNext()) {
             dispatcher.expunged(uidIt.next(), mailboxSession.getSessionId(), new StoreMailboxPath<Id>(getMailboxEntity()));
         }
-        return uids.iterator();
+        return uids.iterator();    
     }
 
     /*
      * (non-Javadoc)
      * @see org.apache.james.imap.mailbox.Mailbox#setFlags(javax.mail.Flags, boolean, boolean, org.apache.james.imap.mailbox.MessageRange, org.apache.james.imap.mailbox.MailboxSession)
      */
-    public Map<Long, Flags> setFlags(Flags flags, boolean value, boolean replace,
-            MessageRange set, MailboxSession mailboxSession) throws MailboxException {
-        return doSetFlags(flags, value, replace, set, mailboxSession);
-    }
-
-    private Map<Long, Flags> doSetFlags(final Flags flags, final boolean value, final boolean replace,
-            final MessageRange set, final MailboxSession mailboxSession) throws MailboxException {
-        final SortedMap<Long, Flags> newFlagsByUid = new TreeMap<Long, Flags>();
+    public Map<Long, Flags> setFlags(final Flags flags, final boolean value, final boolean replace,
+            final MessageRange set, MailboxSession mailboxSession) throws MailboxException {
+    	final SortedMap<Long, Flags> newFlagsByUid = new TreeMap<Long, Flags>();
         final Map<Long, Flags> originalFlagsByUid = new HashMap<Long, Flags>(INITIAL_SIZE_FLAGS);
         messageMapper.execute(new TransactionalMapper.Transaction(){
 
@@ -497,6 +487,7 @@ public abstract class StoreMessageManager<Id> implements org.apache.james.imap.m
         }
         return newFlagsByUid;
     }
+
 
     public void addListener(MailboxListener listener) throws MailboxException {
         dispatcher.addMailboxListener(listener);
@@ -532,10 +523,7 @@ public abstract class StoreMessageManager<Id> implements org.apache.james.imap.m
                     uids.add(member.getUid());
                 }
             } catch (MailboxException e) {
-                mailboxSession.getLog()
-                .info(
-                        "Cannot test message against search criteria. Will continue to test other messages.",
-                        e);
+                mailboxSession.getLog().info("Cannot test message against search criteria. Will continue to test other messages.", e);
                 if (mailboxSession.getLog().isDebugEnabled())
                     mailboxSession.getLog().debug("UID: " + member.getUid());
             }

@@ -94,18 +94,7 @@ public abstract class StoreMailboxManager<Id> extends DelegatingMailboxManager {
      */
     public org.apache.james.imap.mailbox.Mailbox getMailbox(MailboxPath mailboxPath, MailboxSession session)
     throws MailboxException {
-        return doGetMailbox(mailboxPath, session);
-    }
-
-    /**
-     * Get the Mailbox for the given name. If none is found a MailboxException will get thrown
-     * 
-     * @param mailboxPath the name of the mailbox to return
-     * @return mailbox the mailbox for the given name
-     * @throws MailboxException get thrown if no Mailbox could be found for the given name
-     */
-    private StoreMessageManager<Id> doGetMailbox(MailboxPath mailboxPath, MailboxSession session) throws MailboxException {
-        final MailboxMapper<Id> mapper = mailboxSessionMapperFactory.getMailboxMapper(session);
+    	final MailboxMapper<Id> mapper = mailboxSessionMapperFactory.getMailboxMapper(session);
         Mailbox<Id> mailboxRow = mapper.findMailboxByPath(mailboxPath);
 
         if (mailboxRow == null) {
@@ -240,9 +229,10 @@ public abstract class StoreMailboxManager<Id> extends DelegatingMailboxManager {
      * (non-Javadoc)
      * @see org.apache.james.imap.mailbox.MailboxManager#copyMessages(org.apache.james.imap.mailbox.MessageRange, org.apache.james.imap.api.MailboxPath, org.apache.james.imap.api.MailboxPath, org.apache.james.imap.mailbox.MailboxSession)
      */
-    public void copyMessages(MessageRange set, MailboxPath from, MailboxPath to, MailboxSession session) throws MailboxException {
-        StoreMessageManager<Id> toMailbox = doGetMailbox(to, session);
-        StoreMessageManager<Id> fromMailbox = doGetMailbox(from, session);
+    @SuppressWarnings("unchecked")
+	public void copyMessages(MessageRange set, MailboxPath from, MailboxPath to, MailboxSession session) throws MailboxException {
+        StoreMessageManager<Id> toMailbox = (StoreMessageManager<Id>) getMailbox(to, session);
+        StoreMessageManager<Id> fromMailbox = (StoreMessageManager<Id>) getMailbox(from, session);
         fromMailbox.copyTo(set, toMailbox, session);
 
     }

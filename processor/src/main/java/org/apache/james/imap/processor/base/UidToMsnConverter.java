@@ -51,19 +51,20 @@ public class UidToMsnConverter implements MailboxListener {
             	
                 highestUid = uid.longValue();
                 highestMsn = msn;
-                final Integer msnInteger = new Integer(msn);
-                msnToUid.put(msnInteger, uid);
-                uidToMsn.put(uid, msnInteger);
+                msnToUid.put(msn, uid);
+                uidToMsn.put(uid, msn);
+                
                 msn++;
             }
+
         }
     }
 
-    public synchronized long getUid(int msn) {
+    public long getUid(int msn) {
         if (msn == -1) {
             return -1;
         }
-        Long uid = msnToUid.get(new Integer(msn));
+        Long uid = msnToUid.get(msn);
         if (uid != null) {
             return uid.longValue();
         } else {
@@ -75,8 +76,8 @@ public class UidToMsnConverter implements MailboxListener {
         }
     }
 
-    public synchronized int getMsn(long uid) {
-        Integer msn = (Integer) uidToMsn.get(new Long(uid));
+    public int getMsn(long uid) {
+        Integer msn = uidToMsn.get(uid);
         if (msn != null) {
             return msn.intValue();
         } else {
@@ -85,17 +86,15 @@ public class UidToMsnConverter implements MailboxListener {
 
     }
 
-    private synchronized void add(int msn, long uid) {
+    private void add(int msn, long uid) {
         if (uid > highestUid) {
             highestUid = uid;
         }
-        final Integer msnInteger = new Integer(msn);
-        final Long uidLong = new Long(uid);
-        msnToUid.put(msnInteger, uidLong);
-        uidToMsn.put(uidLong, msnInteger);
+        msnToUid.put(msn, uid);
+        uidToMsn.put(uid, msn);
     }
 
-    public synchronized void expunge(final long uid) {
+    public void expunge(final long uid) {
         final int msn = getMsn(uid);
         remove(msn, uid);
         final List<Integer> renumberMsns = new ArrayList<Integer>(msnToUid
@@ -110,11 +109,11 @@ public class UidToMsnConverter implements MailboxListener {
     }
 
     private void remove(int msn, long uid) {
-        uidToMsn.remove(new Long(uid));
-        msnToUid.remove(new Integer(msn));
+        uidToMsn.remove(uid);
+        msnToUid.remove(msn);
     }
 
-    public synchronized void add(long uid) {
+    public void add(long uid) {
         if (!uidToMsn.containsKey(new Long(uid))) {
             highestMsn++;
             add(highestMsn, uid);
