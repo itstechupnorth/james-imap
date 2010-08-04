@@ -22,7 +22,6 @@ package org.apache.james.imap.store;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
-import java.util.List;
 import java.util.NoSuchElementException;
 
 import javax.mail.Flags;
@@ -40,35 +39,27 @@ import org.apache.james.imap.store.mail.model.MailboxMembership;
  */
 public class ResultIterator<Id> implements Iterator<MessageResult> {
 
-    private final List<MailboxMembership<Id>> messages;
+    private final Iterator<MailboxMembership<Id>> messages;
 
     private final FetchGroup fetchGroup;
 
-    public ResultIterator(final List<MailboxMembership<Id>> messages, final FetchGroup fetchGroup) {
+    public ResultIterator(final Iterator<MailboxMembership<Id>> messages, final FetchGroup fetchGroup) {
         super();
         if (messages == null) {
-            this.messages = new ArrayList<MailboxMembership<Id>>();
+            this.messages = new ArrayList<MailboxMembership<Id>>().iterator();
         } else {
             this.messages = messages;
         }
         this.fetchGroup = fetchGroup;
     }
     
-    /**
-     * Iterates over the contained rows.
-     * 
-     * @return <code>Iterator</code> for message rows
-     */
-    public final Iterator<MailboxMembership<Id>> iterateRows() {
-        return messages.iterator();
-    }
 
     /*
      * (non-Javadoc)
      * @see java.util.Iterator#hasNext()
      */
     public boolean hasNext() {
-        return !messages.isEmpty();
+        return messages.hasNext();
     }
 
     /*
@@ -79,8 +70,7 @@ public class ResultIterator<Id> implements Iterator<MessageResult> {
         if (hasNext() == false) {
             throw new NoSuchElementException("No such element.");
         }
-        final MailboxMembership<Id> message = messages.get(0);
-        messages.remove(message);
+        final MailboxMembership<Id> message = messages.next();
         MessageResult result;
         try {
 
@@ -98,19 +88,6 @@ public class ResultIterator<Id> implements Iterator<MessageResult> {
         throw new UnsupportedOperationException("Read only iteration.");
     }
 
-    /**
-     * Return a List which contains {@link MessageResult} objects which are left in the {@link Iterator}
-     * 
-     * @return list
-     */
-    public List<MessageResult> toList() {
-        final List<MessageResult> results = new ArrayList<MessageResult>(messages.size());
-        while(hasNext()) {
-            results.add((MessageResult) next());
-        }
-        return results;
-    }
-    
     private static final class UnloadedMessageResult<Id> implements MessageResult {
         private final MailboxException exception;
 
