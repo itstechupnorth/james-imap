@@ -20,7 +20,7 @@
 package org.apache.james.imap.store;
 
 import java.io.File;
-import java.io.FileInputStream;
+
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -39,6 +39,7 @@ import java.util.TreeSet;
 
 import javax.mail.Flags;
 import javax.mail.MessagingException;
+import javax.mail.util.SharedFileInputStream;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.james.imap.api.display.HumanReadableText;
@@ -137,6 +138,7 @@ public abstract class StoreMessageManager<Id> implements org.apache.james.imap.m
         final long uid = consumer.reserveNextUid(getMailboxEntity(), mailboxSession);
         
         File file = null;
+        SharedFileInputStream tmpMsgIn = null;
         try {
             // Create a temporary file and copy the message to it. We will work with the file as
             // source for the InputStream
@@ -151,7 +153,7 @@ public abstract class StoreMessageManager<Id> implements org.apache.james.imap.m
             out.flush();
             out.close();
             
-            FileInputStream tmpMsgIn = new FileInputStream(file);
+            tmpMsgIn = new SharedFileInputStream(file);
             // To be thread safe, we first get our own copy and the
             // exclusive
             // Uid
@@ -161,7 +163,7 @@ public abstract class StoreMessageManager<Id> implements org.apache.james.imap.m
             // inserted long before 4, when
             // mail 4 is big and comes over a slow connection.
             final int size = tmpMsgIn.available();
-            final int bodyStartOctet = bodyStartOctet(new FileInputStream(file));
+            final int bodyStartOctet = bodyStartOctet(tmpMsgIn);
 
             // Disable line length... This should be handled by the smtp server component and not the parser itself
             // https://issues.apache.org/jira/browse/IMAP-122
@@ -171,7 +173,7 @@ public abstract class StoreMessageManager<Id> implements org.apache.james.imap.m
             final ConfigurableMimeTokenStream parser = new ConfigurableMimeTokenStream(config);
            
             parser.setRecursionMode(MimeTokenStream.M_NO_RECURSE);
-            parser.parse(new FileInputStream(file));
+            parser.parse(tmpMsgIn.newStream(0, -1));
             final List<Header> headers = new ArrayList<Header>(INITIAL_SIZE_HEADERS);
             
             int lineNumber = 0;
@@ -254,7 +256,7 @@ public abstract class StoreMessageManager<Id> implements org.apache.james.imap.m
             if (isRecent) {
                 flags.add(Flags.Flag.RECENT);
             }
-            final MailboxMembership<Id> message = createMessage(internalDate, uid, size, bodyStartOctet, new FileInputStream(file), flags, headers, propertyBuilder);
+            final MailboxMembership<Id> message = createMessage(internalDate, uid, size, bodyStartOctet, tmpMsgIn.newStream(0, -1), flags, headers, propertyBuilder);
 
             messageMapper.execute(new TransactionalMapper.Transaction() {
                 
@@ -275,6 +277,13 @@ public abstract class StoreMessageManager<Id> implements org.apache.james.imap.m
             e.printStackTrace();
             throw new MailboxException(HumanReadableText.FAILURE_MAIL_PARSE, e);
         } finally {
+            if (tmpMsgIn != null) {
+                try {
+                    tmpMsgIn.close();
+                } catch (IOException e) {
+                    // ignore on close
+                }
+            }
             // delete the temporary file if one was specified
             if (file != null) {
                 file.delete();
@@ -319,9 +328,6 @@ public abstract class StoreMessageManager<Id> implements org.apache.james.imap.m
             }
             count++;
         }
-        
-        // close the stream
-        in.close();
         
         return bodyStartOctet;
     }
