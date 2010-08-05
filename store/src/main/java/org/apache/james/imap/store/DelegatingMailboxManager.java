@@ -25,7 +25,7 @@ import java.util.Locale;
 import java.util.Random;
 
 import org.apache.commons.logging.Log;
-import org.apache.james.imap.api.AbstractLogEnabled;
+import org.apache.commons.logging.LogFactory;
 import org.apache.james.imap.mailbox.BadCredentialsException;
 import org.apache.james.imap.mailbox.MailboxConstants;
 import org.apache.james.imap.mailbox.MailboxException;
@@ -37,7 +37,7 @@ import org.apache.james.imap.mailbox.SubscriptionException;
  * Abstract {@link MailboxManager} which delegates various stuff to the {@link Authenticator} and {@link Subscriber}
  *
  */
-public abstract class DelegatingMailboxManager extends AbstractLogEnabled implements MailboxManager {
+public abstract class DelegatingMailboxManager implements MailboxManager {
 
     private final Authenticator authenticator;
     private final Subscriber subscriper;
@@ -46,6 +46,16 @@ public abstract class DelegatingMailboxManager extends AbstractLogEnabled implem
     public DelegatingMailboxManager(final Authenticator authenticator, final Subscriber subscriper) {
         this.subscriper = subscriper;
         this.authenticator = authenticator;
+    }
+
+    private Log log = LogFactory.getLog("org.apache.james.imap");
+
+    protected Log getLog() {
+        return log;
+    }
+
+    public void setLog(Log log) {
+        this.log = log;
     }
 
     /**
