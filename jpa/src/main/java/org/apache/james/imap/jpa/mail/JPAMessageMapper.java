@@ -20,12 +20,15 @@ package org.apache.james.imap.jpa.mail;
 
 import java.util.List;
 
+import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+import javax.persistence.LockModeType;
 import javax.persistence.PersistenceException;
 import javax.persistence.Query;
 
 import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.jpa.JPATransactionalMapper;
+import org.apache.james.imap.jpa.mail.model.JPAMailbox;
 import org.apache.james.imap.jpa.mail.model.openjpa.AbstractJPAMailboxMembership;
 import org.apache.james.imap.jpa.mail.model.openjpa.JPAMailboxMembership;
 import org.apache.james.imap.jpa.mail.model.openjpa.JPAStreamingMailboxMembership;
@@ -291,9 +294,17 @@ public class JPAMessageMapper extends JPATransactionalMapper implements MessageM
     /**
      * @see org.apache.james.imap.store.mail.MessageMapper#save(MailboxMembership)
      */
-    public void save(Mailbox<Long> mailbox, MailboxMembership<Long> message) throws StorageException {
+    public long save(Mailbox<Long> mailbox, MailboxMembership<Long> message) throws StorageException {
         try {
+            
+            if (message.getUid() == 0) {
+                
+                ((AbstractJPAMailboxMembership) message).setUid(reserveUid((JPAMailbox)mailbox));
+            }
+            
+            
             getEntityManager().persist(message);
+            return message.getUid();
         } catch (PersistenceException e) {
             throw new StorageException(HumanReadableText.SAVE_FAILED, e);
         }
@@ -303,18 +314,36 @@ public class JPAMessageMapper extends JPATransactionalMapper implements MessageM
      * (non-Javadoc)
      * @see org.apache.james.imap.store.mail.MessageMapper#copy(java.lang.Object, long, org.apache.james.imap.store.mail.model.MailboxMembership)
      */
-    public MailboxMembership<Long> copy(Mailbox<Long> mailbox, long uid, MailboxMembership<Long> original) throws StorageException {
+    public MailboxMembership<Long> copy(Mailbox<Long> mailbox, MailboxMembership<Long> original) throws StorageException {
         try {
             MailboxMembership<Long> copy;
             if (original instanceof JPAStreamingMailboxMembership) {
-                copy = new JPAStreamingMailboxMembership(mailbox.getMailboxId(), uid, (AbstractJPAMailboxMembership) original);
+                copy = new JPAStreamingMailboxMembership(mailbox.getMailboxId(), (AbstractJPAMailboxMembership) original);
             } else {
-                copy = new JPAMailboxMembership(mailbox.getMailboxId(), uid, (AbstractJPAMailboxMembership)original);
+                copy = new JPAMailboxMembership(mailbox.getMailboxId(), (AbstractJPAMailboxMembership)original);
             }
             save(mailbox, copy);
             return copy;
         } catch (MailboxException e) {
             throw new StorageException(e.getKey(),e);
         }
+    }
+    
+    /**
+     * Reserve the uid for the next {@link MailboxMembership} in the given {@link JPAMailbox}.
+     * This is done by using a row lock.
+     * 
+     * @param mailbox
+     * @return uid
+     */
+    protected long reserveUid(JPAMailbox mailbox) {
+        EntityManager manager = getEntityManager();
+
+        // we need to set a pessimistic write lock to be sure we don't get any problems with dirty reads etc.
+        JPAMailbox m = manager.find(JPAMailbox.class, mailbox.getMailboxId(), LockModeType.PESSIMISTIC_WRITE);
+        manager.refresh(m);
+        m.consumeUid();
+        manager.persist(m);
+        return m.getLastUid();
     }
 }

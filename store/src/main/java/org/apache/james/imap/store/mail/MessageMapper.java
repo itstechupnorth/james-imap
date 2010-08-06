@@ -125,13 +125,15 @@ public interface MessageMapper<Id> extends TransactionalMapper {
 
 
     /**
-     * Save the given {@link MailboxMembership} to the underlying storage
+     * Save the given {@link MailboxMembership} to the underlying storage and return the uid of it. the uid needs to be unique and sequential. Howto
+     * archive that is up to the implementation
+     * 
      * 
      * @param mailbox
      * @param message
      * @throws StorageException
      */
-    public abstract void save(Mailbox<Id> mailbox, MailboxMembership<Id> message) throws StorageException;
+    public abstract long save(Mailbox<Id> mailbox, MailboxMembership<Id> message) throws StorageException;
     
     
     /**
@@ -143,6 +145,6 @@ public interface MessageMapper<Id> extends TransactionalMapper {
      * @return The copied instance
      * @throws StorageException
      */
-    public abstract MailboxMembership<Id> copy(Mailbox<Id> mailbox, long uid, MailboxMembership<Id> original) throws StorageException;
+    public abstract MailboxMembership<Id> copy(Mailbox<Id> mailbox, MailboxMembership<Id> original) throws StorageException;
 
 }

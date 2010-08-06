@@ -99,13 +99,11 @@ public class JCRMessage extends AbstractDocument implements MailboxMembership<St
         this.node = node;
     }
     
-    public JCRMessage(String mailboxUUID, long uid,
-            Date internalDate, int size, Flags flags, InputStream content,
+    public JCRMessage(String mailboxUUID, Date internalDate, int size, Flags flags, InputStream content,
             int bodyStartOctet, final List<JCRHeader> headers,
             final PropertyBuilder propertyBuilder, Log logger) {
         super();
         this.mailboxUUID = mailboxUUID;
-        this.uid = uid;
         this.internalDate = internalDate;
         this.size = size;
         this.logger = logger;
@@ -134,9 +132,8 @@ public class JCRMessage extends AbstractDocument implements MailboxMembership<St
      * @param message
      * @throws IOException 
      */
-    public JCRMessage(String mailboxUUID, long uid, JCRMessage message, Log logger) throws MailboxException {
+    public JCRMessage(String mailboxUUID, JCRMessage message, Log logger) throws MailboxException {
         this.mailboxUUID = mailboxUUID;
-        this.uid = uid;
         this.internalDate = message.getInternalDate();
         this.size = message.getFullContentOctets();
         this.answered = message.isAnswered();

@@ -31,7 +31,6 @@ import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.MailboxSession;
 import org.apache.james.imap.mailbox.util.MailboxEventDispatcher;
 import org.apache.james.imap.store.StoreMessageManager;
-import org.apache.james.imap.store.UidConsumer;
 import org.apache.james.imap.store.mail.model.Header;
 import org.apache.james.imap.store.mail.model.Mailbox;
 import org.apache.james.imap.store.mail.model.MailboxMembership;
@@ -43,19 +42,18 @@ import org.apache.james.imap.store.mail.model.PropertyBuilder;
 public class JPAMessageManager extends StoreMessageManager<Long> {
     
     public JPAMessageManager(JPAMailboxSessionMapperFactory mapperFactory,
-            final MailboxEventDispatcher dispatcher, final UidConsumer<Long> consumer,
-            final Mailbox<Long> mailbox, MailboxSession session) throws MailboxException {
-        super(mapperFactory, dispatcher, consumer, mailbox, session);     
+            final MailboxEventDispatcher dispatcher,final Mailbox<Long> mailbox, MailboxSession session) throws MailboxException {
+        super(mapperFactory, dispatcher, mailbox, session);     
     }
     
     @Override
-    protected MailboxMembership<Long> createMessage(Date internalDate, final long uid, final int size, int bodyStartOctet, final InputStream document, 
+    protected MailboxMembership<Long> createMessage(Date internalDate, final int size, int bodyStartOctet, final InputStream document, 
             final Flags flags, final List<Header> headers, PropertyBuilder propertyBuilder) throws MailboxException{
         final List<JPAHeader> jpaHeaders = new ArrayList<JPAHeader>(headers.size());
         for (Header header: headers) {
             jpaHeaders.add((JPAHeader) header);
         }
-        final MailboxMembership<Long> message = new JPAMailboxMembership(mailbox.getMailboxId(), uid, internalDate, size, flags, document, bodyStartOctet, jpaHeaders, propertyBuilder);
+        final MailboxMembership<Long> message = new JPAMailboxMembership(mailbox.getMailboxId(), internalDate, size, flags, document, bodyStartOctet, jpaHeaders, propertyBuilder);
         return message;
     }
 

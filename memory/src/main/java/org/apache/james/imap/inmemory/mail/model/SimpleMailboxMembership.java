@@ -54,7 +54,6 @@ public class SimpleMailboxMembership extends AbstractMailboxMembership<Long> imp
     private Long lineCount;
     private byte[] document;
     private int bodyStartOctet;
-    
     public SimpleMailboxMembership(long mailboxId, long uid, final SimpleMailboxMembership original) {
         this.uid = uid;
         this.mailboxId = mailboxId;
@@ -75,7 +74,7 @@ public class SimpleMailboxMembership extends AbstractMailboxMembership<Long> imp
         this.bodyStartOctet = original.bodyStartOctet;
     }
     
-    public SimpleMailboxMembership(Date internalDate, long uid, int size, int bodyStartOctet, byte[] document, 
+    public SimpleMailboxMembership(Date internalDate, long uid,  int size, int bodyStartOctet, byte[] document, 
             Flags flags, List<Header> headers, PropertyBuilder propertyBuilder, final long mailboxId) {
         this.uid = uid;
         this.document = document;

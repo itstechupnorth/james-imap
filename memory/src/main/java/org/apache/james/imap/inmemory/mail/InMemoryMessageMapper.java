@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.apache.james.imap.inmemory.mail.model.InMemoryMailbox;
 import org.apache.james.imap.inmemory.mail.model.SimpleMailboxMembership;
 import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.MessageRange;
@@ -163,8 +164,9 @@ public class InMemoryMessageMapper implements MessageMapper<Long> {
      * (non-Javadoc)
      * @see org.apache.james.imap.store.mail.MessageMapper#save(org.apache.james.imap.store.mail.model.MailboxMembership)
      */
-    public void save(Mailbox<Long> mailbox, MailboxMembership<Long> message) throws StorageException {
+    public long save(Mailbox<Long> mailbox, MailboxMembership<Long> message) throws StorageException {
         getMembershipByUidForMailbox(mailbox).put(message.getUid(), message);
+        return message.getUid();
     }
 
     /*
@@ -193,12 +195,14 @@ public class InMemoryMessageMapper implements MessageMapper<Long> {
         // Do nothing
     }
 
+  
     /*
      * (non-Javadoc)
-     * @see org.apache.james.imap.store.mail.MessageMapper#copy(java.lang.Object, long, org.apache.james.imap.store.mail.model.MailboxMembership)
+     * @see org.apache.james.imap.store.mail.MessageMapper#copy(org.apache.james.imap.store.mail.model.Mailbox, org.apache.james.imap.store.mail.model.MailboxMembership)
      */
-    public MailboxMembership<Long> copy(Mailbox<Long> mailbox, long uid, MailboxMembership<Long> original) throws StorageException {
-        SimpleMailboxMembership membership = new SimpleMailboxMembership(mailbox.getMailboxId(), uid, (SimpleMailboxMembership) original);
+    public MailboxMembership<Long> copy(Mailbox<Long> mailbox, MailboxMembership<Long> original) throws StorageException {
+        ((InMemoryMailbox) mailbox).consumeUid();
+        SimpleMailboxMembership membership = new SimpleMailboxMembership(mailbox.getMailboxId(), mailbox.getLastUid(), (SimpleMailboxMembership) original);
         save(mailbox, membership);
         return membership;
     }

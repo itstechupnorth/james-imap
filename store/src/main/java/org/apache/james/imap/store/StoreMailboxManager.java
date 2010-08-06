@@ -59,13 +59,10 @@ public abstract class StoreMailboxManager<Id> extends DelegatingMailboxManager {
     private final MailboxEventDispatcher dispatcher = new MailboxEventDispatcher();
     private final DelegatingMailboxListener delegatingListener = new DelegatingMailboxListener();   
     private final MailboxPathLock lock = new MailboxPathLock();
-    protected final MailboxSessionMapperFactory<Id> mailboxSessionMapperFactory;
-    private UidConsumer<Id> consumer;
+    protected final MailboxSessionMapperFactory<Id> mailboxSessionMapperFactory;    
     
-    
-    public StoreMailboxManager(MailboxSessionMapperFactory<Id> mailboxSessionMapperFactory, final Authenticator authenticator, final Subscriber subscriber, final UidConsumer<Id> consumer) {
+    public StoreMailboxManager(MailboxSessionMapperFactory<Id> mailboxSessionMapperFactory, final Authenticator authenticator, final Subscriber subscriber) {
         super(authenticator, subscriber);
-        this.consumer = consumer;
         this.mailboxSessionMapperFactory = mailboxSessionMapperFactory;
         
         // The dispatcher need to have the delegating listener added
@@ -78,7 +75,7 @@ public abstract class StoreMailboxManager<Id> extends DelegatingMailboxManager {
      * @param mailboxRow
      * @return storeMailbox
      */
-    protected abstract StoreMessageManager<Id> createMessageManager(MailboxEventDispatcher dispatcher, UidConsumer<Id> consumer, Mailbox<Id> mailboxRow, MailboxSession session) throws MailboxException;
+    protected abstract StoreMessageManager<Id> createMessageManager(MailboxEventDispatcher dispatcher, Mailbox<Id> mailboxRow, MailboxSession session) throws MailboxException;
 
     /**
      * Create a Mailbox for the given namespace and store it to the underlying storage
@@ -104,7 +101,7 @@ public abstract class StoreMailboxManager<Id> extends DelegatingMailboxManager {
         } else {
             getLog().debug("Loaded mailbox " + mailboxPath);
 
-            return createMessageManager(dispatcher, consumer, mailboxRow, session);
+            return createMessageManager(dispatcher, mailboxRow, session);
         }
     }
 

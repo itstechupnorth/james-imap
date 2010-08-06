@@ -27,6 +27,7 @@ import java.util.List;
 import javax.jcr.ItemNotFoundException;
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
+import javax.jcr.Property;
 import javax.jcr.RepositoryException;
 import javax.jcr.query.Query;
 import javax.jcr.query.QueryManager;
@@ -41,6 +42,7 @@ import org.apache.james.imap.jcr.AbstractJCRMapper;
 import org.apache.james.imap.jcr.MailboxSessionJCRRepository;
 import org.apache.james.imap.jcr.NodeLocker;
 import org.apache.james.imap.jcr.NodeLocker.NodeLockedExecution;
+import org.apache.james.imap.jcr.mail.model.JCRMailbox;
 import org.apache.james.imap.jcr.mail.model.JCRMessage;
 import org.apache.james.imap.mailbox.MailboxSession;
 import org.apache.james.imap.mailbox.MessageRange;
@@ -467,12 +469,9 @@ public class JCRMessageMapper extends AbstractJCRMapper implements MessageMapper
 
     /*
      * (non-Javadoc)
-     * 
-     * @see
-     * org.apache.james.imap.store.mail.MessageMapper#save(org.apache.james.
-     * imap.store.mail.model.MailboxMembership)
+     * @see org.apache.james.imap.store.mail.MessageMapper#save(org.apache.james.imap.store.mail.model.Mailbox, org.apache.james.imap.store.mail.model.MailboxMembership)
      */
-    public void save(Mailbox<String> mailbox, MailboxMembership<String> message) throws StorageException {
+    public long save(Mailbox<String> mailbox, MailboxMembership<String> message) throws StorageException {
         final JCRMessage membership = (JCRMessage) message;
         try {
 
@@ -501,6 +500,8 @@ public class JCRMessageMapper extends AbstractJCRMapper implements MessageMapper
                 Node node = null;
                 Node mailboxNode = getSession().getNodeByIdentifier(mailbox.getMailboxId());
 
+                final long nextUid = reserveNextUid((JCRMailbox) mailbox);
+                
                 NodeLocker locker = getNodeLocker();
 
                 if (scaleType > MESSAGE_SCALE_NONE) {
@@ -555,10 +556,12 @@ public class JCRMessageMapper extends AbstractJCRMapper implements MessageMapper
                 locker.execute(new NodeLockedExecution<Void>() {
 
                     public Void execute(Node node) throws RepositoryException {
-                        Node messageNode = node.addNode(String.valueOf(membership.getUid()), "nt:file");
+                        Node messageNode = node.addNode(String.valueOf(nextUid), "nt:file");
                         messageNode.addMixin("jamesMailbox:message");
                         try {
                             membership.merge(messageNode);
+                            messageNode.setProperty(JCRMessage.UID_PROPERTY, nextUid);
+
                         } catch (IOException e) {
                             throw new RepositoryException("Unable to merge message in to tree", e);
                         }
@@ -572,9 +575,11 @@ public class JCRMessageMapper extends AbstractJCRMapper implements MessageMapper
                         return true;
                     }
                 }, node, Void.class);
+                return nextUid;
 
             } else {
                 membership.merge(messageNode);
+                return membership.getUid();
             }
         } catch (RepositoryException e) {
             throw new StorageException(HumanReadableText.SAVE_FAILED, e);
@@ -685,8 +690,9 @@ public class JCRMessageMapper extends AbstractJCRMapper implements MessageMapper
      * (non-Javadoc)
      * @see org.apache.james.imap.store.mail.MessageMapper#copy(java.lang.Object, long, org.apache.james.imap.store.mail.model.MailboxMembership)
      */
-    public MailboxMembership<String> copy(Mailbox<String> mailbox, long uid, MailboxMembership<String> oldmessage) throws StorageException{
+    public MailboxMembership<String> copy(Mailbox<String> mailbox, MailboxMembership<String> oldmessage) throws StorageException{
         try {
+            long uid = reserveNextUid((JCRMailbox) mailbox);
             String newMessagePath = getSession().getNodeByIdentifier(mailbox.getMailboxId()).getPath() + NODE_DELIMITER + String.valueOf(uid);
             getSession().getWorkspace().copy(((JCRMessage)oldmessage).getNode().getPath(), getSession().getNodeByIdentifier(mailbox.getMailboxId()).getPath() + NODE_DELIMITER + String.valueOf(uid));
             Node node = getSession().getNode(newMessagePath);
@@ -695,7 +701,30 @@ public class JCRMessageMapper extends AbstractJCRMapper implements MessageMapper
             return new JCRMessage(node,getLogger());
         } catch (RepositoryException e) {
             throw new StorageException(HumanReadableText.SAVE_FAILED, e);
+        } catch (InterruptedException e) {
+            throw new StorageException(HumanReadableText.SAVE_FAILED, e);
         }
+    }
+    
+    protected long reserveNextUid(Mailbox<String> mailbox) throws RepositoryException, InterruptedException {
+        long result = getNodeLocker().execute(new NodeLocker.NodeLockedExecution<Long>() {
+
+            public Long execute(Node node) throws RepositoryException {
+                Property uidProp = node.getProperty(JCRMailbox.LASTUID_PROPERTY);
+                long uid = uidProp.getLong();
+                uid++;
+                uidProp.setValue(uid);
+                uidProp.getSession().save();
+                return uid;
+            }
+
+            public boolean isDeepLocked() {
+                return true;
+            }
+            
+        }, getSession().getNodeByIdentifier(mailbox.getMailboxId()), Long.class);
+        return result;
+        
     }
 
 }

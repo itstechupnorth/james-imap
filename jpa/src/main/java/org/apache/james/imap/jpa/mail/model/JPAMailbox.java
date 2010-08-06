@@ -193,4 +193,8 @@ public class JPAMailbox implements Mailbox<Long> {
     public void setUser(String user) {
         this.user = user;
     }
+
+    public void setLastUid(long uid) {
+        this.lastUid = uid;
+    }
 }

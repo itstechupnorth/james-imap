@@ -30,24 +30,17 @@ import org.apache.james.imap.store.MailboxSessionMapperFactory;
 import org.apache.james.imap.store.StoreMailboxManager;
 import org.apache.james.imap.store.StoreMessageManager;
 import org.apache.james.imap.store.Subscriber;
-import org.apache.james.imap.store.UidConsumer;
 import org.apache.james.imap.store.mail.model.Mailbox;
 
 public class InMemoryMailboxManager extends StoreMailboxManager<Long> {
 
     public InMemoryMailboxManager(MailboxSessionMapperFactory<Long> mapperFactory, Authenticator authenticator, Subscriber subscriber) {
-        super(mapperFactory, authenticator, subscriber, new UidConsumer<Long>() {
-
-            public long reserveNextUid(Mailbox<Long> mailbox, MailboxSession session) throws MailboxException {
-                mailbox.consumeUid();
-                return mailbox.getLastUid();
-            }
-        });
+        super(mapperFactory, authenticator, subscriber);
     }
 
     @Override
-    protected StoreMessageManager<Long> createMessageManager(MailboxEventDispatcher dispatcher, UidConsumer<Long> consumer, Mailbox<Long> mailboxRow, MailboxSession session) throws MailboxException {
-        return new InMemoryStoreMessageManager(mailboxSessionMapperFactory, dispatcher, consumer, (InMemoryMailbox)mailboxRow, session);
+    protected StoreMessageManager<Long> createMessageManager(MailboxEventDispatcher dispatcher, Mailbox<Long> mailboxRow, MailboxSession session) throws MailboxException {
+        return new InMemoryStoreMessageManager(mailboxSessionMapperFactory, dispatcher, (InMemoryMailbox)mailboxRow, session);
     }
 
     @Override

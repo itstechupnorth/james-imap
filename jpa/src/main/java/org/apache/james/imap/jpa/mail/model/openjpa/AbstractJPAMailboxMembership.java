@@ -142,10 +142,9 @@ public abstract class AbstractJPAMailboxMembership extends AbstractMailboxMember
     @Deprecated
     public AbstractJPAMailboxMembership() {}
 
-    public AbstractJPAMailboxMembership(long mailboxId, long uid, Date internalDate, Flags flags, int bodyStartOctet, final List<JPAHeader> headers, final PropertyBuilder propertyBuilder) throws MailboxException {
+    public AbstractJPAMailboxMembership(long mailboxId, Date internalDate, Flags flags, int bodyStartOctet, final List<JPAHeader> headers, final PropertyBuilder propertyBuilder) throws MailboxException {
         super();
         this.mailboxId = mailboxId;
-        this.uid = uid;
         this.internalDate = internalDate;
        
         setFlags(flags);
@@ -159,10 +158,9 @@ public abstract class AbstractJPAMailboxMembership extends AbstractMailboxMember
      * @param original message to be copied, not null
      * @throws IOException 
      */
-    public AbstractJPAMailboxMembership(long mailboxId, long uid, MailboxMembership<?> original) throws MailboxException {
+    public AbstractJPAMailboxMembership(long mailboxId, MailboxMembership<?> original) throws MailboxException {
         super();
         this.mailboxId = mailboxId;
-        this.uid = uid;
         this.internalDate = original.getInternalDate();
         this.answered = original.isAnswered();
         this.deleted = original.isDeleted();
@@ -298,5 +296,9 @@ public abstract class AbstractJPAMailboxMembership extends AbstractMailboxMember
             + " )";
 
         return retValue;
+    }
+    
+    public void setUid(long uid) {
+        this.uid = uid;
     }
 }

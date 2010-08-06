@@ -84,13 +84,11 @@ public abstract class StoreMessageManager<Id> implements org.apache.james.imap.m
     
     private MailboxEventDispatcher dispatcher;
 
-    private UidConsumer<Id> consumer;
     
     
-    public StoreMessageManager(MailboxSessionMapperFactory<Id> mapperFactory, final MailboxEventDispatcher dispatcher, UidConsumer<Id> consumer, final Mailbox<Id> mailbox, MailboxSession session) throws MailboxException {
+    public StoreMessageManager(MailboxSessionMapperFactory<Id> mapperFactory, final MailboxEventDispatcher dispatcher, final Mailbox<Id> mailbox, MailboxSession session) throws MailboxException {
         this.mailbox = mailbox;
         this.dispatcher = dispatcher;
-        this.consumer = consumer;
         this.messageMapper = mapperFactory.getMessageMapper(session);
     }
 
@@ -134,9 +132,6 @@ public abstract class StoreMessageManager<Id> implements org.apache.james.imap.m
     public long appendMessage(final InputStream msgIn, final Date internalDate,
             final MailboxSession mailboxSession,final boolean isRecent, final Flags flagsToBeSet)
     throws MailboxException {
-        // this will hold the uid after the transaction was complete
-        final long uid = consumer.reserveNextUid(getMailboxEntity(), mailboxSession);
-        
         File file = null;
         SharedFileInputStream tmpMsgIn = null;
         try {
@@ -154,14 +149,7 @@ public abstract class StoreMessageManager<Id> implements org.apache.james.imap.m
             out.close();
             
             tmpMsgIn = new SharedFileInputStream(file);
-            // To be thread safe, we first get our own copy and the
-            // exclusive
-            // Uid
-            // TODO create own message_id and assign uid later
-            // at the moment it could lead to the situation that uid 5
-            // is
-            // inserted long before 4, when
-            // mail 4 is big and comes over a slow connection.
+           
             final int size = tmpMsgIn.available();
             final int bodyStartOctet = bodyStartOctet(tmpMsgIn);
 
@@ -256,15 +244,15 @@ public abstract class StoreMessageManager<Id> implements org.apache.james.imap.m
             if (isRecent) {
                 flags.add(Flags.Flag.RECENT);
             }
-            final MailboxMembership<Id> message = createMessage(internalDate, uid, size, bodyStartOctet, tmpMsgIn.newStream(0, -1), flags, headers, propertyBuilder);
-
+            final MailboxMembership<Id> message = createMessage(internalDate, size, bodyStartOctet, tmpMsgIn.newStream(0, -1), flags, headers, propertyBuilder);
+            final List<Long> uids = new ArrayList<Long>();
             messageMapper.execute(new TransactionalMapper.Transaction() {
                 
                 public void run() throws MailboxException {
-                    messageMapper.save(mailbox, message);
+                    uids.add(messageMapper.save(mailbox, message));
                 }
             });
-           
+            long uid = uids.get(0);
             dispatcher.added(uid, mailboxSession.getSessionId(), new StoreMailboxPath<Id>(getMailboxEntity()));
             return uid;
         } catch (IOException e) {
@@ -336,7 +324,6 @@ public abstract class StoreMessageManager<Id> implements org.apache.james.imap.m
      * Create a new {@link MailboxMembership} for the given data
      * 
      * @param internalDate
-     * @param uid
      * @param size
      * @param bodyStartOctet
      * @param documentIn
@@ -346,7 +333,7 @@ public abstract class StoreMessageManager<Id> implements org.apache.james.imap.m
      * @return membership
      * @throws MailboxException 
      */
-    protected abstract MailboxMembership<Id> createMessage(Date internalDate, final long uid, final int size, int bodyStartOctet, 
+    protected abstract MailboxMembership<Id> createMessage(Date internalDate, final int size, int bodyStartOctet, 
             final InputStream documentIn, final Flags flags, final List<Header> headers, PropertyBuilder propertyBuilder) throws MailboxException;
     
     /**
@@ -550,11 +537,10 @@ public abstract class StoreMessageManager<Id> implements org.apache.james.imap.m
             final List<MailboxMembership<Id>> copiedRows = new ArrayList<MailboxMembership<Id>>();
 
             for (final MailboxMembership<Id> originalMessage:originalRows) {
-                final long uid = consumer.reserveNextUid(getMailboxEntity(),session);
                 messageMapper.execute(new TransactionalMapper.Transaction() {
 
                     public void run() throws MailboxException {
-                        final MailboxMembership<Id> newRow = messageMapper.copy(mailbox, uid, originalMessage);
+                        final MailboxMembership<Id> newRow = messageMapper.copy(mailbox, originalMessage);
                         copiedRows.add(newRow);
                     }
                     

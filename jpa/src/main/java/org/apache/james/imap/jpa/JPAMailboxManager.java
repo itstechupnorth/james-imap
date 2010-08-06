@@ -36,7 +36,7 @@ public abstract class JPAMailboxManager extends StoreMailboxManager<Long> {
     
     public JPAMailboxManager(JPAMailboxSessionMapperFactory mailboxSessionMapperFactory,
             final Authenticator authenticator, final Subscriber subscriber) {
-        super(mailboxSessionMapperFactory, authenticator, subscriber, new JPAUidConsumer(mailboxSessionMapperFactory));
+        super(mailboxSessionMapperFactory, authenticator, subscriber);
     }
     
     @Override

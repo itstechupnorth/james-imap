@@ -28,12 +28,7 @@ public interface Mailbox<Id> {
      * @return uid
      */
     public abstract long getLastUid();
-
-    /**
-     * Consumes the current UID.
-     */
-    public abstract void consumeUid();
-    
+        
     /**
      * Gets the unique mailbox ID.
      * @return mailbox id

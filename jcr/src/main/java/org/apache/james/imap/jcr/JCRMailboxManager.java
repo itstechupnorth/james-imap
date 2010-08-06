@@ -30,7 +30,6 @@ import org.apache.james.imap.store.Authenticator;
 import org.apache.james.imap.store.StoreMailboxManager;
 import org.apache.james.imap.store.StoreMessageManager;
 import org.apache.james.imap.store.Subscriber;
-import org.apache.james.imap.store.UidConsumer;
 import org.apache.james.imap.store.mail.model.Mailbox;
 import org.apache.james.imap.store.transaction.TransactionalMapper;
 
@@ -44,18 +43,18 @@ public class JCRMailboxManager extends StoreMailboxManager<String> implements JC
     private final Log logger = LogFactory.getLog(JCRMailboxManager.class);
     
     public JCRMailboxManager(JCRMailboxSessionMapperFactory mapperFactory, final Authenticator authenticator, final Subscriber subscriber) {
-	    this(mapperFactory, authenticator, subscriber, new JCRVmNodeLocker(), new JCRUidConsumer(mapperFactory.getRepository(),  new JCRVmNodeLocker()));
+	    this(mapperFactory, authenticator, subscriber, new JCRVmNodeLocker());
     }
 
-    public JCRMailboxManager(JCRMailboxSessionMapperFactory mapperFactory, final Authenticator authenticator, final Subscriber subscriber, final NodeLocker locker, final UidConsumer<String> consumer) {
-        super(mapperFactory, authenticator, subscriber, consumer);
+    public JCRMailboxManager(JCRMailboxSessionMapperFactory mapperFactory, final Authenticator authenticator, final Subscriber subscriber, final NodeLocker locker) {
+        super(mapperFactory, authenticator, subscriber);
         this.mapperFactory = mapperFactory;
     }
 
     
     @Override
-    protected StoreMessageManager<String> createMessageManager(MailboxEventDispatcher dispatcher, UidConsumer<String> consumer, Mailbox<String> mailboxEntity, MailboxSession session) throws MailboxException{
-        return new JCRMessageManager(mapperFactory, dispatcher, consumer, (JCRMailbox) mailboxEntity, logger, getDelimiter(), session);
+    protected StoreMessageManager<String> createMessageManager(MailboxEventDispatcher dispatcher, Mailbox<String> mailboxEntity, MailboxSession session) throws MailboxException{
+        return new JCRMessageManager(mapperFactory, dispatcher, (JCRMailbox) mailboxEntity, logger, getDelimiter(), session);
     }
 
     @Override

@@ -49,9 +49,9 @@ public class JPAMailboxMembership extends AbstractJPAMailboxMembership{
     @Deprecated
     public JPAMailboxMembership() {}
 
-    public JPAMailboxMembership(long mailboxId, long uid, Date internalDate, int size, Flags flags, 
+    public JPAMailboxMembership(long mailboxId, Date internalDate, int size, Flags flags, 
             InputStream content, int bodyStartOctet, final List<JPAHeader> headers, final PropertyBuilder propertyBuilder) throws MailboxException {
-        super(mailboxId, uid, internalDate, flags, bodyStartOctet, headers, propertyBuilder);  
+        super(mailboxId, internalDate, flags, bodyStartOctet, headers, propertyBuilder);  
         try {
             this.message = new JPAMessage(content, size, bodyStartOctet, headers, propertyBuilder);
         } catch (IOException e) {
@@ -59,8 +59,8 @@ public class JPAMailboxMembership extends AbstractJPAMailboxMembership{
         }
     }
 
-    public JPAMailboxMembership(long mailboxId, long uid, AbstractJPAMailboxMembership original) throws MailboxException {
-        super(mailboxId, uid, original);
+    public JPAMailboxMembership(long mailboxId, AbstractJPAMailboxMembership original) throws MailboxException {
+        super(mailboxId, original);
         try {
             this.message = new JPAMessage((JPAMessage) original.getDocument());
         } catch (IOException e) {

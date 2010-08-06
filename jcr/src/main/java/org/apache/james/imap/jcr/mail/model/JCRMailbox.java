@@ -75,24 +75,6 @@ public class JCRMailbox implements Mailbox<String>, JCRImapConstants, Persistent
     public Log getLog() {
         return logger;
     }
-    
-    /*
-     * (non-Javadoc)
-     * @see org.apache.james.imap.store.mail.model.Mailbox#consumeUid()
-     */
-    public void consumeUid() {
-        if (isPersistent()) {
-            try {
-                long uid = node.getProperty(LASTUID_PROPERTY).getLong();
-                uid++;
-                node.setProperty(LASTUID_PROPERTY, uid);
-            } catch (RepositoryException e) {
-                logger.error("Unable to access property " + LASTUID_PROPERTY, e);
-            }
-        } else {
-            lastUid++;
-        }
-    }
 
     /*
      * (non-Javadoc)
@@ -311,5 +293,4 @@ public class JCRMailbox implements Mailbox<String>, JCRImapConstants, Persistent
             this.user = user;
         }        
     }
-
 }

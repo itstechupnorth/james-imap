@@ -28,7 +28,6 @@ import org.apache.james.imap.mailbox.util.MailboxEventDispatcher;
 import org.apache.james.imap.store.Authenticator;
 import org.apache.james.imap.store.StoreMessageManager;
 import org.apache.james.imap.store.Subscriber;
-import org.apache.james.imap.store.UidConsumer;
 import org.apache.james.imap.store.mail.model.Mailbox;
 
 /**
@@ -49,8 +48,8 @@ public class OpenJPAMailboxManager extends JPAMailboxManager {
     }
 
     @Override
-    protected StoreMessageManager<Long> createMessageManager(MailboxEventDispatcher dispatcher, UidConsumer<Long> consumer, Mailbox<Long> mailboxRow, MailboxSession session) throws MailboxException {
-        StoreMessageManager<Long> result =  new OpenJPAMessageManager((JPAMailboxSessionMapperFactory) mailboxSessionMapperFactory, dispatcher, consumer, mailboxRow, session, useStreaming);
+    protected StoreMessageManager<Long> createMessageManager(MailboxEventDispatcher dispatcher, Mailbox<Long> mailboxRow, MailboxSession session) throws MailboxException {
+        StoreMessageManager<Long> result =  new OpenJPAMessageManager((JPAMailboxSessionMapperFactory) mailboxSessionMapperFactory, dispatcher, mailboxRow, session, useStreaming);
         return result;
     }
 }

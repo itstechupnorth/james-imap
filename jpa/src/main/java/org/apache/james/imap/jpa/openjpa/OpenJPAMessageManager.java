@@ -33,7 +33,6 @@ import org.apache.james.imap.jpa.mail.model.openjpa.JPAStreamingMailboxMembershi
 import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.MailboxSession;
 import org.apache.james.imap.mailbox.util.MailboxEventDispatcher;
-import org.apache.james.imap.store.UidConsumer;
 import org.apache.james.imap.store.mail.model.Header;
 import org.apache.james.imap.store.mail.model.Mailbox;
 import org.apache.james.imap.store.mail.model.MailboxMembership;
@@ -48,28 +47,26 @@ public class OpenJPAMessageManager extends JPAMessageManager {
     private final boolean useStreaming;
 
     public OpenJPAMessageManager(JPAMailboxSessionMapperFactory mapperFactory,
-            MailboxEventDispatcher dispatcher, UidConsumer<Long> consumer,
-            Mailbox<Long> mailbox, MailboxSession session) throws MailboxException {
-        this(mapperFactory, dispatcher, consumer, mailbox, session, false);
+            MailboxEventDispatcher dispatcher, Mailbox<Long> mailbox, MailboxSession session) throws MailboxException {
+        this(mapperFactory, dispatcher, mailbox, session, false);
     }
 
     public OpenJPAMessageManager(JPAMailboxSessionMapperFactory mapperFactory,
-            MailboxEventDispatcher dispatcher, UidConsumer<Long> consumer,
-            Mailbox<Long> mailbox, MailboxSession session, final boolean useStreaming) throws MailboxException {
-        super(mapperFactory, dispatcher, consumer, mailbox, session);
+            MailboxEventDispatcher dispatcher, Mailbox<Long> mailbox, MailboxSession session, final boolean useStreaming) throws MailboxException {
+        super(mapperFactory, dispatcher, mailbox, session);
         this.useStreaming = useStreaming;
     }
 
     @Override
-    protected MailboxMembership<Long> createMessage(Date internalDate, long uid, int size, int bodyStartOctet, InputStream document, Flags flags, List<Header> headers, PropertyBuilder propertyBuilder) throws MailboxException {
+    protected MailboxMembership<Long> createMessage(Date internalDate, int size, int bodyStartOctet, InputStream document, Flags flags, List<Header> headers, PropertyBuilder propertyBuilder) throws MailboxException {
         if (useStreaming) {
             final List<JPAHeader> jpaHeaders = new ArrayList<JPAHeader>(headers.size());
             for (Header header: headers) {
                 jpaHeaders.add((JPAHeader) header);
             }
-            return new JPAStreamingMailboxMembership(mailbox.getMailboxId(), uid, internalDate, size, flags, document, bodyStartOctet, jpaHeaders, propertyBuilder);
+            return new JPAStreamingMailboxMembership(mailbox.getMailboxId(), internalDate, size, flags, document, bodyStartOctet, jpaHeaders, propertyBuilder);
         } else {
-            return super.createMessage(internalDate, uid, size, bodyStartOctet, document, flags, headers, propertyBuilder);
+            return super.createMessage(internalDate, size, bodyStartOctet, document, flags, headers, propertyBuilder);
         }
     }
 

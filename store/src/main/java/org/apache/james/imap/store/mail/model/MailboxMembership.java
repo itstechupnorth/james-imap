@@ -112,4 +112,5 @@ public interface MailboxMembership<Id> {
      * @return new instance, not null
      */
     public abstract Flags createFlags();
+
 }
