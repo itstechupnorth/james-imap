@@ -70,11 +70,6 @@
       <artifactId>apache-james-imap-torque</artifactId>
       <scope>test</scope>
     </dependency>
-   <dependency>
-      <groupId>org.apache.james</groupId>
-      <artifactId>apache-james-imap-jpa</artifactId>
-      <scope>test</scope>
-    </dependency>
     <dependency>
       <groupId>org.apache.james</groupId>
       <artifactId>apache-james-imap-memory</artifactId>
