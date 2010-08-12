@@ -329,7 +329,12 @@ abstract public class AbstractMailboxProcessor extends AbstractChainedProcessor 
             namespace = MailboxConstants.USER_NAMESPACE;
             name = mailboxName;
         }
-        final String user = ImapSessionUtils.getUserName(session);
+        String user = null;
+        // we only 
+        if (namespace.equals(MailboxConstants.USER_NAMESPACE)) {
+            user = ImapSessionUtils.getUserName(session);
+        }
+
         return new MailboxPath(namespace, user, name);
     }
     
@@ -338,7 +343,7 @@ abstract public class AbstractMailboxProcessor extends AbstractChainedProcessor 
      * @param mailboxPath
      * @return
      */
-    public String joinMailboxPath(MailboxPath mailboxPath) {
+    private String joinMailboxPath(MailboxPath mailboxPath) {
         StringBuffer sb = new StringBuffer("");
         if (mailboxPath.getNamespace() != null && !mailboxPath.getNamespace().equals("")) {
             sb.append(mailboxPath.getNamespace());
