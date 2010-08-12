@@ -57,7 +57,7 @@ public interface Mailbox {
     boolean isWriteable(MailboxSession session);
 
     /**
-     * Searches for messages matching the given query.
+     * Searches for messages matching the given query. The result must be ordered 
      * @param mailboxSession not null
      * @return uid iterator
      * @throws UnsupportedCriteriaException

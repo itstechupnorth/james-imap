@@ -38,10 +38,8 @@ import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.MailboxManager;
 import org.apache.james.imap.mailbox.MailboxNotFoundException;
 import org.apache.james.imap.mailbox.MailboxSession;
-import org.apache.james.imap.mailbox.MessageRange;
-import org.apache.james.imap.mailbox.MessageResult;
+import org.apache.james.imap.mailbox.SearchQuery;
 import org.apache.james.imap.mailbox.Mailbox.MetaData;
-import org.apache.james.imap.mailbox.util.FetchGroupImpl;
 import org.apache.james.imap.message.request.AbstractMailboxSelectionRequest;
 import org.apache.james.imap.message.response.ExistsResponse;
 import org.apache.james.imap.message.response.FlagsResponse;
@@ -193,23 +191,14 @@ abstract class AbstractSelectionProcessor extends AbstractMailboxProcessor {
     private SelectedMailbox createNewSelectedMailbox(final Mailbox mailbox,
             final MailboxSession mailboxSession, ImapSession session, MailboxPath path)
             throws MailboxException {
-        final Iterator<MessageResult> it = mailbox.getMessages(MessageRange.all(),
-                FetchGroupImpl.MINIMAL, mailboxSession);
+        SearchQuery query = new SearchQuery();
+        query.andCriteria(SearchQuery.all());
+        
+        // use search here to allow implementation a better way to improve selects on mailboxes. 
+        // See https://issues.apache.org/jira/browse/IMAP-192
+        final Iterator<Long> it = mailbox.search(query, mailboxSession);
 
-        final SelectedMailbox sessionMailbox = new SelectedMailboxImpl(getMailboxManager(), new Iterator<Long>() {
-
-			public boolean hasNext() {
-				return it.hasNext();
-			}
-
-			public Long next() {
-				return it.next().getUid();
-			}
-
-			public void remove() {
-				throw new UnsupportedOperationException("Read-only iterator");
-			}
-		}, mailboxSession, path);
+        final SelectedMailbox sessionMailbox = new SelectedMailboxImpl(getMailboxManager(), it, mailboxSession, path);
         session.selected(sessionMailbox);
         return sessionMailbox;
     }

@@ -174,7 +174,10 @@ public class InMemoryMessageMapper implements MessageMapper<Long> {
      * @see org.apache.james.imap.store.mail.MessageMapper#searchMailbox(org.apache.james.imap.store.mail.model.Mailbox, org.apache.james.imap.mailbox.SearchQuery)
      */
     public Iterator<Long> searchMailbox(Mailbox<Long> mailbox, SearchQuery query) throws StorageException {
-        return new SearchQueryIterator(new ArrayList<MailboxMembership<?>>(getMembershipByUidForMailbox(mailbox).values()).iterator(), query);
+        List<MailboxMembership<?>> memberships = new ArrayList<MailboxMembership<?>>(getMembershipByUidForMailbox(mailbox).values());
+        Collections.sort(memberships, MailboxMembershipComparator.INSTANCE);
+
+        return new SearchQueryIterator(memberships.iterator(), query);
     }
 
     /**
