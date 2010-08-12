@@ -440,30 +440,25 @@ public class JCRMessageMapper extends AbstractJCRMapper implements MessageMapper
 
 
     /*
-     * TODO: Maybe we should better use an ItemVisitor and just traverse through the child nodes. This could be a way faster
-     * 
      * (non-Javadoc)
-     * @see org.apache.james.imap.store.mail.MessageMapper#findUnseenMessagesInMailbox()
+     * @see org.apache.james.imap.store.mail.MessageMapper#findFirstUnseenMessageUid(org.apache.james.imap.store.mail.model.Mailbox)
      */
-    public List<MailboxMembership<String>> findUnseenMessagesInMailbox(Mailbox<String> mailbox, int limit) throws StorageException {
+    public Long findFirstUnseenMessageUid(Mailbox<String> mailbox) throws StorageException {
         try {
-  
-            List<MailboxMembership<String>> list = new ArrayList<MailboxMembership<String>>();
             String queryString = "/jcr:root" + getMailboxPath(mailbox) + "//element(*,jamesMailbox:message)[@" + JCRMessage.SEEN_PROPERTY +"='false'] order by @" + JCRMessage.UID_PROPERTY;
 
             QueryManager manager = getSession().getWorkspace().getQueryManager();
             
             Query query = manager.createQuery(queryString, Query.XPATH);
-            if (limit > 0) {
-                query.setLimit(limit);
-            }
+            query.setLimit(1);
             QueryResult result = query.execute();
 
             NodeIterator iterator = result.getNodes();
-            while(iterator.hasNext()) {
-                list.add(new JCRMessage(iterator.nextNode(), getLogger()));
+            if(iterator.hasNext()) {
+                return new JCRMessage(iterator.nextNode(), getLogger()).getUid();
+            } else {
+                return null;
             }
-            return list;
         } catch (RepositoryException e) {
             throw new StorageException(HumanReadableText.SEARCH_FAILED, e);
         }

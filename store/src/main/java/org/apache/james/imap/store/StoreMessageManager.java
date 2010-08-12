@@ -391,22 +391,6 @@ public abstract class StoreMessageManager<Id> implements org.apache.james.imap.m
         return ArrayUtils.toPrimitive(results.toArray(new Long[results.size()]));
     }
 
-    private Long getFirstUnseen(MailboxSession mailboxSession) throws MailboxException {
-        try {
-            final List<MailboxMembership<Id>> members = messageMapper.findUnseenMessagesInMailbox(mailbox,1);
-            final Iterator<MailboxMembership<Id>> it = members.iterator();
-            final Long result;
-            if (it.hasNext()) {
-                final MailboxMembership<Id> member = it.next();
-                result = member.getUid();
-            } else {
-                result = null;
-            }
-            return result;
-        } catch (MessagingException e) {
-            throw new MailboxException(HumanReadableText.FAILURE_MAIL_PARSE, e);
-        }
-    }
 
     private int getUnseenCount(MailboxSession mailboxSession) throws MailboxException {
         final int count = (int) messageMapper.countUnseenMessagesInMailbox(mailbox);
@@ -574,7 +558,7 @@ public abstract class StoreMessageManager<Id> implements org.apache.james.imap.m
                 firstUnseen = null;
                 break;
             case FIRST_UNSEEN:
-                firstUnseen = getFirstUnseen(mailboxSession);
+                firstUnseen = getMessageMapper().findFirstUnseenMessageUid(mailbox);
                 unseenCount = 0;
                 break;
             default:

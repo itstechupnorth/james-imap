@@ -262,17 +262,21 @@ public class JPAMessageMapper extends JPATransactionalMapper implements MessageM
 
     /*
      * (non-Javadoc)
-     * @see org.apache.james.imap.store.mail.MessageMapper#findUnseenMessagesInMailbox()
+     * @see org.apache.james.imap.store.mail.MessageMapper#findFirstUnseenMessageUid(org.apache.james.imap.store.mail.model.Mailbox)
      */
     @SuppressWarnings("unchecked")
-    public List<MailboxMembership<Long>> findUnseenMessagesInMailbox(Mailbox<Long> mailbox, int limit)  throws StorageException {
+    public Long findFirstUnseenMessageUid(Mailbox<Long> mailbox)  throws StorageException {
         try {
             Query query = getEntityManager().createNamedQuery("findUnseenMessagesInMailboxOrderByUid").setParameter("idParam", mailbox.getMailboxId());
-            if (limit > 0) {
-                query = query.setMaxResults(limit);
+            query.setMaxResults(1);
+            List<MailboxMembership<Long>> result = query.getResultList();
+            if (result.isEmpty()) {
+                return null;
+            } else {
+                return result.get(0).getUid();
             }
-            return query.getResultList();
         } catch (PersistenceException e) {
+            e.printStackTrace();
             throw new StorageException(HumanReadableText.SEARCH_FAILED, e);
         }
     }

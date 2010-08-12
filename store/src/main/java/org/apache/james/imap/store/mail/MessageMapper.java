@@ -99,17 +99,14 @@ public interface MessageMapper<Id> extends TransactionalMapper {
     public abstract void delete(Mailbox<Id> mailbox, MailboxMembership<Id> message) throws StorageException;
 
     /**
-     * Return a List of {@link MailboxMembership} which are unseen. 
-     * The list must be ordered by the {@link Document} uid.
-     * If a limit was given the list will maximal be the size of the limit. Id a 
-     * limit smaller then 1 is given the List must contain all messages
+     * Return the uid of the first unseen message. If non can be found null will get returned
+     * 
      * 
      * @param mailbox
-     * @param limit
-     * @return list
+     * @return uid or null
      * @throws StorageException
      */
-    public abstract List<MailboxMembership<Id>> findUnseenMessagesInMailbox(Mailbox<Id> mailbox, int limit) throws StorageException;
+    public abstract Long findFirstUnseenMessageUid(Mailbox<Id> mailbox) throws StorageException;
 
     /**
      * Return a List of {@link MailboxMembership} which are recent.
