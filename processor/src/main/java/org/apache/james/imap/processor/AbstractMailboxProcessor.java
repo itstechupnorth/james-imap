@@ -330,7 +330,8 @@ abstract public class AbstractMailboxProcessor extends AbstractChainedProcessor 
             name = mailboxName;
         }
         String user = null;
-        // we only 
+        // we only use the user as part of the MailboxPath if its a private user
+        // namespace
         if (namespace.equals(MailboxConstants.USER_NAMESPACE)) {
             user = ImapSessionUtils.getUserName(session);
         }
