@@ -392,11 +392,6 @@ public abstract class StoreMessageManager<Id> implements org.apache.james.imap.m
     }
 
 
-    private int getUnseenCount(MailboxSession mailboxSession) throws MailboxException {
-        final int count = (int) messageMapper.countUnseenMessagesInMailbox(mailbox);
-        return count;
-    }
-
     /*
      * (non-Javadoc)
      * @see org.apache.james.imap.mailbox.Mailbox#expunge(org.apache.james.imap.mailbox.MessageRange, org.apache.james.imap.mailbox.MailboxSession)
@@ -467,11 +462,6 @@ public abstract class StoreMessageManager<Id> implements org.apache.james.imap.m
 
     public void addListener(MailboxListener listener) throws MailboxException {
         dispatcher.addMailboxListener(listener);
-    }
-
-    private long getUidValidity(MailboxSession mailboxSession) throws MailboxException {
-        final long result = getMailboxEntity().getUidValidity();
-        return result;
     }
 
     private long getUidNext(MailboxSession mailboxSession) throws MailboxException {
@@ -547,14 +537,14 @@ public abstract class StoreMessageManager<Id> implements org.apache.james.imap.m
             org.apache.james.imap.mailbox.Mailbox.MetaData.FetchGroup fetchGroup) throws MailboxException {
         final long[] recent = recent(resetRecent, mailboxSession);
         final Flags permanentFlags = getPermanentFlags();
-        final long uidValidity = getUidValidity(mailboxSession);
+        final long uidValidity = getMailboxEntity().getUidValidity();
         final long uidNext = getUidNext(mailboxSession);
         final int messageCount = getMessageCount(mailboxSession);
         final int unseenCount;
         final Long firstUnseen;
         switch (fetchGroup) {
             case UNSEEN_COUNT:
-                unseenCount = getUnseenCount(mailboxSession);
+                unseenCount = (int) messageMapper.countUnseenMessagesInMailbox(mailbox);
                 firstUnseen = null;
                 break;
             case FIRST_UNSEEN:
