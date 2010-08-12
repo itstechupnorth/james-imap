@@ -18,6 +18,7 @@
  ****************************************************************/
 package org.apache.james.imap.store.mail;
 
+import java.util.Iterator;
 import java.util.List;
 
 import org.apache.james.imap.mailbox.MessageRange;
@@ -79,14 +80,14 @@ public interface MessageMapper<Id> extends TransactionalMapper {
             throws StorageException;
 
     /**
-     * Return a List of {@link MailboxMembership} which matched the {@link SearchQuery}
+     * Return a List of uids which matched the {@link SearchQuery}
      * The list must be ordered by the {@link Document} uid
      * @param mailbox
      * @param query
      * @return
      * @throws StorageException
      */
-    public abstract List<MailboxMembership<Id>> searchMailbox(Mailbox<Id> mailbox, SearchQuery query) throws StorageException;
+    public abstract Iterator<Long> searchMailbox(Mailbox<Id> mailbox, SearchQuery query) throws StorageException;
 
     /**
      * Delete the given {@link MailboxMembership}

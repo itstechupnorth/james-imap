@@ -14,6 +14,7 @@ import org.apache.james.imap.mailbox.MessageRange;
 import org.apache.james.imap.mailbox.SearchQuery;
 import org.apache.james.imap.mailbox.StorageException;
 import org.apache.james.imap.store.MailboxMembershipComparator;
+import org.apache.james.imap.store.SearchQueryIterator;
 import org.apache.james.imap.store.mail.MessageMapper;
 import org.apache.james.imap.store.mail.model.Mailbox;
 import org.apache.james.imap.store.mail.model.MailboxMembership;
@@ -169,12 +170,13 @@ public class InMemoryMessageMapper implements MessageMapper<Long> {
         return message.getUid();
     }
 
+
     /*
      * (non-Javadoc)
-     * @see org.apache.james.imap.store.mail.MessageMapper#searchMailbox(org.apache.james.imap.mailbox.SearchQuery)
+     * @see org.apache.james.imap.store.mail.MessageMapper#searchMailbox(org.apache.james.imap.store.mail.model.Mailbox, org.apache.james.imap.mailbox.SearchQuery)
      */
-    public List<MailboxMembership<Long>> searchMailbox(Mailbox<Long> mailbox, SearchQuery query) throws StorageException {
-        return new ArrayList<MailboxMembership<Long>>(getMembershipByUidForMailbox(mailbox).values());
+    public Iterator<Long> searchMailbox(Mailbox<Long> mailbox, SearchQuery query) throws StorageException {
+        return new SearchQueryIterator(new ArrayList<MailboxMembership<?>>(getMembershipByUidForMailbox(mailbox).values()).iterator(), query);
     }
 
     /**

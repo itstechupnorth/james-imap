@@ -32,7 +32,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.TreeSet;
@@ -506,23 +505,7 @@ public abstract class StoreMessageManager<Id> implements org.apache.james.imap.m
      * @see org.apache.james.imap.mailbox.Mailbox#search(org.apache.james.imap.mailbox.SearchQuery, org.apache.james.imap.mailbox.MailboxSession)
      */
     public Iterator<Long> search(SearchQuery query, MailboxSession mailboxSession) throws MailboxException {
-        final List<MailboxMembership<Id>> members = messageMapper.searchMailbox(mailbox, query);
-        final Set<Long> uids = new TreeSet<Long>();
-        for (MailboxMembership<Id> member:members) {
-            try {
-                final MessageSearches searches = new MessageSearches();
-                searches.setLog(mailboxSession.getLog());
-                if (searches.isMatch(query, member)) {
-                    uids.add(member.getUid());
-                }
-            } catch (MailboxException e) {
-                mailboxSession.getLog().info("Cannot test message against search criteria. Will continue to test other messages.", e);
-                if (mailboxSession.getLog().isDebugEnabled())
-                    mailboxSession.getLog().debug("UID: " + member.getUid());
-            }
-        }
-
-        return uids.iterator();
+        return messageMapper.searchMailbox(mailbox, query);    
     }
 
     /**

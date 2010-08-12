@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.jcr.ItemNotFoundException;
@@ -51,6 +52,7 @@ import org.apache.james.imap.mailbox.StorageException;
 import org.apache.james.imap.mailbox.MessageRange.Type;
 import org.apache.james.imap.mailbox.SearchQuery.Criterion;
 import org.apache.james.imap.mailbox.SearchQuery.NumericRange;
+import org.apache.james.imap.store.SearchQueryIterator;
 import org.apache.james.imap.store.mail.MessageMapper;
 import org.apache.james.imap.store.mail.model.Mailbox;
 import org.apache.james.imap.store.mail.model.MailboxMembership;
@@ -604,25 +606,37 @@ public class JCRMessageMapper extends AbstractJCRMapper implements MessageMapper
             return String.valueOf(value);
         }
     }
+
     /*
      * (non-Javadoc)
-     * 
-     * @see
-     * org.apache.james.imap.store.mail.MessageMapper#searchMailbox(org.apache
-     * .james.imap.mailbox.SearchQuery)
+     * @see org.apache.james.imap.store.mail.MessageMapper#searchMailbox(org.apache.james.imap.store.mail.model.Mailbox, org.apache.james.imap.mailbox.SearchQuery)
      */
-    public List<MailboxMembership<String>> searchMailbox(Mailbox<String> mailbox, SearchQuery query) throws StorageException {
+    public Iterator<Long> searchMailbox(Mailbox<String> mailbox, SearchQuery query) throws StorageException {
         try {
-            List<MailboxMembership<String>> list = new ArrayList<MailboxMembership<String>>();
             final Query xQuery = formulateXPath(mailbox, query);
             
             QueryResult result = xQuery.execute();
             
-            NodeIterator it = result.getNodes();
-            while (it.hasNext()) {
-                list.add(new JCRMessage(it.nextNode(), getLogger()));
-            }
-            return list;
+            final NodeIterator it = result.getNodes();
+
+            
+            // Lazy build the JCRMessage instances
+            return new SearchQueryIterator(new Iterator<MailboxMembership<?>>() {
+
+                public boolean hasNext() {
+                    return it.hasNext();
+                }
+
+                public MailboxMembership<?> next() {
+                    return new JCRMessage(it.nextNode(), getLogger());
+                    
+                }
+
+                public void remove() {
+                    it.remove();
+                }
+                
+            }, query, getLogger());
         } catch (RepositoryException e) {
             throw new StorageException(HumanReadableText.SEARCH_FAILED, e);
         }

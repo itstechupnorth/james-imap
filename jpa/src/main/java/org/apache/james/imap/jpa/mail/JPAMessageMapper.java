@@ -18,6 +18,7 @@
  ****************************************************************/
 package org.apache.james.imap.jpa.mail;
 
+import java.util.Iterator;
 import java.util.List;
 
 import javax.persistence.EntityManager;
@@ -39,6 +40,7 @@ import org.apache.james.imap.mailbox.StorageException;
 import org.apache.james.imap.mailbox.MessageRange.Type;
 import org.apache.james.imap.mailbox.SearchQuery.Criterion;
 import org.apache.james.imap.mailbox.SearchQuery.NumericRange;
+import org.apache.james.imap.store.SearchQueryIterator;
 import org.apache.james.imap.store.mail.MessageMapper;
 import org.apache.james.imap.store.mail.model.Mailbox;
 import org.apache.james.imap.store.mail.model.MailboxMembership;
@@ -189,61 +191,61 @@ public class JPAMessageMapper extends JPATransactionalMapper implements MessageM
         }
     }
 
-    /**
-     * @see org.apache.james.imap.store.mail.MessageMapper#searchMailbox(org.apache.james.imap.mailbox.SearchQuery)
+
+
+    /*
+     * 
+     * (non-Javadoc)
+     * @see org.apache.james.imap.store.mail.MessageMapper#searchMailbox(org.apache.james.imap.store.mail.model.Mailbox, org.apache.james.imap.mailbox.SearchQuery)
      */
     @SuppressWarnings("unchecked")
-    public List<MailboxMembership<Long>> searchMailbox(Mailbox<Long> mailbox, SearchQuery query) throws StorageException {
+    public Iterator<Long> searchMailbox(Mailbox<Long> mailbox, SearchQuery query) throws StorageException {
         try {
-            final Query jQuery = formulateJQL(mailbox.getMailboxId(), query);
-            return jQuery.getResultList();
+            final StringBuilder queryBuilder = new StringBuilder(50);
+            queryBuilder.append("SELECT membership FROM Membership membership WHERE membership.mailboxId = ").append(mailbox.getMailboxId());
+            final List<Criterion> criteria = query.getCriterias();
+            boolean range = false;
+            int rangeLength = -1;
+            
+            if (criteria.size() == 1) {
+                final Criterion firstCriterion = criteria.get(0);
+                if (firstCriterion instanceof SearchQuery.UidCriterion) {
+                    final SearchQuery.UidCriterion uidCriterion = (SearchQuery.UidCriterion) firstCriterion;
+                    final NumericRange[] ranges = uidCriterion.getOperator().getRange();
+                    rangeLength = ranges.length;
+
+                    for (int i = 0; i < ranges.length; i++) {
+                        final long low = ranges[i].getLowValue();
+                        final long high = ranges[i].getHighValue();
+
+                        if (low == Long.MAX_VALUE) {
+                            queryBuilder.append(" AND membership.uid<=").append(high);
+                            range = true;
+                        } else if (low == high) {
+                            queryBuilder.append(" AND membership.uid=").append(low);
+                            range = false;
+                        } else {
+                            queryBuilder.append(" AND membership.uid BETWEEN ").append(low).append(" AND ").append(high);
+                            range = true;
+                        }
+                    }
+                }
+            }        
+            if (rangeLength != 0 || range) {
+                queryBuilder.append(" order by membership.uid");
+            }
+            
+            Query jQuery = getEntityManager().createQuery(queryBuilder.toString());
+
+            // Check if we only need to fetch 1 message, if so we can set a limit to speed up things
+            if (rangeLength == 1 && range == false) {
+                jQuery.setMaxResults(1);
+            }
+            return new SearchQueryIterator(jQuery.getResultList().iterator(), query);
+            
         } catch (PersistenceException e) {
             throw new StorageException(HumanReadableText.SEARCH_FAILED, e);
         }
-    }
-
-    private Query formulateJQL(Long mailboxId, SearchQuery query) {
-        final StringBuilder queryBuilder = new StringBuilder(50);
-        queryBuilder.append("SELECT membership FROM Membership membership WHERE membership.mailboxId = ").append(mailboxId);
-        final List<Criterion> criteria = query.getCriterias();
-        boolean range = false;
-        int rangeLength = -1;
-        
-        if (criteria.size() == 1) {
-            final Criterion firstCriterion = criteria.get(0);
-            if (firstCriterion instanceof SearchQuery.UidCriterion) {
-                final SearchQuery.UidCriterion uidCriterion = (SearchQuery.UidCriterion) firstCriterion;
-                final NumericRange[] ranges = uidCriterion.getOperator().getRange();
-                rangeLength = ranges.length;
-
-                for (int i = 0; i < ranges.length; i++) {
-                    final long low = ranges[i].getLowValue();
-                    final long high = ranges[i].getHighValue();
-
-                    if (low == Long.MAX_VALUE) {
-                        queryBuilder.append(" AND membership.uid<=").append(high);
-                        range = true;
-                    } else if (low == high) {
-                        queryBuilder.append(" AND membership.uid=").append(low);
-                        range = false;
-                    } else {
-                        queryBuilder.append(" AND membership.uid BETWEEN ").append(low).append(" AND ").append(high);
-                        range = true;
-                    }
-                }
-            }
-        }        
-        if (rangeLength != 0 || range) {
-            queryBuilder.append(" order by membership.uid");
-        }
-        
-        Query jQuery = getEntityManager().createQuery(queryBuilder.toString());
-
-        // Check if we only need to fetch 1 message, if so we can set a limit to speed up things
-        if (rangeLength == 1 && range == false) {
-            jQuery.setMaxResults(1);
-        }
-        return jQuery;
     }
 
     /*
