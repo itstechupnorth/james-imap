@@ -40,7 +40,6 @@ import javax.mail.Flags;
 import javax.mail.MessagingException;
 import javax.mail.util.SharedFileInputStream;
 
-import org.apache.commons.lang.ArrayUtils;
 import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.MailboxListener;
@@ -367,7 +366,15 @@ public abstract class StoreMessageManager<Id> implements org.apache.james.imap.m
         return permanentFlags;
     }
 
-    private long[] recent(final boolean reset, MailboxSession mailboxSession) throws MailboxException {
+    /**
+     * Return a List which holds all uids of recent messages and optional reset the recent flag on the messages for the uids
+     * 
+     * @param reset
+     * @param mailboxSession
+     * @return list
+     * @throws MailboxException
+     */
+    protected List<Long> recent(final boolean reset, MailboxSession mailboxSession) throws MailboxException {
         final List<Long> results = new ArrayList<Long>();
 
         messageMapper.execute(new TransactionalMapper.Transaction() {
@@ -388,7 +395,7 @@ public abstract class StoreMessageManager<Id> implements org.apache.james.imap.m
             
         });;
         
-        return ArrayUtils.toPrimitive(results.toArray(new Long[results.size()]));
+        return results;
     }
 
 
@@ -535,7 +542,7 @@ public abstract class StoreMessageManager<Id> implements org.apache.james.imap.m
      */
     public MetaData getMetaData(boolean resetRecent, MailboxSession mailboxSession, 
             org.apache.james.imap.mailbox.Mailbox.MetaData.FetchGroup fetchGroup) throws MailboxException {
-        final long[] recent = recent(resetRecent, mailboxSession);
+        final List<Long> recent = recent(resetRecent, mailboxSession);
         final Flags permanentFlags = getPermanentFlags();
         final long uidValidity = getMailboxEntity().getUidValidity();
         final long uidNext = getUidNext(mailboxSession);

@@ -22,6 +22,7 @@ package org.apache.james.imap.mailbox;
 import java.io.InputStream;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import javax.mail.Flags;
@@ -149,9 +150,8 @@ public interface Mailbox {
         /**
          * Gets the UIDs of recent messages. 
          * @return the uids flagged RECENT in this mailbox, 
-         * or null when there are no recent uids
          */
-        public long[] getRecent();
+        public List<Long> getRecent();
 
         /**
          * Gets the number of recent messages.

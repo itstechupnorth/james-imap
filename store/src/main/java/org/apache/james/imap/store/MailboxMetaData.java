@@ -19,6 +19,9 @@
 
 package org.apache.james.imap.store;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.mail.Flags;
 
 import org.apache.james.imap.mailbox.Mailbox;
@@ -30,7 +33,7 @@ import org.apache.james.imap.mailbox.Mailbox;
 public class MailboxMetaData implements Mailbox.MetaData {
 
     private final int recentCount;
-    private final long[] recent;
+    private final List<Long> recent;
     private final Flags premanentFlags;
     private final long uidValidity;
     private final long nextUid;
@@ -39,15 +42,17 @@ public class MailboxMetaData implements Mailbox.MetaData {
     private final Long firstUnseen;
     private final boolean writeable;
     
-    public MailboxMetaData(final long[] recent, final Flags premanentFlags, final long uidValidity, final long nextUid,
+    public MailboxMetaData(final List<Long> recent, final Flags premanentFlags, final long uidValidity, final long nextUid,
             final int messageCount, final int unseenCount, final Long firstUnseen, final boolean writeable) {
         super();
         if (recent == null) {
-            recentCount = 0;
+            this.recent = new ArrayList<Long>();
         } else {
-            recentCount = recent.length;
+            this.recent = recent;
+
         }
-        this.recent = recent;
+        recentCount = recent.size();
+
         this.premanentFlags = premanentFlags;
         this.uidValidity = uidValidity;
         this.nextUid = nextUid;
@@ -74,7 +79,7 @@ public class MailboxMetaData implements Mailbox.MetaData {
     /**
      * @see {@link Mailbox.MetaData#getRecent()}
      */
-    public long[] getRecent() {
+    public List<Long> getRecent() {
         return recent;
     }
 

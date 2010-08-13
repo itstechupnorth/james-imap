@@ -20,6 +20,7 @@
 package org.apache.james.imap.processor;
 
 import java.util.Iterator;
+import java.util.List;
 
 import javax.mail.Flags;
 
@@ -205,12 +206,10 @@ abstract class AbstractSelectionProcessor extends AbstractMailboxProcessor {
 
     private void addRecent(final Mailbox.MetaData metaData,
             SelectedMailbox sessionMailbox) throws MailboxException {
-        final long[] recentUids = metaData.getRecent();
-        if (recentUids != null) {
-            for (int i = 0; i < recentUids.length; i++) {
-                long uid = recentUids[i];
-                sessionMailbox.addRecent(uid);
-            }
+        final List<Long> recentUids = metaData.getRecent();
+        for (int i = 0; i < recentUids.size(); i++) {
+            long uid = recentUids.get(i);
+            sessionMailbox.addRecent(uid);
         }
     }
 }
