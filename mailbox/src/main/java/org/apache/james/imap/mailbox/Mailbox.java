@@ -47,7 +47,7 @@ public interface Mailbox {
      * @return count
      * @throws MailboxException
      */
-    int getMessageCount(MailboxSession mailboxSession) throws MailboxException;
+    long getMessageCount(MailboxSession mailboxSession) throws MailboxException;
 
     /**
      * Return if the Mailbox is writable
@@ -157,7 +157,7 @@ public interface Mailbox {
          * Gets the number of recent messages.
          * @return the number of messages flagged RECENT in this mailbox
          */
-        public int countRecent();
+        public long countRecent();
         
         /**
          * Gets the flags which can be stored by this mailbox.
@@ -183,7 +183,7 @@ public interface Mailbox {
          * Gets the number of messages that this mailbox contains.
          * @return number of messages contained
          */
-        int getMessageCount();
+        long getMessageCount();
         
         /**
          * Gets the number of unseen messages contained in this mailbox.
@@ -192,7 +192,7 @@ public interface Mailbox {
          * or zero when this optional data has not been requested
          * @see FetchGroup#UNSEEN_COUNT
          */
-        int getUnseenCount();
+        long getUnseenCount();
         
         /**
          * Gets the UID of the first unseen message.

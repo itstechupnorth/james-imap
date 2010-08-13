@@ -247,7 +247,7 @@ abstract public class AbstractMailboxProcessor extends AbstractChainedProcessor 
         try {
             final Mailbox mailbox = getMailbox(session, selected);
             final MailboxSession mailboxSession = ImapSessionUtils.getMailboxSession(session);
-            final int messageCount = mailbox.getMessageCount(mailboxSession);
+            final long messageCount = mailbox.getMessageCount(mailboxSession);
             // TODO: use factory
             final ExistsResponse response = new ExistsResponse(messageCount);
             responder.respond(response);

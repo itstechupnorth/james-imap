@@ -58,11 +58,11 @@ public interface ImapResponseComposer {
      */
     public abstract void flagsResponse(Flags flags) throws IOException;
 
-    public abstract void existsResponse(int count) throws IOException;
+    public abstract void existsResponse(long count) throws IOException;
 
-    public abstract void recentResponse(int count) throws IOException;
+    public abstract void recentResponse(long count) throws IOException;
 
-    public abstract void expungeResponse(int msn) throws IOException;
+    public abstract void expungeResponse(long msn) throws IOException;
 
     public abstract void searchResponse(long[] ids) throws IOException;
 

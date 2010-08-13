@@ -26,6 +26,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -60,6 +61,7 @@ import org.apache.james.imap.mailbox.SearchQuery.Criterion;
 import org.apache.james.imap.mailbox.SearchQuery.NumericRange;
 import org.apache.james.imap.mailbox.util.FetchGroupImpl;
 import org.apache.james.imap.mailbox.util.UidRange;
+import org.apache.james.imap.store.MailboxMetaData;
 import org.apache.james.imap.store.streaming.CRLFOutputStream;
 import org.apache.james.mailboxmanager.torque.om.MailboxRow;
 import org.apache.james.mailboxmanager.torque.om.MailboxRowPeer;
@@ -108,7 +110,7 @@ public class TorqueMailbox implements Mailbox {
         return mailboxRow.getName();
     }
 
-    public int getMessageCount(MailboxSession mailboxSession)
+    public long getMessageCount(MailboxSession mailboxSession)
     throws MailboxException {
         lockForReading();
         try {
@@ -394,7 +396,7 @@ public class TorqueMailbox implements Mailbox {
         return permanentFlags;
     }
 
-    public long[] recent(boolean reset, MailboxSession mailboxSession)
+    protected List<Long> recent(boolean reset, MailboxSession mailboxSession)
     throws MailboxException {
         lockForReading();
         try {
@@ -402,11 +404,10 @@ public class TorqueMailbox implements Mailbox {
             final Criteria criterion = queryRecentFlagSet();
             final List messageRows = getMailboxRow().getMessageRows(
                     criterion);
-            final long[] results = new long[messageRows.size()];
-            int count = 0;
+            final List<Long> results = new ArrayList<Long>(messageRows.size());
             for (Iterator it = messageRows.iterator(); it.hasNext();) {
                 final MessageRow row = (MessageRow) it.next();
-                results[count++] = row.getUid();
+                results.add(row.getUid());
             }
 
             if (reset) {
@@ -832,11 +833,11 @@ public class TorqueMailbox implements Mailbox {
      * @see org.apache.james.imap.mailbox.Mailbox#getMetaData(boolean, MailboxSession, org.apache.james.imap.mailbox.Mailbox.MetaData.FetchGroup)
      */
     public MetaData getMetaData(boolean resetRecent, MailboxSession mailboxSession, Mailbox.MetaData.FetchGroup fetchGroup) throws MailboxException {
-        final long[] recent = recent(resetRecent, mailboxSession);
+        final List<Long> recent = recent(resetRecent, mailboxSession);
         final Flags permanentFlags = getPermanentFlags();
         final long uidValidity = getUidValidity(mailboxSession);
         final long uidNext = getUidNext(mailboxSession);
-        final int messageCount = getMessageCount(mailboxSession);
+        final long messageCount = getMessageCount(mailboxSession);
         final int unseenCount;
         final Long firstUnseen;
         switch (fetchGroup) {

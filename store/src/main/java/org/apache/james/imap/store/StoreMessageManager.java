@@ -119,8 +119,8 @@ public abstract class StoreMessageManager<Id> implements org.apache.james.imap.m
      * (non-Javadoc)
      * @see org.apache.james.imap.mailbox.Mailbox#getMessageCount(org.apache.james.imap.mailbox.MailboxSession)
      */
-    public int getMessageCount(MailboxSession mailboxSession) throws MailboxException {
-        return (int) messageMapper.countMessagesInMailbox(mailbox);
+    public long getMessageCount(MailboxSession mailboxSession) throws MailboxException {
+        return messageMapper.countMessagesInMailbox(mailbox);
     }
 
     /*
@@ -546,8 +546,8 @@ public abstract class StoreMessageManager<Id> implements org.apache.james.imap.m
         final Flags permanentFlags = getPermanentFlags();
         final long uidValidity = getMailboxEntity().getUidValidity();
         final long uidNext = getUidNext(mailboxSession);
-        final int messageCount = getMessageCount(mailboxSession);
-        final int unseenCount;
+        final long messageCount = getMessageCount(mailboxSession);
+        final long unseenCount;
         final Long firstUnseen;
         switch (fetchGroup) {
             case UNSEEN_COUNT:

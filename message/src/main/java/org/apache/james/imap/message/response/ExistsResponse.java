@@ -22,14 +22,14 @@ package org.apache.james.imap.message.response;
 import org.apache.james.imap.api.message.response.ImapResponseMessage;
 
 public final class ExistsResponse implements ImapResponseMessage {
-    private final int numberOfMessages;
+    private final long numberOfMessages;
 
-    public ExistsResponse(final int numberOfMessages) {
+    public ExistsResponse(final long numberOfMessages) {
         super();
         this.numberOfMessages = numberOfMessages;
     }
 
-    public final int getNumberOfMessages() {
+    public final long getNumberOfMessages() {
         return numberOfMessages;
     }
 }

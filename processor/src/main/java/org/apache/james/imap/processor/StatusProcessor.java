@@ -94,8 +94,7 @@ public class StatusProcessor extends AbstractMailboxProcessor {
             throws MailboxException {
         final Long unseen;
         if (statusDataItems.isUnseen()) {
-            final int unseenCountValue = metaData.getUnseenCount();
-            unseen = new Long(unseenCountValue);
+            unseen = metaData.getUnseenCount();
         } else {
             unseen = null;
         }
@@ -130,8 +129,7 @@ public class StatusProcessor extends AbstractMailboxProcessor {
             throws MailboxException {
         final Long recent;
         if (statusDataItems.isRecent()) {
-            final int recentCount = metaData.countRecent();
-            recent = new Long(recentCount);
+            recent = metaData.countRecent();
         } else {
             recent = null;
         }
@@ -142,8 +140,7 @@ public class StatusProcessor extends AbstractMailboxProcessor {
             throws MailboxException {
         final Long messages;
         if (statusDataItems.isMessages()) {
-            final int messageCount = metaData.getMessageCount();
-            messages = new Long(messageCount);
+            messages = metaData.getMessageCount();
         } else {
             messages = null;
         }

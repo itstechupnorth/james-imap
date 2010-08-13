@@ -32,18 +32,18 @@ import org.apache.james.imap.mailbox.Mailbox;
  */
 public class MailboxMetaData implements Mailbox.MetaData {
 
-    private final int recentCount;
+    private final long recentCount;
     private final List<Long> recent;
     private final Flags premanentFlags;
     private final long uidValidity;
     private final long nextUid;
-    private final int messageCount;
-    private final int unseenCount;
+    private final long messageCount;
+    private final long unseenCount;
     private final Long firstUnseen;
     private final boolean writeable;
     
     public MailboxMetaData(final List<Long> recent, final Flags premanentFlags, final long uidValidity, final long nextUid,
-            final int messageCount, final int unseenCount, final Long firstUnseen, final boolean writeable) {
+            final long messageCount, final long unseenCount, final Long firstUnseen, final boolean writeable) {
         super();
         if (recent == null) {
             this.recent = new ArrayList<Long>();
@@ -65,7 +65,7 @@ public class MailboxMetaData implements Mailbox.MetaData {
     /**
      * @see {@link Mailbox.MetaData#countRecent()()}
      */
-    public int countRecent() {
+    public long countRecent() {
         return recentCount;
     }
 
@@ -100,14 +100,14 @@ public class MailboxMetaData implements Mailbox.MetaData {
     /**
      * @see {@link Mailbox.MetaData#getMessageCount()}
      */
-    public int getMessageCount() {
+    public long getMessageCount() {
         return messageCount;
     }
 
     /**
      * @see {@link Mailbox.MetaData#getUnseenCount()}
      */
-    public int getUnseenCount() {
+    public long getUnseenCount() {
         return unseenCount;
     }
 

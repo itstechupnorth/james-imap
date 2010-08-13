@@ -98,33 +98,33 @@ public class ImapResponseComposerImpl implements ImapConstants, ImapResponseComp
         end();
     }
 
-    /**
-     * @throws IOException
-     * @see org.apache.james.imap.encode.ImapResponseComposer#existsResponse(int)
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.encode.ImapResponseComposer#existsResponse(long)
      */
-    public void existsResponse(int count) throws IOException {
+    public void existsResponse(long count) throws IOException {
         untagged();
         message(count);
         message(EXISTS);
         end();
     }
 
-    /**
-     * @throws IOException
-     * @see org.apache.james.imap.encode.ImapResponseComposer#recentResponse(int)
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.encode.ImapResponseComposer#recentResponse(long)
      */
-    public void recentResponse(int count) throws IOException {
+    public void recentResponse(long count) throws IOException {
         untagged();
         message(count);
         message(RECENT);
         end();
     }
 
-    /**
-     * @throws IOException
-     * @see org.apache.james.imap.encode.ImapResponseComposer#expungeResponse(int)
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.encode.ImapResponseComposer#expungeResponse(long)
      */
-    public void expungeResponse(int msn) throws IOException {
+    public void expungeResponse(long msn) throws IOException {
         untagged();
         message(msn);
         message(EXPUNGE);

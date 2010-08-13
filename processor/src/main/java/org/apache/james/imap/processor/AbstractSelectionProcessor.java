@@ -165,7 +165,7 @@ abstract class AbstractSelectionProcessor extends AbstractMailboxProcessor {
     }
 
     private void exists(Responder responder, Mailbox.MetaData metaData) throws MailboxException {
-        final int messageCount = metaData.getMessageCount();
+        final long messageCount = metaData.getMessageCount();
         final ExistsResponse existsResponse = new ExistsResponse(messageCount);
         responder.respond(existsResponse);
     }
