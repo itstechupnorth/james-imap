@@ -232,7 +232,7 @@
         <groupId>org.apache.james</groupId>
         <artifactId>apache-james-imap-jcr</artifactId>
         <version>${pom.version}</version>
-      </dependency>
+      </dependency>   
       <dependency>
         <groupId>org.apache.james</groupId>
         <artifactId>apache-james-imap-memory</artifactId>
@@ -274,8 +274,13 @@
         <groupId>org.apache.james</groupId>
         <artifactId>apache-james-imap-deployment</artifactId>
         <version>${pom.version}</version>
-		<type>test-jar</type>
+        <type>test-jar</type>
         <scope>test</scope>
+      </dependency>   
+      <dependency>
+        <groupId>org.apache.james</groupId>
+        <artifactId>apache-james-imap-maildir</artifactId>
+        <version>${pom.version}</version>
       </dependency>
       <!--
         END Modules
@@ -499,28 +504,7 @@
       <!-- 
         END OpenJPA
       -->
-
-      <!-- 
-        START Maildir
-      -->
-      <!-- 
-      <dependency>
-        <groupId>commons-transaction</groupId>
-        <artifactId>commons-transaction</artifactId>
-        <version>2.0-SNAPSHOT</version>
-      </dependency>
-      <dependency>
-        <groupId>com.thoughtworks.xstream</groupId>
-        <artifactId>xstream</artifactId>
-        <version>1.3.1</version>
-      </dependency>
-      -->
-
-      
-      <!-- 
-        END Maildir
-      -->
-      
+        
       <!-- 
         START JCR
       -->

@@ -48,9 +48,7 @@
     <module>deployment</module>
     <module>parent</module>
     <module>torque</module>
-    <!--  
     <module>maildir</module>
-    -->
   </modules>
   <distributionManagement>
     <site>
