@@ -248,8 +248,6 @@ public abstract class ImapHostSystem implements HostSystem {
         }
     }
 
-    public abstract boolean addUser(String user, String password) throws Exception;
-
     public void afterTests() throws Exception {
         // default do nothing
     }

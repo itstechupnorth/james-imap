@@ -44,12 +44,13 @@
       <artifactId>apache-james-imap-store</artifactId>
     </dependency>
 
+<!--
     <dependency>
       <groupId>org.apache.torque</groupId>
       <artifactId>torque-runtime</artifactId>
       <scope>test</scope>
     </dependency>
-
+-->
     <dependency>
       <groupId>org.apache.james</groupId>
       <artifactId>apache-james-imap-deployment</artifactId>
@@ -93,13 +94,13 @@
       <artifactId>jackrabbit-core</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.apache.james</groupId>
-      <artifactId>apache-james-imap-jcr</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
       <groupId>org.apache.jackrabbit</groupId>
       <artifactId>jackrabbit-jcr-commons</artifactId>
+    </dependency>
+    <!-- needed for some java versions -->
+    <dependency>
+      <groupId>xerces</groupId>
+      <artifactId>xercesImpl</artifactId>
     </dependency>
 
   </dependencies>

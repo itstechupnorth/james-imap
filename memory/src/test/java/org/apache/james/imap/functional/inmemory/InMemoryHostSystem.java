@@ -50,7 +50,6 @@ public class InMemoryHostSystem extends ImapHostSystem {
                 defaultImapProcessorFactory.buildImapProcessor());
     }
     
-    @Override
     public boolean addUser(String user, String password) throws Exception {
         userManager.addUser(user, password);
         return true;
