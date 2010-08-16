@@ -23,6 +23,7 @@ import java.io.IOException;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.james.imap.functional.AbstractStressTest;
+import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.maildir.MaildirMailboxManager;
 import org.apache.james.imap.maildir.MaildirMailboxSessionMapperFactory;
 import org.apache.james.imap.maildir.MaildirSubscriptionManager;
@@ -44,6 +45,15 @@ public class MaildirStressTest extends AbstractStressTest {
     @After
     public void tearDown() throws IOException {
         FileUtils.deleteDirectory(new File(MAILDIR_HOME));
+    }
+
+    @Override
+    public void testStessTest() throws InterruptedException, MailboxException {
+        if (OsDetector.isWindows()) {
+            System.out.println("Maildir tests work only on non-windows systems. So skip the test");
+        } else {
+            super.testStessTest();
+        }
     }
 
     @Override

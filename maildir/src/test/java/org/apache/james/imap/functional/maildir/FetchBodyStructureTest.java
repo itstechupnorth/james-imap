@@ -28,4 +28,14 @@ public class FetchBodyStructureTest extends
         super(MaildirHostSystem.build());
     }
 
+
+    @Override
+    protected void runSessions() throws Exception {
+        if (OsDetector.isWindows()) {
+            System.out.println("Maildir tests work only on non-windows systems. So skip the test");
+        } else {
+            super.runSessions(); 
+        }
+    }
+    
 }

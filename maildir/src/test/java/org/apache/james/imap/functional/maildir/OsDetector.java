@@ -16,25 +16,20 @@
  * specific language governing permissions and limitations      *
  * under the License.                                           *
  ****************************************************************/
+
 package org.apache.james.imap.functional.maildir;
 
-import org.apache.james.imap.functional.suite.FetchBodySection;
+public class OsDetector {
 
-public class FetchBodySectionTest extends FetchBodySection {
-
-    public FetchBodySectionTest() throws Exception {
-        super(MaildirHostSystem.build());
-
+    /**
+     * Return if the Test is run on windows
+     * 
+     * @return windows
+     */
+    public static boolean isWindows() {
+        String os = System.getProperty("os.name").toLowerCase();
+        return (os.indexOf( "win" ) >= 0); 
     }
     
-
-    @Override
-    protected void runSessions() throws Exception {
-        if (OsDetector.isWindows()) {
-            System.out.println("Maildir tests work only on non-windows systems. So skip the test");
-        } else {
-            super.runSessions(); 
-        }
-    }
     
 }
