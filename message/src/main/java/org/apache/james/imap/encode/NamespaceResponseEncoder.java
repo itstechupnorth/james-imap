@@ -72,8 +72,14 @@ public class NamespaceResponseEncoder extends AbstractChainedImapEncoder {
     private void encode(Namespace namespace, ImapResponseComposer composer)
             throws IOException {
         composer.openParen();
-        composer.quote(namespace.getPrefix());
-        composer.quote(Character.toString(namespace.getDelimiter()));
+        String prefix = namespace.getPrefix();
+        String delimiter = Character.toString(namespace.getDelimiter());
+        
+        if (prefix.length() > 0) {
+            prefix = prefix + delimiter;
+        }
+        composer.quote(prefix);
+        composer.quote(delimiter);
         composer.closeParen();
     }
 
