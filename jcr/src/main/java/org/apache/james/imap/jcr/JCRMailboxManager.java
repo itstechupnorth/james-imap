@@ -61,9 +61,9 @@ public class JCRMailboxManager extends StoreMailboxManager<String> implements JC
     protected void doCreateMailbox(MailboxPath path, MailboxSession session) throws MailboxException {
         final Mailbox<String> mailbox = new org.apache.james.imap.jcr.mail.model.JCRMailbox(path, randomUidValidity(), logger);
         final JCRMailboxMapper mapper = (JCRMailboxMapper) mapperFactory.getMailboxMapper(session);
-        mapper.execute(new TransactionalMapper.Transaction() {
+        mapper.execute(new TransactionalMapper.VoidTransaction() {
 
-            public void run() throws MailboxException {
+            public void runVoid() throws MailboxException {
                 mapper.save(mailbox);
             }
 

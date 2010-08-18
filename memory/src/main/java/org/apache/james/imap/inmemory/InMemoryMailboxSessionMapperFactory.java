@@ -64,9 +64,9 @@ public class InMemoryMailboxSessionMapperFactory extends MailboxSessionMapperFac
     
     public void deleteAll() throws MailboxException {
         final MailboxMapper<Long> mapper = mailboxMapper;
-        mapper.execute(new TransactionalMapper.Transaction() {
+        mapper.execute(new TransactionalMapper.VoidTransaction() {
 
-            public void run() throws MailboxException {
+            public void runVoid() throws MailboxException {
                 mapper.deleteAll(); 
             }
             

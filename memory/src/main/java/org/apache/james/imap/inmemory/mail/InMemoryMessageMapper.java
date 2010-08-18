@@ -183,8 +183,8 @@ public class InMemoryMessageMapper implements MessageMapper<Long> {
     /**
      * There is no really Transaction handling here.. Just run it 
      */
-    public void execute(Transaction transaction) throws MailboxException {
-        transaction.run();
+    public <T> T execute(Transaction<T> transaction) throws MailboxException {
+        return transaction.run();
     }
     
     public void deleteAll() {

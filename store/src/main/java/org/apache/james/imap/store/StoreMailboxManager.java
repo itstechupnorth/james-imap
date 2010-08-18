@@ -143,9 +143,9 @@ public abstract class StoreMailboxManager<Id> extends DelegatingMailboxManager {
         session.getLog().info("deleteMailbox " + mailboxPath);
         final MailboxMapper<Id> mapper = mailboxSessionMapperFactory.getMailboxMapper(session);
 
-        mapper.execute(new TransactionalMapper.Transaction() {
+        mapper.execute(new TransactionalMapper.VoidTransaction() {
 
-            public void run() throws MailboxException {
+            public void runVoid() throws MailboxException {
                 Mailbox<Id> mailbox = mapper.findMailboxByPath(mailboxPath);
                 if (mailbox == null) {
                     throw new MailboxNotFoundException("Mailbox not found");
@@ -172,9 +172,9 @@ public abstract class StoreMailboxManager<Id> extends DelegatingMailboxManager {
         }
 
         final MailboxMapper<Id> mapper = mailboxSessionMapperFactory.getMailboxMapper(session);
-        mapper.execute(new TransactionalMapper.Transaction() {
+        mapper.execute(new TransactionalMapper.VoidTransaction() {
 
-            public void run() throws MailboxException {
+            public void runVoid() throws MailboxException {
                 // TODO put this into a serilizable transaction
                 final Mailbox<Id> mailbox = mapper.findMailboxByPath(from);
                 if (mailbox == null) {

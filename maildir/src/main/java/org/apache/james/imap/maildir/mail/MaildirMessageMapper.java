@@ -448,9 +448,9 @@ public class MaildirMessageMapper implements MessageMapper<Integer> {
      * (non-Javadoc)
      * @see org.apache.james.imap.store.transaction.TransactionalMapper#execute(org.apache.james.imap.store.transaction.TransactionalMapper.Transaction)
      */
-    public void execute(Transaction transaction) throws MailboxException {
+    public <T> T execute(Transaction<T> transaction) throws MailboxException {
         // no transactions used
-        transaction.run();
+        return transaction.run();
     }
     
     /**

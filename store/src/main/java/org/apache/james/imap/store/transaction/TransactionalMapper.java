@@ -38,19 +38,29 @@ public interface TransactionalMapper {
      * @param transaction 
      * @throws MailboxException
      */
-    public void execute(Transaction transaction) throws MailboxException;
+    public <T> T execute(Transaction<T> transaction) throws MailboxException;
         
     /**
      * Unit of work executed in a Transaction
      *
      */
-    public interface Transaction {
+    public interface Transaction<T> {
         
         /**
-         * Run unit of work in a Transaction
+         * Run unit of work in a Transaction and return a value
          * 
          * @throws MailboxException
          */
-        public void run() throws MailboxException;
+        public T run() throws MailboxException;
+    }
+    
+    public abstract class VoidTransaction implements Transaction<Void> {
+        
+        public final Void run() throws MailboxException {
+            runVoid();
+            return null;
+        }
+        public abstract void runVoid() throws MailboxException;
+
     }
 }

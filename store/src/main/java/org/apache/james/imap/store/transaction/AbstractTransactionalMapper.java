@@ -32,11 +32,12 @@ public abstract class AbstractTransactionalMapper implements TransactionalMapper
      * (non-Javadoc)
      * @see org.apache.james.imap.store.transaction.TransactionalMapper#execute(org.apache.james.imap.store.transaction.TransactionalMapper.Transaction)
      */
-    public final void execute(Transaction transaction) throws MailboxException {
+    public final <T> T execute(Transaction<T> transaction) throws MailboxException {
         begin();
         try {
-            transaction.run();
+            T value = transaction.run();
             commit();
+            return value;
         } catch (MailboxException e) {
             rollback();
             throw e;

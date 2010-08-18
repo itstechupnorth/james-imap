@@ -104,8 +104,8 @@ public class InMemorySubscriptionMapper implements SubscriptionMapper {
      * (non-Javadoc)
      * @see org.apache.james.imap.store.transaction.TransactionalMapper#execute(org.apache.james.imap.store.transaction.TransactionalMapper.Transaction)
      */
-    public void execute(Transaction transaction) throws MailboxException {
-        transaction.run();
+    public <T> T execute(Transaction<T> transaction) throws MailboxException {
+        return transaction.run();
     }
     
     public void deleteAll() {

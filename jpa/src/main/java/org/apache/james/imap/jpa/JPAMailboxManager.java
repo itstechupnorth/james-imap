@@ -43,9 +43,9 @@ public abstract class JPAMailboxManager extends StoreMailboxManager<Long> {
     protected void doCreateMailbox(MailboxPath path, MailboxSession session) throws MailboxException {
         final Mailbox<Long> mailbox = new JPAMailbox(path, randomUidValidity());
         final MailboxMapper<Long> mapper = mailboxSessionMapperFactory.getMailboxMapper(session);
-        mapper.execute(new TransactionalMapper.Transaction(){
+        mapper.execute(new TransactionalMapper.VoidTransaction(){
 
-            public void run() throws MailboxException {
+            public void runVoid() throws MailboxException {
                 mapper.save(mailbox);
             }
             
@@ -60,9 +60,9 @@ public abstract class JPAMailboxManager extends StoreMailboxManager<Long> {
      */
     public void deleteEverything(MailboxSession mailboxSession) throws MailboxException {
         final MailboxMapper<Long> mapper = mailboxSessionMapperFactory.getMailboxMapper(mailboxSession);
-        mapper.execute(new TransactionalMapper.Transaction() {
+        mapper.execute(new TransactionalMapper.VoidTransaction() {
 
-            public void run() throws MailboxException {
+            public void runVoid() throws MailboxException {
                 mapper.deleteAll(); 
             }
             

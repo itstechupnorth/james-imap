@@ -49,9 +49,9 @@ public abstract class StoreSubscriptionManager<Id> implements Subscriber {
     public void subscribe(final MailboxSession session, final String mailbox) throws SubscriptionException {
         final SubscriptionMapper mapper = mapperFactory.getSubscriptionMapper(session);
         try {
-            mapper.execute(new TransactionalMapper.Transaction() {
+            mapper.execute(new TransactionalMapper.VoidTransaction() {
 
-                public void run() throws MailboxException {
+                public void runVoid() throws MailboxException {
                     final Subscription subscription = mapper.findMailboxSubscriptionForUser(session.getUser().getUserName(), mailbox);
                     if (subscription == null) {
                         final Subscription newSubscription = createSubscription(session, mailbox);
@@ -95,9 +95,9 @@ public abstract class StoreSubscriptionManager<Id> implements Subscriber {
     public void unsubscribe(final MailboxSession session, final String mailbox) throws SubscriptionException {
         final SubscriptionMapper mapper = mapperFactory.getSubscriptionMapper(session);
         try {
-            mapper.execute(new TransactionalMapper.Transaction() {
+            mapper.execute(new TransactionalMapper.VoidTransaction() {
 
-                public void run() throws MailboxException {
+                public void runVoid() throws MailboxException {
                     final Subscription subscription = mapper.findMailboxSubscriptionForUser(session.getUser().getUserName(), mailbox);
                     if (subscription != null) {
                         mapper.delete(subscription);
