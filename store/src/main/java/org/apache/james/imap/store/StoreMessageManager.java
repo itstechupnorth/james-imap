@@ -551,7 +551,7 @@ public abstract class StoreMessageManager<Id> implements org.apache.james.imap.m
         final Long firstUnseen;
         switch (fetchGroup) {
             case UNSEEN_COUNT:
-                unseenCount = (int) messageMapper.countUnseenMessagesInMailbox(mailbox);
+                unseenCount = getMessageMapper().countUnseenMessagesInMailbox(mailbox);
                 firstUnseen = null;
                 break;
             case FIRST_UNSEEN:
