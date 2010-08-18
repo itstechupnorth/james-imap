@@ -69,7 +69,7 @@ public class NamespaceResponseEncoderTest {
                 oneOf(mockComposer).nil(); inSequence(sequence);
                 oneOf(mockComposer).openParen();  inSequence(sequence);
                 oneOf(mockComposer).openParen(); inSequence(sequence);
-                oneOf(mockComposer).quote(aPrefix); inSequence(sequence);
+                oneOf(mockComposer).quote(aPrefix + aDeliminator); inSequence(sequence);
                 oneOf(mockComposer).quote(aDeliminator); inSequence(sequence);
                 oneOf(mockComposer).closeParen(); inSequence(sequence);
                 oneOf(mockComposer).closeParen(); inSequence(sequence);
@@ -96,7 +96,7 @@ public class NamespaceResponseEncoderTest {
                 oneOf(mockComposer).nil(); inSequence(sequence);
                 oneOf(mockComposer).openParen(); inSequence(sequence);
                 oneOf(mockComposer).openParen(); inSequence(sequence);
-                oneOf(mockComposer).quote(aPrefix); inSequence(sequence);
+                oneOf(mockComposer).quote(aPrefix + aDeliminator); inSequence(sequence);
                 oneOf(mockComposer).quote(aDeliminator); inSequence(sequence);
                 oneOf(mockComposer).closeParen(); inSequence(sequence);
                 oneOf(mockComposer).closeParen(); inSequence(sequence);
@@ -123,7 +123,7 @@ public class NamespaceResponseEncoderTest {
                 oneOf(mockComposer).commandName(ImapConstants.NAMESPACE_COMMAND_NAME);
                 oneOf(mockComposer).openParen(); inSequence(sequence);
                 oneOf(mockComposer).openParen(); inSequence(sequence);
-                oneOf(mockComposer).quote(aPrefix); inSequence(sequence);
+                oneOf(mockComposer).quote(aPrefix + aDeliminator); inSequence(sequence);
                 oneOf(mockComposer).quote(aDeliminator); inSequence(sequence);
                 oneOf(mockComposer).closeParen(); inSequence(sequence);
                 oneOf(mockComposer).closeParen(); inSequence(sequence);
@@ -153,11 +153,11 @@ public class NamespaceResponseEncoderTest {
                 oneOf(mockComposer).commandName(ImapConstants.NAMESPACE_COMMAND_NAME);
                 oneOf(mockComposer).openParen(); inSequence(sequence);
                 oneOf(mockComposer).openParen(); inSequence(sequence);
-                oneOf(mockComposer).quote(aPrefix); inSequence(sequence);
+                oneOf(mockComposer).quote(aPrefix + aDeliminator ); inSequence(sequence);
                 oneOf(mockComposer).quote(aDeliminator); inSequence(sequence);
                 oneOf(mockComposer).closeParen(); inSequence(sequence);
                 oneOf(mockComposer).openParen(); inSequence(sequence);
-                oneOf(mockComposer).quote(anotherPrefix); inSequence(sequence);
+                oneOf(mockComposer).quote(anotherPrefix + anotherDeliminator); inSequence(sequence);
                 oneOf(mockComposer).quote(anotherDeliminator); inSequence(sequence);
                 oneOf(mockComposer).closeParen(); inSequence(sequence);
                 oneOf(mockComposer).closeParen(); inSequence(sequence);
