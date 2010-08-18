@@ -314,6 +314,10 @@ abstract public class AbstractMailboxProcessor extends AbstractChainedProcessor 
     public MailboxPath buildFullPath(final ImapSession session, String mailboxName) {
         String namespace = null;
         String name = null;
+        
+        if (mailboxName == null || mailboxName.length() == 0) {
+            return new MailboxPath("", "", "");
+        }
         if (mailboxName.charAt(0) == ImapConstants.NAMESPACE_PREFIX_CHAR) {
             int namespaceLength = mailboxName.indexOf(MailboxConstants.DEFAULT_DELIMITER);
             if (namespaceLength > -1) {

@@ -93,9 +93,11 @@ public class LSubProcessor extends AbstractMailboxProcessor {
         final Collection<String> mailboxes = manager.subscriptions(mailboxSession);
         // If the mailboxName is fully qualified, ignore the reference name.
         String finalReferencename = referenceName;
+        
         if (mailboxName.charAt(0) == ImapConstants.NAMESPACE_PREFIX_CHAR) {
             finalReferencename = "";
         }
+      
         // Is the interpreted (combined) pattern relative?
         boolean isRelative = ((finalReferencename + mailboxName).charAt(0) != ImapConstants.NAMESPACE_PREFIX_CHAR);
         MailboxPath basePath = null;
@@ -106,7 +108,8 @@ public class LSubProcessor extends AbstractMailboxProcessor {
         else {
             basePath = buildFullPath(session, finalReferencename);
         }
-        
+       
+
         final MailboxQuery expression = new MailboxQuery(basePath, mailboxName, '*', '%');
         final Collection<String> mailboxResponses = new ArrayList<String>();
         for (final String mailbox: mailboxes) {
