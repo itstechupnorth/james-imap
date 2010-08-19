@@ -19,10 +19,6 @@
 
 package org.apache.james.imap.processor;
 
-import static org.apache.james.imap.api.ImapConstants.*;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import org.apache.james.imap.api.message.response.StatusResponseFactory;
 import org.apache.james.imap.api.process.ImapProcessor;
@@ -42,13 +38,8 @@ public class DefaultProcessorChain {
         final LogoutProcessor logoutProcessor = new LogoutProcessor(
                 systemProcessor, mailboxManager, statusResponseFactory);
         
-        final List<String> capabilities = new ArrayList<String>();
-        capabilities.add(VERSION);
-        capabilities.add(SUPPORTS_LITERAL_PLUS);
-        capabilities.add(SUPPORTS_NAMESPACES);
-        capabilities.add(SUPPORTS_RFC3348);
         final CapabilityProcessor capabilityProcessor = new CapabilityProcessor(
-                logoutProcessor, mailboxManager, statusResponseFactory, capabilities);
+                logoutProcessor, mailboxManager, statusResponseFactory);
         final CheckProcessor checkProcessor = new CheckProcessor(
                 capabilityProcessor, mailboxManager, statusResponseFactory);
         final LoginProcessor loginProcessor = new LoginProcessor(
@@ -94,9 +85,13 @@ public class DefaultProcessorChain {
                 searchProcessor, mailboxManager, statusResponseFactory);
         final NamespaceProcessor namespaceProcessor = new NamespaceProcessor(
                 selectProcessor, mailboxManager, statusResponseFactory);
+        
+        capabilityProcessor.addProcessor(namespaceProcessor);
+        
         final ImapProcessor fetchProcessor = new FetchProcessor(namespaceProcessor,
                 mailboxManager, statusResponseFactory);
-        final ImapProcessor startTLSProcessor = new StartTLSProcessor(fetchProcessor, statusResponseFactory);
+        final StartTLSProcessor startTLSProcessor = new StartTLSProcessor(fetchProcessor, statusResponseFactory);
+        capabilityProcessor.addProcessor(startTLSProcessor);
         return startTLSProcessor;
         
     }  

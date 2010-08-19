@@ -18,6 +18,11 @@
  ****************************************************************/
 package org.apache.james.imap.processor;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import org.apache.james.imap.api.ImapConstants;
 import org.apache.james.imap.api.ImapMessage;
 import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.api.message.request.ImapRequest;
@@ -32,7 +37,7 @@ import org.apache.james.imap.processor.base.AbstractChainedProcessor;
  * Processing STARTLS commands
  *
  */
-public class StartTLSProcessor extends AbstractChainedProcessor{
+public class StartTLSProcessor extends AbstractChainedProcessor implements CapabilityImplementingProcessor{
 
     private StatusResponseFactory factory;
 
@@ -57,6 +62,19 @@ public class StartTLSProcessor extends AbstractChainedProcessor{
     @Override
     protected boolean isAcceptable(ImapMessage message) {
         return message instanceof StartTLSRequest;
+    }
+
+
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.processor.CapabilityImplementingProcessor#getImplementedCapabilities(org.apache.james.imap.api.process.ImapSession)
+     */
+    public List<String> getImplementedCapabilities(ImapSession session) {
+        if (session.supportStartTLS()) {
+            return Arrays.asList(ImapConstants.SUPPORTS_STARTTLS);
+        } else {
+            return new ArrayList<String>();
+        }
     }
 
 }

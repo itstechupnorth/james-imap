@@ -18,7 +18,10 @@
  ****************************************************************/
 package org.apache.james.imap.processor;
 
+import static org.apache.james.imap.api.ImapConstants.SUPPORTS_NAMESPACES;
+
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
@@ -38,7 +41,7 @@ import org.apache.james.imap.processor.base.ImapSessionUtils;
 /**
  * Processes a NAMESPACE command into a suitable set of responses.
  */
-public class NamespaceProcessor extends AbstractMailboxProcessor {
+public class NamespaceProcessor extends AbstractMailboxProcessor implements CapabilityImplementingProcessor{
     
     public NamespaceProcessor(ImapProcessor next,
             MailboxManager mailboxManager,
@@ -97,6 +100,15 @@ public class NamespaceProcessor extends AbstractMailboxProcessor {
     @Override
     protected boolean isAcceptable(ImapMessage message) {
         return message instanceof NamespaceRequest;
+    }
+
+
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.processor.CapabilityImplementingProcessor#getImplementedCapabilities(org.apache.james.imap.api.process.ImapSession)
+     */
+    public List<String> getImplementedCapabilities(ImapSession session) {
+        return Arrays.asList(SUPPORTS_NAMESPACES);
     }
 
 }

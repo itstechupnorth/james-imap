@@ -19,11 +19,14 @@
 
 package org.apache.james.imap.processor;
 
+import static org.apache.james.imap.api.ImapConstants.SUPPORTS_LITERAL_PLUS;
+import static org.apache.james.imap.api.ImapConstants.SUPPORTS_RFC3348;
+import static org.apache.james.imap.api.ImapConstants.VERSION;
+
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.james.imap.api.ImapCommand;
-import org.apache.james.imap.api.ImapConstants;
 import org.apache.james.imap.api.ImapMessage;
 import org.apache.james.imap.api.message.request.ImapRequest;
 import org.apache.james.imap.api.message.response.ImapResponseMessage;
@@ -34,16 +37,23 @@ import org.apache.james.imap.mailbox.MailboxManager;
 import org.apache.james.imap.message.request.CapabilityRequest;
 import org.apache.james.imap.message.response.CapabilityResponse;
 
-public class CapabilityProcessor extends AbstractMailboxProcessor {
+public class CapabilityProcessor extends AbstractMailboxProcessor implements CapabilityImplementingProcessor {
 
-    private final List<String> capabilities;
+    private final List<CapabilityImplementingProcessor> capabilities = new ArrayList<CapabilityImplementingProcessor>();
 
     public CapabilityProcessor(final ImapProcessor next, final MailboxManager mailboxManager,
-            final StatusResponseFactory factory, final List<String> capabilities) {
-        super(next, mailboxManager, factory);
-        this.capabilities = capabilities;
+            final StatusResponseFactory factory, final List<CapabilityImplementingProcessor> capabilities) {
+        this(next, mailboxManager, factory);
+        this.capabilities.addAll(capabilities);
+
     }
 
+    public CapabilityProcessor(final ImapProcessor next, final MailboxManager mailboxManager,
+            final StatusResponseFactory factory) {
+        super(next, mailboxManager, factory);
+        this.capabilities.add(this);
+
+    }
     protected boolean isAcceptable(ImapMessage message) {
         return (message instanceof CapabilityRequest);
     }
@@ -60,11 +70,34 @@ public class CapabilityProcessor extends AbstractMailboxProcessor {
 
     private ImapResponseMessage doProcess(CapabilityRequest request,
             ImapSession session, String tag, ImapCommand command) {
-        List<String> caps = new ArrayList<String>(capabilities);
-        if (session.supportStartTLS()) {
-            caps.add(ImapConstants.STARTTLS);
+        List<String> caps = new ArrayList<String>();
+        for (int i = 0; i < capabilities.size(); i++) {
+            caps.addAll(capabilities.get(i).getImplementedCapabilities(session));
         }
         final CapabilityResponse result = new CapabilityResponse(caps);
         return result;
     }
+    
+    /**
+     * Add a {@link CapabilityImplementor} which will get queried for implemented capabilities
+     * 
+     * @param implementor
+     */
+    public void addProcessor(CapabilityImplementingProcessor implementor) {
+        capabilities.add(implementor);
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.processor.CapabilityImplementingProcessor#getImplementedCapabilities(org.apache.james.imap.api.process.ImapSession)
+     */
+    public List<String> getImplementedCapabilities(ImapSession session) {
+        final List<String> capabilities = new ArrayList<String>();
+        capabilities.add(VERSION);
+        capabilities.add(SUPPORTS_LITERAL_PLUS);
+        capabilities.add(SUPPORTS_RFC3348);
+        return capabilities;
+    }
+    
+    
 }
