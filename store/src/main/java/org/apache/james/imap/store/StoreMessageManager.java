@@ -499,24 +499,21 @@ public abstract class StoreMessageManager<Id> implements org.apache.james.imap.m
 
     private void copy(final List<MailboxMembership<Id>> originalRows, final MailboxSession session) throws MailboxException {
         try {
-            final List<MailboxMembership<Id>> copiedRows = new ArrayList<MailboxMembership<Id>>();
+            final List<Long> copiedRows = new ArrayList<Long>();
             for (final MailboxMembership<Id> originalMessage:originalRows) {
-               copiedRows.addAll(messageMapper.execute(new TransactionalMapper.Transaction<List<MailboxMembership<Id>>>() {
+               copiedRows.add(messageMapper.execute(new TransactionalMapper.Transaction<Long>() {
 
-                    public List<MailboxMembership<Id>> run() throws MailboxException {
-                        final List<MailboxMembership<Id>> copiedRows = new ArrayList<MailboxMembership<Id>>();
+                    public Long run() throws MailboxException {
 
-                        final MailboxMembership<Id> newRow = messageMapper.copy(mailbox, originalMessage);
+                        return messageMapper.copy(mailbox, originalMessage);
                         
-                        copiedRows.add(newRow);
-                        return copiedRows;
                     }
                     
                 }));
             }
             // Wait until commit before issuing events
-            for (MailboxMembership<Id> newMember:copiedRows) {
-                dispatcher.added(newMember.getUid(), session.getSessionId(), new StoreMailboxPath<Id>(getMailboxEntity()));
+            for (Long newMember:copiedRows) {
+                dispatcher.added(newMember, session.getSessionId(), new StoreMailboxPath<Id>(getMailboxEntity()));
             }
         } catch (MessagingException e) {
             throw new MailboxException(HumanReadableText.FAILURE_MAIL_PARSE, e);

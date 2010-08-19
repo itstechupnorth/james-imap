@@ -135,14 +135,14 @@ public interface MessageMapper<Id> extends TransactionalMapper {
     
     
     /**
-     * Copy the given {@link MailboxMembership} to a new mailbox
+     * Copy the given {@link MailboxMembership} to a new mailbox and return the uid of the copy
      * 
      * @param mailbox the Mailbox to copy to
      * @param uid the uid to use for the new MailboxMembership
      * @param original the original to copy
-     * @return The copied instance
+     * @return The uid of the copied instance
      * @throws StorageException
      */
-    public abstract MailboxMembership<Id> copy(Mailbox<Id> mailbox, MailboxMembership<Id> original) throws StorageException;
+    public abstract long copy(Mailbox<Id> mailbox, MailboxMembership<Id> original) throws StorageException;
 
 }

@@ -203,11 +203,10 @@ public class InMemoryMessageMapper implements MessageMapper<Long> {
      * (non-Javadoc)
      * @see org.apache.james.imap.store.mail.MessageMapper#copy(org.apache.james.imap.store.mail.model.Mailbox, org.apache.james.imap.store.mail.model.MailboxMembership)
      */
-    public MailboxMembership<Long> copy(Mailbox<Long> mailbox, MailboxMembership<Long> original) throws StorageException {
+    public long copy(Mailbox<Long> mailbox, MailboxMembership<Long> original) throws StorageException {
         ((InMemoryMailbox) mailbox).consumeUid();
         SimpleMailboxMembership membership = new SimpleMailboxMembership(mailbox.getMailboxId(), mailbox.getLastUid(), (SimpleMailboxMembership) original);
-        save(mailbox, membership);
-        return membership;
+        return save(mailbox, membership);
     }
     
 }

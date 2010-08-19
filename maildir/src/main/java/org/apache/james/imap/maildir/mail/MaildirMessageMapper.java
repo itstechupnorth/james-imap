@@ -71,11 +71,12 @@ public class MaildirMessageMapper implements MessageMapper<Integer> {
         this.maildirStore = new MaildirStore(maildirLocation);
     }
     
-    /* 
+
+    /*
      * (non-Javadoc)
      * @see org.apache.james.imap.store.mail.MessageMapper#copy(org.apache.james.imap.store.mail.model.Mailbox, org.apache.james.imap.store.mail.model.MailboxMembership)
      */
-    public MailboxMembership<Integer> copy(Mailbox<Integer> mailbox, MailboxMembership<Integer> original)
+    public long copy(Mailbox<Integer> mailbox, MailboxMembership<Integer> original)
     throws StorageException {
         MaildirMessage theCopy;
         try {
@@ -83,8 +84,7 @@ public class MaildirMessageMapper implements MessageMapper<Integer> {
         } catch (MailboxException e) {
             throw new StorageException(HumanReadableText.FAILURE_MAIL_PARSE, e);
         }
-        theCopy.setUid(save(mailbox, theCopy));
-        return theCopy;
+        return save(mailbox, theCopy);
     }
 
     /* 
