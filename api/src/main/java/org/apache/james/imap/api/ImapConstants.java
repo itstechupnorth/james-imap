@@ -103,6 +103,8 @@ public interface ImapConstants {
     
     public static final String SUPPORTS_NAMESPACES = "NAMESPACE";
 
+    public static final String SUPPORTS_STARTTLS = "STARTTLS";
+
     public static final char HIERARCHY_DELIMITER_CHAR = '.';
 
     public static final char NAMESPACE_PREFIX_CHAR = '#';
