@@ -42,7 +42,7 @@ public class MaildirMessageName {
     public static final String FLAG_DELETED = "T";
 
     // patterns
-    public static final String PATTERN_STRING_MESSAGE_NAME = "\\d*\\.\\w*\\.\\w*";
+    public static final String PATTERN_STRING_MESSAGE_NAME = "\\d+\\.\\w+\\..+?";
     public static final String PATTERN_STRING_FLAGS = ":2,[DFRST]*";
     public static final String PATTERN_STRING_SIZE = ",S=\\d+";
     public static final Pattern PATTERN_MESSAGE =
@@ -437,5 +437,4 @@ public class MaildirMessageName {
     public String toString() {
         return getFullName();
     }
-    
 }
