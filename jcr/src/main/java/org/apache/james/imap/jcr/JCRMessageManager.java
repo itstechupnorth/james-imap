@@ -30,24 +30,23 @@ import org.apache.james.imap.jcr.mail.model.JCRHeader;
 import org.apache.james.imap.jcr.mail.model.JCRMailbox;
 import org.apache.james.imap.jcr.mail.model.JCRMessage;
 import org.apache.james.imap.mailbox.MailboxException;
-import org.apache.james.imap.mailbox.MailboxSession;
 import org.apache.james.imap.mailbox.util.MailboxEventDispatcher;
-import org.apache.james.imap.store.StoreMessageManager;
+import org.apache.james.imap.store.MapperStoreMessageManager;
 import org.apache.james.imap.store.mail.model.Header;
 import org.apache.james.imap.store.mail.model.MailboxMembership;
 import org.apache.james.imap.store.mail.model.PropertyBuilder;
 
 /**
- * JCR implementation of a {@link StoreMessageManager}
+ * JCR implementation of a {@link MapperStoreMessageManager}
  *
  */
-public class JCRMessageManager extends StoreMessageManager<String> {
+public class JCRMessageManager extends MapperStoreMessageManager<String> {
 
     private final Log log;
 
     public JCRMessageManager(JCRMailboxSessionMapperFactory mapperFactory,
-            final MailboxEventDispatcher dispatcher, final JCRMailbox mailbox, final Log log, final char delimiter, MailboxSession session) throws MailboxException {
-        super(mapperFactory, dispatcher, mailbox, session);
+            final MailboxEventDispatcher dispatcher, final JCRMailbox mailbox, final Log log, final char delimiter) throws MailboxException {
+        super(mapperFactory, dispatcher, mailbox);
         this.log = log;
     }
 
@@ -57,12 +56,12 @@ public class JCRMessageManager extends StoreMessageManager<String> {
     }
 
     @Override
-    protected MailboxMembership<String> createMessage(Date internalDate, int size, int bodyStartOctet, InputStream document, Flags flags, List<Header> headers, PropertyBuilder propertyBuilder) {
+    protected MailboxMembership<String> createMessage(Date internalDate, int size, int bodyStartOctet, InputStream document, Flags flags, List<Header> headers, PropertyBuilder propertyBuilder) throws MailboxException{
         final List<JCRHeader> jcrHeaders = new ArrayList<JCRHeader>(headers.size());
         for (Header header: headers) {
             jcrHeaders.add((JCRHeader) header);
         }
-        final MailboxMembership<String> message = new JCRMessage(mailbox.getMailboxId(), internalDate, 
+        final MailboxMembership<String> message = new JCRMessage(getMailboxEntity().getMailboxId(), internalDate, 
                 size, flags, document, bodyStartOctet, jcrHeaders, propertyBuilder, log);
         return message;
     }

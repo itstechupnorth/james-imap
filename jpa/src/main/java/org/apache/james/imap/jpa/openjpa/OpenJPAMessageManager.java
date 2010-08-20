@@ -31,7 +31,6 @@ import org.apache.james.imap.jpa.JPAMessageManager;
 import org.apache.james.imap.jpa.mail.model.JPAHeader;
 import org.apache.james.imap.jpa.mail.model.openjpa.JPAStreamingMailboxMembership;
 import org.apache.james.imap.mailbox.MailboxException;
-import org.apache.james.imap.mailbox.MailboxSession;
 import org.apache.james.imap.mailbox.util.MailboxEventDispatcher;
 import org.apache.james.imap.store.mail.model.Header;
 import org.apache.james.imap.store.mail.model.Mailbox;
@@ -47,13 +46,13 @@ public class OpenJPAMessageManager extends JPAMessageManager {
     private final boolean useStreaming;
 
     public OpenJPAMessageManager(JPAMailboxSessionMapperFactory mapperFactory,
-            MailboxEventDispatcher dispatcher, Mailbox<Long> mailbox, MailboxSession session) throws MailboxException {
-        this(mapperFactory, dispatcher, mailbox, session, false);
+            MailboxEventDispatcher dispatcher, Mailbox<Long> mailbox) throws MailboxException {
+        this(mapperFactory, dispatcher, mailbox, false);
     }
 
     public OpenJPAMessageManager(JPAMailboxSessionMapperFactory mapperFactory,
-            MailboxEventDispatcher dispatcher, Mailbox<Long> mailbox, MailboxSession session, final boolean useStreaming) throws MailboxException {
-        super(mapperFactory, dispatcher, mailbox, session);
+            MailboxEventDispatcher dispatcher, Mailbox<Long> mailbox, final boolean useStreaming) throws MailboxException {
+        super(mapperFactory, dispatcher, mailbox);
         this.useStreaming = useStreaming;
     }
 
@@ -64,7 +63,7 @@ public class OpenJPAMessageManager extends JPAMessageManager {
             for (Header header: headers) {
                 jpaHeaders.add((JPAHeader) header);
             }
-            return new JPAStreamingMailboxMembership(mailbox.getMailboxId(), internalDate, size, flags, document, bodyStartOctet, jpaHeaders, propertyBuilder);
+            return new JPAStreamingMailboxMembership(getMailboxEntity().getMailboxId(), internalDate, size, flags, document, bodyStartOctet, jpaHeaders, propertyBuilder);
         } else {
             return super.createMessage(internalDate, size, bodyStartOctet, document, flags, headers, propertyBuilder);
         }

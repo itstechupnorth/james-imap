@@ -30,20 +30,18 @@ import org.apache.james.imap.inmemory.mail.model.InMemoryMailbox;
 import org.apache.james.imap.inmemory.mail.model.SimpleHeader;
 import org.apache.james.imap.inmemory.mail.model.SimpleMailboxMembership;
 import org.apache.james.imap.mailbox.MailboxException;
-import org.apache.james.imap.mailbox.MailboxSession;
 import org.apache.james.imap.mailbox.util.MailboxEventDispatcher;
 import org.apache.james.imap.store.MailboxSessionMapperFactory;
-import org.apache.james.imap.store.StoreMessageManager;
+import org.apache.james.imap.store.MapperStoreMessageManager;
 import org.apache.james.imap.store.mail.model.Header;
 import org.apache.james.imap.store.mail.model.MailboxMembership;
 import org.apache.james.imap.store.mail.model.PropertyBuilder;
 
-public class InMemoryStoreMessageManager extends StoreMessageManager<Long> {
+public class InMemoryStoreMessageManager extends MapperStoreMessageManager<Long> {
 
     public InMemoryStoreMessageManager(MailboxSessionMapperFactory<Long> mapperFactory,
-            MailboxEventDispatcher dispatcher, InMemoryMailbox mailbox,
-            MailboxSession session) throws MailboxException {
-        super(mapperFactory, dispatcher,mailbox, session);
+            MailboxEventDispatcher dispatcher, InMemoryMailbox mailbox) throws MailboxException {
+        super(mapperFactory, dispatcher,mailbox);
     }
     
     @Override
@@ -53,7 +51,7 @@ public class InMemoryStoreMessageManager extends StoreMessageManager<Long> {
 
     @Override
     protected MailboxMembership<Long> createMessage(Date internalDate, int size, int bodyStartOctet, 
-            InputStream  document, Flags flags, List<Header> headers, PropertyBuilder propertyBuilder) {
+            InputStream  document, Flags flags, List<Header> headers, PropertyBuilder propertyBuilder) throws MailboxException {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         byte[] byteContent;
         try {
@@ -70,6 +68,7 @@ public class InMemoryStoreMessageManager extends StoreMessageManager<Long> {
             e.printStackTrace();
             byteContent = new byte[0];
         }
+        InMemoryMailbox mailbox = (InMemoryMailbox) getMailboxEntity();
         ((InMemoryMailbox) mailbox).consumeUid();
         return new SimpleMailboxMembership(internalDate, mailbox.getLastUid(), size, bodyStartOctet, byteContent, flags, headers, propertyBuilder, mailbox.getMailboxId());
     }

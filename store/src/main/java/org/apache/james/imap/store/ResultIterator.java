@@ -93,7 +93,7 @@ public class ResultIterator<Id> implements Iterator<MessageResult> {
 
         private final Date internalDate;
 
-        private final int size;
+        private final long size;
 
         private final long uid;
 
@@ -101,7 +101,7 @@ public class ResultIterator<Id> implements Iterator<MessageResult> {
                 final MailboxException exception) {
             super();
             internalDate = message.getInternalDate();
-            size = (int)message.getDocument().getFullContentOctets();
+            size = message.getDocument().getFullContentOctets();
             uid = message.getUid();
             this.exception = exception;
         }

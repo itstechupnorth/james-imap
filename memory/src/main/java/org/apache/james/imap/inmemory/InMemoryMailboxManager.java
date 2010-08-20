@@ -28,7 +28,7 @@ import org.apache.james.imap.mailbox.util.MailboxEventDispatcher;
 import org.apache.james.imap.store.Authenticator;
 import org.apache.james.imap.store.MailboxSessionMapperFactory;
 import org.apache.james.imap.store.StoreMailboxManager;
-import org.apache.james.imap.store.StoreMessageManager;
+import org.apache.james.imap.store.MapperStoreMessageManager;
 import org.apache.james.imap.store.Subscriber;
 import org.apache.james.imap.store.mail.model.Mailbox;
 
@@ -39,8 +39,8 @@ public class InMemoryMailboxManager extends StoreMailboxManager<Long> {
     }
 
     @Override
-    protected StoreMessageManager<Long> createMessageManager(MailboxEventDispatcher dispatcher, Mailbox<Long> mailboxRow, MailboxSession session) throws MailboxException {
-        return new InMemoryStoreMessageManager(mailboxSessionMapperFactory, dispatcher, (InMemoryMailbox)mailboxRow, session);
+    protected MapperStoreMessageManager<Long> createMessageManager(MailboxEventDispatcher dispatcher, Mailbox<Long> mailboxRow, MailboxSession session) throws MailboxException {
+        return new InMemoryStoreMessageManager(mailboxSessionMapperFactory, dispatcher, (InMemoryMailbox)mailboxRow);
     }
 
     @Override

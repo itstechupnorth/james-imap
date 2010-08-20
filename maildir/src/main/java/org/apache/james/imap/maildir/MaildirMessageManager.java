@@ -26,23 +26,22 @@ import java.util.List;
 import javax.mail.Flags;
 
 import org.apache.james.imap.mailbox.MailboxException;
-import org.apache.james.imap.mailbox.MailboxSession;
 import org.apache.james.imap.mailbox.util.MailboxEventDispatcher;
 import org.apache.james.imap.maildir.mail.model.MaildirHeader;
 import org.apache.james.imap.maildir.mail.model.MaildirMessage;
 import org.apache.james.imap.store.MailboxSessionMapperFactory;
-import org.apache.james.imap.store.StoreMessageManager;
+import org.apache.james.imap.store.MapperStoreMessageManager;
 import org.apache.james.imap.store.mail.model.Header;
 import org.apache.james.imap.store.mail.model.Mailbox;
 import org.apache.james.imap.store.mail.model.MailboxMembership;
 import org.apache.james.imap.store.mail.model.PropertyBuilder;
 
-public class MaildirMessageManager extends StoreMessageManager<Integer> {
+public class MaildirMessageManager extends MapperStoreMessageManager<Integer> {
 
     public MaildirMessageManager(MailboxSessionMapperFactory<Integer> mapperFactory,
-            MailboxEventDispatcher dispatcher, Mailbox<Integer> mailboxEntiy, MailboxSession session)
+            MailboxEventDispatcher dispatcher, Mailbox<Integer> mailboxEntiy)
     throws MailboxException {
-        super(mapperFactory, dispatcher, mailboxEntiy, session);
+        super(mapperFactory, dispatcher, mailboxEntiy);
     }
 
     @Override
@@ -59,7 +58,7 @@ public class MaildirMessageManager extends StoreMessageManager<Integer> {
         for (Header header: headers) {
             maildirHeaders.add((MaildirHeader) header);
         }
-        final MailboxMembership<Integer> message = new MaildirMessage(mailbox, internalDate, 
+        final MailboxMembership<Integer> message = new MaildirMessage(getMailboxEntity(), internalDate, 
                 size, flags, documentIn, bodyStartOctet, maildirHeaders, propertyBuilder);
         return message;
     }
