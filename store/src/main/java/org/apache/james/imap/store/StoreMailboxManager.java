@@ -75,7 +75,7 @@ public abstract class StoreMailboxManager<Id> extends DelegatingMailboxManager {
      * @param mailboxRow
      * @return storeMailbox
      */
-    protected abstract MapperStoreMessageManager<Id> createMessageManager(MailboxEventDispatcher dispatcher, Mailbox<Id> mailboxRow, MailboxSession session) throws MailboxException;
+    protected abstract StoreMessageManager<Id> createMessageManager(MailboxEventDispatcher dispatcher, Mailbox<Id> mailboxRow, MailboxSession session) throws MailboxException;
 
     /**
      * Create a Mailbox for the given namespace and store it to the underlying storage
@@ -228,8 +228,8 @@ public abstract class StoreMailboxManager<Id> extends DelegatingMailboxManager {
      */
     @SuppressWarnings("unchecked")
 	public void copyMessages(MessageRange set, MailboxPath from, MailboxPath to, MailboxSession session) throws MailboxException {
-        MapperStoreMessageManager<Id> toMailbox = (MapperStoreMessageManager<Id>) getMailbox(to, session);
-        MapperStoreMessageManager<Id> fromMailbox = (MapperStoreMessageManager<Id>) getMailbox(from, session);
+        StoreMessageManager<Id> toMailbox = (StoreMessageManager<Id>) getMailbox(to, session);
+        StoreMessageManager<Id> fromMailbox = (StoreMessageManager<Id>) getMailbox(from, session);
         fromMailbox.copyTo(set, toMailbox, session);
 
     }
