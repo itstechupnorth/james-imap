@@ -29,15 +29,21 @@ import org.apache.james.imap.api.process.ImapSession;
 import org.apache.james.imap.mailbox.MailboxManager;
 import org.apache.james.imap.mailbox.MailboxSession;
 import org.apache.james.imap.mailbox.SubscriptionException;
+import org.apache.james.imap.mailbox.SubscriptionManager;
 import org.apache.james.imap.message.request.UnsubscribeRequest;
 import org.apache.james.imap.processor.base.ImapSessionUtils;
 
 public class UnsubscribeProcessor extends AbstractMailboxProcessor {
 
+    private final SubscriptionManager subscriptionManager;
+
+    
     public UnsubscribeProcessor(final ImapProcessor next,
             final MailboxManager mailboxManager,
+            final SubscriptionManager subscriptionManager,
             final StatusResponseFactory factory) {
         super(next, mailboxManager, factory);
+        this.subscriptionManager = subscriptionManager;
     }
 
     protected boolean isAcceptable(ImapMessage message) {
@@ -50,8 +56,7 @@ public class UnsubscribeProcessor extends AbstractMailboxProcessor {
         final String mailboxName = request.getMailboxName();
         final MailboxSession mailboxSession = ImapSessionUtils.getMailboxSession(session);
         try {
-            final MailboxManager mailboxManager = getMailboxManager();
-            mailboxManager.unsubscribe(mailboxSession, mailboxName);
+            subscriptionManager.unsubscribe(mailboxSession, mailboxName);
 
             unsolicitedResponses(session, responder, false);
             okComplete(command, tag, responder);

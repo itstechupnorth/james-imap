@@ -23,6 +23,7 @@ package org.apache.james.imap.processor;
 import org.apache.james.imap.api.message.response.StatusResponseFactory;
 import org.apache.james.imap.api.process.ImapProcessor;
 import org.apache.james.imap.mailbox.MailboxManager;
+import org.apache.james.imap.mailbox.SubscriptionManager;
 import org.apache.james.imap.processor.fetch.FetchProcessor;
 
 /**
@@ -33,6 +34,7 @@ public class DefaultProcessorChain {
     public static final ImapProcessor createDefaultChain(
             final ImapProcessor chainEndProcessor,
             final MailboxManager mailboxManager,
+            final SubscriptionManager subscriptionManager,
             final StatusResponseFactory statusResponseFactory) {
         final SystemMessageProcessor systemProcessor = new SystemMessageProcessor(chainEndProcessor, mailboxManager);
         final LogoutProcessor logoutProcessor = new LogoutProcessor(
@@ -53,10 +55,10 @@ public class DefaultProcessorChain {
         final CloseProcessor closeProcessor = new CloseProcessor(
                 createProcessor, mailboxManager, statusResponseFactory);
         final UnsubscribeProcessor unsubscribeProcessor = new UnsubscribeProcessor(
-                closeProcessor, mailboxManager, statusResponseFactory);
+                closeProcessor, mailboxManager, subscriptionManager, statusResponseFactory);
         final SubscribeProcessor subscribeProcessor = new SubscribeProcessor(
                 unsubscribeProcessor, mailboxManager,
-                statusResponseFactory);
+                subscriptionManager, statusResponseFactory);
         final CopyProcessor copyProcessor = new CopyProcessor(
                 subscribeProcessor, mailboxManager,
                 statusResponseFactory);
@@ -76,7 +78,7 @@ public class DefaultProcessorChain {
         final StatusProcessor statusProcessor = new StatusProcessor(
                 noopProcessor, mailboxManager, statusResponseFactory);
         final LSubProcessor lsubProcessor = new LSubProcessor(statusProcessor,
-                mailboxManager, statusResponseFactory);
+                mailboxManager, subscriptionManager, statusResponseFactory);
         final ListProcessor listProcessor = new ListProcessor(lsubProcessor,
                 mailboxManager, statusResponseFactory);
         final SearchProcessor searchProcessor = new SearchProcessor(

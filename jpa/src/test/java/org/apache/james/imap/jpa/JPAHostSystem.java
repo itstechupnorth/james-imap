@@ -26,6 +26,7 @@ import javax.persistence.EntityManagerFactory;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.impl.SimpleLog;
+import org.apache.james.imap.api.process.ImapProcessor;
 import org.apache.james.imap.encode.main.DefaultImapEncoderFactory;
 import org.apache.james.imap.functional.ImapHostSystem;
 import org.apache.james.imap.functional.InMemoryUserManager;
@@ -39,6 +40,7 @@ import org.apache.james.imap.jpa.mail.model.openjpa.JPAMessage;
 import org.apache.james.imap.jpa.openjpa.OpenJPAMailboxManager;
 import org.apache.james.imap.jpa.user.model.JPASubscription;
 import org.apache.james.imap.mailbox.MailboxSession;
+import org.apache.james.imap.mailbox.SubscriptionManager;
 import org.apache.james.imap.main.DefaultImapDecoderFactory;
 import org.apache.james.imap.processor.main.DefaultImapProcessorFactory;
 import org.apache.james.test.functional.HostSystem;
@@ -75,14 +77,13 @@ public class JPAHostSystem extends ImapHostSystem {
         userManager = new InMemoryUserManager();
         entityManagerFactory = OpenJPAPersistence.getEntityManagerFactory(properties);
         JPAMailboxSessionMapperFactory mf = new JPAMailboxSessionMapperFactory(entityManagerFactory);
-        mailboxManager = new OpenJPAMailboxManager(mf, userManager, new JPASubscriptionManager(mf));
-        
-        final DefaultImapProcessorFactory defaultImapProcessorFactory = new DefaultImapProcessorFactory();
+        mailboxManager = new OpenJPAMailboxManager(mf, userManager);
+        SubscriptionManager subscriptionManager = new JPASubscriptionManager(mf);
+        final ImapProcessor defaultImapProcessorFactory = DefaultImapProcessorFactory.createDefaultProcessor(mailboxManager, subscriptionManager);
         resetUserMetaData();
-        defaultImapProcessorFactory.configure(mailboxManager);
         configure(new DefaultImapDecoderFactory().buildImapDecoder(),
                 new DefaultImapEncoderFactory().buildImapEncoder(),
-                defaultImapProcessorFactory.buildImapProcessor());
+                defaultImapProcessorFactory);
     }
 
     public boolean addUser(String user, String password) {

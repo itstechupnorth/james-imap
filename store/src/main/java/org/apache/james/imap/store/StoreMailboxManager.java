@@ -61,8 +61,8 @@ public abstract class StoreMailboxManager<Id> extends DelegatingMailboxManager {
     private final MailboxPathLock lock = new MailboxPathLock();
     protected final MailboxSessionMapperFactory<Id> mailboxSessionMapperFactory;    
     
-    public StoreMailboxManager(MailboxSessionMapperFactory<Id> mailboxSessionMapperFactory, final Authenticator authenticator, final Subscriber subscriber) {
-        super(authenticator, subscriber);
+    public StoreMailboxManager(MailboxSessionMapperFactory<Id> mailboxSessionMapperFactory, final Authenticator authenticator) {
+        super(authenticator);
         this.mailboxSessionMapperFactory = mailboxSessionMapperFactory;
         
         // The dispatcher need to have the delegating listener added

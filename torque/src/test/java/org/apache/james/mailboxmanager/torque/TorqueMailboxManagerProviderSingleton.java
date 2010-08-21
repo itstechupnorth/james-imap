@@ -29,6 +29,7 @@ import org.apache.commons.configuration.BaseConfiguration;
 import org.apache.james.imap.functional.ImapHostSystem;
 import org.apache.james.imap.functional.InMemoryUserManager;
 import org.apache.james.imap.mailbox.MailboxManager;
+import org.apache.james.imap.mailbox.SubscriptionManager;
 import org.apache.james.mailboxmanager.torque.om.MailboxRowPeer;
 import org.apache.james.mailboxmanager.torque.om.MessageBodyPeer;
 import org.apache.james.mailboxmanager.torque.om.MessageFlagsPeer;
@@ -160,7 +161,8 @@ public class TorqueMailboxManagerProviderSingleton {
 
     private static TorqueMailboxManager TORQUE_MAILBOX_MANAGER;
 
-    private static InMemoryUserManager USER_MANAGER;
+    private static InMemoryUserManager USER_MANAGER  = new InMemoryUserManager();
+
 
 
     public static final ImapHostSystem HOST = new TorqueHostSystem();
@@ -170,15 +172,19 @@ public class TorqueMailboxManagerProviderSingleton {
         return getMailboxManager();
     }
 
+    
+    public synchronized static SubscriptionManager getSubscriptionManager(){
+        return USER_MANAGER;
+     }
+
     public static void addUser(String user, String password) {
         USER_MANAGER.addUser(user, password);
     }
 
     private static TorqueMailboxManager getMailboxManager() throws Exception {
         if (TORQUE_MAILBOX_MANAGER == null) {
-            USER_MANAGER = new InMemoryUserManager();
             initialize();
-            TORQUE_MAILBOX_MANAGER = new TorqueMailboxManager(USER_MANAGER, USER_MANAGER);
+            TORQUE_MAILBOX_MANAGER = new TorqueMailboxManager(USER_MANAGER);
         }
         return TORQUE_MAILBOX_MANAGER;
     }

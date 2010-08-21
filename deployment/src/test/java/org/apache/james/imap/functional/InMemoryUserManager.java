@@ -25,13 +25,13 @@ import java.util.Map;
 
 import org.apache.james.imap.mailbox.MailboxSession;
 import org.apache.james.imap.mailbox.SubscriptionException;
+import org.apache.james.imap.mailbox.SubscriptionManager;
 import org.apache.james.imap.store.Authenticator;
-import org.apache.james.imap.store.Subscriber;
 
 /**
  * Stores users in memory.
  */
-public class InMemoryUserManager implements Authenticator, Subscriber {
+public class InMemoryUserManager implements Authenticator, SubscriptionManager {
 
     private final Map<String, User> users;
 

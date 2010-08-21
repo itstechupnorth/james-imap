@@ -23,6 +23,7 @@ import org.apache.james.imap.api.message.response.StatusResponseFactory;
 import org.apache.james.imap.api.process.ImapProcessor;
 import org.apache.james.imap.api.process.ImapProcessorFactory;
 import org.apache.james.imap.mailbox.MailboxManager;
+import org.apache.james.imap.mailbox.SubscriptionManager;
 import org.apache.james.imap.message.response.UnpooledStatusResponseFactory;
 import org.apache.james.imap.processor.DefaultProcessorChain;
 import org.apache.james.imap.processor.base.ImapResponseMessageProcessor;
@@ -33,23 +34,19 @@ import org.apache.james.imap.processor.base.UnknownRequestProcessor;
  */
 public class DefaultImapProcessorFactory implements ImapProcessorFactory {
 
-    public static final ImapProcessor createDefaultProcessor(final MailboxManager mailboxManager) {
+    public static final ImapProcessor createDefaultProcessor(final MailboxManager mailboxManager, final SubscriptionManager subscriptionManager) {
         final StatusResponseFactory statusResponseFactory = new UnpooledStatusResponseFactory();
         final UnknownRequestProcessor unknownRequestImapProcessor = new UnknownRequestProcessor(
                 statusResponseFactory);
         final ImapProcessor imap4rev1Chain = DefaultProcessorChain
                 .createDefaultChain(unknownRequestImapProcessor,
-                        mailboxManager, statusResponseFactory);
+                        mailboxManager, subscriptionManager, statusResponseFactory);
         final ImapProcessor result = new ImapResponseMessageProcessor(
                 imap4rev1Chain);
         return result;
     }
 
     private MailboxManager mailboxManager;
-
-    public final void configure(MailboxManager mailboxManager) {
-        setMailboxManager(mailboxManager);
-    }
 
     public final MailboxManager getMailboxManager() {
         return mailboxManager;
@@ -59,11 +56,21 @@ public class DefaultImapProcessorFactory implements ImapProcessorFactory {
         this.mailboxManager = mailboxManager;
     }
 
+    private SubscriptionManager subscriptionManager;
+
+    public final SubscriptionManager getSubscriptionManager() {
+        return subscriptionManager;
+    }
+
+    public final void setSubscriptionManager(SubscriptionManager subscriptionManager) {
+        this.subscriptionManager = subscriptionManager;
+    }
+    
     /*
      * (non-Javadoc)
      * @see org.apache.james.imap.api.process.ImapProcessorFactory#buildImapProcessor()
      */
     public ImapProcessor buildImapProcessor() {
-        return createDefaultProcessor(mailboxManager);
+        return createDefaultProcessor(mailboxManager, subscriptionManager);
     }
 }

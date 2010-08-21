@@ -34,6 +34,7 @@ import org.apache.james.imap.api.process.ImapSession;
 import org.apache.james.imap.mailbox.MailboxManager;
 import org.apache.james.imap.mailbox.MailboxMetaData;
 import org.apache.james.imap.mailbox.MailboxSession;
+import org.apache.james.imap.mailbox.SubscriptionManager;
 import org.apache.james.imap.message.request.LsubRequest;
 import org.apache.james.imap.message.response.LSubResponse;
 import org.apache.james.imap.processor.base.ImapSessionUtils;
@@ -71,7 +72,7 @@ public class LSubProcessorTest {
 
     ImapProcessor next;
 
-    MailboxManager manager;
+    SubscriptionManager manager;
 
     ImapProcessor.Responder responder;
 
@@ -104,9 +105,9 @@ public class LSubProcessorTest {
         result = mockery.mock(MailboxMetaData.class);
         statusResponse = mockery.mock(StatusResponse.class);
         responderImpl = responder;
-        manager = mockery. mock(MailboxManager.class);
+        manager = mockery. mock(SubscriptionManager.class);
         mailboxSession = mockery.mock(MailboxSession.class);
-        processor = new LSubProcessor(next, manager, serverResponseFactory);
+        processor = new LSubProcessor(next, mockery.mock(MailboxManager.class), manager, serverResponseFactory);
     }
 
     @Test

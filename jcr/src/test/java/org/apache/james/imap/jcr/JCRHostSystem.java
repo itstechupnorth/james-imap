@@ -24,6 +24,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.impl.SimpleLog;
 import org.apache.jackrabbit.core.RepositoryImpl;
 import org.apache.jackrabbit.core.config.RepositoryConfig;
+import org.apache.james.imap.api.process.ImapProcessor;
 import org.apache.james.imap.encode.main.DefaultImapEncoderFactory;
 import org.apache.james.imap.functional.ImapHostSystem;
 import org.apache.james.imap.functional.InMemoryUserManager;
@@ -71,9 +72,8 @@ public class JCRHostSystem extends ImapHostSystem{
             userManager = new InMemoryUserManager();
             JCRMailboxSessionMapperFactory mf = new JCRMailboxSessionMapperFactory(sessionRepos, new JCRVmNodeLocker());
 
-            //TODO: Fix the scaling stuff so the tests will pass with max scaling too
-            mailboxManager = new JCRMailboxManager(mf, userManager, new JCRSubscriptionManager(mf));
-            final DefaultImapProcessorFactory defaultImapProcessorFactory = new DefaultImapProcessorFactory();
+            mailboxManager = new JCRMailboxManager(mf, userManager);
+            final ImapProcessor defaultImapProcessorFactory = DefaultImapProcessorFactory.createDefaultProcessor(mailboxManager, new JCRSubscriptionManager(mf));
             resetUserMetaData();
             MailboxSession session = mailboxManager.createSystemSession("test", new SimpleLog("TestLog"));
             mailboxManager.startProcessingRequest(session);
@@ -81,8 +81,7 @@ public class JCRHostSystem extends ImapHostSystem{
             mailboxManager.endProcessingRequest(session);
             mailboxManager.logout(session, false);
             
-            defaultImapProcessorFactory.configure(mailboxManager);
-            configure(new DefaultImapDecoderFactory().buildImapDecoder(), new DefaultImapEncoderFactory().buildImapEncoder(), defaultImapProcessorFactory.buildImapProcessor());
+            configure(new DefaultImapDecoderFactory().buildImapDecoder(), new DefaultImapEncoderFactory().buildImapEncoder(), defaultImapProcessorFactory);
         } catch (Exception e) {
             shutdownRepository();
             throw e;

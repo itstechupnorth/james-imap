@@ -29,7 +29,6 @@ import org.apache.james.imap.mailbox.util.MailboxEventDispatcher;
 import org.apache.james.imap.store.Authenticator;
 import org.apache.james.imap.store.StoreMailboxManager;
 import org.apache.james.imap.store.MapperStoreMessageManager;
-import org.apache.james.imap.store.Subscriber;
 import org.apache.james.imap.store.mail.model.Mailbox;
 import org.apache.james.imap.store.transaction.TransactionalMapper;
 
@@ -42,12 +41,12 @@ public class JCRMailboxManager extends StoreMailboxManager<String> implements JC
     private final JCRMailboxSessionMapperFactory mapperFactory;
     private final Log logger = LogFactory.getLog(JCRMailboxManager.class);
     
-    public JCRMailboxManager(JCRMailboxSessionMapperFactory mapperFactory, final Authenticator authenticator, final Subscriber subscriber) {
-	    this(mapperFactory, authenticator, subscriber, new JCRVmNodeLocker());
+    public JCRMailboxManager(JCRMailboxSessionMapperFactory mapperFactory, final Authenticator authenticator) {
+	    this(mapperFactory, authenticator, new JCRVmNodeLocker());
     }
 
-    public JCRMailboxManager(JCRMailboxSessionMapperFactory mapperFactory, final Authenticator authenticator, final Subscriber subscriber, final NodeLocker locker) {
-        super(mapperFactory, authenticator, subscriber);
+    public JCRMailboxManager(JCRMailboxSessionMapperFactory mapperFactory, final Authenticator authenticator, final NodeLocker locker) {
+        super(mapperFactory, authenticator);
         this.mapperFactory = mapperFactory;
     }
 

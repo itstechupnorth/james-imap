@@ -37,16 +37,21 @@ import org.apache.james.imap.mailbox.MailboxManager;
 import org.apache.james.imap.mailbox.MailboxQuery;
 import org.apache.james.imap.mailbox.MailboxSession;
 import org.apache.james.imap.mailbox.SubscriptionException;
+import org.apache.james.imap.mailbox.SubscriptionManager;
 import org.apache.james.imap.message.request.LsubRequest;
 import org.apache.james.imap.message.response.LSubResponse;
 import org.apache.james.imap.processor.base.ImapSessionUtils;
 
 public class LSubProcessor extends AbstractMailboxProcessor {
 
+    private final SubscriptionManager subscriptionManager;
+
     public LSubProcessor(final ImapProcessor next,
-            final MailboxManager mailboxManager,
+            final MailboxManager mailboxManager, 
+            final SubscriptionManager subscriptionManager,
             final StatusResponseFactory factory) {
         super(next, mailboxManager, factory);
+        this.subscriptionManager = subscriptionManager;
     }
 
     protected boolean isAcceptable(ImapMessage message) {
@@ -89,8 +94,7 @@ public class LSubProcessor extends AbstractMailboxProcessor {
             final String referenceName, final String mailboxName)
             throws SubscriptionException, MailboxException {
         final MailboxSession mailboxSession = ImapSessionUtils.getMailboxSession(session);
-        final MailboxManager manager = getMailboxManager();
-        final Collection<String> mailboxes = manager.subscriptions(mailboxSession);
+        final Collection<String> mailboxes = subscriptionManager.subscriptions(mailboxSession);
         // If the mailboxName is fully qualified, ignore the reference name.
         String finalReferencename = referenceName;
         

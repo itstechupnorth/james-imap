@@ -25,7 +25,6 @@ import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.MailboxSession;
 import org.apache.james.imap.store.Authenticator;
 import org.apache.james.imap.store.StoreMailboxManager;
-import org.apache.james.imap.store.Subscriber;
 import org.apache.james.imap.store.mail.MailboxMapper;
 import org.apache.james.imap.store.mail.model.Mailbox;
 import org.apache.james.imap.store.transaction.TransactionalMapper;
@@ -37,8 +36,8 @@ import org.apache.james.imap.store.user.model.Subscription;
 public abstract class JPAMailboxManager extends StoreMailboxManager<Long> {
     
     public JPAMailboxManager(JPAMailboxSessionMapperFactory mailboxSessionMapperFactory,
-            final Authenticator authenticator, Subscriber subscripter) {
-        super(mailboxSessionMapperFactory, authenticator, subscripter);
+            final Authenticator authenticator) {
+        super(mailboxSessionMapperFactory, authenticator);
     }
     
     @Override

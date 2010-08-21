@@ -44,7 +44,6 @@ import org.apache.james.imap.mailbox.MailboxMetaData.Selectability;
 import org.apache.james.imap.mailbox.util.SimpleMailboxMetaData;
 import org.apache.james.imap.store.Authenticator;
 import org.apache.james.imap.store.DelegatingMailboxManager;
-import org.apache.james.imap.store.Subscriber;
 import org.apache.james.mailboxmanager.torque.om.MailboxRow;
 import org.apache.james.mailboxmanager.torque.om.MailboxRowPeer;
 import org.apache.torque.TorqueException;
@@ -65,8 +64,8 @@ public class TorqueMailboxManager extends DelegatingMailboxManager {
     private final Map<String, TorqueMailbox> mailboxes;
 
     
-    public TorqueMailboxManager(final Authenticator authenticator, final Subscriber subscriper) {
-        super(authenticator, subscriper);
+    public TorqueMailboxManager(final Authenticator authenticator) {
+        super(authenticator);
         this.lock = new ReentrantReadWriteLock();
         mailboxes = new HashMap<String, TorqueMailbox>();
     }

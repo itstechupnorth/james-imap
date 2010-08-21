@@ -19,7 +19,6 @@
 
 package org.apache.james.imap.mailbox;
 
-import java.util.Collection;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
@@ -195,37 +194,7 @@ public interface MailboxManager {
      */
     void logout(MailboxSession session, boolean force) throws MailboxException;
 
-    /**
-     * Subscribes the user to the given mailbox.
-     * 
-     * @param session
-     *            the user name, not null
-     * @param mailbox
-     *            the mailbox name, not null
-     */
-    public void subscribe(MailboxSession session, String mailbox)
-            throws SubscriptionException;
 
-    /**
-     * Unsubscribes the user from the given mailbox.
-     * 
-     * @param session
-     *            the user name, not null
-     * @param mailbox
-     *            the mailbox name, not null
-     */
-    public void unsubscribe(MailboxSession session, String mailbox)
-            throws SubscriptionException;
-
-    /**
-     * Lists current subscriptions for the given user.
-     * 
-     * @param session
-     *            the user name, not null
-     * @return a <code>Collection<String></code> of mailbox names
-     */
-    public Collection<String> subscriptions(MailboxSession session) throws SubscriptionException;
-    
     /**
      * <p>Implementations of Mailbox may interpret the fact that someone is
      * listening and do some caching and even postpone persistence until

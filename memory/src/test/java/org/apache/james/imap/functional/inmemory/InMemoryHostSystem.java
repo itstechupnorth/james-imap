@@ -19,6 +19,7 @@
 
 package org.apache.james.imap.functional.inmemory;
 
+import org.apache.james.imap.api.process.ImapProcessor;
 import org.apache.james.imap.encode.main.DefaultImapEncoderFactory;
 import org.apache.james.imap.functional.ImapHostSystem;
 import org.apache.james.imap.functional.InMemoryUserManager;
@@ -42,12 +43,12 @@ public class InMemoryHostSystem extends ImapHostSystem {
     private InMemoryHostSystem() {
         userManager = new InMemoryUserManager();
         factory = new InMemoryMailboxSessionMapperFactory();
-        mailboxManager = new InMemoryMailboxManager(factory, userManager, new InMemorySubscriptionManager(factory));
-        final DefaultImapProcessorFactory defaultImapProcessorFactory = new DefaultImapProcessorFactory();
-        defaultImapProcessorFactory.configure(mailboxManager);
+        mailboxManager = new InMemoryMailboxManager(factory, userManager);
+        final ImapProcessor defaultImapProcessorFactory = DefaultImapProcessorFactory.createDefaultProcessor(mailboxManager, new InMemorySubscriptionManager(factory));
+
         configure(new DefaultImapDecoderFactory().buildImapDecoder(),
                 new DefaultImapEncoderFactory().buildImapEncoder(),
-                defaultImapProcessorFactory.buildImapProcessor());
+                defaultImapProcessorFactory);
     }
     
     public boolean addUser(String user, String password) throws Exception {

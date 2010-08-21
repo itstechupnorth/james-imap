@@ -17,17 +17,15 @@
  * under the License.                                           *
  ****************************************************************/
 
-package org.apache.james.imap.store;
+package org.apache.james.imap.mailbox;
 
 import java.util.Collection;
 
-import org.apache.james.imap.mailbox.MailboxSession;
-import org.apache.james.imap.mailbox.SubscriptionException;
 
 /**
  * Subscribes users.
  */
-public interface Subscriber {
+public interface SubscriptionManager{
     
     /**
      * Subscribes the user in the session to the given mailbox.

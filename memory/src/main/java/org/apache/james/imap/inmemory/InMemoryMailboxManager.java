@@ -29,13 +29,12 @@ import org.apache.james.imap.store.Authenticator;
 import org.apache.james.imap.store.MailboxSessionMapperFactory;
 import org.apache.james.imap.store.StoreMailboxManager;
 import org.apache.james.imap.store.MapperStoreMessageManager;
-import org.apache.james.imap.store.Subscriber;
 import org.apache.james.imap.store.mail.model.Mailbox;
 
 public class InMemoryMailboxManager extends StoreMailboxManager<Long> {
 
-    public InMemoryMailboxManager(MailboxSessionMapperFactory<Long> mapperFactory, Authenticator authenticator, Subscriber subscriber) {
-        super(mapperFactory, authenticator, subscriber);
+    public InMemoryMailboxManager(MailboxSessionMapperFactory<Long> mapperFactory, Authenticator authenticator) {
+        super(mapperFactory, authenticator);
     }
 
     @Override

@@ -27,7 +27,6 @@ import org.apache.james.imap.store.Authenticator;
 import org.apache.james.imap.store.MailboxSessionMapperFactory;
 import org.apache.james.imap.store.StoreMailboxManager;
 import org.apache.james.imap.store.MapperStoreMessageManager;
-import org.apache.james.imap.store.Subscriber;
 import org.apache.james.imap.store.mail.MailboxMapper;
 import org.apache.james.imap.store.mail.model.Mailbox;
 
@@ -35,8 +34,8 @@ public class MaildirMailboxManager extends StoreMailboxManager<Integer> {
 
     public MaildirMailboxManager(
             MailboxSessionMapperFactory<Integer> mailboxSessionMapperFactory,
-            Authenticator authenticator, Subscriber subscriber) {
-        super(mailboxSessionMapperFactory, authenticator, subscriber);
+            Authenticator authenticator) {
+        super(mailboxSessionMapperFactory, authenticator);
     }
 
     @Override
