@@ -16,42 +16,28 @@
  * specific language governing permissions and limitations      *
  * under the License.                                           *
  ****************************************************************/
+package org.apache.james.imap.jcr;
 
-package org.apache.james.imap.store;
-
-import java.util.Collection;
-
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.james.imap.jcr.user.model.JCRSubscription;
 import org.apache.james.imap.mailbox.MailboxSession;
-import org.apache.james.imap.mailbox.SubscriptionException;
+import org.apache.james.imap.store.StoreSubscriptionManager;
+import org.apache.james.imap.store.user.model.Subscription;
 
 /**
- * Subscribes users.
+ * JCR implementation of a SubscriptionManager
  */
-public interface Subscriber {
+public class JCRSubscriptionManager extends StoreSubscriptionManager<String> implements JCRImapConstants {
     
-    /**
-     * Subscribes the user in the session to the given mailbox.
-     * @param session not null
-     * @param mailbox not null
-     * @throws SubscriptionException when subscription fails
-     */
-    public void subscribe(MailboxSession session, String mailbox)
-            throws SubscriptionException;
+    private final Log logger = LogFactory.getLog(JCRSubscriptionManager.class);
 
-    /**
-     * Finds all subscriptions for the user in the session.
-     * @param user not null
-     * @return not null
-     * @throws SubscriptionException when subscriptions cannot be read
-     */
-    public Collection<String> subscriptions(MailboxSession session) throws SubscriptionException;
+    public JCRSubscriptionManager(JCRMailboxSessionMapperFactory mapperFactory) {
+        super(mapperFactory);
+    }
 
-    /**
-     * Unsubscribes the user in the session from the given mailbox.
-     * @param session not null
-     * @param mailbox not null
-     * @throws SubscriptionException when subscriptions cannot be read
-     */
-    public void unsubscribe(MailboxSession session, String mailbox)
-            throws SubscriptionException;
+    @Override
+    protected Subscription createSubscription(MailboxSession session, String mailbox) {
+        return new JCRSubscription(session.getUser().getUserName(), mailbox, logger);
+    }
 }

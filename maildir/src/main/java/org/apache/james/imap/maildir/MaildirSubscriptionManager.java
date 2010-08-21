@@ -16,42 +16,22 @@
  * specific language governing permissions and limitations      *
  * under the License.                                           *
  ****************************************************************/
-
-package org.apache.james.imap.store;
-
-import java.util.Collection;
+package org.apache.james.imap.maildir;
 
 import org.apache.james.imap.mailbox.MailboxSession;
-import org.apache.james.imap.mailbox.SubscriptionException;
+import org.apache.james.imap.maildir.user.model.MaildirSubscription;
+import org.apache.james.imap.store.StoreSubscriptionManager;
+import org.apache.james.imap.store.user.model.Subscription;
 
-/**
- * Subscribes users.
- */
-public interface Subscriber {
-    
-    /**
-     * Subscribes the user in the session to the given mailbox.
-     * @param session not null
-     * @param mailbox not null
-     * @throws SubscriptionException when subscription fails
-     */
-    public void subscribe(MailboxSession session, String mailbox)
-            throws SubscriptionException;
+public class MaildirSubscriptionManager extends StoreSubscriptionManager<Integer> {
 
-    /**
-     * Finds all subscriptions for the user in the session.
-     * @param user not null
-     * @return not null
-     * @throws SubscriptionException when subscriptions cannot be read
-     */
-    public Collection<String> subscriptions(MailboxSession session) throws SubscriptionException;
+    public MaildirSubscriptionManager(MaildirMailboxSessionMapperFactory mf) {
+        super(mf);
+    }
 
-    /**
-     * Unsubscribes the user in the session from the given mailbox.
-     * @param session not null
-     * @param mailbox not null
-     * @throws SubscriptionException when subscriptions cannot be read
-     */
-    public void unsubscribe(MailboxSession session, String mailbox)
-            throws SubscriptionException;
+    @Override
+    protected Subscription createSubscription(MailboxSession session, String mailbox) {
+        return new MaildirSubscription(session.getUser().getUserName(), mailbox);
+    }
+
 }

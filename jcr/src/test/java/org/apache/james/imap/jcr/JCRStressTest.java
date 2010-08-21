@@ -29,6 +29,7 @@ import org.apache.james.imap.functional.AbstractStressTest;
 import org.apache.james.imap.jcr.GlobalMailboxSessionJCRRepository;
 import org.apache.james.imap.jcr.JCRMailboxManager;
 import org.apache.james.imap.jcr.JCRMailboxSessionMapperFactory;
+import org.apache.james.imap.jcr.JCRSubscriptionManager;
 import org.apache.james.imap.jcr.JCRUtils;
 import org.apache.james.imap.jcr.JCRVmNodeLocker;
 import org.apache.james.imap.jcr.MailboxSessionJCRRepository;
@@ -63,7 +64,7 @@ public class JCRStressTest extends AbstractStressTest{
 
         MailboxSessionJCRRepository sessionRepos = new GlobalMailboxSessionJCRRepository(repository, workspace, user, pass);
         JCRMailboxSessionMapperFactory mf = new JCRMailboxSessionMapperFactory(sessionRepos, new JCRVmNodeLocker());
-        mailboxManager = new JCRMailboxManager(mf, null);
+        mailboxManager = new JCRMailboxManager(mf, null, new JCRSubscriptionManager(mf));
 
     }
     

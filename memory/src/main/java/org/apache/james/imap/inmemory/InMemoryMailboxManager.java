@@ -21,7 +21,6 @@ package org.apache.james.imap.inmemory;
 
 import org.apache.james.imap.api.MailboxPath;
 import org.apache.james.imap.inmemory.mail.model.InMemoryMailbox;
-import org.apache.james.imap.inmemory.user.model.InMemorySubscription;
 import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.MailboxSession;
 import org.apache.james.imap.mailbox.StorageException;
@@ -30,13 +29,13 @@ import org.apache.james.imap.store.Authenticator;
 import org.apache.james.imap.store.MailboxSessionMapperFactory;
 import org.apache.james.imap.store.StoreMailboxManager;
 import org.apache.james.imap.store.MapperStoreMessageManager;
+import org.apache.james.imap.store.Subscriber;
 import org.apache.james.imap.store.mail.model.Mailbox;
-import org.apache.james.imap.store.user.model.Subscription;
 
 public class InMemoryMailboxManager extends StoreMailboxManager<Long> {
 
-    public InMemoryMailboxManager(MailboxSessionMapperFactory<Long> mapperFactory, Authenticator authenticator) {
-        super(mapperFactory, authenticator);
+    public InMemoryMailboxManager(MailboxSessionMapperFactory<Long> mapperFactory, Authenticator authenticator, Subscriber subscriber) {
+        super(mapperFactory, authenticator, subscriber);
     }
 
     @Override
@@ -62,11 +61,7 @@ public class InMemoryMailboxManager extends StoreMailboxManager<Long> {
     public synchronized void deleteEverything() throws MailboxException {
         ((InMemoryMailboxSessionMapperFactory) mailboxSessionMapperFactory).deleteAll();
     }
-    
-    @Override
-    protected Subscription createSubscription(MailboxSession session, String mailbox) {
-        return new InMemorySubscription(mailbox, session.getUser());
-    }
+
 
     
 }

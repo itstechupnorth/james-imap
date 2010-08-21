@@ -20,7 +20,6 @@
 package org.apache.james.mailboxmanager.torque;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -41,7 +40,6 @@ import org.apache.james.imap.mailbox.MailboxQuery;
 import org.apache.james.imap.mailbox.MailboxSession;
 import org.apache.james.imap.mailbox.MessageRange;
 import org.apache.james.imap.mailbox.StandardMailboxMetaDataComparator;
-import org.apache.james.imap.mailbox.SubscriptionException;
 import org.apache.james.imap.mailbox.MailboxMetaData.Selectability;
 import org.apache.james.imap.mailbox.util.SimpleMailboxMetaData;
 import org.apache.james.imap.store.Authenticator;
@@ -66,13 +64,11 @@ public class TorqueMailboxManager extends DelegatingMailboxManager {
 
     private final Map<String, TorqueMailbox> mailboxes;
 
-    private Subscriber subscriper;
     
     public TorqueMailboxManager(final Authenticator authenticator, final Subscriber subscriper) {
-        super(authenticator);
+        super(authenticator, subscriper);
         this.lock = new ReentrantReadWriteLock();
         mailboxes = new HashMap<String, TorqueMailbox>();
-        this.subscriper = subscriper;
     }
 
     public Mailbox getMailbox(MailboxPath path, MailboxSession session)
@@ -375,16 +371,5 @@ public class TorqueMailboxManager extends DelegatingMailboxManager {
         mailbox.addListener(listener);
     }
 
-    public void subscribe(MailboxSession session, String mailbox) throws SubscriptionException {
-        subscriper.subscribe(session, mailbox);
-    }
-
-    public Collection<String> subscriptions(MailboxSession session) throws SubscriptionException {
-        return subscriper.subscriptions(session);
-    }
-
-    public void unsubscribe(MailboxSession session, String mailbox) throws SubscriptionException {
-        subscriper.unsubscribe(session, mailbox);
-    }
 
 }

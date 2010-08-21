@@ -71,7 +71,7 @@ public class JPAStressTest extends AbstractStressTest{
        
         entityManagerFactory = OpenJPAPersistence.getEntityManagerFactory(properties);
         JPAMailboxSessionMapperFactory mf = new JPAMailboxSessionMapperFactory(entityManagerFactory);
-        mailboxManager = new OpenJPAMailboxManager(mf, null);
+        mailboxManager = new OpenJPAMailboxManager(mf, null, new JPASubscriptionManager(mf));
         
         // Set the lock timeout via SQL because of a bug in openJPA
         // https://issues.apache.org/jira/browse/OPENJPA-1656

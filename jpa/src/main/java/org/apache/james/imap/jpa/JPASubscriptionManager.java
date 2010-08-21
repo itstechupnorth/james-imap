@@ -16,42 +16,29 @@
  * specific language governing permissions and limitations      *
  * under the License.                                           *
  ****************************************************************/
+package org.apache.james.imap.jpa;
 
-package org.apache.james.imap.store;
-
-import java.util.Collection;
-
+import org.apache.james.imap.jpa.user.model.JPASubscription;
 import org.apache.james.imap.mailbox.MailboxSession;
-import org.apache.james.imap.mailbox.SubscriptionException;
+import org.apache.james.imap.store.StoreSubscriptionManager;
+import org.apache.james.imap.store.user.model.Subscription;
 
 /**
- * Subscribes users.
+ * JPA implementation of {@link StoreSubscriptionManager}
+ *
  */
-public interface Subscriber {
+public class JPASubscriptionManager extends StoreSubscriptionManager<Long> {
     
-    /**
-     * Subscribes the user in the session to the given mailbox.
-     * @param session not null
-     * @param mailbox not null
-     * @throws SubscriptionException when subscription fails
+    public JPASubscriptionManager(final JPAMailboxSessionMapperFactory mapperFactory) {
+        super(mapperFactory);
+    }
+    
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.store.StoreSubscriptionManager#createSubscription(org.apache.james.imap.mailbox.MailboxSession, java.lang.String)
      */
-    public void subscribe(MailboxSession session, String mailbox)
-            throws SubscriptionException;
-
-    /**
-     * Finds all subscriptions for the user in the session.
-     * @param user not null
-     * @return not null
-     * @throws SubscriptionException when subscriptions cannot be read
-     */
-    public Collection<String> subscriptions(MailboxSession session) throws SubscriptionException;
-
-    /**
-     * Unsubscribes the user in the session from the given mailbox.
-     * @param session not null
-     * @param mailbox not null
-     * @throws SubscriptionException when subscriptions cannot be read
-     */
-    public void unsubscribe(MailboxSession session, String mailbox)
-            throws SubscriptionException;
+    protected Subscription createSubscription(final MailboxSession session, final String mailbox) {
+        final Subscription newSubscription = new JPASubscription(session.getUser().getUserName(), mailbox);
+        return newSubscription;
+    }
 }

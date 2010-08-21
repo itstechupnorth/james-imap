@@ -20,6 +20,7 @@
 package org.apache.james.imap.store;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Locale;
 import java.util.Random;
 
@@ -30,6 +31,7 @@ import org.apache.james.imap.mailbox.MailboxConstants;
 import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.MailboxManager;
 import org.apache.james.imap.mailbox.MailboxSession;
+import org.apache.james.imap.mailbox.SubscriptionException;
 
 /**
  * Abstract {@link MailboxManager} which delegates various stuff to the {@link Authenticator} and {@link Subscriber}
@@ -38,9 +40,11 @@ import org.apache.james.imap.mailbox.MailboxSession;
 public abstract class DelegatingMailboxManager implements MailboxManager {
 
     private final Authenticator authenticator;
+    private final Subscriber subscriper;
     private final static Random RANDOM = new Random();
 
-    public DelegatingMailboxManager(final Authenticator authenticator) {
+    public DelegatingMailboxManager(final Authenticator authenticator, final Subscriber subscriper) {
+        this.subscriper = subscriper;
         this.authenticator = authenticator;
     }
 
@@ -145,4 +149,30 @@ public abstract class DelegatingMailboxManager implements MailboxManager {
         // Default do nothing
         
     }
+
+
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.mailbox.MailboxManager#subscribe(org.apache.james.imap.mailbox.MailboxSession, java.lang.String)
+     */
+    public void subscribe(MailboxSession session, String mailbox) throws SubscriptionException {
+        subscriper.subscribe(session, mailbox);
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.mailbox.MailboxManager#subscriptions(org.apache.james.imap.mailbox.MailboxSession)
+     */
+    public Collection<String> subscriptions(MailboxSession session) throws SubscriptionException {
+        return subscriper.subscriptions(session);
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.mailbox.MailboxManager#unsubscribe(org.apache.james.imap.mailbox.MailboxSession, java.lang.String)
+     */
+    public void unsubscribe(MailboxSession session, String mailbox) throws SubscriptionException {
+        subscriper.unsubscribe(session, mailbox);
+    }
+
 }

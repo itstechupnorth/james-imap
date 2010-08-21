@@ -23,21 +23,20 @@ import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.MailboxSession;
 import org.apache.james.imap.mailbox.util.MailboxEventDispatcher;
 import org.apache.james.imap.maildir.mail.model.MaildirMailbox;
-import org.apache.james.imap.maildir.user.model.MaildirSubscription;
 import org.apache.james.imap.store.Authenticator;
 import org.apache.james.imap.store.MailboxSessionMapperFactory;
 import org.apache.james.imap.store.StoreMailboxManager;
 import org.apache.james.imap.store.MapperStoreMessageManager;
+import org.apache.james.imap.store.Subscriber;
 import org.apache.james.imap.store.mail.MailboxMapper;
 import org.apache.james.imap.store.mail.model.Mailbox;
-import org.apache.james.imap.store.user.model.Subscription;
 
 public class MaildirMailboxManager extends StoreMailboxManager<Integer> {
 
     public MaildirMailboxManager(
             MailboxSessionMapperFactory<Integer> mailboxSessionMapperFactory,
-            Authenticator authenticator) {
-        super(mailboxSessionMapperFactory, authenticator);
+            Authenticator authenticator, Subscriber subscriber) {
+        super(mailboxSessionMapperFactory, authenticator, subscriber);
     }
 
     @Override
@@ -53,11 +52,5 @@ public class MaildirMailboxManager extends StoreMailboxManager<Integer> {
         final MailboxMapper<Integer> mapper = mailboxSessionMapperFactory.getMailboxMapper(session);
         mapper.save(mailbox);
     }
-    
-    @Override
-    protected Subscription createSubscription(MailboxSession session, String mailbox) {
-        return new MaildirSubscription(session.getUser().getUserName(), mailbox);
-    }
-
 
 }

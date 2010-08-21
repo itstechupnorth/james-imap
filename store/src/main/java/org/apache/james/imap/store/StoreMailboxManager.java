@@ -20,9 +20,7 @@
 package org.apache.james.imap.store;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
@@ -38,15 +36,12 @@ import org.apache.james.imap.mailbox.MailboxQuery;
 import org.apache.james.imap.mailbox.MailboxSession;
 import org.apache.james.imap.mailbox.MessageRange;
 import org.apache.james.imap.mailbox.StandardMailboxMetaDataComparator;
-import org.apache.james.imap.mailbox.SubscriptionException;
 import org.apache.james.imap.mailbox.MailboxMetaData.Selectability;
 import org.apache.james.imap.mailbox.util.MailboxEventDispatcher;
 import org.apache.james.imap.mailbox.util.SimpleMailboxMetaData;
 import org.apache.james.imap.store.mail.MailboxMapper;
 import org.apache.james.imap.store.mail.model.Mailbox;
 import org.apache.james.imap.store.transaction.TransactionalMapper;
-import org.apache.james.imap.store.user.SubscriptionMapper;
-import org.apache.james.imap.store.user.model.Subscription;
 
 /**
  * This abstract base class of an {@link MailboxManager} implementation provides a high-level api for writing your own
@@ -66,8 +61,8 @@ public abstract class StoreMailboxManager<Id> extends DelegatingMailboxManager {
     private final MailboxPathLock lock = new MailboxPathLock();
     protected final MailboxSessionMapperFactory<Id> mailboxSessionMapperFactory;    
     
-    public StoreMailboxManager(MailboxSessionMapperFactory<Id> mailboxSessionMapperFactory, final Authenticator authenticator) {
-        super(authenticator);
+    public StoreMailboxManager(MailboxSessionMapperFactory<Id> mailboxSessionMapperFactory, final Authenticator authenticator, final Subscriber subscriber) {
+        super(authenticator, subscriber);
         this.mailboxSessionMapperFactory = mailboxSessionMapperFactory;
         
         // The dispatcher need to have the delegating listener added
@@ -311,76 +306,6 @@ public abstract class StoreMailboxManager<Id> extends DelegatingMailboxManager {
      */
     public void endProcessingRequest(MailboxSession session) {
         mailboxSessionMapperFactory.endRequest(session);
-    }
-    
-
-    /*
-     * (non-Javadoc)
-     * @see org.apache.james.imap.store.Subscriber#subscribe(org.apache.james.imap.mailbox.MailboxSession, java.lang.String)
-     */
-    public void subscribe(final MailboxSession session, final String mailbox) throws SubscriptionException {
-        final SubscriptionMapper mapper = mailboxSessionMapperFactory.getSubscriptionMapper(session);
-        try {
-            mapper.execute(new TransactionalMapper.VoidTransaction() {
-
-                public void runVoid() throws MailboxException {
-                    final Subscription subscription = mapper.findMailboxSubscriptionForUser(session.getUser().getUserName(), mailbox);
-                    if (subscription == null) {
-                        final Subscription newSubscription = createSubscription(session, mailbox);
-                        mapper.save(newSubscription);
-                    }
-                }
-                
-            });
-        } catch (MailboxException e) {
-            throw new SubscriptionException(e.getKey(), (Exception) e.getCause());
-        }
-    }
-
-    /**
-     * Create Subscription for the given user and mailbox
-     * 
-     * @param session
-     * @param mailbox
-     * @return subscription 
-     */
-    protected abstract Subscription createSubscription(final MailboxSession session, final String mailbox);
-
-    /*
-     * (non-Javadoc)
-     * @see org.apache.james.imap.mailbox.MailboxManager#subscriptions(org.apache.james.imap.mailbox.MailboxSession)
-     */
-    public Collection<String> subscriptions(final MailboxSession session) throws SubscriptionException {
-        final SubscriptionMapper mapper = mailboxSessionMapperFactory.getSubscriptionMapper(session);
-        final List<Subscription> subscriptions = mapper.findSubscriptionsForUser(session.getUser().getUserName());
-        final Collection<String> results = new HashSet<String>();
-        for (Subscription subscription:subscriptions) {
-            results.add(subscription.getMailbox());
-        }        
-        return results;
-    }
-
-
-    /*
-     * (non-Javadoc)
-     * @see org.apache.james.imap.mailbox.MailboxManager#unsubscribe(org.apache.james.imap.mailbox.MailboxSession, java.lang.String)
-     */
-    public void unsubscribe(final MailboxSession session, final String mailbox) throws SubscriptionException {
-        final SubscriptionMapper mapper = mailboxSessionMapperFactory.getSubscriptionMapper(session);
-        try {
-            mapper.execute(new TransactionalMapper.VoidTransaction() {
-
-                public void runVoid() throws MailboxException {
-                    final Subscription subscription = mapper.findMailboxSubscriptionForUser(session.getUser().getUserName(), mailbox);
-                    if (subscription != null) {
-                        mapper.delete(subscription);
-                    }
-                }
-
-            });
-        } catch (MailboxException e) {
-            throw new SubscriptionException(e.getKey(), (Exception)e.getCause());
-        }
     }
 
 }

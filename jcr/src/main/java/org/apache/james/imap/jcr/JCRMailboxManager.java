@@ -23,16 +23,15 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.james.imap.api.MailboxPath;
 import org.apache.james.imap.jcr.mail.JCRMailboxMapper;
 import org.apache.james.imap.jcr.mail.model.JCRMailbox;
-import org.apache.james.imap.jcr.user.model.JCRSubscription;
 import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.MailboxSession;
 import org.apache.james.imap.mailbox.util.MailboxEventDispatcher;
 import org.apache.james.imap.store.Authenticator;
 import org.apache.james.imap.store.StoreMailboxManager;
 import org.apache.james.imap.store.MapperStoreMessageManager;
+import org.apache.james.imap.store.Subscriber;
 import org.apache.james.imap.store.mail.model.Mailbox;
 import org.apache.james.imap.store.transaction.TransactionalMapper;
-import org.apache.james.imap.store.user.model.Subscription;
 
 /**
  * JCR implementation of a MailboxManager
@@ -43,12 +42,12 @@ public class JCRMailboxManager extends StoreMailboxManager<String> implements JC
     private final JCRMailboxSessionMapperFactory mapperFactory;
     private final Log logger = LogFactory.getLog(JCRMailboxManager.class);
     
-    public JCRMailboxManager(JCRMailboxSessionMapperFactory mapperFactory, final Authenticator authenticator) {
-	    this(mapperFactory, authenticator, new JCRVmNodeLocker());
+    public JCRMailboxManager(JCRMailboxSessionMapperFactory mapperFactory, final Authenticator authenticator, final Subscriber subscriber) {
+	    this(mapperFactory, authenticator, subscriber, new JCRVmNodeLocker());
     }
 
-    public JCRMailboxManager(JCRMailboxSessionMapperFactory mapperFactory, final Authenticator authenticator, final NodeLocker locker) {
-        super(mapperFactory, authenticator);
+    public JCRMailboxManager(JCRMailboxSessionMapperFactory mapperFactory, final Authenticator authenticator, final Subscriber subscriber, final NodeLocker locker) {
+        super(mapperFactory, authenticator, subscriber);
         this.mapperFactory = mapperFactory;
     }
 
@@ -69,16 +68,6 @@ public class JCRMailboxManager extends StoreMailboxManager<String> implements JC
             }
 
         });
-    }
-    
-
-   
-    /*
-     * (non-Javadoc)
-     * @see org.apache.james.imap.store.StoreMailboxManager#createSubscription(org.apache.james.imap.mailbox.MailboxSession, java.lang.String)
-     */
-    protected Subscription createSubscription(MailboxSession session, String mailbox) {
-        return new JCRSubscription(session.getUser().getUserName(), mailbox, logger);
     }
 
 }
