@@ -26,7 +26,6 @@ import org.apache.james.imap.functional.AbstractStressTest;
 import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.maildir.MaildirMailboxManager;
 import org.apache.james.imap.maildir.MaildirMailboxSessionMapperFactory;
-import org.apache.james.imap.maildir.MaildirSubscriptionManager;
 import org.apache.james.imap.store.StoreMailboxManager;
 import org.junit.After;
 import org.junit.Before;
@@ -39,7 +38,7 @@ public class MaildirStressTest extends AbstractStressTest {
     @Before
     public void setUp() {
         MaildirMailboxSessionMapperFactory mf = new MaildirMailboxSessionMapperFactory(MAILDIR_HOME + "/%user");
-        mailboxManager = new MaildirMailboxManager(mf, null, new MaildirSubscriptionManager(mf));
+        mailboxManager = new MaildirMailboxManager(mf, null);
     }
     
     @After

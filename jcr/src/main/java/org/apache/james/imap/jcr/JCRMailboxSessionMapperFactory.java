@@ -52,7 +52,7 @@ public class JCRMailboxSessionMapperFactory extends MailboxSessionMapperFactory<
 
     public JCRMailboxSessionMapperFactory(final MailboxSessionJCRRepository repository, final NodeLocker locker, final int scaling, final int messageScaling) {
         this.repository = repository;
-        this.logger = LogFactory.getLog(JCRSubscriptionManager.class);
+        this.logger = LogFactory.getLog(JCRMailboxSessionMapperFactory.class);
         this.locker = locker;
         this.scaling = scaling;
         this.messageScaling = messageScaling;

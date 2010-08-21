@@ -21,12 +21,16 @@ package org.apache.james.imap.store;
 
 import java.util.Collection;
 
+import org.apache.james.imap.mailbox.MailboxManager;
 import org.apache.james.imap.mailbox.MailboxSession;
 import org.apache.james.imap.mailbox.SubscriptionException;
 
 /**
  * Subscribes users.
+ * 
+ * @deprecated Use {@link MailboxManager}
  */
+@Deprecated
 public interface Subscriber {
     
     /**

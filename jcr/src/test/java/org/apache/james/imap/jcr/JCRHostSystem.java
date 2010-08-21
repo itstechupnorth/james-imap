@@ -30,7 +30,6 @@ import org.apache.james.imap.functional.InMemoryUserManager;
 import org.apache.james.imap.jcr.GlobalMailboxSessionJCRRepository;
 import org.apache.james.imap.jcr.JCRMailboxManager;
 import org.apache.james.imap.jcr.JCRMailboxSessionMapperFactory;
-import org.apache.james.imap.jcr.JCRSubscriptionManager;
 import org.apache.james.imap.jcr.JCRUtils;
 import org.apache.james.imap.jcr.JCRVmNodeLocker;
 import org.apache.james.imap.mailbox.MailboxSession;
@@ -72,7 +71,7 @@ public class JCRHostSystem extends ImapHostSystem{
             JCRMailboxSessionMapperFactory mf = new JCRMailboxSessionMapperFactory(sessionRepos, new JCRVmNodeLocker());
 
             //TODO: Fix the scaling stuff so the tests will pass with max scaling too
-            mailboxManager = new JCRMailboxManager(mf, userManager, new JCRSubscriptionManager(mf));
+            mailboxManager = new JCRMailboxManager(mf, userManager);
             final DefaultImapProcessorFactory defaultImapProcessorFactory = new DefaultImapProcessorFactory();
             resetUserMetaData();
             MailboxSession session = mailboxManager.createSystemSession("test", new SimpleLog("TestLog"));

@@ -24,7 +24,6 @@ import org.apache.james.imap.functional.ImapHostSystem;
 import org.apache.james.imap.functional.InMemoryUserManager;
 import org.apache.james.imap.inmemory.InMemoryMailboxManager;
 import org.apache.james.imap.inmemory.InMemoryMailboxSessionMapperFactory;
-import org.apache.james.imap.inmemory.InMemorySubscriptionManager;
 import org.apache.james.imap.main.DefaultImapDecoderFactory;
 import org.apache.james.imap.processor.main.DefaultImapProcessorFactory;
 import org.apache.james.test.functional.HostSystem;
@@ -42,7 +41,7 @@ public class InMemoryHostSystem extends ImapHostSystem {
     private InMemoryHostSystem() {
         userManager = new InMemoryUserManager();
         factory = new InMemoryMailboxSessionMapperFactory();
-        mailboxManager = new InMemoryMailboxManager(factory, userManager, new InMemorySubscriptionManager(factory));
+        mailboxManager = new InMemoryMailboxManager(factory, userManager);
         final DefaultImapProcessorFactory defaultImapProcessorFactory = new DefaultImapProcessorFactory();
         defaultImapProcessorFactory.configure(mailboxManager);
         configure(new DefaultImapDecoderFactory().buildImapDecoder(),

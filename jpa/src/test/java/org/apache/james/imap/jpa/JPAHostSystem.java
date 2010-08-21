@@ -30,7 +30,6 @@ import org.apache.james.imap.encode.main.DefaultImapEncoderFactory;
 import org.apache.james.imap.functional.ImapHostSystem;
 import org.apache.james.imap.functional.InMemoryUserManager;
 import org.apache.james.imap.jpa.JPAMailboxSessionMapperFactory;
-import org.apache.james.imap.jpa.JPASubscriptionManager;
 import org.apache.james.imap.jpa.mail.model.JPAMailbox;
 import org.apache.james.imap.jpa.mail.model.JPAProperty;
 import org.apache.james.imap.jpa.mail.model.openjpa.AbstractJPAMailboxMembership;
@@ -76,7 +75,7 @@ public class JPAHostSystem extends ImapHostSystem {
         userManager = new InMemoryUserManager();
         entityManagerFactory = OpenJPAPersistence.getEntityManagerFactory(properties);
         JPAMailboxSessionMapperFactory mf = new JPAMailboxSessionMapperFactory(entityManagerFactory);
-        mailboxManager = new OpenJPAMailboxManager(mf, userManager, new JPASubscriptionManager(mf));
+        mailboxManager = new OpenJPAMailboxManager(mf, userManager);
         
         final DefaultImapProcessorFactory defaultImapProcessorFactory = new DefaultImapProcessorFactory();
         resetUserMetaData();

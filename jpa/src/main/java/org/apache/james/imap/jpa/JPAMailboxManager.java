@@ -20,14 +20,15 @@ package org.apache.james.imap.jpa;
 
 import org.apache.james.imap.api.MailboxPath;
 import org.apache.james.imap.jpa.mail.model.JPAMailbox;
+import org.apache.james.imap.jpa.user.model.JPASubscription;
 import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.MailboxSession;
 import org.apache.james.imap.store.Authenticator;
 import org.apache.james.imap.store.StoreMailboxManager;
-import org.apache.james.imap.store.Subscriber;
 import org.apache.james.imap.store.mail.MailboxMapper;
 import org.apache.james.imap.store.mail.model.Mailbox;
 import org.apache.james.imap.store.transaction.TransactionalMapper;
+import org.apache.james.imap.store.user.model.Subscription;
 
 /**
  * JPA implementation of {@link StoreMailboxManager}
@@ -35,8 +36,8 @@ import org.apache.james.imap.store.transaction.TransactionalMapper;
 public abstract class JPAMailboxManager extends StoreMailboxManager<Long> {
     
     public JPAMailboxManager(JPAMailboxSessionMapperFactory mailboxSessionMapperFactory,
-            final Authenticator authenticator, final Subscriber subscriber) {
-        super(mailboxSessionMapperFactory, authenticator, subscriber);
+            final Authenticator authenticator) {
+        super(mailboxSessionMapperFactory, authenticator);
     }
     
     @Override
@@ -67,6 +68,15 @@ public abstract class JPAMailboxManager extends StoreMailboxManager<Long> {
             }
             
         });
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.store.StoreMailboxManager#createSubscription(org.apache.james.imap.mailbox.MailboxSession, java.lang.String)
+     */
+    protected Subscription createSubscription(final MailboxSession session, final String mailbox) {
+        final Subscription newSubscription = new JPASubscription(session.getUser().getUserName(), mailbox);
+        return newSubscription;
     }
     
 }

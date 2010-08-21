@@ -26,7 +26,6 @@ import javax.persistence.EntityManagerFactory;
 import org.apache.commons.logging.impl.SimpleLog;
 import org.apache.james.imap.functional.AbstractStressTest;
 import org.apache.james.imap.jpa.JPAMailboxSessionMapperFactory;
-import org.apache.james.imap.jpa.JPASubscriptionManager;
 import org.apache.james.imap.jpa.mail.model.JPAMailbox;
 import org.apache.james.imap.jpa.mail.model.JPAProperty;
 import org.apache.james.imap.jpa.mail.model.openjpa.AbstractJPAMailboxMembership;
@@ -72,7 +71,7 @@ public class JPAStressTest extends AbstractStressTest{
        
         entityManagerFactory = OpenJPAPersistence.getEntityManagerFactory(properties);
         JPAMailboxSessionMapperFactory mf = new JPAMailboxSessionMapperFactory(entityManagerFactory);
-        mailboxManager = new OpenJPAMailboxManager(mf, null, new JPASubscriptionManager(mf));
+        mailboxManager = new OpenJPAMailboxManager(mf, null);
         
         // Set the lock timeout via SQL because of a bug in openJPA
         // https://issues.apache.org/jira/browse/OPENJPA-1656
