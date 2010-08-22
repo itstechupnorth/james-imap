@@ -21,14 +21,14 @@ package org.apache.james.imap.store.user;
 import java.util.List;
 
 import org.apache.james.imap.mailbox.SubscriptionException;
-import org.apache.james.imap.store.transaction.TransactionalMapper;
+import org.apache.james.imap.store.transaction.Mapper;
 import org.apache.james.imap.store.user.model.Subscription;
 
 /**
  * Mapper for {@link Subscription}
  *
  */
-public interface SubscriptionMapper extends TransactionalMapper{
+public interface SubscriptionMapper extends Mapper {
 
 	
     /**

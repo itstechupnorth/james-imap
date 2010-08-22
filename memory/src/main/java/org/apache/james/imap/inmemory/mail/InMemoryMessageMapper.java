@@ -9,7 +9,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.james.imap.inmemory.mail.model.InMemoryMailbox;
 import org.apache.james.imap.inmemory.mail.model.SimpleMailboxMembership;
-import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.MessageRange;
 import org.apache.james.imap.mailbox.SearchQuery;
 import org.apache.james.imap.mailbox.StorageException;
@@ -18,8 +17,9 @@ import org.apache.james.imap.store.SearchQueryIterator;
 import org.apache.james.imap.store.mail.MessageMapper;
 import org.apache.james.imap.store.mail.model.Mailbox;
 import org.apache.james.imap.store.mail.model.MailboxMembership;
+import org.apache.james.imap.store.transaction.NonTransactionalMapper;
 
-public class InMemoryMessageMapper implements MessageMapper<Long> {
+public class InMemoryMessageMapper extends NonTransactionalMapper implements MessageMapper<Long> {
 
     private Map<Long, Map<Long, MailboxMembership<Long>>> mailboxByUid;
     private static final int INITIAL_SIZE = 256;
@@ -178,13 +178,6 @@ public class InMemoryMessageMapper implements MessageMapper<Long> {
         Collections.sort(memberships, MailboxMembershipComparator.INSTANCE);
 
         return new SearchQueryIterator(memberships.iterator(), query);
-    }
-
-    /**
-     * There is no really Transaction handling here.. Just run it 
-     */
-    public <T> T execute(Transaction<T> transaction) throws MailboxException {
-        return transaction.run();
     }
     
     public void deleteAll() {

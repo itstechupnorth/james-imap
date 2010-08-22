@@ -25,7 +25,7 @@ import org.apache.commons.logging.Log;
 import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.MailboxSession;
-import org.apache.james.imap.store.transaction.AbstractTransactionalMapper;
+import org.apache.james.imap.store.transaction.TransactionalMapper;
 
 /**
  * Abstract Mapper base class for Level 1 Implementations of JCR. So no real transaction management is used. 
@@ -33,7 +33,7 @@ import org.apache.james.imap.store.transaction.AbstractTransactionalMapper;
  * The Session.save() will get called on commit() method,  session.refresh(false) on rollback, and session.refresh(true) on begin()
  *
  */
-public abstract class AbstractJCRMapper extends AbstractTransactionalMapper implements JCRImapConstants {
+public abstract class AbstractJCRMapper extends TransactionalMapper implements JCRImapConstants {
     public final static String MAILBOXES_PATH =  "mailboxes";
 
     private final Log logger;

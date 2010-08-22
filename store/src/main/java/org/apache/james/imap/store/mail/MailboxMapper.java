@@ -24,14 +24,14 @@ import org.apache.james.imap.api.MailboxPath;
 import org.apache.james.imap.mailbox.MailboxNotFoundException;
 import org.apache.james.imap.mailbox.StorageException;
 import org.apache.james.imap.store.mail.model.Mailbox;
-import org.apache.james.imap.store.transaction.TransactionalMapper;
+import org.apache.james.imap.store.transaction.Mapper;
 
 /**
  * Mapper for {@link Mailbox} actions. A {@link MailboxMapper} has a lifecycle from the start of a request 
  * to the end of the request.
  *
  */
-public interface MailboxMapper<Id> extends TransactionalMapper {
+public interface MailboxMapper<Id> extends Mapper {
     
     /**
      * Save the give {@link Mailbox} to the underlying storage

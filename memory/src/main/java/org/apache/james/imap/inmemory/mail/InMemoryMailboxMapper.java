@@ -25,13 +25,13 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.james.imap.api.MailboxPath;
 import org.apache.james.imap.inmemory.mail.model.InMemoryMailbox;
-import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.MailboxNotFoundException;
 import org.apache.james.imap.mailbox.StorageException;
 import org.apache.james.imap.store.mail.MailboxMapper;
 import org.apache.james.imap.store.mail.model.Mailbox;
+import org.apache.james.imap.store.transaction.NonTransactionalMapper;
 
-public class InMemoryMailboxMapper implements MailboxMapper<Long> {
+public class InMemoryMailboxMapper extends NonTransactionalMapper implements MailboxMapper<Long> {
     
     private static final int INITIAL_SIZE = 128;
     private final Map<Long, InMemoryMailbox> mailboxesById;
@@ -113,14 +113,6 @@ public class InMemoryMailboxMapper implements MailboxMapper<Long> {
      */
     public void save(Mailbox<Long> mailbox) throws StorageException {
         mailboxesById.put(mailbox.getMailboxId(), (InMemoryMailbox) mailbox);
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see org.apache.james.imap.store.transaction.TransactionalMapper#execute(org.apache.james.imap.store.transaction.TransactionalMapper.Transaction)
-     */
-    public <T> T execute(Transaction<T> transaction) throws MailboxException {
-        return transaction.run();
     }
 
     /**

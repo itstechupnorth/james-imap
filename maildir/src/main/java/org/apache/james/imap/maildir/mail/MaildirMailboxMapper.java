@@ -29,7 +29,6 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.james.imap.api.MailboxPath;
 import org.apache.james.imap.api.display.HumanReadableText;
-import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.MailboxNotFoundException;
 import org.apache.james.imap.mailbox.StorageException;
 import org.apache.james.imap.maildir.MaildirFolder;
@@ -38,8 +37,9 @@ import org.apache.james.imap.maildir.MaildirStore;
 import org.apache.james.imap.maildir.mail.model.MaildirMailbox;
 import org.apache.james.imap.store.mail.MailboxMapper;
 import org.apache.james.imap.store.mail.model.Mailbox;
+import org.apache.james.imap.store.transaction.NonTransactionalMapper;
 
-public class MaildirMailboxMapper implements MailboxMapper<Integer> {
+public class MaildirMailboxMapper extends NonTransactionalMapper implements MailboxMapper<Integer> {
 
     /**
      * The {@link MaildirStore} the mailboxes reside in
@@ -209,15 +209,6 @@ public class MaildirMailboxMapper implements MailboxMapper<Integer> {
      */
     public void endRequest() {
         mailboxCache.clear();
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see org.apache.james.imap.store.transaction.TransactionalMapper#execute(org.apache.james.imap.store.transaction.TransactionalMapper.Transaction)
-     */
-    public <T> T execute(Transaction<T> transaction) throws MailboxException {
-        // no transactions used
-        return transaction.run();
     }
     
     /**

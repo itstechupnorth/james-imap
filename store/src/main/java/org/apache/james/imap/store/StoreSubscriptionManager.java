@@ -26,7 +26,7 @@ import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.MailboxSession;
 import org.apache.james.imap.mailbox.SubscriptionException;
 import org.apache.james.imap.mailbox.SubscriptionManager;
-import org.apache.james.imap.store.transaction.TransactionalMapper;
+import org.apache.james.imap.store.transaction.Mapper;
 import org.apache.james.imap.store.user.SubscriptionMapper;
 import org.apache.james.imap.store.user.model.Subscription;
 
@@ -50,7 +50,7 @@ public abstract class StoreSubscriptionManager<Id> implements SubscriptionManage
     public void subscribe(final MailboxSession session, final String mailbox) throws SubscriptionException {
         final SubscriptionMapper mapper = mapperFactory.getSubscriptionMapper(session);
         try {
-            mapper.execute(new TransactionalMapper.VoidTransaction() {
+            mapper.execute(new Mapper.VoidTransaction() {
 
                 public void runVoid() throws MailboxException {
                     final Subscription subscription = mapper.findMailboxSubscriptionForUser(session.getUser().getUserName(), mailbox);
@@ -97,7 +97,7 @@ public abstract class StoreSubscriptionManager<Id> implements SubscriptionManage
     public void unsubscribe(final MailboxSession session, final String mailbox) throws SubscriptionException {
         final SubscriptionMapper mapper = mapperFactory.getSubscriptionMapper(session);
         try {
-            mapper.execute(new TransactionalMapper.VoidTransaction() {
+            mapper.execute(new Mapper.VoidTransaction() {
 
                 public void runVoid() throws MailboxException {
                     final Subscription subscription = mapper.findMailboxSubscriptionForUser(session.getUser().getUserName(), mailbox);

@@ -39,7 +39,7 @@ import org.apache.james.imap.mailbox.util.MailboxEventDispatcher;
 import org.apache.james.imap.store.mail.MessageMapper;
 import org.apache.james.imap.store.mail.model.Mailbox;
 import org.apache.james.imap.store.mail.model.MailboxMembership;
-import org.apache.james.imap.store.transaction.TransactionalMapper;
+import org.apache.james.imap.store.transaction.Mapper;
 
 /**
  * Abstract base class for {@link org.apache.james.imap.mailbox.Mailbox} implementations.
@@ -63,7 +63,7 @@ public abstract class MapperStoreMessageManager<Id> extends StoreMessageManager<
     @Override
     protected long appendMessageToStore(final MailboxMembership<Id> message, MailboxSession session) throws MailboxException {
         final MessageMapper<Id> mapper = mapperFactory.getMessageMapper(session);
-        return mapperFactory.getMessageMapper(session).execute(new TransactionalMapper.Transaction<Long>() {
+        return mapperFactory.getMessageMapper(session).execute(new Mapper.Transaction<Long>() {
 
             public Long run() throws MailboxException {
                 return mapper.save(getMailboxEntity(), message);
@@ -105,7 +105,7 @@ public abstract class MapperStoreMessageManager<Id> extends StoreMessageManager<
     protected List<Long> recent(final boolean reset, MailboxSession mailboxSession) throws MailboxException {
         final MessageMapper<Id> messageMapper = mapperFactory.getMessageMapper(mailboxSession);
         
-        return messageMapper.execute(new TransactionalMapper.Transaction<List<Long>>() {
+        return messageMapper.execute(new Mapper.Transaction<List<Long>>() {
 
             public List<Long> run() throws MailboxException {
                 final List<MailboxMembership<Id>> members = messageMapper.findRecentMessagesInMailbox(getMailboxEntity(), -1);
@@ -131,7 +131,7 @@ public abstract class MapperStoreMessageManager<Id> extends StoreMessageManager<
     protected Iterator<Long> deleteMarkedInMailbox(final MessageRange range, final MailboxSession session) throws MailboxException {
         final MessageMapper<Id> messageMapper = mapperFactory.getMessageMapper(session);
 
-        return messageMapper.execute(new TransactionalMapper.Transaction<Iterator<Long>>() {
+        return messageMapper.execute(new Mapper.Transaction<Iterator<Long>>() {
 
             public Iterator<Long> run() throws MailboxException {
                 final Collection<Long> uids = new TreeSet<Long>();
@@ -158,7 +158,7 @@ public abstract class MapperStoreMessageManager<Id> extends StoreMessageManager<
             final MessageRange set, MailboxSession mailboxSession) throws MailboxException {
         final MessageMapper<Id> messageMapper = mapperFactory.getMessageMapper(mailboxSession);
 
-        return messageMapper.execute(new TransactionalMapper.Transaction<Iterator<UpdatedFlag>>(){
+        return messageMapper.execute(new Mapper.Transaction<Iterator<UpdatedFlag>>(){
 
             public Iterator<UpdatedFlag> run() throws MailboxException {
                 final List<UpdatedFlag> updatedFlags = new ArrayList<UpdatedFlag>();
@@ -207,7 +207,7 @@ public abstract class MapperStoreMessageManager<Id> extends StoreMessageManager<
             final MessageMapper<Id> messageMapper = mapperFactory.getMessageMapper(session);
 
             for (final MailboxMembership<Id> originalMessage:originalRows) {
-               copiedRows.add(messageMapper.execute(new TransactionalMapper.Transaction<Long>() {
+               copiedRows.add(messageMapper.execute(new Mapper.Transaction<Long>() {
 
                     public Long run() throws MailboxException {
 

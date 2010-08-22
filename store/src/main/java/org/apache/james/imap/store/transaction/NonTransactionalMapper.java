@@ -21,39 +21,18 @@ package org.apache.james.imap.store.transaction;
 import org.apache.james.imap.mailbox.MailboxException;
 
 /**
- * Mapper which not do any real transaction handling. It just execute the execute() method
+ * A Mapper which does no transaction handling. It just executes the execute() method
  * of the Transaction object without any special handling.
  *  
- * This class is mostly useful for Mapper implementations which not support Transactions
- *
+ * This class is mostly useful for Mapper implementations which do not support Transactions
  */
-public abstract class NonTransactionalMapper extends AbstractTransactionalMapper {
+public abstract class NonTransactionalMapper implements Mapper {
 
-
-    /**
-     * Do nothing because we don't support transaction
-     */
-    protected void begin() throws MailboxException {
-        // do nothing
-        
-    }
-
-
-    /**
-     * Do nothing because we don't support transaction
-     */
-    protected void commit() throws MailboxException {
-        // do nothing
-        
-    }
-
-
-    /**
-     * Do nothing because we don't support transaction
-     */
-    protected void rollback() throws MailboxException {
-        // do nothing
-        
+	/* (non-Javadoc)
+	 * @see org.apache.james.imap.store.transaction.Mapper#execute(org.apache.james.imap.store.transaction.Mapper.Transaction)
+	 */
+	public final <T> T execute(Transaction<T> transaction) throws MailboxException {
+        return transaction.run();
     }
 
 }

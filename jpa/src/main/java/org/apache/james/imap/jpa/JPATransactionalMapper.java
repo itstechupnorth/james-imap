@@ -26,13 +26,13 @@ import javax.persistence.PersistenceException;
 import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.StorageException;
-import org.apache.james.imap.store.transaction.AbstractTransactionalMapper;
+import org.apache.james.imap.store.transaction.TransactionalMapper;
 
 /**
  * JPA implementation of TransactionMapper. This class is not thread-safe!
  *
  */
-public abstract class JPATransactionalMapper extends AbstractTransactionalMapper {
+public abstract class JPATransactionalMapper extends TransactionalMapper {
 
     protected EntityManagerFactory entityManagerFactory;
     protected EntityManager entityManager;

@@ -57,12 +57,13 @@ import org.apache.james.imap.store.mail.model.MailboxMembership;
 import org.apache.james.imap.store.mail.model.PropertyBuilder;
 import org.apache.james.imap.store.streaming.ConfigurableMimeTokenStream;
 import org.apache.james.imap.store.streaming.CountingInputStream;
+import org.apache.james.imap.store.transaction.NonTransactionalMapper;
 import org.apache.james.mime4j.MimeException;
 import org.apache.james.mime4j.descriptor.MaximalBodyDescriptor;
 import org.apache.james.mime4j.parser.MimeEntityConfig;
 import org.apache.james.mime4j.parser.MimeTokenStream;
 
-public class MaildirMessageMapper implements MessageMapper<Integer> {
+public class MaildirMessageMapper extends NonTransactionalMapper implements MessageMapper<Integer> {
 
     private final MaildirStore maildirStore;
     private final int BUF_SIZE = 2048;
@@ -442,15 +443,6 @@ public class MaildirMessageMapper implements MessageMapper<Integer> {
     public void endRequest() {
         // not used
         
-    }
-
-    /* 
-     * (non-Javadoc)
-     * @see org.apache.james.imap.store.transaction.TransactionalMapper#execute(org.apache.james.imap.store.transaction.TransactionalMapper.Transaction)
-     */
-    public <T> T execute(Transaction<T> transaction) throws MailboxException {
-        // no transactions used
-        return transaction.run();
     }
     
     /**

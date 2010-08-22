@@ -41,7 +41,7 @@ import org.apache.james.imap.mailbox.util.MailboxEventDispatcher;
 import org.apache.james.imap.mailbox.util.SimpleMailboxMetaData;
 import org.apache.james.imap.store.mail.MailboxMapper;
 import org.apache.james.imap.store.mail.model.Mailbox;
-import org.apache.james.imap.store.transaction.TransactionalMapper;
+import org.apache.james.imap.store.transaction.Mapper;
 
 /**
  * This abstract base class of an {@link MailboxManager} implementation provides a high-level api for writing your own
@@ -143,7 +143,7 @@ public abstract class StoreMailboxManager<Id> extends DelegatingMailboxManager {
         session.getLog().info("deleteMailbox " + mailboxPath);
         final MailboxMapper<Id> mapper = mailboxSessionMapperFactory.getMailboxMapper(session);
 
-        mapper.execute(new TransactionalMapper.VoidTransaction() {
+        mapper.execute(new Mapper.VoidTransaction() {
 
             public void runVoid() throws MailboxException {
                 Mailbox<Id> mailbox = mapper.findMailboxByPath(mailboxPath);
@@ -172,7 +172,7 @@ public abstract class StoreMailboxManager<Id> extends DelegatingMailboxManager {
         }
 
         final MailboxMapper<Id> mapper = mailboxSessionMapperFactory.getMailboxMapper(session);
-        mapper.execute(new TransactionalMapper.VoidTransaction() {
+        mapper.execute(new Mapper.VoidTransaction() {
 
             public void runVoid() throws MailboxException {
                 // TODO put this into a serilizable transaction

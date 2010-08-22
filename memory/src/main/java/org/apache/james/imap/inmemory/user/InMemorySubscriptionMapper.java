@@ -24,11 +24,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.apache.james.imap.mailbox.MailboxException;
+import org.apache.james.imap.store.transaction.NonTransactionalMapper;
 import org.apache.james.imap.store.user.SubscriptionMapper;
 import org.apache.james.imap.store.user.model.Subscription;
 
-public class InMemorySubscriptionMapper implements SubscriptionMapper {
+public class InMemorySubscriptionMapper extends NonTransactionalMapper implements SubscriptionMapper {
     
     private static final int INITIAL_SIZE = 64;
     private final Map<String, List<Subscription>> subscriptionsByUser;
@@ -98,14 +98,6 @@ public class InMemorySubscriptionMapper implements SubscriptionMapper {
         } else {
             subscriptions.add(subscription);
         }
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see org.apache.james.imap.store.transaction.TransactionalMapper#execute(org.apache.james.imap.store.transaction.TransactionalMapper.Transaction)
-     */
-    public <T> T execute(Transaction<T> transaction) throws MailboxException {
-        return transaction.run();
     }
     
     public void deleteAll() {

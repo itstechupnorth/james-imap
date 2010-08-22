@@ -27,13 +27,13 @@ import org.apache.james.imap.mailbox.StorageException;
 import org.apache.james.imap.store.mail.model.Document;
 import org.apache.james.imap.store.mail.model.Mailbox;
 import org.apache.james.imap.store.mail.model.MailboxMembership;
-import org.apache.james.imap.store.transaction.TransactionalMapper;
+import org.apache.james.imap.store.transaction.Mapper;
 
 /**
  * Maps {@link Document} in a {@link org.apache.james.imap.mailbox.Mailbox}. A {@link MessageMapper} has a lifecycle from the start of a request 
  * to the end of the request.
  */
-public interface MessageMapper<Id> extends TransactionalMapper {
+public interface MessageMapper<Id> extends Mapper {
 
     /**
      * Return a List of {@link MailboxMembership} which represent the given {@link MessageRange}

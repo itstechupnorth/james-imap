@@ -23,7 +23,7 @@ import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.MailboxSession;
 import org.apache.james.imap.store.MailboxSessionMapperFactory;
 import org.apache.james.imap.store.StoreSubscriptionManager;
-import org.apache.james.imap.store.transaction.TransactionalMapper.Transaction;
+import org.apache.james.imap.store.transaction.Mapper.Transaction;
 import org.apache.james.imap.store.user.model.Subscription;
 
 /**

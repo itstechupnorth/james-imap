@@ -22,47 +22,45 @@ package org.apache.james.imap.store.transaction;
 import org.apache.james.imap.mailbox.MailboxException;
 
 /**
- *
- * Run Transaction and handle begin, commit and rollback in the right order
+ * Mapper which execute units of work in a {@link Transaction}
  *
  */
-public abstract class AbstractTransactionalMapper implements TransactionalMapper {
-
-    /*
-     * (non-Javadoc)
-     * @see org.apache.james.imap.store.transaction.TransactionalMapper#execute(org.apache.james.imap.store.transaction.TransactionalMapper.Transaction)
+public interface Mapper {
+    
+    /**
+     * IMAP Request was complete. Cleanup all Request scoped stuff
      */
-    public final <T> T execute(Transaction<T> transaction) throws MailboxException {
-        begin();
-        try {
-            T value = transaction.run();
-            commit();
-            return value;
-        } catch (MailboxException e) {
-            rollback();
-            throw e;
-        }
+    public void endRequest();
+    
+    /**
+     * Execute the given Transaction
+     * 
+     * @param transaction 
+     * @throws MailboxException
+     */
+    public <T> T execute(Transaction<T> transaction) throws MailboxException;
+        
+    /**
+     * Unit of work executed in a Transaction
+     *
+     */
+    public interface Transaction<T> {
+        
+        /**
+         * Run unit of work in a Transaction and return a value
+         * 
+         * @throws MailboxException
+         */
+        public T run() throws MailboxException;
     }
     
-    /**
-     * Begin transaction
-     * 
-     * @throws StorageException
-     */
-    protected abstract void begin() throws MailboxException;
+    public abstract class VoidTransaction implements Transaction<Void> {
+        
+        public final Void run() throws MailboxException {
+            runVoid();
+            return null;
+        }
+        public abstract void runVoid() throws MailboxException;
 
-    /**
-     * Commit transaction
-     * 
-     * @throws StorageException
-     */
-    protected abstract void commit() throws MailboxException;
-    
-    /**
-     * Rollback transaction
-     * 
-     * @throws StorageException
-     */
-    protected abstract void rollback() throws MailboxException;
-
+    }
 }

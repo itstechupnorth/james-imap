@@ -34,10 +34,11 @@ import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.SubscriptionException;
 import org.apache.james.imap.maildir.user.model.MaildirSubscription;
+import org.apache.james.imap.store.transaction.NonTransactionalMapper;
 import org.apache.james.imap.store.user.SubscriptionMapper;
 import org.apache.james.imap.store.user.model.Subscription;
 
-public class MaildirSubscriptionMapper implements SubscriptionMapper {
+public class MaildirSubscriptionMapper extends NonTransactionalMapper implements SubscriptionMapper {
 
     private static final String PATH_USER = "%user";
     private static final String FILE_SUBSCRIPTION = "subscriptions";
@@ -117,14 +118,6 @@ public class MaildirSubscriptionMapper implements SubscriptionMapper {
      */
     public void endRequest() {
         // nothing to do
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see org.apache.james.imap.store.transaction.TransactionalMapper#execute(org.apache.james.imap.store.transaction.TransactionalMapper.Transaction)
-     */
-    public <T> T execute(Transaction<T> transaction) throws MailboxException {
-        return transaction.run();
     }
     
     /**
