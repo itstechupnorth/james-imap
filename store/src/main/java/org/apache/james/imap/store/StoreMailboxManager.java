@@ -23,7 +23,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import javax.mail.Flags;
+
 import org.apache.commons.logging.Log;
+import org.apache.james.imap.api.ImapConstants;
 import org.apache.james.imap.api.MailboxPath;
 import org.apache.james.imap.mailbox.MailboxConstants;
 import org.apache.james.imap.mailbox.MailboxException;
@@ -185,7 +188,7 @@ public abstract class StoreMailboxManager<Id> extends DelegatingMailboxManager {
                 mailbox.setName(to.getName());
                 mapper.save(mailbox);
 
-                changeMailboxName(from, to, session);
+                dispatcher.mailboxRenamed(from, to, session.getSessionId());
 
                 // rename submailboxes
                 MailboxPath children = new MailboxPath(MailboxConstants.USER_NAMESPACE, from.getUser(), from.getName() + MailboxConstants.DEFAULT_DELIMITER + "%");
@@ -195,13 +198,37 @@ public abstract class StoreMailboxManager<Id> extends DelegatingMailboxManager {
                     for (Mailbox<Id> sub : subMailboxes) {
                         final String subOriginalName = sub.getName();
                         final String subNewName = to.getName() + subOriginalName.substring(from.getName().length());
-                        sub.setName(subNewName);
-                        mapper.save(sub);
+                        final MailboxPath fromPath = new MailboxPath(children, subOriginalName);
+                        final MailboxPath toPath = new MailboxPath(children, subNewName);
+                        if (sub.getName().equalsIgnoreCase(ImapConstants.INBOX_NAME) == false) {
+                           
+                            sub.setName(subNewName);
+                            mapper.save(sub);
+                            dispatcher.mailboxRenamed(fromPath, toPath, session.getSessionId());
 
-                        changeMailboxName(new MailboxPath(children, subOriginalName), new MailboxPath(children, subNewName), session);
+                            if (log.isDebugEnabled())
+                                log.debug("Rename mailbox sub-mailbox " + subOriginalName + " to " + subNewName);
+                            
+                        } else {
+                           
+                            // if the mailbox is INBOX we need to move move the messages
+                            // https://issues.apache.org/jira/browse/IMAP-188                           
+                            MessageRange range = MessageRange.all();
+                            
+                            // create the mailbox if it not exist yet
+                            if (mailboxExists(toPath, session) == false) {
+                                createMailbox(toPath, session);
+                            }
+                            copyMessages(range, fromPath, toPath, session);
+                            
+                            org.apache.james.imap.mailbox.Mailbox inbox = getMailbox(fromPath, session);
+                            inbox.setFlags(new Flags(Flags.Flag.DELETED), true, false, range, session);
+                            inbox.expunge(range, session);
+                            
+                        }
 
-                        if (log.isDebugEnabled())
-                            log.debug("Rename mailbox sub-mailbox " + subOriginalName + " to " + subNewName);
+
+
                     }
                 } finally {
                     lock.unlock(children);
@@ -212,15 +239,7 @@ public abstract class StoreMailboxManager<Id> extends DelegatingMailboxManager {
         });
 
     }
- 
-    /**
-     * Changes the name of the mailbox instance in the cache.
-     * @param from not null
-     * @param to not null
-     */
-    private void changeMailboxName(MailboxPath from, MailboxPath to, MailboxSession session) {
-        dispatcher.mailboxRenamed(from, to, session.getSessionId());
-    }
+
 
     /*
      * (non-Javadoc)
