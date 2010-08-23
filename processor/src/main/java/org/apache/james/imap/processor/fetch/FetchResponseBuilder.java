@@ -36,7 +36,7 @@ import org.apache.james.imap.api.message.FetchData;
 import org.apache.james.imap.api.process.ImapSession;
 import org.apache.james.imap.api.process.SelectedMailbox;
 import org.apache.james.imap.mailbox.Content;
-import org.apache.james.imap.mailbox.Mailbox;
+import org.apache.james.imap.mailbox.MessageManager;
 import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.MailboxSession;
 import org.apache.james.imap.mailbox.MessageRange;
@@ -98,7 +98,7 @@ final class FetchResponseBuilder {
         return result;
     }
 
-    public FetchResponse build(FetchData fetch, MessageResult result, Mailbox mailbox, 
+    public FetchResponse build(FetchData fetch, MessageResult result, MessageManager mailbox, 
             ImapSession session, boolean useUids) throws MessagingException,
             ParseException {
         final SelectedMailbox selected = session.getSelected();

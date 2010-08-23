@@ -58,11 +58,11 @@ public class ResultUtils {
     static final Charset US_ASCII = Charset.forName("US-ASCII");
 
     public static List<MessageResult.Header> createHeaders(MailboxMembership<?> message) {
-        final org.apache.james.imap.store.mail.model.Document document = message.getDocument();
+        final org.apache.james.imap.store.mail.model.Message document = message.getDocument();
         return createHeaders(document);
     }
 
-    public static List<MessageResult.Header> createHeaders(final org.apache.james.imap.store.mail.model.Document document) {
+    public static List<MessageResult.Header> createHeaders(final org.apache.james.imap.store.mail.model.Message document) {
         final List<Header> headers = getSortedHeaders(document);
 
         final List<MessageResult.Header> results = new ArrayList<MessageResult.Header>(headers.size());
@@ -73,7 +73,7 @@ public class ResultUtils {
         return results;
     }
 
-    private static List<Header> getSortedHeaders(final org.apache.james.imap.store.mail.model.Document document) {
+    private static List<Header> getSortedHeaders(final org.apache.james.imap.store.mail.model.Message document) {
         final List<Header> headers = new ArrayList<Header>(document.getHeaders());
         Collections.sort(headers);
         return headers;
@@ -233,7 +233,7 @@ public class ResultUtils {
     }
 
     /**
-     * Return an {@link InputStream} which holds the content of the {@link org.apache.james.imap.store.mail.model.Document} which is linked in the {@link MailboxMembership}
+     * Return an {@link InputStream} which holds the content of the {@link org.apache.james.imap.store.mail.model.Message} which is linked in the {@link MailboxMembership}
      * 
      * @param membership
      * @return stream
@@ -241,19 +241,19 @@ public class ResultUtils {
      */
 
     public static InputStream toInput(final MailboxMembership<?> membership) throws IOException {
-        final org.apache.james.imap.store.mail.model.Document document = membership.getDocument();
+        final org.apache.james.imap.store.mail.model.Message document = membership.getDocument();
         return toInput(document);
     }
    
 
     /**
-     * Return an {@link InputStream} which holds the content of the given {@link org.apache.james.imap.store.mail.model.Document}
+     * Return an {@link InputStream} which holds the content of the given {@link org.apache.james.imap.store.mail.model.Message}
      * 
      * @param document
      * @return stream
      * @throws IOException 
      */
-    public static InputStream toInput(final org.apache.james.imap.store.mail.model.Document document) throws IOException {
+    public static InputStream toInput(final org.apache.james.imap.store.mail.model.Message document) throws IOException {
         final List<Header> headers = getSortedHeaders(document);
         final StringBuffer headersToString = new StringBuffer(headers.size() * 50);
         for (Header header: headers) {

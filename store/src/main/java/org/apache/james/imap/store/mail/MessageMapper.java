@@ -24,20 +24,20 @@ import java.util.List;
 import org.apache.james.imap.mailbox.MessageRange;
 import org.apache.james.imap.mailbox.SearchQuery;
 import org.apache.james.imap.mailbox.StorageException;
-import org.apache.james.imap.store.mail.model.Document;
+import org.apache.james.imap.store.mail.model.Message;
 import org.apache.james.imap.store.mail.model.Mailbox;
 import org.apache.james.imap.store.mail.model.MailboxMembership;
 import org.apache.james.imap.store.transaction.Mapper;
 
 /**
- * Maps {@link Document} in a {@link org.apache.james.imap.mailbox.Mailbox}. A {@link MessageMapper} has a lifecycle from the start of a request 
+ * Maps {@link Message} in a {@link org.apache.james.imap.mailbox.MessageManager}. A {@link MessageMapper} has a lifecycle from the start of a request 
  * to the end of the request.
  */
 public interface MessageMapper<Id> extends Mapper {
 
     /**
      * Return a List of {@link MailboxMembership} which represent the given {@link MessageRange}
-     * The list must be ordered by the {@link Document} uid
+     * The list must be ordered by the {@link Message} uid
      * 
      * @param mailbox The mailbox to search
      * @param set
@@ -49,7 +49,7 @@ public interface MessageMapper<Id> extends Mapper {
 
     /**
      * Return a List of {@link MailboxMembership} for the given {@link MessageRange} which are marked for deletion
-     * The list must be ordered by the {@link Document} uid
+     * The list must be ordered by the {@link Message} uid
      * @param mailbox
      * @param set 
      * @return list
@@ -81,7 +81,7 @@ public interface MessageMapper<Id> extends Mapper {
 
     /**
      * Return a List of uids which matched the {@link SearchQuery}
-     * The list must be ordered by the {@link Document} uid
+     * The list must be ordered by the {@link Message} uid
      * @param mailbox
      * @param query
      * @return
@@ -110,7 +110,7 @@ public interface MessageMapper<Id> extends Mapper {
 
     /**
      * Return a List of {@link MailboxMembership} which are recent.
-     * The list must be ordered by the {@link Document} uid. 
+     * The list must be ordered by the {@link Message} uid. 
      * If a limit was given the list will maximal be the size of the limit. Id a 
      * limit smaller then 1 is given the List must contain all messages
      * 

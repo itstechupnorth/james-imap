@@ -39,8 +39,8 @@ import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.jcr.JCRImapConstants;
 import org.apache.james.imap.jcr.Persistent;
 import org.apache.james.imap.mailbox.MailboxException;
-import org.apache.james.imap.store.mail.model.AbstractDocument;
-import org.apache.james.imap.store.mail.model.Document;
+import org.apache.james.imap.store.mail.model.AbstractMessage;
+import org.apache.james.imap.store.mail.model.Message;
 import org.apache.james.imap.store.mail.model.Header;
 import org.apache.james.imap.store.mail.model.MailboxMembership;
 import org.apache.james.imap.store.mail.model.Property;
@@ -48,10 +48,10 @@ import org.apache.james.imap.store.mail.model.PropertyBuilder;
 import org.apache.james.imap.store.streaming.StreamUtils;
 
 /**
- * JCR implementation of {@link Document}
+ * JCR implementation of {@link Message}
  *
  */
-public class JCRMessage extends AbstractDocument implements MailboxMembership<String>, JCRImapConstants, Persistent{
+public class JCRMessage extends AbstractMessage implements MailboxMembership<String>, JCRImapConstants, Persistent{
 
     private Node node;
     private final Log logger;
@@ -481,7 +481,7 @@ public class JCRMessage extends AbstractDocument implements MailboxMembership<St
      * @see
      * org.apache.james.imap.store.mail.model.MailboxMembership#getDocument()
      */
-    public Document getDocument() {
+    public Message getDocument() {
         if (isPersistent()) {
         	//TODO: Why not "this"?
             return new JCRMessage(node, logger);

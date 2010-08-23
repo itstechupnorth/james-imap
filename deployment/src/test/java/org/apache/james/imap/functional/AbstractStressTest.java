@@ -29,7 +29,7 @@ import javax.mail.Flags;
 
 import org.apache.commons.logging.impl.SimpleLog;
 import org.apache.james.imap.api.MailboxPath;
-import org.apache.james.imap.mailbox.Mailbox;
+import org.apache.james.imap.mailbox.MessageManager;
 import org.apache.james.imap.mailbox.MailboxConstants;
 import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.MailboxSession;
@@ -71,7 +71,7 @@ public abstract class AbstractStressTest {
 
                     try {
                         getMailboxManager().startProcessingRequest(session);
-                        Mailbox m = getMailboxManager().getMailbox(path, session);
+                        MessageManager m = getMailboxManager().getMailbox(path, session);
                         
                         System.out.println("Append message with uid=" + m.appendMessage(new ByteArrayInputStream("Subject: test\r\n\r\ntestmail".getBytes()), new Date(), session, false, new Flags()));
                         getMailboxManager().endProcessingRequest(session);

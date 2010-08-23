@@ -32,7 +32,7 @@ import javax.mail.Flags;
 
 import org.apache.james.imap.api.MailboxPath;
 import org.apache.james.imap.mailbox.MailboxConstants;
-import org.apache.james.imap.mailbox.Mailbox;
+import org.apache.james.imap.mailbox.MessageManager;
 import org.apache.james.imap.mailbox.MailboxListener;
 import org.apache.james.imap.mailbox.util.MailboxEventDispatcher;
 import org.apache.james.imap.mailbox.util.UidRange;
@@ -107,7 +107,7 @@ public class UidChangeTracker implements MailboxConstants {
 
         for (Iterator<Long> iter = expectedSet.iterator(); iter.hasNext();) {
             long uid = ((Long) iter.next()).longValue();
-            eventDispatcher.expunged(uid, Mailbox.ANONYMOUS_SESSION, path);
+            eventDispatcher.expunged(uid, MessageManager.ANONYMOUS_SESSION, path);
         }
     }
 
@@ -115,11 +115,11 @@ public class UidChangeTracker implements MailboxConstants {
         if (flags != null) {
             final Flags cachedFlags = cache.get(uid);
             if (cachedFlags == null || !flags.equals(cachedFlags)) {
-                eventDispatcher.flagsUpdated(uid, Mailbox.ANONYMOUS_SESSION, path, cachedFlags, flags);
+                eventDispatcher.flagsUpdated(uid, MessageManager.ANONYMOUS_SESSION, path, cachedFlags, flags);
             }
         }
         if (uid > lastUid) {
-            eventDispatcher.added(uid, Mailbox.ANONYMOUS_SESSION, path);
+            eventDispatcher.added(uid, MessageManager.ANONYMOUS_SESSION, path);
             lastUid = uid;
         }
         cache.put(uid, flags);
@@ -148,7 +148,7 @@ public class UidChangeTracker implements MailboxConstants {
     }
 
     public void reportRenamed(MailboxPath to) {
-        eventDispatcher.mailboxRenamed(path, to, Mailbox.ANONYMOUS_SESSION);
+        eventDispatcher.mailboxRenamed(path, to, MessageManager.ANONYMOUS_SESSION);
         path = to;
     }
 }

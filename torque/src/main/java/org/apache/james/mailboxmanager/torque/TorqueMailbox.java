@@ -48,7 +48,7 @@ import javax.mail.internet.MimeMessage;
 import org.apache.james.imap.api.MailboxPath;
 import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.mailbox.LockException;
-import org.apache.james.imap.mailbox.Mailbox;
+import org.apache.james.imap.mailbox.MessageManager;
 import org.apache.james.imap.mailbox.MailboxConstants;
 import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.MailboxListener;
@@ -84,7 +84,7 @@ import com.workingdogs.village.DataSetException;
  * @deprecated Torque implementation will get removed in the next release
  */
 @Deprecated()
-public class TorqueMailbox implements Mailbox {
+public class TorqueMailbox implements MessageManager {
 
     private static final int LOCK_TIMEOUT = 10;
 
@@ -830,9 +830,9 @@ public class TorqueMailbox implements Mailbox {
 
     }
     /**
-     * @see org.apache.james.imap.mailbox.Mailbox#getMetaData(boolean, MailboxSession, org.apache.james.imap.mailbox.Mailbox.MetaData.FetchGroup)
+     * @see org.apache.james.imap.mailbox.MessageManager#getMetaData(boolean, MailboxSession, org.apache.james.imap.mailbox.MessageManager.MetaData.FetchGroup)
      */
-    public MetaData getMetaData(boolean resetRecent, MailboxSession mailboxSession, Mailbox.MetaData.FetchGroup fetchGroup) throws MailboxException {
+    public MetaData getMetaData(boolean resetRecent, MailboxSession mailboxSession, MessageManager.MetaData.FetchGroup fetchGroup) throws MailboxException {
         final List<Long> recent = recent(resetRecent, mailboxSession);
         final Flags permanentFlags = getPermanentFlags();
         final long uidValidity = getUidValidity(mailboxSession);

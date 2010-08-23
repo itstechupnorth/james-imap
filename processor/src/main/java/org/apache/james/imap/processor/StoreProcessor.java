@@ -31,7 +31,7 @@ import org.apache.james.imap.api.message.response.StatusResponseFactory;
 import org.apache.james.imap.api.process.ImapProcessor;
 import org.apache.james.imap.api.process.ImapSession;
 import org.apache.james.imap.api.process.SelectedMailbox;
-import org.apache.james.imap.mailbox.Mailbox;
+import org.apache.james.imap.mailbox.MessageManager;
 import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.MailboxManager;
 import org.apache.james.imap.mailbox.MailboxSession;
@@ -74,7 +74,7 @@ public class StoreProcessor extends AbstractMailboxProcessor {
             value = true;
         }
         try {
-            final Mailbox mailbox = getSelectedMailbox(session);
+            final MessageManager mailbox = getSelectedMailbox(session);
             for (int i = 0; i < idSet.length; i++) {
                 final long lowVal;
                 final long highVal;

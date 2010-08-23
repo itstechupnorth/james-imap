@@ -42,7 +42,7 @@ import org.apache.james.imap.store.mail.model.MailboxMembership;
 import org.apache.james.imap.store.transaction.Mapper;
 
 /**
- * Abstract base class for {@link org.apache.james.imap.mailbox.Mailbox} implementations.
+ * Abstract base class for {@link org.apache.james.imap.mailbox.MessageManager} implementations.
  * 
  * This class provides a high-level api, and is most times the best to just extend
  * 

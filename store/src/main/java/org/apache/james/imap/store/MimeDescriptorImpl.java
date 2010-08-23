@@ -30,7 +30,7 @@ import java.util.TreeMap;
 
 import org.apache.james.imap.mailbox.MessageResult;
 import org.apache.james.imap.mailbox.MimeDescriptor;
-import org.apache.james.imap.store.mail.model.Document;
+import org.apache.james.imap.store.mail.model.Message;
 import org.apache.james.imap.store.mail.model.Property;
 import org.apache.james.imap.store.mail.model.PropertyBuilder;
 import org.apache.james.imap.store.streaming.ConfigurableMimeTokenStream;
@@ -43,7 +43,7 @@ import org.apache.james.mime4j.parser.RecursionMode;
 
 public class MimeDescriptorImpl implements MimeDescriptor {
 
-    public static MimeDescriptorImpl build(final Document document) throws IOException, MimeException {
+    public static MimeDescriptorImpl build(final Message document) throws IOException, MimeException {
         final MimeDescriptorImpl result;
         final String mediaType = document.getMediaType();
         if (isComposite(mediaType)) {

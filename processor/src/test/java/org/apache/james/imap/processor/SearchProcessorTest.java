@@ -37,7 +37,7 @@ import org.apache.james.imap.api.message.response.StatusResponseFactory;
 import org.apache.james.imap.api.process.ImapProcessor;
 import org.apache.james.imap.api.process.ImapSession;
 import org.apache.james.imap.api.process.SelectedMailbox;
-import org.apache.james.imap.mailbox.Mailbox;
+import org.apache.james.imap.mailbox.MessageManager;
 import org.apache.james.imap.mailbox.MailboxManager;
 import org.apache.james.imap.mailbox.MailboxSession;
 import org.apache.james.imap.mailbox.SearchQuery;
@@ -99,7 +99,7 @@ public class SearchProcessorTest {
 
     StatusResponse statusResponse;
 
-    Mailbox mailbox;
+    MessageManager mailbox;
     
     MailboxManager mailboxManager;
     
@@ -117,7 +117,7 @@ public class SearchProcessorTest {
         next = mockery.mock(ImapProcessor.class);
         responder = mockery.mock(ImapProcessor.Responder.class);
         statusResponse = mockery.mock(StatusResponse.class);
-        mailbox = mockery.mock(Mailbox.class);
+        mailbox = mockery.mock(MessageManager.class);
         mailboxManager = mockery.mock(MailboxManager.class);
         mailboxSession = mockery.mock(MailboxSession.class);
         selectedMailbox = mockery.mock(SelectedMailbox.class);

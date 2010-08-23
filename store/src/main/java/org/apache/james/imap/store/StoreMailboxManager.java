@@ -92,7 +92,7 @@ public abstract class StoreMailboxManager<Id> extends DelegatingMailboxManager {
      * (non-Javadoc)
      * @see org.apache.james.imap.mailbox.MailboxManager#getMailbox(org.apache.james.imap.api.MailboxPath, org.apache.james.imap.mailbox.MailboxSession)
      */
-    public org.apache.james.imap.mailbox.Mailbox getMailbox(MailboxPath mailboxPath, MailboxSession session)
+    public org.apache.james.imap.mailbox.MessageManager getMailbox(MailboxPath mailboxPath, MailboxSession session)
     throws MailboxException {
     	final MailboxMapper<Id> mapper = mailboxSessionMapperFactory.getMailboxMapper(session);
         Mailbox<Id> mailboxRow = mapper.findMailboxByPath(mailboxPath);
@@ -221,7 +221,7 @@ public abstract class StoreMailboxManager<Id> extends DelegatingMailboxManager {
                             }
                             copyMessages(range, fromPath, toPath, session);
                             
-                            org.apache.james.imap.mailbox.Mailbox inbox = getMailbox(fromPath, session);
+                            org.apache.james.imap.mailbox.MessageManager inbox = getMailbox(fromPath, session);
                             inbox.setFlags(new Flags(Flags.Flag.DELETED), true, false, range, session);
                             inbox.expunge(range, session);
                             

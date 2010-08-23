@@ -28,7 +28,7 @@ import org.apache.james.imap.api.message.request.ImapRequest;
 import org.apache.james.imap.api.message.response.StatusResponseFactory;
 import org.apache.james.imap.api.process.ImapProcessor;
 import org.apache.james.imap.api.process.ImapSession;
-import org.apache.james.imap.mailbox.Mailbox;
+import org.apache.james.imap.mailbox.MessageManager;
 import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.MailboxManager;
 import org.apache.james.imap.mailbox.MailboxSession;
@@ -63,14 +63,14 @@ public class StatusProcessor extends AbstractMailboxProcessor {
             }
 
             final MailboxManager mailboxManager = getMailboxManager();
-            final Mailbox mailbox = mailboxManager.getMailbox(mailboxPath, ImapSessionUtils.getMailboxSession(session));
-            final Mailbox.MetaData.FetchGroup fetchGroup;
+            final MessageManager mailbox = mailboxManager.getMailbox(mailboxPath, ImapSessionUtils.getMailboxSession(session));
+            final MessageManager.MetaData.FetchGroup fetchGroup;
             if (statusDataItems.isUnseen()) {
-                fetchGroup = Mailbox.MetaData.FetchGroup.UNSEEN_COUNT;
+                fetchGroup = MessageManager.MetaData.FetchGroup.UNSEEN_COUNT;
             } else {
-                fetchGroup = Mailbox.MetaData.FetchGroup.NO_UNSEEN;
+                fetchGroup = MessageManager.MetaData.FetchGroup.NO_UNSEEN;
             }
-            final Mailbox.MetaData metaData = mailbox.getMetaData(false, mailboxSession, fetchGroup);
+            final MessageManager.MetaData metaData = mailbox.getMetaData(false, mailboxSession, fetchGroup);
             
             final Long messages = messages(statusDataItems, metaData);
             final Long recent = recent(statusDataItems, metaData);
@@ -90,7 +90,7 @@ public class StatusProcessor extends AbstractMailboxProcessor {
     }
 
     private Long unseen(final StatusDataItems statusDataItems,
-            final Mailbox.MetaData metaData)
+            final MessageManager.MetaData metaData)
             throws MailboxException {
         final Long unseen;
         if (statusDataItems.isUnseen()) {
@@ -102,7 +102,7 @@ public class StatusProcessor extends AbstractMailboxProcessor {
     }
 
     private Long uidValidity(final StatusDataItems statusDataItems,
-            final Mailbox.MetaData metaData) throws MailboxException {
+            final MessageManager.MetaData metaData) throws MailboxException {
         final Long uidValidity;
         if (statusDataItems.isUidValidity()) {
             final long uidValidityValue = metaData.getUidValidity();
@@ -113,7 +113,7 @@ public class StatusProcessor extends AbstractMailboxProcessor {
         return uidValidity;
     }
 
-    private Long uidNext(final StatusDataItems statusDataItems, final Mailbox.MetaData metaData)
+    private Long uidNext(final StatusDataItems statusDataItems, final MessageManager.MetaData metaData)
             throws MailboxException {
         final Long uidNext;
         if (statusDataItems.isUidNext()) {
@@ -125,7 +125,7 @@ public class StatusProcessor extends AbstractMailboxProcessor {
         return uidNext;
     }
 
-    private Long recent(final StatusDataItems statusDataItems, final Mailbox.MetaData metaData)
+    private Long recent(final StatusDataItems statusDataItems, final MessageManager.MetaData metaData)
             throws MailboxException {
         final Long recent;
         if (statusDataItems.isRecent()) {
@@ -136,7 +136,7 @@ public class StatusProcessor extends AbstractMailboxProcessor {
         return recent;
     }
 
-    private Long messages(final StatusDataItems statusDataItems, final Mailbox.MetaData metaData)
+    private Long messages(final StatusDataItems statusDataItems, final MessageManager.MetaData metaData)
             throws MailboxException {
         final Long messages;
         if (statusDataItems.isMessages()) {

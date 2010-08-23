@@ -34,13 +34,13 @@ import org.apache.james.imap.api.message.response.StatusResponse.ResponseCode;
 import org.apache.james.imap.api.process.ImapProcessor;
 import org.apache.james.imap.api.process.ImapSession;
 import org.apache.james.imap.api.process.SelectedMailbox;
-import org.apache.james.imap.mailbox.Mailbox;
+import org.apache.james.imap.mailbox.MessageManager;
 import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.MailboxManager;
 import org.apache.james.imap.mailbox.MailboxNotFoundException;
 import org.apache.james.imap.mailbox.MailboxSession;
 import org.apache.james.imap.mailbox.SearchQuery;
-import org.apache.james.imap.mailbox.Mailbox.MetaData;
+import org.apache.james.imap.mailbox.MessageManager.MetaData;
 import org.apache.james.imap.message.request.AbstractMailboxSelectionRequest;
 import org.apache.james.imap.message.response.ExistsResponse;
 import org.apache.james.imap.message.response.FlagsResponse;
@@ -78,7 +78,7 @@ abstract class AbstractSelectionProcessor extends AbstractMailboxProcessor {
         final String mailboxName = request.getMailboxName();
         try {
             final MailboxPath fullMailboxPath = buildFullPath(session, mailboxName);
-            final Mailbox.MetaData metaData = selectMailbox(fullMailboxPath, session);
+            final MessageManager.MetaData metaData = selectMailbox(fullMailboxPath, session);
             respond(tag, command, session, metaData, responder);
         } catch (MailboxNotFoundException e) {
             responder.respond(statusResponseFactory.taggedNo(tag, command,
@@ -89,7 +89,7 @@ abstract class AbstractSelectionProcessor extends AbstractMailboxProcessor {
     }
 
     private void respond(String tag, ImapCommand command, ImapSession session,
-            final Mailbox.MetaData metaData, Responder responder) throws MailboxException {
+            final MessageManager.MetaData metaData, Responder responder) throws MailboxException {
 
         final SelectedMailbox selected = session.getSelected();
         
@@ -103,7 +103,7 @@ abstract class AbstractSelectionProcessor extends AbstractMailboxProcessor {
         taggedOk(responder, tag, command, metaData);
     }
 
-    private void uidNext(final Responder responder, final Mailbox.MetaData metaData)
+    private void uidNext(final Responder responder, final MessageManager.MetaData metaData)
     throws MailboxException {
         final long uid = metaData.getUidNext();
         final StatusResponse untaggedOk = statusResponseFactory.untaggedOk(
@@ -129,7 +129,7 @@ abstract class AbstractSelectionProcessor extends AbstractMailboxProcessor {
         responder.respond(standardFlags);
     }
 
-    private void permanentFlags(Responder responder, Mailbox.MetaData metaData) {
+    private void permanentFlags(Responder responder, MessageManager.MetaData metaData) {
         final Flags permanentFlags = metaData.getPermanentFlags();
         final StatusResponse untaggedOk = statusResponseFactory.untaggedOk(
                 HumanReadableText.PERMANENT_FLAGS, ResponseCode
@@ -137,7 +137,7 @@ abstract class AbstractSelectionProcessor extends AbstractMailboxProcessor {
         responder.respond(untaggedOk);
     }
 
-    private void unseen(Responder responder, Mailbox.MetaData metaData,
+    private void unseen(Responder responder, MessageManager.MetaData metaData,
             final SelectedMailbox selected) throws MailboxException {
         final Long firstUnseen = metaData.getFirstUnseen();
         if (firstUnseen != null) {
@@ -150,7 +150,7 @@ abstract class AbstractSelectionProcessor extends AbstractMailboxProcessor {
 
     }
 
-    private void uidValidity(Responder responder, Mailbox.MetaData metaData) throws MailboxException {
+    private void uidValidity(Responder responder, MessageManager.MetaData metaData) throws MailboxException {
         final long uidValidity = metaData.getUidValidity();
         final StatusResponse untaggedOk = statusResponseFactory.untaggedOk(
                 HumanReadableText.UID_VALIDITY, ResponseCode
@@ -164,17 +164,17 @@ abstract class AbstractSelectionProcessor extends AbstractMailboxProcessor {
         responder.respond(recentResponse);
     }
 
-    private void exists(Responder responder, Mailbox.MetaData metaData) throws MailboxException {
+    private void exists(Responder responder, MessageManager.MetaData metaData) throws MailboxException {
         final long messageCount = metaData.getMessageCount();
         final ExistsResponse existsResponse = new ExistsResponse(messageCount);
         responder.respond(existsResponse);
     }
 
-    private Mailbox.MetaData  selectMailbox(MailboxPath mailboxPath, ImapSession session)
+    private MessageManager.MetaData  selectMailbox(MailboxPath mailboxPath, ImapSession session)
             throws MailboxException {
         final MailboxManager mailboxManager = getMailboxManager();
         final MailboxSession mailboxSession = ImapSessionUtils.getMailboxSession(session);
-        final Mailbox mailbox = mailboxManager.getMailbox(mailboxPath, mailboxSession);
+        final MessageManager mailbox = mailboxManager.getMailbox(mailboxPath, mailboxSession);
 
         final SelectedMailbox sessionMailbox;
         final SelectedMailbox currentMailbox = session.getSelected();
@@ -184,12 +184,12 @@ abstract class AbstractSelectionProcessor extends AbstractMailboxProcessor {
         } else {
             sessionMailbox = currentMailbox;
         }
-        final Mailbox.MetaData metaData = mailbox.getMetaData(!openReadOnly, mailboxSession, Mailbox.MetaData.FetchGroup.FIRST_UNSEEN);
+        final MessageManager.MetaData metaData = mailbox.getMetaData(!openReadOnly, mailboxSession, MessageManager.MetaData.FetchGroup.FIRST_UNSEEN);
         addRecent(metaData, sessionMailbox);
         return metaData;
     }
 
-    private SelectedMailbox createNewSelectedMailbox(final Mailbox mailbox,
+    private SelectedMailbox createNewSelectedMailbox(final MessageManager mailbox,
             final MailboxSession mailboxSession, ImapSession session, MailboxPath path)
             throws MailboxException {
         SearchQuery query = new SearchQuery();
@@ -204,7 +204,7 @@ abstract class AbstractSelectionProcessor extends AbstractMailboxProcessor {
         return sessionMailbox;
     }
 
-    private void addRecent(final Mailbox.MetaData metaData,
+    private void addRecent(final MessageManager.MetaData metaData,
             SelectedMailbox sessionMailbox) throws MailboxException {
         final List<Long> recentUids = metaData.getRecent();
         for (int i = 0; i < recentUids.size(); i++) {

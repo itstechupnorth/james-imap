@@ -32,19 +32,19 @@ import javax.persistence.OrderBy;
 
 import org.apache.james.imap.jpa.mail.model.JPAHeader;
 import org.apache.james.imap.jpa.mail.model.JPAProperty;
-import org.apache.james.imap.store.mail.model.AbstractDocument;
-import org.apache.james.imap.store.mail.model.Document;
+import org.apache.james.imap.store.mail.model.AbstractMessage;
+import org.apache.james.imap.store.mail.model.Message;
 import org.apache.james.imap.store.mail.model.Header;
 import org.apache.james.imap.store.mail.model.Property;
 import org.apache.james.imap.store.mail.model.PropertyBuilder;
 import org.apache.openjpa.persistence.jdbc.ElementJoinColumn;
 
 /**
- * Abstract base class for JPA based implementations of {@link AbstractDocument}
+ * Abstract base class for JPA based implementations of {@link AbstractMessage}
  *
  */
 @MappedSuperclass
-public abstract class AbstractJPAMessage extends AbstractDocument{
+public abstract class AbstractJPAMessage extends AbstractMessage{
 
     @Id@GeneratedValue private long id;
 
@@ -89,7 +89,7 @@ public abstract class AbstractJPAMessage extends AbstractDocument{
      * 
      * @param message
      */
-    public AbstractJPAMessage(Document message) {
+    public AbstractJPAMessage(Message message) {
     	
         this.contentOctets = message.getFullContentOctets();
         this.bodyStartOctet = (int) (message.getFullContentOctets() - message.getBodyOctets());
@@ -114,7 +114,7 @@ public abstract class AbstractJPAMessage extends AbstractDocument{
     }
 
     /**
-     * @see org.apache.james.imap.store.mail.model.Document#getHeaders()
+     * @see org.apache.james.imap.store.mail.model.Message#getHeaders()
      */
     public List<Header> getHeaders() {
         return new ArrayList<Header>(headers);

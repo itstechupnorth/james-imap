@@ -37,7 +37,7 @@ import org.apache.james.imap.api.message.response.StatusResponseFactory;
 import org.apache.james.imap.api.process.ImapProcessor;
 import org.apache.james.imap.api.process.ImapSession;
 import org.apache.james.imap.api.process.SelectedMailbox;
-import org.apache.james.imap.mailbox.Mailbox;
+import org.apache.james.imap.mailbox.MessageManager;
 import org.apache.james.imap.mailbox.MailboxConstants;
 import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.MailboxExistsException;
@@ -191,7 +191,7 @@ abstract public class AbstractMailboxProcessor extends AbstractChainedProcessor 
         try {
             final Collection<Long> flagUpdateUids = selected.flagUpdateUids();
             if (!flagUpdateUids.isEmpty()) {
-                final Mailbox mailbox = getMailbox(session, selected);
+                final MessageManager mailbox = getMailbox(session, selected);
                 final MailboxSession mailboxSession = ImapSessionUtils.getMailboxSession(session);
                 for (final Long uid: flagUpdateUids) {
                     MessageRange messageSet = MessageRange.one(uid.longValue());
@@ -204,7 +204,7 @@ abstract public class AbstractMailboxProcessor extends AbstractChainedProcessor 
     }
 
     private void addFlagsResponses(final ImapSession session, final SelectedMailbox selected, 
-            final ImapProcessor.Responder responder, boolean useUid, MessageRange messageSet, Mailbox mailbox, MailboxSession mailboxSession)
+            final ImapProcessor.Responder responder, boolean useUid, MessageRange messageSet, MessageManager mailbox, MailboxSession mailboxSession)
     throws MailboxException {
         final Iterator<MessageResult> it = mailbox.getMessages(messageSet, FetchGroupImpl.MINIMAL, mailboxSession);
         while (it.hasNext()) {
@@ -229,9 +229,9 @@ abstract public class AbstractMailboxProcessor extends AbstractChainedProcessor 
         }
     }
 
-    private Mailbox getMailbox(final ImapSession session, final SelectedMailbox selected) throws MailboxException {
+    private MessageManager getMailbox(final ImapSession session, final SelectedMailbox selected) throws MailboxException {
         final MailboxManager mailboxManager = getMailboxManager();
-        final Mailbox mailbox = mailboxManager.getMailbox(selected.getPath(), ImapSessionUtils.getMailboxSession(session));
+        final MessageManager mailbox = mailboxManager.getMailbox(selected.getPath(), ImapSessionUtils.getMailboxSession(session));
         return mailbox;
     }
 
@@ -245,7 +245,7 @@ abstract public class AbstractMailboxProcessor extends AbstractChainedProcessor 
     private void addExistsResponses(final ImapSession session, final SelectedMailbox selected, 
             final ImapProcessor.Responder responder) {
         try {
-            final Mailbox mailbox = getMailbox(session, selected);
+            final MessageManager mailbox = getMailbox(session, selected);
             final MailboxSession mailboxSession = ImapSessionUtils.getMailboxSession(session);
             final long messageCount = mailbox.getMessageCount(mailboxSession);
             // TODO: use factory
@@ -378,8 +378,8 @@ abstract public class AbstractMailboxProcessor extends AbstractChainedProcessor 
         return mailboxManager;
     }
 
-    public Mailbox getSelectedMailbox(final ImapSession session) throws MailboxException {
-        Mailbox result;
+    public MessageManager getSelectedMailbox(final ImapSession session) throws MailboxException {
+        MessageManager result;
         final SelectedMailbox selectedMailbox = session.getSelected();
         if (selectedMailbox == null) {
             result = null;

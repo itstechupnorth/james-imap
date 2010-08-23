@@ -24,13 +24,13 @@ import java.util.List;
 
 import javax.mail.Flags;
 
-import org.apache.james.imap.mailbox.Mailbox;
+import org.apache.james.imap.mailbox.MessageManager;
 
 
 /**
  * Describes the current state of a mailbox.
  */
-public class MailboxMetaData implements Mailbox.MetaData {
+public class MailboxMetaData implements MessageManager.MetaData {
 
     private final long recentCount;
     private final List<Long> recent;
@@ -77,35 +77,35 @@ public class MailboxMetaData implements Mailbox.MetaData {
     }
 
     /**
-     * @see {@link Mailbox.MetaData#getRecent()}
+     * @see {@link MessageManager.MetaData#getRecent()}
      */
     public List<Long> getRecent() {
         return recent;
     }
 
     /**
-     * @see {@link Mailbox.MetaData#getUidValidity()}
+     * @see {@link MessageManager.MetaData#getUidValidity()}
      */
     public long getUidValidity() {
         return uidValidity;
     }
 
     /**
-     * @see {@link Mailbox.MetaData#getUidNext()}
+     * @see {@link MessageManager.MetaData#getUidNext()}
      */
     public long getUidNext() {
         return nextUid;
     }
 
     /**
-     * @see {@link Mailbox.MetaData#getMessageCount()}
+     * @see {@link MessageManager.MetaData#getMessageCount()}
      */
     public long getMessageCount() {
         return messageCount;
     }
 
     /**
-     * @see {@link Mailbox.MetaData#getUnseenCount()}
+     * @see {@link MessageManager.MetaData#getUnseenCount()}
      */
     public long getUnseenCount() {
         return unseenCount;

@@ -78,7 +78,7 @@ public interface MailboxManager {
      * @throws MailboxNotFoundException
      *             when the given mailbox does not exist
      */
-    Mailbox getMailbox(MailboxPath mailboxPath, MailboxSession session) throws MailboxException;
+    MessageManager getMailbox(MailboxPath mailboxPath, MailboxSession session) throws MailboxException;
 
     /**
      * Creates a new mailbox. Any intermediary mailboxes missing from the

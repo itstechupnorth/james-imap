@@ -26,12 +26,12 @@ import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.james.imap.store.mail.model.Document;
+import org.apache.james.imap.store.mail.model.Message;
 import org.apache.james.imap.store.mail.model.Header;
 import org.apache.james.imap.store.mail.model.Property;
 import org.apache.james.imap.store.streaming.RewindableInputStream;
 
-public class SimpleMessage implements Document {
+public class SimpleMessage implements Message {
     
     public static final char[] NEW_LINE = { 0x0D, 0x0A };
     
@@ -89,7 +89,7 @@ public class SimpleMessage implements Document {
 
     /**
      * @throws IOException 
-     * @see org.apache.james.imap.jpa.mail.model.Document#getBodyContent()
+     * @see org.apache.james.imap.Message.mail.model.Document#getBodyContent()
      */
     public RewindableInputStream getBodyContent() throws IOException {
         return new ByteArrayRewindableInputStream(body);
@@ -105,7 +105,7 @@ public class SimpleMessage implements Document {
     }
     
     /**
-     * @see org.apache.james.imap.jpa.mail.model.Document#getHeaders()
+     * @see org.apache.james.imap.Message.mail.model.Document#getHeaders()
      */
     public List<Header> getHeaders() {
         return new ArrayList<Header>(headers);

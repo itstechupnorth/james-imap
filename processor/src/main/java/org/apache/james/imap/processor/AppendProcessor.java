@@ -36,7 +36,7 @@ import org.apache.james.imap.api.message.response.StatusResponseFactory;
 import org.apache.james.imap.api.process.ImapProcessor;
 import org.apache.james.imap.api.process.ImapSession;
 import org.apache.james.imap.api.process.SelectedMailbox;
-import org.apache.james.imap.mailbox.Mailbox;
+import org.apache.james.imap.mailbox.MessageManager;
 import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.MailboxManager;
 import org.apache.james.imap.mailbox.MailboxNotFoundException;
@@ -71,7 +71,7 @@ public class AppendProcessor extends AbstractMailboxProcessor {
 
             final MailboxPath mailboxPath = buildFullPath(session, mailboxName);
             final MailboxManager mailboxManager = getMailboxManager();
-            final Mailbox mailbox = mailboxManager.getMailbox(mailboxPath, ImapSessionUtils.getMailboxSession(session));
+            final MessageManager mailbox = mailboxManager.getMailbox(mailboxPath, ImapSessionUtils.getMailboxSession(session));
             appendToMailbox(messageIn, datetime, flags, session, tag,
                     command, mailbox, responder, mailboxPath);
         } catch (MailboxNotFoundException e) {
@@ -127,7 +127,7 @@ public class AppendProcessor extends AbstractMailboxProcessor {
 
     private void appendToMailbox(final InputStream message, final Date datetime,
             final Flags flagsToBeSet, final ImapSession session, final String tag,
-            final ImapCommand command, final Mailbox mailbox, Responder responder, final MailboxPath mailboxPath) {
+            final ImapCommand command, final MessageManager mailbox, Responder responder, final MailboxPath mailboxPath) {
         try {
             final MailboxSession mailboxSession = ImapSessionUtils.getMailboxSession(session);
             final SelectedMailbox selectedMailbox = session.getSelected();

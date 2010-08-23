@@ -24,7 +24,7 @@ import java.util.List;
 
 import javax.mail.Flags;
 
-import org.apache.james.imap.store.mail.model.Document;
+import org.apache.james.imap.store.mail.model.Message;
 import org.apache.james.imap.store.mail.model.MailboxMembership;
 
 public class SimpleMailboxMembership implements MailboxMembership<Long> {
@@ -76,77 +76,77 @@ public class SimpleMailboxMembership implements MailboxMembership<Long> {
     }
 
     /**
-     * @see org.apache.james.imap.jpa.mail.model.Document#getInternalDate()
+     * @see org.apache.james.imap.Message.mail.model.Document#getInternalDate()
      */
     public Date getInternalDate() {
         return internalDate;
     }
 
     /**
-     * @see org.apache.james.imap.jpa.mail.model.Document#getMailboxId()
+     * @see org.apache.james.imap.Message.mail.model.Document#getMailboxId()
      */
     public Long getMailboxId() {
         return mailboxId;
     }
     
     /**
-     * @see org.apache.james.imap.jpa.mail.model.Document#getUid()
+     * @see org.apache.james.imap.Message.mail.model.Document#getUid()
      */
     public long getUid() {
         return uid;
     }
 
     /**
-     * @see org.apache.james.imap.jpa.mail.model.Document#isAnswered()
+     * @see org.apache.james.imap.Message.mail.model.Document#isAnswered()
      */
     public boolean isAnswered() {
         return answered;
     }
 
     /**
-     * @see org.apache.james.imap.jpa.mail.model.Document#isDeleted()
+     * @see org.apache.james.imap.Message.mail.model.Document#isDeleted()
      */
     public boolean isDeleted() {
         return deleted;
     }
 
     /**
-     * @see org.apache.james.imap.jpa.mail.model.Document#isDraft()
+     * @see org.apache.james.imap.Message.mail.model.Document#isDraft()
      */
     public boolean isDraft() {
         return draft;
     }
 
     /**
-     * @see org.apache.james.imap.jpa.mail.model.Document#isFlagged()
+     * @see org.apache.james.imap.Message.mail.model.Document#isFlagged()
      */
     public boolean isFlagged() {
         return flagged;
     }
 
     /**
-     * @see org.apache.james.imap.jpa.mail.model.Document#isRecent()
+     * @see org.apache.james.imap.Message.mail.model.Document#isRecent()
      */
     public boolean isRecent() {
         return recent;
     }
 
     /**
-     * @see org.apache.james.imap.jpa.mail.model.Document#isSeen()
+     * @see org.apache.james.imap.Message.mail.model.Document#isSeen()
      */
     public boolean isSeen() {
         return seen;
     }
 
     /**
-     * @see org.apache.james.imap.jpa.mail.model.Document#unsetRecent()
+     * @see org.apache.james.imap.Message.mail.model.Document#unsetRecent()
      */
     public void unsetRecent() {
         recent = false;
     }
     
     /**
-     * @see org.apache.james.imap.jpa.mail.model.Document#setFlags(javax.mail.Flags)
+     * @see org.apache.james.imap.Message.mail.model.Document#setFlags(javax.mail.Flags)
      */
     public void setFlags(Flags flags) {
         answered = flags.contains(Flags.Flag.ANSWERED);
@@ -158,7 +158,7 @@ public class SimpleMailboxMembership implements MailboxMembership<Long> {
     }
 
     /**
-     * @see org.apache.james.imap.jpa.mail.model.Document#createFlags()
+     * @see org.apache.james.imap.Message.mail.model.Document#createFlags()
      */
     public Flags createFlags() {
         final Flags flags = new Flags();
@@ -229,7 +229,7 @@ public class SimpleMailboxMembership implements MailboxMembership<Long> {
         return retValue;
     }
 
-    public Document getDocument() {
+    public Message getDocument() {
         return message;
     }
 

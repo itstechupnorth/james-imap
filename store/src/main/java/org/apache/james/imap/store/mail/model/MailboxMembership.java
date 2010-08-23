@@ -48,7 +48,7 @@ public interface MailboxMembership<Id> {
      * 
      * @return document
      */
-    public abstract Document getDocument();
+    public abstract Message getDocument();
 
     /**
      * Return if it was marked as answered

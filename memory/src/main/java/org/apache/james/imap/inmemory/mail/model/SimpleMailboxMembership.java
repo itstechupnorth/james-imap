@@ -27,7 +27,7 @@ import java.util.List;
 import javax.mail.Flags;
 
 import org.apache.james.imap.store.mail.model.AbstractMailboxMembership;
-import org.apache.james.imap.store.mail.model.Document;
+import org.apache.james.imap.store.mail.model.Message;
 import org.apache.james.imap.store.mail.model.Header;
 import org.apache.james.imap.store.mail.model.MailboxMembership;
 import org.apache.james.imap.store.mail.model.Property;
@@ -35,7 +35,7 @@ import org.apache.james.imap.store.mail.model.PropertyBuilder;
 import org.apache.james.imap.store.streaming.LazySkippingInputStream;
 import org.apache.james.imap.store.streaming.RewindableInputStream;
 
-public class SimpleMailboxMembership extends AbstractMailboxMembership<Long> implements Document, Comparable<MailboxMembership<Long>> {
+public class SimpleMailboxMembership extends AbstractMailboxMembership<Long> implements Message, Comparable<MailboxMembership<Long>> {
 
     private final long uid;
     private final long mailboxId;
@@ -92,7 +92,7 @@ public class SimpleMailboxMembership extends AbstractMailboxMembership<Long> imp
     }
 
 
-    public Document getDocument() {
+    public Message getDocument() {
         return this;
     }
 

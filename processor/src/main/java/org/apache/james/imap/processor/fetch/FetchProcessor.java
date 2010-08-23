@@ -34,7 +34,7 @@ import org.apache.james.imap.api.message.request.ImapRequest;
 import org.apache.james.imap.api.message.response.StatusResponseFactory;
 import org.apache.james.imap.api.process.ImapProcessor;
 import org.apache.james.imap.api.process.ImapSession;
-import org.apache.james.imap.mailbox.Mailbox;
+import org.apache.james.imap.mailbox.MessageManager;
 import org.apache.james.imap.mailbox.MailboxManager;
 import org.apache.james.imap.mailbox.MailboxSession;
 import org.apache.james.imap.mailbox.MessageRange;
@@ -76,7 +76,7 @@ public class FetchProcessor extends AbstractMailboxProcessor {
         final FetchData fetch = request.getFetch();
         try {
             FetchGroup resultToFetch = getFetchGroup(fetch);
-            final Mailbox mailbox = getSelectedMailbox(session);
+            final MessageManager mailbox = getSelectedMailbox(session);
 
             if (mailbox == null) {
                 throw new MessagingException("Session not in SELECTED state");

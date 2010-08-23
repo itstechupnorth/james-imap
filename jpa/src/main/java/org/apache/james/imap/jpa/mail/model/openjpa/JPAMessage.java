@@ -30,7 +30,7 @@ import javax.persistence.FetchType;
 import javax.persistence.Lob;
 
 import org.apache.james.imap.jpa.mail.model.JPAHeader;
-import org.apache.james.imap.store.mail.model.Document;
+import org.apache.james.imap.store.mail.model.Message;
 import org.apache.james.imap.store.mail.model.PropertyBuilder;
 import org.apache.james.imap.store.streaming.StreamUtils;
 
@@ -55,7 +55,7 @@ public class JPAMessage extends AbstractJPAMessage{
      * 
      * @param message
      */
-    public JPAMessage(Document message) throws IOException{
+    public JPAMessage(Message message) throws IOException{
         super(message);
         this.content = StreamUtils.out(message.getFullContent()).toByteArray();
         

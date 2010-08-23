@@ -32,7 +32,7 @@ import javax.persistence.ManyToOne;
 import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.jpa.mail.model.JPAHeader;
 import org.apache.james.imap.mailbox.MailboxException;
-import org.apache.james.imap.store.mail.model.Document;
+import org.apache.james.imap.store.mail.model.Message;
 import org.apache.james.imap.store.mail.model.MailboxMembership;
 import org.apache.james.imap.store.mail.model.PropertyBuilder;
 
@@ -71,7 +71,7 @@ public class JPAStreamingMailboxMembership extends AbstractJPAMailboxMembership{
      * Gets the message member.
      * @return message, not null
      */
-    public Document getDocument() {
+    public Message getDocument() {
         return message;
     }
     

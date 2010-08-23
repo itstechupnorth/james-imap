@@ -24,11 +24,11 @@ import java.util.List;
 import org.apache.james.imap.store.streaming.RewindableInputStream;
 
 /**
- * A MIME documents, consisting of meta-data (including MIME headers)
+ * A MIME message, consisting of meta-data (including MIME headers)
  * plus body content. In the case of multipart documents, this body content
  * has internal structure described by the meta-data.
  */
-public interface Document {
+public interface Message {
 
 
     /**

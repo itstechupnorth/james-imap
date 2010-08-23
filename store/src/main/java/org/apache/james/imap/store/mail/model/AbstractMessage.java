@@ -26,10 +26,10 @@ import org.apache.james.imap.store.streaming.RewindableInputStream;
 
 
 /**
- * Abstract base class for {@link Document}
+ * Abstract base class for {@link Message}
  *
  */
-public abstract class AbstractDocument implements Document{
+public abstract class AbstractMessage implements Message {
     
     
     /**

@@ -31,8 +31,8 @@ import org.apache.commons.lang.NotImplementedException;
 import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.maildir.MaildirMessageName;
-import org.apache.james.imap.store.mail.model.AbstractDocument;
-import org.apache.james.imap.store.mail.model.Document;
+import org.apache.james.imap.store.mail.model.AbstractMessage;
+import org.apache.james.imap.store.mail.model.Message;
 import org.apache.james.imap.store.mail.model.Header;
 import org.apache.james.imap.store.mail.model.Mailbox;
 import org.apache.james.imap.store.mail.model.MailboxMembership;
@@ -40,7 +40,7 @@ import org.apache.james.imap.store.mail.model.Property;
 import org.apache.james.imap.store.mail.model.PropertyBuilder;
 import org.apache.james.imap.store.streaming.StreamUtils;
 
-public class MaildirMessage extends AbstractDocument implements MailboxMembership<Integer> {
+public class MaildirMessage extends AbstractMessage implements MailboxMembership<Integer> {
 
     // Document
     private int bodyStartOctet;
@@ -275,7 +275,7 @@ public class MaildirMessage extends AbstractDocument implements MailboxMembershi
      * (non-Javadoc)
      * @see org.apache.james.imap.store.mail.model.MailboxMembership#getDocument()
      */
-    public Document getDocument() {
+    public Message getDocument() {
         return this;
     }
 

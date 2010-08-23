@@ -33,10 +33,10 @@ import org.apache.james.imap.mailbox.MessageResult.FetchGroup;
 /**
  * Interface which represent a Mailbox
  * 
- * A {@link Mailbox} should be valid for the whole {@link MailboxSession}
+ * A {@link MessageManager} should be valid for the whole {@link MailboxSession}
  *
  */
-public interface Mailbox {
+public interface MessageManager {
 
     public static final long ANONYMOUS_SESSION = 0;
 
@@ -133,7 +133,7 @@ public interface Mailbox {
      * @return meta data, not null
      * @throws MailboxException
      */
-    MetaData getMetaData(boolean resetRecent, MailboxSession mailboxSession, Mailbox.MetaData.FetchGroup fetchGroup) throws MailboxException;
+    MetaData getMetaData(boolean resetRecent, MailboxSession mailboxSession, MessageManager.MetaData.FetchGroup fetchGroup) throws MailboxException;
     
     /**
      * Meta data about the current state of the mailbox.

@@ -38,7 +38,7 @@ import org.apache.james.imap.api.message.response.StatusResponseFactory;
 import org.apache.james.imap.api.process.ImapProcessor;
 import org.apache.james.imap.api.process.ImapSession;
 import org.apache.james.imap.api.process.SelectedMailbox;
-import org.apache.james.imap.mailbox.Mailbox;
+import org.apache.james.imap.mailbox.MessageManager;
 import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.MailboxManager;
 import org.apache.james.imap.mailbox.SearchQuery;
@@ -64,7 +64,7 @@ public class SearchProcessor extends AbstractMailboxProcessor {
             final SearchRequest request = (SearchRequest) message;
             final SearchKey searchKey = request.getSearchKey();
             final boolean useUids = request.isUseUids();
-            final Mailbox mailbox = getSelectedMailbox(session);
+            final MessageManager mailbox = getSelectedMailbox(session);
 
             final SearchQuery query = toQuery(searchKey, session);
 
@@ -92,7 +92,7 @@ public class SearchProcessor extends AbstractMailboxProcessor {
     }
 
     private Collection<Long> findIds(final boolean useUids,
-            final ImapSession session, Mailbox mailbox, final SearchQuery query)
+            final ImapSession session, MessageManager mailbox, final SearchQuery query)
             throws MailboxException {
         final Iterator<Long> it = mailbox.search(query, ImapSessionUtils
                 .getMailboxSession(session));

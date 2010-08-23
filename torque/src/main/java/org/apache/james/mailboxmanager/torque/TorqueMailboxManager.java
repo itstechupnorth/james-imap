@@ -29,7 +29,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.apache.james.imap.api.MailboxPath;
 import org.apache.james.imap.api.display.HumanReadableText;
-import org.apache.james.imap.mailbox.Mailbox;
+import org.apache.james.imap.mailbox.MessageManager;
 import org.apache.james.imap.mailbox.MailboxConstants;
 import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.MailboxExistsException;
@@ -70,7 +70,7 @@ public class TorqueMailboxManager extends DelegatingMailboxManager {
         mailboxes = new HashMap<String, TorqueMailbox>();
     }
 
-    public Mailbox getMailbox(MailboxPath path, MailboxSession session)
+    public MessageManager getMailbox(MailboxPath path, MailboxSession session)
             throws MailboxException {
         return doGetMailbox(getName(path));
     }

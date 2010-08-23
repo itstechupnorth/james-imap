@@ -56,13 +56,13 @@ import org.apache.james.mime4j.parser.MimeEntityConfig;
 import org.apache.james.mime4j.parser.MimeTokenStream;
 
 /**
- * Abstract base class for {@link org.apache.james.imap.mailbox.Mailbox} implementations. This abstract
+ * Abstract base class for {@link org.apache.james.imap.mailbox.MessageManager} implementations. This abstract
  * class take care of dispatching events to the registered {@link MailboxListener} and so help
  * with handling concurrent {@link MailboxSession}'s. So this is a perfect starting point when writing your 
  * own implementation and don't want to depend on {@link MessageMapper}.
  *
  */
-public abstract class StoreMessageManager<Id> implements org.apache.james.imap.mailbox.Mailbox{
+public abstract class StoreMessageManager<Id> implements org.apache.james.imap.mailbox.MessageManager{
 
 
     private final Mailbox<Id> mailbox;
@@ -378,7 +378,7 @@ public abstract class StoreMessageManager<Id> implements org.apache.james.imap.m
      * @see {@link Mailbox#getMetaData(boolean, MailboxSession, FetchGroup)}
      */
     public MetaData getMetaData(boolean resetRecent, MailboxSession mailboxSession, 
-            org.apache.james.imap.mailbox.Mailbox.MetaData.FetchGroup fetchGroup) throws MailboxException {
+            org.apache.james.imap.mailbox.MessageManager.MetaData.FetchGroup fetchGroup) throws MailboxException {
         final List<Long> recent = recent(resetRecent, mailboxSession);
         final Flags permanentFlags = getPermanentFlags();
         final long uidValidity = getMailboxEntity().getUidValidity();
