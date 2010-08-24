@@ -229,7 +229,7 @@ public class SimpleMailboxMembership implements MailboxMembership<Long> {
         return retValue;
     }
 
-    public Message getDocument() {
+    public Message getMessage() {
         return message;
     }
 

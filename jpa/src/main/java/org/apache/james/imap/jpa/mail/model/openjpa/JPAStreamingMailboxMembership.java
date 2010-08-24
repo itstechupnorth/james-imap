@@ -61,7 +61,7 @@ public class JPAStreamingMailboxMembership extends AbstractJPAMailboxMembership{
     public JPAStreamingMailboxMembership(long mailboxId, MailboxMembership<?> original) throws MailboxException {
         super(mailboxId, original);
         try {
-            this.message = new JPAStreamingMessage(original.getDocument());
+            this.message = new JPAStreamingMessage(original.getMessage());
         } catch (IOException e) {
             throw new MailboxException(HumanReadableText.FAILURE_MAIL_PARSE,e);
         }
@@ -71,7 +71,7 @@ public class JPAStreamingMailboxMembership extends AbstractJPAMailboxMembership{
      * Gets the message member.
      * @return message, not null
      */
-    public Message getDocument() {
+    public Message getMessage() {
         return message;
     }
     

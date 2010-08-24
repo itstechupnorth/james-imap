@@ -479,9 +479,9 @@ public class JCRMessage extends AbstractMessage implements MailboxMembership<Str
      * (non-Javadoc)
      * 
      * @see
-     * org.apache.james.imap.store.mail.model.MailboxMembership#getDocument()
+     * org.apache.james.imap.store.mail.model.MailboxMembership#getMessage()
      */
-    public Message getDocument() {
+    public Message getMessage() {
         if (isPersistent()) {
         	//TODO: Why not "this"?
             return new JCRMessage(node, logger);

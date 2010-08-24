@@ -292,7 +292,7 @@ public class MessageSearches {
 
     private boolean exists(String headerName, MailboxMembership<?> message) {
         boolean result = false;
-        final List<Header> headers = message.getDocument().getHeaders();
+        final List<Header> headers = message.getMessage().getHeaders();
         for (Header header:headers) {
             final String name = header.getFieldName();
             if (headerName.equalsIgnoreCase(name)) {
@@ -307,7 +307,7 @@ public class MessageSearches {
             final String headerName, final MailboxMembership<?> message) {
         final String text = operator.getValue().toUpperCase();
         boolean result = false;
-        final List<Header> headers = message.getDocument().getHeaders();
+        final List<Header> headers = message.getMessage().getHeaders();
         for (Header header:headers) {
             final String name = header.getFieldName();
             if (headerName.equalsIgnoreCase(name)) {
@@ -353,7 +353,7 @@ public class MessageSearches {
     }
 
     private String headerValue(final String headerName, final MailboxMembership<?> message) {
-        final List<Header> headers = message.getDocument().getHeaders();
+        final List<Header> headers = message.getMessage().getHeaders();
         String value = null;
         for (Header header:headers) {
             final String name = header.getFieldName();
@@ -376,7 +376,7 @@ public class MessageSearches {
     private boolean matches(SearchQuery.SizeCriterion criterion, MailboxMembership<?> message)
             throws UnsupportedSearchException {
         final SearchQuery.NumericOperator operator = criterion.getOperator();
-        final long size = message.getDocument().getFullContentOctets();
+        final long size = message.getMessage().getFullContentOctets();
         final long value = operator.getValue();
         switch (operator.getType()) {
             case LESS_THAN:

@@ -58,7 +58,7 @@ public class ResultUtils {
     static final Charset US_ASCII = Charset.forName("US-ASCII");
 
     public static List<MessageResult.Header> createHeaders(MailboxMembership<?> message) {
-        final org.apache.james.imap.store.mail.model.Message document = message.getDocument();
+        final org.apache.james.imap.store.mail.model.Message document = message.getMessage();
         return createHeaders(document);
     }
 
@@ -87,7 +87,7 @@ public class ResultUtils {
      * @throws IOException 
      */
     public static Content createBodyContent(MailboxMembership<?> membership) throws IOException {
-        final RewindableInputStream stream = membership.getDocument().getBodyContent();
+        final RewindableInputStream stream = membership.getMessage().getBodyContent();
         final InputStreamContent result = new InputStreamContent(stream);
         return result;
     }
@@ -100,7 +100,7 @@ public class ResultUtils {
      * @throws IOException 
      */
     public static Content createFullContent(final MailboxMembership<?> membership) throws IOException {
-        final RewindableInputStream stream = membership.getDocument().getFullContent();
+        final RewindableInputStream stream = membership.getMessage().getFullContent();
         final InputStreamContent results = new InputStreamContent(stream);
         return results;
     }
@@ -121,7 +121,7 @@ public class ResultUtils {
         if (fetchGroup != null) {
             int content = fetchGroup.content();
             messageResult.setFlags(message.createFlags());
-            messageResult.setSize((int)message.getDocument().getFullContentOctets());
+            messageResult.setSize((int)message.getMessage().getFullContentOctets());
             messageResult.setInternalDate(message.getInternalDate());
 
             try {
@@ -157,7 +157,7 @@ public class ResultUtils {
     }
 
     private static void addMimeDescriptor(MailboxMembership<?> message, MessageResultImpl messageResult) throws IOException, MimeException {
-            MimeDescriptor descriptor = MimeDescriptorImpl.build(message.getDocument());
+            MimeDescriptor descriptor = MimeDescriptorImpl.build(message.getMessage());
             messageResult.setMimeDescriptor(descriptor);
     }
 
@@ -241,7 +241,7 @@ public class ResultUtils {
      */
 
     public static InputStream toInput(final MailboxMembership<?> membership) throws IOException {
-        final org.apache.james.imap.store.mail.model.Message document = membership.getDocument();
+        final org.apache.james.imap.store.mail.model.Message document = membership.getMessage();
         return toInput(document);
     }
    

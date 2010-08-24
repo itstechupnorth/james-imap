@@ -62,7 +62,7 @@ public class JPAMailboxMembership extends AbstractJPAMailboxMembership{
     public JPAMailboxMembership(long mailboxId, AbstractJPAMailboxMembership original) throws MailboxException {
         super(mailboxId, original);
         try {
-            this.message = new JPAMessage((JPAMessage) original.getDocument());
+            this.message = new JPAMessage((JPAMessage) original.getMessage());
         } catch (IOException e) {
             throw new MailboxException(HumanReadableText.FAILURE_MAIL_PARSE,e);
         }
@@ -72,7 +72,7 @@ public class JPAMailboxMembership extends AbstractJPAMailboxMembership{
      * Gets the message member.
      * @return message, not null
      */
-    public Message getDocument() {
+    public Message getMessage() {
         return message;
     }
     
