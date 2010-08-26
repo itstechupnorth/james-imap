@@ -141,7 +141,7 @@ public class MaildirMessage extends AbstractMessage implements MailboxMembership
      */
     public MaildirMessage(Mailbox<Integer> mailbox, MaildirMessage message) throws MailboxException {
         this.internalDate = message.getInternalDate();
-        this.size = message.getDocument().getFullContentOctets();
+        this.size = message.getMessage().getFullContentOctets();
         this.answered = message.isAnswered();
         this.deleted = message.isDeleted();
         this.draft = message.isDraft();
@@ -273,9 +273,9 @@ public class MaildirMessage extends AbstractMessage implements MailboxMembership
 
     /* 
      * (non-Javadoc)
-     * @see org.apache.james.imap.store.mail.model.MailboxMembership#getDocument()
+     * @see org.apache.james.imap.store.mail.model.MailboxMembership#getMessage()
      */
-    public Message getDocument() {
+    public Message getMessage() {
         return this;
     }
 

@@ -312,13 +312,13 @@ public class MaildirMessageMapper extends NonTransactionalMapper implements Mess
             // In order to prevent this case we would need to check ALL files in all folders and compare
             // them to this message name. We rather let this happen once in a billion years...
             MaildirMessageName messageName = MaildirMessageName.createUniqueName(folder,
-                    message.getDocument().getFullContentOctets());
+                    message.getMessage().getFullContentOctets());
             File messageFile = new File(tmpFolder, messageName.getFullName());
             FileOutputStream fos = null;
             try {
                 messageFile.createNewFile();
                 fos = new FileOutputStream(messageFile);
-                InputStream input = message.getDocument().getFullContent();
+                InputStream input = message.getMessage().getFullContent();
                 byte[] b = new byte[BUF_SIZE];
                 int len = 0;
                 while ((len = input.read(b)) != -1)

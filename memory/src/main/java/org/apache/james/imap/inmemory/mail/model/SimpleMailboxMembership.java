@@ -92,7 +92,7 @@ public class SimpleMailboxMembership extends AbstractMailboxMembership<Long> imp
     }
 
 
-    public Message getDocument() {
+    public Message getMessage() {
         return this;
     }
 
