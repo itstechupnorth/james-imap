@@ -37,7 +37,6 @@
     <module>protocol-tester</module>
     <module>api</module>
     <module>message</module>
-    <module>decode</module>
     <module>mailbox</module>
     <module>store</module>
     <module>processor</module>
