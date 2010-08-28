@@ -47,11 +47,6 @@
     </dependency>
     <dependency>
       <groupId>org.apache.james</groupId>
-      <artifactId>apache-james-imap-decode</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.james</groupId>
       <artifactId>apache-james-imap-mailbox</artifactId>
       <scope>test</scope>
     </dependency>
