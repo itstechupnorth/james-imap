@@ -52,4 +52,18 @@ public interface SubscriptionManager{
      */
     public void unsubscribe(MailboxSession session, String mailbox)
             throws SubscriptionException;
+    
+    /**
+     * Start the processing of a request for the given MailboxSession. If the user is not logged in already then the MailboxSession will be null
+     * 
+     * @param session 
+     */
+    public void startProcessingRequest(MailboxSession session);
+    
+    /**
+     * End the processing of a request for the given MailboxSession. If the user is not logged in already then the MailboxSession will be null
+     * 
+     * @param session 
+     */
+    public void endProcessingRequest(MailboxSession session);
 }

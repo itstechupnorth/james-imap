@@ -91,4 +91,14 @@ public class InMemoryUserManager implements Authenticator, SubscriptionManager {
         user.setPassword(password);
     }
 
+    public void endProcessingRequest(MailboxSession session) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    public void startProcessingRequest(MailboxSession session) {
+        // TODO Auto-generated method stub
+        
+    }
+
 }

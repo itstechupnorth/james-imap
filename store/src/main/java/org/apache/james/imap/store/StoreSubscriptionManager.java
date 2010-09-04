@@ -111,4 +111,21 @@ public abstract class StoreSubscriptionManager<Id> implements SubscriptionManage
             throw new SubscriptionException(e.getKey(), (Exception)e.getCause());
         }
     }
+
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.mailbox.SubscriptionManager#endProcessingRequest(org.apache.james.imap.mailbox.MailboxSession)
+     */
+    public void endProcessingRequest(MailboxSession session) {
+        mapperFactory.endRequest(session);
+    }
+
+    /**
+     * Do nothing, Sub classes should override this if needed
+     */
+    public void startProcessingRequest(MailboxSession session) {
+        // Do nothing        
+    }
+    
+    
 }

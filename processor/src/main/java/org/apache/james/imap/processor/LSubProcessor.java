@@ -42,59 +42,21 @@ import org.apache.james.imap.message.request.LsubRequest;
 import org.apache.james.imap.message.response.LSubResponse;
 import org.apache.james.imap.processor.base.ImapSessionUtils;
 
-public class LSubProcessor extends AbstractMailboxProcessor {
+public class LSubProcessor extends AbstractSubscriptionProcessor {
 
-    private final SubscriptionManager subscriptionManager;
-
-    public LSubProcessor(final ImapProcessor next,
-            final MailboxManager mailboxManager, 
-            final SubscriptionManager subscriptionManager,
-            final StatusResponseFactory factory) {
-        super(next, mailboxManager, factory);
-        this.subscriptionManager = subscriptionManager;
+    public LSubProcessor(ImapProcessor next, MailboxManager mailboxManager, SubscriptionManager subscriptionManager, StatusResponseFactory factory) {
+        super(next, mailboxManager, subscriptionManager, factory);
     }
 
     protected boolean isAcceptable(ImapMessage message) {
         return (message instanceof LsubRequest);
     }
 
-    protected void doProcess(ImapRequest message, ImapSession session,
-            String tag, ImapCommand command, Responder responder) {
-        final LsubRequest request = (LsubRequest) message;
-        final String referenceName = request.getBaseReferenceName();
-        final String mailboxPattern = request.getMailboxPattern();
-
-        try {
-            if (mailboxPattern.length() == 0) {
-                respondWithHierarchyDelimiter(responder);
-            } else {
-                listSubscriptions(session, responder, referenceName, mailboxPattern);
-            }
-
-            okComplete(command, tag, responder);
-
-        } catch (SubscriptionException e) {
-            session.getLog().debug("Subscription failed", e);
-            final HumanReadableText exceptionKey = e.getKey();
-            final HumanReadableText displayTextKey;
-            if (exceptionKey == null) {
-                displayTextKey = HumanReadableText.GENERIC_LSUB_FAILURE;
-            } else {
-                displayTextKey = exceptionKey;
-            }
-            no(command, tag, responder, displayTextKey);
-        } catch (MailboxException e) {
-            session.getLog().debug("Subscription failed", e);
-            final HumanReadableText displayTextKey = HumanReadableText.GENERIC_LSUB_FAILURE;
-            no(command, tag, responder, displayTextKey);
-        }
-    }
-
     private void listSubscriptions(ImapSession session, Responder responder,
             final String referenceName, final String mailboxName)
             throws SubscriptionException, MailboxException {
         final MailboxSession mailboxSession = ImapSessionUtils.getMailboxSession(session);
-        final Collection<String> mailboxes = subscriptionManager.subscriptions(mailboxSession);
+        final Collection<String> mailboxes = getSubscriptionManager().subscriptions(mailboxSession);
         // If the mailboxName is fully qualified, ignore the reference name.
         String finalReferencename = referenceName;
         
@@ -152,5 +114,37 @@ public class LSubProcessor extends AbstractMailboxProcessor {
     private void respondWithHierarchyDelimiter(final Responder responder) {
         final LSubResponse response = new LSubResponse("", true);
         responder.respond(response);
+    }
+
+    @Override
+    protected void doProcessRequest(ImapRequest message, ImapSession session, String tag, ImapCommand command, Responder responder) {
+        final LsubRequest request = (LsubRequest) message;
+        final String referenceName = request.getBaseReferenceName();
+        final String mailboxPattern = request.getMailboxPattern();
+
+        try {
+            if (mailboxPattern.length() == 0) {
+                respondWithHierarchyDelimiter(responder);
+            } else {
+                listSubscriptions(session, responder, referenceName, mailboxPattern);
+            }
+
+            okComplete(command, tag, responder);
+
+        } catch (SubscriptionException e) {
+            session.getLog().debug("Subscription failed", e);
+            final HumanReadableText exceptionKey = e.getKey();
+            final HumanReadableText displayTextKey;
+            if (exceptionKey == null) {
+                displayTextKey = HumanReadableText.GENERIC_LSUB_FAILURE;
+            } else {
+                displayTextKey = exceptionKey;
+            }
+            no(command, tag, responder, displayTextKey);
+        } catch (MailboxException e) {
+            session.getLog().debug("Subscription failed", e);
+            final HumanReadableText displayTextKey = HumanReadableText.GENERIC_LSUB_FAILURE;
+            no(command, tag, responder, displayTextKey);
+        }        
     }
 }

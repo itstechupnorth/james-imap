@@ -115,7 +115,9 @@ public class LSubProcessorTest {
         subscriptions.add(MAILBOX_A);
         subscriptions.add(MAILBOX_B);
         subscriptions.add(MAILBOX_C);
+
         mockery.checking(new Expectations() {{
+            allowing(session).getAttribute(ImapSessionUtils.MAILBOX_SESSION_ATTRIBUTE_SESSION_KEY); will(returnValue(mailboxSession));
             oneOf(responder).respond(with(
                     equal(new LSubResponse("", true))));
         }});
@@ -123,7 +125,7 @@ public class LSubProcessorTest {
         expectOk();
 
         LsubRequest request = new LsubRequest(command, "", "", TAG);
-        processor.doProcess(request, session, TAG, command, responderImpl);
+        processor.doProcessRequest(request, session, TAG, command, responderImpl);
 
     }
 
@@ -148,7 +150,7 @@ public class LSubProcessorTest {
 
         LsubRequest request = new LsubRequest(command, "", PARENT
                 + ImapConstants.HIERARCHY_DELIMITER + "%", TAG);
-        processor.doProcess(request, session, TAG, command, responderImpl);
+        processor.doProcessRequest(request, session, TAG, command, responderImpl);
 
     }
 
@@ -171,7 +173,7 @@ public class LSubProcessorTest {
 
         LsubRequest request = new LsubRequest(command, "", ROOT
                 + ImapConstants.HIERARCHY_DELIMITER + "%", TAG);
-        processor.doProcess(request, session, TAG, command, responderImpl);
+        processor.doProcessRequest(request, session, TAG, command, responderImpl);
 
     }
 
@@ -195,7 +197,7 @@ public class LSubProcessorTest {
 
         LsubRequest request = new LsubRequest(command, "", ROOT
                 + ImapConstants.HIERARCHY_DELIMITER + "%", TAG);
-        processor.doProcess(request, session, TAG, command, responderImpl);
+        processor.doProcessRequest(request, session, TAG, command, responderImpl);
 
     }
 
@@ -217,7 +219,7 @@ public class LSubProcessorTest {
         expectOk();
 
         LsubRequest request = new LsubRequest(command, "", "*", TAG);
-        processor.doProcess(request, session, TAG, command, responderImpl);
+        processor.doProcessRequest(request, session, TAG, command, responderImpl);
 
     }
 

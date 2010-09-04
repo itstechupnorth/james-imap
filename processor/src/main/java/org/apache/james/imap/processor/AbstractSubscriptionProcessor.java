@@ -16,57 +16,59 @@
  * specific language governing permissions and limitations      *
  * under the License.                                           *
  ****************************************************************/
-
 package org.apache.james.imap.processor;
 
 import org.apache.james.imap.api.ImapCommand;
-import org.apache.james.imap.api.ImapMessage;
-import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.api.message.request.ImapRequest;
 import org.apache.james.imap.api.message.response.StatusResponseFactory;
 import org.apache.james.imap.api.process.ImapProcessor;
 import org.apache.james.imap.api.process.ImapSession;
 import org.apache.james.imap.mailbox.MailboxManager;
 import org.apache.james.imap.mailbox.MailboxSession;
-import org.apache.james.imap.mailbox.SubscriptionException;
 import org.apache.james.imap.mailbox.SubscriptionManager;
-import org.apache.james.imap.message.request.SubscribeRequest;
 import org.apache.james.imap.processor.base.ImapSessionUtils;
 
-public class SubscribeProcessor extends AbstractSubscriptionProcessor {
+/**
+ * Abstract base class which should be used by implementations which need to access the {@link SubscriptionManager}
+ *
+ */
+public abstract class AbstractSubscriptionProcessor extends AbstractMailboxProcessor{
 
-    public SubscribeProcessor(ImapProcessor next, MailboxManager mailboxManager, SubscriptionManager subscriptionManager, StatusResponseFactory factory) {
-        super(next, mailboxManager, subscriptionManager, factory);
+    private final SubscriptionManager subscriptionManager;
+
+    public AbstractSubscriptionProcessor(ImapProcessor next, MailboxManager mailboxManager, final SubscriptionManager subscriptionManager,StatusResponseFactory factory) {
+        super(next, mailboxManager, factory);
+        this.subscriptionManager = subscriptionManager;
     }
 
-    protected boolean isAcceptable(ImapMessage message) {
-        return (message instanceof SubscribeRequest);
+    /**
+     * Return the {@link SubscriptionManager}
+     * 
+     * @return subscriptionManager
+     */
+    protected SubscriptionManager getSubscriptionManager() {
+        return subscriptionManager;
     }
 
     @Override
-    protected void doProcessRequest(ImapRequest message, ImapSession session, String tag, ImapCommand command, Responder responder) {
-        final SubscribeRequest request = (SubscribeRequest) message;
-        final String mailboxName = request.getMailboxName();
-        final MailboxSession mailboxSession = ImapSessionUtils.getMailboxSession(session);
-        try {
-            getSubscriptionManager().subscribe(mailboxSession, mailboxName);
-
-            unsolicitedResponses(session, responder, false);
-            okComplete(command, tag, responder);
-
-        } catch (SubscriptionException e) {
-            session.getLog().debug("Subscription failed", e);
-            unsolicitedResponses(session, responder, false);
-
-            final HumanReadableText exceptionKey = e.getKey();
-            final HumanReadableText displayTextKey;
-            if (exceptionKey == null) {
-                displayTextKey = HumanReadableText.GENERIC_SUBSCRIPTION_FAILURE;
-            } else {
-                displayTextKey = exceptionKey;
-            }
-            no(command, tag, responder, displayTextKey);
-        }        
+    protected final void doProcess(ImapRequest message, ImapSession session, String tag, ImapCommand command, Responder responder) {
+        
+        // take care of calling the start/end processing 
+        MailboxSession mSession = ImapSessionUtils.getMailboxSession(session);
+        getSubscriptionManager().startProcessingRequest(mSession);
+        doProcessRequest(message, session, tag, command, responder);
+        getSubscriptionManager().endProcessingRequest(mSession);
     }
-
+    
+    /**
+     * Process the request
+     * 
+     * @param message
+     * @param session
+     * @param tag
+     * @param command
+     * @param responder
+     */
+    protected abstract void doProcessRequest(ImapRequest message, ImapSession session, String tag, ImapCommand command, Responder responder);
+    
 }

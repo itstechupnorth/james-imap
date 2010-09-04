@@ -33,30 +33,24 @@ import org.apache.james.imap.mailbox.SubscriptionManager;
 import org.apache.james.imap.message.request.UnsubscribeRequest;
 import org.apache.james.imap.processor.base.ImapSessionUtils;
 
-public class UnsubscribeProcessor extends AbstractMailboxProcessor {
+public class UnsubscribeProcessor extends AbstractSubscriptionProcessor {
 
-    private final SubscriptionManager subscriptionManager;
 
-    
-    public UnsubscribeProcessor(final ImapProcessor next,
-            final MailboxManager mailboxManager,
-            final SubscriptionManager subscriptionManager,
-            final StatusResponseFactory factory) {
-        super(next, mailboxManager, factory);
-        this.subscriptionManager = subscriptionManager;
+    public UnsubscribeProcessor(ImapProcessor next, MailboxManager mailboxManager, SubscriptionManager subscriptionManager, StatusResponseFactory factory) {
+        super(next, mailboxManager, subscriptionManager, factory);
     }
 
     protected boolean isAcceptable(ImapMessage message) {
         return (message instanceof UnsubscribeRequest);
     }
 
-    protected void doProcess(ImapRequest message, ImapSession session,
-            String tag, ImapCommand command, Responder responder) {
+    @Override
+    protected void doProcessRequest(ImapRequest message, ImapSession session, String tag, ImapCommand command, Responder responder) {
         final UnsubscribeRequest request = (UnsubscribeRequest) message;
         final String mailboxName = request.getMailboxName();
         final MailboxSession mailboxSession = ImapSessionUtils.getMailboxSession(session);
         try {
-            subscriptionManager.unsubscribe(mailboxSession, mailboxName);
+            getSubscriptionManager().unsubscribe(mailboxSession, mailboxName);
 
             unsolicitedResponses(session, responder, false);
             okComplete(command, tag, responder);
@@ -73,6 +67,7 @@ public class UnsubscribeProcessor extends AbstractMailboxProcessor {
                 displayTextKey = exceptionKey;
             }
             no(command, tag, responder, displayTextKey);
-        }
+        }        
     }
+
 }
