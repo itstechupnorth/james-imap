@@ -142,7 +142,7 @@ public abstract class StoreMailboxManager<Id> implements MailboxManager {
      * @param passwd the password
      * @return success true if login success false otherwise
      */
-    public boolean login(String userid, String passwd) {
+    private boolean login(String userid, String passwd) {
         return authenticator.isAuthentic(userid, passwd);
     }
     
