@@ -24,11 +24,17 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.Random;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.james.imap.api.MailboxPath;
 import org.apache.james.imap.api.display.HumanReadableText;
+import org.apache.james.imap.mailbox.BadCredentialsException;
+import org.apache.james.imap.mailbox.MailboxManager;
 import org.apache.james.imap.mailbox.MessageManager;
 import org.apache.james.imap.mailbox.MailboxConstants;
 import org.apache.james.imap.mailbox.MailboxException;
@@ -43,7 +49,7 @@ import org.apache.james.imap.mailbox.StandardMailboxMetaDataComparator;
 import org.apache.james.imap.mailbox.MailboxMetaData.Selectability;
 import org.apache.james.imap.mailbox.util.SimpleMailboxMetaData;
 import org.apache.james.imap.store.Authenticator;
-import org.apache.james.imap.store.DelegatingMailboxManager;
+import org.apache.james.imap.store.SimpleMailboxSession;
 import org.apache.james.mailboxmanager.torque.om.MailboxRow;
 import org.apache.james.mailboxmanager.torque.om.MailboxRowPeer;
 import org.apache.torque.TorqueException;
@@ -55,7 +61,7 @@ import org.apache.torque.util.Criteria;
  * @deprecated Torque implementation will get removed in the next release
  */
 @Deprecated()
-public class TorqueMailboxManager extends DelegatingMailboxManager {
+public class TorqueMailboxManager implements MailboxManager {
     
     private static final char SQL_WILDCARD_CHAR = '%';
 
@@ -65,11 +71,100 @@ public class TorqueMailboxManager extends DelegatingMailboxManager {
 
     
     public TorqueMailboxManager(final Authenticator authenticator) {
-        super(authenticator);
+        this.authenticator = authenticator;
         this.lock = new ReentrantReadWriteLock();
         mailboxes = new HashMap<String, TorqueMailbox>();
     }
 
+    
+    private final Authenticator authenticator;
+    private final static Random RANDOM = new Random();
+
+    private Log log = LogFactory.getLog("org.apache.james.imap");
+
+    
+    protected Log getLog() {
+        return log;
+    }
+
+    public void setLog(Log log) {
+        this.log = log;
+    }
+
+    /**
+     * Generate an return the next uid validity 
+     * 
+     * @return uidValidity
+     */
+    protected int randomUidValidity() {
+        return Math.abs(RANDOM.nextInt());
+    }
+    
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.mailbox.MailboxManager#createSystemSession(java.lang.String, org.apache.commons.logging.Log)
+     */
+    public MailboxSession createSystemSession(String userName, Log log) {
+        return createSession(userName, null, log);
+    }
+
+    /**
+     * Create Session 
+     * 
+     * @param userName
+     * @param log
+     * @return session
+     */
+    private SimpleMailboxSession createSession(String userName, String password, Log log) {
+        return new SimpleMailboxSession(randomId(), userName, password, log, new ArrayList<Locale>());
+    }
+
+    /**
+     * Generate and return the next id to use
+     * 
+     * @return id
+     */
+    protected long randomId() {
+        return RANDOM.nextLong();
+    }
+    
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.mailbox.MailboxManager#getDelimiter()
+     */
+    public final char getDelimiter() {
+        return MailboxConstants.DEFAULT_DELIMITER;
+    }
+
+    /**
+     * Log in the user with the given userid and password
+     * 
+     * @param userid the username
+     * @param passwd the password
+     * @return success true if login success false otherwise
+     */
+    public boolean login(String userid, String passwd) {
+        return authenticator.isAuthentic(userid, passwd);
+    }
+    
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.mailbox.MailboxManager#login(java.lang.String, java.lang.String, org.apache.commons.logging.Log)
+     */
+    public MailboxSession login(String userid, String passwd, Log log) throws BadCredentialsException, MailboxException {
+        if (login(userid, passwd)) {
+            return createSession(userid, passwd, log);
+        } else {
+            throw new BadCredentialsException();
+        }
+    }
+    
+    /**
+     * Default do nothing. Should be overridden by subclass if needed
+     */
+    public void logout(MailboxSession session, boolean force) throws MailboxException {
+        // Do nothing by default
+    }
     public MessageManager getMailbox(MailboxPath path, MailboxSession session)
             throws MailboxException {
         return doGetMailbox(getName(path));
@@ -368,6 +463,14 @@ public class TorqueMailboxManager extends DelegatingMailboxManager {
     public void addListener(MailboxPath path, MailboxListener listener, MailboxSession session) throws MailboxException {
         final TorqueMailbox mailbox = doGetMailbox(getName(path));
         mailbox.addListener(listener);
+    }
+
+    public void endProcessingRequest(MailboxSession session) {
+        
+    }
+
+    public void startProcessingRequest(MailboxSession session) {
+        
     }
 
 

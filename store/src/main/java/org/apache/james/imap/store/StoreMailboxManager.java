@@ -22,12 +22,16 @@ package org.apache.james.imap.store;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
+import java.util.Random;
 
 import javax.mail.Flags;
 
 import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.james.imap.api.ImapConstants;
 import org.apache.james.imap.api.MailboxPath;
+import org.apache.james.imap.mailbox.BadCredentialsException;
 import org.apache.james.imap.mailbox.MailboxConstants;
 import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.MailboxExistsException;
@@ -55,7 +59,7 @@ import org.apache.james.imap.store.transaction.Mapper;
  *
  * @param <Id>
  */
-public abstract class StoreMailboxManager<Id> extends DelegatingMailboxManager {
+public abstract class StoreMailboxManager<Id> implements MailboxManager {
     
     public static final char SQL_WILDCARD_CHAR = '%';
     
@@ -64,14 +68,103 @@ public abstract class StoreMailboxManager<Id> extends DelegatingMailboxManager {
     private final MailboxPathLock lock = new MailboxPathLock();
     protected final MailboxSessionMapperFactory<Id> mailboxSessionMapperFactory;    
     
+    private final Authenticator authenticator;
+    private final static Random RANDOM = new Random();
+
+    private Log log = LogFactory.getLog("org.apache.james.imap");
+
+    
     public StoreMailboxManager(MailboxSessionMapperFactory<Id> mailboxSessionMapperFactory, final Authenticator authenticator) {
-        super(authenticator);
+        this.authenticator = authenticator;
         this.mailboxSessionMapperFactory = mailboxSessionMapperFactory;
         
         // The dispatcher need to have the delegating listener added
         dispatcher.addMailboxListener(delegatingListener);
     }
+   
+    protected Log getLog() {
+        return log;
+    }
+
+    public void setLog(Log log) {
+        this.log = log;
+    }
+
+    /**
+     * Generate an return the next uid validity 
+     * 
+     * @return uidValidity
+     */
+    protected int randomUidValidity() {
+        return Math.abs(RANDOM.nextInt());
+    }
     
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.mailbox.MailboxManager#createSystemSession(java.lang.String, org.apache.commons.logging.Log)
+     */
+    public MailboxSession createSystemSession(String userName, Log log) {
+        return createSession(userName, null, log);
+    }
+
+    /**
+     * Create Session 
+     * 
+     * @param userName
+     * @param log
+     * @return session
+     */
+    private SimpleMailboxSession createSession(String userName, String password, Log log) {
+        return new SimpleMailboxSession(randomId(), userName, password, log, new ArrayList<Locale>());
+    }
+
+    /**
+     * Generate and return the next id to use
+     * 
+     * @return id
+     */
+    protected long randomId() {
+        return RANDOM.nextLong();
+    }
+    
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.mailbox.MailboxManager#getDelimiter()
+     */
+    public final char getDelimiter() {
+        return MailboxConstants.DEFAULT_DELIMITER;
+    }
+
+    /**
+     * Log in the user with the given userid and password
+     * 
+     * @param userid the username
+     * @param passwd the password
+     * @return success true if login success false otherwise
+     */
+    public boolean login(String userid, String passwd) {
+        return authenticator.isAuthentic(userid, passwd);
+    }
+    
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.mailbox.MailboxManager#login(java.lang.String, java.lang.String, org.apache.commons.logging.Log)
+     */
+    public MailboxSession login(String userid, String passwd, Log log) throws BadCredentialsException, MailboxException {
+        if (login(userid, passwd)) {
+            return createSession(userid, passwd, log);
+        } else {
+            throw new BadCredentialsException();
+        }
+    }
+    
+    /**
+     * Default do nothing. Should be overridden by subclass if needed
+     */
+    public void logout(MailboxSession session, boolean force) throws MailboxException {
+        // Do nothing by default
+    }
+  
     /**
      * Create a {@link MapperStoreMessageManager} for the given Mailbox
      * 
