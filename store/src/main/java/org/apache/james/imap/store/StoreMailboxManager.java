@@ -420,4 +420,12 @@ public abstract class StoreMailboxManager<Id> implements MailboxManager {
         mailboxSessionMapperFactory.endRequest(session);
     }
 
+    /**
+     * Do nothing. Sub classes should override this if needed
+     */
+    public void startProcessingRequest(MailboxSession session) {
+        // do nothing
+        
+    }
+
 }
