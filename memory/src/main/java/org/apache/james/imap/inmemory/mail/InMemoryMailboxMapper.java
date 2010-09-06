@@ -23,10 +23,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.apache.james.imap.api.MailboxPath;
 import org.apache.james.imap.inmemory.mail.model.InMemoryMailbox;
+import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.MailboxNotFoundException;
-import org.apache.james.imap.mailbox.StorageException;
+import org.apache.james.imap.mailbox.MailboxPath;
 import org.apache.james.imap.store.mail.MailboxMapper;
 import org.apache.james.imap.store.mail.model.Mailbox;
 import org.apache.james.imap.store.transaction.NonTransactionalMapper;
@@ -46,7 +46,7 @@ public class InMemoryMailboxMapper extends NonTransactionalMapper implements Mai
      * (non-Javadoc)
      * @see org.apache.james.imap.store.mail.MailboxMapper#delete(org.apache.james.imap.store.mail.model.Mailbox)
      */
-    public void delete(Mailbox<Long> mailbox) throws StorageException {
+    public void delete(Mailbox<Long> mailbox) throws MailboxException {
         mailboxesById.remove(mailbox.getMailboxId());
     }
 
@@ -54,7 +54,7 @@ public class InMemoryMailboxMapper extends NonTransactionalMapper implements Mai
      * (non-Javadoc)
      * @see org.apache.james.imap.store.mail.MailboxMapper#deleteAll()
      */
-    public void deleteAll() throws StorageException {
+    public void deleteAll() throws MailboxException {
         mailboxesById.clear();
     }
 
@@ -63,10 +63,10 @@ public class InMemoryMailboxMapper extends NonTransactionalMapper implements Mai
      * (non-Javadoc)
      * @see org.apache.james.imap.store.mail.MailboxMapper#findMailboxById(java.lang.Object)
      */
-    public Mailbox<Long> findMailboxById(Long mailboxId) throws StorageException, MailboxNotFoundException {
+    public Mailbox<Long> findMailboxById(Long mailboxId) throws MailboxException, MailboxNotFoundException {
         Mailbox<Long> mailbox = mailboxesById.get(mailboxesById);
         if (mailbox == null) {
-            throw new MailboxNotFoundException(mailboxId);
+            throw new MailboxNotFoundException(String.valueOf(mailboxId));
         } else {
             return mailbox;
         }
@@ -76,7 +76,7 @@ public class InMemoryMailboxMapper extends NonTransactionalMapper implements Mai
      * (non-Javadoc)
      * @see org.apache.james.imap.store.mail.MailboxMapper#findMailboxByName(java.lang.String)
      */
-    public synchronized Mailbox<Long> findMailboxByPath(MailboxPath path) throws StorageException, MailboxNotFoundException {
+    public synchronized Mailbox<Long> findMailboxByPath(MailboxPath path) throws MailboxException, MailboxNotFoundException {
         Mailbox<Long> result = null;
         for (final InMemoryMailbox mailbox:mailboxesById.values()) {
             MailboxPath mp = new MailboxPath(mailbox.getNamespace(), mailbox.getUser(), mailbox.getName());
@@ -96,7 +96,7 @@ public class InMemoryMailboxMapper extends NonTransactionalMapper implements Mai
      * (non-Javadoc)
      * @see org.apache.james.imap.store.mail.MailboxMapper#findMailboxWithNameLike(java.lang.String)
      */
-    public List<Mailbox<Long>> findMailboxWithPathLike(MailboxPath path) throws StorageException {
+    public List<Mailbox<Long>> findMailboxWithPathLike(MailboxPath path) throws MailboxException {
         final String regex = path.getName().replace("%", ".*");
         List<Mailbox<Long>> results = new ArrayList<Mailbox<Long>>();
         for (final InMemoryMailbox mailbox:mailboxesById.values()) {
@@ -111,7 +111,7 @@ public class InMemoryMailboxMapper extends NonTransactionalMapper implements Mai
      * (non-Javadoc)
      * @see org.apache.james.imap.store.mail.MailboxMapper#save(org.apache.james.imap.store.mail.model.Mailbox)
      */
-    public void save(Mailbox<Long> mailbox) throws StorageException {
+    public void save(Mailbox<Long> mailbox) throws MailboxException {
         mailboxesById.put(mailbox.getMailboxId(), (InMemoryMailbox) mailbox);
     }
 
@@ -126,7 +126,7 @@ public class InMemoryMailboxMapper extends NonTransactionalMapper implements Mai
      * (non-Javadoc)
      * @see org.apache.james.imap.store.mail.MailboxMapper#hasChildren(org.apache.james.imap.store.mail.model.Mailbox)
      */
-    public boolean hasChildren(Mailbox<Long> mailbox) throws StorageException,
+    public boolean hasChildren(Mailbox<Long> mailbox) throws MailboxException,
             MailboxNotFoundException {
         String mailboxName = mailbox.getName() + delimiter;
         for (final InMemoryMailbox box:mailboxesById.values()) {

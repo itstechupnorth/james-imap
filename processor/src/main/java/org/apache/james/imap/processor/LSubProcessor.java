@@ -25,7 +25,6 @@ import java.util.Collection;
 import org.apache.james.imap.api.ImapCommand;
 import org.apache.james.imap.api.ImapConstants;
 import org.apache.james.imap.api.ImapMessage;
-import org.apache.james.imap.api.MailboxPath;
 import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.api.message.request.ImapRequest;
 import org.apache.james.imap.api.message.response.StatusResponseFactory;
@@ -34,6 +33,7 @@ import org.apache.james.imap.api.process.ImapSession;
 import org.apache.james.imap.mailbox.MailboxConstants;
 import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.MailboxManager;
+import org.apache.james.imap.mailbox.MailboxPath;
 import org.apache.james.imap.mailbox.MailboxQuery;
 import org.apache.james.imap.mailbox.MailboxSession;
 import org.apache.james.imap.mailbox.SubscriptionException;
@@ -133,14 +133,7 @@ public class LSubProcessor extends AbstractSubscriptionProcessor {
 
         } catch (SubscriptionException e) {
             session.getLog().debug("Subscription failed", e);
-            final HumanReadableText exceptionKey = e.getKey();
-            final HumanReadableText displayTextKey;
-            if (exceptionKey == null) {
-                displayTextKey = HumanReadableText.GENERIC_LSUB_FAILURE;
-            } else {
-                displayTextKey = exceptionKey;
-            }
-            no(command, tag, responder, displayTextKey);
+            no(command, tag, responder, HumanReadableText.GENERIC_LSUB_FAILURE);
         } catch (MailboxException e) {
             session.getLog().debug("Subscription failed", e);
             final HumanReadableText displayTextKey = HumanReadableText.GENERIC_LSUB_FAILURE;

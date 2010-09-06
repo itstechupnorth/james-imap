@@ -29,11 +29,6 @@
   <artifactId>apache-james-imap-jcr</artifactId>
   <name>Apache James IMAP JCR Mailbox Manager</name>
   <dependencies>
-  
-    <dependency>
-      <groupId>org.apache.james</groupId>
-      <artifactId>apache-james-imap-api</artifactId>
-    </dependency>
     <dependency>
       <groupId>org.apache.james</groupId>
       <artifactId>apache-james-imap-mailbox</artifactId>
@@ -43,14 +38,6 @@
       <groupId>org.apache.james</groupId>
       <artifactId>apache-james-imap-store</artifactId>
     </dependency>
-
-<!--
-    <dependency>
-      <groupId>org.apache.torque</groupId>
-      <artifactId>torque-runtime</artifactId>
-      <scope>test</scope>
-    </dependency>
--->
     <dependency>
       <groupId>org.apache.james</groupId>
       <artifactId>apache-james-imap-deployment</artifactId>

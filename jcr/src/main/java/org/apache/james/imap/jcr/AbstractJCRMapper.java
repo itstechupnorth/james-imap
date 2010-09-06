@@ -22,7 +22,6 @@ import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 
 import org.apache.commons.logging.Log;
-import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.MailboxSession;
 import org.apache.james.imap.store.transaction.TransactionalMapper;
@@ -92,7 +91,7 @@ public abstract class AbstractJCRMapper extends TransactionalMapper implements J
                 getSession().save();
             }
         } catch (RepositoryException e) {
-            throw new MailboxException(HumanReadableText.COMMIT_TRANSACTION_FAILED, e);
+            throw new MailboxException("Unable to commit", e);
         }
     }
 

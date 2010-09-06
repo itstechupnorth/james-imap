@@ -19,8 +19,8 @@
 
 package org.apache.james.imap.mailbox.util;
 
-import org.apache.james.imap.api.MailboxPath;
 import org.apache.james.imap.mailbox.MailboxMetaData;
+import org.apache.james.imap.mailbox.MailboxPath;
 import org.apache.james.imap.mailbox.StandardMailboxMetaDataComparator;
 
 public class SimpleMailboxMetaData implements MailboxMetaData, Comparable<MailboxMetaData> {

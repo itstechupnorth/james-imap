@@ -1,3 +1,22 @@
+/****************************************************************
+ * Licensed to the Apache Software Foundation (ASF) under one   *
+ * or more contributor license agreements.  See the NOTICE file *
+ * distributed with this work for additional information        *
+ * regarding copyright ownership.  The ASF licenses this file   *
+ * to you under the Apache License, Version 2.0 (the            *
+ * "License"); you may not use this file except in compliance   *
+ * with the License.  You may obtain a copy of the License at   *
+ *                                                              *
+ *   http://www.apache.org/licenses/LICENSE-2.0                 *
+ *                                                              *
+ * Unless required by applicable law or agreed to in writing,   *
+ * software distributed under the License is distributed on an  *
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY       *
+ * KIND, either express or implied.  See the License for the    *
+ * specific language governing permissions and limitations      *
+ * under the License.                                           *
+ ****************************************************************/
+
 package org.apache.james.imap.inmemory.mail;
 
 import java.util.ArrayList;
@@ -9,9 +28,9 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.james.imap.inmemory.mail.model.InMemoryMailbox;
 import org.apache.james.imap.inmemory.mail.model.SimpleMailboxMembership;
+import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.MessageRange;
 import org.apache.james.imap.mailbox.SearchQuery;
-import org.apache.james.imap.mailbox.StorageException;
 import org.apache.james.imap.store.MailboxMembershipComparator;
 import org.apache.james.imap.store.SearchQueryIterator;
 import org.apache.james.imap.store.mail.MessageMapper;
@@ -41,7 +60,7 @@ public class InMemoryMessageMapper extends NonTransactionalMapper implements Mes
      * (non-Javadoc)
      * @see org.apache.james.imap.store.mail.MessageMapper#countMessagesInMailbox()
      */
-    public long countMessagesInMailbox(Mailbox<Long> mailbox) throws StorageException {
+    public long countMessagesInMailbox(Mailbox<Long> mailbox) throws MailboxException {
         return getMembershipByUidForMailbox(mailbox).size();
     }
 
@@ -49,7 +68,7 @@ public class InMemoryMessageMapper extends NonTransactionalMapper implements Mes
      * (non-Javadoc)
      * @see org.apache.james.imap.store.mail.MessageMapper#countUnseenMessagesInMailbox()
      */
-    public long countUnseenMessagesInMailbox(Mailbox<Long> mailbox) throws StorageException {
+    public long countUnseenMessagesInMailbox(Mailbox<Long> mailbox) throws MailboxException {
         long count = 0;
         for(MailboxMembership<Long> member:getMembershipByUidForMailbox(mailbox).values()) {
             if (!member.isSeen()) {
@@ -63,7 +82,7 @@ public class InMemoryMessageMapper extends NonTransactionalMapper implements Mes
      * (non-Javadoc)
      * @see org.apache.james.imap.store.mail.MessageMapper#delete(org.apache.james.imap.store.mail.model.MailboxMembership)
      */
-    public void delete(Mailbox<Long> mailbox, MailboxMembership<Long> message) throws StorageException {
+    public void delete(Mailbox<Long> mailbox, MailboxMembership<Long> message) throws MailboxException {
         getMembershipByUidForMailbox(mailbox).remove(message.getUid());
     }
 
@@ -72,7 +91,7 @@ public class InMemoryMessageMapper extends NonTransactionalMapper implements Mes
      * @see org.apache.james.imap.store.mail.MessageMapper#findInMailbox(java.lang.Object, org.apache.james.imap.mailbox.MessageRange)
      */
     @SuppressWarnings("unchecked")
-    public List<MailboxMembership<Long>> findInMailbox(Mailbox<Long> mailbox, MessageRange set) throws StorageException {
+    public List<MailboxMembership<Long>> findInMailbox(Mailbox<Long> mailbox, MessageRange set) throws MailboxException {
         final List<MailboxMembership<Long>> results;
         final MessageRange.Type type = set.getType();
         switch (type) {
@@ -115,7 +134,7 @@ public class InMemoryMessageMapper extends NonTransactionalMapper implements Mes
      * (non-Javadoc)
      * @see org.apache.james.imap.store.mail.MessageMapper#findMarkedForDeletionInMailbox(org.apache.james.imap.mailbox.MessageRange)
      */
-    public List<MailboxMembership<Long>> findMarkedForDeletionInMailbox(Mailbox<Long> mailbox, MessageRange set) throws StorageException {
+    public List<MailboxMembership<Long>> findMarkedForDeletionInMailbox(Mailbox<Long> mailbox, MessageRange set) throws MailboxException {
         final List<MailboxMembership<Long>> results = findInMailbox(mailbox, set);
         for(final Iterator<MailboxMembership<Long>> it=results.iterator();it.hasNext();) {
             if (!it.next().isDeleted()) {
@@ -129,7 +148,7 @@ public class InMemoryMessageMapper extends NonTransactionalMapper implements Mes
      * (non-Javadoc)
      * @see org.apache.james.imap.store.mail.MessageMapper#findRecentMessagesInMailbox()
      */
-    public List<MailboxMembership<Long>> findRecentMessagesInMailbox(Mailbox<Long> mailbox,int limit) throws StorageException {
+    public List<MailboxMembership<Long>> findRecentMessagesInMailbox(Mailbox<Long> mailbox,int limit) throws MailboxException {
         final List<MailboxMembership<Long>> results = new ArrayList<MailboxMembership<Long>>();
         for(MailboxMembership<Long> member:getMembershipByUidForMailbox(mailbox).values()) {
             if (member.isRecent()) {
@@ -147,7 +166,7 @@ public class InMemoryMessageMapper extends NonTransactionalMapper implements Mes
      * (non-Javadoc)
      * @see org.apache.james.imap.store.mail.MessageMapper#findFirstUnseenMessageUid(org.apache.james.imap.store.mail.model.Mailbox)
      */
-    public Long findFirstUnseenMessageUid(Mailbox<Long> mailbox) throws StorageException {
+    public Long findFirstUnseenMessageUid(Mailbox<Long> mailbox) throws MailboxException {
         List<MailboxMembership<Long>> memberships = new ArrayList<MailboxMembership<Long>>(getMembershipByUidForMailbox(mailbox).values());
         Collections.sort(memberships, MailboxMembershipComparator.INSTANCE);
         for (int i = 0;  i < memberships.size(); i++) {
@@ -163,7 +182,7 @@ public class InMemoryMessageMapper extends NonTransactionalMapper implements Mes
      * (non-Javadoc)
      * @see org.apache.james.imap.store.mail.MessageMapper#save(org.apache.james.imap.store.mail.model.MailboxMembership)
      */
-    public long save(Mailbox<Long> mailbox, MailboxMembership<Long> message) throws StorageException {
+    public long save(Mailbox<Long> mailbox, MailboxMembership<Long> message) throws MailboxException {
         getMembershipByUidForMailbox(mailbox).put(message.getUid(), message);
         return message.getUid();
     }
@@ -173,7 +192,7 @@ public class InMemoryMessageMapper extends NonTransactionalMapper implements Mes
      * (non-Javadoc)
      * @see org.apache.james.imap.store.mail.MessageMapper#searchMailbox(org.apache.james.imap.store.mail.model.Mailbox, org.apache.james.imap.mailbox.SearchQuery)
      */
-    public Iterator<Long> searchMailbox(Mailbox<Long> mailbox, SearchQuery query) throws StorageException {
+    public Iterator<Long> searchMailbox(Mailbox<Long> mailbox, SearchQuery query) throws MailboxException {
         List<MailboxMembership<?>> memberships = new ArrayList<MailboxMembership<?>>(getMembershipByUidForMailbox(mailbox).values());
         Collections.sort(memberships, MailboxMembershipComparator.INSTANCE);
 
@@ -196,7 +215,7 @@ public class InMemoryMessageMapper extends NonTransactionalMapper implements Mes
      * (non-Javadoc)
      * @see org.apache.james.imap.store.mail.MessageMapper#copy(org.apache.james.imap.store.mail.model.Mailbox, org.apache.james.imap.store.mail.model.MailboxMembership)
      */
-    public long copy(Mailbox<Long> mailbox, MailboxMembership<Long> original) throws StorageException {
+    public long copy(Mailbox<Long> mailbox, MailboxMembership<Long> original) throws MailboxException {
         ((InMemoryMailbox) mailbox).consumeUid();
         SimpleMailboxMembership membership = new SimpleMailboxMembership(mailbox.getMailboxId(), mailbox.getLastUid(), (SimpleMailboxMembership) original);
         return save(mailbox, membership);

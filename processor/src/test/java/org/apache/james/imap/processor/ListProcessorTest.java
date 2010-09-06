@@ -20,12 +20,12 @@
 package org.apache.james.imap.processor;
 
 import org.apache.james.imap.api.ImapCommand;
-import org.apache.james.imap.api.MailboxPath;
 import org.apache.james.imap.api.message.response.StatusResponseFactory;
 import org.apache.james.imap.api.process.ImapProcessor;
 import org.apache.james.imap.api.process.ImapSession;
 import org.apache.james.imap.mailbox.MailboxManager;
 import org.apache.james.imap.mailbox.MailboxMetaData;
+import org.apache.james.imap.mailbox.MailboxPath;
 import org.apache.james.imap.message.response.ListResponse;
 import org.jmock.Expectations;
 import org.jmock.Mockery;

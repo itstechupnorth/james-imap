@@ -19,9 +19,6 @@
 
 package org.apache.james.imap.mailbox;
 
-import org.apache.james.imap.api.MailboxPath;
-import org.apache.james.imap.api.display.HumanReadableText;
-
 /**
  * Indicates that the failure is caused by a reference to a mailbox which does
  * not exist.
@@ -30,25 +27,9 @@ public class MailboxNotFoundException extends MailboxException {
 
     private static final long serialVersionUID = -8493370806722264915L;
 
-    private static String message(String mailboxName) {
-        final String result;
-        if (mailboxName == null) {
-            result = "Mailbox not found";
-        } else {
-            result = "Mailbox '" + mailboxName + "' not found.";
-        }
-        return result;
-    }
 
     private final String mailboxName;
 
-    private final long id;
-    
-    public MailboxNotFoundException(long id) {
-        super(HumanReadableText.MAILBOX_NOT_FOUND, message(Long.toString(id)));
-        this.id = id;
-        mailboxName = null;
-    }
     
     /**
      * 
@@ -56,9 +37,7 @@ public class MailboxNotFoundException extends MailboxException {
      *            name of the mailbox, not null
      */
     public MailboxNotFoundException(String mailboxName) {
-        super(HumanReadableText.MAILBOX_NOT_FOUND, message(mailboxName));
         this.mailboxName = mailboxName;
-        this.id = 0;
     }
     
     /**
@@ -66,9 +45,7 @@ public class MailboxNotFoundException extends MailboxException {
      *            name of the mailbox, not null
      */
     public MailboxNotFoundException(MailboxPath mailboxPath) {
-        super(HumanReadableText.MAILBOX_NOT_FOUND, message(mailboxPath.toString()));
         this.mailboxName = mailboxPath.toString();
-        this.id = 0;
     }
 
     /**
@@ -80,11 +57,4 @@ public class MailboxNotFoundException extends MailboxException {
         return mailboxName;
     }
 
-    /**
-     * Gets the storage id of the mailbox.
-     * @return storage id, or zero when this is not known
-     */
-    public long getId() {
-        return id;
-    }
 }

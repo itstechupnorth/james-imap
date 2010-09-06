@@ -27,7 +27,6 @@ import java.util.Date;
 
 import javax.mail.Flags;
 
-import org.apache.james.imap.api.ImapConstants;
 import org.apache.james.imap.mailbox.SearchQuery;
 import org.apache.james.imap.store.mail.model.MailboxMembership;
 import org.junit.Before;
@@ -43,9 +42,9 @@ public class SearchUtilsTest {
 
     private static final int SIZE = 1729;
 
-    private static final String DATE_FIELD = ImapConstants.RFC822_DATE;
+    private static final String DATE_FIELD = "Date";
 
-    private static final String SUBJECT_FIELD = ImapConstants.RFC822_SUBJECT;
+    private static final String SUBJECT_FIELD = "Subject";
 
     private static final String RFC822_SUN_SEP_9TH_2001 = "Sun, 9 Sep 2001 09:10:48 +0000 (GMT)";
 

@@ -25,8 +25,8 @@ import java.util.Iterator;
 
 import javax.mail.Flags;
 
-import org.apache.james.imap.api.MailboxPath;
 import org.apache.james.imap.mailbox.MailboxListener;
+import org.apache.james.imap.mailbox.MailboxPath;
 import org.apache.james.imap.mailbox.MessageResult;
 import org.jmock.Expectations;
 import org.jmock.Mockery;

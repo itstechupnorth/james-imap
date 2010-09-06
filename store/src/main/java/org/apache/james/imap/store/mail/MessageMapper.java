@@ -23,7 +23,7 @@ import java.util.List;
 
 import org.apache.james.imap.mailbox.MessageRange;
 import org.apache.james.imap.mailbox.SearchQuery;
-import org.apache.james.imap.mailbox.StorageException;
+import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.store.mail.model.Message;
 import org.apache.james.imap.store.mail.model.Mailbox;
 import org.apache.james.imap.store.mail.model.MailboxMembership;
@@ -42,10 +42,10 @@ public interface MessageMapper<Id> extends Mapper {
      * @param mailbox The mailbox to search
      * @param set
      * @return list
-     * @throws StorageException
+     * @throws MailboxException
      */
     public abstract List<MailboxMembership<Id>> findInMailbox(Mailbox<Id> mailbox, MessageRange set)
-            throws StorageException;
+            throws MailboxException;
 
     /**
      * Return a List of {@link MailboxMembership} for the given {@link MessageRange} which are marked for deletion
@@ -53,21 +53,21 @@ public interface MessageMapper<Id> extends Mapper {
      * @param mailbox
      * @param set 
      * @return list
-     * @throws StorageException
+     * @throws MailboxException
      */
     public abstract List<MailboxMembership<Id>> findMarkedForDeletionInMailbox(
             Mailbox<Id> mailbox, final MessageRange set)
-            throws StorageException;
+            throws MailboxException;
 
     /**
      * Return the count of messages in the mailbox
      * 
      * @param mailbox
      * @return count
-     * @throws StorageException
+     * @throws MailboxException
      */
     public abstract long countMessagesInMailbox(Mailbox<Id> mailbox)
-            throws StorageException;
+            throws MailboxException;
 
     /**
      * Return the count of unseen messages in the mailbox
@@ -77,7 +77,7 @@ public interface MessageMapper<Id> extends Mapper {
      * @throws StorageException
      */
     public abstract long countUnseenMessagesInMailbox(Mailbox<Id> mailbox)
-            throws StorageException;
+            throws MailboxException;
 
     /**
      * Return a List of uids which matched the {@link SearchQuery}
@@ -87,7 +87,7 @@ public interface MessageMapper<Id> extends Mapper {
      * @return
      * @throws StorageException
      */
-    public abstract Iterator<Long> searchMailbox(Mailbox<Id> mailbox, SearchQuery query) throws StorageException;
+    public abstract Iterator<Long> searchMailbox(Mailbox<Id> mailbox, SearchQuery query) throws MailboxException;
 
     /**
      * Delete the given {@link MailboxMembership}
@@ -96,7 +96,7 @@ public interface MessageMapper<Id> extends Mapper {
      * @param message
      * @throws StorageException
      */
-    public abstract void delete(Mailbox<Id> mailbox, MailboxMembership<Id> message) throws StorageException;
+    public abstract void delete(Mailbox<Id> mailbox, MailboxMembership<Id> message) throws MailboxException;
 
     /**
      * Return the uid of the first unseen message. If non can be found null will get returned
@@ -106,7 +106,7 @@ public interface MessageMapper<Id> extends Mapper {
      * @return uid or null
      * @throws StorageException
      */
-    public abstract Long findFirstUnseenMessageUid(Mailbox<Id> mailbox) throws StorageException;
+    public abstract Long findFirstUnseenMessageUid(Mailbox<Id> mailbox) throws MailboxException;
 
     /**
      * Return a List of {@link MailboxMembership} which are recent.
@@ -119,7 +119,7 @@ public interface MessageMapper<Id> extends Mapper {
      * @return recentList
      * @throws StorageException
      */
-    public abstract List<MailboxMembership<Id>> findRecentMessagesInMailbox(Mailbox<Id> mailbox, int limit) throws StorageException;
+    public abstract List<MailboxMembership<Id>> findRecentMessagesInMailbox(Mailbox<Id> mailbox, int limit) throws MailboxException;
 
 
     /**
@@ -131,7 +131,7 @@ public interface MessageMapper<Id> extends Mapper {
      * @param message
      * @throws StorageException
      */
-    public abstract long save(Mailbox<Id> mailbox, MailboxMembership<Id> message) throws StorageException;
+    public abstract long save(Mailbox<Id> mailbox, MailboxMembership<Id> message) throws MailboxException;
     
     
     /**
@@ -143,6 +143,6 @@ public interface MessageMapper<Id> extends Mapper {
      * @return The uid of the copied instance
      * @throws StorageException
      */
-    public abstract long copy(Mailbox<Id> mailbox, MailboxMembership<Id> original) throws StorageException;
+    public abstract long copy(Mailbox<Id> mailbox, MailboxMembership<Id> original) throws MailboxException;
 
 }

@@ -31,10 +31,9 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.james.imap.api.MailboxPath;
-import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.mailbox.BadCredentialsException;
 import org.apache.james.imap.mailbox.MailboxManager;
+import org.apache.james.imap.mailbox.MailboxPath;
 import org.apache.james.imap.mailbox.MessageManager;
 import org.apache.james.imap.mailbox.MailboxConstants;
 import org.apache.james.imap.mailbox.MailboxException;
@@ -206,7 +205,7 @@ public class TorqueMailboxManager implements MailboxManager {
                 }
             }
         } catch (TorqueException e) {
-            throw new MailboxException(HumanReadableText.SEARCH_FAILED, e);
+            throw new MailboxException("parsing of message failed");
         }
     }
 
@@ -262,7 +261,7 @@ public class TorqueMailboxManager implements MailboxManager {
         try {
             mr.save();
         } catch (TorqueException e) {
-            throw new MailboxException(HumanReadableText.SAVE_FAILED, e);
+            throw new MailboxException("save failed");
         }
     }
 
@@ -285,7 +284,7 @@ public class TorqueMailboxManager implements MailboxManager {
                     mailbox.deleted(session);
                 }
             } catch (TorqueException e) {
-                throw new MailboxException(HumanReadableText.DELETED_FAILED, e);
+                throw new MailboxException("delete failed");
             }
         }
     }
@@ -334,7 +333,7 @@ public class TorqueMailboxManager implements MailboxManager {
                 }
             }
         } catch (TorqueException e) {
-            throw new MailboxException(HumanReadableText.SAVE_FAILED, e);
+            throw new MailboxException("save failed");
         }
     }
 
@@ -395,7 +394,7 @@ public class TorqueMailboxManager implements MailboxManager {
             Collections.sort(results, new StandardMailboxMetaDataComparator());
             return results;
         } catch (TorqueException e) {
-            throw new MailboxException(HumanReadableText.SEARCH_FAILED, e);
+            throw new MailboxException("search failed");
         }
 
     }
@@ -431,13 +430,12 @@ public class TorqueMailboxManager implements MailboxManager {
                     if (count == 1) {
                         return true;
                     } else {
-                        throw new MailboxException(HumanReadableText.DUPLICATE_MAILBOXES, 
-                                "found " + count + " mailboxes");
+                        throw new MailboxException("found " + count + " mailboxes");
                     }
                 }
             }
         } catch (TorqueException e) {
-            throw new MailboxException(HumanReadableText.SEARCH_FAILED, e);
+            throw new MailboxException("search failed");
         }
     }
 
@@ -456,7 +454,7 @@ public class TorqueMailboxManager implements MailboxManager {
                     Criteria.GREATER_THAN));
             mailboxes.clear();
         } catch (TorqueException e) {
-            throw new MailboxException(HumanReadableText.DELETED_FAILED, e);
+            throw new MailboxException("save failed");
         }
     }
 

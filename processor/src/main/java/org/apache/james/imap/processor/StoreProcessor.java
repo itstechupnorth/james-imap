@@ -25,6 +25,7 @@ import javax.mail.Flags;
 
 import org.apache.james.imap.api.ImapCommand;
 import org.apache.james.imap.api.ImapMessage;
+import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.api.message.IdRange;
 import org.apache.james.imap.api.message.request.ImapRequest;
 import org.apache.james.imap.api.message.response.StatusResponseFactory;
@@ -116,7 +117,7 @@ public class StoreProcessor extends AbstractMailboxProcessor {
             unsolicitedResponses(session, responder, omitExpunged, useUids);
             okComplete(command, tag, responder);
         } catch (MailboxException e) {
-            no(command, tag, responder, e, session);
+            no(command, tag, responder, HumanReadableText.SAVE_FAILED);
         }
     }
 }

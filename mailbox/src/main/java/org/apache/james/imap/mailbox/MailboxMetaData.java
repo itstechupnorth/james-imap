@@ -19,7 +19,6 @@
 
 package org.apache.james.imap.mailbox;
 
-import org.apache.james.imap.api.MailboxPath;
 
 
 /**

@@ -21,7 +21,7 @@ package org.apache.james.imap.api.process;
 
 import java.util.Collection;
 
-import org.apache.james.imap.api.MailboxPath;
+import org.apache.james.imap.mailbox.MailboxPath;
 
 
 /**

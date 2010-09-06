@@ -25,7 +25,6 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import org.apache.james.imap.api.ImapConstants;
 import org.apache.james.imap.mailbox.SearchQuery;
 import org.apache.james.imap.store.mail.model.MailboxMembership;
 import org.junit.Before;
@@ -115,10 +114,10 @@ public class SearchUtilsMultipartMixedTest {
     public void setUp() throws Exception {
         final MessageBuilder builder = new MessageBuilder();
         
-        builder.header(ImapConstants.RFC822_FROM, "Alex <alex@example.org");
-        builder.header(ImapConstants.RFC822_TO, "Harry <harry@example.org");
-        builder.header(ImapConstants.RFC822_SUBJECT, "A Mixed Multipart Mail");
-        builder.header(ImapConstants.RFC822_DATE, "Thu, 14 Feb 2008 12:00:00 +0000 (GMT)");
+        builder.header("From", "Alex <alex@example.org");
+        builder.header("To", "Harry <harry@example.org");
+        builder.header("Subject", "A Mixed Multipart Mail");
+        builder.header("Date", "Thu, 14 Feb 2008 12:00:00 +0000 (GMT)");
         builder.header("Content-Type", "multipart/mixed;boundary=1729");
         builder.body = Charset.forName("us-ascii").encode(BODY).array();
         row = builder.build();

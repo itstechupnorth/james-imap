@@ -21,7 +21,6 @@ package org.apache.james.imap.mailbox;
 
 import static org.junit.Assert.*;
 
-import org.apache.james.imap.api.MailboxPath;
 import org.junit.Test;
 
 public class MailboxExpressionTest {

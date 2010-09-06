@@ -23,9 +23,7 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 import javax.persistence.PersistenceException;
 
-import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.mailbox.MailboxException;
-import org.apache.james.imap.mailbox.StorageException;
 import org.apache.james.imap.store.transaction.TransactionalMapper;
 
 /**
@@ -61,7 +59,7 @@ public abstract class JPATransactionalMapper extends TransactionalMapper {
         try {
             getEntityManager().getTransaction().begin();
         } catch (PersistenceException e) {
-            throw new StorageException(HumanReadableText.START_TRANSACTION_FAILED, e);
+            throw new MailboxException("Begin of transaction failed", e);
         }
     }
 
@@ -72,7 +70,7 @@ public abstract class JPATransactionalMapper extends TransactionalMapper {
         try {
             getEntityManager().getTransaction().commit();
         } catch (PersistenceException e) {
-            throw new StorageException(HumanReadableText.COMMIT_TRANSACTION_FAILED, e);
+            throw new MailboxException("Commit of transaction failed",e);
         }
     }
 

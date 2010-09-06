@@ -34,17 +34,16 @@ import org.apache.jackrabbit.JcrConstants;
 import org.apache.jackrabbit.commons.JcrUtils;
 import org.apache.jackrabbit.util.ISO9075;
 import org.apache.jackrabbit.util.Text;
-import org.apache.james.imap.api.MailboxPath;
-import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.jcr.AbstractJCRScalingMapper;
 import org.apache.james.imap.jcr.MailboxSessionJCRRepository;
 import org.apache.james.imap.jcr.NodeLocker;
 import org.apache.james.imap.jcr.NodeLocker.NodeLockedExecution;
 import org.apache.james.imap.jcr.mail.model.JCRMailbox;
 import org.apache.james.imap.mailbox.MailboxConstants;
+import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.MailboxNotFoundException;
+import org.apache.james.imap.mailbox.MailboxPath;
 import org.apache.james.imap.mailbox.MailboxSession;
-import org.apache.james.imap.mailbox.StorageException;
 import org.apache.james.imap.store.mail.MailboxMapper;
 import org.apache.james.imap.store.mail.model.Mailbox;
 
@@ -66,7 +65,7 @@ public class JCRMailboxMapper extends AbstractJCRScalingMapper implements Mailbo
      * org.apache.james.imap.store.mail.MailboxMapper#delete(org.apache.james
      * .imap.store.mail.model.Mailbox)
      */
-    public void delete(Mailbox<String> mailbox) throws StorageException {
+    public void delete(Mailbox<String> mailbox) throws MailboxException {
         try {
             Node node = getSession().getNodeByIdentifier(((JCRMailbox) mailbox).getMailboxId());
                    
@@ -75,7 +74,7 @@ public class JCRMailboxMapper extends AbstractJCRScalingMapper implements Mailbo
         } catch (PathNotFoundException e) {
             // mailbox does not exists..
         } catch (RepositoryException e) {
-            throw new StorageException(HumanReadableText.DELETED_FAILED, e);
+            throw new MailboxException("Unable to delete mailbox " + mailbox, e);
         }
     }
 
@@ -84,14 +83,14 @@ public class JCRMailboxMapper extends AbstractJCRScalingMapper implements Mailbo
      * 
      * @see org.apache.james.imap.store.mail.MailboxMapper#deleteAll()
      */
-    public void deleteAll() throws StorageException {
+    public void deleteAll() throws MailboxException {
         try {
             getSession().getRootNode().getNode(MAILBOXES_PATH).remove();
 
         } catch (PathNotFoundException e) {
             // nothing todo
         } catch (RepositoryException e) {
-            throw new StorageException(HumanReadableText.DELETED_FAILED, e);
+            throw new MailboxException("Unable to delete all mailboxes", e);
         }
     }
 
@@ -99,13 +98,13 @@ public class JCRMailboxMapper extends AbstractJCRScalingMapper implements Mailbo
      * (non-Javadoc)
      * @see org.apache.james.imap.store.mail.MailboxMapper#findMailboxById(java.lang.Object)
      */
-    public Mailbox<String> findMailboxById(String mailboxId) throws StorageException, MailboxNotFoundException {
+    public Mailbox<String> findMailboxById(String mailboxId) throws MailboxException, MailboxNotFoundException {
         try {
             return new JCRMailbox(getSession().getNodeByIdentifier(mailboxId), getLogger());
         } catch (PathNotFoundException e) {
             throw new MailboxNotFoundException(mailboxId);
         } catch (RepositoryException e) {
-            throw new StorageException(HumanReadableText.SEARCH_FAILED, e);
+            throw new MailboxException("Unable to find mailbox  with id " + mailboxId, e);
         }
     }
     
@@ -114,7 +113,7 @@ public class JCRMailboxMapper extends AbstractJCRScalingMapper implements Mailbo
      * (non-Javadoc)
      * @see org.apache.james.imap.store.mail.MailboxMapper#findMailboxByPath(org.apache.james.imap.api.MailboxPath)
      */
-    public Mailbox<String> findMailboxByPath(MailboxPath path) throws StorageException, MailboxNotFoundException {
+    public Mailbox<String> findMailboxByPath(MailboxPath path) throws MailboxException, MailboxNotFoundException {
         try {
             String name = Text.escapeIllegalXpathSearchChars(path.getName());
             String user = path.getUser();
@@ -136,7 +135,7 @@ public class JCRMailboxMapper extends AbstractJCRScalingMapper implements Mailbo
         } catch (PathNotFoundException e) {
             throw new MailboxNotFoundException(path);
         } catch (RepositoryException e) {
-            throw new StorageException(HumanReadableText.SEARCH_FAILED, e);
+            throw new MailboxException("Unable to find mailbox " + path, e);
         }
     }
 
@@ -145,7 +144,7 @@ public class JCRMailboxMapper extends AbstractJCRScalingMapper implements Mailbo
      * (non-Javadoc)
      * @see org.apache.james.imap.store.mail.MailboxMapper#findMailboxWithPathLike(org.apache.james.imap.api.MailboxPath)
      */
-    public List<Mailbox<String>> findMailboxWithPathLike(MailboxPath path) throws StorageException {
+    public List<Mailbox<String>> findMailboxWithPathLike(MailboxPath path) throws MailboxException {
         List<Mailbox<String>> mailboxList = new ArrayList<Mailbox<String>>();
         try {
             String name = Text.escapeIllegalXpathSearchChars(path.getName());
@@ -166,7 +165,7 @@ public class JCRMailboxMapper extends AbstractJCRScalingMapper implements Mailbo
         } catch (PathNotFoundException e) {
             // nothing todo
         } catch (RepositoryException e) {
-            throw new StorageException(HumanReadableText.SEARCH_FAILED, e);
+            throw new MailboxException("Unable to find mailbox " + path, e);
         }
         return mailboxList;
     }
@@ -178,7 +177,7 @@ public class JCRMailboxMapper extends AbstractJCRScalingMapper implements Mailbo
      * org.apache.james.imap.store.mail.MailboxMapper#save(org.apache.james.
      * imap.store.mail.model.Mailbox)
      */
-    public void save(Mailbox<String> mailbox) throws StorageException {
+    public void save(Mailbox<String> mailbox) throws MailboxException {
         
         try {
             final JCRMailbox jcrMailbox = (JCRMailbox)mailbox;
@@ -227,9 +226,9 @@ public class JCRMailboxMapper extends AbstractJCRScalingMapper implements Mailbo
            }
             
         } catch (RepositoryException e) {
-            throw new StorageException(HumanReadableText.SAVE_FAILED, e);
+            throw new MailboxException("Unable to save mailbox " + mailbox, e);
         } catch (InterruptedException e) {
-            throw new StorageException(HumanReadableText.SAVE_FAILED, e);
+            throw new MailboxException("Unable to save mailbox " + mailbox, e);
         }
     }
 
@@ -240,7 +239,7 @@ public class JCRMailboxMapper extends AbstractJCRScalingMapper implements Mailbo
      * imap.store.mail.model.Mailbox)
      */
     public boolean hasChildren(Mailbox<String> mailbox)
-            throws StorageException, MailboxNotFoundException {
+            throws MailboxException, MailboxNotFoundException {
         try {
             String name = Text.escapeIllegalXpathSearchChars(mailbox.getName());
             String user = mailbox.getUser();
@@ -260,7 +259,7 @@ public class JCRMailboxMapper extends AbstractJCRScalingMapper implements Mailbo
             NodeIterator it = result.getNodes();
             return it.hasNext();
         } catch (RepositoryException e) {
-            throw new StorageException(HumanReadableText.SEARCH_FAILED, e);
+            throw new MailboxException("Unable to retrieve children for mailbox " + mailbox, e);
         }
     }
  

@@ -27,14 +27,12 @@ import javax.persistence.NoResultException;
 import javax.persistence.PersistenceException;
 import javax.persistence.RollbackException;
 
-import org.apache.james.imap.api.MailboxPath;
-import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.jpa.JPATransactionalMapper;
 import org.apache.james.imap.jpa.mail.model.JPAMailbox;
 import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.MailboxExistsException;
 import org.apache.james.imap.mailbox.MailboxNotFoundException;
-import org.apache.james.imap.mailbox.StorageException;
+import org.apache.james.imap.mailbox.MailboxPath;
 import org.apache.james.imap.store.mail.MailboxMapper;
 import org.apache.james.imap.store.mail.model.Mailbox;
 
@@ -68,26 +66,26 @@ public class JPAMailboxMapper extends JPATransactionalMapper implements MailboxM
                 if (t != null && t instanceof EntityExistsException)
                     throw new MailboxExistsException(lastMailboxName);
             }
-            throw new StorageException(HumanReadableText.COMMIT_TRANSACTION_FAILED, e);
+            throw new MailboxException("Commit of transaction failed", e);
         }
     }
     
     /**
      * @see org.apache.james.imap.store.mail.MailboxMapper#save(Mailbox)
      */
-    public void save(Mailbox<Long> mailbox) throws StorageException {
+    public void save(Mailbox<Long> mailbox) throws MailboxException {
         try {
             this.lastMailboxName = mailbox.getName();
             getEntityManager().persist(mailbox);
         } catch (PersistenceException e) {
-            throw new StorageException(HumanReadableText.SAVE_FAILED, e);
+            throw new MailboxException("Save of mailbox " + mailbox.getName() +" failed", e);
         } 
     }
 
     /**
      * @see org.apache.james.imap.store.mail.MailboxMapper#findMailboxByPath(java.lang.String)
      */
-    public Mailbox<Long> findMailboxByPath(MailboxPath mailboxPath) throws StorageException, MailboxNotFoundException {
+    public Mailbox<Long> findMailboxByPath(MailboxPath mailboxPath) throws MailboxException, MailboxNotFoundException {
         try {
             if (mailboxPath.getUser() == null) {
                 return (JPAMailbox) getEntityManager().createNamedQuery("findMailboxByName").setParameter("nameParam", mailboxPath.getName()).setParameter("namespaceParam", mailboxPath.getNamespace()).getSingleResult();
@@ -98,19 +96,19 @@ public class JPAMailboxMapper extends JPATransactionalMapper implements MailboxM
             throw new MailboxNotFoundException(mailboxPath);
             
         } catch (PersistenceException e) {
-            throw new StorageException(HumanReadableText.SEARCH_FAILED, e);
+            throw new MailboxException("Search of mailbox " + mailboxPath + " failed", e);
         } 
     }
 
     /**
      * @see org.apache.james.imap.store.mail.MailboxMapper#delete(Mailbox)
      */
-    public void delete(Mailbox<Long> mailbox) throws StorageException {
+    public void delete(Mailbox<Long> mailbox) throws MailboxException {
         try {  
             getEntityManager().remove(mailbox);
             getEntityManager().createNamedQuery("deleteMessages").setParameter("idParam", mailbox.getMailboxId()).executeUpdate();
         } catch (PersistenceException e) {
-            throw new StorageException(HumanReadableText.DELETED_FAILED, e);
+            throw new MailboxException("Delete of mailbox " + mailbox + " failed", e);
         } 
     }
 
@@ -119,7 +117,7 @@ public class JPAMailboxMapper extends JPATransactionalMapper implements MailboxM
      * @see org.apache.james.imap.store.mail.MailboxMapper#findMailboxWithPathLike(org.apache.james.imap.api.MailboxPath)
      */
     @SuppressWarnings("unchecked")
-    public List<Mailbox<Long>> findMailboxWithPathLike(MailboxPath path) throws StorageException {
+    public List<Mailbox<Long>> findMailboxWithPathLike(MailboxPath path) throws MailboxException {
         try {
             if (path.getUser() == null) {
                 return getEntityManager().createNamedQuery("findMailboxWithNameLike").setParameter("nameParam", SQL_WILDCARD_CHAR + path.getName() + SQL_WILDCARD_CHAR).setParameter("namespaceParam", path.getNamespace()).getResultList();
@@ -127,38 +125,38 @@ public class JPAMailboxMapper extends JPATransactionalMapper implements MailboxM
                 return getEntityManager().createNamedQuery("findMailboxWithNameLikeWithUser").setParameter("nameParam", SQL_WILDCARD_CHAR + path.getName() + SQL_WILDCARD_CHAR).setParameter("namespaceParam", path.getNamespace()).setParameter("userParam", path.getUser()).getResultList();
             }
         } catch (PersistenceException e) {
-            throw new StorageException(HumanReadableText.SEARCH_FAILED, e);
+            throw new MailboxException("Search of mailbox " + path + " failed", e);
         }
     }
 
     /**
      * @see org.apache.james.imap.store.mail.MailboxMapper#deleteAll()
      */
-    public void deleteAll() throws StorageException {
+    public void deleteAll() throws MailboxException {
         try {
             getEntityManager().createNamedQuery("deleteAll").executeUpdate();
         } catch (PersistenceException e) {
-            throw new StorageException(HumanReadableText.DELETED_FAILED, e);
+            throw new MailboxException("Delete of mailboxes failed", e);
         } 
     }
 
     /**
      * @see org.apache.james.imap.store.mail.MailboxMapper#findMailboxById(long)
      */
-    public Mailbox<Long> findMailboxById(Long mailboxId) throws StorageException, MailboxNotFoundException  {
+    public Mailbox<Long> findMailboxById(Long mailboxId) throws MailboxException, MailboxNotFoundException  {
         try {
             return (JPAMailbox) getEntityManager().createNamedQuery("findMailboxById").setParameter("idParam", mailboxId).getSingleResult();
         } catch (NoResultException e) {
-            throw new MailboxNotFoundException(mailboxId);   
+            throw new MailboxNotFoundException("");   
         } catch (PersistenceException e) {
-            throw new StorageException(HumanReadableText.SEARCH_FAILED, e);
+            throw new MailboxException("Search of mailbox with id " + mailboxId + " failed", e);
         } 
     }
 
     /**
      * @see org.apache.james.imap.store.mail.MailboxMapper#hasChildren(java.lang.String)
      */
-    public boolean hasChildren(Mailbox<Long> mailbox) throws StorageException,
+    public boolean hasChildren(Mailbox<Long> mailbox) throws MailboxException,
             MailboxNotFoundException {
         final String name = mailbox.getName() + delimiter + SQL_WILDCARD_CHAR; 
         final Long numberOfChildMailboxes;

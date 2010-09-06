@@ -30,8 +30,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.james.imap.api.display.HumanReadableText;
-import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.SubscriptionException;
 import org.apache.james.imap.maildir.user.model.MaildirSubscription;
 import org.apache.james.imap.store.transaction.NonTransactionalMapper;
@@ -60,7 +58,7 @@ public class MaildirSubscriptionMapper extends NonTransactionalMapper implements
             try {
                 writeSubscriptions(new File(createFolderNameFromUser(subscription.getUser())), subscriptionNames);
             } catch (IOException e) {
-                throw new SubscriptionException(HumanReadableText.GENERIC_SUBSCRIPTION_FAILURE);
+                throw new SubscriptionException(e);
             }
         }
     }
@@ -88,7 +86,7 @@ public class MaildirSubscriptionMapper extends NonTransactionalMapper implements
         try {
             subscriptionNames = readSubscriptions(userRoot);
         } catch (IOException e) {
-            throw new SubscriptionException(HumanReadableText.GENERIC_SUBSCRIPTION_FAILURE);
+            throw new SubscriptionException(e);
         }
         if (subscriptionNames.contains(mailbox))
             return new MaildirSubscription(user, mailbox);
@@ -107,7 +105,7 @@ public class MaildirSubscriptionMapper extends NonTransactionalMapper implements
             try {
                 writeSubscriptions(new File(createFolderNameFromUser(subscription.getUser())), subscriptionNames);
             } catch (IOException e) {
-                throw new SubscriptionException(HumanReadableText.GENERIC_SUBSCRIPTION_FAILURE);
+                throw new SubscriptionException(e);
             }
         }
     }
@@ -141,7 +139,7 @@ public class MaildirSubscriptionMapper extends NonTransactionalMapper implements
         try {
             subscriptionNames = readSubscriptions(userRoot);
         } catch (IOException e) {
-            throw new SubscriptionException(HumanReadableText.GENERIC_SUBSCRIPTION_FAILURE);
+            throw new SubscriptionException(e);
         }
         return subscriptionNames;
     }

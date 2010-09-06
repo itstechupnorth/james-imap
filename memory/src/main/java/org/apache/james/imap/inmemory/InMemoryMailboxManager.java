@@ -19,11 +19,10 @@
 
 package org.apache.james.imap.inmemory;
 
-import org.apache.james.imap.api.MailboxPath;
 import org.apache.james.imap.inmemory.mail.model.InMemoryMailbox;
 import org.apache.james.imap.mailbox.MailboxException;
+import org.apache.james.imap.mailbox.MailboxPath;
 import org.apache.james.imap.mailbox.MailboxSession;
-import org.apache.james.imap.mailbox.StorageException;
 import org.apache.james.imap.mailbox.util.MailboxEventDispatcher;
 import org.apache.james.imap.store.Authenticator;
 import org.apache.james.imap.store.MailboxSessionMapperFactory;
@@ -43,7 +42,7 @@ public class InMemoryMailboxManager extends StoreMailboxManager<Long> {
     }
 
     @Override
-    protected void doCreateMailbox(MailboxPath mailboxPath, MailboxSession session) throws StorageException {
+    protected void doCreateMailbox(MailboxPath mailboxPath, MailboxSession session) throws MailboxException {
         InMemoryMailbox mailbox = new InMemoryMailbox(randomId(), mailboxPath, randomUidValidity());
         try {
             mailboxSessionMapperFactory.getMailboxMapper(session).save(mailbox);

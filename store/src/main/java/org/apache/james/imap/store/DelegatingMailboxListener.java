@@ -24,8 +24,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.james.imap.api.MailboxPath;
 import org.apache.james.imap.mailbox.MailboxListener;
+import org.apache.james.imap.mailbox.MailboxPath;
 
 /**
  * Receive a {@link Event} and delegate it to an other {@link MailboxListener} depending on the registered name

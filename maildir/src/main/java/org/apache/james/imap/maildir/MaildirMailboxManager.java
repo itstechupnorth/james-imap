@@ -18,8 +18,8 @@
  ****************************************************************/
 package org.apache.james.imap.maildir;
 
-import org.apache.james.imap.api.MailboxPath;
 import org.apache.james.imap.mailbox.MailboxException;
+import org.apache.james.imap.mailbox.MailboxPath;
 import org.apache.james.imap.mailbox.MailboxSession;
 import org.apache.james.imap.mailbox.util.MailboxEventDispatcher;
 import org.apache.james.imap.maildir.mail.model.MaildirMailbox;

@@ -113,7 +113,7 @@ public class FetchProcessor extends AbstractMailboxProcessor {
             no(command, tag, responder,
                     HumanReadableText.UNSUPPORTED_SEARCH_CRITERIA);
         } catch (MessagingException e) {
-            no(command, tag, responder, e, session);
+            no(command, tag, responder, HumanReadableText.SEARCH_FAILED);
         } catch (ParseException e) {
             no(command, tag, responder, HumanReadableText.FAILURE_MAIL_PARSE);
         }

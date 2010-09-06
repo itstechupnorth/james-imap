@@ -35,11 +35,9 @@ import java.util.Map.Entry;
 import javax.mail.util.SharedFileInputStream;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.MessageRange;
 import org.apache.james.imap.mailbox.SearchQuery;
-import org.apache.james.imap.mailbox.StorageException;
 import org.apache.james.imap.mailbox.MessageRange.Type;
 import org.apache.james.imap.mailbox.SearchQuery.Criterion;
 import org.apache.james.imap.mailbox.SearchQuery.NumericRange;
@@ -78,13 +76,9 @@ public class MaildirMessageMapper extends NonTransactionalMapper implements Mess
      * @see org.apache.james.imap.store.mail.MessageMapper#copy(org.apache.james.imap.store.mail.model.Mailbox, org.apache.james.imap.store.mail.model.MailboxMembership)
      */
     public long copy(Mailbox<Integer> mailbox, MailboxMembership<Integer> original)
-    throws StorageException {
-        MaildirMessage theCopy;
-        try {
-            theCopy = new MaildirMessage(mailbox, (MaildirMessage) original);
-        } catch (MailboxException e) {
-            throw new StorageException(HumanReadableText.FAILURE_MAIL_PARSE, e);
-        }
+    throws MailboxException {
+        MaildirMessage theCopy = new MaildirMessage(mailbox, (MaildirMessage) original);
+
         return save(mailbox, theCopy);
     }
 
@@ -92,14 +86,14 @@ public class MaildirMessageMapper extends NonTransactionalMapper implements Mess
      * (non-Javadoc)
      * @see org.apache.james.imap.store.mail.MessageMapper#countMessagesInMailbox(org.apache.james.imap.store.mail.model.Mailbox)
      */
-    public long countMessagesInMailbox(Mailbox<Integer> mailbox) throws StorageException {
+    public long countMessagesInMailbox(Mailbox<Integer> mailbox) throws MailboxException {
         MaildirFolder folder = maildirStore.createMaildirFolder(mailbox);
         File newFolder = folder.getNewFolder();
         File curFolder = folder.getCurFolder();
         File[] newFiles = newFolder.listFiles();
         File[] curFiles = curFolder.listFiles();
         if (newFiles == null || curFiles == null)
-            throw new StorageException(HumanReadableText.COUNT_FAILED,
+            throw new MailboxException("Unable to count messages in Mailbox " + mailbox,
                     new IOException("Not a valid Maildir folder: " + maildirStore.getFolderName(mailbox)));
         int count = newFiles.length + curFiles.length;
         return count;
@@ -109,14 +103,14 @@ public class MaildirMessageMapper extends NonTransactionalMapper implements Mess
      * (non-Javadoc)
      * @see org.apache.james.imap.store.mail.MessageMapper#countUnseenMessagesInMailbox(org.apache.james.imap.store.mail.model.Mailbox)
      */
-    public long countUnseenMessagesInMailbox(Mailbox<Integer> mailbox) throws StorageException {
+    public long countUnseenMessagesInMailbox(Mailbox<Integer> mailbox) throws MailboxException {
         MaildirFolder folder = maildirStore.createMaildirFolder(mailbox);
         File newFolder = folder.getNewFolder();
         File curFolder = folder.getCurFolder();
         String[] unseenMessages = curFolder.list(MaildirMessageName.FILTER_UNSEEN_MESSAGES);
         String[] newUnseenMessages = newFolder.list(MaildirMessageName.FILTER_UNSEEN_MESSAGES);
         if (newUnseenMessages == null || unseenMessages == null)
-            throw new StorageException(HumanReadableText.COUNT_FAILED,
+            throw new MailboxException("Unable to count unseen messages in Mailbox " + mailbox,
                     new IOException("Not a valid Maildir folder: " + maildirStore.getFolderName(mailbox)));
         int count = newUnseenMessages.length + unseenMessages.length;
         return count;
@@ -126,12 +120,12 @@ public class MaildirMessageMapper extends NonTransactionalMapper implements Mess
      * (non-Javadoc)
      * @see org.apache.james.imap.store.mail.MessageMapper#delete(org.apache.james.imap.store.mail.model.Mailbox, org.apache.james.imap.store.mail.model.MailboxMembership)
      */
-    public void delete(Mailbox<Integer> mailbox, MailboxMembership<Integer> message) throws StorageException {
+    public void delete(Mailbox<Integer> mailbox, MailboxMembership<Integer> message) throws MailboxException {
         MaildirFolder folder = maildirStore.createMaildirFolder(mailbox);
         try {
             folder.delete(message.getUid());
         } catch (IOException e) {
-            throw new StorageException(HumanReadableText.DELETED_FAILED, e);
+            throw new MailboxException("Unable to delete Message " + message + " in Mailbox " + mailbox, e);
         }
     }
 
@@ -140,7 +134,7 @@ public class MaildirMessageMapper extends NonTransactionalMapper implements Mess
      * @see org.apache.james.imap.store.mail.MessageMapper#findInMailbox(org.apache.james.imap.store.mail.model.Mailbox, org.apache.james.imap.mailbox.MessageRange)
      */
     public List<MailboxMembership<Integer>> findInMailbox(Mailbox<Integer> mailbox, MessageRange set)
-    throws StorageException {
+    throws MailboxException {
         final List<MailboxMembership<Integer>> results;
         final long from = set.getUidFrom();
         final long to = set.getUidTo();
@@ -164,13 +158,13 @@ public class MaildirMessageMapper extends NonTransactionalMapper implements Mess
     }
 
     private List<MailboxMembership<Integer>> findMessageInMailboxWithUID(Mailbox<Integer> mailbox, long uid)
-    throws StorageException {
+    throws MailboxException {
         MaildirFolder folder = maildirStore.createMaildirFolder(mailbox);
         MaildirMessageName messageName = null;
         try {
              messageName = folder.getMessageNameByUid(uid);
         } catch (IOException e) {
-            throw new StorageException(HumanReadableText.SEARCH_FAILED, e);
+            throw new MailboxException("Failure while search for Message with uid " + uid + " in Mailbox " + mailbox, e );
         }
         ArrayList<MailboxMembership<Integer>> messages = new ArrayList<MailboxMembership<Integer>>();
         if (messageName != null) {
@@ -181,7 +175,7 @@ public class MaildirMessageMapper extends NonTransactionalMapper implements Mess
     }
 
     private List<MailboxMembership<Integer>> findMessagesInMailboxBetweenUIDs(Mailbox<Integer> mailbox,
-            FilenameFilter filter, long from, long to) throws StorageException {
+            FilenameFilter filter, long from, long to) throws MailboxException {
         MaildirFolder folder = maildirStore.createMaildirFolder(mailbox);
         SortedMap<Long, MaildirMessageName> uidMap = null;
         try {
@@ -190,7 +184,7 @@ public class MaildirMessageMapper extends NonTransactionalMapper implements Mess
             else
                 uidMap = folder.getUidMap(from, to);
         } catch (IOException e) {
-            throw new StorageException(HumanReadableText.SEARCH_FAILED, e);
+            throw new MailboxException("Failure while search for Messages in Mailbox " + mailbox, e );
         }
         ArrayList<MailboxMembership<Integer>> messages = new ArrayList<MailboxMembership<Integer>>();
         for (Entry<Long, MaildirMessageName> entry : uidMap.entrySet()) {
@@ -203,7 +197,7 @@ public class MaildirMessageMapper extends NonTransactionalMapper implements Mess
      * (non-Javadoc)
      * @see org.apache.james.imap.store.mail.MessageMapper#findMarkedForDeletionInMailbox(org.apache.james.imap.store.mail.model.Mailbox, org.apache.james.imap.mailbox.MessageRange)
      */
-    public List<MailboxMembership<Integer>> findMarkedForDeletionInMailbox(Mailbox<Integer> mailbox, MessageRange set) throws StorageException {
+    public List<MailboxMembership<Integer>> findMarkedForDeletionInMailbox(Mailbox<Integer> mailbox, MessageRange set) throws MailboxException {
         List<MailboxMembership<Integer>> results = new ArrayList<MailboxMembership<Integer>>();
         final long from = set.getUidFrom();
         final long to = set.getUidTo();
@@ -227,13 +221,13 @@ public class MaildirMessageMapper extends NonTransactionalMapper implements Mess
     }
 
     private List<MailboxMembership<Integer>> findMessagesInMailbox(Mailbox<Integer> mailbox,
-            FilenameFilter filter, int limit) throws StorageException {
+            FilenameFilter filter, int limit) throws MailboxException {
         MaildirFolder folder = maildirStore.createMaildirFolder(mailbox);
         SortedMap<Long, MaildirMessageName> uidMap = null;
         try {
             uidMap = folder.getUidMap(filter, limit);
         } catch (IOException e) {
-            throw new StorageException(HumanReadableText.SEARCH_FAILED, e);
+            throw new MailboxException("Failure while search for Messages in Mailbox " + mailbox, e );
         }
         ArrayList<MailboxMembership<Integer>> filtered = new ArrayList<MailboxMembership<Integer>>(uidMap.size());
         for (Entry<Long, MaildirMessageName> entry : uidMap.entrySet())
@@ -242,13 +236,13 @@ public class MaildirMessageMapper extends NonTransactionalMapper implements Mess
     }
 
     private List<MailboxMembership<Integer>> findDeletedMessageInMailboxWithUID(
-            Mailbox<Integer> mailbox, long uid) throws StorageException {
+            Mailbox<Integer> mailbox, long uid) throws MailboxException {
         MaildirFolder folder = maildirStore.createMaildirFolder(mailbox);
         MaildirMessageName messageName = null;
         try {
              messageName = folder.getMessageNameByUid(uid);
         } catch (IOException e) {
-            throw new StorageException(HumanReadableText.SEARCH_FAILED, e);
+            throw new MailboxException("Failure while search for Messages in Mailbox " + mailbox, e );
         }
         ArrayList<MailboxMembership<Integer>> messages = new ArrayList<MailboxMembership<Integer>>();
         if (MaildirMessageName.FILTER_DELETED_MESSAGES.accept(null, messageName.getFullName())) {
@@ -263,13 +257,13 @@ public class MaildirMessageMapper extends NonTransactionalMapper implements Mess
      * @see org.apache.james.imap.store.mail.MessageMapper#findRecentMessagesInMailbox(org.apache.james.imap.store.mail.model.Mailbox, int)
      */
     public List<MailboxMembership<Integer>> findRecentMessagesInMailbox(Mailbox<Integer> mailbox, int limit)
-    throws StorageException {
+    throws MailboxException {
         MaildirFolder folder = maildirStore.createMaildirFolder(mailbox);
         SortedMap<Long, MaildirMessageName> recentMessageNames;
         try {
             recentMessageNames = folder.getRecentMessages(limit);
         } catch (IOException e) {
-            throw new StorageException(HumanReadableText.SEARCH_FAILED, e);
+            throw new MailboxException("Failure while search recent messages in Mailbox " + mailbox, e );
         }
         List<MailboxMembership<Integer>> recentMessages = new ArrayList<MailboxMembership<Integer>>(recentMessageNames.size());
         for (Entry<Long, MaildirMessageName> entry : recentMessageNames.entrySet())
@@ -282,7 +276,7 @@ public class MaildirMessageMapper extends NonTransactionalMapper implements Mess
      * @see org.apache.james.imap.store.mail.MessageMapper#findFirstUnseenMessageUid(org.apache.james.imap.store.mail.model.Mailbox)
      */
     public Long findFirstUnseenMessageUid(Mailbox<Integer> mailbox)
-    throws StorageException {
+    throws MailboxException {
         List<MailboxMembership<Integer>> result = findMessagesInMailbox(mailbox, MaildirMessageName.FILTER_UNSEEN_MESSAGES, 1);
         if (result.isEmpty()) {
             return null;
@@ -297,7 +291,7 @@ public class MaildirMessageMapper extends NonTransactionalMapper implements Mess
      * org.apache.james.imap.store.mail.model.MailboxMembership)
      */
     public long save(Mailbox<Integer> mailbox, MailboxMembership<Integer> message)
-    throws StorageException {
+    throws MailboxException {
         MaildirMessage maildirMessage = (MaildirMessage) message;
         MaildirFolder folder = maildirStore.createMaildirFolder(mailbox);
         long uid = 0;
@@ -325,7 +319,7 @@ public class MaildirMessageMapper extends NonTransactionalMapper implements Mess
                     fos.write(b, 0, len);
             }
             catch (IOException ioe) {
-                throw new StorageException(HumanReadableText.SAVE_FAILED, ioe);
+                throw new MailboxException("Failure while save Message " + message + " in Mailbox " + mailbox, ioe );
             }
             finally {
                 try {
@@ -353,12 +347,12 @@ public class MaildirMessageMapper extends NonTransactionalMapper implements Mess
             } catch (IOException e) {
                 System.err.println(newMessageFile);
                 // TODO: Try copy and delete
-                throw new StorageException(HumanReadableText.SAVE_FAILED, e);
+                throw new MailboxException("Failure while save Message " + message + " in Mailbox " + mailbox, e );
             }
             try {
                 uid = folder.appendMessage(newMessageFile.getName());
             } catch (IOException e) {
-                throw new StorageException(HumanReadableText.SAVE_FAILED, e);
+                throw new MailboxException("Failure while save Message " + message + " in Mailbox " + mailbox, e );
             }
         }
         // the message already exists and its flags need to be updated (everything else is immutable)
@@ -374,7 +368,7 @@ public class MaildirMessageMapper extends NonTransactionalMapper implements Mess
                 uid = message.getUid();
                 folder.update(uid, newMessageName);
             } catch (IOException e) {
-                throw new StorageException(HumanReadableText.SAVE_FAILED, e);
+                throw new MailboxException("Failure while save Message " + message + " in Mailbox " + mailbox, e );
             }
         }
         return uid;
@@ -386,7 +380,7 @@ public class MaildirMessageMapper extends NonTransactionalMapper implements Mess
      * @see org.apache.james.imap.store.mail.MessageMapper#searchMailbox(org.apache.james.imap.store.mail.model.Mailbox, org.apache.james.imap.mailbox.SearchQuery)
      */
     public Iterator<Long> searchMailbox(Mailbox<Integer> mailbox, SearchQuery query)
-    throws StorageException {
+    throws MailboxException {
         final List<Criterion> criteria = query.getCriterias();
         boolean range = false;
         int rangeLength = -1;
@@ -421,7 +415,7 @@ public class MaildirMessageMapper extends NonTransactionalMapper implements Mess
         try {
             uidMap = folder.getUidMap(0, -1);
         } catch (IOException e) {
-            throw new StorageException(HumanReadableText.SEARCH_FAILED, e);
+            throw new MailboxException("Failure while search in Mailbox " + mailbox, e );
         }
         LinkedList<MailboxMembership<?>> messages = new LinkedList<MailboxMembership<?>>();
         for (Entry<Long, MaildirMessageName> entry : uidMap.entrySet()) {
@@ -450,16 +444,16 @@ public class MaildirMessageMapper extends NonTransactionalMapper implements Mess
      * @param mailbox The mailbox which the message resides in
      * @param messageName The name of the message
      * @return the {@link MaildirMessage} filled with data from the respective file
-     * @throws StorageException if there was an error parsing the message or the message could not be found
+     * @throws MailboxException if there was an error parsing the message or the message could not be found
      */
     private MaildirMessage loadMessage(Mailbox<Integer> mailbox, MaildirMessageName messageName, Long uid)
-    throws StorageException {
+    throws MailboxException {
         MaildirMessage message = null;
         try {
             File messageFile = messageName.getFile();
             message = parseMessage(messageFile, mailbox);
         } catch (IOException e) {
-            throw new StorageException(HumanReadableText.FAILURE_MAIL_PARSE, e);
+            throw new MailboxException("Parsing of message failed in Mailbox " + mailbox, e );
         }
         message.setFlags(messageName.getFlags());
         message.setInternalDate(messageName.getInternalDate());

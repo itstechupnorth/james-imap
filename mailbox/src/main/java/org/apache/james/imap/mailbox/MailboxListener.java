@@ -23,7 +23,6 @@ import java.util.Iterator;
 
 import javax.mail.Flags;
 
-import org.apache.james.imap.api.MailboxPath;
 
 /**
  * Listens to <code>Mailbox</code> events.

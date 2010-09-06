@@ -36,7 +36,6 @@ import javax.mail.Flags;
 import javax.mail.MessagingException;
 import javax.mail.util.SharedFileInputStream;
 
-import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.MailboxListener;
 import org.apache.james.imap.mailbox.MailboxNotFoundException;
@@ -259,14 +258,11 @@ public abstract class StoreMessageManager<Id> implements org.apache.james.imap.m
             dispatcher.added(uid, mailboxSession.getSessionId(), new StoreMailboxPath<Id>(getMailboxEntity()));
             return uid;
         } catch (IOException e) {
-            e.printStackTrace();
-            throw new MailboxException(HumanReadableText.FAILURE_MAIL_PARSE, e);
+            throw new MailboxException("Unable to parse message", e);
         } catch (MessagingException e) {
-            e.printStackTrace();
-            throw new MailboxException(HumanReadableText.FAILURE_MAIL_PARSE, e);
+            throw new MailboxException("Unable to parse message", e);
         } catch (MimeException e) {
-            e.printStackTrace();
-            throw new MailboxException(HumanReadableText.FAILURE_MAIL_PARSE, e);
+            throw new MailboxException("Unable to parse message", e);
         } finally {
             if (tmpMsgIn != null) {
                 try {
@@ -472,7 +468,7 @@ public abstract class StoreMessageManager<Id> implements org.apache.james.imap.m
                 dispatcher.added(copiedUids.next(), session.getSessionId(), new StoreMailboxPath<Id>(toMailbox.getMailboxEntity()));
             }
         } catch (MessagingException e) {
-            throw new MailboxException(HumanReadableText.FAILURE_MAIL_PARSE, e);
+            throw new MailboxException("Unable to parse message", e);
         }
     }
     

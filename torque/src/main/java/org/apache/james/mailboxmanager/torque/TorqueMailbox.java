@@ -45,8 +45,8 @@ import javax.mail.Flags;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 
-import org.apache.james.imap.api.MailboxPath;
-import org.apache.james.imap.api.display.HumanReadableText;
+import org.apache.james.imap.mailbox.MailboxNotFoundException;
+import org.apache.james.imap.mailbox.MailboxPath;
 import org.apache.james.imap.mailbox.MessageManager;
 import org.apache.james.imap.mailbox.MailboxConstants;
 import org.apache.james.imap.mailbox.MailboxException;
@@ -116,7 +116,7 @@ public class TorqueMailbox implements MessageManager {
             try {
                 return getMailboxRow().countMessages();
             } catch (Exception e) {
-                throw new MailboxException(HumanReadableText.COUNT_FAILED, e);
+                throw new MailboxException("Count of messages in mailbox " + getName() + " failed", e);
             }
         } finally {
             unlockAfterReading();
@@ -199,7 +199,7 @@ public class TorqueMailbox implements MessageManager {
                     return messageResult.getUid();
                 } catch (Exception e) {
                     e.printStackTrace();
-                    throw new MailboxException(HumanReadableText.FAILURE_MAIL_PARSE, e);
+                    throw new MailboxException("Parsing of message failed", e);
                 } finally {
                     if (file != null) {
                         file.delete();
@@ -207,10 +207,10 @@ public class TorqueMailbox implements MessageManager {
                 }
             } else {
                 // mailboxRow==null
-                throw new MailboxException(HumanReadableText.MAILBOX_DELETED);
+                throw new MailboxNotFoundException(getName());
             }
         } catch (InterruptedException e) {
-            throw new MailboxException(HumanReadableText.LOCK_FAILED, e);
+            throw new LockException(e);
         }
     }
 
@@ -283,9 +283,9 @@ public class TorqueMailbox implements MessageManager {
             lockForWriting();
             myMailboxRow = getMailboxRow().consumeNextUid();
         } catch (TorqueException e) {
-            throw new MailboxException(HumanReadableText.COMSUME_UID_FAILED, e);
+            throw new MailboxException("Consume next uid failed", e);
         } catch (SQLException e) {
-            throw new MailboxException(HumanReadableText.COMSUME_UID_FAILED, e);
+            throw new MailboxException("Consume next uid failed", e);
         } finally {
             unlockAfterWriting();
         }
@@ -337,9 +337,9 @@ public class TorqueMailbox implements MessageManager {
                         .getMailboxId());
                 return getMessages(fetchGroup, set, c, mailboxSession);
             } catch (TorqueException e) {
-                throw new MailboxException(HumanReadableText.SEARCH_FAILED, e);
+                throw new MailboxException("Search failed", e);
             } catch (MessagingException e) {
-                throw new MailboxException(HumanReadableText.FAILURE_MAIL_PARSE, e);
+                throw new MailboxException("Parsing of message failed", e);
             }
         } finally {
             unlockAfterReading();
@@ -403,7 +403,7 @@ public class TorqueMailbox implements MessageManager {
             }
             return results;
         } catch (TorqueException e) {
-            throw new MailboxException(HumanReadableText.SEARCH_FAILED, e);
+            throw new MailboxException("Search failed", e);
         } finally {
             unlockAfterReading();
         }
@@ -450,11 +450,11 @@ public class TorqueMailbox implements MessageManager {
                     return null;
                 }
             } catch (TorqueException e) {
-                throw new MailboxException(HumanReadableText.SEARCH_FAILED, e);
+                throw new MailboxException("Search failed", e);
             } catch (MessagingException e) {
-                throw new MailboxException(HumanReadableText.FAILURE_MAIL_PARSE, e);
+                throw new MailboxException("Parsing of message failed", e);
             } catch (MimeException e) {
-                throw new MailboxException(HumanReadableText.FAILURE_MAIL_PARSE, e);
+                throw new MailboxException("Parsing of message failed", e);
             }
         } finally {
             unlockAfterReading();
@@ -471,9 +471,9 @@ public class TorqueMailbox implements MessageManager {
                         new Flags(Flags.Flag.SEEN), false);
                 return count;
             } catch (TorqueException e) {
-                throw new MailboxException(HumanReadableText.COUNT_FAILED, e);
+                throw new MailboxException("count failed", e);
             } catch (DataSetException e) {
-                throw new MailboxException(HumanReadableText.COUNT_FAILED, e);
+                throw new MailboxException("count failed", e);
             }
         } finally {
             unlockAfterReading();
@@ -516,7 +516,7 @@ public class TorqueMailbox implements MessageManager {
             getUidChangeTracker().expunged(uids);
             return uids.iterator();
         } catch (TorqueException e) {
-            throw new MailboxException(HumanReadableText.DELETED_FAILED, e);
+            throw new MailboxException("delete failed", e);
         }
     }
 
@@ -561,7 +561,7 @@ public class TorqueMailbox implements MessageManager {
             tracker.flagsUpdated(newFlagsByUid, originalFlagsByUid, mailboxSession.getSessionId());
             return newFlagsByUid;
         } catch (TorqueException e) {
-            throw new MailboxException(HumanReadableText.SAVE_FAILED, e);
+            throw new MailboxException("save failed", e);
         }
     }
 
@@ -596,14 +596,14 @@ public class TorqueMailbox implements MessageManager {
                     final long lastUid = mailboxRow.getLastUid();
                     return lastUid + 1;
                 } else {
-                    throw new MailboxException(HumanReadableText.MAILBOX_DELETED);
+                    throw new MailboxException("consume failed");
                 }
             } catch (NoRowsException e) {
-                throw new MailboxException(HumanReadableText.COMSUME_UID_FAILED, e);
+                throw new MailboxException("consume failed");
             } catch (TooManyRowsException e) {
-                throw new MailboxException(HumanReadableText.COMSUME_UID_FAILED, e);
+                throw new MailboxException("consume failed");
             } catch (TorqueException e) {
-                throw new MailboxException(HumanReadableText.COMSUME_UID_FAILED, e);
+                throw new MailboxException("consume failed");
             }
         } finally {
             unlockAfterReading();
@@ -655,9 +655,9 @@ public class TorqueMailbox implements MessageManager {
 
             return uids.iterator();
         } catch (TorqueException e) {
-            throw new MailboxException(HumanReadableText.SEARCH_FAILED, e);
+            throw new MailboxException("search failed");
         } catch (MimeException e) {
-            throw new MailboxException(HumanReadableText.FAILURE_MAIL_PARSE, e);
+            throw new MailboxException("Parsing of message failed");
         } finally {
             unlockAfterReading();
         }
@@ -723,9 +723,9 @@ public class TorqueMailbox implements MessageManager {
                 rows = MessageRowPeer.doSelectJoinMessageFlags(c);
                 
             } catch (TorqueException e) {
-                throw new MailboxException(HumanReadableText.SAVE_FAILED, e);
+                throw new MailboxException("save failed");
             } catch (MessagingException e) {
-                throw new MailboxException(HumanReadableText.FAILURE_MAIL_PARSE, e);
+                throw new MailboxException("parsing of message failed");
             }
         } finally {
             unlockAfterReading();
@@ -790,13 +790,14 @@ public class TorqueMailbox implements MessageManager {
                 }
             }
         } catch (TorqueException e) {
-            throw new MailboxException(HumanReadableText.SAVE_FAILED, e);
+            throw new MailboxException("save failed");
         } catch (InterruptedException e) {
-            throw new MailboxException(HumanReadableText.LOCK_FAILED, e);
+            throw new LockException();
         } catch (MessagingException e) {
-            throw new MailboxException(HumanReadableText.FAILURE_MAIL_PARSE, e);
+            throw new MailboxException("parsing of message failed");
         } catch (MimeException e) {
-            throw new MailboxException(HumanReadableText.FAILURE_MAIL_PARSE, e);
+            throw new MailboxException("parsing of message failed");
+
         }
     }
 

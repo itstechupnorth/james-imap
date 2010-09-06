@@ -28,7 +28,6 @@ import java.util.TreeSet;
 import javax.mail.Flags;
 import javax.mail.MessagingException;
 
-import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.MailboxSession;
 import org.apache.james.imap.mailbox.MessageRange;
@@ -219,7 +218,7 @@ public abstract class MapperStoreMessageManager<Id> extends StoreMessageManager<
             }
             return copiedRows.iterator();
         } catch (MessagingException e) {
-            throw new MailboxException(HumanReadableText.FAILURE_MAIL_PARSE, e);
+            throw new MailboxException("Unable to parse message", e);
         }
     }
     
@@ -235,7 +234,7 @@ public abstract class MapperStoreMessageManager<Id> extends StoreMessageManager<
             return to.copy(originalRows, session);
 
         } catch (MessagingException e) {
-            throw new MailboxException(HumanReadableText.FAILURE_MAIL_PARSE, e);
+            throw new MailboxException("Unable to parse message", e);
         }
     }
 

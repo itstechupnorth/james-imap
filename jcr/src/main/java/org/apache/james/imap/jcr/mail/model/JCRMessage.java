@@ -35,7 +35,6 @@ import javax.mail.Flags;
 import org.apache.commons.logging.Log;
 import org.apache.jackrabbit.JcrConstants;
 import org.apache.jackrabbit.commons.JcrUtils;
-import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.jcr.JCRImapConstants;
 import org.apache.james.imap.jcr.Persistent;
 import org.apache.james.imap.mailbox.MailboxException;
@@ -147,7 +146,7 @@ public class JCRMessage extends AbstractMessage implements MailboxMembership<Str
         try {
             this.content = new ByteArrayInputStream(StreamUtils.toByteArray(message.getFullContent()));
         } catch (IOException e) {
-            throw new MailboxException(HumanReadableText.FAILURE_MAIL_PARSE,e);
+            throw new MailboxException("Unable to parse message",e);
         }
        
         this.bodyStartOctet = (int) (message.getFullContentOctets() - message.getBodyOctets());

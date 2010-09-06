@@ -38,17 +38,16 @@ import org.apache.commons.logging.Log;
 import org.apache.jackrabbit.JcrConstants;
 import org.apache.jackrabbit.commons.JcrUtils;
 import org.apache.jackrabbit.util.ISO9075;
-import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.jcr.AbstractJCRMapper;
 import org.apache.james.imap.jcr.MailboxSessionJCRRepository;
 import org.apache.james.imap.jcr.NodeLocker;
 import org.apache.james.imap.jcr.NodeLocker.NodeLockedExecution;
 import org.apache.james.imap.jcr.mail.model.JCRMailbox;
 import org.apache.james.imap.jcr.mail.model.JCRMessage;
+import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.MailboxSession;
 import org.apache.james.imap.mailbox.MessageRange;
 import org.apache.james.imap.mailbox.SearchQuery;
-import org.apache.james.imap.mailbox.StorageException;
 import org.apache.james.imap.mailbox.MessageRange.Type;
 import org.apache.james.imap.mailbox.SearchQuery.Criterion;
 import org.apache.james.imap.mailbox.SearchQuery.NumericRange;
@@ -147,7 +146,7 @@ public class JCRMessageMapper extends AbstractJCRMapper implements MessageMapper
      * @see
      * org.apache.james.imap.store.mail.MessageMapper#countMessagesInMailbox()
      */
-    public long countMessagesInMailbox(Mailbox<String> mailbox) throws StorageException {
+    public long countMessagesInMailbox(Mailbox<String> mailbox) throws MailboxException {
         try {
             // we use order by because without it count will always be 0 in jackrabbit
             String queryString = "/jcr:root" + getMailboxPath(mailbox) + "//element(*,jamesMailbox:message) order by @" + JCRMessage.UID_PROPERTY;
@@ -164,7 +163,7 @@ public class JCRMessageMapper extends AbstractJCRMapper implements MessageMapper
             } 
             return count;
         } catch (RepositoryException e) {
-            throw new StorageException(HumanReadableText.COUNT_FAILED, e);
+            throw new MailboxException("Unable to count messages in mailbox " + mailbox, e);
         }
        
     }
@@ -176,7 +175,7 @@ public class JCRMessageMapper extends AbstractJCRMapper implements MessageMapper
      * org.apache.james.imap.store.mail.MessageMapper#countUnseenMessagesInMailbox
      * ()
      */
-    public long countUnseenMessagesInMailbox(Mailbox<String> mailbox) throws StorageException {
+    public long countUnseenMessagesInMailbox(Mailbox<String> mailbox) throws MailboxException {
         
         try {
             // we use order by because without it count will always be 0 in jackrabbit
@@ -196,7 +195,7 @@ public class JCRMessageMapper extends AbstractJCRMapper implements MessageMapper
             } 
             return count;
         } catch (RepositoryException e) {
-            throw new StorageException(HumanReadableText.COUNT_FAILED, e);
+            throw new MailboxException("Unable to count unseen messages in mailbox " + mailbox, e);
         }
     }
 
@@ -204,14 +203,14 @@ public class JCRMessageMapper extends AbstractJCRMapper implements MessageMapper
      * (non-Javadoc)
      * @see org.apache.james.imap.store.mail.MessageMapper#delete(java.lang.Object, org.apache.james.imap.store.mail.model.MailboxMembership)
      */
-    public void delete(Mailbox<String> mailbox, MailboxMembership<String> message) throws StorageException {
+    public void delete(Mailbox<String> mailbox, MailboxMembership<String> message) throws MailboxException {
         JCRMessage membership = (JCRMessage) message;
         if (membership.isPersistent()) {
             try {
 
                 getSession().getNodeByIdentifier(membership.getId()).remove();
             } catch (RepositoryException e) {
-                throw new StorageException(HumanReadableText.DELETED_FAILED, e);
+                throw new MailboxException("Unable to delete message " + message + " in mailbox " + mailbox, e);
             }
         }
     }
@@ -223,7 +222,7 @@ public class JCRMessageMapper extends AbstractJCRMapper implements MessageMapper
      * org.apache.james.imap.store.mail.MessageMapper#findInMailbox(org.apache
      * .james.imap.mailbox.MessageRange)
      */
-    public List<MailboxMembership<String>> findInMailbox(Mailbox<String> mailbox, MessageRange set) throws StorageException {
+    public List<MailboxMembership<String>> findInMailbox(Mailbox<String> mailbox, MessageRange set) throws MailboxException {
         try {
             final List<MailboxMembership<String>> results;
             final long from = set.getUidFrom();
@@ -246,7 +245,7 @@ public class JCRMessageMapper extends AbstractJCRMapper implements MessageMapper
             }
             return results;
         } catch (RepositoryException e) {
-            throw new StorageException(HumanReadableText.SEARCH_FAILED, e);
+            throw new MailboxException("Unable to search MessageRange " + set + " in mailbox " + mailbox, e);
         }
     }
 
@@ -376,7 +375,7 @@ public class JCRMessageMapper extends AbstractJCRMapper implements MessageMapper
      * org.apache.james.imap.store.mail.MessageMapper#findMarkedForDeletionInMailbox
      * (org.apache.james.imap.mailbox.MessageRange)
      */
-    public List<MailboxMembership<String>> findMarkedForDeletionInMailbox(Mailbox<String> mailbox, MessageRange set) throws StorageException {
+    public List<MailboxMembership<String>> findMarkedForDeletionInMailbox(Mailbox<String> mailbox, MessageRange set) throws MailboxException {
         try {
             final List<MailboxMembership<String>> results;
             final long from = set.getUidFrom();
@@ -399,7 +398,7 @@ public class JCRMessageMapper extends AbstractJCRMapper implements MessageMapper
             }
             return results;
         } catch (RepositoryException e) {
-            throw new StorageException(HumanReadableText.SEARCH_FAILED, e);
+            throw new MailboxException("Unable to search MessageRange " + set + " in mailbox " + mailbox, e);
         }
     }
 
@@ -413,7 +412,7 @@ public class JCRMessageMapper extends AbstractJCRMapper implements MessageMapper
      * org.apache.james.imap.store.mail.MessageMapper#findRecentMessagesInMailbox
      * ()
      */
-    public List<MailboxMembership<String>> findRecentMessagesInMailbox(Mailbox<String> mailbox, int limit) throws StorageException {
+    public List<MailboxMembership<String>> findRecentMessagesInMailbox(Mailbox<String> mailbox, int limit) throws MailboxException {
         
         try {
  
@@ -434,7 +433,7 @@ public class JCRMessageMapper extends AbstractJCRMapper implements MessageMapper
             return list;
 
         } catch (RepositoryException e) {
-            throw new StorageException(HumanReadableText.SEARCH_FAILED, e);
+            throw new MailboxException("Unable to search recent messages in mailbox " + mailbox, e);
         }
     }
 
@@ -443,7 +442,7 @@ public class JCRMessageMapper extends AbstractJCRMapper implements MessageMapper
      * (non-Javadoc)
      * @see org.apache.james.imap.store.mail.MessageMapper#findFirstUnseenMessageUid(org.apache.james.imap.store.mail.model.Mailbox)
      */
-    public Long findFirstUnseenMessageUid(Mailbox<String> mailbox) throws StorageException {
+    public Long findFirstUnseenMessageUid(Mailbox<String> mailbox) throws MailboxException {
         try {
             String queryString = "/jcr:root" + getMailboxPath(mailbox) + "//element(*,jamesMailbox:message)[@" + JCRMessage.SEEN_PROPERTY +"='false'] order by @" + JCRMessage.UID_PROPERTY;
 
@@ -460,7 +459,7 @@ public class JCRMessageMapper extends AbstractJCRMapper implements MessageMapper
                 return null;
             }
         } catch (RepositoryException e) {
-            throw new StorageException(HumanReadableText.SEARCH_FAILED, e);
+            throw new MailboxException("Unable to find first unseen message in mailbox " + mailbox, e);
         }
     }
 
@@ -468,7 +467,7 @@ public class JCRMessageMapper extends AbstractJCRMapper implements MessageMapper
      * (non-Javadoc)
      * @see org.apache.james.imap.store.mail.MessageMapper#save(org.apache.james.imap.store.mail.model.Mailbox, org.apache.james.imap.store.mail.model.MailboxMembership)
      */
-    public long save(Mailbox<String> mailbox, MailboxMembership<String> message) throws StorageException {
+    public long save(Mailbox<String> mailbox, MailboxMembership<String> message) throws MailboxException {
         final JCRMessage membership = (JCRMessage) message;
         try {
 
@@ -579,11 +578,11 @@ public class JCRMessageMapper extends AbstractJCRMapper implements MessageMapper
                 return membership.getUid();
             }
         } catch (RepositoryException e) {
-            throw new StorageException(HumanReadableText.SAVE_FAILED, e);
+            throw new MailboxException("Unable to save message " + message + " in mailbox " + mailbox, e);
         } catch (IOException e) {
-            throw new StorageException(HumanReadableText.SAVE_FAILED, e);
+            throw new MailboxException("Unable to save message " + message + " in mailbox " + mailbox, e);
         } catch (InterruptedException e) {
-            throw new StorageException(HumanReadableText.SAVE_FAILED, e);
+            throw new MailboxException("Unable to save message " + message + " in mailbox " + mailbox, e);
         }
 
     }
@@ -606,7 +605,7 @@ public class JCRMessageMapper extends AbstractJCRMapper implements MessageMapper
      * (non-Javadoc)
      * @see org.apache.james.imap.store.mail.MessageMapper#searchMailbox(org.apache.james.imap.store.mail.model.Mailbox, org.apache.james.imap.mailbox.SearchQuery)
      */
-    public Iterator<Long> searchMailbox(Mailbox<String> mailbox, SearchQuery query) throws StorageException {
+    public Iterator<Long> searchMailbox(Mailbox<String> mailbox, SearchQuery query) throws MailboxException {
         try {
             final Query xQuery = formulateXPath(mailbox, query);
             
@@ -633,7 +632,7 @@ public class JCRMessageMapper extends AbstractJCRMapper implements MessageMapper
                 
             }, query, getLogger());
         } catch (RepositoryException e) {
-            throw new StorageException(HumanReadableText.SEARCH_FAILED, e);
+            throw new MailboxException("Unable to search messages for query " + query + " in mailbox " + mailbox, e);
         }
     }
 
@@ -699,7 +698,7 @@ public class JCRMessageMapper extends AbstractJCRMapper implements MessageMapper
      * (non-Javadoc)
      * @see org.apache.james.imap.store.mail.MessageMapper#copy(java.lang.Object, long, org.apache.james.imap.store.mail.model.MailboxMembership)
      */
-    public long copy(Mailbox<String> mailbox, MailboxMembership<String> oldmessage) throws StorageException{
+    public long copy(Mailbox<String> mailbox, MailboxMembership<String> oldmessage) throws MailboxException{
         try {
             long uid = reserveNextUid((JCRMailbox) mailbox);
             String newMessagePath = getSession().getNodeByIdentifier(mailbox.getMailboxId()).getPath() + NODE_DELIMITER + String.valueOf(uid);
@@ -709,9 +708,9 @@ public class JCRMessageMapper extends AbstractJCRMapper implements MessageMapper
             node.setProperty(JCRMessage.UID_PROPERTY, uid);
             return uid;
         } catch (RepositoryException e) {
-            throw new StorageException(HumanReadableText.SAVE_FAILED, e);
+            throw new MailboxException("Unable to copy message " +oldmessage + " in mailbox " + mailbox, e);
         } catch (InterruptedException e) {
-            throw new StorageException(HumanReadableText.SAVE_FAILED, e);
+            throw new MailboxException("Unable to copy message " +oldmessage + " in mailbox " + mailbox, e);
         }
     }
     

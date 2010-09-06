@@ -57,15 +57,7 @@ public class SubscribeProcessor extends AbstractSubscriptionProcessor {
         } catch (SubscriptionException e) {
             session.getLog().debug("Subscription failed", e);
             unsolicitedResponses(session, responder, false);
-
-            final HumanReadableText exceptionKey = e.getKey();
-            final HumanReadableText displayTextKey;
-            if (exceptionKey == null) {
-                displayTextKey = HumanReadableText.GENERIC_SUBSCRIPTION_FAILURE;
-            } else {
-                displayTextKey = exceptionKey;
-            }
-            no(command, tag, responder, displayTextKey);
+            no(command, tag, responder,  HumanReadableText.GENERIC_SUBSCRIPTION_FAILURE);
         }        
     }
 

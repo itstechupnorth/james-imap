@@ -19,8 +19,6 @@
 
 package org.apache.james.imap.mailbox;
 
-import org.apache.james.imap.api.display.HumanReadableText;
-
 /**
  * Indicates that the operation failed since the mailbox already exists.
  */
@@ -31,7 +29,7 @@ public class MailboxExistsException extends MailboxException {
     private final String mailboxName;
 
     public MailboxExistsException(String mailboxName) {
-        super(HumanReadableText.MAILBOX_EXISTS);
+        super();
         this.mailboxName = mailboxName;
     }
 

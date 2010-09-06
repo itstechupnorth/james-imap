@@ -21,7 +21,6 @@ package org.apache.james.mailboxmanager.torque;
 
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
-import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.mailbox.MailboxException;
 
 /**
@@ -32,24 +31,24 @@ public class LockException extends MailboxException {
 
     private static final long serialVersionUID = 698379731076300030L;
 
-    public LockException(HumanReadableText key, String message) {
-        super(key, message);
+    public LockException(String message) {
+        super(message);
     }
 
-    public LockException(HumanReadableText key) {
-        super(key);}
+    public LockException() {
+        super();}
 
-    public LockException(HumanReadableText key, Exception cause) {
-        super(key, cause);
+    public LockException(Exception cause) {
+        super(null, cause);
     }
 
     public static void tryLock(final Lock lock, final int timeoutInSeconds) throws LockException {
         try {
             if (!lock.tryLock(timeoutInSeconds, TimeUnit.SECONDS)) {
-                throw new LockException(HumanReadableText.LOCK_FAILED);
+                throw new LockException("Lock failed");
             }
         } catch (InterruptedException e) {
-            throw new LockException(HumanReadableText.LOCK_FAILED, e);
+            throw new LockException("Lock failed");
         }
     }
 

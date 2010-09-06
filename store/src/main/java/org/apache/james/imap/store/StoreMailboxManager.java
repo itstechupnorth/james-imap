@@ -29,8 +29,6 @@ import javax.mail.Flags;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.james.imap.api.ImapConstants;
-import org.apache.james.imap.api.MailboxPath;
 import org.apache.james.imap.mailbox.BadCredentialsException;
 import org.apache.james.imap.mailbox.MailboxConstants;
 import org.apache.james.imap.mailbox.MailboxException;
@@ -39,6 +37,7 @@ import org.apache.james.imap.mailbox.MailboxListener;
 import org.apache.james.imap.mailbox.MailboxManager;
 import org.apache.james.imap.mailbox.MailboxMetaData;
 import org.apache.james.imap.mailbox.MailboxNotFoundException;
+import org.apache.james.imap.mailbox.MailboxPath;
 import org.apache.james.imap.mailbox.MailboxQuery;
 import org.apache.james.imap.mailbox.MailboxSession;
 import org.apache.james.imap.mailbox.MessageRange;
@@ -293,7 +292,10 @@ public abstract class StoreMailboxManager<Id> implements MailboxManager {
                         final String subNewName = to.getName() + subOriginalName.substring(from.getName().length());
                         final MailboxPath fromPath = new MailboxPath(children, subOriginalName);
                         final MailboxPath toPath = new MailboxPath(children, subNewName);
-                        if (sub.getName().equalsIgnoreCase(ImapConstants.INBOX_NAME) == false) {
+                        
+                        
+                        // TODO: Move to processor
+                        if (sub.getName().equalsIgnoreCase("INBOX") == false) {
                            
                             sub.setName(subNewName);
                             mapper.save(sub);

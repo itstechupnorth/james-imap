@@ -25,7 +25,6 @@ import java.util.List;
 import javax.mail.Flags;
 
 import org.apache.james.imap.api.ImapCommand;
-import org.apache.james.imap.api.MailboxPath;
 import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.api.message.request.ImapRequest;
 import org.apache.james.imap.api.message.response.StatusResponse;
@@ -34,6 +33,7 @@ import org.apache.james.imap.api.message.response.StatusResponse.ResponseCode;
 import org.apache.james.imap.api.process.ImapProcessor;
 import org.apache.james.imap.api.process.ImapSession;
 import org.apache.james.imap.api.process.SelectedMailbox;
+import org.apache.james.imap.mailbox.MailboxPath;
 import org.apache.james.imap.mailbox.MessageManager;
 import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.MailboxManager;
@@ -84,7 +84,7 @@ abstract class AbstractSelectionProcessor extends AbstractMailboxProcessor {
             responder.respond(statusResponseFactory.taggedNo(tag, command,
                     HumanReadableText.FAILURE_NO_SUCH_MAILBOX));
         } catch (MailboxException e) {
-            no(command, tag, responder, e, session);
+            no(command, tag, responder, HumanReadableText.SELECT);
         }
     }
 

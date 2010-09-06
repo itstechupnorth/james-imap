@@ -19,8 +19,8 @@
 
 package org.apache.james.imap.processor.base;
 
-import org.apache.james.imap.api.MailboxPath;
 import org.apache.james.imap.mailbox.MailboxListener;
+import org.apache.james.imap.mailbox.MailboxPath;
 
 public class FakeMailboxListenerAdded extends MailboxListener.Added {
 

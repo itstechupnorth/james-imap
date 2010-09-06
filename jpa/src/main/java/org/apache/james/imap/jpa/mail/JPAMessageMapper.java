@@ -27,7 +27,6 @@ import javax.persistence.LockModeType;
 import javax.persistence.PersistenceException;
 import javax.persistence.Query;
 
-import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.jpa.JPATransactionalMapper;
 import org.apache.james.imap.jpa.mail.model.JPAMailbox;
 import org.apache.james.imap.jpa.mail.model.openjpa.AbstractJPAMailboxMembership;
@@ -36,7 +35,6 @@ import org.apache.james.imap.jpa.mail.model.openjpa.JPAStreamingMailboxMembershi
 import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.MessageRange;
 import org.apache.james.imap.mailbox.SearchQuery;
-import org.apache.james.imap.mailbox.StorageException;
 import org.apache.james.imap.mailbox.MessageRange.Type;
 import org.apache.james.imap.mailbox.SearchQuery.Criterion;
 import org.apache.james.imap.mailbox.SearchQuery.NumericRange;
@@ -59,7 +57,7 @@ public class JPAMessageMapper extends JPATransactionalMapper implements MessageM
     /**
      * @see org.apache.james.imap.store.mail.MessageMapper#findInMailbox(org.apache.james.imap.mailbox.MessageRange)
      */
-    public List<MailboxMembership<Long>> findInMailbox(Mailbox<Long> mailbox, MessageRange set) throws StorageException {
+    public List<MailboxMembership<Long>> findInMailbox(Mailbox<Long> mailbox, MessageRange set) throws MailboxException {
         try {
             final List<MailboxMembership<Long>> results;
             final long from = set.getUidFrom();
@@ -82,7 +80,7 @@ public class JPAMessageMapper extends JPATransactionalMapper implements MessageM
             }
             return results;
         } catch (PersistenceException e) {
-            throw new StorageException(HumanReadableText.SEARCH_FAILED, e);
+            throw new MailboxException("Search of MessageRange " + set + " failed in mailbox " + mailbox, e);
         }
     }
 
@@ -116,7 +114,7 @@ public class JPAMessageMapper extends JPATransactionalMapper implements MessageM
     /**
      * @see org.apache.james.imap.store.mail.MessageMapper#findMarkedForDeletionInMailbox(org.apache.james.imap.mailbox.MessageRange)
      */
-    public List<MailboxMembership<Long>> findMarkedForDeletionInMailbox(Mailbox<Long> mailbox, final MessageRange set) throws StorageException {
+    public List<MailboxMembership<Long>> findMarkedForDeletionInMailbox(Mailbox<Long> mailbox, final MessageRange set) throws MailboxException {
         try {
             final List<MailboxMembership<Long>> results;
             final long from = set.getUidFrom();
@@ -138,7 +136,7 @@ public class JPAMessageMapper extends JPATransactionalMapper implements MessageM
             }
             return results;
         } catch (PersistenceException e) {
-            throw new StorageException(HumanReadableText.SEARCH_FAILED, e);
+            throw new MailboxException("Search of MessageRange " + set + " failed in mailbox " + mailbox, e);
         }
     }
 
@@ -172,22 +170,22 @@ public class JPAMessageMapper extends JPATransactionalMapper implements MessageM
     /**
      * @see org.apache.james.imap.store.mail.MessageMapper#countMessagesInMailbox()
      */
-    public long countMessagesInMailbox(Mailbox<Long> mailbox) throws StorageException {
+    public long countMessagesInMailbox(Mailbox<Long> mailbox) throws MailboxException {
         try {
             return (Long) getEntityManager().createNamedQuery("countMessagesInMailbox").setParameter("idParam", mailbox.getMailboxId()).getSingleResult();
         } catch (PersistenceException e) {
-            throw new StorageException(HumanReadableText.COUNT_FAILED, e);
+            throw new MailboxException("Count of messages failed in mailbox " + mailbox, e);
         }
     }
 
     /**
      * @see org.apache.james.imap.store.mail.MessageMapper#countUnseenMessagesInMailbox()
      */
-    public long countUnseenMessagesInMailbox(Mailbox<Long> mailbox) throws StorageException {
+    public long countUnseenMessagesInMailbox(Mailbox<Long> mailbox) throws MailboxException {
         try {
             return (Long) getEntityManager().createNamedQuery("countUnseenMessagesInMailbox").setParameter("idParam", mailbox.getMailboxId()).getSingleResult();
         } catch (PersistenceException e) {
-            throw new StorageException(HumanReadableText.COUNT_FAILED, e);
+            throw new MailboxException("Count of useen messages failed in mailbox " + mailbox, e);
         }
     }
 
@@ -199,7 +197,7 @@ public class JPAMessageMapper extends JPATransactionalMapper implements MessageM
      * @see org.apache.james.imap.store.mail.MessageMapper#searchMailbox(org.apache.james.imap.store.mail.model.Mailbox, org.apache.james.imap.mailbox.SearchQuery)
      */
     @SuppressWarnings("unchecked")
-    public Iterator<Long> searchMailbox(Mailbox<Long> mailbox, SearchQuery query) throws StorageException {
+    public Iterator<Long> searchMailbox(Mailbox<Long> mailbox, SearchQuery query) throws MailboxException {
         try {
             final StringBuilder queryBuilder = new StringBuilder(50);
             queryBuilder.append("SELECT membership FROM Membership membership WHERE membership.mailboxId = ").append(mailbox.getMailboxId());
@@ -244,7 +242,7 @@ public class JPAMessageMapper extends JPATransactionalMapper implements MessageM
             return new SearchQueryIterator(jQuery.getResultList().iterator(), query);
             
         } catch (PersistenceException e) {
-            throw new StorageException(HumanReadableText.SEARCH_FAILED, e);
+            throw new MailboxException("Search of messages via the query " + query + " failed in mailbox " + mailbox, e);
         }
     }
 
@@ -252,11 +250,11 @@ public class JPAMessageMapper extends JPATransactionalMapper implements MessageM
      * (non-Javadoc)
      * @see org.apache.james.imap.store.mail.MessageMapper#delete(java.lang.Object, org.apache.james.imap.store.mail.model.MailboxMembership)
      */
-    public void delete(Mailbox<Long> mailbox, MailboxMembership<Long> message) throws StorageException {
+    public void delete(Mailbox<Long> mailbox, MailboxMembership<Long> message) throws MailboxException {
         try {
             getEntityManager().remove(message);
         } catch (PersistenceException e) {
-            throw new StorageException(HumanReadableText.DELETED_FAILED, e);
+            throw new MailboxException("Delete of message " + message + " failed in mailbox " + mailbox, e);
         }
     }
 
@@ -265,7 +263,7 @@ public class JPAMessageMapper extends JPATransactionalMapper implements MessageM
      * @see org.apache.james.imap.store.mail.MessageMapper#findFirstUnseenMessageUid(org.apache.james.imap.store.mail.model.Mailbox)
      */
     @SuppressWarnings("unchecked")
-    public Long findFirstUnseenMessageUid(Mailbox<Long> mailbox)  throws StorageException {
+    public Long findFirstUnseenMessageUid(Mailbox<Long> mailbox)  throws MailboxException {
         try {
             Query query = getEntityManager().createNamedQuery("findUnseenMessagesInMailboxOrderByUid").setParameter("idParam", mailbox.getMailboxId());
             query.setMaxResults(1);
@@ -276,8 +274,7 @@ public class JPAMessageMapper extends JPATransactionalMapper implements MessageM
                 return result.get(0).getUid();
             }
         } catch (PersistenceException e) {
-            e.printStackTrace();
-            throw new StorageException(HumanReadableText.SEARCH_FAILED, e);
+            throw new MailboxException("Search of first unseen message failed in mailbox " + mailbox, e);
         }
     }
 
@@ -285,7 +282,7 @@ public class JPAMessageMapper extends JPATransactionalMapper implements MessageM
      * @see org.apache.james.imap.store.mail.MessageMapper#findRecentMessagesInMailbox()
      */
     @SuppressWarnings("unchecked")
-    public List<MailboxMembership<Long>> findRecentMessagesInMailbox(Mailbox<Long> mailbox, int limit) throws StorageException {
+    public List<MailboxMembership<Long>> findRecentMessagesInMailbox(Mailbox<Long> mailbox, int limit) throws MailboxException {
         try {
             Query query = getEntityManager().createNamedQuery("findRecentMessagesInMailbox").setParameter("idParam", mailbox.getMailboxId());
             if (limit > 0) {
@@ -293,26 +290,23 @@ public class JPAMessageMapper extends JPATransactionalMapper implements MessageM
             }
             return query.getResultList();
         } catch (PersistenceException e) {
-            throw new StorageException(HumanReadableText.SEARCH_FAILED, e);
+            throw new MailboxException("Search of recent messages failed in mailbox " + mailbox, e);
         }
     }
 
     /**
      * @see org.apache.james.imap.store.mail.MessageMapper#save(MailboxMembership)
      */
-    public long save(Mailbox<Long> mailbox, MailboxMembership<Long> message) throws StorageException {
+    public long save(Mailbox<Long> mailbox, MailboxMembership<Long> message) throws MailboxException {
         try {
             
             if (message.getUid() == 0) {
-                
                 ((AbstractJPAMailboxMembership) message).setUid(reserveUid((JPAMailbox)mailbox));
             }
-            
-            
             getEntityManager().persist(message);
             return message.getUid();
         } catch (PersistenceException e) {
-            throw new StorageException(HumanReadableText.SAVE_FAILED, e);
+            throw new MailboxException("Save of message " + message + " failed in mailbox " + mailbox, e);
         }
     }
 
@@ -320,18 +314,15 @@ public class JPAMessageMapper extends JPATransactionalMapper implements MessageM
      * (non-Javadoc)
      * @see org.apache.james.imap.store.mail.MessageMapper#copy(org.apache.james.imap.store.mail.model.Mailbox, org.apache.james.imap.store.mail.model.MailboxMembership)
      */
-    public long copy(Mailbox<Long> mailbox, MailboxMembership<Long> original) throws StorageException {
-        try {
-            MailboxMembership<Long> copy;
-            if (original instanceof JPAStreamingMailboxMembership) {
-                copy = new JPAStreamingMailboxMembership(mailbox.getMailboxId(), (AbstractJPAMailboxMembership) original);
-            } else {
-                copy = new JPAMailboxMembership(mailbox.getMailboxId(), (AbstractJPAMailboxMembership)original);
-            }
-            return save(mailbox, copy);
-        } catch (MailboxException e) {
-            throw new StorageException(e.getKey(),e);
+    public long copy(Mailbox<Long> mailbox, MailboxMembership<Long> original) throws MailboxException {
+
+        MailboxMembership<Long> copy;
+        if (original instanceof JPAStreamingMailboxMembership) {
+            copy = new JPAStreamingMailboxMembership(mailbox.getMailboxId(), (AbstractJPAMailboxMembership) original);
+        } else {
+            copy = new JPAMailboxMembership(mailbox.getMailboxId(), (AbstractJPAMailboxMembership) original);
         }
+        return save(mailbox, copy);
     }
     
     /**

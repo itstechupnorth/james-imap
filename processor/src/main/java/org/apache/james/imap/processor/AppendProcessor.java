@@ -28,7 +28,6 @@ import javax.mail.Flags;
 import org.apache.commons.logging.Log;
 import org.apache.james.imap.api.ImapCommand;
 import org.apache.james.imap.api.ImapMessage;
-import org.apache.james.imap.api.MailboxPath;
 import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.api.message.request.ImapRequest;
 import org.apache.james.imap.api.message.response.StatusResponse;
@@ -36,12 +35,12 @@ import org.apache.james.imap.api.message.response.StatusResponseFactory;
 import org.apache.james.imap.api.process.ImapProcessor;
 import org.apache.james.imap.api.process.ImapSession;
 import org.apache.james.imap.api.process.SelectedMailbox;
+import org.apache.james.imap.mailbox.MailboxPath;
 import org.apache.james.imap.mailbox.MessageManager;
 import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.MailboxManager;
 import org.apache.james.imap.mailbox.MailboxNotFoundException;
 import org.apache.james.imap.mailbox.MailboxSession;
-import org.apache.james.imap.mailbox.StorageException;
 import org.apache.james.imap.message.request.AppendRequest;
 import org.apache.james.imap.processor.base.ImapSessionUtils;
 
@@ -87,7 +86,7 @@ public class AppendProcessor extends AbstractMailboxProcessor {
             cosume(messageIn);
             
 //          Some other issue
-            no(command, tag, responder, e, session);
+            no(command, tag, responder, HumanReadableText.GENERIC_FAILURE_DURING_PROCESSING);
             
         }
 
@@ -144,11 +143,12 @@ public class AppendProcessor extends AbstractMailboxProcessor {
 //          Indicates that the mailbox does not exist
 //          So TRY CREATE
             tryCreate(session, tag, command, responder, e);
-        } catch (StorageException e) {
+        /*} catch (StorageException e) {
             taggedBad(command, tag, responder, e.getKey());
+        */   
         } catch (MailboxException e) {
 //          Some other issue
-            no(command, tag, responder, e, session);
+            no(command, tag, responder, HumanReadableText.SAVE_FAILED);
         }
     }
     

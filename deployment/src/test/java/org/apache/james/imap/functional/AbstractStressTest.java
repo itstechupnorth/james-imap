@@ -28,7 +28,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import javax.mail.Flags;
 
 import org.apache.commons.logging.impl.SimpleLog;
-import org.apache.james.imap.api.MailboxPath;
+import org.apache.james.imap.mailbox.MailboxPath;
 import org.apache.james.imap.mailbox.MessageManager;
 import org.apache.james.imap.mailbox.MailboxConstants;
 import org.apache.james.imap.mailbox.MailboxException;

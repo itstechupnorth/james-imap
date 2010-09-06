@@ -21,10 +21,9 @@ package org.apache.james.imap.maildir;
 import java.io.File;
 import java.io.IOException;
 
-import org.apache.james.imap.api.MailboxPath;
-import org.apache.james.imap.api.display.HumanReadableText;
+import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.MailboxNotFoundException;
-import org.apache.james.imap.mailbox.StorageException;
+import org.apache.james.imap.mailbox.MailboxPath;
 import org.apache.james.imap.maildir.mail.model.MaildirMailbox;
 import org.apache.james.imap.store.mail.model.Mailbox;
 
@@ -69,9 +68,9 @@ public class MaildirStore {
      * @param user The owner of this mailbox
      * @param folderName The name of the mailbox folder
      * @return The Mailbox object populated with data from the file system
-     * @throws StorageException If the mailbox folder doesn't exist or can't be read
+     * @throws MailboxException If the mailbox folder doesn't exist or can't be read
      */
-    public Mailbox<Integer> loadMailbox(File root, String namespace, String user, String folderName) throws StorageException {
+    public Mailbox<Integer> loadMailbox(File root, String namespace, String user, String folderName) throws MailboxException {
         String mailboxName = getMailboxNameFromFolderName(folderName);
         return loadMailbox(new File(root, folderName), new MailboxPath(namespace, user, mailboxName));
     }
@@ -81,10 +80,10 @@ public class MaildirStore {
      * @param mailboxPath The path of the mailbox
      * @return The Mailbox object populated with data from the file system
      * @throws MailboxNotFoundException If the mailbox folder doesn't exist
-     * @throws StorageException If the mailbox folder can't be read
+     * @throws MailboxException If the mailbox folder can't be read
      */
     public Mailbox<Integer> loadMailbox(MailboxPath mailboxPath)
-    throws MailboxNotFoundException, StorageException {
+    throws MailboxNotFoundException, MailboxException {
         String folder = getFolderName(mailboxPath);
         File f = new File(folder);
         if (!f.isDirectory())
@@ -97,9 +96,9 @@ public class MaildirStore {
      * @param mailboxFile File object referencing the folder for the mailbox
      * @param mailboxPath The path of the mailbox
      * @return The Mailbox object populated with data from the file system
-     * @throws StorageException If the mailbox folder doesn't exist or can't be read
+     * @throws MailboxException If the mailbox folder doesn't exist or can't be read
      */
-    public Mailbox<Integer> loadMailbox(File mailboxFile, MailboxPath mailboxPath) throws StorageException {
+    public Mailbox<Integer> loadMailbox(File mailboxFile, MailboxPath mailboxPath) throws MailboxException {
         long uidValidity;
         long lastUid;
         MaildirFolder folder = new MaildirFolder(mailboxFile.getAbsolutePath());
@@ -107,7 +106,7 @@ public class MaildirStore {
             uidValidity = folder.getUidValidity();
             lastUid = folder.getLastUid();
         } catch (IOException e) {
-            throw new StorageException(HumanReadableText.SELECT, null);
+            throw new MailboxException("Unable to load Mailbox " + mailboxPath, e);
         }
         return new MaildirMailbox(mailboxPath, uidValidity, lastUid);
     }
@@ -133,13 +132,13 @@ public class MaildirStore {
      * The main maildir folder containing all mailboxes for one user
      * @param user The user name of a mailbox
      * @return A File object referencing the main maildir folder
-     * @throws StorageException If the folder does not exist or is no directory
+     * @throws MailboxException If the folder does not exist or is no directory
      */
-    public File getMailboxRootForUser(String user) throws StorageException {
+    public File getMailboxRootForUser(String user) throws MailboxException {
         String path = userRoot(user);
         File root = new File(path);
         if (!root.isDirectory())
-            throw new StorageException(HumanReadableText.MAILBOX_NOT_FOUND, null);
+            throw new MailboxException("Unable to load Mailbox for user " + user);
         return root;
     }
     

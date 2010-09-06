@@ -19,8 +19,6 @@
 
 package org.apache.james.imap.mailbox;
 
-import org.apache.james.imap.api.display.HumanReadableText;
-
 /**
  * Indicates that an operation required is not supported
  * by this mailbox.
@@ -30,7 +28,7 @@ public class UnsupportedOperationException extends MailboxException {
     private static final long serialVersionUID = 1943118588115772317L;
 
     public UnsupportedOperationException(String message) {
-        super(HumanReadableText.UNSUPPORTED, message);
+        super(message);
     }
 
 }

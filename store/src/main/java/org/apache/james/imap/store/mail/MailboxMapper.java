@@ -20,9 +20,9 @@ package org.apache.james.imap.store.mail;
 
 import java.util.List;
 
-import org.apache.james.imap.api.MailboxPath;
+import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.MailboxNotFoundException;
-import org.apache.james.imap.mailbox.StorageException;
+import org.apache.james.imap.mailbox.MailboxPath;
 import org.apache.james.imap.store.mail.model.Mailbox;
 import org.apache.james.imap.store.transaction.Mapper;
 
@@ -37,65 +37,65 @@ public interface MailboxMapper<Id> extends Mapper {
      * Save the give {@link Mailbox} to the underlying storage
      * 
      * @param mailbox
-     * @throws StorageException
+     * @throws MailboxException
      */
-    public abstract void save(Mailbox<Id> mailbox) throws StorageException;
+    public abstract void save(Mailbox<Id> mailbox) throws MailboxException;
     
     /**
      * Delete the given {@link Mailbox} from the underlying storage
      * 
      * @param mailbox
-     * @throws StorageException
+     * @throws MailboxException
      */
-    public abstract void delete(Mailbox<Id> mailbox) throws StorageException;
+    public abstract void delete(Mailbox<Id> mailbox) throws MailboxException;
 
     /**
      * Delete all {@link Mailbox} objects from the underlying storage
      * 
-     * @throws StorageException
+     * @throws MailboxException
      */
-    public abstract void deleteAll() throws StorageException;
+    public abstract void deleteAll() throws MailboxException;
 
     /**
      * Return the {@link Mailbox} for the given name
      * 
      * @param name 
      * @return mailbox
-     * @throws StorageException
+     * @throws MailboxException
      * @throws MailboxNotFoundException
      */
     public abstract Mailbox<Id> findMailboxByPath(MailboxPath mailboxName)
-            throws StorageException, MailboxNotFoundException;
+            throws MailboxException, MailboxNotFoundException;
 
     /**
      * Return a List of {@link Mailbox} which name is like the given name
      * 
      * @param name
      * @return mailboxList
-     * @throws StorageException
+     * @throws MailboxException
      */
     public abstract List<Mailbox<Id>> findMailboxWithPathLike(MailboxPath mailboxPath)
-            throws StorageException;
+            throws MailboxException;
 
     /**
      * Return the {@link Mailbox} for the given id
      * 
      * @param mailboxId
      * @return mailbox
-     * @throws StorageException
+     * @throws MailboxException
      * @throws MailboxNotFoundException
      */
     public abstract Mailbox<Id> findMailboxById(Id mailboxId)
-            throws StorageException, MailboxNotFoundException;
+            throws MailboxException, MailboxNotFoundException;
 
     /**
      * Return if the given {@link Mailbox} has children
      * 
      * @param mailbox not null
      * @return true when the mailbox has children, false otherwise
-     * @throws StorageException
+     * @throws MailboxException
      * @throws MailboxNotFoundException
      */
     public abstract boolean hasChildren(Mailbox<Id> mailbox)
-            throws StorageException, MailboxNotFoundException;
+            throws MailboxException, MailboxNotFoundException;
 }

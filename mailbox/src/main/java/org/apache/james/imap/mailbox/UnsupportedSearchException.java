@@ -19,8 +19,6 @@
 
 package org.apache.james.imap.mailbox;
 
-import org.apache.james.imap.api.display.HumanReadableText;
-
 
 /**
  * Indicates that the requested search is not supported by this implementation.
@@ -30,6 +28,6 @@ public class UnsupportedSearchException extends MailboxException {
     private static final long serialVersionUID = -7442949630563672557L;
 
     public UnsupportedSearchException() {
-        super(HumanReadableText.UNSUPPORTED_SEARCH);
+        super();
     }
 }

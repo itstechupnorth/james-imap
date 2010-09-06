@@ -21,7 +21,6 @@ package org.apache.james.imap.processor;
 
 import org.apache.james.imap.api.ImapCommand;
 import org.apache.james.imap.api.ImapMessage;
-import org.apache.james.imap.api.MailboxPath;
 import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.api.message.request.ImapRequest;
 import org.apache.james.imap.api.message.response.StatusResponseFactory;
@@ -31,6 +30,7 @@ import org.apache.james.imap.mailbox.BadCredentialsException;
 import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.MailboxExistsException;
 import org.apache.james.imap.mailbox.MailboxManager;
+import org.apache.james.imap.mailbox.MailboxPath;
 import org.apache.james.imap.mailbox.MailboxSession;
 import org.apache.james.imap.message.request.LoginRequest;
 import org.apache.james.imap.processor.base.ImapSessionUtils;
@@ -103,7 +103,7 @@ public class LoginProcessor extends AbstractMailboxProcessor {
             }
         } catch (MailboxException e) {
             session.getLog().debug("Login failed", e);
-            no(command, tag, responder, e.getKey());
+            no(command, tag, responder, HumanReadableText.GENERIC_FAILURE_DURING_PROCESSING);
         }
     }
 }

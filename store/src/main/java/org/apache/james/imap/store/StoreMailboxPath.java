@@ -19,7 +19,7 @@
 
 package org.apache.james.imap.store;
 
-import org.apache.james.imap.api.MailboxPath;
+import org.apache.james.imap.mailbox.MailboxPath;
 import org.apache.james.imap.store.mail.model.Mailbox;
 
 public class StoreMailboxPath<Id> extends MailboxPath {

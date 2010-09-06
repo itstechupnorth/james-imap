@@ -25,7 +25,7 @@ import java.util.List;
 import org.apache.james.imap.api.ImapCommand;
 import org.apache.james.imap.api.ImapConstants;
 import org.apache.james.imap.api.ImapMessage;
-import org.apache.james.imap.api.MailboxPath;
+import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.api.message.request.ImapRequest;
 import org.apache.james.imap.api.message.response.ImapResponseMessage;
 import org.apache.james.imap.api.message.response.StatusResponseFactory;
@@ -35,6 +35,7 @@ import org.apache.james.imap.mailbox.MailboxConstants;
 import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.MailboxManager;
 import org.apache.james.imap.mailbox.MailboxMetaData;
+import org.apache.james.imap.mailbox.MailboxPath;
 import org.apache.james.imap.mailbox.MailboxQuery;
 import org.apache.james.imap.mailbox.MailboxMetaData.Children;
 import org.apache.james.imap.mailbox.util.SimpleMailboxMetaData;
@@ -154,7 +155,7 @@ public class ListProcessor extends AbstractMailboxProcessor {
 
             okComplete(command, tag, responder);
         } catch (MailboxException e) {
-            no(command, tag, responder, e, session);
+            no(command, tag, responder, HumanReadableText.SEARCH_FAILED);
         }
     }
 

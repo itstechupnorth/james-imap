@@ -34,7 +34,6 @@ import javax.mail.Flags;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.SearchQuery;
 import org.apache.james.imap.mailbox.UnsupportedSearchException;
@@ -145,9 +144,9 @@ public class MessageSearches {
                     throw new UnsupportedSearchException();
             }
         } catch (IOException e) {
-            throw new MailboxException(HumanReadableText.FAILURE_MAIL_PARSE, e);
+            throw new MailboxException("Unable to parse message", e);
         } catch (MimeException e) {
-            throw new MailboxException(HumanReadableText.FAILURE_MAIL_PARSE, e);
+            throw new MailboxException("Unable to parse message", e);
         }
     }
 

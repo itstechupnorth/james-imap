@@ -34,7 +34,6 @@ import javax.jcr.query.QueryResult;
 import org.apache.commons.logging.Log;
 import org.apache.jackrabbit.commons.JcrUtils;
 import org.apache.jackrabbit.util.Text;
-import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.jcr.AbstractJCRScalingMapper;
 import org.apache.james.imap.jcr.MailboxSessionJCRRepository;
 import org.apache.james.imap.jcr.NodeLocker;
@@ -87,7 +86,7 @@ public class JCRSubscriptionMapper extends AbstractJCRScalingMapper implements S
         } catch (PathNotFoundException e) {
             // do nothing
         } catch (RepositoryException e) {
-            throw new SubscriptionException(HumanReadableText.DELETED_FAILED, e);
+            throw new SubscriptionException(e);
         }
 
     }
@@ -114,7 +113,7 @@ public class JCRSubscriptionMapper extends AbstractJCRScalingMapper implements S
         } catch (PathNotFoundException e) {
             // nothing todo here
         } catch (RepositoryException e) {
-            throw new SubscriptionException(HumanReadableText.SEARCH_FAILED, e);
+            throw new SubscriptionException(e);
         }
         return null;
 
@@ -148,7 +147,7 @@ public class JCRSubscriptionMapper extends AbstractJCRScalingMapper implements S
         } catch (PathNotFoundException e) {
             // Do nothing just return the empty list later
         } catch (RepositoryException e) {
-            throw new SubscriptionException(HumanReadableText.SEARCH_FAILED, e);
+            throw new SubscriptionException(e);
         }
         return subList;
 
@@ -187,7 +186,7 @@ public class JCRSubscriptionMapper extends AbstractJCRScalingMapper implements S
             ((JCRSubscription)subscription).merge(node);
 
         } catch (RepositoryException e) {
-            throw new SubscriptionException(HumanReadableText.SAVE_FAILED, e);
+            throw new SubscriptionException(e);
         }
     }
 

@@ -24,7 +24,6 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceException;
 
-import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.jpa.JPATransactionalMapper;
 import org.apache.james.imap.mailbox.SubscriptionException;
 import org.apache.james.imap.store.user.SubscriptionMapper;
@@ -51,7 +50,7 @@ public class JPASubscriptionMapper extends JPATransactionalMapper implements Sub
         } catch (NoResultException e) {
             return null;
         } catch (PersistenceException e) {
-            throw new SubscriptionException(HumanReadableText.SEARCH_FAILED, e);
+            throw new SubscriptionException(e);
         }
     }
 
@@ -63,7 +62,7 @@ public class JPASubscriptionMapper extends JPATransactionalMapper implements Sub
         try {
             getEntityManager().persist(subscription);
         } catch (PersistenceException e) {
-            throw new SubscriptionException(HumanReadableText.SAVE_FAILED, e);
+            throw new SubscriptionException(e);
         }
     }
 
@@ -76,7 +75,7 @@ public class JPASubscriptionMapper extends JPATransactionalMapper implements Sub
         try {
             return (List<Subscription>) getEntityManager().createNamedQuery("findSubscriptionsForUser").setParameter("userParam", user).getResultList();
         } catch (PersistenceException e) {
-            throw new SubscriptionException(HumanReadableText.SEARCH_FAILED, e);
+            throw new SubscriptionException(e);
         }
     }
 
@@ -88,7 +87,7 @@ public class JPASubscriptionMapper extends JPATransactionalMapper implements Sub
         try {
             getEntityManager().remove(subscription);
         } catch (PersistenceException e) {
-            throw new SubscriptionException(HumanReadableText.DELETED_FAILED, e);
+            throw new SubscriptionException(e);
         }
     }
 }

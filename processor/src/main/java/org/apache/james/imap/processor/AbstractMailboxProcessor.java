@@ -24,11 +24,9 @@ import java.util.Iterator;
 import javax.mail.Flags;
 import javax.mail.MessagingException;
 
-import org.apache.commons.logging.Log;
 import org.apache.james.imap.api.ImapCommand;
 import org.apache.james.imap.api.ImapConstants;
 import org.apache.james.imap.api.ImapMessage;
-import org.apache.james.imap.api.MailboxPath;
 import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.api.message.request.ImapRequest;
 import org.apache.james.imap.api.message.response.ImapResponseMessage;
@@ -37,12 +35,11 @@ import org.apache.james.imap.api.message.response.StatusResponseFactory;
 import org.apache.james.imap.api.process.ImapProcessor;
 import org.apache.james.imap.api.process.ImapSession;
 import org.apache.james.imap.api.process.SelectedMailbox;
+import org.apache.james.imap.mailbox.MailboxPath;
 import org.apache.james.imap.mailbox.MessageManager;
 import org.apache.james.imap.mailbox.MailboxConstants;
 import org.apache.james.imap.mailbox.MailboxException;
-import org.apache.james.imap.mailbox.MailboxExistsException;
 import org.apache.james.imap.mailbox.MailboxManager;
-import org.apache.james.imap.mailbox.MailboxNotFoundException;
 import org.apache.james.imap.mailbox.MailboxSession;
 import org.apache.james.imap.mailbox.MessageRange;
 import org.apache.james.imap.mailbox.MessageResult;
@@ -81,38 +78,7 @@ abstract public class AbstractMailboxProcessor extends AbstractChainedProcessor 
         doProcess(message, command, tag, responder, session);
     }
 
-    protected void no(final ImapCommand command, final String tag,
-            final Responder responder, final MessagingException e, ImapSession session) {
-        final Log logger = session.getLog();
-        final ImapResponseMessage response;
-        if (e instanceof MailboxExistsException) {
-            response = factory.taggedNo(tag, command,
-                    HumanReadableText.FAILURE_MAILBOX_EXISTS);
-        } else if (e instanceof MailboxNotFoundException) {
-            response = factory.taggedNo(tag, command,
-                    HumanReadableText.FAILURE_NO_SUCH_MAILBOX);
-        } else {
-            if (logger != null) {
-                logger.info(e.getMessage());
-                logger.debug("Processing failed:", e);
-            }
-            final HumanReadableText key;
-            if (e instanceof MailboxException) {
-                final MailboxException mailboxException = (MailboxException) e;
-                final HumanReadableText exceptionKey = mailboxException.getKey();
-                if (exceptionKey == null) {
-                    key = HumanReadableText.GENERIC_FAILURE_DURING_PROCESSING;
-                } else {
-                    key = exceptionKey;
-                }
-            } else {
-                key = HumanReadableText.GENERIC_FAILURE_DURING_PROCESSING;
-            }
-            response = factory.taggedNo(tag, command, key);
-        }
-        responder.respond(response);
-    }
-
+   
     final void doProcess(final ImapRequest message, final ImapCommand command,
             final String tag, Responder responder, ImapSession session) {
         if (!command.validForState(session.getState())) {

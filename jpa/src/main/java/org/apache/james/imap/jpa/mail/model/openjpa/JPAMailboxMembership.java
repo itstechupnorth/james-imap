@@ -29,7 +29,6 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.ManyToOne;
 
-import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.jpa.mail.model.JPAHeader;
 import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.store.mail.model.Message;
@@ -55,7 +54,7 @@ public class JPAMailboxMembership extends AbstractJPAMailboxMembership{
         try {
             this.message = new JPAMessage(content, size, bodyStartOctet, headers, propertyBuilder);
         } catch (IOException e) {
-            throw new MailboxException(HumanReadableText.FAILURE_MAIL_PARSE,e);
+            throw new MailboxException("Unable to parse message",e);
         }
     }
 
@@ -64,7 +63,7 @@ public class JPAMailboxMembership extends AbstractJPAMailboxMembership{
         try {
             this.message = new JPAMessage((JPAMessage) original.getMessage());
         } catch (IOException e) {
-            throw new MailboxException(HumanReadableText.FAILURE_MAIL_PARSE,e);
+            throw new MailboxException("Unable to parse message",e);
         }
     }
     

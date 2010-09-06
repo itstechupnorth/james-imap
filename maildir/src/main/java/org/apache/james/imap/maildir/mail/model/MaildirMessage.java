@@ -28,7 +28,6 @@ import java.util.List;
 import javax.mail.Flags;
 
 import org.apache.commons.lang.NotImplementedException;
-import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.maildir.MaildirMessageName;
 import org.apache.james.imap.store.mail.model.AbstractMessage;
@@ -152,7 +151,7 @@ public class MaildirMessage extends AbstractMessage implements MailboxMembership
         try {
             this.rawFullContent = new ByteArrayInputStream(StreamUtils.toByteArray(message.getFullContent()));
         } catch (IOException e) {
-            throw new MailboxException(HumanReadableText.FAILURE_MAIL_PARSE,e);
+            throw new MailboxException("Parsing of message failed",e);
         }
        
         this.bodyStartOctet = (int) (message.getFullContentOctets() - message.getBodyOctets());

@@ -19,8 +19,6 @@
 
 package org.apache.james.imap.mailbox;
 
-import org.apache.james.imap.api.display.HumanReadableText;
-
 /**
  * Indicates that the credentials for this operation were not acceptable.
  */
@@ -29,11 +27,8 @@ public class BadCredentialsException extends MailboxException {
     private static final long serialVersionUID = -8055692887730696513L;
 
     public BadCredentialsException() {
-        super(HumanReadableText.INVALID_LOGIN);
+        super();
     }
     
-    public BadCredentialsException(HumanReadableText key) {
-        super(key);
-    }
 
 }

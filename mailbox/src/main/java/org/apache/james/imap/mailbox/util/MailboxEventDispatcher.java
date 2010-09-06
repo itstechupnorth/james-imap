@@ -29,8 +29,8 @@ import java.util.concurrent.CopyOnWriteArraySet;
 import javax.mail.Flags;
 import javax.mail.Flags.Flag;
 
-import org.apache.james.imap.api.MailboxPath;
 import org.apache.james.imap.mailbox.MailboxListener;
+import org.apache.james.imap.mailbox.MailboxPath;
 
 /**
  * Helper class to dispatch {@link Event}'s to registerend MailboxListener 

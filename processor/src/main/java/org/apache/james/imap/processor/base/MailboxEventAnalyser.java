@@ -27,8 +27,8 @@ import java.util.TreeSet;
 
 import javax.mail.Flags;
 
-import org.apache.james.imap.api.MailboxPath;
 import org.apache.james.imap.mailbox.MailboxListener;
+import org.apache.james.imap.mailbox.MailboxPath;
 
 /**
  * {@link MailboxListener} implementation which will listen for {@link Event} notifications and 
