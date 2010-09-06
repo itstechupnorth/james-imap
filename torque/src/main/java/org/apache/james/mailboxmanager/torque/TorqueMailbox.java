@@ -47,7 +47,6 @@ import javax.mail.internet.MimeMessage;
 
 import org.apache.james.imap.api.MailboxPath;
 import org.apache.james.imap.api.display.HumanReadableText;
-import org.apache.james.imap.mailbox.LockException;
 import org.apache.james.imap.mailbox.MessageManager;
 import org.apache.james.imap.mailbox.MailboxConstants;
 import org.apache.james.imap.mailbox.MailboxException;
@@ -60,7 +59,6 @@ import org.apache.james.imap.mailbox.MessageResult.FetchGroup;
 import org.apache.james.imap.mailbox.SearchQuery.Criterion;
 import org.apache.james.imap.mailbox.SearchQuery.NumericRange;
 import org.apache.james.imap.mailbox.util.FetchGroupImpl;
-import org.apache.james.imap.mailbox.util.UidRange;
 import org.apache.james.imap.store.MailboxMetaData;
 import org.apache.james.imap.store.streaming.CRLFOutputStream;
 import org.apache.james.mailboxmanager.torque.om.MailboxRow;
@@ -333,12 +331,11 @@ public class TorqueMailbox implements MessageManager {
         lockForReading();
         try {
             checkAccess();
-            UidRange range = uidRangeForMessageSet(set);
             try {
                 Criteria c = criteriaForMessageSet(set);
                 c.add(MessageFlagsPeer.MAILBOX_ID, getMailboxRow()
                         .getMailboxId());
-                return getMessages(fetchGroup, range, c);
+                return getMessages(fetchGroup, set, c);
             } catch (TorqueException e) {
                 throw new MailboxException(HumanReadableText.SEARCH_FAILED, e);
             } catch (MessagingException e) {
@@ -350,7 +347,7 @@ public class TorqueMailbox implements MessageManager {
     }
 
     @SuppressWarnings("unchecked")
-    private TorqueResultIterator getMessages(FetchGroup result, UidRange range,
+    private TorqueResultIterator getMessages(FetchGroup result, MessageRange range,
             Criteria c) throws TorqueException, MessagingException,
             MailboxException {
         List<MessageRow> rows = MessageRowPeer.doSelectJoinMessageFlags(c);
@@ -369,15 +366,6 @@ public class TorqueMailbox implements MessageManager {
         final TorqueResultIterator results = new TorqueResultIterator(rows,
                 result);
         return results;
-    }
-
-    private static UidRange uidRangeForMessageSet(MessageRange set)
-    throws MailboxException {
-        if (set.getType().equals(MessageRange.Type.ALL)) {
-            return new UidRange(1, -1);
-        } else {
-            return new UidRange(set.getUidFrom(), set.getUidTo());
-        }
     }
 
     public MessageResult fillMessageResult(MessageRow messageRow,

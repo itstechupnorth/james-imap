@@ -17,16 +17,17 @@
  * under the License.                                           *
  ****************************************************************/
 
-package org.apache.james.imap.mailbox;
+package org.apache.james.mailboxmanager.torque;
 
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
-
 import org.apache.james.imap.api.display.HumanReadableText;
+import org.apache.james.imap.mailbox.MailboxException;
 
 /**
  * Indicates that required locks cannot be acquired at this time.
  */
+@Deprecated
 public class LockException extends MailboxException {
 
     private static final long serialVersionUID = 698379731076300030L;

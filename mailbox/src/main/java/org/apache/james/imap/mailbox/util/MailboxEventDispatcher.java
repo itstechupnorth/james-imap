@@ -264,9 +264,10 @@ public class MailboxEventDispatcher implements MailboxListener {
             this.newPath = newPath;
         }
 
+
         /*
          * (non-Javadoc)
-         * @see org.apache.james.imap.mailbox.MailboxListener.MailboxRenamed#getNewName()
+         * @see org.apache.james.imap.mailbox.MailboxListener.MailboxRenamed#getNewPath()
          */
         public MailboxPath getNewPath() {
             return newPath;

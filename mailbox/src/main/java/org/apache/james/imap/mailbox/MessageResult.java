@@ -138,9 +138,12 @@ public interface MessageResult extends Comparable<MessageResult>, Headers {
 
     MimeDescriptor getMimeDescriptor() throws MailboxException;
 
+    /**
+     * Return the uid of the message which the MessageResult belongs to
+     * 
+     * @return uid
+     */
     long getUid();
-
-    long getUidValidity();
 
     /**
      * 
@@ -166,16 +169,14 @@ public interface MessageResult extends Comparable<MessageResult>, Headers {
      */
     Flags getFlags() throws MailboxException;
 
+    /**
+     * Return the size in bytes
+     * 
+     * @return size
+     */
     long getSize();
 
-    /**
-     * Gets headers for the message.
-     * 
-     * @return <code>Header</code> <code>Iterator</code>, or null if
-     *         {@link FetchGroup#HEADERS} was not fetched
-     */
-    Iterator<Header> headers() throws MailboxException;
-
+  
     /**
      * Iterates the message headers for the given part in a multipart message.
      * 

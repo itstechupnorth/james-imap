@@ -76,14 +76,6 @@ public class MessageResultImpl implements MessageResult {
         return uid;
     }
 
-    /*
-     * (non-Javadoc)
-     * @see org.apache.james.imap.mailbox.MessageResult#getUidValidity()
-     */
-    public long getUidValidity() {
-        // TODO implement or remove
-        return 0;
-    }
 
     /*
      * (non-Javadoc)

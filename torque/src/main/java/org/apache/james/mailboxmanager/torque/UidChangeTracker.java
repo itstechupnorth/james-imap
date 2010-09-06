@@ -35,7 +35,7 @@ import org.apache.james.imap.mailbox.MailboxConstants;
 import org.apache.james.imap.mailbox.MessageManager;
 import org.apache.james.imap.mailbox.MailboxListener;
 import org.apache.james.imap.mailbox.util.MailboxEventDispatcher;
-import org.apache.james.imap.mailbox.util.UidRange;
+import org.apache.james.imap.mailbox.MessageRange;
 
 /**
  * 
@@ -94,7 +94,7 @@ public class UidChangeTracker implements MailboxConstants {
         }
     }
 
-    public synchronized void found(UidRange range, final Map<Long, Flags> flagsByIndex) {
+    public synchronized void found(MessageRange range, final Map<Long, Flags> flagsByIndex) {
         final Set<Long> expectedSet = getSubSet(range);
         for (Map.Entry<Long, Flags> entry:flagsByIndex.entrySet()) {
             final Long uid = entry.getKey();
@@ -125,10 +125,10 @@ public class UidChangeTracker implements MailboxConstants {
         cache.put(uid, flags);
     }
 
-    private SortedSet<Long> getSubSet(UidRange range) {
-        final Long rangeStartLong = new Long(range.getFromUid());
-        if (range.getToUid() > 0) {
-            final long nextUidAfterRange = range.getToUid() + 1;
+    private SortedSet<Long> getSubSet(MessageRange range) {
+        final Long rangeStartLong = range.getUidFrom();
+        if (range.getUidTo() > 0) {
+            final long nextUidAfterRange = range.getUidTo() + 1;
             final Long nextUidAfterRangeLong = new Long(nextUidAfterRange);
             final SortedMap<Long, Flags> subMap = cache.subMap(rangeStartLong,
                     nextUidAfterRangeLong);
