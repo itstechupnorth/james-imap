@@ -69,10 +69,17 @@ public interface MailboxMetaData {
      */
     public Selectability getSelectability();
 
+    /**
+     * Return the delimiter
+     * 
+     * @return delimiter
+     */
     String getHierarchyDelimiter();
 
     /**
-     * @return full mailbox path
+     * Return the MailboxPath 
+     * 
+     * @return path
      */
     MailboxPath getPath();
 }

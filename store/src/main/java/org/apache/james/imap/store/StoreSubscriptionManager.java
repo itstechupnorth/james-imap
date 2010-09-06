@@ -117,7 +117,7 @@ public abstract class StoreSubscriptionManager<Id> implements SubscriptionManage
      * @see org.apache.james.imap.mailbox.SubscriptionManager#endProcessingRequest(org.apache.james.imap.mailbox.MailboxSession)
      */
     public void endProcessingRequest(MailboxSession session) {
-        mapperFactory.endRequest(session);
+        mapperFactory.endProcessingRequest(session);
     }
 
     /**

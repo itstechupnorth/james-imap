@@ -328,10 +328,6 @@ public class MessageResultImpl implements MessageResult {
 
         private int content;
 
-		public final int getContent() {
-            return content;
-        }
-
         public final Content getBody() {
             return body;
         }

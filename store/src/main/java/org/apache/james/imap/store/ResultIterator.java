@@ -34,7 +34,7 @@ import org.apache.james.imap.mailbox.MessageResult.FetchGroup;
 import org.apache.james.imap.store.mail.model.MailboxMembership;
 
 /**
- * {@link Iterator} implementations for {@link MessageResult}
+ * {@link Iterator} implementation for {@link MessageResult}
  *
  */
 public class ResultIterator<Id> implements Iterator<MessageResult> {
@@ -127,10 +127,6 @@ public class ResultIterator<Id> implements Iterator<MessageResult> {
 
         public long getUid() {
             return uid;
-        }
-
-        public long getUidValidity() {
-            return 0;
         }
 
         public Iterator<Header> headers() throws MailboxException {

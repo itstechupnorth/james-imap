@@ -16,41 +16,27 @@
  * specific language governing permissions and limitations      *
  * under the License.                                           *
  ****************************************************************/
-
 package org.apache.james.imap.mailbox;
 
-import java.util.Collection;
-
-
 /**
- * Subscribes users.
+ * Implementations of this interface are aware of processing requests
+ * 
+ *
  */
-public interface SubscriptionManager extends RequestAware{
+public interface RequestAware {
+
     
     /**
-     * Subscribes the user in the session to the given mailbox.
-     * @param session not null
-     * @param mailbox not null
-     * @throws SubscriptionException when subscription fails
+     * Start the processing of a request for the given MailboxSession. If the user is not logged in already then the MailboxSession will be null
+     * 
+     * @param session 
      */
-    public void subscribe(MailboxSession session, String mailbox)
-            throws SubscriptionException;
-
+    public void startProcessingRequest(MailboxSession session);
+    
     /**
-     * Finds all subscriptions for the user in the session.
-     * @param user not null
-     * @return not null
-     * @throws SubscriptionException when subscriptions cannot be read
+     * End the processing of a request for the given MailboxSession. If the user is not logged in already then the MailboxSession will be null
+     * 
+     * @param session 
      */
-    public Collection<String> subscriptions(MailboxSession session) throws SubscriptionException;
-
-    /**
-     * Unsubscribes the user in the session from the given mailbox.
-     * @param session not null
-     * @param mailbox not null
-     * @throws SubscriptionException when subscriptions cannot be read
-     */
-    public void unsubscribe(MailboxSession session, String mailbox)
-            throws SubscriptionException;
-   
+    public void endProcessingRequest(MailboxSession session);
 }

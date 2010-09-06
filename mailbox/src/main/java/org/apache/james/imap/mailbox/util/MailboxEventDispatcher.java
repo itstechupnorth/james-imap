@@ -32,10 +32,18 @@ import javax.mail.Flags.Flag;
 import org.apache.james.imap.api.MailboxPath;
 import org.apache.james.imap.mailbox.MailboxListener;
 
+/**
+ * Helper class to dispatch {@link Event}'s to registerend MailboxListener 
+ * 
+ *
+ */
 public class MailboxEventDispatcher implements MailboxListener {
 
     private final Set<MailboxListener> listeners = new CopyOnWriteArraySet<MailboxListener>();
 
+    /**
+     * Remove all closed MailboxListener 
+     */
     private void pruneClosed() {
         final Collection<MailboxListener> closedListeners = new ArrayList<MailboxListener>();
         for (MailboxListener listener:listeners) {
@@ -48,22 +56,50 @@ public class MailboxEventDispatcher implements MailboxListener {
         }
     }
     
+    /**
+     * Add a MailboxListener to this dispatcher
+     * 
+     * @param mailboxListener
+     */
     public void addMailboxListener(MailboxListener mailboxListener) {
         pruneClosed();
         listeners.add(mailboxListener);
     }
 
+    /**
+     * Should get called when a new message was added to a Mailbox. All registered MailboxListener will get triggered then
+     * 
+     * @param uid
+     * @param sessionId
+     * @param path
+     */
     public void added(long uid, long sessionId, MailboxPath path) {
         pruneClosed();
         final AddedImpl added = new AddedImpl(sessionId, path, uid);
         event(added);
     }
 
+    /**
+     * Should get called when a message was expunged from a Mailbox. All registered MailboxListener will get triggered then
+
+     * @param uid
+     * @param sessionId
+     * @param path
+     */
     public void expunged(final long uid, long sessionId, MailboxPath path) {
         final ExpungedImpl expunged = new ExpungedImpl(sessionId, path, uid);
         event(expunged);
     }
 
+    /**
+     * Should get called when the message flags were update in a Mailbox. All registered MailboxListener will get triggered then
+     *
+     * @param uid
+     * @param sessionId
+     * @param path
+     * @param original
+     * @param updated
+     */
     public void flagsUpdated(final long uid, long sessionId, final MailboxPath path,
             final Flags original, final Flags updated) {
         final FlagsUpdatedImpl flags = new FlagsUpdatedImpl(sessionId, path, uid,
@@ -82,10 +118,22 @@ public class MailboxEventDispatcher implements MailboxListener {
         }
     }
 
-    public int size() {
+    /**
+     * Return the the count of all registered MailboxListener 
+     * 
+     * @return count
+     */
+    public int count() {
         return listeners.size();
     }
     
+    /**
+     * Should get called when a Mailbox was renamed. All registered MailboxListener will get triggered then
+     * 
+     * @param from
+     * @param to
+     * @param sessionId
+     */
     public void mailboxRenamed(MailboxPath from, MailboxPath to, long sessionId) {
         event(new MailboxRenamedEventImpl(from, to, sessionId));
     }
@@ -243,6 +291,14 @@ public class MailboxEventDispatcher implements MailboxListener {
         }
     }
 
+
+    /**
+     * Should get called when a Mailbox was deleted. All registered MailboxListener will get triggered then
+ 
+     *
+     * @param sessionId
+     * @param path
+     */
     public void mailboxDeleted(long sessionId, MailboxPath path) {
         final MailboxDeletionEventImpl event = new MailboxDeletionEventImpl(
                 sessionId, path);

@@ -30,7 +30,7 @@ import org.apache.commons.logging.Log;
  * Mailbox session.
  */
 public interface MailboxSession {
-
+  
     /**
      * Gets the session ID.
      * 

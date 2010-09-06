@@ -58,7 +58,7 @@ import org.apache.james.imap.api.MailboxPath;
  * </p>
  */
 
-public interface MailboxManager {
+public interface MailboxManager extends RequestAware {
 
     /**
      * Return the delimter to use for folders
@@ -210,17 +210,4 @@ public interface MailboxManager {
      */
     void addListener(MailboxPath mailboxPath, MailboxListener listener, MailboxSession session) throws MailboxException;
     
-    /**
-     * Start the processing of a request for the given MailboxSession. If the user is not logged in already then the MailboxSession will be null
-     * 
-     * @param session 
-     */
-    void startProcessingRequest(MailboxSession session);
-    
-    /**
-     * End the processing of a request for the given MailboxSession. If the user is not logged in already then the MailboxSession will be null
-     * 
-     * @param session 
-     */
-    void endProcessingRequest(MailboxSession session);
 }

@@ -20,10 +20,6 @@
 package org.apache.james.imap.mailbox;
 
 public interface MailboxConstants {
-
-    public final long UID_INFINITY = -1;
-
-    public final int MSN_INFINITY = -1;
     
     /**
      * The namespace used for store user inboxes

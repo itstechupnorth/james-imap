@@ -117,6 +117,35 @@ public class MessageRange {
         return uidTo;
     }
 
+
+    /**
+     * Return true if the uid is within the range
+     * 
+     * @param uid
+     * @return withinRange
+     */
+    public boolean includes(long uid) {
+        switch (type) {
+        case ALL:
+            return true;
+        case FROM: 
+            if (uid > getUidFrom()) {
+                return true;
+            }
+        case RANGE:
+            if (uid >= getUidFrom() && uid <= getUidTo()) {
+                return true;
+            }
+        case ONE:
+            if (getUidFrom() == uid) {
+                return true;
+            }
+        default:
+            break;
+        }
+        return false;
+    }
+    
     public String toString() {
         return "TYPE: " + type + " UID: " + uidFrom + ":" + uidTo;
     }

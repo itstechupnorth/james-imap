@@ -195,7 +195,7 @@ public class TorqueMailbox implements MessageManager {
                     save(messageRow);
                     MessageResult messageResult = fillMessageResult(messageRow,
                             FetchGroupImpl.MINIMAL);
-                    getUidChangeTracker().found(messageResult.getUid(), messageResult.getFlags());
+                    getUidChangeTracker().found(messageResult.getUid(), messageResult.getFlags(), mailboxSession.getSessionId());
                     return messageResult.getUid();
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -335,7 +335,7 @@ public class TorqueMailbox implements MessageManager {
                 Criteria c = criteriaForMessageSet(set);
                 c.add(MessageFlagsPeer.MAILBOX_ID, getMailboxRow()
                         .getMailboxId());
-                return getMessages(fetchGroup, set, c);
+                return getMessages(fetchGroup, set, c, mailboxSession);
             } catch (TorqueException e) {
                 throw new MailboxException(HumanReadableText.SEARCH_FAILED, e);
             } catch (MessagingException e) {
@@ -348,7 +348,7 @@ public class TorqueMailbox implements MessageManager {
 
     @SuppressWarnings("unchecked")
     private TorqueResultIterator getMessages(FetchGroup result, MessageRange range,
-            Criteria c) throws TorqueException, MessagingException,
+            Criteria c, MailboxSession session) throws TorqueException, MessagingException,
             MailboxException {
         List<MessageRow> rows = MessageRowPeer.doSelectJoinMessageFlags(c);
         final Map<Long, Flags> flagsByIndex = new HashMap<Long, Flags>();
@@ -356,7 +356,7 @@ public class TorqueMailbox implements MessageManager {
             flagsByIndex.put(row.getUid(), row.getMessageFlags().createFlags());
         }
         final TorqueResultIterator results = getResults(result, rows);
-        getUidChangeTracker().found(range, flagsByIndex);
+        getUidChangeTracker().found(range, flagsByIndex, session.getSessionId());
         return results;
     }
 
@@ -442,7 +442,7 @@ public class TorqueMailbox implements MessageManager {
                     MessageResult messageResult = fillMessageResult(
                             (MessageRow) messageRows.get(0), FetchGroupImpl.MINIMAL);
                     if (messageResult != null) {
-                        getUidChangeTracker().found(messageResult.getUid(), messageResult.getFlags());
+                        getUidChangeTracker().found(messageResult.getUid(), messageResult.getFlags(), mailboxSession.getSessionId());
                     }
 
                     return messageResult.getUid();
@@ -786,7 +786,7 @@ public class TorqueMailbox implements MessageManager {
                     save(newRow);
                     MessageResult messageResult = fillMessageResult(newRow,
                             FetchGroupImpl.MINIMAL);
-                    getUidChangeTracker().found(messageResult.getUid(), messageResult.getFlags());
+                    getUidChangeTracker().found(messageResult.getUid(), messageResult.getFlags(), session.getSessionId());
                 }
             }
         } catch (TorqueException e) {
@@ -804,8 +804,8 @@ public class TorqueMailbox implements MessageManager {
         tracker.mailboxDeleted(session.getSessionId());
     }
 
-    public void reportRenamed(String from, MailboxRow mailboxRow) {
-        tracker.reportRenamed(getMailboxPath(mailboxRow.getName()));
+    public void reportRenamed(String from, MailboxRow mailboxRow, MailboxSession session) {
+        tracker.reportRenamed(getMailboxPath(mailboxRow.getName()), session.getSessionId());
         this.mailboxRow = mailboxRow;
     }
 

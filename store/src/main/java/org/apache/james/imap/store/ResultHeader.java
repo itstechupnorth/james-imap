@@ -26,8 +26,6 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.WritableByteChannel;
 
-import javax.mail.MessagingException;
-
 import org.apache.james.imap.mailbox.Content;
 import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.MessageResult;
@@ -50,22 +48,34 @@ public final class ResultHeader implements MessageResult.Header, Content {
         size = name.length() + value.length() + 2;
     }
 
-    public Content getContent() throws MessagingException {
-        return this;
-    }
-
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.mailbox.MessageResult.Header#getName()
+     */
     public String getName() throws MailboxException {
         return name;
     }
 
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.mailbox.MessageResult.Header#getValue()
+     */
     public String getValue() throws MailboxException {
         return value;
     }
 
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.mailbox.Content#size()
+     */
     public long size() {
         return size;
     }
 
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.mailbox.Content#writeTo(java.nio.channels.WritableByteChannel)
+     */
     public void writeTo(WritableByteChannel channel) throws IOException {
         writeAll(channel, ResultUtils.US_ASCII.encode(name));
         ByteBuffer buffer = ByteBuffer

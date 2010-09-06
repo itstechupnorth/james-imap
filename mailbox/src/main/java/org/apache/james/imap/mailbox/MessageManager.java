@@ -38,8 +38,6 @@ import org.apache.james.imap.mailbox.MessageResult.FetchGroup;
  */
 public interface MessageManager {
 
-    public static final long ANONYMOUS_SESSION = 0;
-
     /**
      * Return the count 
      * 

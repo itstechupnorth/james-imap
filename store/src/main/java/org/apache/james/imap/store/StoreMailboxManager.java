@@ -417,7 +417,7 @@ public abstract class StoreMailboxManager<Id> implements MailboxManager {
      * End processing of Request for session
      */
     public void endProcessingRequest(MailboxSession session) {
-        mailboxSessionMapperFactory.endRequest(session);
+        mailboxSessionMapperFactory.endProcessingRequest(session);
     }
 
     /**

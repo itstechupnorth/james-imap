@@ -20,16 +20,18 @@ package org.apache.james.imap.store;
 
 import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.mailbox.MailboxSession;
+import org.apache.james.imap.mailbox.RequestAware;
 import org.apache.james.imap.mailbox.SubscriptionException;
 import org.apache.james.imap.store.mail.MailboxMapper;
 import org.apache.james.imap.store.mail.MessageMapper;
+import org.apache.james.imap.store.transaction.Mapper;
 import org.apache.james.imap.store.user.SubscriptionMapper;
 
 /**
  * Maintain mapper instances by {@link MailboxSession}. So only one mapper instance is used
  * in a {@link MailboxSession}
  */
-public abstract class MailboxSessionMapperFactory <Id> {
+public abstract class MailboxSessionMapperFactory <Id> implements RequestAware{
 
     protected final static String MESSAGEMAPPER ="MESSAGEMAPPER";
     protected final static String MAILBOXMAPPER ="MAILBOXMAPPER";
@@ -110,12 +112,12 @@ public abstract class MailboxSessionMapperFactory <Id> {
     protected abstract SubscriptionMapper createSubscriptionMapper(MailboxSession session) throws SubscriptionException;
 
     /**
-     * Callback which needs to get called once an IMAP Request was complete. It will take care of getting rid of all Session-scoped stuff
+     * Call endRequest on {@link Mapper} instances
      * 
      * @param session
      */
     @SuppressWarnings("unchecked")
-    public void endRequest(MailboxSession session) {
+    public void endProcessingRequest(MailboxSession session) {
         if (session == null) return;
         MessageMapper<Id> messageMapper = (MessageMapper) session.getAttributes().get(MESSAGEMAPPER);
         MailboxMapper<Id> mailboxMapper = (MailboxMapper) session.getAttributes().get(MAILBOXMAPPER);
@@ -125,8 +127,17 @@ public abstract class MailboxSessionMapperFactory <Id> {
         if (mailboxMapper != null)
             mailboxMapper.endRequest();
         if (subscriptionMapper != null)
-            subscriptionMapper.endRequest();
+            subscriptionMapper.endRequest();        
     }
-    
 
+    /**
+     * Do nothing
+     * 
+     */
+    public void startProcessingRequest(MailboxSession session) {
+        // Do nothing
+        
+    }
+
+    
 }
