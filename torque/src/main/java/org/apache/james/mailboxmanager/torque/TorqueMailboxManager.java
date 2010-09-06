@@ -31,24 +31,24 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.james.imap.mailbox.BadCredentialsException;
-import org.apache.james.imap.mailbox.MailboxManager;
-import org.apache.james.imap.mailbox.MailboxPath;
-import org.apache.james.imap.mailbox.MessageManager;
-import org.apache.james.imap.mailbox.MailboxConstants;
-import org.apache.james.imap.mailbox.MailboxException;
-import org.apache.james.imap.mailbox.MailboxExistsException;
-import org.apache.james.imap.mailbox.MailboxListener;
-import org.apache.james.imap.mailbox.MailboxMetaData;
-import org.apache.james.imap.mailbox.MailboxNotFoundException;
-import org.apache.james.imap.mailbox.MailboxQuery;
-import org.apache.james.imap.mailbox.MailboxSession;
-import org.apache.james.imap.mailbox.MessageRange;
-import org.apache.james.imap.mailbox.StandardMailboxMetaDataComparator;
-import org.apache.james.imap.mailbox.MailboxMetaData.Selectability;
-import org.apache.james.imap.mailbox.util.SimpleMailboxMetaData;
 import org.apache.james.imap.store.Authenticator;
 import org.apache.james.imap.store.SimpleMailboxSession;
+import org.apache.james.mailbox.BadCredentialsException;
+import org.apache.james.mailbox.MailboxConstants;
+import org.apache.james.mailbox.MailboxException;
+import org.apache.james.mailbox.MailboxExistsException;
+import org.apache.james.mailbox.MailboxListener;
+import org.apache.james.mailbox.MailboxManager;
+import org.apache.james.mailbox.MailboxMetaData;
+import org.apache.james.mailbox.MailboxNotFoundException;
+import org.apache.james.mailbox.MailboxPath;
+import org.apache.james.mailbox.MailboxQuery;
+import org.apache.james.mailbox.MailboxSession;
+import org.apache.james.mailbox.MessageManager;
+import org.apache.james.mailbox.MessageRange;
+import org.apache.james.mailbox.StandardMailboxMetaDataComparator;
+import org.apache.james.mailbox.MailboxMetaData.Selectability;
+import org.apache.james.mailbox.util.SimpleMailboxMetaData;
 import org.apache.james.mailboxmanager.torque.om.MailboxRow;
 import org.apache.james.mailboxmanager.torque.om.MailboxRowPeer;
 import org.apache.torque.TorqueException;
@@ -101,7 +101,7 @@ public class TorqueMailboxManager implements MailboxManager {
     
     /*
      * (non-Javadoc)
-     * @see org.apache.james.imap.mailbox.MailboxManager#createSystemSession(java.lang.String, org.apache.commons.logging.Log)
+     * @see org.apache.james.mailbox.MailboxManager#createSystemSession(java.lang.String, org.apache.commons.logging.Log)
      */
     public MailboxSession createSystemSession(String userName, Log log) {
         return createSession(userName, null, log);
@@ -129,7 +129,7 @@ public class TorqueMailboxManager implements MailboxManager {
     
     /*
      * (non-Javadoc)
-     * @see org.apache.james.imap.mailbox.MailboxManager#getDelimiter()
+     * @see org.apache.james.mailbox.MailboxManager#getDelimiter()
      */
     public final char getDelimiter() {
         return MailboxConstants.DEFAULT_DELIMITER;
@@ -148,7 +148,7 @@ public class TorqueMailboxManager implements MailboxManager {
     
     /*
      * (non-Javadoc)
-     * @see org.apache.james.imap.mailbox.MailboxManager#login(java.lang.String, java.lang.String, org.apache.commons.logging.Log)
+     * @see org.apache.james.mailbox.MailboxManager#login(java.lang.String, java.lang.String, org.apache.commons.logging.Log)
      */
     public MailboxSession login(String userid, String passwd, Log log) throws BadCredentialsException, MailboxException {
         if (login(userid, passwd)) {

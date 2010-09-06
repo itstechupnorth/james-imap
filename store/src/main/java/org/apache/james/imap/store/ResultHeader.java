@@ -26,10 +26,10 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.WritableByteChannel;
 
-import org.apache.james.imap.mailbox.Content;
-import org.apache.james.imap.mailbox.MailboxException;
-import org.apache.james.imap.mailbox.MessageResult;
 import org.apache.james.imap.store.mail.model.Header;
+import org.apache.james.mailbox.Content;
+import org.apache.james.mailbox.MailboxException;
+import org.apache.james.mailbox.MessageResult;
 
 public final class ResultHeader implements MessageResult.Header, Content {
     private final String name;
@@ -50,7 +50,7 @@ public final class ResultHeader implements MessageResult.Header, Content {
 
     /*
      * (non-Javadoc)
-     * @see org.apache.james.imap.mailbox.MessageResult.Header#getName()
+     * @see org.apache.james.mailbox.MessageResult.Header#getName()
      */
     public String getName() throws MailboxException {
         return name;
@@ -58,7 +58,7 @@ public final class ResultHeader implements MessageResult.Header, Content {
 
     /*
      * (non-Javadoc)
-     * @see org.apache.james.imap.mailbox.MessageResult.Header#getValue()
+     * @see org.apache.james.mailbox.MessageResult.Header#getValue()
      */
     public String getValue() throws MailboxException {
         return value;
@@ -66,7 +66,7 @@ public final class ResultHeader implements MessageResult.Header, Content {
 
     /*
      * (non-Javadoc)
-     * @see org.apache.james.imap.mailbox.Content#size()
+     * @see org.apache.james.mailbox.Content#size()
      */
     public long size() {
         return size;
@@ -74,7 +74,7 @@ public final class ResultHeader implements MessageResult.Header, Content {
 
     /*
      * (non-Javadoc)
-     * @see org.apache.james.imap.mailbox.Content#writeTo(java.nio.channels.WritableByteChannel)
+     * @see org.apache.james.mailbox.Content#writeTo(java.nio.channels.WritableByteChannel)
      */
     public void writeTo(WritableByteChannel channel) throws IOException {
         writeAll(channel, ResultUtils.US_ASCII.encode(name));

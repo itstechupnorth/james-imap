@@ -22,9 +22,9 @@ import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 
 import org.apache.commons.logging.Log;
-import org.apache.james.imap.mailbox.MailboxException;
-import org.apache.james.imap.mailbox.MailboxSession;
 import org.apache.james.imap.store.transaction.TransactionalMapper;
+import org.apache.james.mailbox.MailboxException;
+import org.apache.james.mailbox.MailboxSession;
 
 /**
  * Abstract Mapper base class for Level 1 Implementations of JCR. So no real transaction management is used. 

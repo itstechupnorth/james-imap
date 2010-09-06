@@ -22,7 +22,7 @@ import javax.jcr.Repository;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 
-import org.apache.james.imap.mailbox.MailboxSession;
+import org.apache.james.mailbox.MailboxSession;
 
 
 /**

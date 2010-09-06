@@ -28,15 +28,15 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.james.imap.inmemory.mail.model.InMemoryMailbox;
 import org.apache.james.imap.inmemory.mail.model.SimpleMailboxMembership;
-import org.apache.james.imap.mailbox.MailboxException;
-import org.apache.james.imap.mailbox.MessageRange;
-import org.apache.james.imap.mailbox.SearchQuery;
 import org.apache.james.imap.store.MailboxMembershipComparator;
 import org.apache.james.imap.store.SearchQueryIterator;
 import org.apache.james.imap.store.mail.MessageMapper;
 import org.apache.james.imap.store.mail.model.Mailbox;
 import org.apache.james.imap.store.mail.model.MailboxMembership;
 import org.apache.james.imap.store.transaction.NonTransactionalMapper;
+import org.apache.james.mailbox.MailboxException;
+import org.apache.james.mailbox.MessageRange;
+import org.apache.james.mailbox.SearchQuery;
 
 public class InMemoryMessageMapper extends NonTransactionalMapper implements MessageMapper<Long> {
 
@@ -88,7 +88,7 @@ public class InMemoryMessageMapper extends NonTransactionalMapper implements Mes
 
     /*
      * (non-Javadoc)
-     * @see org.apache.james.imap.store.mail.MessageMapper#findInMailbox(java.lang.Object, org.apache.james.imap.mailbox.MessageRange)
+     * @see org.apache.james.imap.store.mail.MessageMapper#findInMailbox(java.lang.Object, org.apache.james.mailbox.MessageRange)
      */
     @SuppressWarnings("unchecked")
     public List<MailboxMembership<Long>> findInMailbox(Mailbox<Long> mailbox, MessageRange set) throws MailboxException {
@@ -132,7 +132,7 @@ public class InMemoryMessageMapper extends NonTransactionalMapper implements Mes
 
     /*
      * (non-Javadoc)
-     * @see org.apache.james.imap.store.mail.MessageMapper#findMarkedForDeletionInMailbox(org.apache.james.imap.mailbox.MessageRange)
+     * @see org.apache.james.imap.store.mail.MessageMapper#findMarkedForDeletionInMailbox(org.apache.james.mailbox.MessageRange)
      */
     public List<MailboxMembership<Long>> findMarkedForDeletionInMailbox(Mailbox<Long> mailbox, MessageRange set) throws MailboxException {
         final List<MailboxMembership<Long>> results = findInMailbox(mailbox, set);
@@ -190,7 +190,7 @@ public class InMemoryMessageMapper extends NonTransactionalMapper implements Mes
 
     /*
      * (non-Javadoc)
-     * @see org.apache.james.imap.store.mail.MessageMapper#searchMailbox(org.apache.james.imap.store.mail.model.Mailbox, org.apache.james.imap.mailbox.SearchQuery)
+     * @see org.apache.james.imap.store.mail.MessageMapper#searchMailbox(org.apache.james.imap.store.mail.model.Mailbox, org.apache.james.mailbox.SearchQuery)
      */
     public Iterator<Long> searchMailbox(Mailbox<Long> mailbox, SearchQuery query) throws MailboxException {
         List<MailboxMembership<?>> memberships = new ArrayList<MailboxMembership<?>>(getMembershipByUidForMailbox(mailbox).values());

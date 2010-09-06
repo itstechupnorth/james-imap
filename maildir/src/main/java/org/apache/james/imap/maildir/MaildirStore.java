@@ -21,11 +21,11 @@ package org.apache.james.imap.maildir;
 import java.io.File;
 import java.io.IOException;
 
-import org.apache.james.imap.mailbox.MailboxException;
-import org.apache.james.imap.mailbox.MailboxNotFoundException;
-import org.apache.james.imap.mailbox.MailboxPath;
 import org.apache.james.imap.maildir.mail.model.MaildirMailbox;
 import org.apache.james.imap.store.mail.model.Mailbox;
+import org.apache.james.mailbox.MailboxException;
+import org.apache.james.mailbox.MailboxNotFoundException;
+import org.apache.james.mailbox.MailboxPath;
 
 public class MaildirStore {
 

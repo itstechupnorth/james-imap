@@ -34,9 +34,9 @@ import org.apache.james.imap.jcr.JCRMailboxSessionMapperFactory;
 import org.apache.james.imap.jcr.JCRSubscriptionManager;
 import org.apache.james.imap.jcr.JCRUtils;
 import org.apache.james.imap.jcr.JCRVmNodeLocker;
-import org.apache.james.imap.mailbox.MailboxSession;
 import org.apache.james.imap.main.DefaultImapDecoderFactory;
 import org.apache.james.imap.processor.main.DefaultImapProcessorFactory;
+import org.apache.james.mailbox.MailboxSession;
 import org.apache.james.test.functional.HostSystem;
 import org.xml.sax.InputSource;
 

@@ -24,7 +24,7 @@ import java.util.Map;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-import org.apache.james.imap.mailbox.MailboxPath;
+import org.apache.james.mailbox.MailboxPath;
 
 /**
  * 

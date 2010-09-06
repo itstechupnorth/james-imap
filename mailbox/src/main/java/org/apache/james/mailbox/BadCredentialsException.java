@@ -17,40 +17,18 @@
  * under the License.                                           *
  ****************************************************************/
 
-package org.apache.james.imap.mailbox;
-
-import java.util.Collection;
-
+package org.apache.james.mailbox;
 
 /**
- * Subscribes users.
+ * Indicates that the credentials for this operation were not acceptable.
  */
-public interface SubscriptionManager extends RequestAware{
+public class BadCredentialsException extends MailboxException {
+
+    private static final long serialVersionUID = -8055692887730696513L;
+
+    public BadCredentialsException() {
+        super();
+    }
     
-    /**
-     * Subscribes the user in the session to the given mailbox.
-     * @param session not null
-     * @param mailbox not null
-     * @throws SubscriptionException when subscription fails
-     */
-    public void subscribe(MailboxSession session, String mailbox)
-            throws SubscriptionException;
 
-    /**
-     * Finds all subscriptions for the user in the session.
-     * @param user not null
-     * @return not null
-     * @throws SubscriptionException when subscriptions cannot be read
-     */
-    public Collection<String> subscriptions(MailboxSession session) throws SubscriptionException;
-
-    /**
-     * Unsubscribes the user in the session from the given mailbox.
-     * @param session not null
-     * @param mailbox not null
-     * @throws SubscriptionException when subscriptions cannot be read
-     */
-    public void unsubscribe(MailboxSession session, String mailbox)
-            throws SubscriptionException;
-   
 }

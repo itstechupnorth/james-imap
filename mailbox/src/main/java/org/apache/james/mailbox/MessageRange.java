@@ -17,7 +17,7 @@
  * under the License.                                           *
  ****************************************************************/
 
-package org.apache.james.imap.mailbox;
+package org.apache.james.mailbox;
 
 /**
  * Used to define a range of messages by uid or msn, or a individual message by

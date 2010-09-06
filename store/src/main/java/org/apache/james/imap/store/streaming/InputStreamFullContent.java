@@ -24,7 +24,7 @@ import java.nio.ByteBuffer;
 import java.nio.channels.WritableByteChannel;
 import java.util.List;
 
-import org.apache.james.imap.mailbox.MessageResult;
+import org.apache.james.mailbox.MessageResult;
 
 
 /**
@@ -49,7 +49,7 @@ public class InputStreamFullContent extends AbstractFullContent{
 
     /*
      * (non-Javadoc)
-     * @see org.apache.james.imap.mailbox.Content#size()
+     * @see org.apache.james.mailbox.Content#size()
      */
     public final long size() {
         return size;

@@ -18,10 +18,10 @@
  ****************************************************************/
 package org.apache.james.imap.maildir;
 
-import org.apache.james.imap.mailbox.MailboxSession;
 import org.apache.james.imap.maildir.user.model.MaildirSubscription;
 import org.apache.james.imap.store.StoreSubscriptionManager;
 import org.apache.james.imap.store.user.model.Subscription;
+import org.apache.james.mailbox.MailboxSession;
 
 public class MaildirSubscriptionManager extends StoreSubscriptionManager<Integer> {
 

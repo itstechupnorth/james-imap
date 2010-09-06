@@ -32,16 +32,16 @@ import org.apache.james.imap.jpa.mail.model.JPAMailbox;
 import org.apache.james.imap.jpa.mail.model.openjpa.AbstractJPAMailboxMembership;
 import org.apache.james.imap.jpa.mail.model.openjpa.JPAMailboxMembership;
 import org.apache.james.imap.jpa.mail.model.openjpa.JPAStreamingMailboxMembership;
-import org.apache.james.imap.mailbox.MailboxException;
-import org.apache.james.imap.mailbox.MessageRange;
-import org.apache.james.imap.mailbox.SearchQuery;
-import org.apache.james.imap.mailbox.MessageRange.Type;
-import org.apache.james.imap.mailbox.SearchQuery.Criterion;
-import org.apache.james.imap.mailbox.SearchQuery.NumericRange;
 import org.apache.james.imap.store.SearchQueryIterator;
 import org.apache.james.imap.store.mail.MessageMapper;
 import org.apache.james.imap.store.mail.model.Mailbox;
 import org.apache.james.imap.store.mail.model.MailboxMembership;
+import org.apache.james.mailbox.MailboxException;
+import org.apache.james.mailbox.MessageRange;
+import org.apache.james.mailbox.SearchQuery;
+import org.apache.james.mailbox.MessageRange.Type;
+import org.apache.james.mailbox.SearchQuery.Criterion;
+import org.apache.james.mailbox.SearchQuery.NumericRange;
 
 
 /**
@@ -55,7 +55,7 @@ public class JPAMessageMapper extends JPATransactionalMapper implements MessageM
     }
 
     /**
-     * @see org.apache.james.imap.store.mail.MessageMapper#findInMailbox(org.apache.james.imap.mailbox.MessageRange)
+     * @see org.apache.james.imap.store.mail.MessageMapper#findInMailbox(org.apache.james.mailbox.MessageRange)
      */
     public List<MailboxMembership<Long>> findInMailbox(Mailbox<Long> mailbox, MessageRange set) throws MailboxException {
         try {
@@ -112,7 +112,7 @@ public class JPAMessageMapper extends JPATransactionalMapper implements MessageM
     }
 
     /**
-     * @see org.apache.james.imap.store.mail.MessageMapper#findMarkedForDeletionInMailbox(org.apache.james.imap.mailbox.MessageRange)
+     * @see org.apache.james.imap.store.mail.MessageMapper#findMarkedForDeletionInMailbox(org.apache.james.mailbox.MessageRange)
      */
     public List<MailboxMembership<Long>> findMarkedForDeletionInMailbox(Mailbox<Long> mailbox, final MessageRange set) throws MailboxException {
         try {
@@ -194,7 +194,7 @@ public class JPAMessageMapper extends JPATransactionalMapper implements MessageM
     /*
      * 
      * (non-Javadoc)
-     * @see org.apache.james.imap.store.mail.MessageMapper#searchMailbox(org.apache.james.imap.store.mail.model.Mailbox, org.apache.james.imap.mailbox.SearchQuery)
+     * @see org.apache.james.imap.store.mail.MessageMapper#searchMailbox(org.apache.james.imap.store.mail.model.Mailbox, org.apache.james.mailbox.SearchQuery)
      */
     @SuppressWarnings("unchecked")
     public Iterator<Long> searchMailbox(Mailbox<Long> mailbox, SearchQuery query) throws MailboxException {

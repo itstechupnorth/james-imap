@@ -16,24 +16,27 @@
  * specific language governing permissions and limitations      *
  * under the License.                                           *
  ****************************************************************/
-
-package org.apache.james.imap.mailbox;
-
-
-import java.util.Iterator;
-
-import org.apache.james.imap.mailbox.MessageResult.FetchGroup;
-import org.apache.james.imap.mailbox.MessageResult.Header;
+package org.apache.james.mailbox;
 
 /**
- * TODO: remove when MessageResult is sorted out
+ * Implementations of this interface are aware of processing requests
+ * 
+ *
  */
-public interface Headers {
+public interface RequestAware {
+
+    
     /**
-     * Gets headers for the message.
+     * Start the processing of a request for the given MailboxSession. If the user is not logged in already then the MailboxSession will be null
      * 
-     * @return <code>Header</code> <code>Iterator</code>, or null if
-     *         {@link FetchGroup#HEADERS} was not fetched
+     * @param session 
      */
-    Iterator<Header> headers() throws MailboxException;
+    public void startProcessingRequest(MailboxSession session);
+    
+    /**
+     * End the processing of a request for the given MailboxSession. If the user is not logged in already then the MailboxSession will be null
+     * 
+     * @param session 
+     */
+    public void endProcessingRequest(MailboxSession session);
 }

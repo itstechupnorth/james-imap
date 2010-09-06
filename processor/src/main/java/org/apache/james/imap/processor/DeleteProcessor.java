@@ -27,12 +27,12 @@ import org.apache.james.imap.api.message.response.StatusResponseFactory;
 import org.apache.james.imap.api.process.ImapProcessor;
 import org.apache.james.imap.api.process.ImapSession;
 import org.apache.james.imap.api.process.SelectedMailbox;
-import org.apache.james.imap.mailbox.MailboxException;
-import org.apache.james.imap.mailbox.MailboxManager;
-import org.apache.james.imap.mailbox.MailboxNotFoundException;
-import org.apache.james.imap.mailbox.MailboxPath;
 import org.apache.james.imap.message.request.DeleteRequest;
 import org.apache.james.imap.processor.base.ImapSessionUtils;
+import org.apache.james.mailbox.MailboxException;
+import org.apache.james.mailbox.MailboxManager;
+import org.apache.james.mailbox.MailboxNotFoundException;
+import org.apache.james.mailbox.MailboxPath;
 
 public class DeleteProcessor extends AbstractMailboxProcessor {
 

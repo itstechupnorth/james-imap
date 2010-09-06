@@ -26,8 +26,8 @@ import java.util.List;
 import javax.mail.Flags;
 import javax.mail.Flags.Flag;
 
-import org.apache.james.imap.mailbox.MailboxPath;
-import org.apache.james.imap.mailbox.MailboxListener.FlagsUpdated;
+import org.apache.james.mailbox.MailboxPath;
+import org.apache.james.mailbox.MailboxListener.FlagsUpdated;
 
 public class FakeMailboxListenerFlagsUpdate extends FlagsUpdated {
 

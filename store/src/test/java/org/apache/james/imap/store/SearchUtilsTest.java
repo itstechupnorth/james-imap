@@ -27,8 +27,8 @@ import java.util.Date;
 
 import javax.mail.Flags;
 
-import org.apache.james.imap.mailbox.SearchQuery;
 import org.apache.james.imap.store.mail.model.MailboxMembership;
+import org.apache.james.mailbox.SearchQuery;
 import org.junit.Before;
 import org.junit.Test;
 

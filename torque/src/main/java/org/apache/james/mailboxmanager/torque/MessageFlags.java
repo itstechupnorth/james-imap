@@ -25,7 +25,7 @@ import java.util.Iterator;
 import javax.mail.Flags;
 import javax.mail.MessagingException;
 
-import org.apache.james.imap.mailbox.MessageResult;
+import org.apache.james.mailbox.MessageResult;
 
 /**
  * Represents the flags for a message.

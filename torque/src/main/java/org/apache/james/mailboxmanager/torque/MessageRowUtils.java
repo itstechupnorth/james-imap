@@ -32,18 +32,18 @@ import java.util.List;
 
 import javax.mail.Flags;
 
-import org.apache.james.imap.mailbox.Content;
-import org.apache.james.imap.mailbox.MailboxException;
-import org.apache.james.imap.mailbox.MessageResult;
-import org.apache.james.imap.mailbox.MimeDescriptor;
-import org.apache.james.imap.mailbox.MessageResult.FetchGroup;
-import org.apache.james.imap.mailbox.MessageResult.MimePath;
-import org.apache.james.imap.mailbox.util.MessageResultImpl;
 import org.apache.james.imap.store.MimeDescriptorImpl;
 import org.apache.james.imap.store.ResultHeader;
 import org.apache.james.imap.store.streaming.ByteContent;
 import org.apache.james.imap.store.streaming.FullByteContent;
 import org.apache.james.imap.store.streaming.PartContentBuilder;
+import org.apache.james.mailbox.Content;
+import org.apache.james.mailbox.MailboxException;
+import org.apache.james.mailbox.MessageResult;
+import org.apache.james.mailbox.MimeDescriptor;
+import org.apache.james.mailbox.MessageResult.FetchGroup;
+import org.apache.james.mailbox.MessageResult.MimePath;
+import org.apache.james.mailbox.util.MessageResultImpl;
 import org.apache.james.mailboxmanager.torque.om.MessageBody;
 import org.apache.james.mailboxmanager.torque.om.MessageHeader;
 import org.apache.james.mailboxmanager.torque.om.MessageRow;

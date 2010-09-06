@@ -17,44 +17,21 @@
  * under the License.                                           *
  ****************************************************************/
 
-package org.apache.james.imap.mailbox;
+package org.apache.james.mailbox;
+
 
 /**
- * Indicates that the failure is caused by a reference to a mailbox which does
- * not exist.
+ * Indicates exception during subscription processing.
  */
-public class MailboxNotFoundException extends MailboxException {
+public class SubscriptionException extends MailboxException {
 
-    private static final long serialVersionUID = -8493370806722264915L;
+    private static final long serialVersionUID = -4512372322774311468L;
 
-
-    private final String mailboxName;
-
-    
-    /**
-     * 
-     * @param mailboxName
-     *            name of the mailbox, not null
-     */
-    public MailboxNotFoundException(String mailboxName) {
-        this.mailboxName = mailboxName;
-    }
-    
-    /**
-     * @param mailboxPath
-     *            name of the mailbox, not null
-     */
-    public MailboxNotFoundException(MailboxPath mailboxPath) {
-        this.mailboxName = mailboxPath.toString();
+    public SubscriptionException() {
+        super();
     }
 
-    /**
-     * Gets the name of the mailbox which cannot be found.
-     * 
-     * @return name or null when only mailbox ID is known
-     */
-    public final String getMailboxName() {
-        return mailboxName;
+    public SubscriptionException(Exception cause) {
+        super(null, cause);
     }
-
 }

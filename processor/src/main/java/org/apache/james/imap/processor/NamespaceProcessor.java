@@ -33,10 +33,10 @@ import org.apache.james.imap.api.process.ImapProcessor;
 import org.apache.james.imap.api.process.ImapSession;
 import org.apache.james.imap.message.request.NamespaceRequest;
 import org.apache.james.imap.message.response.NamespaceResponse;
-import org.apache.james.imap.mailbox.MailboxConstants;
-import org.apache.james.imap.mailbox.MailboxManager;
-import org.apache.james.imap.mailbox.MailboxSession;
 import org.apache.james.imap.processor.base.ImapSessionUtils;
+import org.apache.james.mailbox.MailboxConstants;
+import org.apache.james.mailbox.MailboxManager;
+import org.apache.james.mailbox.MailboxSession;
 
 /**
  * Processes a NAMESPACE command into a suitable set of responses.

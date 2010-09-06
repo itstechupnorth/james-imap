@@ -37,7 +37,6 @@ import org.apache.jackrabbit.JcrConstants;
 import org.apache.jackrabbit.commons.JcrUtils;
 import org.apache.james.imap.jcr.JCRImapConstants;
 import org.apache.james.imap.jcr.Persistent;
-import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.store.mail.model.AbstractMessage;
 import org.apache.james.imap.store.mail.model.Message;
 import org.apache.james.imap.store.mail.model.Header;
@@ -45,6 +44,7 @@ import org.apache.james.imap.store.mail.model.MailboxMembership;
 import org.apache.james.imap.store.mail.model.Property;
 import org.apache.james.imap.store.mail.model.PropertyBuilder;
 import org.apache.james.imap.store.streaming.StreamUtils;
+import org.apache.james.mailbox.MailboxException;
 
 /**
  * JCR implementation of {@link Message}

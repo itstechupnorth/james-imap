@@ -17,18 +17,39 @@
  * under the License.                                           *
  ****************************************************************/
 
-package org.apache.james.imap.mailbox;
+package org.apache.james.mailbox;
+
+import java.io.IOException;
+import java.nio.channels.WritableByteChannel;
+
+import javax.mail.MessagingException;
 
 /**
- * Indicates that an operation required is not supported
- * by this mailbox.
+ * IMAP needs to know the size of the content before it starts to write it
+ * out. This interface allows direct writing whilst exposing total size.
  */
-public class UnsupportedOperationException extends MailboxException {
+public interface Content {
 
-    private static final long serialVersionUID = 1943118588115772317L;
+    /**
+     * Writes content to the given channel.
+     * 
+     * Be aware that this operation may only be called once one the content because its possible dispose
+     * temp data. If you need to write the content more then one time you 
+     * should "re-create" the content
+     * 
+     * @param channel
+     *            <code>Channel</code> open, not null
+     * @throws MailboxException
+     * @throws IOException
+     *             when channel IO fails
+     */
+    public void writeTo(WritableByteChannel channel) throws IOException;
 
-    public UnsupportedOperationException(String message) {
-        super(message);
-    }
-
+    /**
+     * Size (in octets) of the content.
+     * 
+     * @return number of octets to be written
+     * @throws MessagingException
+     */
+    public long size();
 }

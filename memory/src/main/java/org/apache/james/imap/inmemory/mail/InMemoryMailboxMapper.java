@@ -24,12 +24,12 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.james.imap.inmemory.mail.model.InMemoryMailbox;
-import org.apache.james.imap.mailbox.MailboxException;
-import org.apache.james.imap.mailbox.MailboxNotFoundException;
-import org.apache.james.imap.mailbox.MailboxPath;
 import org.apache.james.imap.store.mail.MailboxMapper;
 import org.apache.james.imap.store.mail.model.Mailbox;
 import org.apache.james.imap.store.transaction.NonTransactionalMapper;
+import org.apache.james.mailbox.MailboxException;
+import org.apache.james.mailbox.MailboxNotFoundException;
+import org.apache.james.mailbox.MailboxPath;
 
 public class InMemoryMailboxMapper extends NonTransactionalMapper implements MailboxMapper<Long> {
     

@@ -35,15 +35,15 @@ import org.apache.james.imap.api.message.BodyFetchElement;
 import org.apache.james.imap.api.message.FetchData;
 import org.apache.james.imap.api.process.ImapSession;
 import org.apache.james.imap.api.process.SelectedMailbox;
-import org.apache.james.imap.mailbox.Content;
-import org.apache.james.imap.mailbox.MessageManager;
-import org.apache.james.imap.mailbox.MailboxException;
-import org.apache.james.imap.mailbox.MailboxSession;
-import org.apache.james.imap.mailbox.MessageRange;
-import org.apache.james.imap.mailbox.MessageResult;
-import org.apache.james.imap.mailbox.MimeDescriptor;
 import org.apache.james.imap.message.response.FetchResponse;
 import org.apache.james.imap.processor.base.ImapSessionUtils;
+import org.apache.james.mailbox.Content;
+import org.apache.james.mailbox.MailboxException;
+import org.apache.james.mailbox.MailboxSession;
+import org.apache.james.mailbox.MessageManager;
+import org.apache.james.mailbox.MessageRange;
+import org.apache.james.mailbox.MessageResult;
+import org.apache.james.mailbox.MimeDescriptor;
 import org.apache.james.mime4j.field.address.parser.ParseException;
 
 final class FetchResponseBuilder {

@@ -29,10 +29,10 @@ import javax.mail.MessagingException;
 
 import org.apache.commons.logging.Log;
 import org.apache.james.imap.api.ImapConstants;
-import org.apache.james.imap.mailbox.Headers;
-import org.apache.james.imap.mailbox.MailboxException;
-import org.apache.james.imap.mailbox.MessageResult;
 import org.apache.james.imap.message.response.FetchResponse;
+import org.apache.james.mailbox.Headers;
+import org.apache.james.mailbox.MailboxException;
+import org.apache.james.mailbox.MessageResult;
 import org.apache.james.mime4j.field.address.Address;
 import org.apache.james.mime4j.field.address.AddressList;
 import org.apache.james.mime4j.field.address.DomainList;

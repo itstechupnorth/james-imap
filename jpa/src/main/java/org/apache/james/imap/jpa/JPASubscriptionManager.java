@@ -19,9 +19,9 @@
 package org.apache.james.imap.jpa;
 
 import org.apache.james.imap.jpa.user.model.JPASubscription;
-import org.apache.james.imap.mailbox.MailboxSession;
 import org.apache.james.imap.store.StoreSubscriptionManager;
 import org.apache.james.imap.store.user.model.Subscription;
+import org.apache.james.mailbox.MailboxSession;
 
 /**
  * JPA implementation of {@link StoreSubscriptionManager}
@@ -35,7 +35,7 @@ public class JPASubscriptionManager extends StoreSubscriptionManager<Long> {
     
     /*
      * (non-Javadoc)
-     * @see org.apache.james.imap.store.StoreSubscriptionManager#createSubscription(org.apache.james.imap.mailbox.MailboxSession, java.lang.String)
+     * @see org.apache.james.imap.store.StoreSubscriptionManager#createSubscription(org.apache.james.mailbox.MailboxSession, java.lang.String)
      */
     protected Subscription createSubscription(final MailboxSession session, final String mailbox) {
         final Subscription newSubscription = new JPASubscription(session.getUser().getUserName(), mailbox);

@@ -30,17 +30,17 @@ import org.apache.james.imap.api.message.request.ImapRequest;
 import org.apache.james.imap.api.message.response.StatusResponseFactory;
 import org.apache.james.imap.api.process.ImapProcessor;
 import org.apache.james.imap.api.process.ImapSession;
-import org.apache.james.imap.mailbox.MailboxConstants;
-import org.apache.james.imap.mailbox.MailboxException;
-import org.apache.james.imap.mailbox.MailboxManager;
-import org.apache.james.imap.mailbox.MailboxPath;
-import org.apache.james.imap.mailbox.MailboxQuery;
-import org.apache.james.imap.mailbox.MailboxSession;
-import org.apache.james.imap.mailbox.SubscriptionException;
-import org.apache.james.imap.mailbox.SubscriptionManager;
 import org.apache.james.imap.message.request.LsubRequest;
 import org.apache.james.imap.message.response.LSubResponse;
 import org.apache.james.imap.processor.base.ImapSessionUtils;
+import org.apache.james.mailbox.MailboxConstants;
+import org.apache.james.mailbox.MailboxException;
+import org.apache.james.mailbox.MailboxManager;
+import org.apache.james.mailbox.MailboxPath;
+import org.apache.james.mailbox.MailboxQuery;
+import org.apache.james.mailbox.MailboxSession;
+import org.apache.james.mailbox.SubscriptionException;
+import org.apache.james.mailbox.SubscriptionManager;
 
 public class LSubProcessor extends AbstractSubscriptionProcessor {
 

@@ -34,12 +34,12 @@ import javax.mail.Flags;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.james.imap.mailbox.MailboxException;
-import org.apache.james.imap.mailbox.SearchQuery;
-import org.apache.james.imap.mailbox.UnsupportedSearchException;
-import org.apache.james.imap.mailbox.SearchQuery.NumericRange;
 import org.apache.james.imap.store.mail.model.Header;
 import org.apache.james.imap.store.mail.model.MailboxMembership;
+import org.apache.james.mailbox.MailboxException;
+import org.apache.james.mailbox.SearchQuery;
+import org.apache.james.mailbox.UnsupportedSearchException;
+import org.apache.james.mailbox.SearchQuery.NumericRange;
 import org.apache.james.mime4j.MimeException;
 import org.apache.james.mime4j.field.datetime.DateTime;
 import org.apache.james.mime4j.field.datetime.parser.DateTimeParser;

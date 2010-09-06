@@ -23,7 +23,7 @@ import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.channels.WritableByteChannel;
 
-import org.apache.james.imap.mailbox.Content;
+import org.apache.james.mailbox.Content;
 
 /**
  * {@link Content} which is stored in a {@link InputStream}
@@ -41,7 +41,7 @@ public final class InputStreamContent implements Content{
     
     /*
      * (non-Javadoc)
-     * @see org.apache.james.imap.mailbox.Content#size()
+     * @see org.apache.james.mailbox.Content#size()
      */
     public long size() {
         return size;
@@ -49,7 +49,7 @@ public final class InputStreamContent implements Content{
 
     /*
      * (non-Javadoc)
-     * @see org.apache.james.imap.mailbox.Content#writeTo(java.nio.channels.WritableByteChannel)
+     * @see org.apache.james.mailbox.Content#writeTo(java.nio.channels.WritableByteChannel)
      */
     public void writeTo(WritableByteChannel channel) throws IOException {
         

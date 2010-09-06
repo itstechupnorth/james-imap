@@ -29,12 +29,12 @@ import org.apache.commons.logging.Log;
 import org.apache.james.imap.jcr.mail.model.JCRHeader;
 import org.apache.james.imap.jcr.mail.model.JCRMailbox;
 import org.apache.james.imap.jcr.mail.model.JCRMessage;
-import org.apache.james.imap.mailbox.MailboxException;
-import org.apache.james.imap.mailbox.util.MailboxEventDispatcher;
 import org.apache.james.imap.store.MapperStoreMessageManager;
 import org.apache.james.imap.store.mail.model.Header;
 import org.apache.james.imap.store.mail.model.MailboxMembership;
 import org.apache.james.imap.store.mail.model.PropertyBuilder;
+import org.apache.james.mailbox.MailboxException;
+import org.apache.james.mailbox.util.MailboxEventDispatcher;
 
 /**
  * JCR implementation of a {@link MapperStoreMessageManager}

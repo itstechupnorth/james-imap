@@ -18,8 +18,8 @@
  ****************************************************************/
 package org.apache.james.imap.inmemory.user.model;
 
-import org.apache.james.imap.mailbox.MailboxSession.User;
 import org.apache.james.imap.store.user.model.Subscription;
+import org.apache.james.mailbox.MailboxSession.User;
 
 public class InMemorySubscription implements Subscription {
 

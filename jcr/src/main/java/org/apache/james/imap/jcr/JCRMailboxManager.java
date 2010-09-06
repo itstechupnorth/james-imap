@@ -22,15 +22,15 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.james.imap.jcr.mail.JCRMailboxMapper;
 import org.apache.james.imap.jcr.mail.model.JCRMailbox;
-import org.apache.james.imap.mailbox.MailboxException;
-import org.apache.james.imap.mailbox.MailboxPath;
-import org.apache.james.imap.mailbox.MailboxSession;
-import org.apache.james.imap.mailbox.util.MailboxEventDispatcher;
 import org.apache.james.imap.store.Authenticator;
 import org.apache.james.imap.store.StoreMailboxManager;
 import org.apache.james.imap.store.MapperStoreMessageManager;
 import org.apache.james.imap.store.mail.model.Mailbox;
 import org.apache.james.imap.store.transaction.Mapper;
+import org.apache.james.mailbox.MailboxException;
+import org.apache.james.mailbox.MailboxPath;
+import org.apache.james.mailbox.MailboxSession;
+import org.apache.james.mailbox.util.MailboxEventDispatcher;
 
 /**
  * JCR implementation of a MailboxManager

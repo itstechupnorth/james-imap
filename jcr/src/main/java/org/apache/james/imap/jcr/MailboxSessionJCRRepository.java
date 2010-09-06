@@ -23,8 +23,8 @@ import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.SimpleCredentials;
 
-import org.apache.james.imap.mailbox.MailboxSession;
-import org.apache.james.imap.mailbox.MailboxSession.User;
+import org.apache.james.mailbox.MailboxSession;
+import org.apache.james.mailbox.MailboxSession.User;
 
 /**
  * Manage JCR {@link Session}. It use the username and the password of 

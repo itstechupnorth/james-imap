@@ -22,12 +22,12 @@ package org.apache.james.imap.processor.main;
 import org.apache.james.imap.api.message.response.StatusResponseFactory;
 import org.apache.james.imap.api.process.ImapProcessor;
 import org.apache.james.imap.api.process.ImapProcessorFactory;
-import org.apache.james.imap.mailbox.MailboxManager;
-import org.apache.james.imap.mailbox.SubscriptionManager;
 import org.apache.james.imap.message.response.UnpooledStatusResponseFactory;
 import org.apache.james.imap.processor.DefaultProcessorChain;
 import org.apache.james.imap.processor.base.ImapResponseMessageProcessor;
 import org.apache.james.imap.processor.base.UnknownRequestProcessor;
+import org.apache.james.mailbox.MailboxManager;
+import org.apache.james.mailbox.SubscriptionManager;
 
 /**
  * 

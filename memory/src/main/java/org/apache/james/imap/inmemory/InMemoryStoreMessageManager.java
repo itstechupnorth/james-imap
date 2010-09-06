@@ -29,13 +29,13 @@ import javax.mail.Flags;
 import org.apache.james.imap.inmemory.mail.model.InMemoryMailbox;
 import org.apache.james.imap.inmemory.mail.model.SimpleHeader;
 import org.apache.james.imap.inmemory.mail.model.SimpleMailboxMembership;
-import org.apache.james.imap.mailbox.MailboxException;
-import org.apache.james.imap.mailbox.util.MailboxEventDispatcher;
 import org.apache.james.imap.store.MailboxSessionMapperFactory;
 import org.apache.james.imap.store.MapperStoreMessageManager;
 import org.apache.james.imap.store.mail.model.Header;
 import org.apache.james.imap.store.mail.model.MailboxMembership;
 import org.apache.james.imap.store.mail.model.PropertyBuilder;
+import org.apache.james.mailbox.MailboxException;
+import org.apache.james.mailbox.util.MailboxEventDispatcher;
 
 public class InMemoryStoreMessageManager extends MapperStoreMessageManager<Long> {
 

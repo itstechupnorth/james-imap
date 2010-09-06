@@ -16,40 +16,47 @@
  * specific language governing permissions and limitations      *
  * under the License.                                           *
  ****************************************************************/
+package org.apache.james.mailbox;
 
-package org.apache.james.imap.mailbox;
-
-import java.io.IOException;
-import java.nio.channels.WritableByteChannel;
-
-import javax.mail.MessagingException;
+import java.util.Comparator;
 
 /**
- * IMAP needs to know the size of the content before it starts to write it
- * out. This interface allows direct writing whilst exposing total size.
+ * Orders by name with INBOX first.
  */
-public interface Content {
+public class StandardMailboxMetaDataComparator implements
+        Comparator<MailboxMetaData> {
 
     /**
-     * Writes content to the given channel.
-     * 
-     * Be aware that this operation may only be called once one the content because its possible dispose
-     * temp data. If you need to write the content more then one time you 
-     * should "re-create" the content
-     * 
-     * @param channel
-     *            <code>Channel</code> open, not null
-     * @throws MailboxException
-     * @throws IOException
-     *             when channel IO fails
+     * Static comparison.
+     * @param one possibly null
+     * @param two possibly null
+     * @return {@link Comparator#compare(Object, Object)}
      */
-    public void writeTo(WritableByteChannel channel) throws IOException;
+    public static int order(MailboxMetaData one, MailboxMetaData two) {
+        final String nameTwo = two.getPath().getName();
+        final int result;
+        final String nameOne = one.getPath().getName();
+        if (INBOX.equals(nameOne)) {
+            result = INBOX.equals(nameTwo) ? 0 : -1;
+        } else if (INBOX.equals(nameTwo)) {
+            result = 1;
+        } else if (nameOne == null) {
+            result = nameTwo == null ? 0 : 1;
+        } else if (nameTwo == null) {
+            result = -1;
+        } else {
+            result = nameOne.compareTo(nameTwo);
+        }
+        return result;
+    }
+    
+    private static final String INBOX = "INBOX";
 
     /**
-     * Size (in octets) of the content.
-     * 
-     * @return number of octets to be written
-     * @throws MessagingException
+     * @see Comparator#compare(Object, Object)
      */
-    public long size();
+    public int compare(MailboxMetaData one, MailboxMetaData two) {
+        return order(one, two);
+    }
+
 }

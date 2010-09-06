@@ -27,8 +27,8 @@ import java.util.TreeSet;
 
 import javax.mail.Flags;
 
-import org.apache.james.imap.mailbox.MailboxListener;
-import org.apache.james.imap.mailbox.MailboxPath;
+import org.apache.james.mailbox.MailboxListener;
+import org.apache.james.mailbox.MailboxPath;
 
 /**
  * {@link MailboxListener} implementation which will listen for {@link Event} notifications and 
@@ -79,7 +79,7 @@ public class MailboxEventAnalyser implements MailboxListener {
      * Handle the given {@link Event} if it was fired for the mailbox we are observing
      * 
      * (non-Javadoc)
-     * @see org.apache.james.imap.mailbox.MailboxListener#event(org.apache.james.imap.mailbox.MailboxListener.Event)
+     * @see org.apache.james.mailbox.MailboxListener#event(org.apache.james.mailbox.MailboxListener.Event)
      */
     public void event(Event event) {
 
@@ -216,7 +216,7 @@ public class MailboxEventAnalyser implements MailboxListener {
     
     /*
      * (non-Javadoc)
-     * @see org.apache.james.imap.mailbox.MailboxListener#isClosed()
+     * @see org.apache.james.mailbox.MailboxListener#isClosed()
      */
     public boolean isClosed() {
         return closed;

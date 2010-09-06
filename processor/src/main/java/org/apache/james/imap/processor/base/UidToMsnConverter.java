@@ -25,7 +25,7 @@ import java.util.List;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
-import org.apache.james.imap.mailbox.MailboxListener;
+import org.apache.james.mailbox.MailboxListener;
 
 //TODO: This is a major memory hog
 //TODO: Each concurrent session requires one, and typical clients now open many
@@ -121,7 +121,7 @@ public class UidToMsnConverter implements MailboxListener {
     }
 
     /**
-     * @see org.apache.james.imap.mailbox.MailboxListener#event(org.apache.james.imap.mailbox.MailboxListener.Event)
+     * @see org.apache.james.mailbox.MailboxListener#event(org.apache.james.mailbox.MailboxListener.Event)
      */
     public void event(Event event) {
         if (event instanceof MessageEvent) {
@@ -139,7 +139,7 @@ public class UidToMsnConverter implements MailboxListener {
     
     /*
      * (non-Javadoc)
-     * @see org.apache.james.imap.mailbox.MailboxListener#isClosed()
+     * @see org.apache.james.mailbox.MailboxListener#isClosed()
      */
     public boolean isClosed() {
         return closed;

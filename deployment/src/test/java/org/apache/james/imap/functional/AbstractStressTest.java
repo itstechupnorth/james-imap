@@ -28,12 +28,12 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import javax.mail.Flags;
 
 import org.apache.commons.logging.impl.SimpleLog;
-import org.apache.james.imap.mailbox.MailboxPath;
-import org.apache.james.imap.mailbox.MessageManager;
-import org.apache.james.imap.mailbox.MailboxConstants;
-import org.apache.james.imap.mailbox.MailboxException;
-import org.apache.james.imap.mailbox.MailboxSession;
 import org.apache.james.imap.store.StoreMailboxManager;
+import org.apache.james.mailbox.MailboxConstants;
+import org.apache.james.mailbox.MailboxException;
+import org.apache.james.mailbox.MailboxPath;
+import org.apache.james.mailbox.MailboxSession;
+import org.apache.james.mailbox.MessageManager;
 import org.junit.Test;
 
 public abstract class AbstractStressTest {

@@ -26,10 +26,10 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import org.apache.james.imap.api.process.SelectedMailbox;
-import org.apache.james.imap.mailbox.MailboxException;
-import org.apache.james.imap.mailbox.MailboxManager;
-import org.apache.james.imap.mailbox.MailboxPath;
-import org.apache.james.imap.mailbox.MailboxSession;
+import org.apache.james.mailbox.MailboxException;
+import org.apache.james.mailbox.MailboxManager;
+import org.apache.james.mailbox.MailboxPath;
+import org.apache.james.mailbox.MailboxSession;
 
 /**
  * Default implementation of {@link SelectedMailbox}

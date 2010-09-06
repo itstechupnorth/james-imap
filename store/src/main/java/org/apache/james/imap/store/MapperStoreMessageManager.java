@@ -28,20 +28,20 @@ import java.util.TreeSet;
 import javax.mail.Flags;
 import javax.mail.MessagingException;
 
-import org.apache.james.imap.mailbox.MailboxException;
-import org.apache.james.imap.mailbox.MailboxSession;
-import org.apache.james.imap.mailbox.MessageRange;
-import org.apache.james.imap.mailbox.MessageResult;
-import org.apache.james.imap.mailbox.SearchQuery;
-import org.apache.james.imap.mailbox.MessageResult.FetchGroup;
-import org.apache.james.imap.mailbox.util.MailboxEventDispatcher;
 import org.apache.james.imap.store.mail.MessageMapper;
 import org.apache.james.imap.store.mail.model.Mailbox;
 import org.apache.james.imap.store.mail.model.MailboxMembership;
 import org.apache.james.imap.store.transaction.Mapper;
+import org.apache.james.mailbox.MailboxException;
+import org.apache.james.mailbox.MailboxSession;
+import org.apache.james.mailbox.MessageRange;
+import org.apache.james.mailbox.MessageResult;
+import org.apache.james.mailbox.SearchQuery;
+import org.apache.james.mailbox.MessageResult.FetchGroup;
+import org.apache.james.mailbox.util.MailboxEventDispatcher;
 
 /**
- * Abstract base class for {@link org.apache.james.imap.mailbox.MessageManager} implementations.
+ * Abstract base class for {@link org.apache.james.mailbox.MessageManager} implementations.
  * 
  * This class provides a high-level api, and is most times the best to just extend
  * 
@@ -74,7 +74,7 @@ public abstract class MapperStoreMessageManager<Id> extends StoreMessageManager<
 
     /*
      * (non-Javadoc)
-     * @see org.apache.james.imap.mailbox.Mailbox#getMessageCount(org.apache.james.imap.mailbox.MailboxSession)
+     * @see org.apache.james.mailbox.Mailbox#getMessageCount(org.apache.james.mailbox.MailboxSession)
      */
     public long getMessageCount(MailboxSession mailboxSession) throws MailboxException {
         return mapperFactory.getMessageMapper(mailboxSession).countMessagesInMailbox(getMailboxEntity());
@@ -85,7 +85,7 @@ public abstract class MapperStoreMessageManager<Id> extends StoreMessageManager<
 
     /*
      * (non-Javadoc)
-     * @see org.apache.james.imap.mailbox.Mailbox#getMessages(org.apache.james.imap.mailbox.MessageRange, org.apache.james.imap.mailbox.MessageResult.FetchGroup, org.apache.james.imap.mailbox.MailboxSession)
+     * @see org.apache.james.mailbox.Mailbox#getMessages(org.apache.james.mailbox.MessageRange, org.apache.james.mailbox.MessageResult.FetchGroup, org.apache.james.mailbox.MailboxSession)
      */
     public Iterator<MessageResult> getMessages(final MessageRange set, FetchGroup fetchGroup,
             MailboxSession mailboxSession) throws MailboxException {
@@ -151,7 +151,7 @@ public abstract class MapperStoreMessageManager<Id> extends StoreMessageManager<
     
     /*
      * (non-Javadoc)
-     * @see org.apache.james.imap.store.AbstractStoreMessageManager#updateFlags(javax.mail.Flags, boolean, boolean, org.apache.james.imap.mailbox.MessageRange, org.apache.james.imap.mailbox.MailboxSession)
+     * @see org.apache.james.imap.store.AbstractStoreMessageManager#updateFlags(javax.mail.Flags, boolean, boolean, org.apache.james.mailbox.MessageRange, org.apache.james.mailbox.MailboxSession)
      */
     public Iterator<UpdatedFlag> updateFlags(final Flags flags, final boolean value, final boolean replace,
             final MessageRange set, MailboxSession mailboxSession) throws MailboxException {
@@ -193,7 +193,7 @@ public abstract class MapperStoreMessageManager<Id> extends StoreMessageManager<
 
     /*
      * (non-Javadoc)
-     * @see org.apache.james.imap.mailbox.Mailbox#search(org.apache.james.imap.mailbox.SearchQuery, org.apache.james.imap.mailbox.MailboxSession)
+     * @see org.apache.james.mailbox.Mailbox#search(org.apache.james.mailbox.SearchQuery, org.apache.james.mailbox.MailboxSession)
      */
     public Iterator<Long> search(SearchQuery query, MailboxSession mailboxSession) throws MailboxException {
         return mapperFactory.getMessageMapper(mailboxSession).searchMailbox(getMailboxEntity(), query);    
@@ -224,7 +224,7 @@ public abstract class MapperStoreMessageManager<Id> extends StoreMessageManager<
     
     /*
      * (non-Javadoc)
-     * @see org.apache.james.imap.store.AbstractStoreMessageManager#copy(org.apache.james.imap.mailbox.MessageRange, org.apache.james.imap.store.AbstractStoreMessageManager, org.apache.james.imap.mailbox.MailboxSession)
+     * @see org.apache.james.imap.store.AbstractStoreMessageManager#copy(org.apache.james.mailbox.MessageRange, org.apache.james.imap.store.AbstractStoreMessageManager, org.apache.james.mailbox.MailboxSession)
      */
     protected Iterator<Long> copy(MessageRange set, StoreMessageManager<Id> toMailbox, MailboxSession session) throws MailboxException {
         MapperStoreMessageManager<Id> to = (MapperStoreMessageManager<Id>) toMailbox;
@@ -242,7 +242,7 @@ public abstract class MapperStoreMessageManager<Id> extends StoreMessageManager<
 
     /*
      * (non-Javadoc)
-     * @see org.apache.james.imap.store.AbstractStoreMessageManager#countUnseenMessagesInMailbox(org.apache.james.imap.mailbox.MailboxSession)
+     * @see org.apache.james.imap.store.AbstractStoreMessageManager#countUnseenMessagesInMailbox(org.apache.james.mailbox.MailboxSession)
      */
     protected long countUnseenMessagesInMailbox(MailboxSession session) throws MailboxException {
         MessageMapper<Id> messageMapper = mapperFactory.getMessageMapper(session);
@@ -253,7 +253,7 @@ public abstract class MapperStoreMessageManager<Id> extends StoreMessageManager<
 
     /*
      * (non-Javadoc)
-     * @see org.apache.james.imap.store.AbstractStoreMessageManager#findFirstUnseenMessageUid(org.apache.james.imap.mailbox.MailboxSession)
+     * @see org.apache.james.imap.store.AbstractStoreMessageManager#findFirstUnseenMessageUid(org.apache.james.mailbox.MailboxSession)
      */
     protected Long findFirstUnseenMessageUid(MailboxSession session) throws MailboxException{
         MessageMapper<Id> messageMapper = mapperFactory.getMessageMapper(session);

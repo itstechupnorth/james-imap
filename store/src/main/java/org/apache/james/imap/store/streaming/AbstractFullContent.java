@@ -24,10 +24,10 @@ import java.nio.channels.WritableByteChannel;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.james.imap.mailbox.Content;
-import org.apache.james.imap.mailbox.MessageResult;
-import org.apache.james.imap.mailbox.MessageResult.Header;
 import org.apache.james.imap.store.ResultUtils;
+import org.apache.james.mailbox.Content;
+import org.apache.james.mailbox.MessageResult;
+import org.apache.james.mailbox.MessageResult.Header;
 
 /**
  * Abstract base class for {@link Content} implementations which hold the headers and 
@@ -59,7 +59,7 @@ public abstract class AbstractFullContent implements Content {
 
     /*
      * (non-Javadoc)
-     * @see org.apache.james.imap.mailbox.Content#writeTo(java.nio.channels.WritableByteChannel)
+     * @see org.apache.james.mailbox.Content#writeTo(java.nio.channels.WritableByteChannel)
      */
     public final void writeTo(WritableByteChannel channel) throws IOException {
         ByteBuffer newLine = ByteBuffer.wrap(ResultUtils.BYTES_NEW_LINE);

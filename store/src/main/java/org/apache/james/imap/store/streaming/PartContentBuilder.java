@@ -26,10 +26,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.james.imap.mailbox.Content;
-import org.apache.james.imap.mailbox.MessageResult;
-import org.apache.james.imap.mailbox.MessageResult.Header;
 import org.apache.james.imap.store.ResultHeader;
+import org.apache.james.mailbox.Content;
+import org.apache.james.mailbox.MessageResult;
+import org.apache.james.mailbox.MessageResult.Header;
 import org.apache.james.mime4j.MimeException;
 import org.apache.james.mime4j.parser.MimeEntityConfig;
 import org.apache.james.mime4j.parser.MimeTokenStream;

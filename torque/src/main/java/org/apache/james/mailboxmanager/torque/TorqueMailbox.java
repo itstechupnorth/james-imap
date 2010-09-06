@@ -45,22 +45,22 @@ import javax.mail.Flags;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 
-import org.apache.james.imap.mailbox.MailboxNotFoundException;
-import org.apache.james.imap.mailbox.MailboxPath;
-import org.apache.james.imap.mailbox.MessageManager;
-import org.apache.james.imap.mailbox.MailboxConstants;
-import org.apache.james.imap.mailbox.MailboxException;
-import org.apache.james.imap.mailbox.MailboxListener;
-import org.apache.james.imap.mailbox.MailboxSession;
-import org.apache.james.imap.mailbox.MessageRange;
-import org.apache.james.imap.mailbox.MessageResult;
-import org.apache.james.imap.mailbox.SearchQuery;
-import org.apache.james.imap.mailbox.MessageResult.FetchGroup;
-import org.apache.james.imap.mailbox.SearchQuery.Criterion;
-import org.apache.james.imap.mailbox.SearchQuery.NumericRange;
-import org.apache.james.imap.mailbox.util.FetchGroupImpl;
 import org.apache.james.imap.store.MailboxMetaData;
 import org.apache.james.imap.store.streaming.CRLFOutputStream;
+import org.apache.james.mailbox.MailboxConstants;
+import org.apache.james.mailbox.MailboxException;
+import org.apache.james.mailbox.MailboxListener;
+import org.apache.james.mailbox.MailboxNotFoundException;
+import org.apache.james.mailbox.MailboxPath;
+import org.apache.james.mailbox.MailboxSession;
+import org.apache.james.mailbox.MessageManager;
+import org.apache.james.mailbox.MessageRange;
+import org.apache.james.mailbox.MessageResult;
+import org.apache.james.mailbox.SearchQuery;
+import org.apache.james.mailbox.MessageResult.FetchGroup;
+import org.apache.james.mailbox.SearchQuery.Criterion;
+import org.apache.james.mailbox.SearchQuery.NumericRange;
+import org.apache.james.mailbox.util.FetchGroupImpl;
 import org.apache.james.mailboxmanager.torque.om.MailboxRow;
 import org.apache.james.mailboxmanager.torque.om.MailboxRowPeer;
 import org.apache.james.mailboxmanager.torque.om.MessageBody;
@@ -704,7 +704,7 @@ public class TorqueMailbox implements MessageManager {
 
     /*
      * (non-Javadoc)
-     * @see org.apache.james.imap.mailbox.Mailbox#isWriteable(org.apache.james.imap.mailbox.MailboxSession)
+     * @see org.apache.james.mailbox.Mailbox#isWriteable(org.apache.james.mailbox.MailboxSession)
      */
     public boolean isWriteable(MailboxSession session) {
         return true;
@@ -819,7 +819,7 @@ public class TorqueMailbox implements MessageManager {
 
     }
     /**
-     * @see org.apache.james.imap.mailbox.MessageManager#getMetaData(boolean, MailboxSession, org.apache.james.imap.mailbox.MessageManager.MetaData.FetchGroup)
+     * @see org.apache.james.mailbox.MessageManager#getMetaData(boolean, MailboxSession, org.apache.james.mailbox.MessageManager.MetaData.FetchGroup)
      */
     public MetaData getMetaData(boolean resetRecent, MailboxSession mailboxSession, MessageManager.MetaData.FetchGroup fetchGroup) throws MailboxException {
         final List<Long> recent = recent(resetRecent, mailboxSession);

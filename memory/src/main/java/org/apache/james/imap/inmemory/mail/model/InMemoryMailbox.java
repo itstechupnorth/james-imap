@@ -21,8 +21,8 @@ package org.apache.james.imap.inmemory.mail.model;
 
 import java.util.concurrent.atomic.AtomicLong;
 
-import org.apache.james.imap.mailbox.MailboxPath;
 import org.apache.james.imap.store.mail.model.Mailbox;
+import org.apache.james.mailbox.MailboxPath;
 
 /**
  * Mailbox data which is stored only in memory.

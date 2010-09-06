@@ -23,12 +23,12 @@ import org.apache.commons.logging.Log;
 import org.apache.james.imap.api.ImapMessage;
 import org.apache.james.imap.api.process.ImapProcessor;
 import org.apache.james.imap.api.process.ImapSession;
-import org.apache.james.imap.mailbox.MailboxException;
-import org.apache.james.imap.mailbox.MailboxManager;
-import org.apache.james.imap.mailbox.MailboxSession;
 import org.apache.james.imap.message.request.SystemMessage;
 import org.apache.james.imap.processor.base.AbstractChainedProcessor;
 import org.apache.james.imap.processor.base.ImapSessionUtils;
+import org.apache.james.mailbox.MailboxException;
+import org.apache.james.mailbox.MailboxManager;
+import org.apache.james.mailbox.MailboxSession;
 
 /**
  * Processes system messages unrelated to IMAP.

@@ -17,7 +17,7 @@
  * under the License.                                           *
  ****************************************************************/
 
-package org.apache.james.imap.mailbox;
+package org.apache.james.mailbox;
 
 import java.util.Collection;
 import java.util.List;

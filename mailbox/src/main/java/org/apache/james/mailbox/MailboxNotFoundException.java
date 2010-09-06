@@ -17,32 +17,44 @@
  * under the License.                                           *
  ****************************************************************/
 
-package org.apache.james.imap.mailbox;
+package org.apache.james.mailbox;
 
 /**
- * Indicates that the operation failed since the mailbox already exists.
+ * Indicates that the failure is caused by a reference to a mailbox which does
+ * not exist.
  */
-public class MailboxExistsException extends MailboxException {
+public class MailboxNotFoundException extends MailboxException {
 
-    private static final long serialVersionUID = -486951759505030166L;
+    private static final long serialVersionUID = -8493370806722264915L;
+
 
     private final String mailboxName;
 
-    public MailboxExistsException(String mailboxName) {
-        super();
+    
+    /**
+     * 
+     * @param mailboxName
+     *            name of the mailbox, not null
+     */
+    public MailboxNotFoundException(String mailboxName) {
         this.mailboxName = mailboxName;
+    }
+    
+    /**
+     * @param mailboxPath
+     *            name of the mailbox, not null
+     */
+    public MailboxNotFoundException(MailboxPath mailboxPath) {
+        this.mailboxName = mailboxPath.toString();
     }
 
     /**
-     * Gets the name of the mailbox which alredy exists.
+     * Gets the name of the mailbox which cannot be found.
      * 
-     * @return the mailboxName, not null
+     * @return name or null when only mailbox ID is known
      */
     public final String getMailboxName() {
         return mailboxName;
     }
 
-    public String toString() {
-        return getMessage();
-    }
 }

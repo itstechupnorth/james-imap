@@ -29,25 +29,25 @@ import javax.mail.Flags;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.james.imap.mailbox.BadCredentialsException;
-import org.apache.james.imap.mailbox.MailboxConstants;
-import org.apache.james.imap.mailbox.MailboxException;
-import org.apache.james.imap.mailbox.MailboxExistsException;
-import org.apache.james.imap.mailbox.MailboxListener;
-import org.apache.james.imap.mailbox.MailboxManager;
-import org.apache.james.imap.mailbox.MailboxMetaData;
-import org.apache.james.imap.mailbox.MailboxNotFoundException;
-import org.apache.james.imap.mailbox.MailboxPath;
-import org.apache.james.imap.mailbox.MailboxQuery;
-import org.apache.james.imap.mailbox.MailboxSession;
-import org.apache.james.imap.mailbox.MessageRange;
-import org.apache.james.imap.mailbox.StandardMailboxMetaDataComparator;
-import org.apache.james.imap.mailbox.MailboxMetaData.Selectability;
-import org.apache.james.imap.mailbox.util.MailboxEventDispatcher;
-import org.apache.james.imap.mailbox.util.SimpleMailboxMetaData;
 import org.apache.james.imap.store.mail.MailboxMapper;
 import org.apache.james.imap.store.mail.model.Mailbox;
 import org.apache.james.imap.store.transaction.Mapper;
+import org.apache.james.mailbox.BadCredentialsException;
+import org.apache.james.mailbox.MailboxConstants;
+import org.apache.james.mailbox.MailboxException;
+import org.apache.james.mailbox.MailboxExistsException;
+import org.apache.james.mailbox.MailboxListener;
+import org.apache.james.mailbox.MailboxManager;
+import org.apache.james.mailbox.MailboxMetaData;
+import org.apache.james.mailbox.MailboxNotFoundException;
+import org.apache.james.mailbox.MailboxPath;
+import org.apache.james.mailbox.MailboxQuery;
+import org.apache.james.mailbox.MailboxSession;
+import org.apache.james.mailbox.MessageRange;
+import org.apache.james.mailbox.StandardMailboxMetaDataComparator;
+import org.apache.james.mailbox.MailboxMetaData.Selectability;
+import org.apache.james.mailbox.util.MailboxEventDispatcher;
+import org.apache.james.mailbox.util.SimpleMailboxMetaData;
 
 /**
  * This abstract base class of an {@link MailboxManager} implementation provides a high-level api for writing your own
@@ -100,7 +100,7 @@ public abstract class StoreMailboxManager<Id> implements MailboxManager {
     
     /*
      * (non-Javadoc)
-     * @see org.apache.james.imap.mailbox.MailboxManager#createSystemSession(java.lang.String, org.apache.commons.logging.Log)
+     * @see org.apache.james.mailbox.MailboxManager#createSystemSession(java.lang.String, org.apache.commons.logging.Log)
      */
     public MailboxSession createSystemSession(String userName, Log log) {
         return createSession(userName, null, log);
@@ -128,7 +128,7 @@ public abstract class StoreMailboxManager<Id> implements MailboxManager {
     
     /*
      * (non-Javadoc)
-     * @see org.apache.james.imap.mailbox.MailboxManager#getDelimiter()
+     * @see org.apache.james.mailbox.MailboxManager#getDelimiter()
      */
     public final char getDelimiter() {
         return MailboxConstants.DEFAULT_DELIMITER;
@@ -147,7 +147,7 @@ public abstract class StoreMailboxManager<Id> implements MailboxManager {
     
     /*
      * (non-Javadoc)
-     * @see org.apache.james.imap.mailbox.MailboxManager#login(java.lang.String, java.lang.String, org.apache.commons.logging.Log)
+     * @see org.apache.james.mailbox.MailboxManager#login(java.lang.String, java.lang.String, org.apache.commons.logging.Log)
      */
     public MailboxSession login(String userid, String passwd, Log log) throws BadCredentialsException, MailboxException {
         if (login(userid, passwd)) {
@@ -182,9 +182,9 @@ public abstract class StoreMailboxManager<Id> implements MailboxManager {
     
     /*
      * (non-Javadoc)
-     * @see org.apache.james.imap.mailbox.MailboxManager#getMailbox(org.apache.james.imap.api.MailboxPath, org.apache.james.imap.mailbox.MailboxSession)
+     * @see org.apache.james.mailbox.MailboxManager#getMailbox(org.apache.james.imap.api.MailboxPath, org.apache.james.mailbox.MailboxSession)
      */
-    public org.apache.james.imap.mailbox.MessageManager getMailbox(MailboxPath mailboxPath, MailboxSession session)
+    public org.apache.james.mailbox.MessageManager getMailbox(MailboxPath mailboxPath, MailboxSession session)
     throws MailboxException {
     	final MailboxMapper<Id> mapper = mailboxSessionMapperFactory.getMailboxMapper(session);
         Mailbox<Id> mailboxRow = mapper.findMailboxByPath(mailboxPath);
@@ -202,7 +202,7 @@ public abstract class StoreMailboxManager<Id> implements MailboxManager {
 
     /*
      * (non-Javadoc)
-     * @see org.apache.james.imap.mailbox.MailboxManager#createMailbox(org.apache.james.imap.api.MailboxPath, org.apache.james.imap.mailbox.MailboxSession)
+     * @see org.apache.james.mailbox.MailboxManager#createMailbox(org.apache.james.imap.api.MailboxPath, org.apache.james.mailbox.MailboxSession)
      */
     public void createMailbox(MailboxPath mailboxPath, MailboxSession mailboxSession)
     throws MailboxException {
@@ -232,7 +232,7 @@ public abstract class StoreMailboxManager<Id> implements MailboxManager {
 
     /*
      * (non-Javadoc)
-     * @see org.apache.james.imap.mailbox.MailboxManager#deleteMailbox(org.apache.james.imap.api.MailboxPath, org.apache.james.imap.mailbox.MailboxSession)
+     * @see org.apache.james.mailbox.MailboxManager#deleteMailbox(org.apache.james.imap.api.MailboxPath, org.apache.james.mailbox.MailboxSession)
      */
     public void deleteMailbox(final MailboxPath mailboxPath, final MailboxSession session) throws MailboxException {
         session.getLog().info("deleteMailbox " + mailboxPath);
@@ -256,7 +256,7 @@ public abstract class StoreMailboxManager<Id> implements MailboxManager {
 
     /*
      * (non-Javadoc)
-     * @see org.apache.james.imap.mailbox.MailboxManager#renameMailbox(org.apache.james.imap.api.MailboxPath, org.apache.james.imap.api.MailboxPath, org.apache.james.imap.mailbox.MailboxSession)
+     * @see org.apache.james.mailbox.MailboxManager#renameMailbox(org.apache.james.imap.api.MailboxPath, org.apache.james.imap.api.MailboxPath, org.apache.james.mailbox.MailboxSession)
      */
     public void renameMailbox(final MailboxPath from, final MailboxPath to, final MailboxSession session) throws MailboxException {
         final Log log = getLog();
@@ -316,7 +316,7 @@ public abstract class StoreMailboxManager<Id> implements MailboxManager {
                             }
                             copyMessages(range, fromPath, toPath, session);
                             
-                            org.apache.james.imap.mailbox.MessageManager inbox = getMailbox(fromPath, session);
+                            org.apache.james.mailbox.MessageManager inbox = getMailbox(fromPath, session);
                             inbox.setFlags(new Flags(Flags.Flag.DELETED), true, false, range, session);
                             inbox.expunge(range, session);
                             
@@ -338,7 +338,7 @@ public abstract class StoreMailboxManager<Id> implements MailboxManager {
 
     /*
      * (non-Javadoc)
-     * @see org.apache.james.imap.mailbox.MailboxManager#copyMessages(org.apache.james.imap.mailbox.MessageRange, org.apache.james.imap.api.MailboxPath, org.apache.james.imap.api.MailboxPath, org.apache.james.imap.mailbox.MailboxSession)
+     * @see org.apache.james.mailbox.MailboxManager#copyMessages(org.apache.james.mailbox.MessageRange, org.apache.james.imap.api.MailboxPath, org.apache.james.imap.api.MailboxPath, org.apache.james.mailbox.MailboxSession)
      */
     @SuppressWarnings("unchecked")
 	public void copyMessages(MessageRange set, MailboxPath from, MailboxPath to, MailboxSession session) throws MailboxException {
@@ -350,7 +350,7 @@ public abstract class StoreMailboxManager<Id> implements MailboxManager {
 
     /*
      * (non-Javadoc)
-     * @see org.apache.james.imap.mailbox.MailboxManager#search(org.apache.james.imap.mailbox.MailboxQuery, org.apache.james.imap.mailbox.MailboxSession)
+     * @see org.apache.james.mailbox.MailboxManager#search(org.apache.james.mailbox.MailboxQuery, org.apache.james.mailbox.MailboxSession)
      */
     public List<MailboxMetaData> search(final MailboxQuery mailboxExpression, MailboxSession session)
     throws MailboxException {
@@ -393,7 +393,7 @@ public abstract class StoreMailboxManager<Id> implements MailboxManager {
 
     /*
      * (non-Javadoc)
-     * @see org.apache.james.imap.mailbox.MailboxManager#mailboxExists(org.apache.james.imap.api.MailboxPath, org.apache.james.imap.mailbox.MailboxSession)
+     * @see org.apache.james.mailbox.MailboxManager#mailboxExists(org.apache.james.imap.api.MailboxPath, org.apache.james.mailbox.MailboxSession)
      */
     public boolean mailboxExists(MailboxPath mailboxPath, MailboxSession session) throws MailboxException {
         try {
@@ -409,7 +409,7 @@ public abstract class StoreMailboxManager<Id> implements MailboxManager {
 
     /*
      * (non-Javadoc)
-     * @see org.apache.james.imap.mailbox.MailboxManager#addListener(org.apache.james.imap.api.MailboxPath, org.apache.james.imap.mailbox.MailboxListener, org.apache.james.imap.mailbox.MailboxSession)
+     * @see org.apache.james.mailbox.MailboxManager#addListener(org.apache.james.imap.api.MailboxPath, org.apache.james.mailbox.MailboxListener, org.apache.james.mailbox.MailboxSession)
      */
     public void addListener(MailboxPath path, MailboxListener listener, MailboxSession session) throws MailboxException {
         delegatingListener.addListener(path, listener);

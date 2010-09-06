@@ -23,7 +23,7 @@ import javax.jcr.RepositoryException;
 
 import org.apache.commons.logging.Log;
 import org.apache.jackrabbit.commons.JcrUtils;
-import org.apache.james.imap.mailbox.MailboxSession;
+import org.apache.james.mailbox.MailboxSession;
 
 /**
  * Abstract base class for Mapper's which support scaling 

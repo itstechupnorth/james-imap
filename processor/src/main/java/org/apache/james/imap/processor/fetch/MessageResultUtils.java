@@ -26,8 +26,8 @@ import java.util.List;
 
 import javax.mail.MessagingException;
 
-import org.apache.james.imap.mailbox.MailboxException;
-import org.apache.james.imap.mailbox.MessageResult;
+import org.apache.james.mailbox.MailboxException;
+import org.apache.james.mailbox.MessageResult;
 
 public class MessageResultUtils {
 

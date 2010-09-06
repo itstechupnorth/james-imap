@@ -24,8 +24,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.james.imap.mailbox.MailboxListener;
-import org.apache.james.imap.mailbox.MailboxPath;
+import org.apache.james.mailbox.MailboxListener;
+import org.apache.james.mailbox.MailboxPath;
 
 /**
  * Receive a {@link Event} and delegate it to an other {@link MailboxListener} depending on the registered name
@@ -49,7 +49,7 @@ public class DelegatingMailboxListener implements MailboxListener{
     
     /*
      * (non-Javadoc)
-     * @see org.apache.james.imap.mailbox.MailboxListener#event(org.apache.james.imap.mailbox.MailboxListener.Event)
+     * @see org.apache.james.mailbox.MailboxListener#event(org.apache.james.mailbox.MailboxListener.Event)
      */
     public void event(Event event) {
         List<MailboxListener> mListeners = listeners.get(event.getMailboxPath());

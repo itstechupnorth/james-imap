@@ -17,18 +17,23 @@
  * under the License.                                           *
  ****************************************************************/
 
-package org.apache.james.imap.mailbox;
+package org.apache.james.mailbox;
+
+
+import java.util.Iterator;
+
+import org.apache.james.mailbox.MessageResult.FetchGroup;
+import org.apache.james.mailbox.MessageResult.Header;
 
 /**
- * Indicates that the credentials for this operation were not acceptable.
+ * TODO: remove when MessageResult is sorted out
  */
-public class BadCredentialsException extends MailboxException {
-
-    private static final long serialVersionUID = -8055692887730696513L;
-
-    public BadCredentialsException() {
-        super();
-    }
-    
-
+public interface Headers {
+    /**
+     * Gets headers for the message.
+     * 
+     * @return <code>Header</code> <code>Iterator</code>, or null if
+     *         {@link FetchGroup#HEADERS} was not fetched
+     */
+    Iterator<Header> headers() throws MailboxException;
 }

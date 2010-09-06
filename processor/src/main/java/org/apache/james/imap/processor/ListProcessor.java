@@ -31,17 +31,17 @@ import org.apache.james.imap.api.message.response.ImapResponseMessage;
 import org.apache.james.imap.api.message.response.StatusResponseFactory;
 import org.apache.james.imap.api.process.ImapProcessor;
 import org.apache.james.imap.api.process.ImapSession;
-import org.apache.james.imap.mailbox.MailboxConstants;
-import org.apache.james.imap.mailbox.MailboxException;
-import org.apache.james.imap.mailbox.MailboxManager;
-import org.apache.james.imap.mailbox.MailboxMetaData;
-import org.apache.james.imap.mailbox.MailboxPath;
-import org.apache.james.imap.mailbox.MailboxQuery;
-import org.apache.james.imap.mailbox.MailboxMetaData.Children;
-import org.apache.james.imap.mailbox.util.SimpleMailboxMetaData;
 import org.apache.james.imap.message.request.ListRequest;
 import org.apache.james.imap.message.response.ListResponse;
 import org.apache.james.imap.processor.base.ImapSessionUtils;
+import org.apache.james.mailbox.MailboxConstants;
+import org.apache.james.mailbox.MailboxException;
+import org.apache.james.mailbox.MailboxManager;
+import org.apache.james.mailbox.MailboxMetaData;
+import org.apache.james.mailbox.MailboxPath;
+import org.apache.james.mailbox.MailboxQuery;
+import org.apache.james.mailbox.MailboxMetaData.Children;
+import org.apache.james.mailbox.util.SimpleMailboxMetaData;
 
 public class ListProcessor extends AbstractMailboxProcessor {
 

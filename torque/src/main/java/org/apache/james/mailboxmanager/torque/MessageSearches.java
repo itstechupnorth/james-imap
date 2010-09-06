@@ -34,9 +34,9 @@ import javax.mail.Flags;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.james.imap.mailbox.SearchQuery;
-import org.apache.james.imap.mailbox.SearchQuery.NumericRange;
 import org.apache.james.imap.store.MessageSearcher;
+import org.apache.james.mailbox.SearchQuery;
+import org.apache.james.mailbox.SearchQuery.NumericRange;
 import org.apache.james.mailboxmanager.torque.om.MessageFlags;
 import org.apache.james.mailboxmanager.torque.om.MessageHeader;
 import org.apache.james.mailboxmanager.torque.om.MessageRow;

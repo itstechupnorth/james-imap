@@ -18,9 +18,6 @@
  ****************************************************************/
 package org.apache.james.imap.maildir;
 
-import org.apache.james.imap.mailbox.MailboxException;
-import org.apache.james.imap.mailbox.MailboxSession;
-import org.apache.james.imap.mailbox.SubscriptionException;
 import org.apache.james.imap.maildir.mail.MaildirMailboxMapper;
 import org.apache.james.imap.maildir.mail.MaildirMessageMapper;
 import org.apache.james.imap.maildir.user.MaildirSubscriptionMapper;
@@ -28,6 +25,9 @@ import org.apache.james.imap.store.MailboxSessionMapperFactory;
 import org.apache.james.imap.store.mail.MailboxMapper;
 import org.apache.james.imap.store.mail.MessageMapper;
 import org.apache.james.imap.store.user.SubscriptionMapper;
+import org.apache.james.mailbox.MailboxException;
+import org.apache.james.mailbox.MailboxSession;
+import org.apache.james.mailbox.SubscriptionException;
 
 public class MaildirMailboxSessionMapperFactory extends
         MailboxSessionMapperFactory<Integer> {

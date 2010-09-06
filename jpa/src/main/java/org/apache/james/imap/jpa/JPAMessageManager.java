@@ -27,13 +27,13 @@ import javax.mail.Flags;
 
 import org.apache.james.imap.jpa.mail.model.JPAHeader;
 import org.apache.james.imap.jpa.mail.model.openjpa.JPAMailboxMembership;
-import org.apache.james.imap.mailbox.MailboxException;
-import org.apache.james.imap.mailbox.util.MailboxEventDispatcher;
 import org.apache.james.imap.store.MapperStoreMessageManager;
 import org.apache.james.imap.store.mail.model.Header;
 import org.apache.james.imap.store.mail.model.Mailbox;
 import org.apache.james.imap.store.mail.model.MailboxMembership;
 import org.apache.james.imap.store.mail.model.PropertyBuilder;
+import org.apache.james.mailbox.MailboxException;
+import org.apache.james.mailbox.util.MailboxEventDispatcher;
 
 /**
  * Abstract base class which should be used from JPA 2.0 implementations

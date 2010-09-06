@@ -29,12 +29,12 @@ import javax.persistence.RollbackException;
 
 import org.apache.james.imap.jpa.JPATransactionalMapper;
 import org.apache.james.imap.jpa.mail.model.JPAMailbox;
-import org.apache.james.imap.mailbox.MailboxException;
-import org.apache.james.imap.mailbox.MailboxExistsException;
-import org.apache.james.imap.mailbox.MailboxNotFoundException;
-import org.apache.james.imap.mailbox.MailboxPath;
 import org.apache.james.imap.store.mail.MailboxMapper;
 import org.apache.james.imap.store.mail.model.Mailbox;
+import org.apache.james.mailbox.MailboxException;
+import org.apache.james.mailbox.MailboxExistsException;
+import org.apache.james.mailbox.MailboxNotFoundException;
+import org.apache.james.mailbox.MailboxPath;
 
 /**
  * Data access management for mailbox.

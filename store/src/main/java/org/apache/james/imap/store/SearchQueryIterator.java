@@ -22,9 +22,9 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 import org.apache.commons.logging.Log;
-import org.apache.james.imap.mailbox.MailboxException;
-import org.apache.james.imap.mailbox.SearchQuery;
 import org.apache.james.imap.store.mail.model.MailboxMembership;
+import org.apache.james.mailbox.MailboxException;
+import org.apache.james.mailbox.SearchQuery;
 
 /**
  * {@link Iterator} implementation which use a {@link MessageSearches} instance to lazy 

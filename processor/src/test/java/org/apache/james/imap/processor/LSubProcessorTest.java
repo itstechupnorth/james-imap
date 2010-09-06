@@ -31,13 +31,13 @@ import org.apache.james.imap.api.message.response.StatusResponse;
 import org.apache.james.imap.api.message.response.StatusResponseFactory;
 import org.apache.james.imap.api.process.ImapProcessor;
 import org.apache.james.imap.api.process.ImapSession;
-import org.apache.james.imap.mailbox.MailboxManager;
-import org.apache.james.imap.mailbox.MailboxMetaData;
-import org.apache.james.imap.mailbox.MailboxSession;
-import org.apache.james.imap.mailbox.SubscriptionManager;
 import org.apache.james.imap.message.request.LsubRequest;
 import org.apache.james.imap.message.response.LSubResponse;
 import org.apache.james.imap.processor.base.ImapSessionUtils;
+import org.apache.james.mailbox.MailboxManager;
+import org.apache.james.mailbox.MailboxMetaData;
+import org.apache.james.mailbox.MailboxSession;
+import org.apache.james.mailbox.SubscriptionManager;
 import org.jmock.Expectations;
 import org.jmock.Mockery;
 import org.jmock.integration.junit4.JMock;
@@ -242,7 +242,7 @@ public class LSubProcessorTest {
 
                 /*
                  * (non-Javadoc)
-                 * @see org.apache.james.imap.mailbox.MailboxSession.User#getLocalePreferences()
+                 * @see org.apache.james.mailbox.MailboxSession.User#getLocalePreferences()
                  */
                 public List<Locale> getLocalePreferences() {
                     return new ArrayList<Locale>();
@@ -250,7 +250,7 @@ public class LSubProcessorTest {
 
                 /*
                  * (non-Javadoc)
-                 * @see org.apache.james.imap.mailbox.MailboxSession.User#getPassword()
+                 * @see org.apache.james.mailbox.MailboxSession.User#getPassword()
                  */
                 public String getPassword() {
                     return "test";
@@ -258,7 +258,7 @@ public class LSubProcessorTest {
 
                 /*
                  * (non-Javadoc)
-                 * @see org.apache.james.imap.mailbox.MailboxSession.User#getUserName()
+                 * @see org.apache.james.mailbox.MailboxSession.User#getUserName()
                  */
                 public String getUserName() {
                     return "test";

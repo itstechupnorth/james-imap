@@ -23,10 +23,10 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.james.imap.mailbox.MailboxSession;
-import org.apache.james.imap.mailbox.SubscriptionException;
-import org.apache.james.imap.mailbox.SubscriptionManager;
 import org.apache.james.imap.store.Authenticator;
+import org.apache.james.mailbox.MailboxSession;
+import org.apache.james.mailbox.SubscriptionException;
+import org.apache.james.mailbox.SubscriptionManager;
 
 /**
  * Stores users in memory.
@@ -61,7 +61,7 @@ public class InMemoryUserManager implements Authenticator, SubscriptionManager {
         user.addSubscription(mailbox);
     }
 
-    public Collection<String> subscriptions(org.apache.james.imap.mailbox.MailboxSession session) throws SubscriptionException {
+    public Collection<String> subscriptions(org.apache.james.mailbox.MailboxSession session) throws SubscriptionException {
         MailboxSession.User u = session.getUser();
         User user = (User) users.get(u.getUserName());
         if (user == null) {
@@ -71,7 +71,7 @@ public class InMemoryUserManager implements Authenticator, SubscriptionManager {
         return user.getSubscriptions();
     }
 
-    public void unsubscribe(org.apache.james.imap.mailbox.MailboxSession session, String mailbox)
+    public void unsubscribe(org.apache.james.mailbox.MailboxSession session, String mailbox)
             throws SubscriptionException {
         MailboxSession.User u = session.getUser();
         User user = (User) users.get(u.getUserName());

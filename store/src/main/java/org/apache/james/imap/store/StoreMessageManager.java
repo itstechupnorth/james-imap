@@ -36,12 +36,6 @@ import javax.mail.Flags;
 import javax.mail.MessagingException;
 import javax.mail.util.SharedFileInputStream;
 
-import org.apache.james.imap.mailbox.MailboxException;
-import org.apache.james.imap.mailbox.MailboxListener;
-import org.apache.james.imap.mailbox.MailboxNotFoundException;
-import org.apache.james.imap.mailbox.MailboxSession;
-import org.apache.james.imap.mailbox.MessageRange;
-import org.apache.james.imap.mailbox.util.MailboxEventDispatcher;
 import org.apache.james.imap.store.mail.MessageMapper;
 import org.apache.james.imap.store.mail.model.Header;
 import org.apache.james.imap.store.mail.model.Mailbox;
@@ -49,19 +43,25 @@ import org.apache.james.imap.store.mail.model.MailboxMembership;
 import org.apache.james.imap.store.mail.model.PropertyBuilder;
 import org.apache.james.imap.store.streaming.ConfigurableMimeTokenStream;
 import org.apache.james.imap.store.streaming.CountingInputStream;
+import org.apache.james.mailbox.MailboxException;
+import org.apache.james.mailbox.MailboxListener;
+import org.apache.james.mailbox.MailboxNotFoundException;
+import org.apache.james.mailbox.MailboxSession;
+import org.apache.james.mailbox.MessageRange;
+import org.apache.james.mailbox.util.MailboxEventDispatcher;
 import org.apache.james.mime4j.MimeException;
 import org.apache.james.mime4j.descriptor.MaximalBodyDescriptor;
 import org.apache.james.mime4j.parser.MimeEntityConfig;
 import org.apache.james.mime4j.parser.MimeTokenStream;
 
 /**
- * Abstract base class for {@link org.apache.james.imap.mailbox.MessageManager} implementations. This abstract
+ * Abstract base class for {@link org.apache.james.mailbox.MessageManager} implementations. This abstract
  * class take care of dispatching events to the registered {@link MailboxListener} and so help
  * with handling concurrent {@link MailboxSession}'s. So this is a perfect starting point when writing your 
  * own implementation and don't want to depend on {@link MessageMapper}.
  *
  */
-public abstract class StoreMessageManager<Id> implements org.apache.james.imap.mailbox.MessageManager{
+public abstract class StoreMessageManager<Id> implements org.apache.james.mailbox.MessageManager{
 
 
     private final Mailbox<Id> mailbox;
@@ -120,7 +120,7 @@ public abstract class StoreMessageManager<Id> implements org.apache.james.imap.m
     protected abstract Iterator<Long> deleteMarkedInMailbox(MessageRange range, MailboxSession session) throws MailboxException;
     /*
      * (non-Javadoc)
-     * @see org.apache.james.imap.mailbox.Mailbox#expunge(org.apache.james.imap.mailbox.MessageRange, org.apache.james.imap.mailbox.MailboxSession)
+     * @see org.apache.james.mailbox.Mailbox#expunge(org.apache.james.mailbox.MessageRange, org.apache.james.mailbox.MailboxSession)
      */
     public Iterator<Long> expunge(final MessageRange set, MailboxSession mailboxSession) throws MailboxException {
         List<Long> uids = new ArrayList<Long>();
@@ -135,7 +135,7 @@ public abstract class StoreMessageManager<Id> implements org.apache.james.imap.m
 
     /*
      * (non-Javadoc)
-     * @see org.apache.james.imap.mailbox.Mailbox#appendMessage(byte[], java.util.Date, org.apache.james.imap.mailbox.MailboxSession, boolean, javax.mail.Flags)
+     * @see org.apache.james.mailbox.Mailbox#appendMessage(byte[], java.util.Date, org.apache.james.mailbox.MailboxSession, boolean, javax.mail.Flags)
      */
     public long appendMessage(final InputStream msgIn, final Date internalDate,
             final MailboxSession mailboxSession,final boolean isRecent, final Flags flagsToBeSet)
@@ -374,7 +374,7 @@ public abstract class StoreMessageManager<Id> implements org.apache.james.imap.m
      * @see {@link Mailbox#getMetaData(boolean, MailboxSession, FetchGroup)}
      */
     public MetaData getMetaData(boolean resetRecent, MailboxSession mailboxSession, 
-            org.apache.james.imap.mailbox.MessageManager.MetaData.FetchGroup fetchGroup) throws MailboxException {
+            org.apache.james.mailbox.MessageManager.MetaData.FetchGroup fetchGroup) throws MailboxException {
         final List<Long> recent = recent(resetRecent, mailboxSession);
         final Flags permanentFlags = getPermanentFlags();
         final long uidValidity = getMailboxEntity().getUidValidity();
@@ -421,7 +421,7 @@ public abstract class StoreMessageManager<Id> implements org.apache.james.imap.m
     
     /*
      * (non-Javadoc)
-     * @see org.apache.james.imap.mailbox.Mailbox#setFlags(javax.mail.Flags, boolean, boolean, org.apache.james.imap.mailbox.MessageRange, org.apache.james.imap.mailbox.MailboxSession)
+     * @see org.apache.james.mailbox.Mailbox#setFlags(javax.mail.Flags, boolean, boolean, org.apache.james.mailbox.MessageRange, org.apache.james.mailbox.MailboxSession)
      */
     public Map<Long, Flags> setFlags(final Flags flags, final boolean value, final boolean replace,
             final MessageRange set, MailboxSession mailboxSession) throws MailboxException {

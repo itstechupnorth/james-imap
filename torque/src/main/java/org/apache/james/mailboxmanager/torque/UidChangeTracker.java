@@ -30,11 +30,11 @@ import java.util.TreeSet;
 
 import javax.mail.Flags;
 
-import org.apache.james.imap.mailbox.MailboxConstants;
-import org.apache.james.imap.mailbox.MailboxListener;
-import org.apache.james.imap.mailbox.MailboxPath;
-import org.apache.james.imap.mailbox.util.MailboxEventDispatcher;
-import org.apache.james.imap.mailbox.MessageRange;
+import org.apache.james.mailbox.MailboxConstants;
+import org.apache.james.mailbox.MailboxListener;
+import org.apache.james.mailbox.MailboxPath;
+import org.apache.james.mailbox.MessageRange;
+import org.apache.james.mailbox.util.MailboxEventDispatcher;
 
 /**
  * 

@@ -35,12 +35,6 @@ import java.util.Map.Entry;
 import javax.mail.util.SharedFileInputStream;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.james.imap.mailbox.MailboxException;
-import org.apache.james.imap.mailbox.MessageRange;
-import org.apache.james.imap.mailbox.SearchQuery;
-import org.apache.james.imap.mailbox.MessageRange.Type;
-import org.apache.james.imap.mailbox.SearchQuery.Criterion;
-import org.apache.james.imap.mailbox.SearchQuery.NumericRange;
 import org.apache.james.imap.maildir.MaildirFolder;
 import org.apache.james.imap.maildir.MaildirMessageName;
 import org.apache.james.imap.maildir.MaildirStore;
@@ -56,6 +50,12 @@ import org.apache.james.imap.store.mail.model.PropertyBuilder;
 import org.apache.james.imap.store.streaming.ConfigurableMimeTokenStream;
 import org.apache.james.imap.store.streaming.CountingInputStream;
 import org.apache.james.imap.store.transaction.NonTransactionalMapper;
+import org.apache.james.mailbox.MailboxException;
+import org.apache.james.mailbox.MessageRange;
+import org.apache.james.mailbox.SearchQuery;
+import org.apache.james.mailbox.MessageRange.Type;
+import org.apache.james.mailbox.SearchQuery.Criterion;
+import org.apache.james.mailbox.SearchQuery.NumericRange;
 import org.apache.james.mime4j.MimeException;
 import org.apache.james.mime4j.descriptor.MaximalBodyDescriptor;
 import org.apache.james.mime4j.parser.MimeEntityConfig;
@@ -131,7 +131,7 @@ public class MaildirMessageMapper extends NonTransactionalMapper implements Mess
 
     /* 
      * (non-Javadoc)
-     * @see org.apache.james.imap.store.mail.MessageMapper#findInMailbox(org.apache.james.imap.store.mail.model.Mailbox, org.apache.james.imap.mailbox.MessageRange)
+     * @see org.apache.james.imap.store.mail.MessageMapper#findInMailbox(org.apache.james.imap.store.mail.model.Mailbox, org.apache.james.mailbox.MessageRange)
      */
     public List<MailboxMembership<Integer>> findInMailbox(Mailbox<Integer> mailbox, MessageRange set)
     throws MailboxException {
@@ -195,7 +195,7 @@ public class MaildirMessageMapper extends NonTransactionalMapper implements Mess
 
     /* 
      * (non-Javadoc)
-     * @see org.apache.james.imap.store.mail.MessageMapper#findMarkedForDeletionInMailbox(org.apache.james.imap.store.mail.model.Mailbox, org.apache.james.imap.mailbox.MessageRange)
+     * @see org.apache.james.imap.store.mail.MessageMapper#findMarkedForDeletionInMailbox(org.apache.james.imap.store.mail.model.Mailbox, org.apache.james.mailbox.MessageRange)
      */
     public List<MailboxMembership<Integer>> findMarkedForDeletionInMailbox(Mailbox<Integer> mailbox, MessageRange set) throws MailboxException {
         List<MailboxMembership<Integer>> results = new ArrayList<MailboxMembership<Integer>>();
@@ -377,7 +377,7 @@ public class MaildirMessageMapper extends NonTransactionalMapper implements Mess
 
     /*
      * (non-Javadoc)
-     * @see org.apache.james.imap.store.mail.MessageMapper#searchMailbox(org.apache.james.imap.store.mail.model.Mailbox, org.apache.james.imap.mailbox.SearchQuery)
+     * @see org.apache.james.imap.store.mail.MessageMapper#searchMailbox(org.apache.james.imap.store.mail.model.Mailbox, org.apache.james.mailbox.SearchQuery)
      */
     public Iterator<Long> searchMailbox(Mailbox<Integer> mailbox, SearchQuery query)
     throws MailboxException {

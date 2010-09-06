@@ -17,24 +17,17 @@
  * under the License.                                           *
  ****************************************************************/
 
-package org.apache.james.imap.mailbox;
-
-import javax.mail.MessagingException;
+package org.apache.james.mailbox;
 
 
-public class MailboxException extends MessagingException {
+/**
+ * Indicates that the requested search is not supported by this implementation.
+ */
+public class UnsupportedSearchException extends MailboxException {
 
-    private static final long serialVersionUID = 4612761817238115904L;
-    
-    public MailboxException(final String message) {
-        super(message);
-    }
+    private static final long serialVersionUID = -7442949630563672557L;
 
-    
-    public MailboxException() {
-    }
-
-    public MailboxException(String msg, Exception cause) {
-        super(msg, cause);
+    public UnsupportedSearchException() {
+        super();
     }
 }

@@ -18,8 +18,8 @@
  ****************************************************************/
 package org.apache.james.imap.maildir.mail.model;
 
-import org.apache.james.imap.mailbox.MailboxPath;
 import org.apache.james.imap.store.mail.model.Mailbox;
+import org.apache.james.mailbox.MailboxPath;
 
 public class MaildirMailbox implements Mailbox<Integer> {
 

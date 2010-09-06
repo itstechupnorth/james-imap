@@ -44,17 +44,17 @@ import org.apache.james.imap.jcr.NodeLocker;
 import org.apache.james.imap.jcr.NodeLocker.NodeLockedExecution;
 import org.apache.james.imap.jcr.mail.model.JCRMailbox;
 import org.apache.james.imap.jcr.mail.model.JCRMessage;
-import org.apache.james.imap.mailbox.MailboxException;
-import org.apache.james.imap.mailbox.MailboxSession;
-import org.apache.james.imap.mailbox.MessageRange;
-import org.apache.james.imap.mailbox.SearchQuery;
-import org.apache.james.imap.mailbox.MessageRange.Type;
-import org.apache.james.imap.mailbox.SearchQuery.Criterion;
-import org.apache.james.imap.mailbox.SearchQuery.NumericRange;
 import org.apache.james.imap.store.SearchQueryIterator;
 import org.apache.james.imap.store.mail.MessageMapper;
 import org.apache.james.imap.store.mail.model.Mailbox;
 import org.apache.james.imap.store.mail.model.MailboxMembership;
+import org.apache.james.mailbox.MailboxException;
+import org.apache.james.mailbox.MailboxSession;
+import org.apache.james.mailbox.MessageRange;
+import org.apache.james.mailbox.SearchQuery;
+import org.apache.james.mailbox.MessageRange.Type;
+import org.apache.james.mailbox.SearchQuery.Criterion;
+import org.apache.james.mailbox.SearchQuery.NumericRange;
 
 /**
  * JCR implementation of a {@link MessageMapper}
@@ -373,7 +373,7 @@ public class JCRMessageMapper extends AbstractJCRMapper implements MessageMapper
      * 
      * @see
      * org.apache.james.imap.store.mail.MessageMapper#findMarkedForDeletionInMailbox
-     * (org.apache.james.imap.mailbox.MessageRange)
+     * (org.apache.james.mailbox.MessageRange)
      */
     public List<MailboxMembership<String>> findMarkedForDeletionInMailbox(Mailbox<String> mailbox, MessageRange set) throws MailboxException {
         try {
@@ -603,7 +603,7 @@ public class JCRMessageMapper extends AbstractJCRMapper implements MessageMapper
 
     /*
      * (non-Javadoc)
-     * @see org.apache.james.imap.store.mail.MessageMapper#searchMailbox(org.apache.james.imap.store.mail.model.Mailbox, org.apache.james.imap.mailbox.SearchQuery)
+     * @see org.apache.james.imap.store.mail.MessageMapper#searchMailbox(org.apache.james.imap.store.mail.model.Mailbox, org.apache.james.mailbox.SearchQuery)
      */
     public Iterator<Long> searchMailbox(Mailbox<String> mailbox, SearchQuery query) throws MailboxException {
         try {

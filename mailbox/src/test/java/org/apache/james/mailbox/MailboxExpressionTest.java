@@ -17,10 +17,12 @@
  * under the License.                                           *
  ****************************************************************/
 
-package org.apache.james.imap.mailbox;
+package org.apache.james.mailbox;
 
 import static org.junit.Assert.*;
 
+import org.apache.james.mailbox.MailboxPath;
+import org.apache.james.mailbox.MailboxQuery;
 import org.junit.Test;
 
 public class MailboxExpressionTest {

@@ -17,23 +17,29 @@
  * under the License.                                           *
  ****************************************************************/
 
-package org.apache.james.imap.mailbox;
+package org.apache.james.mailbox.util;
 
-public interface MailboxConstants {
-    
-    /**
-     * The namespace used for store user inboxes
-     */
-    public static final String USER_NAMESPACE = "#private";
+import java.util.ArrayList;
+import java.util.List;
 
-    /**
-     * The default delimiter used to seperated parent/child folders
-     */
-    public static final char DEFAULT_DELIMITER = '.';
+import org.apache.james.mailbox.MailboxListener;
 
-    /**
-     * The default delimiter used to seperated parent/child folders
-     */
-    public static final String DEFAULT_DELIMITER_STRING = ".";
+public class EventCollector implements MailboxListener {
+
+    public final List<Event> events = new ArrayList<Event>();
+
+    public void event(Event event) {
+        events.add(event);
+    }
+
+    public void mailboxDeleted() {
+    }
+
+    public void mailboxRenamed(String origName, String newName) {
+    }
+
+    public boolean isClosed() {
+        return false;
+    }
 
 }

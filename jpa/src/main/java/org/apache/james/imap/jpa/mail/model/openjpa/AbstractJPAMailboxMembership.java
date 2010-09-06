@@ -32,10 +32,10 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 
 import org.apache.james.imap.jpa.mail.model.JPAHeader;
-import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.store.mail.model.AbstractMailboxMembership;
 import org.apache.james.imap.store.mail.model.MailboxMembership;
 import org.apache.james.imap.store.mail.model.PropertyBuilder;
+import org.apache.james.mailbox.MailboxException;
 import org.apache.openjpa.persistence.jdbc.Index;
 
 @MappedSuperclass

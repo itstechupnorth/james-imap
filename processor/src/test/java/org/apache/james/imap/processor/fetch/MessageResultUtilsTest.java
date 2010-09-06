@@ -26,8 +26,8 @@ import java.nio.channels.WritableByteChannel;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.james.imap.mailbox.MessageResult;
 import org.apache.james.imap.processor.fetch.MessageResultUtils;
+import org.apache.james.mailbox.MessageResult;
 import org.junit.Before;
 import org.junit.Test;
 

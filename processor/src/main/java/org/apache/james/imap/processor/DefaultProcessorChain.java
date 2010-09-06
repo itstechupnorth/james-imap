@@ -22,9 +22,9 @@ package org.apache.james.imap.processor;
 
 import org.apache.james.imap.api.message.response.StatusResponseFactory;
 import org.apache.james.imap.api.process.ImapProcessor;
-import org.apache.james.imap.mailbox.MailboxManager;
-import org.apache.james.imap.mailbox.SubscriptionManager;
 import org.apache.james.imap.processor.fetch.FetchProcessor;
+import org.apache.james.mailbox.MailboxManager;
+import org.apache.james.mailbox.SubscriptionManager;
 
 /**
  * TODO: perhaps this should be a POJO

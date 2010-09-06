@@ -18,10 +18,6 @@
  ****************************************************************/
 package org.apache.james.imap.maildir;
 
-import org.apache.james.imap.mailbox.MailboxException;
-import org.apache.james.imap.mailbox.MailboxPath;
-import org.apache.james.imap.mailbox.MailboxSession;
-import org.apache.james.imap.mailbox.util.MailboxEventDispatcher;
 import org.apache.james.imap.maildir.mail.model.MaildirMailbox;
 import org.apache.james.imap.store.Authenticator;
 import org.apache.james.imap.store.MailboxSessionMapperFactory;
@@ -29,6 +25,10 @@ import org.apache.james.imap.store.StoreMailboxManager;
 import org.apache.james.imap.store.MapperStoreMessageManager;
 import org.apache.james.imap.store.mail.MailboxMapper;
 import org.apache.james.imap.store.mail.model.Mailbox;
+import org.apache.james.mailbox.MailboxException;
+import org.apache.james.mailbox.MailboxPath;
+import org.apache.james.mailbox.MailboxSession;
+import org.apache.james.mailbox.util.MailboxEventDispatcher;
 
 public class MaildirMailboxManager extends StoreMailboxManager<Integer> {
 

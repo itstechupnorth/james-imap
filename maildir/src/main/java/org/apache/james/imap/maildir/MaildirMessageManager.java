@@ -25,8 +25,6 @@ import java.util.List;
 
 import javax.mail.Flags;
 
-import org.apache.james.imap.mailbox.MailboxException;
-import org.apache.james.imap.mailbox.util.MailboxEventDispatcher;
 import org.apache.james.imap.maildir.mail.model.MaildirHeader;
 import org.apache.james.imap.maildir.mail.model.MaildirMessage;
 import org.apache.james.imap.store.MailboxSessionMapperFactory;
@@ -35,6 +33,8 @@ import org.apache.james.imap.store.mail.model.Header;
 import org.apache.james.imap.store.mail.model.Mailbox;
 import org.apache.james.imap.store.mail.model.MailboxMembership;
 import org.apache.james.imap.store.mail.model.PropertyBuilder;
+import org.apache.james.mailbox.MailboxException;
+import org.apache.james.mailbox.util.MailboxEventDispatcher;
 
 public class MaildirMessageManager extends MapperStoreMessageManager<Integer> {
 

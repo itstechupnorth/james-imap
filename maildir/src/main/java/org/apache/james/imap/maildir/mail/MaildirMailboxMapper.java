@@ -27,10 +27,6 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.NotImplementedException;
-import org.apache.james.imap.mailbox.MailboxException;
-import org.apache.james.imap.mailbox.MailboxExistsException;
-import org.apache.james.imap.mailbox.MailboxNotFoundException;
-import org.apache.james.imap.mailbox.MailboxPath;
 import org.apache.james.imap.maildir.MaildirFolder;
 import org.apache.james.imap.maildir.MaildirMessageName;
 import org.apache.james.imap.maildir.MaildirStore;
@@ -38,6 +34,10 @@ import org.apache.james.imap.maildir.mail.model.MaildirMailbox;
 import org.apache.james.imap.store.mail.MailboxMapper;
 import org.apache.james.imap.store.mail.model.Mailbox;
 import org.apache.james.imap.store.transaction.NonTransactionalMapper;
+import org.apache.james.mailbox.MailboxException;
+import org.apache.james.mailbox.MailboxExistsException;
+import org.apache.james.mailbox.MailboxNotFoundException;
+import org.apache.james.mailbox.MailboxPath;
 
 public class MaildirMailboxMapper extends NonTransactionalMapper implements MailboxMapper<Integer> {
 

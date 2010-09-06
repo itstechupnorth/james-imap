@@ -30,12 +30,12 @@ import org.apache.james.imap.jpa.JPAMailboxSessionMapperFactory;
 import org.apache.james.imap.jpa.JPAMessageManager;
 import org.apache.james.imap.jpa.mail.model.JPAHeader;
 import org.apache.james.imap.jpa.mail.model.openjpa.JPAStreamingMailboxMembership;
-import org.apache.james.imap.mailbox.MailboxException;
-import org.apache.james.imap.mailbox.util.MailboxEventDispatcher;
 import org.apache.james.imap.store.mail.model.Header;
 import org.apache.james.imap.store.mail.model.Mailbox;
 import org.apache.james.imap.store.mail.model.MailboxMembership;
 import org.apache.james.imap.store.mail.model.PropertyBuilder;
+import org.apache.james.mailbox.MailboxException;
+import org.apache.james.mailbox.util.MailboxEventDispatcher;
 
 /**
  * OpenJPA implementation of Mailbox

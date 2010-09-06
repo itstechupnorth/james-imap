@@ -21,16 +21,16 @@ package org.apache.james.imap.store.mail;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.james.imap.mailbox.MessageRange;
-import org.apache.james.imap.mailbox.SearchQuery;
-import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.store.mail.model.Message;
 import org.apache.james.imap.store.mail.model.Mailbox;
 import org.apache.james.imap.store.mail.model.MailboxMembership;
 import org.apache.james.imap.store.transaction.Mapper;
+import org.apache.james.mailbox.MailboxException;
+import org.apache.james.mailbox.MessageRange;
+import org.apache.james.mailbox.SearchQuery;
 
 /**
- * Maps {@link Message} in a {@link org.apache.james.imap.mailbox.MessageManager}. A {@link MessageMapper} has a lifecycle from the start of a request 
+ * Maps {@link Message} in a {@link org.apache.james.mailbox.MessageManager}. A {@link MessageMapper} has a lifecycle from the start of a request 
  * to the end of the request.
  */
 public interface MessageMapper<Id> extends Mapper {

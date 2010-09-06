@@ -23,10 +23,10 @@ import java.io.IOException;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.james.imap.functional.AbstractStressTest;
-import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.maildir.MaildirMailboxManager;
 import org.apache.james.imap.maildir.MaildirMailboxSessionMapperFactory;
 import org.apache.james.imap.store.StoreMailboxManager;
+import org.apache.james.mailbox.MailboxException;
 import org.junit.After;
 import org.junit.Before;
 

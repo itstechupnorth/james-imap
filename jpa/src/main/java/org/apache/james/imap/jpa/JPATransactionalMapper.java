@@ -23,8 +23,8 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 import javax.persistence.PersistenceException;
 
-import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.store.transaction.TransactionalMapper;
+import org.apache.james.mailbox.MailboxException;
 
 /**
  * JPA implementation of TransactionMapper. This class is not thread-safe!

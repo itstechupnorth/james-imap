@@ -17,7 +17,7 @@
  * under the License.                                           *
  ****************************************************************/
 
-package org.apache.james.imap.mailbox;
+package org.apache.james.mailbox;
 
 import java.io.InputStream;
 import java.util.Date;
@@ -27,7 +27,7 @@ import java.util.Map;
 
 import javax.mail.Flags;
 
-import org.apache.james.imap.mailbox.MessageResult.FetchGroup;
+import org.apache.james.mailbox.MessageResult.FetchGroup;
 
 
 /**

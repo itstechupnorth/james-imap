@@ -21,7 +21,8 @@ package org.apache.james.mailboxmanager.torque;
 
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
-import org.apache.james.imap.mailbox.MailboxException;
+
+import org.apache.james.mailbox.MailboxException;
 
 /**
  * Indicates that required locks cannot be acquired at this time.

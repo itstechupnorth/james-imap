@@ -19,8 +19,8 @@
 
 package org.apache.james.imap.store;
 
-import org.apache.james.imap.mailbox.MailboxPath;
 import org.apache.james.imap.store.mail.model.Mailbox;
+import org.apache.james.mailbox.MailboxPath;
 
 public class StoreMailboxPath<Id> extends MailboxPath {
 

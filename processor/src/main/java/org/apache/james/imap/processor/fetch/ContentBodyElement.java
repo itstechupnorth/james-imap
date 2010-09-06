@@ -25,8 +25,8 @@ package org.apache.james.imap.processor.fetch;
 import java.io.IOException;
 import java.nio.channels.WritableByteChannel;
 
-import org.apache.james.imap.mailbox.Content;
 import org.apache.james.imap.message.response.FetchResponse.BodyElement;
+import org.apache.james.mailbox.Content;
 
 final class ContentBodyElement implements BodyElement {
     private final String name;

@@ -39,13 +39,13 @@ import org.apache.james.imap.jcr.MailboxSessionJCRRepository;
 import org.apache.james.imap.jcr.NodeLocker;
 import org.apache.james.imap.jcr.NodeLocker.NodeLockedExecution;
 import org.apache.james.imap.jcr.mail.model.JCRMailbox;
-import org.apache.james.imap.mailbox.MailboxConstants;
-import org.apache.james.imap.mailbox.MailboxException;
-import org.apache.james.imap.mailbox.MailboxNotFoundException;
-import org.apache.james.imap.mailbox.MailboxPath;
-import org.apache.james.imap.mailbox.MailboxSession;
 import org.apache.james.imap.store.mail.MailboxMapper;
 import org.apache.james.imap.store.mail.model.Mailbox;
+import org.apache.james.mailbox.MailboxConstants;
+import org.apache.james.mailbox.MailboxException;
+import org.apache.james.mailbox.MailboxNotFoundException;
+import org.apache.james.mailbox.MailboxPath;
+import org.apache.james.mailbox.MailboxSession;
 
 /**
  * JCR implementation of a MailboxMapper

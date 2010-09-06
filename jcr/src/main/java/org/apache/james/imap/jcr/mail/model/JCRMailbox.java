@@ -26,8 +26,8 @@ import org.apache.jackrabbit.JcrConstants;
 import org.apache.jackrabbit.util.Text;
 import org.apache.james.imap.jcr.JCRImapConstants;
 import org.apache.james.imap.jcr.Persistent;
-import org.apache.james.imap.mailbox.MailboxPath;
 import org.apache.james.imap.store.mail.model.Mailbox;
+import org.apache.james.mailbox.MailboxPath;
 
 
 /**

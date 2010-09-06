@@ -32,9 +32,9 @@ import java.util.Set;
 import org.apache.james.imap.api.process.ImapProcessor;
 import org.apache.james.imap.decode.ImapDecoder;
 import org.apache.james.imap.encode.ImapEncoder;
-import org.apache.james.imap.mailbox.MailboxSession.User;
 import org.apache.james.imap.main.ImapRequestStreamHandler;
 import org.apache.james.imap.main.ImapSessionImpl;
+import org.apache.james.mailbox.MailboxSession.User;
 import org.apache.james.test.functional.HostSystem;
 
 public abstract class ImapHostSystem implements HostSystem {

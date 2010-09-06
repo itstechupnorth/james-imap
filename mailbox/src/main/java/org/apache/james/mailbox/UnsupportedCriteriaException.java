@@ -17,17 +17,17 @@
  * under the License.                                           *
  ****************************************************************/
 
-package org.apache.james.imap.mailbox;
-
+package org.apache.james.mailbox;
 
 /**
- * Indicates that the requested search is not supported by this implementation.
+ * Indicates that a search criteria is not supported.
  */
-public class UnsupportedSearchException extends MailboxException {
+public class UnsupportedCriteriaException extends MailboxException {
 
-    private static final long serialVersionUID = -7442949630563672557L;
+    private static final long serialVersionUID = 3791907285083231285L;
 
-    public UnsupportedSearchException() {
+    public UnsupportedCriteriaException() {
         super();
     }
+
 }

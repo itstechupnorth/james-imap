@@ -25,8 +25,8 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import org.apache.james.imap.mailbox.SearchQuery;
 import org.apache.james.imap.store.mail.model.MailboxMembership;
+import org.apache.james.mailbox.SearchQuery;
 import org.junit.Before;
 import org.junit.Test;
 

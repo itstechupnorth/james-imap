@@ -39,10 +39,10 @@ import org.apache.james.imap.jpa.mail.model.openjpa.JPAMailboxMembership;
 import org.apache.james.imap.jpa.mail.model.openjpa.JPAMessage;
 import org.apache.james.imap.jpa.openjpa.OpenJPAMailboxManager;
 import org.apache.james.imap.jpa.user.model.JPASubscription;
-import org.apache.james.imap.mailbox.MailboxSession;
-import org.apache.james.imap.mailbox.SubscriptionManager;
 import org.apache.james.imap.main.DefaultImapDecoderFactory;
 import org.apache.james.imap.processor.main.DefaultImapProcessorFactory;
+import org.apache.james.mailbox.MailboxSession;
+import org.apache.james.mailbox.SubscriptionManager;
 import org.apache.james.test.functional.HostSystem;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
 

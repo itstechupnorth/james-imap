@@ -24,7 +24,7 @@ import java.util.List;
 
 import javax.mail.Flags;
 
-import org.apache.james.imap.mailbox.MessageManager;
+import org.apache.james.mailbox.MessageManager;
 
 
 /**
@@ -113,7 +113,7 @@ public class MailboxMetaData implements MessageManager.MetaData {
 
     /*
      * (non-Javadoc)
-     * @see org.apache.james.imap.mailbox.Mailbox.MetaData#getFirstUnseen()
+     * @see org.apache.james.mailbox.Mailbox.MetaData#getFirstUnseen()
      */
     public Long getFirstUnseen() {
         return firstUnseen;
@@ -121,7 +121,7 @@ public class MailboxMetaData implements MessageManager.MetaData {
 
     /*
      * (non-Javadoc)
-     * @see org.apache.james.imap.mailbox.Mailbox.MetaData#isWriteable()
+     * @see org.apache.james.mailbox.Mailbox.MetaData#isWriteable()
      */
     public boolean isWriteable() {
         return writeable;

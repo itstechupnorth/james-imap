@@ -22,12 +22,12 @@ package org.apache.james.imap.jpa.openjpa;
 
 import org.apache.james.imap.jpa.JPAMailboxManager;
 import org.apache.james.imap.jpa.JPAMailboxSessionMapperFactory;
-import org.apache.james.imap.mailbox.MailboxException;
-import org.apache.james.imap.mailbox.MailboxSession;
-import org.apache.james.imap.mailbox.util.MailboxEventDispatcher;
 import org.apache.james.imap.store.Authenticator;
 import org.apache.james.imap.store.MapperStoreMessageManager;
 import org.apache.james.imap.store.mail.model.Mailbox;
+import org.apache.james.mailbox.MailboxException;
+import org.apache.james.mailbox.MailboxSession;
+import org.apache.james.mailbox.util.MailboxEventDispatcher;
 
 /**
  * OpenJPA implementation of MailboxManager

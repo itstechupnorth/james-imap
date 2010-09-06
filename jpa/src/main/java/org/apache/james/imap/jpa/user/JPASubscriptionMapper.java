@@ -25,9 +25,9 @@ import javax.persistence.NoResultException;
 import javax.persistence.PersistenceException;
 
 import org.apache.james.imap.jpa.JPATransactionalMapper;
-import org.apache.james.imap.mailbox.SubscriptionException;
 import org.apache.james.imap.store.user.SubscriptionMapper;
 import org.apache.james.imap.store.user.model.Subscription;
+import org.apache.james.mailbox.SubscriptionException;
 
 /**
  * JPA implementation of a {@link SubscriptionMapper}. This class is not thread-safe!

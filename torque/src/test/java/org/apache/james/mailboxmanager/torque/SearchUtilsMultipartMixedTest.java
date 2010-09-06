@@ -26,7 +26,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import org.apache.james.imap.api.ImapConstants;
-import org.apache.james.imap.mailbox.SearchQuery;
+import org.apache.james.mailbox.SearchQuery;
 import org.apache.james.mailboxmanager.torque.om.MessageBody;
 import org.apache.james.mailboxmanager.torque.om.MessageHeader;
 import org.apache.james.mailboxmanager.torque.om.MessageRow;

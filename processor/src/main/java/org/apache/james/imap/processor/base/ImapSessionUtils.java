@@ -20,7 +20,7 @@
 package org.apache.james.imap.processor.base;
 
 import org.apache.james.imap.api.process.ImapSession;
-import org.apache.james.imap.mailbox.MailboxSession;
+import org.apache.james.mailbox.MailboxSession;
 
 public class ImapSessionUtils {
 

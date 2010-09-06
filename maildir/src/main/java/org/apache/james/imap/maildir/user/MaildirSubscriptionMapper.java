@@ -30,11 +30,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.james.imap.mailbox.SubscriptionException;
 import org.apache.james.imap.maildir.user.model.MaildirSubscription;
 import org.apache.james.imap.store.transaction.NonTransactionalMapper;
 import org.apache.james.imap.store.user.SubscriptionMapper;
 import org.apache.james.imap.store.user.model.Subscription;
+import org.apache.james.mailbox.SubscriptionException;
 
 public class MaildirSubscriptionMapper extends NonTransactionalMapper implements SubscriptionMapper {
 

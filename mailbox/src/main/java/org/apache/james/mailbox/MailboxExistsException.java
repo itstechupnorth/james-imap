@@ -17,17 +17,32 @@
  * under the License.                                           *
  ****************************************************************/
 
-package org.apache.james.imap.mailbox;
+package org.apache.james.mailbox;
 
 /**
- * Indicates that a search criteria is not supported.
+ * Indicates that the operation failed since the mailbox already exists.
  */
-public class UnsupportedCriteriaException extends MailboxException {
+public class MailboxExistsException extends MailboxException {
 
-    private static final long serialVersionUID = 3791907285083231285L;
+    private static final long serialVersionUID = -486951759505030166L;
 
-    public UnsupportedCriteriaException() {
+    private final String mailboxName;
+
+    public MailboxExistsException(String mailboxName) {
         super();
+        this.mailboxName = mailboxName;
     }
 
+    /**
+     * Gets the name of the mailbox which alredy exists.
+     * 
+     * @return the mailboxName, not null
+     */
+    public final String getMailboxName() {
+        return mailboxName;
+    }
+
+    public String toString() {
+        return getMessage();
+    }
 }

@@ -30,9 +30,9 @@ import javax.persistence.FetchType;
 import javax.persistence.ManyToOne;
 
 import org.apache.james.imap.jpa.mail.model.JPAHeader;
-import org.apache.james.imap.mailbox.MailboxException;
 import org.apache.james.imap.store.mail.model.Message;
 import org.apache.james.imap.store.mail.model.PropertyBuilder;
+import org.apache.james.mailbox.MailboxException;
 
 @Entity(name="Membership")
 public class JPAMailboxMembership extends AbstractJPAMailboxMembership{

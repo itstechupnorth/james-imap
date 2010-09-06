@@ -16,27 +16,25 @@
  * specific language governing permissions and limitations      *
  * under the License.                                           *
  ****************************************************************/
-package org.apache.james.imap.mailbox;
 
-/**
- * Implementations of this interface are aware of processing requests
- * 
- *
- */
-public interface RequestAware {
+package org.apache.james.mailbox;
+
+import javax.mail.MessagingException;
+
+
+public class MailboxException extends MessagingException {
+
+    private static final long serialVersionUID = 4612761817238115904L;
+    
+    public MailboxException(final String message) {
+        super(message);
+    }
 
     
-    /**
-     * Start the processing of a request for the given MailboxSession. If the user is not logged in already then the MailboxSession will be null
-     * 
-     * @param session 
-     */
-    public void startProcessingRequest(MailboxSession session);
-    
-    /**
-     * End the processing of a request for the given MailboxSession. If the user is not logged in already then the MailboxSession will be null
-     * 
-     * @param session 
-     */
-    public void endProcessingRequest(MailboxSession session);
+    public MailboxException() {
+    }
+
+    public MailboxException(String msg, Exception cause) {
+        super(msg, cause);
+    }
 }

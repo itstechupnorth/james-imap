@@ -26,14 +26,14 @@ import org.apache.james.imap.api.message.request.ImapRequest;
 import org.apache.james.imap.api.message.response.StatusResponseFactory;
 import org.apache.james.imap.api.process.ImapProcessor;
 import org.apache.james.imap.api.process.ImapSession;
-import org.apache.james.imap.mailbox.BadCredentialsException;
-import org.apache.james.imap.mailbox.MailboxException;
-import org.apache.james.imap.mailbox.MailboxExistsException;
-import org.apache.james.imap.mailbox.MailboxManager;
-import org.apache.james.imap.mailbox.MailboxPath;
-import org.apache.james.imap.mailbox.MailboxSession;
 import org.apache.james.imap.message.request.LoginRequest;
 import org.apache.james.imap.processor.base.ImapSessionUtils;
+import org.apache.james.mailbox.BadCredentialsException;
+import org.apache.james.mailbox.MailboxException;
+import org.apache.james.mailbox.MailboxExistsException;
+import org.apache.james.mailbox.MailboxManager;
+import org.apache.james.mailbox.MailboxPath;
+import org.apache.james.mailbox.MailboxSession;
 
 /**
  * Processes a <code>LOGIN</code> command.

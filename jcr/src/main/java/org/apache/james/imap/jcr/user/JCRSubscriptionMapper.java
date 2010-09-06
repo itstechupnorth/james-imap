@@ -38,11 +38,11 @@ import org.apache.james.imap.jcr.AbstractJCRScalingMapper;
 import org.apache.james.imap.jcr.MailboxSessionJCRRepository;
 import org.apache.james.imap.jcr.NodeLocker;
 import org.apache.james.imap.jcr.user.model.JCRSubscription;
-import org.apache.james.imap.mailbox.MailboxConstants;
-import org.apache.james.imap.mailbox.MailboxSession;
-import org.apache.james.imap.mailbox.SubscriptionException;
 import org.apache.james.imap.store.user.SubscriptionMapper;
 import org.apache.james.imap.store.user.model.Subscription;
+import org.apache.james.mailbox.MailboxConstants;
+import org.apache.james.mailbox.MailboxSession;
+import org.apache.james.mailbox.SubscriptionException;
 
 /**
  * JCR implementation of a SubscriptionManager

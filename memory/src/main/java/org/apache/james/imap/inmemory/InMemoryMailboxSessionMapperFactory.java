@@ -21,15 +21,15 @@ package org.apache.james.imap.inmemory;
 import org.apache.james.imap.inmemory.mail.InMemoryMailboxMapper;
 import org.apache.james.imap.inmemory.mail.InMemoryMessageMapper;
 import org.apache.james.imap.inmemory.user.InMemorySubscriptionMapper;
-import org.apache.james.imap.mailbox.MailboxConstants;
-import org.apache.james.imap.mailbox.MailboxException;
-import org.apache.james.imap.mailbox.MailboxSession;
-import org.apache.james.imap.mailbox.SubscriptionException;
 import org.apache.james.imap.store.MailboxSessionMapperFactory;
 import org.apache.james.imap.store.mail.MailboxMapper;
 import org.apache.james.imap.store.mail.MessageMapper;
 import org.apache.james.imap.store.transaction.Mapper;
 import org.apache.james.imap.store.user.SubscriptionMapper;
+import org.apache.james.mailbox.MailboxConstants;
+import org.apache.james.mailbox.MailboxException;
+import org.apache.james.mailbox.MailboxSession;
+import org.apache.james.mailbox.SubscriptionException;
 
 public class InMemoryMailboxSessionMapperFactory extends MailboxSessionMapperFactory<Long> {
 

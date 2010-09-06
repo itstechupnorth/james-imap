@@ -27,8 +27,8 @@ import java.util.Locale;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
-import org.apache.james.imap.mailbox.MailboxConstants;
-import org.apache.james.imap.mailbox.MailboxSession;
+import org.apache.james.mailbox.MailboxConstants;
+import org.apache.james.mailbox.MailboxSession;
 
 /**
  * Describes a mailbox session.
@@ -81,7 +81,7 @@ public class SimpleMailboxSession implements MailboxSession, MailboxSession.User
     
     /*
      * (non-Javadoc)
-     * @see org.apache.james.imap.mailbox.MailboxSession#getLog()
+     * @see org.apache.james.mailbox.MailboxSession#getLog()
      */
     public Log getLog() {
         return log;
@@ -89,7 +89,7 @@ public class SimpleMailboxSession implements MailboxSession, MailboxSession.User
 
     /*
      * (non-Javadoc)
-     * @see org.apache.james.imap.mailbox.MailboxSession#close()
+     * @see org.apache.james.mailbox.MailboxSession#close()
      */
     public void close() {
         open = false;
@@ -97,7 +97,7 @@ public class SimpleMailboxSession implements MailboxSession, MailboxSession.User
 
     /*
      * (non-Javadoc)
-     * @see org.apache.james.imap.mailbox.MailboxSession#getSessionId()
+     * @see org.apache.james.mailbox.MailboxSession#getSessionId()
      */
     public long getSessionId() {
         return sessionId;
@@ -105,7 +105,7 @@ public class SimpleMailboxSession implements MailboxSession, MailboxSession.User
 
     /*
      * (non-Javadoc)
-     * @see org.apache.james.imap.mailbox.MailboxSession#isOpen()
+     * @see org.apache.james.mailbox.MailboxSession#isOpen()
      */
     public boolean isOpen() {
         return open;
@@ -143,28 +143,28 @@ public class SimpleMailboxSession implements MailboxSession, MailboxSession.User
     }
 
     /**
-     * @see org.apache.james.imap.mailbox.MailboxSession#getOtherUsersSpace()
+     * @see org.apache.james.mailbox.MailboxSession#getOtherUsersSpace()
      */
     public String getOtherUsersSpace() {
         return otherUsersSpace;
     }
 
     /**
-     * @see org.apache.james.imap.mailbox.MailboxSession#getPersonalSpace()
+     * @see org.apache.james.mailbox.MailboxSession#getPersonalSpace()
      */
     public String getPersonalSpace() {
         return personalSpace;
     }
 
     /**
-     * @see org.apache.james.imap.mailbox.MailboxSession#getSharedSpace()
+     * @see org.apache.james.mailbox.MailboxSession#getSharedSpace()
      */
     public Collection<String> getSharedSpaces() {
         return sharedSpaces;
     }
 
     /**
-     * @see org.apache.james.imap.mailbox.MailboxSession.User#getLocalePreferences()
+     * @see org.apache.james.mailbox.MailboxSession.User#getLocalePreferences()
      */
     public List<Locale> getLocalePreferences() {
         return localePreferences;
@@ -172,7 +172,7 @@ public class SimpleMailboxSession implements MailboxSession, MailboxSession.User
 
     /*
      * (non-Javadoc)
-     * @see org.apache.james.imap.mailbox.MailboxSession#getAttributes()
+     * @see org.apache.james.mailbox.MailboxSession#getAttributes()
      */
     public Map<Object, Object> getAttributes() {
         return attributes;
@@ -180,7 +180,7 @@ public class SimpleMailboxSession implements MailboxSession, MailboxSession.User
 
     /*
      * (non-Javadoc)
-     * @see org.apache.james.imap.mailbox.MailboxSession.User#getPassword()
+     * @see org.apache.james.mailbox.MailboxSession.User#getPassword()
      */
     public String getPassword() {
         return password;

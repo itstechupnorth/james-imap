@@ -20,9 +20,9 @@ package org.apache.james.imap.store.user;
 
 import java.util.List;
 
-import org.apache.james.imap.mailbox.SubscriptionException;
 import org.apache.james.imap.store.transaction.Mapper;
 import org.apache.james.imap.store.user.model.Subscription;
+import org.apache.james.mailbox.SubscriptionException;
 
 /**
  * Mapper for {@link Subscription}

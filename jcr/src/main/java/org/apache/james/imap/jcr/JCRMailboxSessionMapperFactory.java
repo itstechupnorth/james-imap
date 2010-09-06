@@ -24,13 +24,13 @@ import org.apache.james.imap.jcr.mail.JCRMailboxMapper;
 import org.apache.james.imap.jcr.mail.JCRMessageMapper;
 import org.apache.james.imap.jcr.user.JCRSubscriptionMapper;
 
-import org.apache.james.imap.mailbox.MailboxException;
-import org.apache.james.imap.mailbox.MailboxSession;
-import org.apache.james.imap.mailbox.SubscriptionException;
 import org.apache.james.imap.store.MailboxSessionMapperFactory;
 import org.apache.james.imap.store.mail.MailboxMapper;
 import org.apache.james.imap.store.mail.MessageMapper;
 import org.apache.james.imap.store.user.SubscriptionMapper;
+import org.apache.james.mailbox.MailboxException;
+import org.apache.james.mailbox.MailboxSession;
+import org.apache.james.mailbox.SubscriptionException;
 
 /**
  * JCR implementation of a {@link MailboxSessionMapperFactory}

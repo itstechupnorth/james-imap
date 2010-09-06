@@ -16,47 +16,41 @@
  * specific language governing permissions and limitations      *
  * under the License.                                           *
  ****************************************************************/
-package org.apache.james.imap.mailbox;
 
-import java.util.Comparator;
+package org.apache.james.mailbox;
+
+import java.util.Collection;
+
 
 /**
- * Orders by name with INBOX first.
+ * Subscribes users.
  */
-public class StandardMailboxMetaDataComparator implements
-        Comparator<MailboxMetaData> {
-
-    /**
-     * Static comparison.
-     * @param one possibly null
-     * @param two possibly null
-     * @return {@link Comparator#compare(Object, Object)}
-     */
-    public static int order(MailboxMetaData one, MailboxMetaData two) {
-        final String nameTwo = two.getPath().getName();
-        final int result;
-        final String nameOne = one.getPath().getName();
-        if (INBOX.equals(nameOne)) {
-            result = INBOX.equals(nameTwo) ? 0 : -1;
-        } else if (INBOX.equals(nameTwo)) {
-            result = 1;
-        } else if (nameOne == null) {
-            result = nameTwo == null ? 0 : 1;
-        } else if (nameTwo == null) {
-            result = -1;
-        } else {
-            result = nameOne.compareTo(nameTwo);
-        }
-        return result;
-    }
+public interface SubscriptionManager extends RequestAware{
     
-    private static final String INBOX = "INBOX";
+    /**
+     * Subscribes the user in the session to the given mailbox.
+     * @param session not null
+     * @param mailbox not null
+     * @throws SubscriptionException when subscription fails
+     */
+    public void subscribe(MailboxSession session, String mailbox)
+            throws SubscriptionException;
 
     /**
-     * @see Comparator#compare(Object, Object)
+     * Finds all subscriptions for the user in the session.
+     * @param user not null
+     * @return not null
+     * @throws SubscriptionException when subscriptions cannot be read
      */
-    public int compare(MailboxMetaData one, MailboxMetaData two) {
-        return order(one, two);
-    }
+    public Collection<String> subscriptions(MailboxSession session) throws SubscriptionException;
 
+    /**
+     * Unsubscribes the user in the session from the given mailbox.
+     * @param session not null
+     * @param mailbox not null
+     * @throws SubscriptionException when subscriptions cannot be read
+     */
+    public void unsubscribe(MailboxSession session, String mailbox)
+            throws SubscriptionException;
+   
 }

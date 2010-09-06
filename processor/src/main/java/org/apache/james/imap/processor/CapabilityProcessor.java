@@ -33,9 +33,9 @@ import org.apache.james.imap.api.message.response.ImapResponseMessage;
 import org.apache.james.imap.api.message.response.StatusResponseFactory;
 import org.apache.james.imap.api.process.ImapProcessor;
 import org.apache.james.imap.api.process.ImapSession;
-import org.apache.james.imap.mailbox.MailboxManager;
 import org.apache.james.imap.message.request.CapabilityRequest;
 import org.apache.james.imap.message.response.CapabilityResponse;
+import org.apache.james.mailbox.MailboxManager;
 
 public class CapabilityProcessor extends AbstractMailboxProcessor implements CapabilityImplementingProcessor {
 

@@ -26,8 +26,8 @@ import org.apache.james.imap.api.message.request.ImapRequest;
 import org.apache.james.imap.api.message.response.StatusResponseFactory;
 import org.apache.james.imap.api.process.ImapProcessor;
 import org.apache.james.imap.api.process.ImapSession;
-import org.apache.james.imap.mailbox.MailboxManager;
 import org.apache.james.imap.message.request.AuthenticateRequest;
+import org.apache.james.mailbox.MailboxManager;
 
 public class AuthenticateProcessor extends AbstractMailboxProcessor {
 
