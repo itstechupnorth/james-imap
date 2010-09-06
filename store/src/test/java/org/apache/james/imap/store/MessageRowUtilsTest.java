@@ -21,7 +21,8 @@ package org.apache.james.imap.store;
 
 import static org.junit.Assert.*;
 
-import org.apache.james.imap.store.mail.model.MailboxMembership;
+import org.apache.james.mailbox.store.ResultUtils;
+import org.apache.james.mailbox.store.mail.model.MailboxMembership;
 import org.junit.Test;
 
 public class MessageRowUtilsTest {    

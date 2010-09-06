@@ -23,10 +23,10 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.james.imap.store.Authenticator;
 import org.apache.james.mailbox.MailboxSession;
 import org.apache.james.mailbox.SubscriptionException;
 import org.apache.james.mailbox.SubscriptionManager;
+import org.apache.james.mailbox.store.Authenticator;
 
 /**
  * Stores users in memory.

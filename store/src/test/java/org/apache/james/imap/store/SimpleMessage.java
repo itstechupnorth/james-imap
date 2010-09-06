@@ -26,10 +26,10 @@ import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.james.imap.store.mail.model.Message;
-import org.apache.james.imap.store.mail.model.Header;
-import org.apache.james.imap.store.mail.model.Property;
-import org.apache.james.imap.store.streaming.RewindableInputStream;
+import org.apache.james.mailbox.store.mail.model.Header;
+import org.apache.james.mailbox.store.mail.model.Message;
+import org.apache.james.mailbox.store.mail.model.Property;
+import org.apache.james.mailbox.store.streaming.RewindableInputStream;
 
 public class SimpleMessage implements Message {
     

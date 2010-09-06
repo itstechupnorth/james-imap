@@ -18,7 +18,7 @@
  ****************************************************************/
 package org.apache.james.imap.store;
 
-import org.apache.james.imap.store.mail.model.Property;
+import org.apache.james.mailbox.store.mail.model.Property;
 
 /**
  * Simple implementation suitable for testing.

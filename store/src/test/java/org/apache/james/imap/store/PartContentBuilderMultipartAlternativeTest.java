@@ -26,8 +26,9 @@ import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.util.List;
 
-import org.apache.james.imap.store.streaming.PartContentBuilder;
 import org.apache.james.mailbox.MessageResult.Header;
+import org.apache.james.mailbox.store.ResultHeader;
+import org.apache.james.mailbox.store.streaming.PartContentBuilder;
 import org.junit.Before;
 import org.junit.Test;
 

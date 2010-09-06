@@ -18,7 +18,7 @@
  ****************************************************************/
 package org.apache.james.imap.store;
 
-import org.apache.james.imap.store.mail.model.Header;
+import org.apache.james.mailbox.store.mail.model.Header;
 
 public class SimpleHeader implements Header {
 

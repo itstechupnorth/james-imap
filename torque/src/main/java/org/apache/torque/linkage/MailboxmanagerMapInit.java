@@ -31,5 +31,5 @@ package org.apache.torque.linkage;
  */
 @Deprecated()
 public class MailboxmanagerMapInit extends
-        org.apache.james.mailboxmanager.torque.om.map.MailboxmanagerMapInit {
+        org.apache.james.mailbox.torque.om.map.MailboxmanagerMapInit {
 }
