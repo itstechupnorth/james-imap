@@ -17,7 +17,7 @@
  * under the License.                                           *
  ****************************************************************/
 
-package org.apache.james.mailbox.torque;
+package org.apache.james.mailbox.store;
 
 import static org.junit.Assert.*;
 
@@ -27,7 +27,7 @@ import java.nio.charset.Charset;
 import java.util.List;
 
 import org.apache.james.mailbox.MessageResult.Header;
-import org.apache.james.mailbox.store.StringBuilderChannel;
+import org.apache.james.mailbox.store.ResultHeader;
 import org.apache.james.mailbox.store.streaming.PartContentBuilder;
 import org.junit.Before;
 import org.junit.Test;
@@ -77,7 +77,6 @@ public class PartContentBuilderMultipartAlternativeTest {
         builder = new PartContentBuilder();
     }
 
-  
     @Test
     public void testShouldLocatePartsOfMultipartAlterative() throws Exception {
         assertEquals(ALT_PLAIN_BODY, bodyContent(MULTIPART_ALTERNATIVE, 1));
@@ -124,7 +123,7 @@ public class PartContentBuilderMultipartAlternativeTest {
             throws Exception {
         List<Header> headers = headers(mail, position);
         assertEquals(1, headers.size());
-        Header header = (Header) headers.get(0);
+        ResultHeader header = (ResultHeader) headers.get(0);
         assertEquals(CONTENT_TYPE, header.getName());
         assertEquals(contentType, header.getValue());
     }
