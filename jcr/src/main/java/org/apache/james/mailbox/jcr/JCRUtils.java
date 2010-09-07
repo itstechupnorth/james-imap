@@ -70,7 +70,7 @@ public class JCRUtils implements JCRImapConstants{
     public static void registerCnd(Session session) {
         // Register the custom node types defined in the CND file
         InputStream is = Thread.currentThread().getContextClassLoader()
-                              .getResourceAsStream("org/apache/james/imap/jcr/imap.cnd");
+                              .getResourceAsStream("org/apache/james/mailbox/jcr/imap.cnd");
         try {
             CndImporter.registerNodeTypes(new InputStreamReader(is), session);
         } catch (Exception e) {
