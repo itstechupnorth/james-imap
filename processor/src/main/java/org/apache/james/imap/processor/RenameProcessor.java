@@ -19,8 +19,6 @@
 
 package org.apache.james.imap.processor;
 
-import javax.mail.Flags;
-
 import org.apache.james.imap.api.ImapCommand;
 import org.apache.james.imap.api.ImapConstants;
 import org.apache.james.imap.api.ImapMessage;
@@ -61,6 +59,7 @@ public class RenameProcessor extends AbstractMailboxProcessor {
             MailboxSession mailboxsession = ImapSessionUtils.getMailboxSession(session);
             if (existingPath.getName().equalsIgnoreCase(ImapConstants.INBOX_NAME)) {
 
+                
                 // if the mailbox is INBOX we need to move move the messages
                 // https://issues.apache.org/jira/browse/IMAP-188                           
                 MessageRange range = MessageRange.all();
@@ -69,10 +68,9 @@ public class RenameProcessor extends AbstractMailboxProcessor {
                     mailboxManager.createMailbox(newPath, mailboxsession);
                 }
                 mailboxManager.copyMessages(range, existingPath, newPath, mailboxsession);
-                
-                org.apache.james.mailbox.MessageManager inbox = mailboxManager.getMailbox(existingPath, mailboxsession);
-                inbox.setFlags(new Flags(Flags.Flag.DELETED), true, false, range, mailboxsession);
-                inbox.expunge(range, mailboxsession);
+                mailboxManager.deleteMailbox(existingPath, mailboxsession);
+                mailboxManager.createMailbox(existingPath, mailboxsession);
+              
             } else {
                 mailboxManager.renameMailbox(existingPath, newPath, mailboxsession);
             }
