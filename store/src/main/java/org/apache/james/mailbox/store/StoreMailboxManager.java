@@ -25,8 +25,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Random;
 
-import javax.mail.Flags;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.james.mailbox.BadCredentialsException;
@@ -292,38 +290,15 @@ public abstract class StoreMailboxManager<Id> implements MailboxManager {
                         final String subNewName = to.getName() + subOriginalName.substring(from.getName().length());
                         final MailboxPath fromPath = new MailboxPath(children, subOriginalName);
                         final MailboxPath toPath = new MailboxPath(children, subNewName);
-                        
-                        
-                        // TODO: Move to processor
-                        if (sub.getName().equalsIgnoreCase("INBOX") == false) {
-                           
-                            sub.setName(subNewName);
-                            mapper.save(sub);
-                            dispatcher.mailboxRenamed(fromPath, toPath, session.getSessionId());
 
-                            if (log.isDebugEnabled())
-                                log.debug("Rename mailbox sub-mailbox " + subOriginalName + " to " + subNewName);
-                            
-                        } else {
-                           
-                            // if the mailbox is INBOX we need to move move the messages
-                            // https://issues.apache.org/jira/browse/IMAP-188                           
-                            MessageRange range = MessageRange.all();
-                            
-                            // create the mailbox if it not exist yet
-                            if (mailboxExists(toPath, session) == false) {
-                                createMailbox(toPath, session);
-                            }
-                            copyMessages(range, fromPath, toPath, session);
-                            
-                            org.apache.james.mailbox.MessageManager inbox = getMailbox(fromPath, session);
-                            inbox.setFlags(new Flags(Flags.Flag.DELETED), true, false, range, session);
-                            inbox.expunge(range, session);
-                            
-                        }
+                        sub.setName(subNewName);
+                        mapper.save(sub);
+                        dispatcher.mailboxRenamed(fromPath, toPath, session.getSessionId());
 
-
-
+                        if (log.isDebugEnabled())
+                            log.debug("Rename mailbox sub-mailbox " + subOriginalName + " to " + subNewName);
+                            
+                      
                     }
                 } finally {
                     lock.unlock(children);

@@ -19,7 +19,10 @@
 
 package org.apache.james.imap.processor;
 
+import javax.mail.Flags;
+
 import org.apache.james.imap.api.ImapCommand;
+import org.apache.james.imap.api.ImapConstants;
 import org.apache.james.imap.api.ImapMessage;
 import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.api.message.request.ImapRequest;
@@ -33,6 +36,8 @@ import org.apache.james.mailbox.MailboxExistsException;
 import org.apache.james.mailbox.MailboxManager;
 import org.apache.james.mailbox.MailboxNotFoundException;
 import org.apache.james.mailbox.MailboxPath;
+import org.apache.james.mailbox.MailboxSession;
+import org.apache.james.mailbox.MessageRange;
 
 public class RenameProcessor extends AbstractMailboxProcessor {
 
@@ -53,7 +58,24 @@ public class RenameProcessor extends AbstractMailboxProcessor {
         final MailboxPath newPath = buildFullPath(session, request.getNewName());
         try {
             final MailboxManager mailboxManager = getMailboxManager();
-            mailboxManager.renameMailbox(existingPath, newPath, ImapSessionUtils.getMailboxSession(session));
+            MailboxSession mailboxsession = ImapSessionUtils.getMailboxSession(session);
+            if (existingPath.getName().equalsIgnoreCase(ImapConstants.INBOX_NAME)) {
+
+                // if the mailbox is INBOX we need to move move the messages
+                // https://issues.apache.org/jira/browse/IMAP-188                           
+                MessageRange range = MessageRange.all();
+                // create the mailbox if it not exist yet
+                if (mailboxManager.mailboxExists(newPath, mailboxsession) == false) {
+                    mailboxManager.createMailbox(newPath, mailboxsession);
+                }
+                mailboxManager.copyMessages(range, existingPath, newPath, mailboxsession);
+                
+                org.apache.james.mailbox.MessageManager inbox = mailboxManager.getMailbox(existingPath, mailboxsession);
+                inbox.setFlags(new Flags(Flags.Flag.DELETED), true, false, range, mailboxsession);
+                inbox.expunge(range, mailboxsession);
+            } else {
+                mailboxManager.renameMailbox(existingPath, newPath, mailboxsession);
+            }
             okComplete(command, tag, responder);
             unsolicitedResponses(session, responder, false);
         } catch (MailboxExistsException e) {
