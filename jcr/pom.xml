@@ -26,17 +26,17 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.apache.james</groupId>
-  <artifactId>apache-james-imap-jcr</artifactId>
-  <name>Apache James IMAP JCR Mailbox Manager</name>
+  <artifactId>apache-james-mailbox-jcr</artifactId>
+  <name>Apache James JCR Mailbox Manager</name>
   <dependencies>
     <dependency>
       <groupId>org.apache.james</groupId>
-      <artifactId>apache-james-imap-mailbox</artifactId>
+      <artifactId>apache-james-mailbox-api</artifactId>
     </dependency>
     
     <dependency>
       <groupId>org.apache.james</groupId>
-      <artifactId>apache-james-imap-store</artifactId>
+      <artifactId>apache-james-mailbox-store</artifactId>
     </dependency>
     <dependency>
       <groupId>org.apache.james</groupId>

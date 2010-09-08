@@ -26,8 +26,8 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.apache.james</groupId>
-  <artifactId>apache-james-imap-jpa</artifactId>
-  <name>Apache James IMAP JPA Mailbox Manager</name>
+  <artifactId>apache-james-mailbox-jpa</artifactId>
+  <name>Apache James JPA Mailbox Manager</name>
   <dependencies>
     <dependency>
       <groupId>${javax.mail.groupId}</groupId>
@@ -39,12 +39,12 @@
     </dependency>
     <dependency>
       <groupId>org.apache.james</groupId>
-      <artifactId>apache-james-imap-mailbox</artifactId>
+      <artifactId>apache-james-mailbox-api</artifactId>
     </dependency>
     
     <dependency>
       <groupId>org.apache.james</groupId>
-      <artifactId>apache-james-imap-store</artifactId>
+      <artifactId>apache-james-mailbox-store</artifactId>
     </dependency>
     
     <dependency>

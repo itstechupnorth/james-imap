@@ -27,7 +27,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.apache.james</groupId>
   <artifactId>apache-james-imap-torque</artifactId>
-  <name>Apache JAMES Imap Torque Mailbox Manager</name>
+  <name>Apache JAMES Torque Mailbox Manager</name>
   <dependencies>
     <dependency>
       <groupId>${javax.mail.groupId}</groupId>
@@ -35,15 +35,11 @@
     </dependency>
     <dependency>
       <groupId>org.apache.james</groupId>
-      <artifactId>apache-james-imap-api</artifactId>
+      <artifactId>apache-james-mailbox-api</artifactId>
     </dependency>
     <dependency>
       <groupId>org.apache.james</groupId>
-      <artifactId>apache-james-imap-mailbox</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.james</groupId>
-      <artifactId>apache-james-imap-store</artifactId>
+      <artifactId>apache-james-mailbox-store</artifactId>
     </dependency>
     
     <dependency>
@@ -87,7 +83,7 @@
     
     <dependency>
       <groupId>org.apache.james</groupId>
-      <artifactId>apache-james-imap-store</artifactId>
+      <artifactId>apache-james-mailbox-store</artifactId>
       <type>test-jar</type>
       <scope>test</scope>
     </dependency>

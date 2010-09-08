@@ -26,8 +26,8 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.apache.james</groupId>
-  <artifactId>apache-james-imap-store</artifactId>
-  <name>Apache James IMAP Mailbox Store Framework</name>
+  <artifactId>apache-james-mailbox-store</artifactId>
+  <name>Apache James Mailbox Store Framework</name>
   <dependencies>
     <dependency>
       <groupId>${javax.mail.groupId}</groupId>
@@ -35,7 +35,7 @@
     </dependency>
     <dependency>
       <groupId>org.apache.james</groupId>
-      <artifactId>apache-james-imap-mailbox</artifactId>
+      <artifactId>apache-james-mailbox-api</artifactId>
     </dependency>
 
     <dependency>
