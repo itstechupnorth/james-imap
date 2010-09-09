@@ -36,4 +36,9 @@ public interface MailboxConstants {
      */
     public static final String DEFAULT_DELIMITER_STRING = ".";
 
+    /**
+     * The name of the INBOX
+     */
+    public static final String INBOX = "INBOX";
+
 }

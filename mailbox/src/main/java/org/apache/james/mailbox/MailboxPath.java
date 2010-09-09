@@ -169,4 +169,14 @@ public class MailboxPath {
         return result;
    }
     
+    /**
+     * Return a {@link MailboxPath} which represent the INBOX of the given username
+     * 
+     * @param username
+     * @return inbox
+     */
+    public static MailboxPath inbox(String username) {
+        return new MailboxPath(MailboxConstants.USER_NAMESPACE, username, MailboxConstants.INBOX);
+    }
+    
 }
