@@ -35,7 +35,6 @@ import org.apache.james.mailbox.MailboxManager;
 import org.apache.james.mailbox.MailboxNotFoundException;
 import org.apache.james.mailbox.MailboxPath;
 import org.apache.james.mailbox.MailboxSession;
-import org.apache.james.mailbox.MessageRange;
 
 public class RenameProcessor extends AbstractMailboxProcessor {
 
@@ -57,22 +56,13 @@ public class RenameProcessor extends AbstractMailboxProcessor {
         try {
             final MailboxManager mailboxManager = getMailboxManager();
             MailboxSession mailboxsession = ImapSessionUtils.getMailboxSession(session);
-            if (existingPath.getName().equalsIgnoreCase(ImapConstants.INBOX_NAME)) {
+            mailboxManager.renameMailbox(existingPath, newPath, mailboxsession);
 
-                
-                // if the mailbox is INBOX we need to move move the messages
-                // https://issues.apache.org/jira/browse/IMAP-188                           
-                MessageRange range = MessageRange.all();
-                // create the mailbox if it not exist yet
-                if (mailboxManager.mailboxExists(newPath, mailboxsession) == false) {
-                    mailboxManager.createMailbox(newPath, mailboxsession);
+            if (existingPath.getName().equalsIgnoreCase(ImapConstants.INBOX_NAME)) {
+                if (mailboxManager.mailboxExists(existingPath, mailboxsession) == false) {
+                    mailboxManager.createMailbox(existingPath, mailboxsession);
                 }
-                mailboxManager.copyMessages(range, existingPath, newPath, mailboxsession);
-                mailboxManager.deleteMailbox(existingPath, mailboxsession);
-                mailboxManager.createMailbox(existingPath, mailboxsession);
               
-            } else {
-                mailboxManager.renameMailbox(existingPath, newPath, mailboxsession);
             }
             okComplete(command, tag, responder);
             unsolicitedResponses(session, responder, false);
