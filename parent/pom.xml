@@ -215,11 +215,6 @@
       </dependency>
       <dependency>
         <groupId>org.apache.james</groupId>
-        <artifactId>apache-james-imap-seda</artifactId>
-        <version>${pom.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.james</groupId>
         <artifactId>apache-james-mailbox-jpa</artifactId>
         <version>${pom.version}</version>
       </dependency>
@@ -232,13 +227,6 @@
         <groupId>org.apache.james</groupId>
         <artifactId>apache-james-mailbox-memory</artifactId>
         <version>${pom.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.james</groupId>
-        <artifactId>apache-james-imap-seda</artifactId>
-        <version>${pom.version}</version>
-        <type>test-jar</type>
-        <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>org.apache.james</groupId>
@@ -265,13 +253,6 @@
         <type>test-jar</type>
         <scope>test</scope>
       </dependency>
-      <dependency>
-        <groupId>org.apache.james</groupId>
-        <artifactId>apache-james-imap-deployment</artifactId>
-        <version>${pom.version}</version>
-        <type>test-jar</type>
-        <scope>test</scope>
-      </dependency>   
       <dependency>
         <groupId>org.apache.james</groupId>
         <artifactId>apache-james-mailbox-maildir</artifactId>
