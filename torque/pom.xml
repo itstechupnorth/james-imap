@@ -26,7 +26,7 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.apache.james</groupId>
-  <artifactId>apache-james-imap-torque</artifactId>
+  <artifactId>apache-james-mailbox-torque</artifactId>
   <name>Apache JAMES Torque Mailbox Manager</name>
   <dependencies>
     <dependency>
