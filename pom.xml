@@ -21,7 +21,7 @@
   <parent>
     <groupId>org.apache.james</groupId>
     <artifactId>apache-james-imap-parent</artifactId>
-    <version>0.1</version>
+    <version>0.2-SNAPSHOT</version>
     <relativePath>./parent/pom.xml</relativePath>
     
   </parent>
@@ -29,7 +29,7 @@
   <groupId>org.apache.james</groupId>
   <artifactId>apache-james-imap</artifactId>
   <name>Apache JAMES Imap</name>
-  <version>0.1</version>
+  <version>0.2-SNAPSHOT</version>
   <description>The Apache JAMES Imap Protocol</description>
   <url>http://james.apache.org/imap/</url>
   <inceptionYear>2002</inceptionYear>
@@ -57,9 +57,9 @@
   </distributionManagement>
   
   <scm>
-    <connection>scm:svn:http://svn.apache.org/repos/asf/james/imap/tags/apache-james-imap-0.1</connection>
-    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/james/imap/tags/apache-james-imap-0.1</developerConnection>
-    <url>http://svn.apache.org/viewcvs.cgi/james/imap/trunk/tags/apache-james-imap-0.1?root=Apache-SVN</url>
+    <connection>scm:svn:http://svn.apache.org/repos/asf/james/imap/trunk</connection>
+    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/james/imap/trunk</developerConnection>
+    <url>http://svn.apache.org/viewcvs.cgi/james/imap/trunk?root=Apache-SVN</url>
   </scm>
 
   <profiles>
