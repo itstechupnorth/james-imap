@@ -158,17 +158,12 @@
           </dependency>
           <dependency>
             <groupId>org.apache.james</groupId>
-            <artifactId>apache-james-imap-api</artifactId>
+            <artifactId>apache-james-mailbox-api</artifactId>
             <version>${pom.version}</version>
           </dependency>
           <dependency>
             <groupId>org.apache.james</groupId>
-            <artifactId>apache-james-imap-mailbox</artifactId>
-            <version>${pom.version}</version>
-          </dependency>
-          <dependency>
-            <groupId>org.apache.james</groupId>
-            <artifactId>apache-james-imap-store</artifactId>
+            <artifactId>apache-james-mailbox-store</artifactId>
             <version>${pom.version}</version>
           </dependency>
           <dependency>
