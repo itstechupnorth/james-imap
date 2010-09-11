@@ -21,7 +21,7 @@
   <parent>
     <artifactId>apache-james-imap-parent</artifactId>
     <groupId>org.apache.james</groupId>
-    <version>0.1-M2-SNAPSHOT</version>
+    <version>0.1</version>
     <relativePath>../parent/pom.xml</relativePath>
   </parent>
   <modelVersion>4.0.0</modelVersion>
@@ -158,17 +158,12 @@
           </dependency>
           <dependency>
             <groupId>org.apache.james</groupId>
-            <artifactId>apache-james-imap-api</artifactId>
+            <artifactId>apache-james-mailbox-api</artifactId>
             <version>${pom.version}</version>
           </dependency>
           <dependency>
             <groupId>org.apache.james</groupId>
-            <artifactId>apache-james-imap-mailbox</artifactId>
-            <version>${pom.version}</version>
-          </dependency>
-          <dependency>
-            <groupId>org.apache.james</groupId>
-            <artifactId>apache-james-imap-store</artifactId>
+            <artifactId>apache-james-mailbox-store</artifactId>
             <version>${pom.version}</version>
           </dependency>
           <dependency>
