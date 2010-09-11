@@ -104,7 +104,7 @@
         <extensions>true</extensions>
         <configuration>
           <instructions>
-            <Export-Package>org.apache.james.imap.*</Export-Package>
+            <Export-Package>org.apache.james.imap.*,org.apache.james.mailbox.*</Export-Package>
             <Embed-Dependency>*;scope=runtime</Embed-Dependency>
           </instructions>
         </configuration>
