@@ -21,8 +21,18 @@ package org.apache.james.imap.processor.base;
 
 import javax.mail.MessagingException;
 
+/**
+ * Exception which should get thrown if an invalid message set was specified 
+ * via an IMAP command
+ *
+ */
 public class MessageRangeException extends MessagingException{
     
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 5016914557908202117L;
+
     public MessageRangeException(String msg) {
         super(msg);
     }
