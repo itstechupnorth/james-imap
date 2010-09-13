@@ -16,14 +16,14 @@
  * specific language governing permissions and limitations      *
  * under the License.                                           *
  ****************************************************************/
-package org.apache.james.imap.jpa.migrator;
+package org.apache.james.mailbox.jpa.migrator;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 
-import org.apache.james.imap.jpa.migrator.command.JpaMigrateCommand;
-import org.apache.james.imap.jpa.migrator.exception.JpaMigrateException;
+import org.apache.james.mailbox.jpa.migrator.command.JpaMigrateCommand;
+import org.apache.james.mailbox.jpa.migrator.exception.JpaMigrateException;
 
 /**
  * The class that will manage the migration commands for the James JPA database.

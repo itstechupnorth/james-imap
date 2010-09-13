@@ -16,24 +16,28 @@
  * specific language governing permissions and limitations      *
  * under the License.                                           *
  ****************************************************************/
-package org.apache.james.imap.jpa.migrator.command;
+package org.apache.james.mailbox.jpa.migrator.command;
 
 import javax.persistence.EntityManager;
-import javax.persistence.Query;
+
+import org.apache.james.mailbox.jpa.migrator.exception.JpaMigrateException;
 
 /**
- *
+ * JIRA IMAP-172 is "Cleanup JPAMailbox".
+ * 
+ * Simply drop the MAILBOX.MESSAGECOUNT and MAILBOX.SIZE columns.
+ * 
+ * @link https://issues.apache.org/jira/browse/IMAP-172
+ * 
  */
-public class JpaMigrateQuery {
-    
-    /**
-     * @param em
-     * @param update
+public class IMAP172JpaMigrateCommand implements JpaMigrateCommand {
+
+    /* (non-Javadoc)
+     * @see org.apache.james.imap.jpa.migrator.command.JpaMigrateCommand#migrate(javax.persistence.EntityManager)
      */
-    public static void executeUpdate(EntityManager em, String update) {
-        Query query = em.createNativeQuery(update);
-        int result = query.executeUpdate();
-        System.out.println("ExecuteUpdate returned a result=" + result);        
+    public void migrate(EntityManager em) throws JpaMigrateException {
+        JpaMigrateQuery.executeUpdate(em, "ALTER TABLE MAILBOX DROP COLUMN MESSAGECOUNT");
+        JpaMigrateQuery.executeUpdate(em, "ALTER TABLE MAILBOX DROP COLUMN SIZE");
     }
 
 }

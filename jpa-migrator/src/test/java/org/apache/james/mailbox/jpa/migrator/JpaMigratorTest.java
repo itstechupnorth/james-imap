@@ -16,10 +16,10 @@
  * specific language governing permissions and limitations      *
  * under the License.                                           *
  ****************************************************************/
-package org.apache.james.imap.jpa.migrator;
+package org.apache.james.mailbox.jpa.migrator;
 
-import org.apache.james.imap.jpa.migrator.JpaMigrator;
-import org.apache.james.imap.jpa.migrator.exception.JpaMigrateException;
+import org.apache.james.mailbox.jpa.migrator.JpaMigrator;
+import org.apache.james.mailbox.jpa.migrator.exception.JpaMigrateException;
 import org.junit.Test;
 
 public class JpaMigratorTest {

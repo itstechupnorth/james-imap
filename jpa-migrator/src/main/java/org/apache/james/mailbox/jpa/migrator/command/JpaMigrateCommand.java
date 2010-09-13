@@ -16,27 +16,26 @@
  * specific language governing permissions and limitations      *
  * under the License.                                           *
  ****************************************************************/
-package org.apache.james.imap.jpa.migrator.command;
+package org.apache.james.mailbox.jpa.migrator.command;
 
 import javax.persistence.EntityManager;
 
-import org.apache.james.imap.jpa.migrator.exception.JpaMigrateException;
+import org.apache.james.mailbox.jpa.migrator.exception.JpaMigrateException;
 
 /**
- * JIRA 176 is "Change users' namespace to #private".
- * 
- * Simply update the MAILBOX.NAMESPACE column with "#private" value.
- * 
- * @link https://issues.apache.org/jira/browse/IMAP-176
- * 
+ * A command that apply to James database the needed updates.
  */
-public class IMAP176JpaMigrateCommand implements JpaMigrateCommand {
-
-    /* (non-Javadoc)
-     * @see org.apache.james.imap.jpa.migrator.command.JpaMigrateCommand#migrate(javax.persistence.EntityManager)
+public interface JpaMigrateCommand {
+    
+    /**
+     * Executes the needed SQL commands on the database via the provided JPA entity manager.
+     * A transaction on the provided entity manager must be begun by the caller.
+     * It is also the reponsibility of the caller to commit the opened transaction after
+     * calling the migrate method.
+     * 
+     * @param em the provided Entity Manager
+     * @throws JpaMigrateException
      */
-    public void migrate(EntityManager em) throws JpaMigrateException {
-        JpaMigrateQuery.executeUpdate(em, "UPDATE MAILBOX SET NAMESPACE = '#private'");
-    }
+    void migrate(EntityManager em) throws JpaMigrateException;
 
 }

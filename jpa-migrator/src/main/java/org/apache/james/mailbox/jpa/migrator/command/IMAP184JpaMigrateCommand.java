@@ -16,29 +16,27 @@
  * specific language governing permissions and limitations      *
  * under the License.                                           *
  ****************************************************************/
-package org.apache.james.imap.jpa.migrator.command;
+package org.apache.james.mailbox.jpa.migrator.command;
 
 import javax.persistence.EntityManager;
 
-import org.apache.james.imap.jpa.migrator.exception.JpaMigrateException;
+import org.apache.james.mailbox.jpa.migrator.exception.JpaMigrateException;
 
 /**
- * JIRA IMAP-165 is "Add index annotation on frequently used columns".
+ * JIRA IMAP-184 is "Remove size of MailboxMembership".
  * 
- * Add 3 indexes for the DELETED, SEEN and RECENT columns of MEMBERSHIP table.
+ * Simply drop the MAILBOXMEMBERSHIP.SIZE column.
  * 
- * @link https://issues.apache.org/jira/browse/IMAP-165
+ * @link https://issues.apache.org/jira/browse/IMAP-184
  * 
  */
-public class IMAP165JpaMigrateCommand implements JpaMigrateCommand {
+public class IMAP184JpaMigrateCommand implements JpaMigrateCommand {
 
     /* (non-Javadoc)
      * @see org.apache.james.imap.jpa.migrator.command.JpaMigrateCommand#migrate(javax.persistence.EntityManager)
      */
     public void migrate(EntityManager em) throws JpaMigrateException {
-        JpaMigrateQuery.executeUpdate(em, "CREATE INDEX I_MMBRSHP_SEEN ON MEMBERSHIP (SEEN)");
-        JpaMigrateQuery.executeUpdate(em, "CREATE INDEX I_MMBRSHP_RECENT ON MEMBERSHIP (RECENT)");
-        JpaMigrateQuery.executeUpdate(em, "CREATE INDEX I_MMBRSHP_DELETED ON MEMBERSHIP (DELETED)");
+        JpaMigrateQuery.executeUpdate(em, "ALTER TABLE MAILBOXMEMBERSHIP DROP COLUMN SIZE");
     }
 
 }

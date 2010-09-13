@@ -23,89 +23,31 @@
     <parent>
         <artifactId>apache-james-imap-parent</artifactId>
         <groupId>org.apache.james</groupId>
-        <version>0.1-M2-SNAPSHOT</version>
+        <version>0.2-SNAPSHOT</version>
         <relativePath>../parent/pom.xml</relativePath>
     </parent>
-    
     <modelVersion>4.0.0</modelVersion>
-    
     <groupId>org.apache.james</groupId>
-    <artifactId>apache-james-imap-jpa-migrator</artifactId>
-    <name>Apache James IMAP JPA Mailbox Migrator</name>
-
+    <artifactId>apache-james-mailbox-jpa-migrator</artifactId>
+    <name>Apache James JPA Mailbox Migrator</name>
     <dependencies>
-<!--
-        <dependency>
-            <groupId>${javax.mail.groupId}</groupId>
-            <artifactId>${javax.mail.artifactId}</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>${javax.activation.groupId}</groupId>
-            <artifactId>${javax.activation.artifactId}</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.apache.james</groupId>
-            <artifactId>apache-james-imap-api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.james</groupId>
-            <artifactId>apache-james-imap-mailbox</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.james</groupId>
-            <artifactId>apache-james-imap-store</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.james</groupId>
-            <artifactId>apache-james-imap-jpa</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.james</groupId>
-            <artifactId>apache-mime4j</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>commons-logging</groupId>
-            <artifactId>commons-logging</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>commons-lang</groupId>
-            <artifactId>commons-lang</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>commons-collections</groupId>
-            <artifactId>commons-collections</artifactId>
-        </dependency>
--->
         <dependency>
             <groupId>org.apache.derby</groupId>
             <artifactId>derby</artifactId>
             <scope>runtime</scope>
         </dependency>
-
-<!--
-            <dependency> <groupId>javax.persistence</groupId>
-            <artifactId>persistence-api</artifactId> </dependency>
--->
         <dependency>
             <groupId>org.apache.openjpa</groupId>
             <artifactId>openjpa</artifactId>
         </dependency>
-        
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <scope>test</scope>
         </dependency>
-
     </dependencies>
-
     <build>
-
         <plugins>
-
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
@@ -114,7 +56,6 @@
                     <target>1.5</target>
                 </configuration>
             </plugin>
-
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>appassembler-maven-plugin</artifactId>
@@ -160,9 +101,7 @@
                             </platforms>
                         </program>
                     </programs>
-
                 </configuration>
-
                 <executions>
                     <execution>
                         <id>make-appassemble</id>
@@ -172,11 +111,8 @@
                         </goals>
                     </execution>
                 </executions>
-
             </plugin>
-
             <plugin>
-
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-antrun-plugin</artifactId>
                 <version>1.2</version>
@@ -184,7 +120,6 @@
                     <execution>
                         <phase>package</phase>
                         <configuration>
-
                             <tasks>
                                 <!--
                                     this is only needed because windows freak out on long cmd
@@ -195,9 +130,7 @@
                                     token="%BASEDIR%\lib" value="..\lib" />
                                 <replace file="${project.build.directory}/appassembler/bin/run.sh"
                                     token="setenv" value="setenv.sh" />
-
                             </tasks>
-
                         </configuration>
                         <goals>
                             <goal>run</goal>
@@ -205,7 +138,6 @@
                     </execution>
                 </executions>
             </plugin>
-
             <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
                 <configuration>
@@ -222,15 +154,11 @@
                     </execution>
                 </executions>
             </plugin>
-
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-deploy-plugin</artifactId>
                 <version>2.4</version>
             </plugin>
-
         </plugins>
-
     </build>
-
 </project>

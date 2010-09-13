@@ -16,32 +16,29 @@
  * specific language governing permissions and limitations      *
  * under the License.                                           *
  ****************************************************************/
-package org.apache.james.imap.jpa.migrator.exception;
+package org.apache.james.mailbox.jpa.migrator.command;
+
+import javax.persistence.EntityManager;
+
+import org.apache.james.mailbox.jpa.migrator.exception.JpaMigrateException;
 
 /**
- * Exception to be thrown when a problem occurs in the migration process.
- *
+ * JIRA IMAP-165 is "Add index annotation on frequently used columns".
+ * 
+ * Add 3 indexes for the DELETED, SEEN and RECENT columns of MEMBERSHIP table.
+ * 
+ * @link https://issues.apache.org/jira/browse/IMAP-165
+ * 
  */
-public class JpaMigrateException extends Exception {
+public class IMAP165JpaMigrateCommand implements JpaMigrateCommand {
 
-    /**
-     * 
+    /* (non-Javadoc)
+     * @see org.apache.james.imap.jpa.migrator.command.JpaMigrateCommand#migrate(javax.persistence.EntityManager)
      */
-    private static final long serialVersionUID = 1L;
-
-    public JpaMigrateException() {
-    }
-
-    public JpaMigrateException(String message) {
-        super(message);
-    }
-
-    public JpaMigrateException(Throwable cause) {
-        super(cause);
-    }
-
-    public JpaMigrateException(String message, Throwable cause) {
-        super(message, cause);
+    public void migrate(EntityManager em) throws JpaMigrateException {
+        JpaMigrateQuery.executeUpdate(em, "CREATE INDEX I_MMBRSHP_SEEN ON MEMBERSHIP (SEEN)");
+        JpaMigrateQuery.executeUpdate(em, "CREATE INDEX I_MMBRSHP_RECENT ON MEMBERSHIP (RECENT)");
+        JpaMigrateQuery.executeUpdate(em, "CREATE INDEX I_MMBRSHP_DELETED ON MEMBERSHIP (DELETED)");
     }
 
 }
