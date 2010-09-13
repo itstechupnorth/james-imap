@@ -78,7 +78,6 @@ public class SearchProcessor extends AbstractMailboxProcessor {
             unsolicitedResponses(session, responder, omitExpunged, useUids);
             okComplete(command, tag, responder);
         } catch (MailboxException e) {
-        	e.printStackTrace();
             no(command, tag, responder, HumanReadableText.SEARCH_FAILED);
         }
     }
