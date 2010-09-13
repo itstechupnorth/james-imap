@@ -65,18 +65,8 @@ public class CopyProcessor extends AbstractMailboxProcessor {
                         ResponseCode.tryCreate());
             } else {
                 for (int i = 0; i < idSet.length; i++) {
-                    final long highVal;
-                    final long lowVal;
-                    if (useUids) {
-                        highVal = idSet[i].getHighVal();
-                        lowVal = idSet[i].getLowVal();
-                    } else {
-                        highVal = session.getSelected().uid(
-                                (int) idSet[i].getHighVal());
-                        lowVal = session.getSelected().uid(
-                                (int) idSet[i].getLowVal());
-                    }
-                    MessageRange messageSet = MessageRange.range(lowVal, highVal);
+                    
+                    MessageRange messageSet = messageRange(currentMailbox, idSet[i], useUids);
 
                     mailboxManager.copyMessages(messageSet, currentMailbox.getPath(),
                                                 targetMailbox, mailboxSession);

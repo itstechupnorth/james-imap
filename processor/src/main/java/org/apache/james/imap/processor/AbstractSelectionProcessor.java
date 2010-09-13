@@ -143,6 +143,9 @@ abstract class AbstractSelectionProcessor extends AbstractMailboxProcessor {
         if (firstUnseen != null) {
             final long unseenUid = firstUnseen;
             int msn = selected.msn(unseenUid);
+
+            if (msn == SelectedMailbox.NO_SUCH_MESSAGE) throw new MailboxException("No message found with uid " + unseenUid);
+
             final StatusResponse untaggedOk = statusResponseFactory.untaggedOk(
                     HumanReadableText.UNSEEN, ResponseCode.unseen(msn));
             responder.respond(untaggedOk);

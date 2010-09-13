@@ -28,6 +28,7 @@ import org.apache.james.imap.api.ImapCommand;
 import org.apache.james.imap.api.ImapConstants;
 import org.apache.james.imap.api.ImapMessage;
 import org.apache.james.imap.api.display.HumanReadableText;
+import org.apache.james.imap.api.message.IdRange;
 import org.apache.james.imap.api.message.request.ImapRequest;
 import org.apache.james.imap.api.message.response.ImapResponseMessage;
 import org.apache.james.imap.api.message.response.StatusResponse;
@@ -177,6 +178,8 @@ abstract public class AbstractMailboxProcessor extends AbstractChainedProcessor 
             MessageResult mr = it.next();
             final long uid = mr.getUid();
             int msn = selected.msn(uid);
+            if (msn == SelectedMailbox.NO_SUCH_MESSAGE) throw new MailboxException("No message found with uid " + uid);
+            
             final Flags flags = mr.getFlags();
             final Long uidOut;
             if (useUid) {
@@ -354,6 +357,33 @@ abstract public class AbstractMailboxProcessor extends AbstractChainedProcessor 
             result = mailboxManager.getMailbox(selectedMailbox.getPath(), ImapSessionUtils.getMailboxSession(session));
         }
         return result;
+    }
+    
+    /**
+     * Return a {@link MessageRange} for the given values. If the MessageRange can not be generated a {@link MailboxException} will 
+     * get thrown
+     * 
+     * @param selected
+     * @param range
+     * @param useUids
+     * @return
+     * @throws MailboxException
+     */
+    protected MessageRange messageRange(SelectedMailbox selected, IdRange range, boolean useUids) throws MailboxException{
+    	long lowVal = range.getLowVal();
+        long highVal = range.getHighVal();
+    	if (useUids == false) {
+    		if (lowVal != Long.MAX_VALUE) {
+                lowVal = selected.uid((int) lowVal);
+                if (lowVal == SelectedMailbox.NO_SUCH_MESSAGE) throw new MailboxException("No message found with msn " + lowVal);
+    		}
+    		if (highVal != Long.MAX_VALUE) {
+                highVal = selected.uid((int) highVal);
+                if (highVal == SelectedMailbox.NO_SUCH_MESSAGE) throw new MailboxException("No message found with msn " + highVal);
+    		}
+        }
+        MessageRange mRange = MessageRange.range(lowVal, highVal);
+        return mRange;
     }
 
 }

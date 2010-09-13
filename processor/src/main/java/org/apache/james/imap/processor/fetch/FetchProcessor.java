@@ -85,18 +85,8 @@ public class FetchProcessor extends AbstractMailboxProcessor {
             for (int i = 0; i < idSet.length; i++) {
                 final FetchResponseBuilder builder = new FetchResponseBuilder(
                         new EnvelopeBuilder(session.getLog()));
-                final long highVal;
-                final long lowVal;
-                if (useUids) {
-                    highVal = idSet[i].getHighVal();
-                    lowVal = idSet[i].getLowVal();
-                } else {
-                    highVal = session.getSelected().uid(
-                            (int) idSet[i].getHighVal());
-                    lowVal = session.getSelected().uid(
-                            (int) idSet[i].getLowVal());
-                }
-                MessageRange messageSet = MessageRange.range(lowVal, highVal);
+                MessageRange messageSet = messageRange(session.getSelected(), idSet[i], useUids);
+
                 final MailboxSession mailboxSession = ImapSessionUtils
                         .getMailboxSession(session);
                 final Iterator<MessageResult> it = mailbox.getMessages(messageSet, resultToFetch, mailboxSession);

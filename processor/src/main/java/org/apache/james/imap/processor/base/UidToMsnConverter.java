@@ -25,10 +25,16 @@ import java.util.List;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
+import org.apache.james.imap.api.process.SelectedMailbox;
 import org.apache.james.mailbox.MailboxListener;
 
-//TODO: This is a major memory hog
-//TODO: Each concurrent session requires one, and typical clients now open many
+/**
+ * {@link MailboxListener} which takes care of maintaining a mapping between message uids and msn (index)
+ * 
+ *
+ * TODO: This is a major memory hog
+ * TODO: Each concurrent session requires one, and typical clients now open many
+ */
 public class UidToMsnConverter implements MailboxListener {
     private final SortedMap<Integer, Long> msnToUid;
 
@@ -60,9 +66,13 @@ public class UidToMsnConverter implements MailboxListener {
         }
     }
 
-    public long getUid(int msn) {
+    /**
+     * @see SelectedMailbox#uid(int)
+     * 
+     */
+    public synchronized long getUid(int msn) {
         if (msn == -1) {
-            return -1;
+            return SelectedMailbox.NO_SUCH_MESSAGE;
         }
         Long uid = msnToUid.get(msn);
         if (uid != null) {
@@ -76,12 +86,15 @@ public class UidToMsnConverter implements MailboxListener {
         }
     }
 
-    public int getMsn(long uid) {
+    /**
+     * @see SelectedMailbox#msn(int)
+     */
+    public synchronized int getMsn(long uid) {
         Integer msn = uidToMsn.get(uid);
         if (msn != null) {
             return msn.intValue();
         } else {
-            return -1;
+            return SelectedMailbox.NO_SUCH_MESSAGE;
         }
 
     }
@@ -94,7 +107,12 @@ public class UidToMsnConverter implements MailboxListener {
         uidToMsn.put(uid, msn);
     }
 
-    public void expunge(final long uid) {
+    /**
+     * Expunge the message with the given uid
+     * 
+     * @param uid
+     */
+    public synchronized void expunge(final long uid) {
         final int msn = getMsn(uid);
         remove(msn, uid);
         final List<Integer> renumberMsns = new ArrayList<Integer>(msnToUid
@@ -113,7 +131,12 @@ public class UidToMsnConverter implements MailboxListener {
         msnToUid.remove(msn);
     }
 
-    public void add(long uid) {
+    /**
+     * Add the give uid
+     * 
+     * @param uid
+     */
+    public synchronized void add(long uid) {
         if (!uidToMsn.containsKey(new Long(uid))) {
             highestMsn++;
             add(highestMsn, uid);
@@ -123,7 +146,7 @@ public class UidToMsnConverter implements MailboxListener {
     /**
      * @see org.apache.james.mailbox.MailboxListener#event(org.apache.james.mailbox.MailboxListener.Event)
      */
-    public void event(Event event) {
+    public synchronized void event(Event event) {
         if (event instanceof MessageEvent) {
             final MessageEvent messageEvent = (MessageEvent) event;
             final long uid = messageEvent.getSubjectUid();
@@ -133,7 +156,10 @@ public class UidToMsnConverter implements MailboxListener {
         }
     }
 
-    public void close() {
+    /**
+     * Close this {@link MailboxListener}
+     */
+    public synchronized void close() {
         closed = true;
     }
     
@@ -141,7 +167,7 @@ public class UidToMsnConverter implements MailboxListener {
      * (non-Javadoc)
      * @see org.apache.james.mailbox.MailboxListener#isClosed()
      */
-    public boolean isClosed() {
+    public synchronized boolean isClosed() {
         return closed;
     }
 }

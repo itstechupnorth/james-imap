@@ -77,17 +77,9 @@ public class StoreProcessor extends AbstractMailboxProcessor {
         try {
             final MessageManager mailbox = getSelectedMailbox(session);
             for (int i = 0; i < idSet.length; i++) {
-                final long lowVal;
-                final long highVal;
                 final SelectedMailbox selected = session.getSelected();
-                if (useUids) {
-                    lowVal = idSet[i].getLowVal();
-                    highVal = idSet[i].getHighVal();
-                } else {
-                    lowVal = selected.uid((int) idSet[i].getLowVal());
-                    highVal = selected.uid((int) idSet[i].getHighVal());
-                }
-                final MessageRange messageSet = MessageRange.range(lowVal, highVal);
+                MessageRange messageSet = messageRange(selected, idSet[i], useUids);
+
                 final MailboxSession mailboxSession = ImapSessionUtils
                         .getMailboxSession(session);
                 final Map<Long, Flags> flagsByUid = mailbox.setFlags(flags, value, replace,
@@ -96,6 +88,9 @@ public class StoreProcessor extends AbstractMailboxProcessor {
                     for (Map.Entry<Long, Flags> entry: flagsByUid.entrySet()) {
                         final long uid = entry.getKey();
                         final int msn = selected.msn(uid);
+                        
+                        if (msn == SelectedMailbox.NO_SUCH_MESSAGE) throw new MailboxException("No message found with uid " + uid);
+                        
                         final Flags resultFlags = entry.getValue();
                         final Long resultUid;
                         if (useUids) {

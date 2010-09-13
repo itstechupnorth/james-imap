@@ -78,6 +78,7 @@ public class SearchProcessor extends AbstractMailboxProcessor {
             unsolicitedResponses(session, responder, omitExpunged, useUids);
             okComplete(command, tag, responder);
         } catch (MailboxException e) {
+        	e.printStackTrace();
             no(command, tag, responder, HumanReadableText.SEARCH_FAILED);
         }
     }
@@ -107,6 +108,7 @@ public class SearchProcessor extends AbstractMailboxProcessor {
                 number = new Long(uid);
             } else {
                 final int msn = session.getSelected().msn(uid);
+                if (msn == SelectedMailbox.NO_SUCH_MESSAGE) throw new MailboxException("No message found with uid " + uid);
                 number = new Long(msn);
             }
             results.add(number);
@@ -114,7 +116,7 @@ public class SearchProcessor extends AbstractMailboxProcessor {
         return results;
     }
 
-    private SearchQuery toQuery(final SearchKey key, final ImapSession session) {
+    private SearchQuery toQuery(final SearchKey key, final ImapSession session) throws MailboxException {
         final SearchQuery result = new SearchQuery();
         final SelectedMailbox selected = session.getSelected();
         if (selected != null) {
@@ -126,7 +128,7 @@ public class SearchProcessor extends AbstractMailboxProcessor {
     }
 
     private SearchQuery.Criterion toCriterion(final SearchKey key,
-            final ImapSession session) {
+            final ImapSession session) throws MailboxException {
         final int type = key.getType();
         final DayMonthYear date = key.getDate();
         switch (type) {
@@ -224,7 +226,7 @@ public class SearchProcessor extends AbstractMailboxProcessor {
     }
 
     private Criterion sequence(IdRange[] sequenceNumbers,
-            final ImapSession session, boolean msn) {
+            final ImapSession session, boolean msn) throws MailboxException {
         final int length = sequenceNumbers.length;
         final SearchQuery.NumericRange[] ranges = new SearchQuery.NumericRange[length];
         for (int i = 0; i < length; i++) {
@@ -240,12 +242,15 @@ public class SearchProcessor extends AbstractMailboxProcessor {
                 } else {
                     final int highMsn = (int) highVal;
                     highUid = selected.uid(highMsn);
+                    if (highUid == -1) throw new MailboxException("No message found with msn " + highMsn);
                 }
                 if (lowVal == Long.MAX_VALUE) {
                     lowUid = Long.MAX_VALUE;
                 } else {
                     final int lowMsn = (int) lowVal;
                     lowUid = selected.uid(lowMsn);
+                    if (highUid == -1) throw new MailboxException("No message found with msn " + lowUid);
+
                 }
             } else {
                 lowUid = lowVal;
@@ -256,7 +261,7 @@ public class SearchProcessor extends AbstractMailboxProcessor {
         return SearchQuery.uid(ranges);
     }
 
-    private Criterion or(List<SearchKey> keys, final ImapSession session) {
+    private Criterion or(List<SearchKey> keys, final ImapSession session) throws MailboxException {
         final SearchKey keyOne = keys.get(0);
         final SearchKey keyTwo = keys.get(1);
         final Criterion criterionOne = toCriterion(keyOne, session);
@@ -265,14 +270,14 @@ public class SearchProcessor extends AbstractMailboxProcessor {
         return result;
     }
 
-    private Criterion not(List<SearchKey> keys, final ImapSession session) {
+    private Criterion not(List<SearchKey> keys, final ImapSession session) throws MailboxException {
         final SearchKey key = keys.get(0);
         final Criterion criterion = toCriterion(key, session);
         final Criterion result = SearchQuery.not(criterion);
         return result;
     }
 
-    private Criterion and(List<SearchKey> keys, final ImapSession session) {
+    private Criterion and(List<SearchKey> keys, final ImapSession session) throws MailboxException {
         final int size = keys.size();
         final List<Criterion> criteria = new ArrayList<Criterion>(size);
         for (final SearchKey key:keys) {
