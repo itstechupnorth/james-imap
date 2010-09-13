@@ -55,6 +55,10 @@ public class HumanReadableText {
             "org.apache.james.imap.GENERIC_SUBSCRIPTION_FAILURE",
             "Cannot subscribe.");
 
+    public static final HumanReadableText INVALID_MESSAGESET = new HumanReadableText(
+            "org.apache.james.imap.INVALID_MESSAGESET",
+            "failed. Invalid messageset.");
+    
     public static final HumanReadableText INVALID_COMMAND = new HumanReadableText(
             "org.apache.james.imap.INVALID_COMMAND",
             "failed. Command not valid in this state.");

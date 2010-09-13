@@ -37,6 +37,7 @@ import org.apache.james.imap.api.process.ImapSession;
 import org.apache.james.imap.api.process.SelectedMailbox;
 import org.apache.james.imap.message.response.FetchResponse;
 import org.apache.james.imap.processor.base.ImapSessionUtils;
+import org.apache.james.imap.processor.base.MessageRangeException;
 import org.apache.james.mailbox.Content;
 import org.apache.james.mailbox.MailboxException;
 import org.apache.james.mailbox.MailboxSession;
@@ -105,7 +106,7 @@ final class FetchResponseBuilder {
         final long resultUid = result.getUid();
         final int resultMsn = selected.msn(resultUid);
         
-        if (resultMsn == SelectedMailbox.NO_SUCH_MESSAGE) throw new MailboxException("No such message found with uid " + resultUid);
+        if (resultMsn == SelectedMailbox.NO_SUCH_MESSAGE) throw new MessageRangeException("No such message found with uid " + resultUid);
         
         setMsn(resultMsn);
 

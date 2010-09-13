@@ -31,6 +31,7 @@ import org.apache.james.imap.api.process.ImapSession;
 import org.apache.james.imap.api.process.SelectedMailbox;
 import org.apache.james.imap.message.request.CopyRequest;
 import org.apache.james.imap.processor.base.ImapSessionUtils;
+import org.apache.james.imap.processor.base.MessageRangeException;
 import org.apache.james.mailbox.MailboxException;
 import org.apache.james.mailbox.MailboxManager;
 import org.apache.james.mailbox.MailboxPath;
@@ -74,6 +75,8 @@ public class CopyProcessor extends AbstractMailboxProcessor {
                 unsolicitedResponses(session, responder, useUids);
                 okComplete(command, tag, responder);
             }
+        } catch (MessageRangeException e) {
+            taggedBad(command, tag, responder, HumanReadableText.INVALID_MESSAGESET);
         } catch (MailboxException e) {
             no(command, tag, responder, HumanReadableText.GENERIC_FAILURE_DURING_PROCESSING);
         }

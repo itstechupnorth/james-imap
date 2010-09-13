@@ -38,6 +38,7 @@ import org.apache.james.imap.message.request.FetchRequest;
 import org.apache.james.imap.message.response.FetchResponse;
 import org.apache.james.imap.processor.AbstractMailboxProcessor;
 import org.apache.james.imap.processor.base.ImapSessionUtils;
+import org.apache.james.imap.processor.base.MessageRangeException;
 import org.apache.james.mailbox.MailboxManager;
 import org.apache.james.mailbox.MailboxSession;
 import org.apache.james.mailbox.MessageManager;
@@ -102,6 +103,8 @@ public class FetchProcessor extends AbstractMailboxProcessor {
         } catch (UnsupportedCriteriaException e) {
             no(command, tag, responder,
                     HumanReadableText.UNSUPPORTED_SEARCH_CRITERIA);
+        } catch (MessageRangeException e) {
+            taggedBad(command, tag, responder, HumanReadableText.INVALID_MESSAGESET);
         } catch (MessagingException e) {
             no(command, tag, responder, HumanReadableText.SEARCH_FAILED);
         } catch (ParseException e) {

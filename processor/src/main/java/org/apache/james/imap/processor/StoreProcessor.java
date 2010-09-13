@@ -35,6 +35,7 @@ import org.apache.james.imap.api.process.SelectedMailbox;
 import org.apache.james.imap.message.request.StoreRequest;
 import org.apache.james.imap.message.response.FetchResponse;
 import org.apache.james.imap.processor.base.ImapSessionUtils;
+import org.apache.james.imap.processor.base.MessageRangeException;
 import org.apache.james.mailbox.MailboxException;
 import org.apache.james.mailbox.MailboxManager;
 import org.apache.james.mailbox.MailboxSession;
@@ -111,6 +112,8 @@ public class StoreProcessor extends AbstractMailboxProcessor {
             final boolean omitExpunged = (!useUids);
             unsolicitedResponses(session, responder, omitExpunged, useUids);
             okComplete(command, tag, responder);
+        } catch (MessageRangeException e) {
+            taggedBad(command, tag, responder, HumanReadableText.INVALID_MESSAGESET);
         } catch (MailboxException e) {
             no(command, tag, responder, HumanReadableText.SAVE_FAILED);
         }

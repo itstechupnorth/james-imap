@@ -42,6 +42,7 @@ import org.apache.james.imap.message.response.FetchResponse;
 import org.apache.james.imap.message.response.RecentResponse;
 import org.apache.james.imap.processor.base.AbstractChainedProcessor;
 import org.apache.james.imap.processor.base.ImapSessionUtils;
+import org.apache.james.imap.processor.base.MessageRangeException;
 import org.apache.james.mailbox.MailboxConstants;
 import org.apache.james.mailbox.MailboxException;
 import org.apache.james.mailbox.MailboxManager;
@@ -369,18 +370,20 @@ abstract public class AbstractMailboxProcessor extends AbstractChainedProcessor 
      * @return
      * @throws MailboxException
      */
-    protected MessageRange messageRange(SelectedMailbox selected, IdRange range, boolean useUids) throws MailboxException{
-    	long lowVal = range.getLowVal();
+    protected MessageRange messageRange(SelectedMailbox selected, IdRange range, boolean useUids) throws MessageRangeException {
+        long lowVal = range.getLowVal();
         long highVal = range.getHighVal();
-    	if (useUids == false) {
-    		if (lowVal != Long.MAX_VALUE) {
+        if (useUids == false) {
+            if (lowVal != Long.MAX_VALUE) {
                 lowVal = selected.uid((int) lowVal);
-                if (lowVal == SelectedMailbox.NO_SUCH_MESSAGE) throw new MailboxException("No message found with msn " + lowVal);
-    		}
-    		if (highVal != Long.MAX_VALUE) {
+                if (lowVal == SelectedMailbox.NO_SUCH_MESSAGE)
+                    throw new MessageRangeException("No message found with msn " + lowVal);
+            }
+            if (highVal != Long.MAX_VALUE) {
                 highVal = selected.uid((int) highVal);
-                if (highVal == SelectedMailbox.NO_SUCH_MESSAGE) throw new MailboxException("No message found with msn " + highVal);
-    		}
+                if (highVal == SelectedMailbox.NO_SUCH_MESSAGE)
+                    throw new MessageRangeException("No message found with msn " + highVal);
+            }
         }
         MessageRange mRange = MessageRange.range(lowVal, highVal);
         return mRange;

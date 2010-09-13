@@ -42,6 +42,7 @@ import org.apache.james.imap.api.process.SelectedMailbox;
 import org.apache.james.imap.message.request.SearchRequest;
 import org.apache.james.imap.message.response.SearchResponse;
 import org.apache.james.imap.processor.base.ImapSessionUtils;
+import org.apache.james.imap.processor.base.MessageRangeException;
 import org.apache.james.mailbox.MailboxException;
 import org.apache.james.mailbox.MailboxManager;
 import org.apache.james.mailbox.MessageManager;
@@ -77,6 +78,8 @@ public class SearchProcessor extends AbstractMailboxProcessor {
             boolean omitExpunged = (!useUids);
             unsolicitedResponses(session, responder, omitExpunged, useUids);
             okComplete(command, tag, responder);
+        } catch (MessageRangeException e) {
+            taggedBad(command, tag, responder, HumanReadableText.INVALID_MESSAGESET);
         } catch (MailboxException e) {
             no(command, tag, responder, HumanReadableText.SEARCH_FAILED);
         }
@@ -94,7 +97,7 @@ public class SearchProcessor extends AbstractMailboxProcessor {
 
     private Collection<Long> findIds(final boolean useUids,
             final ImapSession session, MessageManager mailbox, final SearchQuery query)
-            throws MailboxException {
+            throws MailboxException, MessageRangeException {
         final Iterator<Long> it = mailbox.search(query, ImapSessionUtils
                 .getMailboxSession(session));
 
@@ -107,7 +110,7 @@ public class SearchProcessor extends AbstractMailboxProcessor {
                 number = new Long(uid);
             } else {
                 final int msn = session.getSelected().msn(uid);
-                if (msn == SelectedMailbox.NO_SUCH_MESSAGE) throw new MailboxException("No message found with uid " + uid);
+                if (msn == SelectedMailbox.NO_SUCH_MESSAGE) throw new MessageRangeException("No message found with uid " + uid);
                 number = new Long(msn);
             }
             results.add(number);
@@ -115,7 +118,7 @@ public class SearchProcessor extends AbstractMailboxProcessor {
         return results;
     }
 
-    private SearchQuery toQuery(final SearchKey key, final ImapSession session) throws MailboxException {
+    private SearchQuery toQuery(final SearchKey key, final ImapSession session) throws MessageRangeException {
         final SearchQuery result = new SearchQuery();
         final SelectedMailbox selected = session.getSelected();
         if (selected != null) {
@@ -127,7 +130,7 @@ public class SearchProcessor extends AbstractMailboxProcessor {
     }
 
     private SearchQuery.Criterion toCriterion(final SearchKey key,
-            final ImapSession session) throws MailboxException {
+            final ImapSession session) throws MessageRangeException {
         final int type = key.getType();
         final DayMonthYear date = key.getDate();
         switch (type) {
@@ -225,7 +228,7 @@ public class SearchProcessor extends AbstractMailboxProcessor {
     }
 
     private Criterion sequence(IdRange[] sequenceNumbers,
-            final ImapSession session, boolean msn) throws MailboxException {
+            final ImapSession session, boolean msn) throws MessageRangeException {
         final int length = sequenceNumbers.length;
         final SearchQuery.NumericRange[] ranges = new SearchQuery.NumericRange[length];
         for (int i = 0; i < length; i++) {
@@ -241,14 +244,14 @@ public class SearchProcessor extends AbstractMailboxProcessor {
                 } else {
                     final int highMsn = (int) highVal;
                     highUid = selected.uid(highMsn);
-                    if (highUid == -1) throw new MailboxException("No message found with msn " + highMsn);
+                    if (highUid == -1) throw new MessageRangeException("No message found with msn " + highMsn);
                 }
                 if (lowVal == Long.MAX_VALUE) {
                     lowUid = Long.MAX_VALUE;
                 } else {
                     final int lowMsn = (int) lowVal;
                     lowUid = selected.uid(lowMsn);
-                    if (highUid == -1) throw new MailboxException("No message found with msn " + lowUid);
+                    if (highUid == -1) throw new MessageRangeException("No message found with msn " + lowUid);
 
                 }
             } else {
@@ -260,7 +263,7 @@ public class SearchProcessor extends AbstractMailboxProcessor {
         return SearchQuery.uid(ranges);
     }
 
-    private Criterion or(List<SearchKey> keys, final ImapSession session) throws MailboxException {
+    private Criterion or(List<SearchKey> keys, final ImapSession session) throws MessageRangeException {
         final SearchKey keyOne = keys.get(0);
         final SearchKey keyTwo = keys.get(1);
         final Criterion criterionOne = toCriterion(keyOne, session);
@@ -269,14 +272,14 @@ public class SearchProcessor extends AbstractMailboxProcessor {
         return result;
     }
 
-    private Criterion not(List<SearchKey> keys, final ImapSession session) throws MailboxException {
+    private Criterion not(List<SearchKey> keys, final ImapSession session) throws MessageRangeException {
         final SearchKey key = keys.get(0);
         final Criterion criterion = toCriterion(key, session);
         final Criterion result = SearchQuery.not(criterion);
         return result;
     }
 
-    private Criterion and(List<SearchKey> keys, final ImapSession session) throws MailboxException {
+    private Criterion and(List<SearchKey> keys, final ImapSession session) throws MessageRangeException {
         final int size = keys.size();
         final List<Criterion> criteria = new ArrayList<Criterion>(size);
         for (final SearchKey key:keys) {
