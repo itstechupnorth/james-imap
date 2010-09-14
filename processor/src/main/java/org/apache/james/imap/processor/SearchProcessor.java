@@ -111,10 +111,9 @@ public class SearchProcessor extends AbstractMailboxProcessor {
                 number = new Long(uid);
             } else {
                 final int msn = session.getSelected().msn(uid);
-                if (msn == SelectedMailbox.NO_SUCH_MESSAGE) throw new MessageRangeException("No message found with uid " + uid);
                 number = new Long(msn);
             }
-            results.add(number);
+            if (number == SelectedMailbox.NO_SUCH_MESSAGE == false) results.add(number);
         }
         return results;
     }
@@ -234,10 +233,10 @@ public class SearchProcessor extends AbstractMailboxProcessor {
         final SearchQuery.NumericRange[] ranges = new SearchQuery.NumericRange[length];
         for (int i = 0; i < length; i++) {
             final IdRange range = sequenceNumbers[i];
-            final long highVal = range.getHighVal();
-            final long lowVal = range.getLowVal();
-            final long lowUid;
-            final long highUid;
+            long highVal = range.getHighVal();
+            long lowVal = range.getLowVal();
+            long lowUid;
+            long highUid;
             final SelectedMailbox selected = session.getSelected();
 
             if (msn) {
@@ -246,14 +245,15 @@ public class SearchProcessor extends AbstractMailboxProcessor {
                 } else {
                     final int highMsn = (int) highVal;
                     highUid = selected.uid(highMsn);
-                    if (highUid == -1) throw new MessageRangeException("No message found with msn " + highMsn);
+                    
+                    if (highUid == SelectedMailbox.NO_SUCH_MESSAGE) highUid = selected.getLastUid();
                 }
                 if (lowVal == Long.MAX_VALUE) {
                     lowUid = Long.MAX_VALUE;
                 } else {
                     final int lowMsn = (int) lowVal;
                     lowUid = selected.uid(lowMsn);
-                    if (highUid == -1) throw new MessageRangeException("No message found with msn " + lowUid);
+                    if (lowUid == SelectedMailbox.NO_SUCH_MESSAGE) lowUid = selected.getFirstUid();
 
                 }
             } else {
@@ -262,11 +262,11 @@ public class SearchProcessor extends AbstractMailboxProcessor {
                 
                 
             	if (lowVal != Long.MAX_VALUE && lowVal < selected.getFirstUid()) {
-                    throw new MessageRangeException("No message found with uid " + lowVal);
+            		lowUid = selected.getFirstUid();
             	} 
             	
             	if (highVal != Long.MAX_VALUE && highVal > selected.getLastUid()) {
-                    throw new MessageRangeException("No message found with uid " + highVal);
+            		highUid = selected.getLastUid();
             	} 
             }
             ranges[i] = new SearchQuery.NumericRange(lowUid, highUid);
