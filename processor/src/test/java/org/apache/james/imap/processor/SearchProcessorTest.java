@@ -157,6 +157,7 @@ public class SearchProcessorTest {
                 42, Long.MAX_VALUE) };
         mockery.checking(new Expectations() {{
             oneOf(selectedMailbox).uid(with(equal(1)));will(returnValue(42L));
+
         }});
         allowUnsolicitedResponses();
         check(SearchKey.buildSequenceSet(ids), SearchQuery.uid(ranges));
@@ -205,6 +206,7 @@ public class SearchProcessorTest {
             atLeast(1).of(selectedMailbox).getPath();will(returnValue(mailboxPath));
             atMost(1).of(selectedMailbox).flagUpdateUids();will(returnValue(Collections.EMPTY_LIST));
             atMost(1).of(selectedMailbox).resetEvents();
+            
             oneOf(selectedMailbox).getRecent();will(returnValue(new ArrayList<Long>()));
         }});
     }
@@ -404,7 +406,15 @@ public class SearchProcessorTest {
 
     @Test
     public void testUID() throws Exception {
-        expectsGetSelectedMailbox();
+    	mockery.checking(new Expectations() {{
+
+    		atLeast(1).of(selectedMailbox).getFirstUid();will(returnValue(1L));
+    		atLeast(1).of(selectedMailbox).getLastUid();will(returnValue(1048L));
+            }});
+    	
+        expectsGetSelectedMailbox();            
+        
+        
         check(SearchKey.buildUidSet(IDS), SearchQuery.uid(RANGES));
     }
 
