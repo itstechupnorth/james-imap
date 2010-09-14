@@ -208,4 +208,20 @@ public class SelectedMailboxImpl implements SelectedMailbox {
     public Collection<Long> flagUpdateUids() {
         return events.flagUpdateUids();
     }
+
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.api.process.SelectedMailbox#getFirstUid()
+     */
+	public long getFirstUid() {
+		return converter.getFirstUid();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see org.apache.james.imap.api.process.SelectedMailbox#getLastUid()
+	 */
+	public long getLastUid() {
+		return converter.getLastUid();
+	}
 }

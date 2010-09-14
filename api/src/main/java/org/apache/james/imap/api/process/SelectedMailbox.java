@@ -151,4 +151,18 @@ public interface SelectedMailbox {
      * @return flagsUids
      */
     public Collection<Long> flagUpdateUids();
+    
+    /**
+     * Return the uid of the first message in the mailbox or -1 if the mailbox is empty
+     * 
+     * @return firstUid
+     */
+    public long getFirstUid();
+    
+    /**
+     * Return the uid of the last message in the mailbox or -1 if the mailbox is empty
+     * 
+     * @return lastUid
+     */
+    public long getLastUid();
 }

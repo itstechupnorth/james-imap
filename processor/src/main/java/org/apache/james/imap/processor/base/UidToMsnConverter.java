@@ -78,11 +78,7 @@ public class UidToMsnConverter implements MailboxListener {
         if (uid != null) {
             return uid.longValue();
         } else {
-            if (msn > 0) {
-                return highestUid;
-            } else {
-                return 0;
-            }
+            return SelectedMailbox.NO_SUCH_MESSAGE;
         }
     }
 
@@ -156,6 +152,29 @@ public class UidToMsnConverter implements MailboxListener {
         }
     }
 
+    
+    /**
+     * @see SelectedMailbox#getFirstUid()
+     */
+    public synchronized long getFirstUid() {
+    	if (uidToMsn.isEmpty()) {
+    		return -1;
+    	} else {
+    		return uidToMsn.firstKey();
+    	}
+    }
+    
+    
+    /**
+     * @see SelectedMailbox#getLastUid()
+     */
+    public synchronized long getLastUid() {
+    	if (uidToMsn.isEmpty()) {
+    		return -1;
+    	} else {
+    		return uidToMsn.lastKey();
+    	}
+    }
     /**
      * Close this {@link MailboxListener}
      */

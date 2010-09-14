@@ -98,6 +98,7 @@ public class SearchProcessor extends AbstractMailboxProcessor {
     private Collection<Long> findIds(final boolean useUids,
             final ImapSession session, MessageManager mailbox, final SearchQuery query)
             throws MailboxException, MessageRangeException {
+    	
         final Iterator<Long> it = mailbox.search(query, ImapSessionUtils
                 .getMailboxSession(session));
 
@@ -237,8 +238,9 @@ public class SearchProcessor extends AbstractMailboxProcessor {
             final long lowVal = range.getLowVal();
             final long lowUid;
             final long highUid;
+            final SelectedMailbox selected = session.getSelected();
+
             if (msn) {
-                final SelectedMailbox selected = session.getSelected();
                 if (highVal == Long.MAX_VALUE) {
                     highUid = Long.MAX_VALUE;
                 } else {
@@ -257,6 +259,15 @@ public class SearchProcessor extends AbstractMailboxProcessor {
             } else {
                 lowUid = lowVal;
                 highUid = highVal;
+                
+                
+            	if (lowVal != Long.MAX_VALUE && lowVal < selected.getFirstUid()) {
+                    throw new MessageRangeException("No message found with uid " + lowVal);
+            	} 
+            	
+            	if (highVal != Long.MAX_VALUE && highVal > selected.getLastUid()) {
+                    throw new MessageRangeException("No message found with uid " + highVal);
+            	} 
             }
             ranges[i] = new SearchQuery.NumericRange(lowUid, highUid);
         }
