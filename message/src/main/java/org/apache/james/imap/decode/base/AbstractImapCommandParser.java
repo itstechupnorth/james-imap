@@ -608,7 +608,7 @@ public abstract class AbstractImapCommandParser implements ImapCommandParser, Me
             	// See https://issues.apache.org/jira/browse/IMAP-212
                 long val1 = parseLong(range.substring(0, pos));
                 long val2 = parseLong(range.substring(pos + 1));
-                if (val1 <= val2) {
+                if (val1 <= val2 || val1 == Long.MAX_VALUE) {
                 	return new IdRange(val1, val2);
                 } else {
                 	return new IdRange(val2, val1);
