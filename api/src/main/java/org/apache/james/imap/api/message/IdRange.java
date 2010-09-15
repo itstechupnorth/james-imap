@@ -20,7 +20,7 @@
 package org.apache.james.imap.api.message;
 
 /**
- * Represents a range of UID values.
+ * Represents a range of UID or MSN values.
  */
 public class IdRange {
 
@@ -46,8 +46,14 @@ public class IdRange {
         return _highVal;
     }
 
-    public boolean includes(long uid) {
-        return _lowVal <= uid && uid <= _highVal;
+    /**
+     * Return true if the {@link IdRange} includes the given value
+     * 
+     * @param value
+     * @return include
+     */
+    public boolean includes(long value) {
+        return _lowVal <= value && value <= _highVal;
     }
 
     /**

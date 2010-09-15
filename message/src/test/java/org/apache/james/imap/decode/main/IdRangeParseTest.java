@@ -1,0 +1,82 @@
+/****************************************************************
+ * Licensed to the Apache Software Foundation (ASF) under one   *
+ * or more contributor license agreements.  See the NOTICE file *
+ * distributed with this work for additional information        *
+ * regarding copyright ownership.  The ASF licenses this file   *
+ * to you under the Apache License, Version 2.0 (the            *
+ * "License"); you may not use this file except in compliance   *
+ * with the License.  You may obtain a copy of the License at   *
+ *                                                              *
+ *   http://www.apache.org/licenses/LICENSE-2.0                 *
+ *                                                              *
+ * Unless required by applicable law or agreed to in writing,   *
+ * software distributed under the License is distributed on an  *
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY       *
+ * KIND, either express or implied.  See the License for the    *
+ * specific language governing permissions and limitations      *
+ * under the License.                                           *
+ ****************************************************************/
+package org.apache.james.imap.decode.main;
+
+import static org.junit.Assert.assertEquals;
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+
+import org.apache.commons.logging.Log;
+import org.apache.james.imap.api.ImapCommand;
+import org.apache.james.imap.api.ImapMessage;
+import org.apache.james.imap.api.message.IdRange;
+import org.apache.james.imap.decode.DecodingException;
+import org.apache.james.imap.decode.ImapRequestLineReader;
+import org.apache.james.imap.decode.ImapRequestStreamLineReader;
+import org.apache.james.imap.decode.base.AbstractImapCommandParser;
+import org.junit.Test;
+
+public class IdRangeParseTest  {
+
+	private final AbstractImapCommandParser parser = new AbstractImapCommandParser(null) {
+
+		@Override
+		protected ImapMessage decode(ImapCommand command,
+				ImapRequestLineReader request, String tag, Log logger)
+				throws DecodingException {
+			return null;
+		}
+		
+	};
+	
+	
+	/**
+	 * Test for https://issues.apache.org/jira/browse/IMAP-212
+	 * @throws DecodingException
+	 */
+	@Test
+	public void testRangeInRandomOrder() throws DecodingException {
+		int val1 = 1;
+		int val2 = 3;
+		
+		IdRange[] ranges1 = ranges(rangeAsString(val1, val2));
+		assertEquals(1, ranges1.length);
+		assertEquals(val1, ranges1[0].getLowVal());
+		assertEquals(val2, ranges1[0].getHighVal());
+		
+		IdRange[] ranges2 = ranges(rangeAsString(val2, val1));
+		assertEquals(1, ranges2.length);
+		assertEquals(val1, ranges2[0].getLowVal());
+		assertEquals(val2, ranges2[0].getHighVal());
+	}
+	
+	private String rangeAsString(int val1, int val2) {
+		return val1 + ":" + val2;
+	}
+	
+	private IdRange[] ranges(String rangesAsString) throws DecodingException {
+
+        ImapRequestLineReader reader = new ImapRequestStreamLineReader(
+                new ByteArrayInputStream((rangesAsString + "\r\n").getBytes()),
+                new ByteArrayOutputStream());
+        
+		return parser.parseIdRange(reader);
+	}
+}

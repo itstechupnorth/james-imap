@@ -589,6 +589,13 @@ public abstract class AbstractImapCommandParser implements ImapCommandParser, Me
         return (IdRange[]) rangeList.toArray(new IdRange[rangeList.size()]);
     }
 
+    /**
+     * Parse a range which use a ":" as delimiter
+     * 
+     * @param range
+     * @return idRange
+     * @throws DecodingException
+     */
     private IdRange parseRange(String range) throws DecodingException {
         int pos = range.indexOf(':');
         try {
@@ -596,9 +603,16 @@ public abstract class AbstractImapCommandParser implements ImapCommandParser, Me
                 long value = parseLong(range);
                 return new IdRange(value);
             } else {
-                long lowVal = parseLong(range.substring(0, pos));
-                long highVal = parseLong(range.substring(pos + 1));
-                return new IdRange(lowVal, highVal);
+            	
+            	// Make sure we detect the low and high value 
+            	// See https://issues.apache.org/jira/browse/IMAP-212
+                long val1 = parseLong(range.substring(0, pos));
+                long val2 = parseLong(range.substring(pos + 1));
+                if (val1 <= val2) {
+                	return new IdRange(val1, val2);
+                } else {
+                	return new IdRange(val2, val1);
+                }
             }
         } catch (NumberFormatException e) {
             throw new DecodingException(HumanReadableText.ILLEGAL_ARGUMENTS, "Invalid message set.", e);
