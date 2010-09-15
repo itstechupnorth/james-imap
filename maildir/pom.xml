@@ -28,7 +28,6 @@
   <groupId>org.apache.james</groupId>
   <artifactId>apache-james-mailbox-maildir</artifactId>
   <name>Apache James Maildir Mailbox Manager</name>
-  
   <build>
     <plugins>
       <plugin>
@@ -42,16 +41,7 @@
       </plugin>
     </plugins>
   </build>
-  
   <dependencies>
-    <dependency>
-      <groupId>${javax.mail.groupId}</groupId>
-      <artifactId>${javax.mail.artifactId}</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>${javax.activation.groupId}</groupId>
-      <artifactId>${javax.activation.artifactId}</artifactId>
-    </dependency>
     <dependency>
       <groupId>org.apache.james</groupId>
       <artifactId>apache-james-mailbox-api</artifactId>
@@ -64,7 +54,6 @@
       <groupId>org.apache.james</groupId>
       <artifactId>apache-mime4j</artifactId>
     </dependency>
-
     <dependency>
       <groupId>commons-logging</groupId>
       <artifactId>commons-logging</artifactId>
@@ -73,22 +62,16 @@
       <groupId>commons-lang</groupId>
       <artifactId>commons-lang</artifactId>
     </dependency>
-    
     <dependency>
-      <groupId>commons-collections</groupId>
-      <artifactId>commons-collections</artifactId>
+      <groupId>org.apache.james</groupId>
+      <artifactId>apache-james-imap-protocol-tester</artifactId>
+      <scope>test</scope>
     </dependency>
-
     <dependency>
       <groupId>org.apache.james</groupId>
       <artifactId>apache-james-imap-processor</artifactId>
       <scope>test</scope>
     </dependency>    
-	<dependency>
-      <groupId>org.apache.james</groupId>
-      <artifactId>apache-james-imap-protocol-tester</artifactId>
-      <scope>test</scope>
-    </dependency>
     <dependency>
       <groupId>commons-io</groupId>
       <artifactId>commons-io</artifactId>
