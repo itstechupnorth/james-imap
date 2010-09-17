@@ -385,15 +385,6 @@ abstract public class AbstractMailboxProcessor extends AbstractChainedProcessor 
                 if (highVal == SelectedMailbox.NO_SUCH_MESSAGE)
                     throw new MessageRangeException("No message found with msn " + highVal);
             }
-        } else {
-            
-        	if (lowVal != Long.MAX_VALUE && lowVal < selected.getFirstUid()) {
-                throw new MessageRangeException("No message found with uid " + lowVal);
-        	} 
-        	
-        	if (highVal != Long.MAX_VALUE && highVal > selected.getLastUid()) {
-                throw new MessageRangeException("No message found with uid " + highVal);
-        	} 
         }
         MessageRange mRange = MessageRange.range(lowVal, highVal);
         return mRange;
