@@ -19,9 +19,7 @@
 package org.apache.james.mailbox.maildir;
 
 import java.io.File;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
@@ -31,68 +29,44 @@ import java.util.concurrent.locks.ReentrantLock;
  * This class can synchronize access to the same files using one
  * {@link ReentrantLock} per file.
  * 
- * Its very important to call the {@link #unlock(MailboxPath)} method
+ * Its very important to call the {@link #unlock(File)} method
  * in a finally block to not risk a dead lock.
+ * 
+ * Be aware that this class will keep one {@link ReentrantLock} per {@link File} in memory. 
+ * Maybe some kind of cleanup should be done here 
  *
  */
 public final class FileLock {
 
-    private static final Map<String, Lock> fileLocks = new HashMap<String, Lock>();
+    private static final ConcurrentHashMap<String, ReentrantLock> fileLocks = new ConcurrentHashMap<String, ReentrantLock>();
     
     /**
      * Obtains a {@link Lock} for the given file. It will block if the lock for the file is
      * already held by some other thread.
+     * 
      * @param file The file to lock
      */
     public static void lock(File file) {
-        Lock lock;
-        synchronized (fileLocks) {
-            lock = fileLocks.get(file.getAbsoluteFile().getAbsolutePath());
-            if (lock == null) {
-                lock = new Lock();
-                fileLocks.put(file.getAbsoluteFile().getAbsolutePath(), lock);
-            }
-        }
-        lock.increaseCount();
-        lock.lock();
+        String key = getKey(file);
+        fileLocks.putIfAbsent(key, new ReentrantLock());
+        fileLocks.get(key).lock();
     }
     
     /**
      * Unlock the previous obtained {@link Lock} for the given file.
+     * 
      * @param file The file to unlock
      */
     public static void unlock(File file) {
-        Lock lock;
-        synchronized (fileLocks) {
-            lock = fileLocks.get(file.getAbsoluteFile().getAbsolutePath());
-        }
+        String key = getKey(file);
+
+        ReentrantLock lock = fileLocks.get(key);
         if (lock != null) {
             lock.unlock();
-            if (lock.decreaseCount() == 0)
-                fileLocks.remove(file.getAbsoluteFile().getAbsolutePath());
         }
     }
     
-    /**
-     * This adds a counter to the ReentrantLock which counts the threads
-     * that are waiting for or owning the lock.
-     */
-    static class Lock extends ReentrantLock {
-
-        private static final long serialVersionUID = 1373469372404809079L;
-        private AtomicInteger counter;
-        
-        public Lock() {
-            this.counter = new AtomicInteger(0);
-        }
-        
-        public int increaseCount() {
-            return this.counter.incrementAndGet();
-        }
-        
-        public int decreaseCount() {
-            return this.counter.decrementAndGet();
-        }
-        
+    private static String getKey(File file) {
+    	return file.getAbsoluteFile().getAbsolutePath();
     }
 }
