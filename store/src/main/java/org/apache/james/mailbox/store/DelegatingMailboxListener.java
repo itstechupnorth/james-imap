@@ -54,7 +54,8 @@ public class DelegatingMailboxListener implements MailboxListener{
     public void event(Event event) {
         List<MailboxListener> mListeners = listeners.get(event.getMailboxPath());
         if (mListeners != null && mListeners.isEmpty() == false) {
-            for (int i = 0; i < mListeners.size(); i++) {
+            int sz = mListeners.size();
+            for (int i = 0; i < sz; i++) {
                 MailboxListener l = mListeners.get(i);
                 if (l.isClosed()) {
                     mListeners.remove(l);
