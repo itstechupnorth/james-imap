@@ -26,9 +26,9 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.apache.james</groupId>
   <artifactId>apache-james-imap-parent</artifactId>
-  <name>Apache JAMES Imap Parent pom</name>
+  <name>Apache James IMAP Parent pom</name>
   <version>0.2-SNAPSHOT</version>
-  <description>The Apache JAMES Imap Protocol</description>
+  <description>The Apache James Imap Protocol</description>
   <url>http://james.apache.org/imap/</url>
   <inceptionYear>2002</inceptionYear>
   <packaging>pom</packaging>
@@ -197,6 +197,13 @@
         <groupId>org.apache.james</groupId>
         <artifactId>apache-james-mailbox-store</artifactId>
         <version>${project.version}</version>
+        <type>test-jar</type>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.james</groupId>
+        <artifactId>apache-james-mailbox-store</artifactId>
+        <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.james</groupId>
@@ -248,14 +255,17 @@
       </dependency>
       <dependency>
         <groupId>org.apache.james</groupId>
-        <artifactId>apache-james-mailbox-store</artifactId>
-        <version>${project.version}</version>        
-        <type>test-jar</type>
-        <scope>test</scope>
+        <artifactId>apache-james-mailbox-maildir</artifactId>
+        <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.james</groupId>
-        <artifactId>apache-james-mailbox-maildir</artifactId>
+        <artifactId>apache-james-mailbox-file</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.james</groupId>
+        <artifactId>apache-james-mailbox-jdbc</artifactId>
         <version>${project.version}</version>
       </dependency>
       <!--
@@ -295,6 +305,53 @@
       <!--
         END Mail
       -->
+
+      <!--
+        Start James Server
+      -->
+
+      <dependency>
+        <groupId>org.apache.james</groupId>
+        <artifactId>james-server-core-api</artifactId>
+        <version>${version.james-server}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.james</groupId>
+        <artifactId>james-server-core-library</artifactId>
+        <version>${version.james-server}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.james</groupId>
+        <artifactId>james-server-core-library</artifactId>
+        <version>${version.james-server}</version>
+        <type>test-jar</type>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.james</groupId>
+        <artifactId>james-server-core-function</artifactId>
+        <version>${version.james-server}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.james</groupId>
+        <artifactId>james-server-common-util</artifactId>
+        <version>${version.james-server}</version>
+      </dependency>
+
+      <!--
+        Start James Mailet
+      -->
+      <dependency>
+        <groupId>org.apache.james</groupId>
+        <artifactId>apache-mailet</artifactId>
+        <version>2.4</version>
+        <exclusions>
+          <exclusion>
+            <groupId>javax.mail</groupId>
+            <artifactId>mail</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
 
       <!--
         Start Commons
@@ -342,7 +399,21 @@
         <artifactId>commons-dbcp</artifactId>
         <version>1.2.1</version> 
       </dependency>
-      
+    <dependency>
+      <groupId>commons-configuration</groupId>
+      <artifactId>commons-configuration</artifactId>
+      <version>1.6</version>
+      <exclusions>
+        <exclusion>
+          <artifactId>commons-digester</artifactId>
+          <groupId>commons-digester</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>commons-beanutils-core</artifactId>
+          <groupId>commons-beanutils</groupId>
+        </exclusion>
+      </exclusions>
+    </dependency>
       <dependency>
         <groupId>commons-beanutils</groupId>
         <artifactId>commons-beanutils</artifactId>
@@ -404,7 +475,7 @@
         <groupId>commons-configuration</groupId>
         <artifactId>commons-configuration</artifactId>
         <scope>test</scope>
-        <version>1.1</version>
+        <version>1.6</version>
         <exclusions>
           <exclusion>
             <artifactId>dom4j</artifactId>
@@ -539,6 +610,7 @@
     <javax.mail.groupId>javax.mail</javax.mail.groupId>
     <javax.mail.artifactId>mail</javax.mail.artifactId>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <version.james-server>3.0-SNAPSHOT</version.james-server>
     <version.openjpa>2.0.1</version.openjpa>
     <version.javax.persistence>1.0.2</version.javax.persistence>
     <version.commons-lang>2.4</version.commons-lang>

@@ -27,7 +27,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.apache.james</groupId>
   <artifactId>apache-james-imap-protocol-tester</artifactId>
-  <name>Apache JAMES Protocol Tester</name>
+  <name>Apache James Protocol Tester</name>
   <dependencies>
     <dependency>
       <groupId>org.apache.james</groupId>

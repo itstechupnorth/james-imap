@@ -26,8 +26,8 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.apache.james</groupId>
-  <artifactId>apache-james-mailbox-jcr</artifactId>
-  <name>Apache James JCR Mailbox Manager</name>
+  <artifactId>apache-james-mailbox-file</artifactId>
+  <name>Apache James File Mailbox Manager</name>
   <dependencies>
     <dependency>
       <groupId>org.apache.james</groupId>
@@ -42,41 +42,28 @@
       <artifactId>james-server-core-library</artifactId>
     </dependency>
     <dependency>
-      <groupId>commons-logging</groupId>
-      <artifactId>commons-logging</artifactId>
-    </dependency>	
-    <dependency>
-      <groupId>javax.jcr</groupId>
-      <artifactId>jcr</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.jackrabbit</groupId>
-      <artifactId>jackrabbit-core</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.jackrabbit</groupId>
-      <artifactId>jackrabbit-jcr-commons</artifactId>
-    </dependency>
-    <!-- xercesImpl needed for some java versions -->
-    <dependency>
-      <groupId>xerces</groupId>
-      <artifactId>xercesImpl</artifactId>
-      <version>2.9.1</version>
-      <scope>test</scope>      
-    </dependency>
-    <dependency>
       <groupId>org.apache.james</groupId>
-      <artifactId>apache-james-imap-protocol-tester</artifactId>
+      <artifactId>james-server-core-function</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>commons-configuration</groupId>
+      <artifactId>commons-configuration</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.james</groupId>
-      <artifactId>apache-james-imap-processor</artifactId>
+      <artifactId>james-server-core-library</artifactId>
+      <type>test-jar</type>
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-log4j12</artifactId>
+      <groupId>org.apache.james</groupId>
+      <artifactId>apache-james-mailbox-store</artifactId>
+      <type>test-jar</type>
       <scope>test</scope>
     </dependency>
   </dependencies>

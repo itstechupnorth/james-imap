@@ -27,7 +27,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.apache.james</groupId>
   <artifactId>apache-james-imap-message</artifactId>
-  <name>Apache JAMES IMAP Message Library</name>
+  <name>Apache James IMAP Message Library</name>
   
   <profiles>
     <profile>

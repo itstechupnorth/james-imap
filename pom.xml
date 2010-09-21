@@ -23,25 +23,25 @@
     <artifactId>apache-james-imap-parent</artifactId>
     <version>0.2-SNAPSHOT</version>
     <relativePath>./parent/pom.xml</relativePath>
-    
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.apache.james</groupId>
   <artifactId>apache-james-imap</artifactId>
-  <name>Apache JAMES Imap</name>
+  <name>Apache James IMAP (and Mailbox)</name>
   <version>0.2-SNAPSHOT</version>
-  <description>The Apache JAMES Imap Protocol</description>
+  <description>The Apache James IMAP</description>
   <url>http://james.apache.org/imap/</url>
   <inceptionYear>2002</inceptionYear>
   <packaging>pom</packaging>
   <modules>
-    <!-- <module>stage</module> -->
     <module>protocol-tester</module>
     <module>api</module>
     <module>message</module>
     <module>mailbox</module>
     <module>store</module>
     <module>processor</module>
+    <module>file</module>
+    <module>jdbc</module>
     <module>jpa</module>
     <module>jcr</module>
     <module>memory</module>
