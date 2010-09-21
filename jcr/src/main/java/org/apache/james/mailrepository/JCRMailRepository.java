@@ -59,7 +59,6 @@ import org.apache.jackrabbit.commons.cnd.CndImporter;
 import org.apache.jackrabbit.util.ISO9075;
 import org.apache.jackrabbit.util.Text;
 import org.apache.james.core.MailImpl;
-import org.apache.james.services.MailRepository;
 import org.apache.mailet.Mail;
 import org.apache.mailet.MailAddress;
 

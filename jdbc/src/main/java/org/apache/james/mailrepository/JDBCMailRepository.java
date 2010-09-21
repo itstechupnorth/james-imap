@@ -661,7 +661,7 @@ public class JDBCMailRepository
 
 
     /**
-     * @see org.apache.james.services.MailRepository#retrieve(String)
+     * @see org.apache.james.mailrepository.MailRepository#retrieve(String)
      */
     public Mail retrieve(String key) throws MessagingException {
         if (DEEP_DEBUG) {
@@ -834,7 +834,7 @@ public class JDBCMailRepository
     }
 
     /**
-     * @see org.apache.james.services.MailRepository#list()
+     * @see org.apache.james.mailrepository.MailRepository#list()
      */
     public Iterator list() throws MessagingException {
         //System.err.println("listing messages");

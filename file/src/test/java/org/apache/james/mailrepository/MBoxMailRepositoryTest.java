@@ -27,7 +27,6 @@ import junit.framework.TestCase;
 
 import org.apache.commons.configuration.DefaultConfigurationBuilder;
 import org.apache.commons.logging.impl.SimpleLog;
-import org.apache.james.services.MailRepository;
 import org.apache.james.test.mock.james.MockFileSystem;
 
 /**
