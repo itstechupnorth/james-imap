@@ -27,7 +27,7 @@ import org.apache.commons.logging.Log;
 import org.apache.james.lifecycle.Configurable;
 import org.apache.james.lifecycle.LogEnabled;
 import org.apache.james.services.MailRepository;
-import org.apache.james.services.store.Store;
+import org.apache.james.services.store.MailStore;
 import org.apache.james.util.Lock;
 import org.apache.mailet.Mail;
 
@@ -54,7 +54,7 @@ public abstract class AbstractMailRepository implements MailRepository, LogEnabl
      */
     private final Lock lock = new Lock();;
 
-    protected Store store; // variable is not used beyond initialization
+    protected MailStore store; // variable is not used beyond initialization
     
     private Log logger;
 
@@ -77,7 +77,7 @@ public abstract class AbstractMailRepository implements MailRepository, LogEnabl
      * @param store the Store
      */
     @Resource(name="mailstore")
-    public void setStore(Store store) {
+    public void setStore(MailStore store) {
         this.store = store;
     }
     

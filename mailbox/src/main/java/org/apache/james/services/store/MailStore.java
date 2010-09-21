@@ -21,7 +21,7 @@ package org.apache.james.services.store;
 
 import org.apache.commons.configuration.HierarchicalConfiguration;
 
-public interface Store {
+public interface MailStore {
 
     public Object select(HierarchicalConfiguration config) throws StoreException;
     

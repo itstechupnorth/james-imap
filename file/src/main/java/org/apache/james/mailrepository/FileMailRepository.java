@@ -28,7 +28,7 @@ import org.apache.james.core.MimeMessageCopyOnWriteProxy;
 import org.apache.james.core.MimeMessageWrapper;
 import org.apache.james.repository.ObjectRepository;
 import org.apache.james.repository.StreamRepository;
-import org.apache.james.services.store.Store;
+import org.apache.james.services.store.MailStore;
 import org.apache.mailet.Mail;
 
 import javax.annotation.PostConstruct;
@@ -145,7 +145,7 @@ public class FileMailRepository
         }
     }
 
-    private Object selectRepository(Store store, String type) throws Exception {
+    private Object selectRepository(MailStore store, String type) throws Exception {
         DefaultConfigurationBuilder objectConfiguration
             = new DefaultConfigurationBuilder();
 

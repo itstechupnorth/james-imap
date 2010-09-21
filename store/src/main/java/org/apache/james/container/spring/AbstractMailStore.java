@@ -34,7 +34,7 @@ import org.apache.commons.configuration.HierarchicalConfiguration;
 import org.apache.commons.logging.Log;
 import org.apache.james.lifecycle.Configurable;
 import org.apache.james.lifecycle.LogEnabled;
-import org.apache.james.services.store.Store;
+import org.apache.james.services.store.MailStore;
 
 /**
  * Provides a registry of mail repositories. A mail repository is uniquely
@@ -42,7 +42,7 @@ import org.apache.james.services.store.Store;
  *
  */
 public abstract class AbstractMailStore
-    implements Store, LogEnabled, Configurable {
+    implements MailStore, LogEnabled, Configurable {
 
     // Prefix for repository names
     private static final String REPOSITORY_NAME = "Repository";
