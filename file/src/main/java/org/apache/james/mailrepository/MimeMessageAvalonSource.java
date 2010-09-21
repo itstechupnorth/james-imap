@@ -22,7 +22,7 @@
 package org.apache.james.mailrepository;
 
 import org.apache.james.core.MimeMessageSource;
-import org.apache.james.services.store.StreamRepository;
+import org.apache.james.repository.StreamRepository;
 
 import java.io.IOException;
 import java.io.InputStream;
