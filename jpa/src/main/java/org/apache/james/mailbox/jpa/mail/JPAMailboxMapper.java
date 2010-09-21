@@ -129,9 +129,6 @@ public class JPAMailboxMapper extends JPATransactionalMapper implements MailboxM
         }
     }
 
-    /**
-     * @see org.apache.james.mailbox.store.mail.MailboxMapper#deleteAll()
-     */
     public void deleteAll() throws MailboxException {
         try {
             getEntityManager().createNamedQuery("deleteAll").executeUpdate();
@@ -140,19 +137,7 @@ public class JPAMailboxMapper extends JPATransactionalMapper implements MailboxM
         } 
     }
 
-    /**
-     * @see org.apache.james.mailbox.store.mail.MailboxMapper#findMailboxById(long)
-     */
-    public Mailbox<Long> findMailboxById(Long mailboxId) throws MailboxException, MailboxNotFoundException  {
-        try {
-            return (JPAMailbox) getEntityManager().createNamedQuery("findMailboxById").setParameter("idParam", mailboxId).getSingleResult();
-        } catch (NoResultException e) {
-            throw new MailboxNotFoundException("");   
-        } catch (PersistenceException e) {
-            throw new MailboxException("Search of mailbox with id " + mailboxId + " failed", e);
-        } 
-    }
-
+    
     /**
      * @see org.apache.james.mailbox.store.mail.MailboxMapper#hasChildren(java.lang.String)
      */

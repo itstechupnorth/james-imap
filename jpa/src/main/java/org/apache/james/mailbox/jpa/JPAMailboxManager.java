@@ -21,6 +21,7 @@ package org.apache.james.mailbox.jpa;
 import org.apache.james.mailbox.MailboxException;
 import org.apache.james.mailbox.MailboxPath;
 import org.apache.james.mailbox.MailboxSession;
+import org.apache.james.mailbox.jpa.mail.JPAMailboxMapper;
 import org.apache.james.mailbox.jpa.mail.model.JPAMailbox;
 import org.apache.james.mailbox.jpa.user.model.JPASubscription;
 import org.apache.james.mailbox.store.Authenticator;
@@ -60,7 +61,7 @@ public abstract class JPAMailboxManager extends StoreMailboxManager<Long> {
      * @throws MailboxException
      */
     public void deleteEverything(MailboxSession mailboxSession) throws MailboxException {
-        final MailboxMapper<Long> mapper = mailboxSessionMapperFactory.getMailboxMapper(mailboxSession);
+        final JPAMailboxMapper mapper = (JPAMailboxMapper) mailboxSessionMapperFactory.getMailboxMapper(mailboxSession);
         mapper.execute(new TransactionalMapper.VoidTransaction() {
 
             public void runVoid() throws MailboxException {

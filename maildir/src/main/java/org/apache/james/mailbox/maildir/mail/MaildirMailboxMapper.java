@@ -26,7 +26,6 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang.NotImplementedException;
 import org.apache.james.mailbox.MailboxException;
 import org.apache.james.mailbox.MailboxExistsException;
 import org.apache.james.mailbox.MailboxNotFoundException;
@@ -73,25 +72,7 @@ public class MaildirMailboxMapper extends NonTransactionalMapper implements Mail
             throw new MailboxNotFoundException(mailbox.getName());
     }
 
-    /*
-     * (non-Javadoc)
-     * @see org.apache.james.mailbox.store.mail.MailboxMapper#deleteAll()
-     */
-    public void deleteAll() throws MailboxException {
-        // not used
-        throw new NotImplementedException();
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see org.apache.james.mailbox.store.mail.MailboxMapper#findMailboxById(java.lang.Object)
-     */
-    public Mailbox<Integer> findMailboxById(Integer mailboxId) throws MailboxException,
-            MailboxNotFoundException {
-        // not used
-        throw new NotImplementedException();
-    }
-    
+   
     /* 
      * (non-Javadoc)
      * @see org.apache.james.mailbox.store.mail.MailboxMapper#findMailboxByPath(org.apache.james.imap.api.MailboxPath)

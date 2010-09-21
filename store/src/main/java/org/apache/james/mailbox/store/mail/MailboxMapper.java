@@ -49,13 +49,7 @@ public interface MailboxMapper<Id> extends Mapper {
      */
     public abstract void delete(Mailbox<Id> mailbox) throws MailboxException;
 
-    /**
-     * Delete all {@link Mailbox} objects from the underlying storage
-     * 
-     * @throws MailboxException
-     */
-    public abstract void deleteAll() throws MailboxException;
-
+  
     /**
      * Return the {@link Mailbox} for the given name
      * 
@@ -76,17 +70,6 @@ public interface MailboxMapper<Id> extends Mapper {
      */
     public abstract List<Mailbox<Id>> findMailboxWithPathLike(MailboxPath mailboxPath)
             throws MailboxException;
-
-    /**
-     * Return the {@link Mailbox} for the given id
-     * 
-     * @param mailboxId
-     * @return mailbox
-     * @throws MailboxException
-     * @throws MailboxNotFoundException
-     */
-    public abstract Mailbox<Id> findMailboxById(Id mailboxId)
-            throws MailboxException, MailboxNotFoundException;
 
     /**
      * Return if the given {@link Mailbox} has children

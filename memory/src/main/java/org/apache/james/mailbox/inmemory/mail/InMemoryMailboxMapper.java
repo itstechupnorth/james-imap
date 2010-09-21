@@ -50,27 +50,10 @@ public class InMemoryMailboxMapper extends NonTransactionalMapper implements Mai
         mailboxesById.remove(mailbox.getMailboxId());
     }
 
-    /*
-     * (non-Javadoc)
-     * @see org.apache.james.mailbox.store.mail.MailboxMapper#deleteAll()
-     */
     public void deleteAll() throws MailboxException {
         mailboxesById.clear();
     }
 
-
-    /*
-     * (non-Javadoc)
-     * @see org.apache.james.mailbox.store.mail.MailboxMapper#findMailboxById(java.lang.Object)
-     */
-    public Mailbox<Long> findMailboxById(Long mailboxId) throws MailboxException, MailboxNotFoundException {
-        Mailbox<Long> mailbox = mailboxesById.get(mailboxesById);
-        if (mailbox == null) {
-            throw new MailboxNotFoundException(String.valueOf(mailboxId));
-        } else {
-            return mailbox;
-        }
-    }
 
     /*
      * (non-Javadoc)

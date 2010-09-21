@@ -80,37 +80,6 @@ public class JCRMailboxMapper extends AbstractJCRScalingMapper implements Mailbo
 
     /*
      * (non-Javadoc)
-     * 
-     * @see org.apache.james.mailbox.store.mail.MailboxMapper#deleteAll()
-     */
-    public void deleteAll() throws MailboxException {
-        try {
-            getSession().getRootNode().getNode(MAILBOXES_PATH).remove();
-
-        } catch (PathNotFoundException e) {
-            // nothing todo
-        } catch (RepositoryException e) {
-            throw new MailboxException("Unable to delete all mailboxes", e);
-        }
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see org.apache.james.mailbox.store.mail.MailboxMapper#findMailboxById(java.lang.Object)
-     */
-    public Mailbox<String> findMailboxById(String mailboxId) throws MailboxException, MailboxNotFoundException {
-        try {
-            return new JCRMailbox(getSession().getNodeByIdentifier(mailboxId), getLogger());
-        } catch (PathNotFoundException e) {
-            throw new MailboxNotFoundException(mailboxId);
-        } catch (RepositoryException e) {
-            throw new MailboxException("Unable to find mailbox  with id " + mailboxId, e);
-        }
-    }
-    
-
-    /*
-     * (non-Javadoc)
      * @see org.apache.james.mailbox.store.mail.MailboxMapper#findMailboxByPath(org.apache.james.imap.api.MailboxPath)
      */
     public Mailbox<String> findMailboxByPath(MailboxPath path) throws MailboxException, MailboxNotFoundException {
