@@ -54,7 +54,6 @@ public class InMemoryMailboxMapper extends NonTransactionalMapper implements Mai
         mailboxesById.clear();
     }
 
-
     /*
      * (non-Javadoc)
      * @see org.apache.james.mailbox.store.mail.MailboxMapper#findMailboxByName(java.lang.String)

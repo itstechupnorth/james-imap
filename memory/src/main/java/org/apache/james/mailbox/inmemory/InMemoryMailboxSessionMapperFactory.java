@@ -28,7 +28,6 @@ import org.apache.james.mailbox.inmemory.user.InMemorySubscriptionMapper;
 import org.apache.james.mailbox.store.MailboxSessionMapperFactory;
 import org.apache.james.mailbox.store.mail.MailboxMapper;
 import org.apache.james.mailbox.store.mail.MessageMapper;
-import org.apache.james.mailbox.store.transaction.Mapper;
 import org.apache.james.mailbox.store.user.SubscriptionMapper;
 
 public class InMemoryMailboxSessionMapperFactory extends MailboxSessionMapperFactory<Long> {
@@ -60,6 +59,12 @@ public class InMemoryMailboxSessionMapperFactory extends MailboxSessionMapperFac
     @Override
     public SubscriptionMapper createSubscriptionMapper(MailboxSession session) throws SubscriptionException {
         return subscriptionMapper;
+    }
+
+    public void deleteAll() throws MailboxException {
+        ((InMemoryMailboxMapper) mailboxMapper).deleteAll();
+        ((InMemoryMessageMapper) messageMapper).deleteAll();
+        ((InMemorySubscriptionMapper) subscriptionMapper).deleteAll();
     }
 
 }
