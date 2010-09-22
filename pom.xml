@@ -40,8 +40,6 @@
     <module>mailbox</module>
     <module>store</module>
     <module>processor</module>
-    <module>file</module>
-    <module>jdbc</module>
     <module>jpa</module>
     <module>jcr</module>
     <module>memory</module>

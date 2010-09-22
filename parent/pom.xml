@@ -258,16 +258,6 @@
         <artifactId>apache-james-mailbox-maildir</artifactId>
         <version>${project.version}</version>
       </dependency>
-      <dependency>
-        <groupId>org.apache.james</groupId>
-        <artifactId>apache-james-mailbox-file</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.james</groupId>
-        <artifactId>apache-james-mailbox-jdbc</artifactId>
-        <version>${project.version}</version>
-      </dependency>
       <!--
         END Modules
       -->
@@ -305,33 +295,6 @@
       <!--
         END Mail
       -->
-
-      <!--
-        Start James Server
-      -->
-
-      <dependency>
-        <groupId>org.apache.james</groupId>
-        <artifactId>james-server-core-api</artifactId>
-        <version>${version.james-server}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.james</groupId>
-        <artifactId>james-server-core-library</artifactId>
-        <version>${version.james-server}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.james</groupId>
-        <artifactId>james-server-core-library</artifactId>
-        <version>${version.james-server}</version>
-        <type>test-jar</type>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.james</groupId>
-        <artifactId>james-server-common-util</artifactId>
-        <version>${version.james-server}</version>
-      </dependency>
 
       <!--
         Start James Mailet
