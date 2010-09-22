@@ -61,18 +61,5 @@ public class InMemoryMailboxSessionMapperFactory extends MailboxSessionMapperFac
     public SubscriptionMapper createSubscriptionMapper(MailboxSession session) throws SubscriptionException {
         return subscriptionMapper;
     }
-    
-    public void deleteAll() throws MailboxException {
-        final MailboxMapper<Long> mapper = mailboxMapper;
-        mapper.execute(new Mapper.VoidTransaction() {
-
-            public void runVoid() throws MailboxException {
-                mapper.deleteAll(); 
-            }
-            
-        });
-        ((InMemoryMessageMapper) messageMapper).deleteAll();
-        ((InMemorySubscriptionMapper) subscriptionMapper).deleteAll();
-    }
 
 }

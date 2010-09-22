@@ -50,16 +50,4 @@ public class InMemoryMailboxManager extends StoreMailboxManager<Long> {
         }
     }
 
-    /**
-     * Delete every Mailbox which exists
-     * 
-     * @throws MailboxException
-     */
-
-    public synchronized void deleteEverything() throws MailboxException {
-        ((InMemoryMailboxSessionMapperFactory) mailboxSessionMapperFactory).deleteAll();
-    }
-
-
-    
 }

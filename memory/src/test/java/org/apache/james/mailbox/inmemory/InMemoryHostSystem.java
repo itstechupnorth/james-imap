@@ -32,23 +32,17 @@ import org.apache.james.test.functional.HostSystem;
 
 public class InMemoryHostSystem extends ImapHostSystem {
 
-    private final InMemoryMailboxManager mailboxManager;
-    private final InMemoryUserManager userManager; 
-    private final InMemoryMailboxSessionMapperFactory factory;
-    static HostSystem build() throws Exception {        
+    private InMemoryMailboxManager mailboxManager;
+    private InMemoryUserManager userManager; 
+    private InMemoryMailboxSessionMapperFactory factory;
+    
+    static HostSystem build() throws Exception {
         InMemoryHostSystem host =  new InMemoryHostSystem();
         return host;
     }
     
     private InMemoryHostSystem() {
-        userManager = new InMemoryUserManager();
-        factory = new InMemoryMailboxSessionMapperFactory();
-        mailboxManager = new InMemoryMailboxManager(factory, userManager);
-        final ImapProcessor defaultImapProcessorFactory = DefaultImapProcessorFactory.createDefaultProcessor(mailboxManager, new InMemorySubscriptionManager(factory));
-
-        configure(new DefaultImapDecoderFactory().buildImapDecoder(),
-                new DefaultImapEncoderFactory().buildImapEncoder(),
-                defaultImapProcessorFactory);
+        initFields();
     }
     
     public boolean addUser(String user, String password) throws Exception {
@@ -58,7 +52,17 @@ public class InMemoryHostSystem extends ImapHostSystem {
 
     @Override
     protected void resetData() throws Exception {
-        mailboxManager.deleteEverything();
+        initFields();
+    }
+    
+    private void initFields() {
+        userManager = new InMemoryUserManager();
+        factory = new InMemoryMailboxSessionMapperFactory();
+        mailboxManager = new InMemoryMailboxManager(factory, userManager);
+        final ImapProcessor defaultImapProcessorFactory = DefaultImapProcessorFactory.createDefaultProcessor(mailboxManager, new InMemorySubscriptionManager(factory));
+        configure(new DefaultImapDecoderFactory().buildImapDecoder(),
+                new DefaultImapEncoderFactory().buildImapEncoder(),
+                defaultImapProcessorFactory);
     }
 
 }
