@@ -25,13 +25,11 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.james.mailbox.MailboxException;
 import org.apache.james.mailbox.MailboxPath;
 import org.apache.james.mailbox.MailboxSession;
-import org.apache.james.mailbox.jcr.mail.JCRMailboxMapper;
 import org.apache.james.mailbox.jcr.mail.model.JCRMailbox;
 import org.apache.james.mailbox.store.Authenticator;
 import org.apache.james.mailbox.store.MapperStoreMessageManager;
 import org.apache.james.mailbox.store.StoreMailboxManager;
 import org.apache.james.mailbox.store.mail.model.Mailbox;
-import org.apache.james.mailbox.store.transaction.Mapper;
 import org.apache.james.mailbox.util.MailboxEventDispatcher;
 
 /**
@@ -59,16 +57,8 @@ public class JCRMailboxManager extends StoreMailboxManager<String> implements JC
     }
 
     @Override
-    protected void doCreateMailbox(MailboxPath path, MailboxSession session) throws MailboxException {
-        final Mailbox<String> mailbox = new org.apache.james.mailbox.jcr.mail.model.JCRMailbox(path, randomUidValidity(), logger);
-        final JCRMailboxMapper mapper = (JCRMailboxMapper) mapperFactory.getMailboxMapper(session);
-        mapper.execute(new Mapper.VoidTransaction() {
-
-            public void runVoid() throws MailboxException {
-                mapper.save(mailbox);
-            }
-
-        });
+    protected Mailbox<String> doCreateMailbox(MailboxPath path, MailboxSession session) throws MailboxException {
+        return new org.apache.james.mailbox.jcr.mail.model.JCRMailbox(path, randomUidValidity(), logger);
     }
 
 }

@@ -47,6 +47,7 @@ import org.apache.james.mailbox.MailboxMetaData.Selectability;
 import org.apache.james.mailbox.store.mail.MailboxMapper;
 import org.apache.james.mailbox.store.mail.model.Mailbox;
 import org.apache.james.mailbox.store.transaction.Mapper;
+import org.apache.james.mailbox.store.transaction.TransactionalMapper;
 import org.apache.james.mailbox.util.MailboxEventDispatcher;
 import org.apache.james.mailbox.util.SimpleMailboxMetaData;
 
@@ -174,12 +175,12 @@ public abstract class StoreMailboxManager<Id> implements MailboxManager {
     protected abstract StoreMessageManager<Id> createMessageManager(AtomicLong lastUid,MailboxEventDispatcher dispatcher, Mailbox<Id> mailboxRow, MailboxSession session) throws MailboxException;
 
     /**
-     * Create a Mailbox for the given namespace and store it to the underlying storage
+     * Create a Mailbox for the given namespace
      * 
      * @param namespaceName
      * @throws MailboxException
      */
-    protected abstract void doCreateMailbox(MailboxPath mailboxPath, MailboxSession session) throws MailboxException;
+    protected abstract  org.apache.james.mailbox.store.mail.model.Mailbox<Id> doCreateMailbox(MailboxPath mailboxPath, final MailboxSession session) throws MailboxException;
     
     /*
      * (non-Javadoc)
@@ -243,7 +244,15 @@ public abstract class StoreMailboxManager<Id> implements MailboxManager {
                 if (!mailboxExists(mailbox, mailboxSession)) {
                     try {
                         lock.lock(mailbox);
-                        doCreateMailbox(mailbox, mailboxSession);
+                        final org.apache.james.mailbox.store.mail.model.Mailbox<Id> m = doCreateMailbox(mailbox, mailboxSession);
+                        final MailboxMapper<Id> mapper = mailboxSessionMapperFactory.getMailboxMapper(mailboxSession);
+                        mapper.execute(new TransactionalMapper.VoidTransaction(){
+
+                            public void runVoid() throws MailboxException {
+                                mapper.save(m);
+                            }
+                            
+                        });
                     } finally {
                         lock.unlock(mailbox);
                     }

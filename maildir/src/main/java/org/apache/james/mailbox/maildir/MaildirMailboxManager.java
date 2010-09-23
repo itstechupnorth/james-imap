@@ -28,7 +28,6 @@ import org.apache.james.mailbox.store.Authenticator;
 import org.apache.james.mailbox.store.MailboxSessionMapperFactory;
 import org.apache.james.mailbox.store.MapperStoreMessageManager;
 import org.apache.james.mailbox.store.StoreMailboxManager;
-import org.apache.james.mailbox.store.mail.MailboxMapper;
 import org.apache.james.mailbox.store.mail.model.Mailbox;
 import org.apache.james.mailbox.util.MailboxEventDispatcher;
 
@@ -47,11 +46,9 @@ public class MaildirMailboxManager extends StoreMailboxManager<Integer> {
     }
 
     @Override
-    protected void doCreateMailbox(MailboxPath mailboxPath, MailboxSession session)
+    protected Mailbox<Integer> doCreateMailbox(MailboxPath mailboxPath, MailboxSession session)
             throws MailboxException {
-        final Mailbox<Integer> mailbox = new MaildirMailbox(mailboxPath, randomUidValidity(), 0);
-        final MailboxMapper<Integer> mapper = mailboxSessionMapperFactory.getMailboxMapper(session);
-        mapper.save(mailbox);
+        return new MaildirMailbox(mailboxPath, randomUidValidity(), 0);
     }
 
 }

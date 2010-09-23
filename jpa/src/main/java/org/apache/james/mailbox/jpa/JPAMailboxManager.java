@@ -23,13 +23,10 @@ import org.apache.james.mailbox.MailboxPath;
 import org.apache.james.mailbox.MailboxSession;
 import org.apache.james.mailbox.jpa.mail.JPAMailboxMapper;
 import org.apache.james.mailbox.jpa.mail.model.JPAMailbox;
-import org.apache.james.mailbox.jpa.user.model.JPASubscription;
 import org.apache.james.mailbox.store.Authenticator;
 import org.apache.james.mailbox.store.StoreMailboxManager;
-import org.apache.james.mailbox.store.mail.MailboxMapper;
 import org.apache.james.mailbox.store.mail.model.Mailbox;
 import org.apache.james.mailbox.store.transaction.TransactionalMapper;
-import org.apache.james.mailbox.store.user.model.Subscription;
 
 /**
  * JPA implementation of {@link StoreMailboxManager}
@@ -42,16 +39,8 @@ public abstract class JPAMailboxManager extends StoreMailboxManager<Long> {
     }
     
     @Override
-    protected void doCreateMailbox(MailboxPath path, MailboxSession session) throws MailboxException {
-        final Mailbox<Long> mailbox = new JPAMailbox(path, randomUidValidity());
-        final MailboxMapper<Long> mapper = mailboxSessionMapperFactory.getMailboxMapper(session);
-        mapper.execute(new TransactionalMapper.VoidTransaction(){
-
-            public void runVoid() throws MailboxException {
-                mapper.save(mailbox);
-            }
-            
-        });
+    protected Mailbox<Long> doCreateMailbox(MailboxPath path, MailboxSession session) throws MailboxException {
+        return  new JPAMailbox(path, randomUidValidity());
     }
 
     /**
@@ -70,14 +59,4 @@ public abstract class JPAMailboxManager extends StoreMailboxManager<Long> {
             
         });
     }
-
-    /*
-     * (non-Javadoc)
-     * @see org.apache.james.mailbox.store.StoreMailboxManager#createSubscription(org.apache.james.mailbox.MailboxSession, java.lang.String)
-     */
-    protected Subscription createSubscription(final MailboxSession session, final String mailbox) {
-        final Subscription newSubscription = new JPASubscription(session.getUser().getUserName(), mailbox);
-        return newSubscription;
-    }
-    
 }

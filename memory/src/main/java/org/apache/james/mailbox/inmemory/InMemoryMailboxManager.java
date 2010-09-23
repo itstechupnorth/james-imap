@@ -44,12 +44,9 @@ public class InMemoryMailboxManager extends StoreMailboxManager<Long> {
     }
 
     @Override
-    protected void doCreateMailbox(MailboxPath mailboxPath, MailboxSession session) throws MailboxException {
-        InMemoryMailbox mailbox = new InMemoryMailbox(randomId(), mailboxPath, randomUidValidity());
-        try {
-            mailboxSessionMapperFactory.getMailboxMapper(session).save(mailbox);
-        } catch (MailboxException e) {
-        }
+    protected Mailbox<Long> doCreateMailbox(MailboxPath mailboxPath, MailboxSession session) throws MailboxException {
+        return new InMemoryMailbox(randomId(), mailboxPath, randomUidValidity());
+       
     }
 
     /**
