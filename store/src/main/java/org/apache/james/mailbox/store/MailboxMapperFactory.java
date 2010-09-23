@@ -16,28 +16,19 @@
  * specific language governing permissions and limitations      *
  * under the License.                                           *
  ****************************************************************/
-package org.apache.james.mailbox.jcr;
+package org.apache.james.mailbox.store;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.james.mailbox.MailboxException;
 import org.apache.james.mailbox.MailboxSession;
-import org.apache.james.mailbox.jcr.user.model.JCRSubscription;
-import org.apache.james.mailbox.store.StoreSubscriptionManager;
-import org.apache.james.mailbox.store.user.model.Subscription;
+import org.apache.james.mailbox.store.mail.MailboxMapper;
 
-/**
- * JCR implementation of a SubscriptionManager
- */
-public class JCRSubscriptionManager extends StoreSubscriptionManager implements JCRImapConstants {
-    
-    private final Log logger = LogFactory.getLog(JCRSubscriptionManager.class);
+public interface MailboxMapperFactory<Id> {
 
-    public JCRSubscriptionManager(JCRMailboxSessionMapperFactory mapperFactory) {
-        super(mapperFactory);
-    }
-
-    @Override
-    protected Subscription createSubscription(MailboxSession session, String mailbox) {
-        return new JCRSubscription(session.getUser().getUserName(), mailbox, logger);
-    }
+    /**
+     * Create a {@link MailboxMapper} instance or return the one which exists for the {@link MailboxSession} already
+     * 
+     * @param session
+     * @return mapper
+     */
+    public MailboxMapper<Id> getMailboxMapper(MailboxSession session) throws MailboxException;
 }

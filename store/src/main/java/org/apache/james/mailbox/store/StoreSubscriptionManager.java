@@ -24,6 +24,7 @@ import java.util.List;
 
 import org.apache.james.mailbox.MailboxException;
 import org.apache.james.mailbox.MailboxSession;
+import org.apache.james.mailbox.RequestAware;
 import org.apache.james.mailbox.SubscriptionException;
 import org.apache.james.mailbox.SubscriptionManager;
 import org.apache.james.mailbox.store.transaction.Mapper;
@@ -33,13 +34,13 @@ import org.apache.james.mailbox.store.user.model.Subscription;
 /**
  * Manages subscriptions.
  */
-public abstract class StoreSubscriptionManager<Id> implements SubscriptionManager {
+public abstract class StoreSubscriptionManager implements SubscriptionManager {
 
     private static final int INITIAL_SIZE = 32;
     
-    protected MailboxSessionMapperFactory<Id> mapperFactory;
+    protected SubscriptionMapperFactory mapperFactory;
     
-    public StoreSubscriptionManager(final MailboxSessionMapperFactory<Id> mapperFactory) {
+    public StoreSubscriptionManager(final SubscriptionMapperFactory mapperFactory) {
         this.mapperFactory = mapperFactory;
     }
 
@@ -117,7 +118,9 @@ public abstract class StoreSubscriptionManager<Id> implements SubscriptionManage
      * @see org.apache.james.mailbox.SubscriptionManager#endProcessingRequest(org.apache.james.mailbox.MailboxSession)
      */
     public void endProcessingRequest(MailboxSession session) {
-        mapperFactory.endProcessingRequest(session);
+        if (mapperFactory instanceof RequestAware) {
+            ((RequestAware)mapperFactory).endProcessingRequest(session);
+        }
     }
 
     /**

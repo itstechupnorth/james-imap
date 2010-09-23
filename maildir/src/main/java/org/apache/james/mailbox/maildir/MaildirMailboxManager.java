@@ -42,7 +42,7 @@ public class MaildirMailboxManager extends StoreMailboxManager<Integer> {
     @Override
     protected MapperStoreMessageManager<Integer> createMessageManager(AtomicLong lastUid, MailboxEventDispatcher dispatcher,
             Mailbox<Integer> mailboxEntiy, MailboxSession session) throws MailboxException {
-        return new MaildirMessageManager(mailboxSessionMapperFactory, lastUid, dispatcher, mailboxEntiy);
+        return new MaildirMessageManager((MailboxSessionMapperFactory<Integer>)mailboxSessionMapperFactory, lastUid, dispatcher, mailboxEntiy);
     }
 
     @Override

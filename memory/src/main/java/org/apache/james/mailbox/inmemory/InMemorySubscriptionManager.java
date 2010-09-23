@@ -29,7 +29,7 @@ import org.apache.james.mailbox.store.user.model.Subscription;
 /**
  * Stores subscriptions in memory.
  */
-public class InMemorySubscriptionManager extends StoreSubscriptionManager<Long> {
+public class InMemorySubscriptionManager extends StoreSubscriptionManager {
     
     public InMemorySubscriptionManager(MailboxSessionMapperFactory<Long> mapperFactory) {
         super(mapperFactory);
@@ -44,6 +44,7 @@ public class InMemorySubscriptionManager extends StoreSubscriptionManager<Long> 
      * (non-Javadoc)
      * @see org.apache.james.mailbox.store.transaction.TransactionalMapper#execute(org.apache.james.mailbox.store.transaction.TransactionalMapper.Transaction)
      */
+    @SuppressWarnings("unchecked")
     public void execute(Transaction transaction) throws MailboxException {
         transaction.run();
     }

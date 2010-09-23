@@ -27,7 +27,7 @@ import org.apache.james.mailbox.store.user.model.Subscription;
  * JPA implementation of {@link StoreSubscriptionManager}
  *
  */
-public class JPASubscriptionManager extends StoreSubscriptionManager<Long> {
+public class JPASubscriptionManager extends StoreSubscriptionManager {
     
     public JPASubscriptionManager(final JPAMailboxSessionMapperFactory mapperFactory) {
         super(mapperFactory);

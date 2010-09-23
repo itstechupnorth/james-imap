@@ -23,7 +23,7 @@ import org.apache.james.mailbox.maildir.user.model.MaildirSubscription;
 import org.apache.james.mailbox.store.StoreSubscriptionManager;
 import org.apache.james.mailbox.store.user.model.Subscription;
 
-public class MaildirSubscriptionManager extends StoreSubscriptionManager<Integer> {
+public class MaildirSubscriptionManager extends StoreSubscriptionManager {
 
     public MaildirSubscriptionManager(MaildirMailboxSessionMapperFactory mf) {
         super(mf);

@@ -51,10 +51,10 @@ import org.apache.james.mailbox.util.MailboxEventDispatcher;
 public abstract class MapperStoreMessageManager<Id> extends StoreMessageManager<Id> {
 
    
-    private MailboxSessionMapperFactory<Id> mapperFactory;
+    private MessageMapperFactory<Id> mapperFactory;
 
     
-    public MapperStoreMessageManager(MailboxSessionMapperFactory<Id> mapperFactory, final AtomicLong lastUid, final MailboxEventDispatcher dispatcher, final Mailbox<Id> mailbox) throws MailboxException {
+    public MapperStoreMessageManager(MessageMapperFactory<Id> mapperFactory, final AtomicLong lastUid, final MailboxEventDispatcher dispatcher, final Mailbox<Id> mailbox) throws MailboxException {
         super(lastUid, dispatcher, mailbox);
         this.mapperFactory = mapperFactory;
     }

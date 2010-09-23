@@ -31,18 +31,16 @@ import org.apache.james.mailbox.store.user.SubscriptionMapper;
  * Maintain mapper instances by {@link MailboxSession}. So only one mapper instance is used
  * in a {@link MailboxSession}
  */
-public abstract class MailboxSessionMapperFactory <Id> implements RequestAware{
+public abstract class MailboxSessionMapperFactory <Id> implements RequestAware, MailboxMapperFactory<Id>, MessageMapperFactory<Id>, SubscriptionMapperFactory{
 
     protected final static String MESSAGEMAPPER ="MESSAGEMAPPER";
     protected final static String MAILBOXMAPPER ="MAILBOXMAPPER";
     protected final static String SUBSCRIPTIONMAPPER ="SUBSCRIPTIONMAPPER";
 
-    /**
-     * Create a {@link MessageMapper} instance of return the one which exists for the {@link MailboxSession} already
-     * 
-     * @param session
-     * @param mailboxId
-     * @return mapper
+
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.mailbox.store.MessageMapperFactory#getMessageMapper(org.apache.james.mailbox.MailboxSession)
      */
     @SuppressWarnings("unchecked")
     public MessageMapper<Id> getMessageMapper(MailboxSession session) throws MailboxException {
@@ -63,11 +61,10 @@ public abstract class MailboxSessionMapperFactory <Id> implements RequestAware{
      */
     protected abstract MessageMapper<Id> createMessageMapper(MailboxSession session) throws MailboxException;
 
-    /**
-     * Create a {@link MailboxMapper} instance or return the one which exists for the {@link MailboxSession} already
-     * 
-     * @param session
-     * @return mapper
+
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.mailbox.store.MailboxMapperFactory#getMailboxMapper(org.apache.james.mailbox.MailboxSession)
      */
     @SuppressWarnings("unchecked")
     public MailboxMapper<Id> getMailboxMapper(MailboxSession session) throws MailboxException {

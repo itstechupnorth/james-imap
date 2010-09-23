@@ -42,6 +42,7 @@ import org.apache.james.mailbox.MailboxPath;
 import org.apache.james.mailbox.MailboxQuery;
 import org.apache.james.mailbox.MailboxSession;
 import org.apache.james.mailbox.MessageRange;
+import org.apache.james.mailbox.RequestAware;
 import org.apache.james.mailbox.StandardMailboxMetaDataComparator;
 import org.apache.james.mailbox.MailboxMetaData.Selectability;
 import org.apache.james.mailbox.store.mail.MailboxMapper;
@@ -67,7 +68,7 @@ public abstract class StoreMailboxManager<Id> implements MailboxManager {
     private final MailboxEventDispatcher dispatcher = new MailboxEventDispatcher();
     private final DelegatingMailboxListener delegatingListener = new DelegatingMailboxListener();   
     private final MailboxPathLock lock = new MailboxPathLock();
-    protected final MailboxSessionMapperFactory<Id> mailboxSessionMapperFactory;    
+    protected final MailboxMapperFactory<Id> mailboxSessionMapperFactory;    
     
     private final Authenticator authenticator;
     private final static Random RANDOM = new Random();
@@ -75,7 +76,7 @@ public abstract class StoreMailboxManager<Id> implements MailboxManager {
     private Log log = LogFactory.getLog("org.apache.james.imap");
     private ConcurrentMap<Id, AtomicLong> lastUids = new ConcurrentHashMap<Id, AtomicLong>();
     
-    public StoreMailboxManager(MailboxSessionMapperFactory<Id> mailboxSessionMapperFactory, final Authenticator authenticator) {
+    public StoreMailboxManager(MailboxMapperFactory<Id> mailboxSessionMapperFactory, final Authenticator authenticator) {
         this.authenticator = authenticator;
         this.mailboxSessionMapperFactory = mailboxSessionMapperFactory;
         
@@ -428,7 +429,9 @@ public abstract class StoreMailboxManager<Id> implements MailboxManager {
      * End processing of Request for session
      */
     public void endProcessingRequest(MailboxSession session) {
-        mailboxSessionMapperFactory.endProcessingRequest(session);
+        if (mailboxSessionMapperFactory instanceof RequestAware) {
+            ((RequestAware)mailboxSessionMapperFactory).endProcessingRequest(session);
+        }
     }
 
     /**

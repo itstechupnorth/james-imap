@@ -40,7 +40,7 @@ public class InMemoryMailboxManager extends StoreMailboxManager<Long> {
 
     @Override
     protected MapperStoreMessageManager<Long> createMessageManager(AtomicLong lastUid, MailboxEventDispatcher dispatcher, Mailbox<Long> mailboxRow, MailboxSession session) throws MailboxException {
-        return new InMemoryStoreMessageManager(mailboxSessionMapperFactory, lastUid, dispatcher, (InMemoryMailbox)mailboxRow);
+        return new InMemoryStoreMessageManager((MailboxSessionMapperFactory<Long>)mailboxSessionMapperFactory, lastUid, dispatcher, (InMemoryMailbox)mailboxRow);
     }
 
     @Override
