@@ -49,7 +49,7 @@ public class SimpleMailboxSession implements MailboxSession, MailboxSession.User
     
     private final String password;
     
-    private boolean open;
+    private boolean open = true;
 
     private final List<Locale> localePreferences;
 
