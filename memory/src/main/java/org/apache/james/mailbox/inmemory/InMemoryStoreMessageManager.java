@@ -23,6 +23,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicLong;
 
 import javax.mail.Flags;
 
@@ -39,9 +40,9 @@ import org.apache.james.mailbox.util.MailboxEventDispatcher;
 
 public class InMemoryStoreMessageManager extends MapperStoreMessageManager<Long> {
 
-    public InMemoryStoreMessageManager(MailboxSessionMapperFactory<Long> mapperFactory,
+    public InMemoryStoreMessageManager(MailboxSessionMapperFactory<Long> mapperFactory, AtomicLong lastUid,
             MailboxEventDispatcher dispatcher, InMemoryMailbox mailbox) throws MailboxException {
-        super(mapperFactory, dispatcher,mailbox);
+        super(mapperFactory, lastUid, dispatcher,mailbox);
     }
     
     @Override

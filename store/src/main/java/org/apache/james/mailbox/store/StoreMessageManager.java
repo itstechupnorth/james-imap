@@ -31,6 +31,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
+import java.util.concurrent.atomic.AtomicLong;
 
 import javax.mail.Flags;
 import javax.mail.MessagingException;
@@ -38,7 +39,6 @@ import javax.mail.util.SharedFileInputStream;
 
 import org.apache.james.mailbox.MailboxException;
 import org.apache.james.mailbox.MailboxListener;
-import org.apache.james.mailbox.MailboxNotFoundException;
 import org.apache.james.mailbox.MailboxSession;
 import org.apache.james.mailbox.MessageRange;
 import org.apache.james.mailbox.store.mail.MessageMapper;
@@ -68,10 +68,15 @@ public abstract class StoreMessageManager<Id> implements org.apache.james.mailbo
     
     private final MailboxEventDispatcher dispatcher;    
     
-    public StoreMessageManager(final MailboxEventDispatcher dispatcher, final Mailbox<Id> mailbox) throws MailboxException {
+    private final AtomicLong lastUid;
+    
+    public StoreMessageManager(final AtomicLong lastUid, final MailboxEventDispatcher dispatcher, final Mailbox<Id> mailbox) throws MailboxException {
         this.mailbox = mailbox;
         this.dispatcher = dispatcher;
+        this.lastUid = lastUid;
     }
+    
+    
     
     /**
      * Return the {@link MailboxEventDispatcher} for this Mailbox
@@ -254,7 +259,7 @@ public abstract class StoreMessageManager<Id> implements org.apache.james.mailbo
             }
             final MailboxMembership<Id> message = createMessage(internalDate, size, bodyStartOctet, tmpMsgIn.newStream(0, -1), flags, headers, propertyBuilder);
             long uid = appendMessageToStore(message, mailboxSession);
-            
+                        
             dispatcher.added(uid, mailboxSession.getSessionId(), new StoreMailboxPath<Id>(getMailboxEntity()));
             return uid;
         } catch (IOException e) {
@@ -350,16 +355,6 @@ public abstract class StoreMessageManager<Id> implements org.apache.james.mailbo
     public void addListener(MailboxListener listener) throws MailboxException {
         dispatcher.addMailboxListener(listener);
     }
-
-    private long getUidNext(MailboxSession mailboxSession) throws MailboxException {
-        Mailbox<Id> mailbox = getMailboxEntity();
-        if (mailbox == null) {
-            throw new MailboxNotFoundException("Mailbox has been deleted");
-        } else {
-            final long lastUid = mailbox.getLastUid();
-            return lastUid + 1;
-        }
-    }
     
 
     /**
@@ -378,7 +373,7 @@ public abstract class StoreMessageManager<Id> implements org.apache.james.mailbo
         final List<Long> recent = recent(resetRecent, mailboxSession);
         final Flags permanentFlags = getPermanentFlags();
         final long uidValidity = getMailboxEntity().getUidValidity();
-        final long uidNext = getUidNext(mailboxSession);
+        final long uidNext = lastUid.get() +1;
         final long messageCount = getMessageCount(mailboxSession);
         final long unseenCount;
         final Long firstUnseen;
@@ -464,8 +459,13 @@ public abstract class StoreMessageManager<Id> implements org.apache.james.mailbo
     public void copyTo(MessageRange set, StoreMessageManager<Id> toMailbox, MailboxSession session) throws MailboxException {
         try {
             Iterator<Long> copiedUids = copy(set, toMailbox, session);
+            long highest = 0;
             while(copiedUids.hasNext()) {
-                dispatcher.added(copiedUids.next(), session.getSessionId(), new StoreMailboxPath<Id>(toMailbox.getMailboxEntity()));
+                long uid = copiedUids.next();
+                if (highest < uid) {
+                    highest = uid;
+                }
+                dispatcher.added(uid, session.getSessionId(), new StoreMailboxPath<Id>(toMailbox.getMailboxEntity()));
             }
         } catch (MessagingException e) {
             throw new MailboxException("Unable to parse message", e);

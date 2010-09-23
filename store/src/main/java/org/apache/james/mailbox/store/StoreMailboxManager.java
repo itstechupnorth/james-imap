@@ -24,6 +24,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Random;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.atomic.AtomicLong;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -67,9 +70,9 @@ public abstract class StoreMailboxManager<Id> implements MailboxManager {
     
     private final Authenticator authenticator;
     private final static Random RANDOM = new Random();
-
+    
     private Log log = LogFactory.getLog("org.apache.james.imap");
-
+    private ConcurrentMap<Id, AtomicLong> lastUids = new ConcurrentHashMap<Id, AtomicLong>();
     
     public StoreMailboxManager(MailboxSessionMapperFactory<Id> mailboxSessionMapperFactory, final Authenticator authenticator) {
         this.authenticator = authenticator;
@@ -156,10 +159,10 @@ public abstract class StoreMailboxManager<Id> implements MailboxManager {
     }
     
     /**
-     * Default do nothing. Should be overridden by subclass if needed
+     * Close the {@link MailboxSession} if not null
      */
     public void logout(MailboxSession session, boolean force) throws MailboxException {
-        // Do nothing by default
+        session.close();
     }
   
     /**
@@ -168,7 +171,7 @@ public abstract class StoreMailboxManager<Id> implements MailboxManager {
      * @param mailboxRow
      * @return storeMailbox
      */
-    protected abstract StoreMessageManager<Id> createMessageManager(MailboxEventDispatcher dispatcher, Mailbox<Id> mailboxRow, MailboxSession session) throws MailboxException;
+    protected abstract StoreMessageManager<Id> createMessageManager(AtomicLong lastUid,MailboxEventDispatcher dispatcher, Mailbox<Id> mailboxRow, MailboxSession session) throws MailboxException;
 
     /**
      * Create a Mailbox for the given namespace and store it to the underlying storage
@@ -193,11 +196,31 @@ public abstract class StoreMailboxManager<Id> implements MailboxManager {
 
         } else {
             getLog().debug("Loaded mailbox " + mailboxPath);
-
-            return createMessageManager(dispatcher, mailboxRow, session);
+            
+            // Get the lastuid for the mailbox and register the LastUidTracker to update it when messages 
+            // are added to the mailbox
+            final AtomicLong lastUid = getLastUid(mailboxRow.getMailboxId());
+            StoreMessageManager<Id>  m = createMessageManager(lastUid, dispatcher, mailboxRow, session);
+            addListener(mailboxPath, new LastUidTracker(lastUid, session), session);
+            return m;
         }
     }
 
+    
+    /**
+     * Return the lastUid for the mailbox. 
+     * 
+     * 
+     * @param mailboxId
+     * @return lastUid
+     * 
+     * TODO: Maybe we should do something smart here and remove it from the {@link ConcurrentHashMap} once its not needed anymore
+     */
+    private AtomicLong getLastUid(Id mailboxId) {
+        lastUids.putIfAbsent(mailboxId, new AtomicLong(0));
+        return lastUids.get(mailboxId); 
+    }
+    
     /*
      * (non-Javadoc)
      * @see org.apache.james.mailbox.MailboxManager#createMailbox(org.apache.james.imap.api.MailboxPath, org.apache.james.mailbox.MailboxSession)
@@ -402,6 +425,40 @@ public abstract class StoreMailboxManager<Id> implements MailboxManager {
      */
     public void startProcessingRequest(MailboxSession session) {
         // do nothing
+        
+    }
+    
+    /**
+     * {@link MailboxListener} which takes care of update the lastUid for a Mailbox.
+     * 
+     * 
+     *
+     */
+    private final class LastUidTracker implements MailboxListener {
+
+        private final AtomicLong lastUid;
+        private final MailboxSession session;
+
+        public LastUidTracker(AtomicLong lastUid, MailboxSession session) {
+            this.lastUid = lastUid;
+            this.session = session;
+        }
+        
+        public void event(Event event) {
+            if (event instanceof Added) {
+                long uid = ((Added) event).getSubjectUid();
+                if (uid > lastUid.get()) {
+                    lastUid.set(uid);
+                }
+            }
+        }
+
+        public boolean isClosed() {
+            if (session == null || session.isOpen() == false) {
+                return true;
+            }
+            return false;
+        }
         
     }
 

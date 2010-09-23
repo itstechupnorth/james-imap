@@ -18,6 +18,8 @@
  ****************************************************************/
 package org.apache.james.mailbox.maildir;
 
+import java.util.concurrent.atomic.AtomicLong;
+
 import org.apache.james.mailbox.MailboxException;
 import org.apache.james.mailbox.MailboxPath;
 import org.apache.james.mailbox.MailboxSession;
@@ -39,9 +41,9 @@ public class MaildirMailboxManager extends StoreMailboxManager<Integer> {
     }
 
     @Override
-    protected MapperStoreMessageManager<Integer> createMessageManager(MailboxEventDispatcher dispatcher,
+    protected MapperStoreMessageManager<Integer> createMessageManager(AtomicLong lastUid, MailboxEventDispatcher dispatcher,
             Mailbox<Integer> mailboxEntiy, MailboxSession session) throws MailboxException {
-        return new MaildirMessageManager(mailboxSessionMapperFactory, dispatcher, mailboxEntiy);
+        return new MaildirMessageManager(mailboxSessionMapperFactory, lastUid, dispatcher, mailboxEntiy);
     }
 
     @Override

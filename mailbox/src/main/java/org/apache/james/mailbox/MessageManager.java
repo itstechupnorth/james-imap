@@ -171,7 +171,10 @@ public interface MessageManager {
         
 
         /**
-         * Gets the next UID predicted.
+         * Gets the next UID predicted. The returned UID is not guaranteed to be the 
+         * one that is assigned to the next message. Its only guaranteed that it will be 
+         * at least equals or bigger then the value
+         * 
          * @param mailboxSession not null
          * @return the uid that will be assigned to the next appended message
          */

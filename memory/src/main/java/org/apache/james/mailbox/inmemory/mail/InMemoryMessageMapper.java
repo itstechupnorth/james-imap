@@ -216,8 +216,10 @@ public class InMemoryMessageMapper extends NonTransactionalMapper implements Mes
      * @see org.apache.james.mailbox.store.mail.MessageMapper#copy(org.apache.james.mailbox.store.mail.model.Mailbox, org.apache.james.mailbox.store.mail.model.MailboxMembership)
      */
     public long copy(Mailbox<Long> mailbox, MailboxMembership<Long> original) throws MailboxException {
-        ((InMemoryMailbox) mailbox).consumeUid();
-        SimpleMailboxMembership membership = new SimpleMailboxMembership(mailbox.getMailboxId(), mailbox.getLastUid(), (SimpleMailboxMembership) original);
+        InMemoryMailbox iMailbox = (InMemoryMailbox) mailbox;
+        iMailbox.consumeUid();
+        
+        SimpleMailboxMembership membership = new SimpleMailboxMembership(mailbox.getMailboxId(), iMailbox.getLastUid(), (SimpleMailboxMembership) original);
         return save(mailbox, membership);
     }
     

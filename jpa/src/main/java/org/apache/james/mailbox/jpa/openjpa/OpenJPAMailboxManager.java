@@ -20,6 +20,8 @@
 package org.apache.james.mailbox.jpa.openjpa;
 
 
+import java.util.concurrent.atomic.AtomicLong;
+
 import org.apache.james.mailbox.MailboxException;
 import org.apache.james.mailbox.MailboxSession;
 import org.apache.james.mailbox.jpa.JPAMailboxManager;
@@ -47,8 +49,8 @@ public class OpenJPAMailboxManager extends JPAMailboxManager {
     }
 
     @Override
-    protected MapperStoreMessageManager<Long> createMessageManager(MailboxEventDispatcher dispatcher, Mailbox<Long> mailboxRow, MailboxSession session) throws MailboxException {
-        MapperStoreMessageManager<Long> result =  new OpenJPAMessageManager((JPAMailboxSessionMapperFactory) mailboxSessionMapperFactory, dispatcher, mailboxRow, useStreaming);
+    protected MapperStoreMessageManager<Long> createMessageManager(AtomicLong lastUid, MailboxEventDispatcher dispatcher, Mailbox<Long> mailboxRow, MailboxSession session) throws MailboxException {
+        MapperStoreMessageManager<Long> result =  new OpenJPAMessageManager((JPAMailboxSessionMapperFactory) mailboxSessionMapperFactory, lastUid, dispatcher, mailboxRow, useStreaming);
         return result;
     }
 }

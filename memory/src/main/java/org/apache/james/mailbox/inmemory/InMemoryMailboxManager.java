@@ -19,6 +19,8 @@
 
 package org.apache.james.mailbox.inmemory;
 
+import java.util.concurrent.atomic.AtomicLong;
+
 import org.apache.james.mailbox.MailboxException;
 import org.apache.james.mailbox.MailboxPath;
 import org.apache.james.mailbox.MailboxSession;
@@ -37,8 +39,8 @@ public class InMemoryMailboxManager extends StoreMailboxManager<Long> {
     }
 
     @Override
-    protected MapperStoreMessageManager<Long> createMessageManager(MailboxEventDispatcher dispatcher, Mailbox<Long> mailboxRow, MailboxSession session) throws MailboxException {
-        return new InMemoryStoreMessageManager(mailboxSessionMapperFactory, dispatcher, (InMemoryMailbox)mailboxRow);
+    protected MapperStoreMessageManager<Long> createMessageManager(AtomicLong lastUid, MailboxEventDispatcher dispatcher, Mailbox<Long> mailboxRow, MailboxSession session) throws MailboxException {
+        return new InMemoryStoreMessageManager(mailboxSessionMapperFactory, lastUid, dispatcher, (InMemoryMailbox)mailboxRow);
     }
 
     @Override

@@ -23,6 +23,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicLong;
 
 import javax.mail.Flags;
 
@@ -45,14 +46,14 @@ public class OpenJPAMessageManager extends JPAMessageManager {
 
     private final boolean useStreaming;
 
-    public OpenJPAMessageManager(JPAMailboxSessionMapperFactory mapperFactory,
+    public OpenJPAMessageManager(JPAMailboxSessionMapperFactory mapperFactory, AtomicLong lastUid,
             MailboxEventDispatcher dispatcher, Mailbox<Long> mailbox) throws MailboxException {
-        this(mapperFactory, dispatcher, mailbox, false);
+        this(mapperFactory, lastUid, dispatcher, mailbox, false);
     }
 
-    public OpenJPAMessageManager(JPAMailboxSessionMapperFactory mapperFactory,
+    public OpenJPAMessageManager(JPAMailboxSessionMapperFactory mapperFactory, AtomicLong lastUid,
             MailboxEventDispatcher dispatcher, Mailbox<Long> mailbox, final boolean useStreaming) throws MailboxException {
-        super(mapperFactory, dispatcher, mailbox);
+        super(mapperFactory, lastUid, dispatcher, mailbox);
         this.useStreaming = useStreaming;
     }
 

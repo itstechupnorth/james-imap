@@ -18,6 +18,8 @@
  ****************************************************************/
 package org.apache.james.mailbox.jcr;
 
+import java.util.concurrent.atomic.AtomicLong;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.james.mailbox.MailboxException;
@@ -52,8 +54,8 @@ public class JCRMailboxManager extends StoreMailboxManager<String> implements JC
 
     
     @Override
-    protected MapperStoreMessageManager<String> createMessageManager(MailboxEventDispatcher dispatcher, Mailbox<String> mailboxEntity, MailboxSession session) throws MailboxException{
-        return new JCRMessageManager(mapperFactory, dispatcher, (JCRMailbox) mailboxEntity, logger, getDelimiter());
+    protected MapperStoreMessageManager<String> createMessageManager(AtomicLong lastUid, MailboxEventDispatcher dispatcher, Mailbox<String> mailboxEntity, MailboxSession session) throws MailboxException{
+        return new JCRMessageManager(mapperFactory, lastUid, dispatcher, (JCRMailbox) mailboxEntity, logger, getDelimiter());
     }
 
     @Override

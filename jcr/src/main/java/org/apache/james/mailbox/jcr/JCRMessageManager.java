@@ -22,6 +22,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicLong;
 
 import javax.mail.Flags;
 
@@ -44,9 +45,9 @@ public class JCRMessageManager extends MapperStoreMessageManager<String> {
 
     private final Log log;
 
-    public JCRMessageManager(JCRMailboxSessionMapperFactory mapperFactory,
+    public JCRMessageManager(JCRMailboxSessionMapperFactory mapperFactory, final AtomicLong lastUid,
             final MailboxEventDispatcher dispatcher, final JCRMailbox mailbox, final Log log, final char delimiter) throws MailboxException {
-        super(mapperFactory, dispatcher, mailbox);
+        super(mapperFactory, lastUid, dispatcher, mailbox);
         this.log = log;
     }
 

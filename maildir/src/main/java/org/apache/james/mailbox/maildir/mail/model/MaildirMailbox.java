@@ -43,7 +43,6 @@ public class MaildirMailbox implements Mailbox<Integer> {
         this.namespace = mailbox.getNamespace();
         this.user = mailbox.getUser();
         this.name = mailbox.getName();
-        this.lastUid = mailbox.getLastUid();
         this.uidValidity = mailbox.getUidValidity();
     }
 
@@ -53,14 +52,6 @@ public class MaildirMailbox implements Mailbox<Integer> {
 	 */
 	public void consumeUid() {
 		lastUid++;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see org.apache.james.mailbox.store.mail.model.Mailbox#getLastUid()
-	 */
-	public long getLastUid() {
-		return lastUid;
 	}
 	
 	public void setMailboxId(Integer id) {

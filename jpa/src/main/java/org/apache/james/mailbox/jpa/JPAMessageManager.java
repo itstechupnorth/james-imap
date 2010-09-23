@@ -22,6 +22,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicLong;
 
 import javax.mail.Flags;
 
@@ -40,9 +41,9 @@ import org.apache.james.mailbox.util.MailboxEventDispatcher;
  */
 public class JPAMessageManager extends MapperStoreMessageManager<Long> {
     
-    public JPAMessageManager(JPAMailboxSessionMapperFactory mapperFactory,
+    public JPAMessageManager(JPAMailboxSessionMapperFactory mapperFactory, AtomicLong lastUid,
             final MailboxEventDispatcher dispatcher,final Mailbox<Long> mailbox) throws MailboxException {
-        super(mapperFactory, dispatcher, mailbox);     
+        super(mapperFactory, lastUid, dispatcher, mailbox);     
     }
     
     @Override

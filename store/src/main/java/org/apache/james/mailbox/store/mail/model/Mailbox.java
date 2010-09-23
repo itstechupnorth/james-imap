@@ -24,12 +24,6 @@ package org.apache.james.mailbox.store.mail.model;
 public interface Mailbox<Id> {
 
     /**
-     * Gets the last UID.
-     * @return uid
-     */
-    public abstract long getLastUid();
-        
-    /**
      * Gets the unique mailbox ID.
      * @return mailbox id
      */
