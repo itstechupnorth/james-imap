@@ -163,7 +163,9 @@ public abstract class StoreMailboxManager<Id> implements MailboxManager {
      * Close the {@link MailboxSession} if not null
      */
     public void logout(MailboxSession session, boolean force) throws MailboxException {
-        session.close();
+        if (session != null) {
+            session.close();
+        }
     }
   
     /**
