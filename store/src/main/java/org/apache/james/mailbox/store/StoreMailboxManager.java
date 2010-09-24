@@ -74,7 +74,7 @@ public abstract class StoreMailboxManager<Id> implements MailboxManager {
     private final static Random RANDOM = new Random();
     
     private Log log = LogFactory.getLog("org.apache.james.imap");
-    private ConcurrentMap<Id, AtomicLong> lastUids = new ConcurrentHashMap<Id, AtomicLong>();
+    private ConcurrentMap<MailboxPath, AtomicLong> lastUids = new ConcurrentHashMap<MailboxPath, AtomicLong>();
     
     public StoreMailboxManager(MailboxMapperFactory<Id> mailboxSessionMapperFactory, final Authenticator authenticator) {
         this.authenticator = authenticator;
@@ -203,7 +203,7 @@ public abstract class StoreMailboxManager<Id> implements MailboxManager {
             
             // Get the lastuid for the mailbox and register the LastUidTracker to update it when messages 
             // are added to the mailbox
-            final AtomicLong lastUid = getLastUid(mailboxRow.getMailboxId());
+            final AtomicLong lastUid = getLastUid(mailboxPath);
             StoreMessageManager<Id>  m = createMessageManager(lastUid, dispatcher, mailboxRow, session);
             addListener(mailboxPath, new LastUidTracker(lastUid, session), session);
             return m;
@@ -220,9 +220,9 @@ public abstract class StoreMailboxManager<Id> implements MailboxManager {
      * 
      * TODO: Maybe we should do something smart here and remove it from the {@link ConcurrentHashMap} once its not needed anymore
      */
-    private AtomicLong getLastUid(Id mailboxId) {
-        lastUids.putIfAbsent(mailboxId, new AtomicLong(0));
-        return lastUids.get(mailboxId); 
+    private AtomicLong getLastUid(MailboxPath path) {
+        lastUids.putIfAbsent(path, new AtomicLong(0));
+        return lastUids.get(path); 
     }
     
     /*
@@ -464,6 +464,18 @@ public abstract class StoreMailboxManager<Id> implements MailboxManager {
                 if (uid > lastUid.get()) {
                     lastUid.set(uid);
                 }
+            } else if (event instanceof MailboxDeletionEvent) {
+                // remove the lastUid if the Mailbox was deleted
+                lastUids.remove(((MailboxDeletionEvent) event).getMailboxPath());
+            } else if (event instanceof MailboxRenamed) {
+                // If the mailbox was renamed we need take care of update the lastUid
+                // and move it to the new MailboxPath
+                MailboxRenamed rEvent = (MailboxRenamed) event;
+                AtomicLong oldLastUid = lastUids.remove(rEvent.getMailboxPath());
+                if (oldLastUid == null) {
+                    oldLastUid = new AtomicLong(0);
+                }
+                lastUids.putIfAbsent(rEvent.getNewPath(), oldLastUid);
             }
         }
 
