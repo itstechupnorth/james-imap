@@ -205,7 +205,7 @@ public abstract class StoreMailboxManager<Id> implements MailboxManager {
             // are added to the mailbox
             final AtomicLong lastUid = getLastUid(mailboxPath);
             StoreMessageManager<Id>  m = createMessageManager(lastUid, dispatcher, mailboxRow, session);
-            addListener(mailboxPath, new LastUidTracker(lastUid, session), session);
+            addListener(mailboxPath, new LastUidTracker(lastUids, session), session);
             return m;
         }
     }
@@ -442,50 +442,6 @@ public abstract class StoreMailboxManager<Id> implements MailboxManager {
         
     }
     
-    /**
-     * {@link MailboxListener} which takes care of update the lastUid for a Mailbox.
-     * 
-     * 
-     *
-     */
-    private final class LastUidTracker implements MailboxListener {
-
-        private final AtomicLong lastUid;
-        private final MailboxSession session;
-
-        public LastUidTracker(AtomicLong lastUid, MailboxSession session) {
-            this.lastUid = lastUid;
-            this.session = session;
-        }
-        
-        public void event(Event event) {
-            if (event instanceof Added) {
-                long uid = ((Added) event).getSubjectUid();
-                if (uid > lastUid.get()) {
-                    lastUid.set(uid);
-                }
-            } else if (event instanceof MailboxDeletionEvent) {
-                // remove the lastUid if the Mailbox was deleted
-                lastUids.remove(((MailboxDeletionEvent) event).getMailboxPath());
-            } else if (event instanceof MailboxRenamed) {
-                // If the mailbox was renamed we need take care of update the lastUid
-                // and move it to the new MailboxPath
-                MailboxRenamed rEvent = (MailboxRenamed) event;
-                AtomicLong oldLastUid = lastUids.remove(rEvent.getMailboxPath());
-                if (oldLastUid == null) {
-                    oldLastUid = new AtomicLong(0);
-                }
-                lastUids.putIfAbsent(rEvent.getNewPath(), oldLastUid);
-            }
-        }
-
-        public boolean isClosed() {
-            if (session == null || session.isOpen() == false) {
-                return true;
-            }
-            return false;
-        }
-        
-    }
+    
 
 }
