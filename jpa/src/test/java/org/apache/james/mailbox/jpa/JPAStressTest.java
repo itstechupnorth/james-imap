@@ -26,6 +26,7 @@ import javax.persistence.EntityManagerFactory;
 import org.apache.commons.logging.impl.SimpleLog;
 import org.apache.james.imap.functional.AbstractStressTest;
 import org.apache.james.mailbox.MailboxException;
+import org.apache.james.mailbox.MailboxManager;
 import org.apache.james.mailbox.MailboxSession;
 import org.apache.james.mailbox.jpa.JPAMailboxSessionMapperFactory;
 import org.apache.james.mailbox.jpa.mail.model.JPAMailbox;
@@ -36,7 +37,6 @@ import org.apache.james.mailbox.jpa.mail.model.openjpa.JPAMailboxMembership;
 import org.apache.james.mailbox.jpa.mail.model.openjpa.JPAMessage;
 import org.apache.james.mailbox.jpa.openjpa.OpenJPAMailboxManager;
 import org.apache.james.mailbox.jpa.user.model.JPASubscription;
-import org.apache.james.mailbox.store.StoreMailboxManager;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.junit.After;
 import org.junit.Before;
@@ -100,7 +100,7 @@ public class JPAStressTest extends AbstractStressTest{
     }
 
     @Override
-    protected StoreMailboxManager<?> getMailboxManager() {
+    protected MailboxManager getMailboxManager() {
         return mailboxManager;
     }
 

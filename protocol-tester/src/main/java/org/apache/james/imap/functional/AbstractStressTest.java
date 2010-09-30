@@ -30,23 +30,23 @@ import javax.mail.Flags;
 import org.apache.commons.logging.impl.SimpleLog;
 import org.apache.james.mailbox.MailboxConstants;
 import org.apache.james.mailbox.MailboxException;
+import org.apache.james.mailbox.MailboxManager;
 import org.apache.james.mailbox.MailboxPath;
 import org.apache.james.mailbox.MailboxSession;
 import org.apache.james.mailbox.MessageManager;
-import org.apache.james.mailbox.store.StoreMailboxManager;
 import org.junit.Test;
 
 public abstract class AbstractStressTest {
 
-    private final static int APPEND_OPERATIONS = 200;
+    private final static int APPEND_OPERATIONS = 100;
     
     
-    protected abstract StoreMailboxManager<?> getMailboxManager();
+    protected abstract MailboxManager getMailboxManager();
     
     @Test
     public void testStessTest() throws InterruptedException, MailboxException {
        
-        final CountDownLatch latch = new CountDownLatch(APPEND_OPERATIONS);
+        final CountDownLatch latch = new CountDownLatch(200);
         final ExecutorService pool = Executors.newFixedThreadPool(APPEND_OPERATIONS/2);
         
         MailboxSession session = getMailboxManager().createSystemSession("test", new SimpleLog("Test"));
@@ -58,7 +58,7 @@ public abstract class AbstractStressTest {
         final AtomicBoolean fail = new AtomicBoolean(false);
         
         // fire of 1000 append operations
-        for (int i = 0 ; i < APPEND_OPERATIONS; i++) {
+        for (int i = 0 ; i < 200; i++) {
             pool.execute(new Runnable() {
                 
                 public void run() {
@@ -67,9 +67,10 @@ public abstract class AbstractStressTest {
                         return;
                     }
                     
-                    MailboxSession session = getMailboxManager().createSystemSession("test", new SimpleLog("Test"));
 
                     try {
+                        MailboxSession session = getMailboxManager().createSystemSession("test", new SimpleLog("Test"));
+
                         getMailboxManager().startProcessingRequest(session);
                         MessageManager m = getMailboxManager().getMailbox(path, session);
                         

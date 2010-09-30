@@ -24,9 +24,9 @@ import java.io.IOException;
 import org.apache.commons.io.FileUtils;
 import org.apache.james.imap.functional.AbstractStressTest;
 import org.apache.james.mailbox.MailboxException;
+import org.apache.james.mailbox.MailboxManager;
 import org.apache.james.mailbox.maildir.MaildirMailboxManager;
 import org.apache.james.mailbox.maildir.MaildirMailboxSessionMapperFactory;
-import org.apache.james.mailbox.store.StoreMailboxManager;
 import org.junit.After;
 import org.junit.Before;
 
@@ -56,7 +56,7 @@ public class MaildirStressTest extends AbstractStressTest {
     }
 
     @Override
-    protected StoreMailboxManager<?> getMailboxManager() {
+    protected MailboxManager getMailboxManager() {
         return mailboxManager;
     }
 

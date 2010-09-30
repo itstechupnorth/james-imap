@@ -26,6 +26,7 @@ import org.apache.commons.logging.impl.SimpleLog;
 import org.apache.jackrabbit.core.RepositoryImpl;
 import org.apache.jackrabbit.core.config.RepositoryConfig;
 import org.apache.james.imap.functional.AbstractStressTest;
+import org.apache.james.mailbox.MailboxManager;
 import org.apache.james.mailbox.MailboxSession;
 import org.apache.james.mailbox.jcr.GlobalMailboxSessionJCRRepository;
 import org.apache.james.mailbox.jcr.JCRMailboxManager;
@@ -33,7 +34,6 @@ import org.apache.james.mailbox.jcr.JCRMailboxSessionMapperFactory;
 import org.apache.james.mailbox.jcr.JCRUtils;
 import org.apache.james.mailbox.jcr.JCRVmNodeLocker;
 import org.apache.james.mailbox.jcr.MailboxSessionJCRRepository;
-import org.apache.james.mailbox.store.StoreMailboxManager;
 import org.junit.After;
 import org.junit.Before;
 import org.xml.sax.InputSource;
@@ -80,7 +80,7 @@ public class JCRStressTest extends AbstractStressTest{
 
     
     @Override
-    protected StoreMailboxManager<?> getMailboxManager() {
+    protected MailboxManager getMailboxManager() {
         return mailboxManager;
     }
 
