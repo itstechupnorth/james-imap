@@ -28,7 +28,7 @@ import org.apache.james.imap.functional.AbstractStressTest;
 import org.apache.james.mailbox.MailboxException;
 import org.apache.james.mailbox.MailboxManager;
 import org.apache.james.mailbox.MailboxSession;
-import org.apache.james.mailbox.jpa.JPAMailboxSessionMapperFactory;
+import org.apache.james.mailbox.jpa.mail.model.JPAHeader;
 import org.apache.james.mailbox.jpa.mail.model.JPAMailbox;
 import org.apache.james.mailbox.jpa.mail.model.JPAProperty;
 import org.apache.james.mailbox.jpa.mail.model.openjpa.AbstractJPAMailboxMembership;
@@ -45,21 +45,24 @@ import org.junit.Before;
  * Proof of bug https://issues.apache.org/jira/browse/IMAP-137
  */
 public class JPAStressTest extends AbstractStressTest{
-
     
     private OpenJPAMailboxManager mailboxManager;
+    
     private long locktimeout = 60000;
+    
     private EntityManagerFactory entityManagerFactory;
     
     @Before
     public void setUp() {
+        
         HashMap<String, String> properties = new HashMap<String, String>();
         properties.put("openjpa.ConnectionDriverName", "org.h2.Driver");
         properties.put("openjpa.ConnectionURL", "jdbc:h2:mem:imap;DB_CLOSE_DELAY=-1");
         properties.put("openjpa.Log", "JDBC=WARN, SQL=WARN, Runtime=WARN");
         properties.put("openjpa.ConnectionFactoryProperties", "PrettyPrint=true, PrettyPrintLineLength=72");
         properties.put("openjpa.jdbc.SynchronizeMappings", "buildSchema(ForeignKeys=true)");
-        properties.put("openjpa.MetaDataFactory", "jpa(Types=org.apache.james.mailbox.jpa.mail.model.JPAHeader;" +
+        properties.put("openjpa.MetaDataFactory", "jpa(Types=" +
+                JPAHeader.class.getName() + ";" +
                 JPAMailbox.class.getName() + ";" +
                 AbstractJPAMailboxMembership.class.getName() + ";" +
                 JPAMailboxMembership.class.getName() + ";" +
@@ -76,9 +79,9 @@ public class JPAStressTest extends AbstractStressTest{
         // Set the lock timeout via SQL because of a bug in openJPA
         // https://issues.apache.org/jira/browse/OPENJPA-1656
         setH2LockTimeout();
+    
     }
     
- 
     private void setH2LockTimeout() {
         EntityManager manager = entityManagerFactory.createEntityManager();
         manager.getTransaction().begin();
@@ -86,7 +89,6 @@ public class JPAStressTest extends AbstractStressTest{
         manager.getTransaction().commit();
         manager.close();
     }
-    
     
     @After
     public void tearDown() {
