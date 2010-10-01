@@ -82,7 +82,7 @@ public class MimeDescriptorImpl implements MimeDescriptor {
      * @return true when the type is composite,
      * false otherwise
      */
-    private static boolean isComposite(String mediaType) {
+    public static boolean isComposite(String mediaType) {
         return "message".equalsIgnoreCase(mediaType) || "multipart".equalsIgnoreCase(mediaType);
     }
 
