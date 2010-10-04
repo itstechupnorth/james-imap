@@ -600,14 +600,14 @@ public abstract class AbstractImapCommandParser implements ImapCommandParser, Me
         int pos = range.indexOf(':');
         try {
             if (pos == -1) {
-                long value = parseLong(range);
+                long value = parseUnsignedInteger(range);
                 return new IdRange(value);
             } else {
             	
             	// Make sure we detect the low and high value 
             	// See https://issues.apache.org/jira/browse/IMAP-212
-                long val1 = parseLong(range.substring(0, pos));
-                long val2 = parseLong(range.substring(pos + 1));
+                long val1 = parseUnsignedInteger(range.substring(0, pos));
+                long val2 = parseUnsignedInteger(range.substring(pos + 1));
                 if (val1 <= val2 || val1 == Long.MAX_VALUE) {
                 	return new IdRange(val1, val2);
                 } else {
@@ -619,11 +619,15 @@ public abstract class AbstractImapCommandParser implements ImapCommandParser, Me
         }
     }
 
-    private long parseLong(String value) {
+    private long  parseUnsignedInteger(String value) throws DecodingException{
         if (value.length() == 1 && value.charAt(0) == '*') {
             return Long.MAX_VALUE;
+        } else {
+        	long number = Long.parseLong(value);
+        	if (number < ImapConstants.MIN_NZ_NUMBER || number > ImapConstants.MAX_NZ_NUMBER) throw new DecodingException(HumanReadableText.ILLEGAL_ARGUMENTS, "Invalid message set. Numbers must be unsigned 32-bit Integers");
+        	return number;
+        	
         }
-        return Long.parseLong(value);
     }
 
     /**

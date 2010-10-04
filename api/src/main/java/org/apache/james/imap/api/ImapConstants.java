@@ -244,4 +244,8 @@ public interface ImapConstants {
     public static final String FETCH_BODY = "BODY";
     
     public static final String STARTTLS = "STARTTLS";
+    
+    public static final long MAX_NZ_NUMBER = 4294967295L;
+    public static final long MIN_NZ_NUMBER = 1L;
+
 }

@@ -23,8 +23,11 @@ import static org.junit.Assert.assertEquals;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 
+import junit.framework.Assert;
+
 import org.apache.commons.logging.Log;
 import org.apache.james.imap.api.ImapCommand;
+import org.apache.james.imap.api.ImapConstants;
 import org.apache.james.imap.api.ImapMessage;
 import org.apache.james.imap.api.message.IdRange;
 import org.apache.james.imap.decode.DecodingException;
@@ -67,7 +70,33 @@ public class IdRangeParseTest  {
 		assertEquals(val2, ranges2[0].getHighVal());
 	}
 	
-	private String rangeAsString(int val1, int val2) {
+	@Test
+	public void testRangeUnsigned() throws DecodingException {
+		int val1 = 1;
+		
+		try {
+			ranges(rangeAsString(0, val1));
+			Assert.fail();
+		} catch (DecodingException e) {
+			// number smaller then 1 should not work
+		}
+	
+		
+		try {
+			ranges(rangeAsString(Long.MAX_VALUE, val1));
+			Assert.fail();
+		} catch (DecodingException e) {
+			// number smaller then 1 should not work
+		}
+		
+		IdRange[] ranges2 = ranges(rangeAsString(ImapConstants.MIN_NZ_NUMBER, ImapConstants.MAX_NZ_NUMBER));
+		assertEquals(1, ranges2.length);
+		assertEquals(ImapConstants.MIN_NZ_NUMBER, ranges2[0].getLowVal());
+		assertEquals(ImapConstants.MAX_NZ_NUMBER, ranges2[0].getHighVal());
+		
+	}
+	
+	private String rangeAsString(long val1, long val2) {
 		return val1 + ":" + val2;
 	}
 	
