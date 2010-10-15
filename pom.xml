@@ -21,14 +21,14 @@
   <parent>
     <groupId>org.apache.james</groupId>
     <artifactId>apache-james-imap-parent</artifactId>
-    <version>0.2-M1</version>
+    <version>0.2-SNAPSHOT</version>
     <relativePath>./parent/pom.xml</relativePath>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.apache.james</groupId>
   <artifactId>apache-james-imap</artifactId>
   <name>Apache James IMAP (and Mailbox)</name>
-  <version>0.2-M1</version>
+  <version>0.2-SNAPSHOT</version>
   <description>The Apache James IMAP</description>
   <url>http://james.apache.org/imap/</url>
   <inceptionYear>2002</inceptionYear>
@@ -55,9 +55,9 @@
   </distributionManagement>
   
   <scm>
-    <connection>scm:svn:http://svn.apache.org/repos/asf/james/imap/tags/apache-james-imap-0.2-M1</connection>
-    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/james/imap/tags/apache-james-imap-0.2-M1</developerConnection>
-    <url>http://svn.apache.org/viewcvs.cgi/james/imap/trunk/tags/apache-james-imap-0.2-M1?root=Apache-SVN</url>
+    <connection>scm:svn:http://svn.apache.org/repos/asf/james/imap/trunk</connection>
+    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/james/imap/trunk</developerConnection>
+    <url>http://svn.apache.org/viewcvs.cgi/james/imap/trunk?root=Apache-SVN</url>
   </scm>
 
   <profiles>
