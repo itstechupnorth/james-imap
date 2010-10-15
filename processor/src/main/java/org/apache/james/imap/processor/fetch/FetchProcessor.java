@@ -19,8 +19,11 @@
 
 package org.apache.james.imap.processor.fetch;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 
 import javax.mail.MessagingException;
 
@@ -34,6 +37,7 @@ import org.apache.james.imap.api.message.request.ImapRequest;
 import org.apache.james.imap.api.message.response.StatusResponseFactory;
 import org.apache.james.imap.api.process.ImapProcessor;
 import org.apache.james.imap.api.process.ImapSession;
+import org.apache.james.imap.api.process.SelectedMailbox;
 import org.apache.james.imap.message.request.FetchRequest;
 import org.apache.james.imap.message.response.FetchResponse;
 import org.apache.james.imap.processor.AbstractMailboxProcessor;
@@ -45,6 +49,7 @@ import org.apache.james.mailbox.MessageManager;
 import org.apache.james.mailbox.MessageRange;
 import org.apache.james.mailbox.MessageResult;
 import org.apache.james.mailbox.UnsupportedCriteriaException;
+import org.apache.james.mailbox.MessageRange.Type;
 import org.apache.james.mailbox.MessageResult.FetchGroup;
 import org.apache.james.mailbox.MessageResult.MimePath;
 import org.apache.james.mailbox.util.FetchGroupImpl;
@@ -52,9 +57,12 @@ import org.apache.james.mime4j.field.address.parser.ParseException;
 
 public class FetchProcessor extends AbstractMailboxProcessor {
 
+    private int batchSize;
+
     public FetchProcessor(final ImapProcessor next, final MailboxManager mailboxManager,
-            final StatusResponseFactory factory) {
+            final StatusResponseFactory factory, int batchSize) {
         super(next, mailboxManager, factory);
+        this.batchSize = batchSize;
     }
 
     /*
@@ -87,15 +95,26 @@ public class FetchProcessor extends AbstractMailboxProcessor {
                 final FetchResponseBuilder builder = new FetchResponseBuilder(
                         new EnvelopeBuilder(session.getLog()));
                 MessageRange messageSet = messageRange(session.getSelected(), idSet[i], useUids);
-
-                final MailboxSession mailboxSession = ImapSessionUtils
-                        .getMailboxSession(session);
-                final Iterator<MessageResult> it = mailbox.getMessages(messageSet, resultToFetch, mailboxSession);
-                while (it.hasNext()) {
-                    final MessageResult result = (MessageResult) it.next();
-                    final FetchResponse response = builder.build(fetch, result, mailbox, 
-                            session, useUids);
-                    responder.respond(response);
+                
+                // TODO: Maybe this should better be handled by the mailbox..
+                //
+                // split the MessageRange to not risk an OOM on big ranges
+                List<MessageRange> batchSet;
+                if (batchSize > 0) {
+                    batchSet = splitMessageRange(session.getSelected(), messageSet);
+                } else {
+                    batchSet = Arrays.asList(messageSet);
+                }
+                for (int a = 0; a < batchSet.size(); a++) {
+                    final MailboxSession mailboxSession = ImapSessionUtils
+                            .getMailboxSession(session);
+                    final Iterator<MessageResult> it = mailbox.getMessages(batchSet.get(a), resultToFetch, mailboxSession);
+                    while (it.hasNext()) {
+                        final MessageResult result = (MessageResult) it.next();
+                        final FetchResponse response = builder.build(fetch, result, mailbox, 
+                                session, useUids);
+                        responder.respond(response);
+                    }
                 }
             }
             unsolicitedResponses(session, responder, useUids);
@@ -112,6 +131,67 @@ public class FetchProcessor extends AbstractMailboxProcessor {
         }
     }
 
+    /**
+     * Split the given MessageRange in pieces
+     * 
+     * @param selected
+     * @param range
+     * @return splitted
+     */
+    private List<MessageRange> splitMessageRange(SelectedMailbox selected, MessageRange range) {
+        Type rangeType = range.getType();
+        long start;
+        long end;
+        switch (rangeType) {
+        case ONE:
+            Arrays.asList(range);
+            break;
+        case ALL:
+            start = selected.getFirstUid();
+            end = selected.getLastUid();
+            return createRanges(start, end);
+
+        case RANGE:
+            start = range.getUidFrom();
+            if (start < 1 || start == Long.MAX_VALUE) {
+                start = selected.getFirstUid();
+            }
+            end = range.getUidTo();
+            if (end < 1 || end == Long.MAX_VALUE) {
+                end = selected.getLastUid();
+            }
+            return createRanges(start, end);
+        case FROM:
+            start = range.getUidFrom();
+            end = range.getUidTo();
+            if (end < 1 || end == Long.MAX_VALUE) {
+                end = selected.getLastUid();
+            }
+            return createRanges(start, end);
+        default:
+            break;
+        }
+        return Arrays.asList(range);
+    }
+
+    private List<MessageRange> createRanges(long start, long end) {
+        List<MessageRange> ranges = new ArrayList<MessageRange>();
+        if (start == end) {
+            ranges.add(MessageRange.one(start));
+        } else {
+            while (start < end) {
+                long to = start + batchSize;
+                if (to > end) {
+                    to = end;
+                }
+                MessageRange r = MessageRange.range(start, to);
+                ranges.add(r);
+                start = to;
+            }
+        }
+        return ranges;
+    }
+    
     private FetchGroup getFetchGroup(FetchData fetch) {
         FetchGroupImpl result = new FetchGroupImpl();
 

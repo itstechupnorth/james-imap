@@ -36,6 +36,15 @@ public class DefaultProcessorChain {
             final MailboxManager mailboxManager,
             final SubscriptionManager subscriptionManager,
             final StatusResponseFactory statusResponseFactory) {
+        return createDefaultChain(chainEndProcessor, mailboxManager, subscriptionManager, statusResponseFactory, 100);
+        
+    }  
+    
+    public static final ImapProcessor createDefaultChain(
+            final ImapProcessor chainEndProcessor,
+            final MailboxManager mailboxManager,
+            final SubscriptionManager subscriptionManager,
+            final StatusResponseFactory statusResponseFactory, int batchSize) {
         final SystemMessageProcessor systemProcessor = new SystemMessageProcessor(chainEndProcessor, mailboxManager);
         final LogoutProcessor logoutProcessor = new LogoutProcessor(
                 systemProcessor, mailboxManager, statusResponseFactory);
@@ -91,7 +100,7 @@ public class DefaultProcessorChain {
         capabilityProcessor.addProcessor(namespaceProcessor);
         
         final ImapProcessor fetchProcessor = new FetchProcessor(namespaceProcessor,
-                mailboxManager, statusResponseFactory);
+                mailboxManager, statusResponseFactory, batchSize);
         final StartTLSProcessor startTLSProcessor = new StartTLSProcessor(fetchProcessor, statusResponseFactory);
         capabilityProcessor.addProcessor(startTLSProcessor);
         return startTLSProcessor;
