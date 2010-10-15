@@ -22,6 +22,7 @@ package org.apache.james.mailbox.util;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
@@ -112,10 +113,17 @@ public class MailboxEventDispatcher implements MailboxListener {
      * @see org.apache.james.mailbox.MailboxListener#event(org.apache.james.mailbox.MailboxListener.Event)
      */
     public void event(Event event) {
+        List<MailboxListener> closed = new ArrayList<MailboxListener>();
         for (Iterator<MailboxListener> iter = listeners.iterator(); iter.hasNext();) {
             MailboxListener mailboxListener = iter.next();
-            mailboxListener.event(event);
+            if (mailboxListener.isClosed() == false) {
+                mailboxListener.event(event);
+            } else {
+                closed.add(mailboxListener);
+            }
         }
+        for (int i = 0; i < closed.size(); i++)
+            listeners.remove(closed.get(i));
     }
 
     /**
