@@ -38,9 +38,9 @@ import org.apache.james.mailbox.MailboxPath;
 public class MailboxEventAnalyser implements MailboxListener {
 
     private final long sessionId;
-    private final Set<Long> flagUpdateUids;
-    private final Flags.Flag uninterestingFlag;
-    private final Set<Long> expungedUids;
+    private Set<Long> flagUpdateUids;
+    private Flags.Flag uninterestingFlag;
+    private Set<Long> expungedUids;
     
     private boolean isDeletedByOtherSession = false;
     private boolean sizeChanged = false;
@@ -102,7 +102,7 @@ public class MailboxEventAnalyser implements MailboxListener {
                     final Long uidObject = new Long(uid);
                     expungedUids.add(uidObject);
                 }
-            } else if (event instanceof MailboxDeletionEvent) {
+            } else if (event instanceof MailboxDeletion) {
                 if (eventSessionId != sessionId) {
                     isDeletedByOtherSession = true;
                 }
@@ -208,17 +208,23 @@ public class MailboxEventAnalyser implements MailboxListener {
     }
 
     /**
-     * Mark the listener as closed. If its marked as closed it will get removed
+     * Mark the listener as closed and dispose all stored stuff 
      */
-    public void close() {
+    public synchronized void close() {
         closed = true;
+        flagUpdateUids.clear();
+        flagUpdateUids = null;
+        
+        uninterestingFlag = null;
+        expungedUids.clear();
+        expungedUids = null;
     }
     
     /*
      * (non-Javadoc)
      * @see org.apache.james.mailbox.MailboxListener#isClosed()
      */
-    public boolean isClosed() {
+    public synchronized boolean isClosed() {
         return closed;
     }
 }

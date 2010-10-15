@@ -51,9 +51,9 @@ public class LastUidTracker implements MailboxListener {
             if (uid > lastUid.get()) {
                 lastUid.set(uid);
             }
-        } else if (event instanceof MailboxDeletionEvent) {
+        } else if (event instanceof MailboxDeletion) {
             // remove the lastUid if the Mailbox was deleted
-            lastUids.remove(((MailboxDeletionEvent) event).getMailboxPath());
+            lastUids.remove(((MailboxDeletion) event).getMailboxPath());
         } else if (event instanceof MailboxRenamed) {
             // If the mailbox was renamed we need take care of update the lastUid
             // and move it to the new MailboxPath

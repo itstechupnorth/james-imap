@@ -36,9 +36,9 @@ import org.apache.james.mailbox.MailboxListener;
  * TODO: Each concurrent session requires one, and typical clients now open many
  */
 public class UidToMsnConverter implements MailboxListener {
-    private final SortedMap<Integer, Long> msnToUid;
+    private SortedMap<Integer, Long> msnToUid;
 
-    private final SortedMap<Long, Integer> uidToMsn;
+    private SortedMap<Long, Integer> uidToMsn;
 
     private long highestUid = 0;
 
@@ -47,14 +47,12 @@ public class UidToMsnConverter implements MailboxListener {
     private boolean closed = false;
 
     public UidToMsnConverter(final Iterator<Long> uids) {
-    	
         msnToUid = new TreeMap<Integer, Long>();
         uidToMsn = new TreeMap<Long, Integer>();
         if (uids != null) {
             int msn = 1;
             while (uids.hasNext()) {
-            	final Long uid = uids.next();
-            	
+                final Long uid = uids.next();
                 highestUid = uid.longValue();
                 highestMsn = msn;
                 msnToUid.put(msn, uid);
@@ -157,11 +155,11 @@ public class UidToMsnConverter implements MailboxListener {
      * @see SelectedMailbox#getFirstUid()
      */
     public synchronized long getFirstUid() {
-    	if (uidToMsn.isEmpty()) {
-    		return -1;
-    	} else {
-    		return uidToMsn.firstKey();
-    	}
+        if (uidToMsn.isEmpty()) {
+            return -1;
+        } else {
+            return uidToMsn.firstKey();
+        }
     }
     
     
@@ -169,16 +167,20 @@ public class UidToMsnConverter implements MailboxListener {
      * @see SelectedMailbox#getLastUid()
      */
     public synchronized long getLastUid() {
-    	if (uidToMsn.isEmpty()) {
-    		return -1;
-    	} else {
-    		return uidToMsn.lastKey();
-    	}
+        if (uidToMsn.isEmpty()) {
+            return -1;
+        } else {
+            return uidToMsn.lastKey();
+        }
     }
     /**
-     * Close this {@link MailboxListener}
+     * Close this {@link MailboxListener} and dispose all stored stuff 
      */
     public synchronized void close() {
+        uidToMsn.clear();
+        uidToMsn = null;
+        msnToUid.clear();
+        msnToUid = null;
         closed = true;
     }
     

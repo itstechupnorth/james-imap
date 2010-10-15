@@ -52,7 +52,8 @@ public class DelegatingMailboxListener implements MailboxListener{
      * @see org.apache.james.mailbox.MailboxListener#event(org.apache.james.mailbox.MailboxListener.Event)
      */
     public synchronized void event(Event event) {
-        List<MailboxListener> mListeners = listeners.get(event.getMailboxPath());
+        MailboxPath path = event.getMailboxPath();
+        List<MailboxListener> mListeners = listeners.get(path);
         if (mListeners != null && mListeners.isEmpty() == false) {
             List<MailboxListener> closedListener = new ArrayList<MailboxListener>();
             
@@ -66,8 +67,22 @@ public class DelegatingMailboxListener implements MailboxListener{
                 }
             }
             
+            if (event instanceof MailboxDeletion) {
+                // remove listeners if the mailbox was deleted
+                listeners.remove(path);
+            } else if (event instanceof MailboxRenamed) {
+                // handle rename events
+                MailboxRenamed renamed = (MailboxRenamed) event;
+                List<MailboxListener> l = listeners.remove(path);
+                if (l != null) {
+                    listeners.put(renamed.getNewPath(), l);
+                }
+            }
             if (closedListener.isEmpty() == false) {
                 mListeners.removeAll(closedListener);
+                if (mListeners.isEmpty()) {
+                    listeners.remove(path);
+                }
             }
         }
     }

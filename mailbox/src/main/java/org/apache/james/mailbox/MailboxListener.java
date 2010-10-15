@@ -41,7 +41,10 @@ public interface MailboxListener {
     
     /**
      * Is this listener closed?
-     * Closed listeners may be unsubscribed.
+     * Closed listeners may be unsubscribed. 
+     * 
+     * Be aware that if the listener is marked as close it will not get any events passed anymore!
+     * 
      * @return true when closed,
      * false when open
      */
@@ -80,9 +83,9 @@ public interface MailboxListener {
     /**
      * Indicates that mailbox has been deleted.
      */
-    public class MailboxDeletionEvent extends Event {
+    public class MailboxDeletion extends Event {
 
-        public MailboxDeletionEvent(long sessionId, MailboxPath path) {
+        public MailboxDeletion(long sessionId, MailboxPath path) {
             super(sessionId, path);
         }
     }

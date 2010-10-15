@@ -306,7 +306,7 @@ public class MailboxEventDispatcher implements MailboxListener {
     }
 
     private static final class MailboxDeletionEventImpl extends
-            MailboxListener.MailboxDeletionEvent {
+            MailboxListener.MailboxDeletion {
         public MailboxDeletionEventImpl(final long sessionId, MailboxPath path) {
             super(sessionId, path);
         }
