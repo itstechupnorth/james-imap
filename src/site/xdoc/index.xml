@@ -27,31 +27,38 @@
 
 <body>
 
-<section name='Introduction'>
+  <section name="What Is James IMAP?">
+   
+    <p>A library providing a flexible codec for IMAP, command processors 
+       and a sample data access layer. In combination with a socket layer,
+       this library can be used to create an IMAP server.</p>
 
-<subsection name="What Is James IMAP?">
-<p>A library providing a flexible codec for IMAP, command processors 
-and a sample data access layer. In combination with a socket layer,
-this library can be used to create an IMAP server.</p>
-</subsection>
+  </section>
 
-<subsection name='Status'>
-<p><a href='http://james.apache.org/server/rfclist/imap4/rfc2060.txt'>RFC2060</a> is functionally complete, tested 
-and usable. The data access layer is still under optimization on performance perspectives. 
-Database schema and API changes are susceptible to change.</p>
-</subsection>
+  <section name='Status'>
 
-<subsection name='IMAP in James Server'>
-<p><a href='http://james.apache.org/server/head'>JAMES Server 3</a> supports IMAP (using this library).
-A backport to <a href='http://james.apache.org/server/2.3.2'>JAMES Server 2.3.2</a> would require
-a volunteer.</p>
-</subsection>
+    <p><a href='http://james.apache.org/server/rfclist/imap4/rfc2060.txt'>RFC2060</a> is functionally complete, tested 
+       and usable. The data access layer is still under optimization on performance perspectives. 
+       Database schema and API changes are susceptible to change.</p>
 
-<subsection name='Develop IMAP'>
-<img src="images/uml/org.apache.james.imap_package.png"/>
-</subsection>
+  </section>
 
-</section>
+  <section name='IMAP in James Server'>
+  
+    <p><a href='http://james.apache.org/server/head'>JAMES Server 3</a> supports IMAP 
+       (using this library). A backport to <a href='http://james.apache.org/server/2.3.2'>JAMES 
+       Server 2.3.2</a> would require a volunteer.</p>
+    
+  </section>
+
+  <section name='Use James IMAP as a component in you application'>
+ 
+    <p>The <a href="source_code.html">source code</a> page contains information on how 
+       to develop on James IMAP.</p>
+
+    <img src="images/uml/org.apache.james.imap_package.png"/>
+
+  </section>
 
 </body>
 
