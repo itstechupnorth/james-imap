@@ -45,7 +45,7 @@
 
   <section name='IMAP in James Server'>
   
-    <p><a href='http://james.apache.org/server/head'>JAMES Server 3</a> supports IMAP 
+    <p><a href='http://james.apache.org/server/3'>JAMES Server 3</a> supports IMAP 
        (using this library). A backport to <a href='http://james.apache.org/server/2.3.2'>JAMES 
        Server 2.3.2</a> would require a volunteer.</p>
     
