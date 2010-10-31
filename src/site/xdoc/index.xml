@@ -31,7 +31,7 @@
    
     <p>A library providing a flexible codec for IMAP, command processors 
        and a sample data access layer. In combination with a socket layer,
-       this library can be used to create an IMAP server.</p>
+       and a mailbox persistence, this library can be used to create an IMAP server.</p>
 
   </section>
 
