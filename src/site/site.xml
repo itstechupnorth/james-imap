@@ -44,7 +44,7 @@
       </menu>  
      
       <menu name="References">
-        <item name="Source Code" href="/source_code.html" />
+        <item name="Source Code" href="/source-code.html" />
       </menu>
     
       <menu ref="reports" />

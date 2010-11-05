@@ -53,10 +53,10 @@
 
   <section name='Use James IMAP as a component in you application'>
  
-    <p>The <a href="source_code.html">source code</a> page contains information on how 
+    <p>The <a href="source-code.html">source code</a> page contains information on how 
        to develop on James IMAP.</p>
 
-    <img src="images/uml/org.apache.james.imap_package.png"/>
+    <img src="images/uml/org.apache.james.imap-package.png"/>
 
   </section>
 
