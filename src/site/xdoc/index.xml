@@ -30,23 +30,26 @@
   <section name="What Is James IMAP?">
    
     <p>A library providing a flexible codec for IMAP, command processors 
-       and a sample data access layer. In combination with a socket layer,
-       and a mailbox persistence, this library can be used to create an IMAP server.</p>
+       and a sample data access layer.</p>
+       
+     <p>In combination with a socket layer, and a mailbox persistence, 
+         this library can be used to create an IMAP server.</p>
 
   </section>
 
   <section name='Status'>
 
-    <p><a href='http://james.apache.org/server/rfclist/imap4/rfc2060.txt'>RFC2060</a> is functionally complete, tested 
-       and usable. The data access layer is still under optimization on performance perspectives. 
-       Database schema and API changes are susceptible to change.</p>
+    <p><a href='http://james.apache.org/server/rfclist/imap4/rfc2060.txt'>RFC2060</a> 
+       is functionally complete, tested and usable. The data access layer is still 
+       under optimization on performance perspectives. Database schema and API changes 
+       are susceptible to change.</p>
 
   </section>
 
   <section name='IMAP in James Server'>
   
     <p><a href='http://james.apache.org/server/3'>JAMES Server 3</a> supports IMAP 
-       (using this library). A backport to <a href='http://james.apache.org/server/2.3.2'>JAMES 
+       (using this library). A backport to <a href='http://james.apache.org/server/2/'>James 
        Server 2.3.2</a> would require a volunteer.</p>
     
   </section>

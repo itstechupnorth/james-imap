@@ -33,7 +33,7 @@
 
       <p>The source can be checked out anonymously from SVN with the following command.</p>
 
-      <code>$ svn checkout http://svn.apache.org/repos/asf/james/imap/trunk james-imap</code>
+      <p><code>$ svn checkout http://svn.apache.org/repos/asf/james/imap/trunk james-imap</code></p>
     
     </subsection>
 
@@ -41,7 +41,7 @@
 
       <p>Everyone can access the Subversion repository via HTTP, but Committers must checkout the Subversion repository via HTTPS.</p>
 
-      <code>$ svn checkout https://svn.apache.org/repos/asf/james/imap/trunk james-imap</code>
+      <p><code>$ svn checkout https://svn.apache.org/repos/asf/james/imap/trunk james-imap</code></p>
       
     </subsection>
 
@@ -55,25 +55,14 @@
         <img src="images/uml/org.apache.james.imap-withtest-package.png"/>
       </div>
     
-      <p><code>apache-james-imap-api</code> contains the interfaces, exceptions and Constants needed by the other projects.</p>
-     
-      <p><code>apache-james-imap-message</code> allows to encode, decode and structure the IMAP requests and responses. 
-         It will provide among other the ImapRequestMessage and ImapResponseMessage implementation to be processed
-         by the apache-james-imap-processor project.</p>
-    
-      <p><code>apache-james-imap-processor</code> implements the Chain Of Responsibility design pattern.
-         ImapRequestMessage and ImapResponder will be passed to the list of Processors that 
-         will execute doProcess if applicable.</p>
-         
-      <p><code>apache-james-imap-protocol-tester</code> can be used by other projects to test the IMAP 
-         protocol in conjunction with a <a href="http://james.apache.org/mailbox">James mailbox</a>.</p>
-         
     </subsection>
        
     <div style="clear:both; float:none;"/>
     
     <subsection name="James IMAP API - apache-james-imap-api">
     
+      <p><code>apache-james-imap-api</code> contains the interfaces, exceptions and Constants needed by the other projects.</p>
+     
       <p>The following diagram represents some key (not all) interfaces of the IMAP API project.</p>
     
       <img src="images/uml/org.apache.james.imap.api.png"/>
@@ -82,10 +71,27 @@
     
     <subsection name="James IMAP Message - apache-james-imap-message">
     
+      <p><code>apache-james-imap-message</code> allows to encode, decode and structure the IMAP requests and responses.</p>
+      
+      <p>It will provide among other the ImapRequestMessage and ImapResponseMessage implementation to be processed
+         by the apache-james-imap-processor project.</p>
+    
     </subsection>
     
     <subsection name="James IMAP Processor - apache-james-imap-processor">
     
+      <p><code>apache-james-imap-processor</code> implements the Chain Of Responsibility design pattern.</p>
+      
+      <p>ImapRequestMessage and ImapResponder will be passed to the list of Processors that 
+         will execute doProcess if applicable.</p>
+         
+    </subsection>
+    
+    <subsection name="James IMAP Protocol Tester - apache-james-imap-protocol-tester">
+    
+      <p><code>apache-james-imap-protocol-tester</code> can be used by other projects to test the IMAP 
+         protocol in conjunction with a <a href="http://james.apache.org/mailbox">James mailbox</a>.</p>
+         
     </subsection>
     
   </section>
