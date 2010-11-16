@@ -158,9 +158,9 @@ public class JCRMessage extends AbstractMessage implements MailboxMembership<Str
         }
 
         PropertyBuilder pBuilder = new PropertyBuilder(message.getProperties());
-        this.textualLineCount = pBuilder.getTextualLineCount();
-        this.mediaType = pBuilder.getMediaType();
-        this.subType = pBuilder.getSubType();
+        this.textualLineCount = message.getTextualLineCount();
+        this.mediaType = message.getMediaType();
+        this.subType = message.getSubType();
         final List<Property> properties = pBuilder.toProperties();
         this.properties = new ArrayList<JCRProperty>(properties.size());
         int order = 0;

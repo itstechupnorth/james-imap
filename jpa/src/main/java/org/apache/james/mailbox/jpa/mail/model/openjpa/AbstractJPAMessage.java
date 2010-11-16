@@ -72,7 +72,7 @@ public abstract class AbstractJPAMessage extends AbstractMessage{
         this.contentOctets = contentOctets;
         this.bodyStartOctet = bodyStartOctet;
         this.headers = new ArrayList<JPAHeader>(headers);
-        textualLineCount = propertyBuilder.getTextualLineCount();
+        this.textualLineCount = propertyBuilder.getTextualLineCount();
         this.mediaType = propertyBuilder.getMediaType();
         this.subType = propertyBuilder.getSubType();
         final List<Property> properties = propertyBuilder.toProperties();
@@ -101,9 +101,9 @@ public abstract class AbstractJPAMessage extends AbstractMessage{
         }
 
         PropertyBuilder pBuilder = new PropertyBuilder(message.getProperties());
-        this.textualLineCount = pBuilder.getTextualLineCount();
-        this.mediaType = pBuilder.getMediaType();
-        this.subType = pBuilder.getSubType();
+        this.textualLineCount = message.getTextualLineCount();
+        this.mediaType = message.getMediaType();
+        this.subType = message.getSubType();
         final List<Property> properties = pBuilder.toProperties();
         this.properties = new ArrayList<JPAProperty>(properties.size());
         int order = 0;
