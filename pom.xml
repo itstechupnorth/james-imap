@@ -21,14 +21,14 @@
   <parent>
     <groupId>org.apache.james</groupId>
     <artifactId>apache-james-imap-parent</artifactId>
-    <version>0.2-SNAPSHOT</version>
+    <version>0.2-M2-SNAPSHOT</version>
     <relativePath>./parent/pom.xml</relativePath>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.apache.james</groupId>
   <artifactId>apache-james-imap</artifactId>
   <name>Apache James IMAP (and Mailbox)</name>
-  <version>0.2-SNAPSHOT</version>
+  <version>0.2-M2-SNAPSHOT</version>
   <description>The Apache James IMAP</description>
   <url>http://james.apache.org/imap/</url>
   <inceptionYear>2002</inceptionYear>
