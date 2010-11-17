@@ -29,17 +29,16 @@ import javax.mail.Flags;
 
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.james.mailbox.MailboxException;
-import org.apache.james.mailbox.maildir.MaildirMessageName;
-import org.apache.james.mailbox.store.mail.model.AbstractMessage;
 import org.apache.james.mailbox.store.mail.model.Header;
 import org.apache.james.mailbox.store.mail.model.Mailbox;
-import org.apache.james.mailbox.store.mail.model.MailboxMembership;
 import org.apache.james.mailbox.store.mail.model.Message;
 import org.apache.james.mailbox.store.mail.model.Property;
 import org.apache.james.mailbox.store.mail.model.PropertyBuilder;
+import org.apache.james.mailbox.store.streaming.LazySkippingInputStream;
+import org.apache.james.mailbox.store.streaming.RewindableInputStream;
 import org.apache.james.mailbox.store.streaming.StreamUtils;
 
-public class MaildirMessage extends AbstractMessage implements MailboxMembership<Integer> {
+public class MaildirMessage extends AbstractMaildirMessage {
 
     // Document
     private int bodyStartOctet;
@@ -53,15 +52,7 @@ public class MaildirMessage extends AbstractMessage implements MailboxMembership
     // MailboxMembership
     private Date internalDate;
     private long size;
-    private long uid;
-    private boolean answered;
-    private boolean deleted;
-    private boolean draft;
-    private boolean flagged;
-    private boolean recent;
-    private boolean seen;
     
-    private boolean newMessage;
     private boolean modified = false;
     
     /**
@@ -78,7 +69,7 @@ public class MaildirMessage extends AbstractMessage implements MailboxMembership
     public MaildirMessage(Mailbox<Integer> mailbox, Date internalDate,
             int size, Flags flags, InputStream documentIn, int bodyStartOctet,
             List<MaildirHeader> maildirHeaders, PropertyBuilder propertyBuilder) {
-        super();
+        super(mailbox);
         // Document
         this.rawFullContent = documentIn;
         this.bodyStartOctet = bodyStartOctet;
@@ -111,7 +102,7 @@ public class MaildirMessage extends AbstractMessage implements MailboxMembership
      */
     public MaildirMessage(Mailbox<Integer> mailbox, int size, InputStream documentIn, int bodyStartOctet,
             List<MaildirHeader> maildirHeaders, PropertyBuilder propertyBuilder) {
-        super();
+        super(mailbox);
         // Document
         this.rawFullContent = documentIn;
         this.bodyStartOctet = bodyStartOctet;
@@ -138,7 +129,8 @@ public class MaildirMessage extends AbstractMessage implements MailboxMembership
      * @param message The message to copy
      * @throws IOException 
      */
-    public MaildirMessage(Mailbox<Integer> mailbox, MaildirMessage message) throws MailboxException {
+    public MaildirMessage(Mailbox<Integer> mailbox, AbstractMaildirMessage message) throws MailboxException {
+        super(mailbox);
         this.internalDate = message.getInternalDate();
         this.size = message.getMessage().getFullContentOctets();
         this.answered = message.isAnswered();
@@ -176,23 +168,7 @@ public class MaildirMessage extends AbstractMessage implements MailboxMembership
         newMessage = true;
     }
 
-    /* 
-     * (non-Javadoc)
-     * @see org.apache.james.mailbox.store.mail.model.AbstractDocument#getBodyStartOctet()
-     */
-    @Override
-    protected int getBodyStartOctet() {
-        return bodyStartOctet;
-    }
-
-    /* 
-     * (non-Javadoc)
-     * @see org.apache.james.mailbox.store.mail.model.AbstractDocument#getRawFullContent()
-     */
-    @Override
-    protected InputStream getRawFullContent() {
-        return rawFullContent;
-    }
+  
 
     /* 
      * (non-Javadoc)
@@ -302,13 +278,6 @@ public class MaildirMessage extends AbstractMessage implements MailboxMembership
         throw new NotImplementedException();
     }
 
-    /* 
-     * (non-Javadoc)
-     * @see org.apache.james.mailbox.store.mail.model.MailboxMembership#getUid()
-     */
-    public long getUid() {
-        return uid;
-    }
     
     /**
      * Set the Uid
@@ -316,56 +285,10 @@ public class MaildirMessage extends AbstractMessage implements MailboxMembership
      */
     public void setUid(long uid) {
         modified = true;
-        this.uid = uid;
+        setUid(uid);
     }
 
-    /* 
-     * (non-Javadoc)
-     * @see org.apache.james.mailbox.store.mail.model.MailboxMembership#isAnswered()
-     */
-    public boolean isAnswered() {
-        return answered;
-    }
-
-    /* 
-     * (non-Javadoc)
-     * @see org.apache.james.mailbox.store.mail.model.MailboxMembership#isDeleted()
-     */
-    public boolean isDeleted() {
-        return deleted;
-    }
-
-    /* 
-     * (non-Javadoc)
-     * @see org.apache.james.mailbox.store.mail.model.MailboxMembership#isDraft()
-     */
-    public boolean isDraft() {
-        return draft;
-    }
-
-    /* 
-     * (non-Javadoc)
-     * @see org.apache.james.mailbox.store.mail.model.MailboxMembership#isFlagged()
-     */
-    public boolean isFlagged() {
-        return flagged;
-    }
-
-    /* 
-     * (non-Javadoc)
-     * @see org.apache.james.mailbox.store.mail.model.MailboxMembership#isRecent()
-     */
-    public boolean isRecent() {
-        return recent;
-    }
-
-    /* 
-     * (non-Javadoc)
-     * @see org.apache.james.mailbox.store.mail.model.MailboxMembership#isSeen()
-     */
-    public boolean isSeen() {
-        return seen;
-    }
+  
 
     /* 
      * (non-Javadoc)
@@ -374,13 +297,9 @@ public class MaildirMessage extends AbstractMessage implements MailboxMembership
     public void setFlags(Flags flags) {
         if (flags != null) {
             modified = true;
-            answered = flags.contains(Flags.Flag.ANSWERED);
-            deleted = flags.contains(Flags.Flag.DELETED);
-            draft = flags.contains(Flags.Flag.DRAFT);
-            flagged = flags.contains(Flags.Flag.FLAGGED);
-            recent = flags.contains(Flags.Flag.RECENT);
-            seen = flags.contains(Flags.Flag.SEEN);
+       
         }
+        super.setFlags(flags);
     }
 
     /* 
@@ -389,16 +308,7 @@ public class MaildirMessage extends AbstractMessage implements MailboxMembership
      */
     public void unsetRecent() {
         modified = true;
-        recent = false;
-    }
-    
-    /**
-     * Indicates whether this MaildirMessage reflects a new message or one that already
-     * exists in the file system.
-     * @return true if it is new, false if it already exists
-     */
-    public boolean isNew() {
-        return newMessage;
+        super.unsetRecent();
     }
     
     /**
@@ -408,26 +318,31 @@ public class MaildirMessage extends AbstractMessage implements MailboxMembership
     public boolean isModified() {
         return modified;
     }
+
+    public RewindableInputStream getFullContent() throws IOException {
+        // TODO Auto-generated method stub
+        return new MyRewindableInputStream(rawFullContent);
+    }
+
+    public RewindableInputStream getBodyContent() throws IOException {
+        return new MyRewindableInputStream(new LazySkippingInputStream(rawFullContent, bodyStartOctet));
+    }
+
+    public long getBodyOctets() {
+        return getFullContentOctets() - bodyStartOctet;
+    }
     
-    @Override
-    public String toString() {
-        StringBuffer theString = new StringBuffer("MaildirMessage ");
-        theString.append(uid);
-        theString.append(" {");
-        Flags flags = createFlags();
-        if (flags.contains(Flags.Flag.DRAFT))
-            theString.append(MaildirMessageName.FLAG_DRAFT);
-        if (flags.contains(Flags.Flag.FLAGGED))
-            theString.append(MaildirMessageName.FLAG_FLAGGED);
-        if (flags.contains(Flags.Flag.ANSWERED))
-            theString.append(MaildirMessageName.FLAG_ANSWERD);
-        if (flags.contains(Flags.Flag.SEEN))
-            theString.append(MaildirMessageName.FLAG_SEEN);
-        if (flags.contains(Flags.Flag.DELETED))
-            theString.append(MaildirMessageName.FLAG_DELETED);
-        theString.append("} ");
-        theString.append(getInternalDate());
-        return theString.toString();
+    private class MyRewindableInputStream extends RewindableInputStream {
+
+        protected MyRewindableInputStream(InputStream in) {
+            super(in);
+        }
+
+        @Override
+        protected void rewindIfNeeded() throws IOException {
+            // do nothing.. 
+        }
+        
     }
 
 }

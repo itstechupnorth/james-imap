@@ -19,47 +19,36 @@
 package org.apache.james.mailbox.maildir.mail;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.PushbackInputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.SortedMap;
 import java.util.Map.Entry;
-
-import javax.mail.util.SharedFileInputStream;
+import java.util.SortedMap;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.james.mailbox.MailboxException;
 import org.apache.james.mailbox.MessageRange;
-import org.apache.james.mailbox.SearchQuery;
 import org.apache.james.mailbox.MessageRange.Type;
+import org.apache.james.mailbox.SearchQuery;
 import org.apache.james.mailbox.SearchQuery.Criterion;
 import org.apache.james.mailbox.SearchQuery.NumericRange;
 import org.apache.james.mailbox.maildir.MaildirFolder;
 import org.apache.james.mailbox.maildir.MaildirMessageName;
 import org.apache.james.mailbox.maildir.MaildirStore;
 import org.apache.james.mailbox.maildir.UidConstraint;
-import org.apache.james.mailbox.maildir.mail.model.MaildirHeader;
+import org.apache.james.mailbox.maildir.mail.model.AbstractMaildirMessage;
+import org.apache.james.mailbox.maildir.mail.model.LazyLoadingMaildirMessage;
 import org.apache.james.mailbox.maildir.mail.model.MaildirMessage;
 import org.apache.james.mailbox.store.SearchQueryIterator;
 import org.apache.james.mailbox.store.mail.MessageMapper;
-import org.apache.james.mailbox.store.mail.model.Header;
 import org.apache.james.mailbox.store.mail.model.Mailbox;
 import org.apache.james.mailbox.store.mail.model.MailboxMembership;
-import org.apache.james.mailbox.store.mail.model.PropertyBuilder;
-import org.apache.james.mailbox.store.streaming.ConfigurableMimeTokenStream;
-import org.apache.james.mailbox.store.streaming.CountingInputStream;
 import org.apache.james.mailbox.store.transaction.NonTransactionalMapper;
-import org.apache.james.mime4j.MimeException;
-import org.apache.james.mime4j.descriptor.MaximalBodyDescriptor;
-import org.apache.james.mime4j.parser.MimeEntityConfig;
-import org.apache.james.mime4j.parser.MimeTokenStream;
 
 public class MaildirMessageMapper extends NonTransactionalMapper implements MessageMapper<Integer> {
 
@@ -77,7 +66,7 @@ public class MaildirMessageMapper extends NonTransactionalMapper implements Mess
      */
     public long copy(Mailbox<Integer> mailbox, MailboxMembership<Integer> original)
     throws MailboxException {
-        MaildirMessage theCopy = new MaildirMessage(mailbox, (MaildirMessage) original);
+        MaildirMessage theCopy = new MaildirMessage(mailbox, (AbstractMaildirMessage) original);
 
         return save(mailbox, theCopy);
     }
@@ -168,8 +157,7 @@ public class MaildirMessageMapper extends NonTransactionalMapper implements Mess
         }
         ArrayList<MailboxMembership<Integer>> messages = new ArrayList<MailboxMembership<Integer>>();
         if (messageName != null) {
-            MaildirMessage message = loadMessage(mailbox, messageName, uid);
-            messages.add(message);
+            messages.add(new LazyLoadingMaildirMessage(mailbox, uid, messageName));
         }
         return messages;
     }
@@ -188,7 +176,7 @@ public class MaildirMessageMapper extends NonTransactionalMapper implements Mess
         }
         ArrayList<MailboxMembership<Integer>> messages = new ArrayList<MailboxMembership<Integer>>();
         for (Entry<Long, MaildirMessageName> entry : uidMap.entrySet()) {
-            messages.add(loadMessage(mailbox, entry.getValue(), entry.getKey()));
+            messages.add(new LazyLoadingMaildirMessage(mailbox, entry.getKey(), entry.getValue()));
         }
         return messages;
     }
@@ -231,7 +219,7 @@ public class MaildirMessageMapper extends NonTransactionalMapper implements Mess
         }
         ArrayList<MailboxMembership<Integer>> filtered = new ArrayList<MailboxMembership<Integer>>(uidMap.size());
         for (Entry<Long, MaildirMessageName> entry : uidMap.entrySet())
-            filtered.add(loadMessage(mailbox, entry.getValue(), entry.getKey()));
+            filtered.add(new LazyLoadingMaildirMessage(mailbox, entry.getKey(), entry.getValue()));
         return filtered;
     }
 
@@ -246,8 +234,7 @@ public class MaildirMessageMapper extends NonTransactionalMapper implements Mess
         }
         ArrayList<MailboxMembership<Integer>> messages = new ArrayList<MailboxMembership<Integer>>();
         if (MaildirMessageName.FILTER_DELETED_MESSAGES.accept(null, messageName.getFullName())) {
-            MaildirMessage message = loadMessage(mailbox, messageName, uid);
-            messages.add(message);
+            messages.add(new LazyLoadingMaildirMessage(mailbox, uid, messageName));
         }
         return messages;
     }
@@ -267,7 +254,7 @@ public class MaildirMessageMapper extends NonTransactionalMapper implements Mess
         }
         List<MailboxMembership<Integer>> recentMessages = new ArrayList<MailboxMembership<Integer>>(recentMessageNames.size());
         for (Entry<Long, MaildirMessageName> entry : recentMessageNames.entrySet())
-            recentMessages.add(loadMessage(mailbox, entry.getValue(), entry.getKey()));
+            recentMessages.add(new LazyLoadingMaildirMessage(mailbox, entry.getKey(), entry.getValue()));
         return recentMessages;
     }
 
@@ -292,7 +279,7 @@ public class MaildirMessageMapper extends NonTransactionalMapper implements Mess
      */
     public long save(Mailbox<Integer> mailbox, MailboxMembership<Integer> message)
     throws MailboxException {
-        MaildirMessage maildirMessage = (MaildirMessage) message;
+        AbstractMaildirMessage maildirMessage = (AbstractMaildirMessage) message;
         MaildirFolder folder = maildirStore.createMaildirFolder(mailbox);
         long uid = 0;
         // a new message
@@ -422,7 +409,7 @@ public class MaildirMessageMapper extends NonTransactionalMapper implements Mess
             //System.out.println("check " + entry.getKey());
             if (constraint.isAllowed(entry.getKey())) {
                 //System.out.println("allow " + entry.getKey());
-                messages.add(loadMessage(mailbox, entry.getValue(), entry.getKey()));
+                messages.add(new LazyLoadingMaildirMessage(mailbox, entry.getKey(), entry.getValue()));
                 // Check if we only need to fetch 1 message, if so we can set a limit to speed up things
                 if (rangeLength == 1 && range == false) break;
             }
@@ -439,199 +426,5 @@ public class MaildirMessageMapper extends NonTransactionalMapper implements Mess
         
     }
     
-    /**
-     * Creates a {@link MaildirMessage} object with data loaded from the repository.
-     * @param mailbox The mailbox which the message resides in
-     * @param messageName The name of the message
-     * @return the {@link MaildirMessage} filled with data from the respective file
-     * @throws MailboxException if there was an error parsing the message or the message could not be found
-     */
-    private MaildirMessage loadMessage(Mailbox<Integer> mailbox, MaildirMessageName messageName, Long uid)
-    throws MailboxException {
-        MaildirMessage message = null;
-        try {
-            File messageFile = messageName.getFile();
-            message = parseMessage(messageFile, mailbox);
-        } catch (IOException e) {
-            throw new MailboxException("Parsing of message failed in Mailbox " + mailbox, e );
-        }
-        message.setFlags(messageName.getFlags());
-        message.setInternalDate(messageName.getInternalDate());
-        message.setUid(uid);
-        return message;
-    }
-    
-    /******************************************************************************
-     * Until there is a database for properties, mail needs to be parse exactlty as
-     * it is done when appending. Hence, this part below is basically a copy of
-     * some parts of {@link StoreMessageManager}.
-     * TODO: This code below needs to be extracted to some common method(s)!
-     */
-
-    /**
-     * The initial size of the headers list
-     */
-    private static final int INITIAL_SIZE_HEADERS = 32;
-    
-    /**
-     * Read a message file and extract the meta data:
-     *   - size
-     *   - headers
-     *   - media type
-     *   - content properties
-     *   - charset
-     *   - boundary
-     *   - line count
-     * It is missing the flags and internalDate
-     * @param messageFile
-     * @param mailbox
-     * @return
-     * @throws IOException
-     */
-    private MaildirMessage parseMessage(File messageFile, Mailbox<Integer> mailbox) throws IOException {
-        SharedFileInputStream tmpMsgIn = null;
-        try {
-            tmpMsgIn = new SharedFileInputStream(messageFile);
-
-            final int size = tmpMsgIn.available();
-            final int bodyStartOctet = bodyStartOctet(tmpMsgIn);
-
-            // Disable line length... This should be handled by the smtp server component and not the parser itself
-            // https://issues.apache.org/jira/browse/IMAP-122
-            MimeEntityConfig config = new MimeEntityConfig();
-            config.setMaximalBodyDescriptor(true);
-            config.setMaxLineLen(-1);
-            final ConfigurableMimeTokenStream parser = new ConfigurableMimeTokenStream(config);
-
-            parser.setRecursionMode(MimeTokenStream.M_NO_RECURSE);
-            parser.parse(tmpMsgIn.newStream(0, -1));
-            final List<Header> headers = new ArrayList<Header>(INITIAL_SIZE_HEADERS);
-
-            int lineNumber = 0;
-            int next = parser.next();
-            while (next != MimeTokenStream.T_BODY
-                    && next != MimeTokenStream.T_END_OF_STREAM
-                    && next != MimeTokenStream.T_START_MULTIPART) {
-                if (next == MimeTokenStream.T_FIELD) {
-                    String fieldValue = parser.getField().getBody();
-                    if (fieldValue.endsWith("\r\f")) {
-                        fieldValue = fieldValue.substring(0,fieldValue.length() - 2);
-                    }
-                    if (fieldValue.startsWith(" ")) {
-                        fieldValue = fieldValue.substring(1);
-                    }
-                    headers.add(new MaildirHeader(lineNumber, parser.getField().getName(), fieldValue));
-                }
-                next = parser.next();
-            }
-            final MaximalBodyDescriptor descriptor = (MaximalBodyDescriptor) parser.getBodyDescriptor();
-            final PropertyBuilder propertyBuilder = new PropertyBuilder();
-            final String mediaType;
-            final String mediaTypeFromHeader = descriptor.getMediaType();
-            final String subType;
-            if (mediaTypeFromHeader == null) {
-                mediaType = "text";
-                subType = "plain";
-            } else {
-                mediaType = mediaTypeFromHeader;
-                subType = descriptor.getSubType();
-            }
-            propertyBuilder.setMediaType(mediaType);
-            propertyBuilder.setSubType(subType);
-            propertyBuilder.setContentID(descriptor.getContentId());
-            propertyBuilder.setContentDescription(descriptor.getContentDescription());
-            propertyBuilder.setContentLocation(descriptor.getContentLocation());
-            propertyBuilder.setContentMD5(descriptor.getContentMD5Raw());
-            propertyBuilder.setContentTransferEncoding(descriptor.getTransferEncoding());
-            propertyBuilder.setContentLanguage(descriptor.getContentLanguage());
-            propertyBuilder.setContentDispositionType(descriptor.getContentDispositionType());
-            propertyBuilder.setContentDispositionParameters(descriptor.getContentDispositionParameters());
-            propertyBuilder.setContentTypeParameters(descriptor.getContentTypeParameters());
-            // Add missing types
-            final String codeset = descriptor.getCharset();
-            if (codeset == null) {
-                if ("TEXT".equalsIgnoreCase(mediaType)) {
-                    propertyBuilder.setCharset("us-ascii");
-                }
-            } else {
-                propertyBuilder.setCharset(codeset);
-            }
-
-            final String boundary = descriptor.getBoundary();
-            if (boundary != null) {
-                propertyBuilder.setBoundary(boundary);
-            }   
-            if ("text".equalsIgnoreCase(mediaType)) {
-                final CountingInputStream bodyStream = new CountingInputStream(parser.getInputStream());
-                bodyStream.readAll();
-                long lines = bodyStream.getLineCount();
-
-                next = parser.next();
-                if (next == MimeTokenStream.T_EPILOGUE)  {
-                    final CountingInputStream epilogueStream = new CountingInputStream(parser.getInputStream());
-                    epilogueStream.readAll();
-                    lines+=epilogueStream.getLineCount();
-                }
-                propertyBuilder.setTextualLineCount(lines);
-            }
-            FileInputStream documentIn = new FileInputStream(messageFile);
-            final List<MaildirHeader> maildirHeaders = new ArrayList<MaildirHeader>(headers.size());
-            for (Header header: headers) {
-                maildirHeaders.add((MaildirHeader) header);
-            }
-            return new MaildirMessage(mailbox, size, documentIn, bodyStartOctet, maildirHeaders, propertyBuilder);
-        }
-        catch (MimeException e) {
-            // has successfully been parsen when appending, shouldn't give any problems
-        }
-        finally {
-            if (tmpMsgIn != null) {
-                try {
-                    tmpMsgIn.close();
-                } catch (IOException e) {
-                    // ignore on close
-                }
-            }
-        }
-        return null;
-    }
-    
-    /**
-     * Return the position in the given {@link InputStream} at which the Body of the 
-     * Message starts
-     * 
-     * @param msgIn
-     * @return bodyStartOctet
-     * @throws IOException
-     */
-    private int bodyStartOctet(InputStream msgIn) throws IOException{
-        // we need to pushback maximal 3 bytes
-        PushbackInputStream in = new PushbackInputStream(msgIn,3);
-        int bodyStartOctet = in.available();
-        int i = -1;
-        int count = 0;
-        while ((i = in.read()) != -1 && in.available() > 4) {
-            if (i == 0x0D) {
-                int a = in.read();
-                if (a == 0x0A) {
-                    int b = in.read();
-
-                    if (b == 0x0D) {
-                        int c = in.read();
-
-                        if (c == 0x0A) {
-                            bodyStartOctet = count+4;
-                            break;
-                        }
-                        in.unread(c);
-                    }
-                    in.unread(b);
-                }
-                in.unread(a);
-            }
-            count++;
-        }
-        return bodyStartOctet;
-    }
-
+  
 }
