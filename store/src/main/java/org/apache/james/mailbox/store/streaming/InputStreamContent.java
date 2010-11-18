@@ -65,6 +65,7 @@ public final class InputStreamContent implements Content{
      */
     public void writeTo(WritableByteChannel channel) throws IOException {
         InputStream in = null;
+        long skipped = 0;
         try {
             switch (type) {
             case Full:
@@ -74,10 +75,13 @@ public final class InputStreamContent implements Content{
                 in = m.getBodyContent();
                 break;
             }
-          
+            if (in instanceof LazySkippingInputStream) {
+                skipped = ((LazySkippingInputStream) in).getSkippedBytes();
+                in = ((LazySkippingInputStream) in).getWrapped(); 
+            }
             if (in instanceof FileInputStream) {
                 FileChannel fileChannel = ((FileInputStream)in).getChannel();
-                fileChannel.transferTo(0, fileChannel.size(), channel);
+                fileChannel.transferTo(skipped, fileChannel.size(), channel);
                 fileChannel.close();
             } else {
                 int i = 0;

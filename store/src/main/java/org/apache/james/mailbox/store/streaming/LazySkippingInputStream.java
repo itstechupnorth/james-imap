@@ -97,5 +97,13 @@ public class LazySkippingInputStream extends FilterInputStream{
             skipped = true;
         }
     }
+    
+    public InputStream getWrapped() throws IOException {
+        return in;
+    }
+    
+    public long getSkippedBytes() {
+        return skipBytes;
+    }
 
 }
