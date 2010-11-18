@@ -18,9 +18,11 @@
  ****************************************************************/
 package org.apache.james.mailbox.store.streaming;
 
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
+import java.nio.channels.FileChannel;
 import java.nio.channels.WritableByteChannel;
 
 import org.apache.james.mailbox.Content;
@@ -72,15 +74,24 @@ public final class InputStreamContent implements Content{
                 in = m.getBodyContent();
                 break;
             }
-            // read all the content of the underlying InputStream in 16384 byte chunks, wrap them
-            // in a ByteBuffer and finally write the Buffer to the channel
-            byte[] buf = new byte[16384];
-            int i = 0;
-            while ((i = in.read(buf)) != -1) {
-                ByteBuffer buffer = ByteBuffer.wrap(buf);
-                // set the limit of the buffer to the returned bytes
+          
+            if (in instanceof FileInputStream) {
+                FileChannel fileChannel = ((FileInputStream)in).getChannel();
+                fileChannel.transferTo(0, fileChannel.size(), channel);
+                fileChannel.close();
+            } else {
+                int i = 0;
+
+                // read all the content of the underlying InputStream in 16384 byte chunks, wrap them
+                // in a ByteBuffer and finally write the Buffer to the channel
+                byte[] buf = new byte[16384];
+                while ((i = in.read(buf)) != -1) {
+                    
+                    ByteBuffer buffer = ByteBuffer.wrap(buf);
+                    // set the limit of the buffer to the returned bytes
                     buffer.limit(i);
                     channel.write(buffer);
+                }
             }
         } finally {
             if(in != null) {
