@@ -746,6 +746,10 @@ public class JCRMessage extends AbstractMessage implements MailboxMembership<Str
         return retValue;
     }
 
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.mailbox.store.mail.model.Message#getFullContent()
+     */
     public InputStream getFullContent() throws IOException {
         if (isPersistent()) {
             try {
@@ -753,13 +757,16 @@ public class JCRMessage extends AbstractMessage implements MailboxMembership<Str
                 InputStream contentStream = node.getNode(JcrConstants.JCR_CONTENT).getProperty(JcrConstants.JCR_DATA).getBinary().getStream();
                 return contentStream;
             } catch (RepositoryException e) {
-                logger.error("Unable to retrieve property " + JcrConstants.JCR_CONTENT, e);
+                throw new IOException("Unable to retrieve property " + JcrConstants.JCR_CONTENT, e);
             }
-            return null;
         }
         return content;
     }
 
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.mailbox.store.mail.model.Message#getBodyContent()
+     */
     public InputStream getBodyContent() throws IOException {
         if (isPersistent()) {
             try {
@@ -767,9 +774,8 @@ public class JCRMessage extends AbstractMessage implements MailboxMembership<Str
                 InputStream contentStream = node.getNode(JcrConstants.JCR_CONTENT).getProperty(JcrConstants.JCR_DATA).getBinary().getStream();
                 return new LazySkippingInputStream(contentStream, getBodyStartOctet());
             } catch (RepositoryException e) {
-                logger.error("Unable to retrieve property " + JcrConstants.JCR_CONTENT, e);
+                throw new IOException("Unable to retrieve property " + JcrConstants.JCR_CONTENT, e);
             }
-            return null;
         }
         return content;
     }
