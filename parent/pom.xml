@@ -370,21 +370,38 @@
           </exclusion>
         </exclusions>
       </dependency>
-    <dependency>
-      <groupId>commons-configuration</groupId>
-      <artifactId>commons-configuration</artifactId>
-      <version>1.6</version>
-      <exclusions>
-        <exclusion>
-          <artifactId>commons-digester</artifactId>
-          <groupId>commons-digester</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>commons-beanutils-core</artifactId>
-          <groupId>commons-beanutils</groupId>
-        </exclusion>
-      </exclusions>
-    </dependency>
+      <dependency>
+        <groupId>commons-configuration</groupId>
+        <artifactId>commons-configuration</artifactId>
+        <scope>test</scope>
+        <version>1.6</version>
+        <exclusions>
+          <exclusion>
+            <artifactId>dom4j</artifactId>
+            <groupId>dom4j</groupId>
+          </exclusion>
+          <exclusion>
+            <artifactId>servletapi</artifactId>
+            <groupId>servletapi</groupId>
+          </exclusion>
+          <exclusion>
+            <artifactId>xerces</artifactId>
+            <groupId>xerces</groupId>
+          </exclusion>
+          <exclusion>
+            <artifactId>commons-digester</artifactId>
+            <groupId>commons-digester</groupId>
+          </exclusion>
+          <exclusion>
+            <artifactId>commons-beanutils-core</artifactId>
+            <groupId>commons-beanutils</groupId>
+          </exclusion>
+          <exclusion>
+            <artifactId>commons-beanutils-bean-collections</artifactId>
+            <groupId>commons-beanutils</groupId>
+          </exclusion>
+        </exclusions>
+      </dependency>
       <dependency>
         <groupId>commons-beanutils</groupId>
         <artifactId>commons-beanutils</artifactId>
@@ -442,38 +459,7 @@
         <artifactId>commons-io</artifactId>
         <version>1.4</version>
       </dependency>
-      <dependency>
-        <groupId>commons-configuration</groupId>
-        <artifactId>commons-configuration</artifactId>
-        <scope>test</scope>
-        <version>1.6</version>
-        <exclusions>
-          <exclusion>
-            <artifactId>dom4j</artifactId>
-            <groupId>dom4j</groupId>
-          </exclusion>
-          <exclusion>
-            <artifactId>servletapi</artifactId>
-            <groupId>servletapi</groupId>
-          </exclusion>
-          <exclusion>
-            <artifactId>xerces</artifactId>
-            <groupId>xerces</groupId>
-          </exclusion>
-          <exclusion>
-            <artifactId>commons-digester</artifactId>
-            <groupId>commons-digester</groupId>
-          </exclusion>
-          <exclusion>
-            <artifactId>commons-beanutils-core</artifactId>
-            <groupId>commons-beanutils</groupId>
-          </exclusion>
-          <exclusion>
-            <artifactId>commons-beanutils-bean-collections</artifactId>
-            <groupId>commons-beanutils</groupId>
-          </exclusion>
-        </exclusions>
-      </dependency>
+      
 
       <!--
         END Testing
