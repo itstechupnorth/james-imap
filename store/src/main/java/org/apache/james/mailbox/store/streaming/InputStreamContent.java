@@ -24,19 +24,23 @@ import java.nio.ByteBuffer;
 import java.nio.channels.WritableByteChannel;
 
 import org.apache.james.mailbox.Content;
+import org.apache.james.mailbox.store.mail.model.Message;
 
 /**
  * {@link Content} which is stored in a {@link InputStream}
  *
  */
 public final class InputStreamContent implements Content{
+    private Message m;
+    private Type type;
 
-    private RewindableInputStream in;
-    private long size;
-
-    public InputStreamContent(RewindableInputStream in) throws IOException{
-        this.in = in;
-        this.size = in.available();
+    public enum Type {
+        Full,
+        Body
+    }
+    public InputStreamContent(Message m, Type type) throws IOException{
+        this.m = m;
+        this.type = type;
     }
     
     /*
@@ -44,7 +48,13 @@ public final class InputStreamContent implements Content{
      * @see org.apache.james.mailbox.Content#size()
      */
     public long size() {
-        return size;
+        switch (type) {
+        case Full:
+            return m.getFullContentOctets();
+
+        default:
+            return m.getBodyOctets();
+        }
     }
 
     /*
@@ -52,11 +62,16 @@ public final class InputStreamContent implements Content{
      * @see org.apache.james.mailbox.Content#writeTo(java.nio.channels.WritableByteChannel)
      */
     public void writeTo(WritableByteChannel channel) throws IOException {
-        
+        InputStream in = null;
         try {
-            // rewind the stream before write it to the channel
-            in.rewind();
-        
+            switch (type) {
+            case Full:
+                in = m.getFullContent();
+                break;
+            default:
+                in = m.getBodyContent();
+                break;
+            }
             // read all the content of the underlying InputStream in 16384 byte chunks, wrap them
             // in a ByteBuffer and finally write the Buffer to the channel
             byte[] buf = new byte[16384];
@@ -68,8 +83,9 @@ public final class InputStreamContent implements Content{
                     channel.write(buffer);
             }
         } finally {
-            // close the stream so temporary files could get delete
-            in.close();
+            if(in != null) {
+                in.close();
+            }
         }
         
     }

@@ -34,11 +34,11 @@ import org.apache.james.mailbox.MessageResult;
  */
 public class InputStreamFullContent extends AbstractFullContent{
 
-    private final RewindableInputStream in;
+    private final InputStream in;
     private long size;
 
 
-    public InputStreamFullContent(final RewindableInputStream contents, final List<MessageResult.Header> headers) throws IOException{
+    public InputStreamFullContent(final InputStream contents, final List<MessageResult.Header> headers) throws IOException{
         super(headers);
         this.in = contents;
         this.size = caculateSize();
@@ -56,22 +56,23 @@ public class InputStreamFullContent extends AbstractFullContent{
     }
 
     @Override
-    protected void bodyWriteTo(WritableByteChannel channel) throws IOException {
-        // rewind the stream before write it to the channel
-        in.rewind();
-        
-        // read all the content of the underlying InputStream in 16384 byte chunks, wrap them
-        // in a ByteBuffer and finally write the Buffer to the channel
-        byte[] buf = new byte[16384];
-        int i = 0;
-        while ((i = in.read(buf)) != -1) {
-            ByteBuffer buffer = ByteBuffer.wrap(buf);
-            // set the limit of the buffer to the returned bytes
-            buffer.limit(i);
-            channel.write(buffer);
-        }  
-    }
-
+	protected void bodyWriteTo(WritableByteChannel channel) throws IOException {
+		try {
+			// read all the content of the underlying InputStream in 16384 byte
+			// chunks, wrap them
+			// in a ByteBuffer and finally write the Buffer to the channel
+			byte[] buf = new byte[16384];
+			int i = 0;
+			while ((i = in.read(buf)) != -1) {
+				ByteBuffer buffer = ByteBuffer.wrap(buf);
+				// set the limit of the buffer to the returned bytes
+				buffer.limit(i);
+				channel.write(buffer);
+			}
+		} finally {
+			in.close();
+		}
+	}
 
     @Override
     protected long getBodySize() throws IOException{

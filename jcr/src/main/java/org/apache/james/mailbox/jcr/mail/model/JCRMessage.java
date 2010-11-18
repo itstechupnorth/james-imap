@@ -44,6 +44,7 @@ import org.apache.james.mailbox.store.mail.model.MailboxMembership;
 import org.apache.james.mailbox.store.mail.model.Message;
 import org.apache.james.mailbox.store.mail.model.Property;
 import org.apache.james.mailbox.store.mail.model.PropertyBuilder;
+import org.apache.james.mailbox.store.streaming.LazySkippingInputStream;
 import org.apache.james.mailbox.store.streaming.StreamUtils;
 
 /**
@@ -428,25 +429,6 @@ public class JCRMessage extends AbstractMessage implements MailboxMembership<Str
 
     /*
      * (non-Javadoc)
-     * @see org.apache.james.mailbox.store.mail.model.AbstractDocument#getRawFullContent()
-     */
-    protected InputStream getRawFullContent() {
-        if (isPersistent()) {
-            try {
-                //TODO: Maybe we should cache this somehow...
-                InputStream contentStream = node.getNode(JcrConstants.JCR_CONTENT).getProperty(JcrConstants.JCR_DATA).getBinary().getStream();
-                return contentStream;
-            } catch (RepositoryException e) {
-                logger.error("Unable to retrieve property " + JcrConstants.JCR_CONTENT, e);
-            }
-            return null;
-        }
-        return content;
-    }
-
-
-    /*
-     * (non-Javadoc)
      * @see org.apache.james.mailbox.store.mail.model.MailboxMembership#createFlags()
      */
     public Flags createFlags() {
@@ -762,5 +744,33 @@ public class JCRMessage extends AbstractMessage implements MailboxMembership<Str
             + " )";
 
         return retValue;
+    }
+
+    public InputStream getFullContent() throws IOException {
+        if (isPersistent()) {
+            try {
+                //TODO: Maybe we should cache this somehow...
+                InputStream contentStream = node.getNode(JcrConstants.JCR_CONTENT).getProperty(JcrConstants.JCR_DATA).getBinary().getStream();
+                return contentStream;
+            } catch (RepositoryException e) {
+                logger.error("Unable to retrieve property " + JcrConstants.JCR_CONTENT, e);
+            }
+            return null;
+        }
+        return content;
+    }
+
+    public InputStream getBodyContent() throws IOException {
+        if (isPersistent()) {
+            try {
+                //TODO: Maybe we should cache this somehow...
+                InputStream contentStream = node.getNode(JcrConstants.JCR_CONTENT).getProperty(JcrConstants.JCR_DATA).getBinary().getStream();
+                return new LazySkippingInputStream(contentStream, getBodyStartOctet());
+            } catch (RepositoryException e) {
+                logger.error("Unable to retrieve property " + JcrConstants.JCR_CONTENT, e);
+            }
+            return null;
+        }
+        return content;
     }
 }

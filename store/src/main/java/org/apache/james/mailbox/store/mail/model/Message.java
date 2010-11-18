@@ -19,9 +19,8 @@
 package org.apache.james.mailbox.store.mail.model;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
-
-import org.apache.james.mailbox.store.streaming.RewindableInputStream;
 
 /**
  * A MIME message, consisting of meta-data (including MIME headers)
@@ -32,17 +31,23 @@ public interface Message {
 
 
     /**
-     * Gets the full content (including headers) of the document.
+     * Gets the full content (including headers) of the document. 
+     * 
+     * Be aware that this method need to return a new fresh {@link InputStream}
+     * on every call, which basicly means it need to start at position 0
+     * 
      * @return fullContent, not null
      */
-    public abstract RewindableInputStream getFullContent() throws IOException;
+    public abstract InputStream getFullContent() throws IOException;
     
     /**
-     * Gets the body content of the document.
-     * Headers are excluded.
+     * Gets the body content of the document. Headers are excluded.
+     * 
+     * Be aware that this method need to return a new fresh {@link InputStream}
+     * on every call, which basicly means it need to start at position 0
      * @return body, not null
      */
-    public abstract RewindableInputStream getBodyContent() throws IOException;
+    public abstract InputStream getBodyContent() throws IOException;
 
     /**
      * Gets the top level MIME content media type.
@@ -81,6 +86,7 @@ public interface Message {
     
     /**
      * Gets a read-only list of headers.
+     * 
      * @return unmodifiable list of headers, not null
      */
     public abstract List<Header> getHeaders();
@@ -89,6 +95,7 @@ public interface Message {
      * Gets a read-only list of meta-data properties.
      * For properties with multiple values, this list will contain
      * several enteries with the same namespace and local name.
+     * 
      * @return unmodifiable list of meta-data, not null
      */
     public abstract List<Property> getProperties();

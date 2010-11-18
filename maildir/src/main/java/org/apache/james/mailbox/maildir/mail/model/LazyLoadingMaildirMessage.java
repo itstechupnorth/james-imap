@@ -18,6 +18,7 @@
  ****************************************************************/
 package org.apache.james.mailbox.maildir.mail.model;
 
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PushbackInputStream;
@@ -34,7 +35,7 @@ import org.apache.james.mailbox.store.mail.model.Property;
 import org.apache.james.mailbox.store.mail.model.PropertyBuilder;
 import org.apache.james.mailbox.store.streaming.ConfigurableMimeTokenStream;
 import org.apache.james.mailbox.store.streaming.CountingInputStream;
-import org.apache.james.mailbox.store.streaming.RewindableInputStream;
+import org.apache.james.mailbox.store.streaming.LazySkippingInputStream;
 import org.apache.james.mime4j.MimeException;
 import org.apache.james.mime4j.descriptor.MaximalBodyDescriptor;
 import org.apache.james.mime4j.parser.MimeEntityConfig;
@@ -274,32 +275,17 @@ public class LazyLoadingMaildirMessage extends AbstractMaildirMessage {
      * (non-Javadoc)
      * @see org.apache.james.mailbox.store.mail.model.Message#getFullContent()
      */
-    public RewindableInputStream getFullContent() throws IOException {
-        return new MyRewindableInputStream(new SharedFileInputStream(messageName.getFile()));
+    public InputStream getFullContent() throws IOException {
+        return new FileInputStream(messageName.getFile());
     }
 
     /*
      * (non-Javadoc)
      * @see org.apache.james.mailbox.store.mail.model.Message#getBodyContent()
      */
-    public RewindableInputStream getBodyContent() throws IOException {
+    public InputStream getBodyContent() throws IOException {
         parseMessage();
+        return new LazySkippingInputStream(getFullContent(), bodyStartOctet);
 
-        SharedFileInputStream in = new SharedFileInputStream(messageName.getFile());
-        return new MyRewindableInputStream(in.newStream(bodyStartOctet, -1));
-    }
-    
-    private final class MyRewindableInputStream extends RewindableInputStream {
-
-        protected MyRewindableInputStream(InputStream in) {
-            super(in);
-            
-        }
-
-        @Override
-        protected void rewindIfNeeded() throws IOException {
-            in.reset();
-        }
-        
     }
 }

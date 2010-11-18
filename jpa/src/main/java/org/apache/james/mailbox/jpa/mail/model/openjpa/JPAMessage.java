@@ -32,6 +32,7 @@ import javax.persistence.Lob;
 import org.apache.james.mailbox.jpa.mail.model.JPAHeader;
 import org.apache.james.mailbox.store.mail.model.Message;
 import org.apache.james.mailbox.store.mail.model.PropertyBuilder;
+import org.apache.james.mailbox.store.streaming.LazySkippingInputStream;
 import org.apache.james.mailbox.store.streaming.StreamUtils;
 
 @Entity(name="Message")
@@ -63,11 +64,20 @@ public class JPAMessage extends AbstractJPAMessage{
 
     /*
      * (non-Javadoc)
-     * @see org.apache.james.mailbox.store.mail.model.AbstractDocument#getRawFullContent()
+     * @see org.apache.james.mailbox.store.mail.model.Message#getFullContent()
      */
-    protected InputStream getRawFullContent() {
+    public InputStream getFullContent() throws IOException {
         return new ByteArrayInputStream(content);
     }
+
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.mailbox.store.mail.model.Message#getBodyContent()
+     */
+    public InputStream getBodyContent() throws IOException {
+        return new ByteArrayInputStream(content, getBodyStartOctet(), (int)getFullContentOctets());
+    }
+
 
 
 }

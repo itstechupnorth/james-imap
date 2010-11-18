@@ -21,6 +21,7 @@ package org.apache.james.mailbox.store;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.util.ArrayList;
@@ -29,7 +30,6 @@ import java.util.List;
 import org.apache.james.mailbox.store.mail.model.Header;
 import org.apache.james.mailbox.store.mail.model.Message;
 import org.apache.james.mailbox.store.mail.model.Property;
-import org.apache.james.mailbox.store.streaming.RewindableInputStream;
 
 public class SimpleMessage implements Message {
     
@@ -91,8 +91,8 @@ public class SimpleMessage implements Message {
      * @throws IOException 
      * @see org.apache.james.imap.Message.mail.model.Document#getBodyContent()
      */
-    public RewindableInputStream getBodyContent() throws IOException {
-        return new ByteArrayRewindableInputStream(body);
+    public InputStream getBodyContent() throws IOException {
+        return new ByteArrayInputStream(body);
     }
 
     /**
@@ -100,8 +100,8 @@ public class SimpleMessage implements Message {
      * @return read only buffer, not null
      * @throws IOException 
      */
-    public RewindableInputStream getFullContent() throws IOException {
-        return new ByteArrayRewindableInputStream(fullContent);
+    public InputStream getFullContent() throws IOException {
+        return new ByteArrayInputStream(fullContent);
     }
     
     /**
@@ -133,19 +133,5 @@ public class SimpleMessage implements Message {
 
     public long getFullContentOctets() {
         return size;
-    }
-    
-    private final class ByteArrayRewindableInputStream extends RewindableInputStream {
-
-        private byte[] content;
-        public ByteArrayRewindableInputStream(byte[] content) {
-            super(new ByteArrayInputStream(content));
-            this.content = content;
-        }
-        @Override
-        protected void rewindIfNeeded() throws IOException {
-            in = new ByteArrayInputStream(content);
-        }
-        
     }
 }

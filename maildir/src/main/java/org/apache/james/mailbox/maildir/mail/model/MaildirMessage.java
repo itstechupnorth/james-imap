@@ -31,11 +31,9 @@ import org.apache.commons.lang.NotImplementedException;
 import org.apache.james.mailbox.MailboxException;
 import org.apache.james.mailbox.store.mail.model.Header;
 import org.apache.james.mailbox.store.mail.model.Mailbox;
-import org.apache.james.mailbox.store.mail.model.Message;
 import org.apache.james.mailbox.store.mail.model.Property;
 import org.apache.james.mailbox.store.mail.model.PropertyBuilder;
 import org.apache.james.mailbox.store.streaming.LazySkippingInputStream;
-import org.apache.james.mailbox.store.streaming.RewindableInputStream;
 import org.apache.james.mailbox.store.streaming.StreamUtils;
 
 public class MaildirMessage extends AbstractMaildirMessage {
@@ -248,14 +246,6 @@ public class MaildirMessage extends AbstractMaildirMessage {
 
     /* 
      * (non-Javadoc)
-     * @see org.apache.james.mailbox.store.mail.model.MailboxMembership#getMessage()
-     */
-    public Message getMessage() {
-        return this;
-    }
-
-    /* 
-     * (non-Javadoc)
      * @see org.apache.james.mailbox.store.mail.model.MailboxMembership#getInternalDate()
      */
     public Date getInternalDate() {
@@ -319,30 +309,16 @@ public class MaildirMessage extends AbstractMaildirMessage {
         return modified;
     }
 
-    public RewindableInputStream getFullContent() throws IOException {
-        // TODO Auto-generated method stub
-        return new MyRewindableInputStream(rawFullContent);
+    public InputStream getFullContent() throws IOException {
+        return rawFullContent;
     }
 
-    public RewindableInputStream getBodyContent() throws IOException {
-        return new MyRewindableInputStream(new LazySkippingInputStream(rawFullContent, bodyStartOctet));
+    public InputStream getBodyContent() throws IOException {
+        return new LazySkippingInputStream(rawFullContent, bodyStartOctet);
     }
 
     public long getBodyOctets() {
         return getFullContentOctets() - bodyStartOctet;
     }
-    
-    private class MyRewindableInputStream extends RewindableInputStream {
-
-        protected MyRewindableInputStream(InputStream in) {
-            super(in);
-        }
-
-        @Override
-        protected void rewindIfNeeded() throws IOException {
-            // do nothing.. 
-        }
-        
-    }
-
+   
 }

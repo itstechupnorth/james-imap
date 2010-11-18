@@ -18,11 +18,6 @@
  ****************************************************************/
 package org.apache.james.mailbox.store.mail.model;
 
-import java.io.IOException;
-import java.io.InputStream;
-
-import org.apache.james.mailbox.store.streaming.LazySkippingInputStream;
-import org.apache.james.mailbox.store.streaming.RewindableInputStream;
 
 
 /**
@@ -47,41 +42,7 @@ public abstract class AbstractMessage implements Message {
      * @return startOctet
      */
     protected abstract int getBodyStartOctet();
-    
-    /*
-     * (non-Javadoc)
-     * @see org.apache.james.mailbox.store.mail.model.Document#getFullContent()
-     */
-    public RewindableInputStream getFullContent() throws IOException {
-        return new RewindableInputStream(getRawFullContent()) {
-            
-            @Override
-            protected void rewindIfNeeded() throws IOException {
-                in = getFullContent();
-            }
-        };
-    }
 
-    /*
-     * (non-Javadoc)
-     * @see org.apache.james.mailbox.store.mail.model.Document#getBodyContent()
-     */
-    public RewindableInputStream getBodyContent() throws IOException {
-        return new RewindableInputStream(new LazySkippingInputStream(getRawFullContent(), getBodyStartOctet())) {
-            
-            @Override
-            protected void rewindIfNeeded() throws IOException {
-                in = new LazySkippingInputStream(getRawFullContent(), getBodyStartOctet());
-            }
-        };
-    }
-    
-    /**
-     * Return the raw {@link InputStream} of the full content. The InputStream must not be read already. So it need to be on start position
-     * 
-     * @return rawFullContent
-     */
-    protected abstract InputStream getRawFullContent();
     
 
 }

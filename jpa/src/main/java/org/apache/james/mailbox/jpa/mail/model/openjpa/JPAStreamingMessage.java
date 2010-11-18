@@ -31,6 +31,7 @@ import javax.persistence.FetchType;
 import org.apache.james.mailbox.jpa.mail.model.JPAHeader;
 import org.apache.james.mailbox.store.mail.model.Message;
 import org.apache.james.mailbox.store.mail.model.PropertyBuilder;
+import org.apache.james.mailbox.store.streaming.LazySkippingInputStream;
 import org.apache.james.mailbox.store.streaming.StreamUtils;
 import org.apache.openjpa.persistence.Persistent;
 
@@ -42,6 +43,7 @@ import org.apache.openjpa.persistence.Persistent;
  * 
  * If your DB is not supported by this, use {@link JPAMessage} 
  *
+ * TODO: Fix me!
  */
 @Entity(name="Message")
 public class JPAStreamingMessage extends AbstractJPAMessage{
@@ -69,9 +71,13 @@ public class JPAStreamingMessage extends AbstractJPAMessage{
         this.content = new ByteArrayInputStream(StreamUtils.toByteArray(message.getFullContent()));
     }
 
-    @Override
-    protected InputStream getRawFullContent() {
+    public InputStream getFullContent() throws IOException {
         return content;
+    }
+
+    
+    public InputStream getBodyContent() throws IOException {
+        return new LazySkippingInputStream(content, getBodyStartOctet());
     }
 
 }

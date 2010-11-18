@@ -34,14 +34,14 @@ import javax.swing.text.Document;
 import org.apache.james.mailbox.Content;
 import org.apache.james.mailbox.MailboxException;
 import org.apache.james.mailbox.MessageResult;
-import org.apache.james.mailbox.MimeDescriptor;
 import org.apache.james.mailbox.MessageResult.FetchGroup;
 import org.apache.james.mailbox.MessageResult.MimePath;
+import org.apache.james.mailbox.MimeDescriptor;
 import org.apache.james.mailbox.store.mail.model.Header;
 import org.apache.james.mailbox.store.mail.model.MailboxMembership;
 import org.apache.james.mailbox.store.streaming.InputStreamContent;
+import org.apache.james.mailbox.store.streaming.InputStreamContent.Type;
 import org.apache.james.mailbox.store.streaming.PartContentBuilder;
-import org.apache.james.mailbox.store.streaming.RewindableInputStream;
 import org.apache.james.mailbox.util.MessageResultImpl;
 import org.apache.james.mime4j.MimeException;
 
@@ -86,8 +86,7 @@ public class ResultUtils {
      * @throws IOException 
      */
     public static Content createBodyContent(MailboxMembership<?> membership) throws IOException {
-        final RewindableInputStream stream = membership.getMessage().getBodyContent();
-        final InputStreamContent result = new InputStreamContent(stream);
+        final InputStreamContent result = new InputStreamContent(membership.getMessage(), Type.Body);
         return result;
     }
 
@@ -99,9 +98,8 @@ public class ResultUtils {
      * @throws IOException 
      */
     public static Content createFullContent(final MailboxMembership<?> membership) throws IOException {
-        final RewindableInputStream stream = membership.getMessage().getFullContent();
-        final InputStreamContent results = new InputStreamContent(stream);
-        return results;
+        final InputStreamContent result = new InputStreamContent(membership.getMessage(), Type.Full);
+        return result;
     }
 
     /**
@@ -215,7 +213,7 @@ public class ResultUtils {
 
     private static PartContentBuilder build(int[] path, final MailboxMembership<?> message)
             throws IOException, MimeException {
-        final InputStream stream = toInput(message);
+        final InputStream stream = toInput(message.getMessage());
         PartContentBuilder result = new PartContentBuilder();
         result.parse(stream);
         try {
@@ -229,19 +227,6 @@ public class ResultUtils {
             result.markEmpty();
         }
         return result;
-    }
-
-    /**
-     * Return an {@link InputStream} which holds the content of the {@link org.apache.james.mailbox.store.mail.model.Message} which is linked in the {@link MailboxMembership}
-     * 
-     * @param membership
-     * @return stream
-     * @throws IOException 
-     */
-
-    public static InputStream toInput(final MailboxMembership<?> membership) throws IOException {
-        final org.apache.james.mailbox.store.mail.model.Message document = membership.getMessage();
-        return toInput(document);
     }
    
 
@@ -262,7 +247,7 @@ public class ResultUtils {
             headersToString.append("\r\n");
         }
         headersToString.append("\r\n");
-        final RewindableInputStream bodyContent = document.getBodyContent();
+        final InputStream bodyContent = document.getBodyContent();
         final MessageInputStream stream = new MessageInputStream(headersToString, bodyContent);
         return stream;
     }
@@ -273,11 +258,10 @@ public class ResultUtils {
         private int headerPosition = 0;
 
         public MessageInputStream(final StringBuffer headers,
-                final RewindableInputStream bodyContent) throws IOException{
+                final InputStream bodyContent) throws IOException{
             super(bodyContent);
             
             this.headers = headers;
-            bodyContent.rewind();
         }
 
         public int read() throws IOException {

@@ -21,6 +21,7 @@ package org.apache.james.mailbox.inmemory.mail.model;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Date;
 import java.util.List;
 
@@ -33,7 +34,6 @@ import org.apache.james.mailbox.store.mail.model.Message;
 import org.apache.james.mailbox.store.mail.model.Property;
 import org.apache.james.mailbox.store.mail.model.PropertyBuilder;
 import org.apache.james.mailbox.store.streaming.LazySkippingInputStream;
-import org.apache.james.mailbox.store.streaming.RewindableInputStream;
 
 public class SimpleMailboxMembership extends AbstractMailboxMembership<Long> implements Message, Comparable<MailboxMembership<Long>> {
 
@@ -149,29 +149,16 @@ public class SimpleMailboxMembership extends AbstractMailboxMembership<Long> imp
         recent = false;
     }
 
-    public RewindableInputStream getBodyContent() throws IOException {
-        return new RewindableInputStream(new LazySkippingInputStream(new ByteArrayInputStream(document),bodyStartOctet)) {
-            
-            @Override
-            protected void rewindIfNeeded() throws IOException {
-                in = new LazySkippingInputStream(new ByteArrayInputStream(document),bodyStartOctet);
-            }
-        };       
+    public InputStream getBodyContent() throws IOException {
+        return new ByteArrayInputStream(document,bodyStartOctet, (int) getFullContentOctets());      
     }
 
     public long getBodyOctets() {
         return getFullContentOctets() - bodyStartOctet;
     }
 
-    public RewindableInputStream getFullContent() throws IOException {
-        return new RewindableInputStream(new ByteArrayInputStream(document)) {
-
-            @Override
-            protected void rewindIfNeeded() throws IOException {
-                in = new ByteArrayInputStream(document);
-            }
-            
-        };
+    public InputStream getFullContent() throws IOException {
+        return new ByteArrayInputStream(document);
     }
 
     public long getFullContentOctets() {
