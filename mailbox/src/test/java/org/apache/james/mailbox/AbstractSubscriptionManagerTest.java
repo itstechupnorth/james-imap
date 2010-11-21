@@ -18,7 +18,7 @@
  ****************************************************************/
 package org.apache.james.mailbox;
 
-import java.util.Iterator;
+import java.util.Collection;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -54,11 +54,11 @@ public abstract class AbstractSubscriptionManagerTest {
         Assert.assertEquals(1, manager.subscriptions(session).size());
         
         manager.subscribe(session, MAILBOX2);
-        Iterator<String> it = manager.subscriptions(session).iterator();
-        
-        Assert.assertEquals(MAILBOX1, it.next());
-        Assert.assertEquals(MAILBOX2, it.next());
-        Assert.assertFalse(it.hasNext());
+        Collection<String> col = manager.subscriptions(session);
+      
+        Assert.assertTrue(col.contains(MAILBOX2));
+        Assert.assertTrue(col.contains(MAILBOX1));
+        Assert.assertEquals(2, col.size());
         
         
         manager.unsubscribe(session, MAILBOX1);
