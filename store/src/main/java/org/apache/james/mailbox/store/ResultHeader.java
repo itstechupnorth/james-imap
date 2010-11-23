@@ -22,16 +22,20 @@
  */
 package org.apache.james.mailbox.store;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.ByteBuffer;
+import java.nio.channels.Channels;
 import java.nio.channels.WritableByteChannel;
 
-import org.apache.james.mailbox.Content;
+import org.apache.james.mailbox.InputStreamContent;
 import org.apache.james.mailbox.MailboxException;
 import org.apache.james.mailbox.MessageResult;
 import org.apache.james.mailbox.store.mail.model.Header;
 
-public final class ResultHeader implements MessageResult.Header, Content {
+public final class ResultHeader implements MessageResult.Header, InputStreamContent {
     private final String name;
 
     private final String value;
@@ -93,5 +97,15 @@ public final class ResultHeader implements MessageResult.Header, Content {
 
     public String toString() {
         return "[HEADER " + name + ": " + value + "]";
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.mailbox.InputStreamContent#getInputStream()
+     */
+    public InputStream getInputStream() throws IOException {
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        writeTo(Channels.newChannel(out));
+        return new ByteArrayInputStream(out.toByteArray());
     }
 }

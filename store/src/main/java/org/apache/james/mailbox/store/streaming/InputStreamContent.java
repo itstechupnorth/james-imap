@@ -32,7 +32,7 @@ import org.apache.james.mailbox.store.mail.model.Message;
  * {@link Content} which is stored in a {@link InputStream}
  *
  */
-public final class InputStreamContent implements Content{
+public final class InputStreamContent implements org.apache.james.mailbox.InputStreamContent{
     private Message m;
     private Type type;
 
@@ -59,6 +59,18 @@ public final class InputStreamContent implements Content{
         }
     }
 
+    /*
+     * 
+     */
+    public InputStream getInputStream() throws IOException {
+        switch (type) {
+        case Full:
+            return m.getFullContent();
+        default:
+            return m.getBodyContent();
+        }
+       
+    }
     /*
      * (non-Javadoc)
      * @see org.apache.james.mailbox.Content#writeTo(java.nio.channels.WritableByteChannel)

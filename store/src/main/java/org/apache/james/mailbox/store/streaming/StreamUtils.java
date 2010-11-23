@@ -19,9 +19,13 @@
 
 package org.apache.james.mailbox.store.streaming;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.channels.Channels;
+
+import org.apache.james.mailbox.Content;
 
 /**
  * Utility methods for messages.
@@ -52,6 +56,16 @@ public class StreamUtils {
         int read;
         while ((read = is.read(buf)) > 0) {
             baos.write(buf, 0, read);
+        }
+    }
+    
+    public static InputStream toInputStream(Content content) throws IOException {
+        if (content instanceof org.apache.james.mailbox.InputStreamContent) {
+            return ((org.apache.james.mailbox.InputStreamContent) content).getInputStream();
+        } else {
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            content.writeTo(Channels.newChannel(out));
+            return new ByteArrayInputStream(out.toByteArray());
         }
     }
 }
