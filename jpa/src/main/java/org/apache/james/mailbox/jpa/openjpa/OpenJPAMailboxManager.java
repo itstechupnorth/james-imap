@@ -27,6 +27,8 @@ import org.apache.james.mailbox.MailboxSession;
 import org.apache.james.mailbox.jpa.JPAMailboxManager;
 import org.apache.james.mailbox.jpa.JPAMailboxSessionMapperFactory;
 import org.apache.james.mailbox.store.Authenticator;
+import org.apache.james.mailbox.store.JVMMailboxPathLocker;
+import org.apache.james.mailbox.store.MailboxPathLocker;
 import org.apache.james.mailbox.store.MapperStoreMessageManager;
 import org.apache.james.mailbox.store.mail.model.Mailbox;
 import org.apache.james.mailbox.util.MailboxEventDispatcher;
@@ -39,13 +41,13 @@ public class OpenJPAMailboxManager extends JPAMailboxManager {
 
     private boolean useStreaming;
 
-    public OpenJPAMailboxManager(JPAMailboxSessionMapperFactory mapperFactory, Authenticator authenticator, boolean useStreaming) {
-        super(mapperFactory, authenticator);
+    public OpenJPAMailboxManager(JPAMailboxSessionMapperFactory mapperFactory, Authenticator authenticator, MailboxPathLocker locker, boolean useStreaming) {
+        super(mapperFactory, authenticator, locker);
         this.useStreaming = useStreaming;
     }
 
     public OpenJPAMailboxManager(JPAMailboxSessionMapperFactory mapperFactory, Authenticator authenticator) {
-        this(mapperFactory, authenticator, false);
+        this(mapperFactory, authenticator, new JVMMailboxPathLocker(), false);
     }
 
     @Override

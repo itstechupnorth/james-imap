@@ -25,6 +25,8 @@ import org.apache.james.mailbox.MailboxPath;
 import org.apache.james.mailbox.MailboxSession;
 import org.apache.james.mailbox.maildir.mail.model.MaildirMailbox;
 import org.apache.james.mailbox.store.Authenticator;
+import org.apache.james.mailbox.store.JVMMailboxPathLocker;
+import org.apache.james.mailbox.store.MailboxPathLocker;
 import org.apache.james.mailbox.store.MailboxSessionMapperFactory;
 import org.apache.james.mailbox.store.MapperStoreMessageManager;
 import org.apache.james.mailbox.store.StoreMailboxManager;
@@ -36,7 +38,13 @@ public class MaildirMailboxManager extends StoreMailboxManager<Integer> {
     public MaildirMailboxManager(
             MailboxSessionMapperFactory<Integer> mailboxSessionMapperFactory,
             Authenticator authenticator) {
-        super(mailboxSessionMapperFactory, authenticator);
+        this(mailboxSessionMapperFactory, authenticator, new JVMMailboxPathLocker());
+    }
+
+    public MaildirMailboxManager(
+            MailboxSessionMapperFactory<Integer> mailboxSessionMapperFactory,
+            Authenticator authenticator, MailboxPathLocker locker) {
+        super(mailboxSessionMapperFactory, authenticator, locker);
     }
 
     @Override

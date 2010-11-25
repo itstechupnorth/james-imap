@@ -45,6 +45,7 @@ import org.apache.james.mailbox.MessageRange;
 import org.apache.james.mailbox.RequestAware;
 import org.apache.james.mailbox.StandardMailboxMetaDataComparator;
 import org.apache.james.mailbox.MailboxMetaData.Selectability;
+import org.apache.james.mailbox.store.MailboxPathLocker.LockAwareExecution;
 import org.apache.james.mailbox.store.mail.MailboxMapper;
 import org.apache.james.mailbox.store.mail.model.Mailbox;
 import org.apache.james.mailbox.store.transaction.Mapper;
@@ -67,7 +68,6 @@ public abstract class StoreMailboxManager<Id> implements MailboxManager {
     
     private final MailboxEventDispatcher dispatcher = new MailboxEventDispatcher();
     private final DelegatingMailboxListener delegatingListener = new DelegatingMailboxListener();   
-    private final MailboxPathLock lock = new MailboxPathLock();
     protected final MailboxMapperFactory<Id> mailboxSessionMapperFactory;    
     
     private final Authenticator authenticator;
@@ -75,9 +75,12 @@ public abstract class StoreMailboxManager<Id> implements MailboxManager {
     
     private Log log = LogFactory.getLog("org.apache.james.imap");
     private ConcurrentMap<MailboxPath, AtomicLong> lastUids = new ConcurrentHashMap<MailboxPath, AtomicLong>();
+
+    private MailboxPathLocker locker;
     
-    public StoreMailboxManager(MailboxMapperFactory<Id> mailboxSessionMapperFactory, final Authenticator authenticator) {
+    public StoreMailboxManager(MailboxMapperFactory<Id> mailboxSessionMapperFactory, final Authenticator authenticator, final MailboxPathLocker locker) {
         this.authenticator = authenticator;
+        this.locker = locker;
         this.mailboxSessionMapperFactory = mailboxSessionMapperFactory;
         
         // The dispatcher need to have the delegating listener added
@@ -229,7 +232,7 @@ public abstract class StoreMailboxManager<Id> implements MailboxManager {
      * (non-Javadoc)
      * @see org.apache.james.mailbox.MailboxManager#createMailbox(org.apache.james.imap.api.MailboxPath, org.apache.james.mailbox.MailboxSession)
      */
-    public void createMailbox(MailboxPath mailboxPath, MailboxSession mailboxSession)
+    public void createMailbox(MailboxPath mailboxPath, final MailboxSession mailboxSession)
     throws MailboxException {
         getLog().debug("createMailbox " + mailboxPath);
         final int length = mailboxPath.getName().length();
@@ -243,23 +246,25 @@ public abstract class StoreMailboxManager<Id> implements MailboxManager {
             // Create parents first
             // If any creation fails then the mailbox will not be created
             // TODO: transaction
-            for (MailboxPath mailbox : mailboxPath.getHierarchyLevels(MailboxConstants.DEFAULT_DELIMITER))
-                if (!mailboxExists(mailbox, mailboxSession)) {
-                    try {
-                        lock.lock(mailbox);
-                        final org.apache.james.mailbox.store.mail.model.Mailbox<Id> m = doCreateMailbox(mailbox, mailboxSession);
-                        final MailboxMapper<Id> mapper = mailboxSessionMapperFactory.getMailboxMapper(mailboxSession);
-                        mapper.execute(new TransactionalMapper.VoidTransaction(){
+            for (final MailboxPath mailbox : mailboxPath.getHierarchyLevels(MailboxConstants.DEFAULT_DELIMITER))
 
-                            public void runVoid() throws MailboxException {
-                                mapper.save(m);
-                            }
-                            
-                        });
-                    } finally {
-                        lock.unlock(mailbox);
+                locker.executeWithLock(mailboxSession, mailbox, new LockAwareExecution() {
+
+                    public void execute(MailboxSession session, MailboxPath mailbox) throws MailboxException {
+                        if (!mailboxExists(mailbox, session)) {
+                            final org.apache.james.mailbox.store.mail.model.Mailbox<Id> m = doCreateMailbox(mailbox, session);
+                            final MailboxMapper<Id> mapper = mailboxSessionMapperFactory.getMailboxMapper(session);
+                            mapper.execute(new TransactionalMapper.VoidTransaction() {
+
+                                public void runVoid() throws MailboxException {
+                                    mapper.save(m);
+                                }
+
+                            });
+                        }
                     }
-                }
+                });
+
         }
     }
 
@@ -316,28 +321,28 @@ public abstract class StoreMailboxManager<Id> implements MailboxManager {
                 dispatcher.mailboxRenamed(from, to, session.getSessionId());
 
                 // rename submailboxes
-                MailboxPath children = new MailboxPath(MailboxConstants.USER_NAMESPACE, from.getUser(), from.getName() + MailboxConstants.DEFAULT_DELIMITER + "%");
-                try {
-                    lock.lock(children);
-                    final List<Mailbox<Id>> subMailboxes = mapper.findMailboxWithPathLike(children);
-                    for (Mailbox<Id> sub : subMailboxes) {
-                        final String subOriginalName = sub.getName();
-                        final String subNewName = to.getName() + subOriginalName.substring(from.getName().length());
-                        final MailboxPath fromPath = new MailboxPath(children, subOriginalName);
-                        final MailboxPath toPath = new MailboxPath(children, subNewName);
+                final MailboxPath children = new MailboxPath(MailboxConstants.USER_NAMESPACE, from.getUser(), from.getName() + MailboxConstants.DEFAULT_DELIMITER + "%");
+                locker.executeWithLock(session, children, new LockAwareExecution() {
+                    
+                    public void execute(MailboxSession session, MailboxPath children) throws MailboxException {
+                        final List<Mailbox<Id>> subMailboxes = mapper.findMailboxWithPathLike(children);
+                        for (Mailbox<Id> sub : subMailboxes) {
+                            final String subOriginalName = sub.getName();
+                            final String subNewName = to.getName() + subOriginalName.substring(from.getName().length());
+                            final MailboxPath fromPath = new MailboxPath(children, subOriginalName);
+                            final MailboxPath toPath = new MailboxPath(children, subNewName);
 
-                        sub.setName(subNewName);
-                        mapper.save(sub);
-                        dispatcher.mailboxRenamed(fromPath, toPath, session.getSessionId());
+                            sub.setName(subNewName);
+                            mapper.save(sub);
+                            dispatcher.mailboxRenamed(fromPath, toPath, session.getSessionId());
 
-                        if (log.isDebugEnabled())
-                            log.debug("Rename mailbox sub-mailbox " + subOriginalName + " to " + subNewName);
-                            
-                      
+                            if (log.isDebugEnabled())
+                                log.debug("Rename mailbox sub-mailbox " + subOriginalName + " to " + subNewName);
+                        }
                     }
-                } finally {
-                    lock.unlock(children);
-                }
+                });
+    
+               
                 
             }
 

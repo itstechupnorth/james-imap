@@ -19,58 +19,44 @@
 
 package org.apache.james.mailbox.store;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
-
+import org.apache.james.mailbox.MailboxException;
 import org.apache.james.mailbox.MailboxPath;
+import org.apache.james.mailbox.MailboxSession;
 
 /**
- * 
- * Helper class which helps to synchronize the access the 
- * same MailboxPath. This is done using one {@link ReentrantLock}
- * per {@link MailboxPath}.
- * 
- * Its very important to call the {@link #unlock(MailboxPath)} method
- * in a finally block to not risk a dead lock
+ * The {@link MailboxPathLocker} is responsible to help to synchronize the access to a {@link MailboxPath}
+ * and execute an given {@link LockAwareExecution}
  *
  */
-public final class MailboxPathLock {
-
-    private final Map<MailboxPath, ReentrantLock> paths = new HashMap<MailboxPath, ReentrantLock>();
+public interface MailboxPathLocker {
+    
     
     /**
-     * Obtain a {@link Lock} for the given path. It will block if the lock for the {@link MailboxPath} is
-     * already held by some other thread 
+     * Execute the {@link LockAwareExecution} while holding a lock on the {@link MailboxPath}
      * 
+     * @param session
      * @param path
+     * @param execution
+     * @throws MailboxException
      */
-    public void lock(MailboxPath path) {
-        ReentrantLock lock;
-        synchronized (paths) {
-            lock = paths.get(path);
-
-            if (lock == null) {
-                lock = new ReentrantLock();
-                paths.put(path, lock);
-            }
-        }
-        lock.lock();
-    }
+    public void executeWithLock(MailboxSession session, MailboxPath path, LockAwareExecution execution) throws MailboxException;
+    
     
     /**
-     * Unlock the previous obtained {@link Lock} for the given path
+     * Execute code while holding a lock
      * 
-     * @param path
+     *
      */
-    public void unlock(MailboxPath path) {
-        ReentrantLock lock;
-        synchronized (paths) {
-            lock = paths.remove(path);
-        }
-        if (lock != null) {
-            lock.unlock();
-        }
+    public interface LockAwareExecution {
+        
+        /**
+         * Execute code block
+         * 
+         * @param session
+         * @param path
+         * @throws MailboxException
+         */
+        public void execute(MailboxSession session, MailboxPath path) throws MailboxException;
     }
+
 }
