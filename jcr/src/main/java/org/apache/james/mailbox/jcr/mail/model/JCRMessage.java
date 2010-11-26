@@ -152,7 +152,7 @@ public class JCRMessage extends AbstractMessage implements MailboxMembership<Str
        
         this.bodyStartOctet = (int) (message.getFullContentOctets() - message.getBodyOctets());
         this.headers = new ArrayList<JCRHeader>();
-        
+
         List<Header> originalHeaders = message.getHeaders();
         for (int i = 0; i < originalHeaders.size(); i++) {
             headers.add(new JCRHeader(originalHeaders.get(i),logger));
@@ -768,15 +768,6 @@ public class JCRMessage extends AbstractMessage implements MailboxMembership<Str
      * @see org.apache.james.mailbox.store.mail.model.Message#getBodyContent()
      */
     public InputStream getBodyContent() throws IOException {
-        if (isPersistent()) {
-            try {
-                //TODO: Maybe we should cache this somehow...
-                InputStream contentStream = node.getNode(JcrConstants.JCR_CONTENT).getProperty(JcrConstants.JCR_DATA).getBinary().getStream();
-                return new LazySkippingInputStream(contentStream, getBodyStartOctet());
-            } catch (RepositoryException e) {
-                throw new IOException("Unable to retrieve property " + JcrConstants.JCR_CONTENT, e);
-            }
-        }
-        return content;
+        return new LazySkippingInputStream(getFullContent(), getBodyStartOctet());
     }
 }

@@ -77,6 +77,7 @@ public final class InputStreamContent implements org.apache.james.mailbox.InputS
      */
     public void writeTo(WritableByteChannel channel) throws IOException {
         InputStream in = null;
+        InputStream wrapped = null;
         long skipped = 0;
         try {
             switch (type) {
@@ -87,11 +88,15 @@ public final class InputStreamContent implements org.apache.james.mailbox.InputS
                 in = m.getBodyContent();
                 break;
             }
+            
             if (in instanceof LazySkippingInputStream) {
                 skipped = ((LazySkippingInputStream) in).getSkippedBytes();
-                in = ((LazySkippingInputStream) in).getWrapped(); 
+                wrapped = ((LazySkippingInputStream) in).getWrapped(); 
+            } else {
+            	wrapped = in;
             }
-            if (in instanceof FileInputStream) {
+            
+            if (wrapped instanceof FileInputStream) {
                 FileChannel fileChannel = ((FileInputStream)in).getChannel();
                 fileChannel.transferTo(skipped, fileChannel.size(), channel);
                 fileChannel.close();
@@ -111,8 +116,21 @@ public final class InputStreamContent implements org.apache.james.mailbox.InputS
             }
         } finally {
             if(in != null) {
-                in.close();
+            	try {
+            		in.close();
+            	} catch (IOException e) {
+            		
+            	}
             }
+            
+            if(wrapped != null) {
+            	try {
+            		wrapped.close();
+            	} catch (IOException e) {
+            		
+            	}
+            }
+            
         }
         
     }
