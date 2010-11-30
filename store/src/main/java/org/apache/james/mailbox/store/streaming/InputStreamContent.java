@@ -97,7 +97,7 @@ public final class InputStreamContent implements org.apache.james.mailbox.InputS
             }
             
             if (wrapped instanceof FileInputStream) {
-                FileChannel fileChannel = ((FileInputStream)in).getChannel();
+                FileChannel fileChannel = ((FileInputStream)wrapped).getChannel();
                 fileChannel.transferTo(skipped, fileChannel.size(), channel);
                 fileChannel.close();
             } else {
