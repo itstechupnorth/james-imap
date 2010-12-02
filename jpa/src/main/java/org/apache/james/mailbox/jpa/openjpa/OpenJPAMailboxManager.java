@@ -20,8 +20,6 @@
 package org.apache.james.mailbox.jpa.openjpa;
 
 
-import java.util.concurrent.atomic.AtomicLong;
-
 import org.apache.james.mailbox.MailboxException;
 import org.apache.james.mailbox.MailboxSession;
 import org.apache.james.mailbox.jpa.JPAMailboxManager;
@@ -30,6 +28,7 @@ import org.apache.james.mailbox.store.Authenticator;
 import org.apache.james.mailbox.store.JVMMailboxPathLocker;
 import org.apache.james.mailbox.store.MailboxPathLocker;
 import org.apache.james.mailbox.store.MapperStoreMessageManager;
+import org.apache.james.mailbox.store.UidProvider;
 import org.apache.james.mailbox.store.mail.model.Mailbox;
 import org.apache.james.mailbox.util.MailboxEventDispatcher;
 
@@ -41,18 +40,18 @@ public class OpenJPAMailboxManager extends JPAMailboxManager {
 
     private boolean useStreaming;
 
-    public OpenJPAMailboxManager(JPAMailboxSessionMapperFactory mapperFactory, Authenticator authenticator, MailboxPathLocker locker, boolean useStreaming) {
-        super(mapperFactory, authenticator, locker);
+    public OpenJPAMailboxManager(JPAMailboxSessionMapperFactory mapperFactory, Authenticator authenticator, UidProvider<Long> uidProvider, MailboxPathLocker locker, boolean useStreaming) {
+        super(mapperFactory, authenticator, uidProvider, locker);
         this.useStreaming = useStreaming;
     }
 
-    public OpenJPAMailboxManager(JPAMailboxSessionMapperFactory mapperFactory, Authenticator authenticator) {
-        this(mapperFactory, authenticator, new JVMMailboxPathLocker(), false);
+    public OpenJPAMailboxManager(JPAMailboxSessionMapperFactory mapperFactory, Authenticator authenticator, UidProvider<Long> uidProvider) {
+        this(mapperFactory, authenticator, uidProvider, new JVMMailboxPathLocker(), false);
     }
 
     @Override
-    protected MapperStoreMessageManager<Long> createMessageManager(AtomicLong lastUid, MailboxEventDispatcher dispatcher, Mailbox<Long> mailboxRow, MailboxSession session) throws MailboxException {
-        MapperStoreMessageManager<Long> result =  new OpenJPAMessageManager((JPAMailboxSessionMapperFactory) mailboxSessionMapperFactory, lastUid, dispatcher, mailboxRow, useStreaming);
+    protected MapperStoreMessageManager<Long> createMessageManager(UidProvider<Long> uidProvider, MailboxEventDispatcher dispatcher, Mailbox<Long> mailboxRow, MailboxSession session) throws MailboxException {
+        MapperStoreMessageManager<Long> result =  new OpenJPAMessageManager((JPAMailboxSessionMapperFactory) mailboxSessionMapperFactory, uidProvider, dispatcher, mailboxRow, useStreaming);
         return result;
     }
 }

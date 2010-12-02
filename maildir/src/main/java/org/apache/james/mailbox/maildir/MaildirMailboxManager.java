@@ -18,8 +18,6 @@
  ****************************************************************/
 package org.apache.james.mailbox.maildir;
 
-import java.util.concurrent.atomic.AtomicLong;
-
 import org.apache.james.mailbox.MailboxException;
 import org.apache.james.mailbox.MailboxPath;
 import org.apache.james.mailbox.MailboxSession;
@@ -30,6 +28,7 @@ import org.apache.james.mailbox.store.MailboxPathLocker;
 import org.apache.james.mailbox.store.MailboxSessionMapperFactory;
 import org.apache.james.mailbox.store.MapperStoreMessageManager;
 import org.apache.james.mailbox.store.StoreMailboxManager;
+import org.apache.james.mailbox.store.UidProvider;
 import org.apache.james.mailbox.store.mail.model.Mailbox;
 import org.apache.james.mailbox.util.MailboxEventDispatcher;
 
@@ -37,20 +36,20 @@ public class MaildirMailboxManager extends StoreMailboxManager<Integer> {
 
     public MaildirMailboxManager(
             MailboxSessionMapperFactory<Integer> mailboxSessionMapperFactory,
-            Authenticator authenticator) {
-        this(mailboxSessionMapperFactory, authenticator, new JVMMailboxPathLocker());
+            Authenticator authenticator, MaildirStore store) {
+        this(mailboxSessionMapperFactory, authenticator, store, new JVMMailboxPathLocker());
     }
 
     public MaildirMailboxManager(
             MailboxSessionMapperFactory<Integer> mailboxSessionMapperFactory,
-            Authenticator authenticator, MailboxPathLocker locker) {
-        super(mailboxSessionMapperFactory, authenticator, locker);
+            Authenticator authenticator, MaildirStore store, MailboxPathLocker locker) {
+        super(mailboxSessionMapperFactory, authenticator, store, locker);
     }
 
     @Override
-    protected MapperStoreMessageManager<Integer> createMessageManager(AtomicLong lastUid, MailboxEventDispatcher dispatcher,
+    protected MapperStoreMessageManager<Integer> createMessageManager(UidProvider<Integer> uidProvider, MailboxEventDispatcher dispatcher,
             Mailbox<Integer> mailboxEntiy, MailboxSession session) throws MailboxException {
-        return new MaildirMessageManager((MailboxSessionMapperFactory<Integer>)mailboxSessionMapperFactory, lastUid, dispatcher, mailboxEntiy);
+        return new MaildirMessageManager((MailboxSessionMapperFactory<Integer>)mailboxSessionMapperFactory, uidProvider, dispatcher, mailboxEntiy);
     }
 
     @Override

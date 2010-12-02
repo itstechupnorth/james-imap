@@ -18,8 +18,6 @@
  ****************************************************************/
 package org.apache.james.mailbox.jcr;
 
-import java.util.concurrent.atomic.AtomicLong;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.james.mailbox.MailboxException;
@@ -31,6 +29,7 @@ import org.apache.james.mailbox.store.JVMMailboxPathLocker;
 import org.apache.james.mailbox.store.MailboxPathLocker;
 import org.apache.james.mailbox.store.MapperStoreMessageManager;
 import org.apache.james.mailbox.store.StoreMailboxManager;
+import org.apache.james.mailbox.store.UidProvider;
 import org.apache.james.mailbox.store.mail.model.Mailbox;
 import org.apache.james.mailbox.util.MailboxEventDispatcher;
 
@@ -43,19 +42,19 @@ public class JCRMailboxManager extends StoreMailboxManager<String> implements JC
     private final JCRMailboxSessionMapperFactory mapperFactory;
     private final Log logger = LogFactory.getLog(JCRMailboxManager.class);
     
-    public JCRMailboxManager(JCRMailboxSessionMapperFactory mapperFactory, final Authenticator authenticator) {
-	    this(mapperFactory, authenticator, new JVMMailboxPathLocker());
+    public JCRMailboxManager(JCRMailboxSessionMapperFactory mapperFactory, final Authenticator authenticator, final UidProvider<String> uidProvider) {
+	    this(mapperFactory, authenticator, uidProvider, new JVMMailboxPathLocker());
     }
 
-    public JCRMailboxManager(JCRMailboxSessionMapperFactory mapperFactory, final Authenticator authenticator, final MailboxPathLocker locker) {
-        super(mapperFactory, authenticator, locker);
+    public JCRMailboxManager(JCRMailboxSessionMapperFactory mapperFactory, final Authenticator authenticator, final UidProvider<String> uidProvider, final MailboxPathLocker locker) {
+        super(mapperFactory, authenticator, uidProvider, locker);
         this.mapperFactory = mapperFactory;
     }
 
     
     @Override
-    protected MapperStoreMessageManager<String> createMessageManager(AtomicLong lastUid, MailboxEventDispatcher dispatcher, Mailbox<String> mailboxEntity, MailboxSession session) throws MailboxException{
-        return new JCRMessageManager(mapperFactory, lastUid, dispatcher, (JCRMailbox) mailboxEntity, logger, getDelimiter());
+    protected MapperStoreMessageManager<String> createMessageManager(UidProvider<String> uidProvider, MailboxEventDispatcher dispatcher, Mailbox<String> mailboxEntity, MailboxSession session) throws MailboxException{
+        return new JCRMessageManager(mapperFactory, uidProvider, dispatcher, (JCRMailbox) mailboxEntity, logger, getDelimiter());
     }
 
     @Override

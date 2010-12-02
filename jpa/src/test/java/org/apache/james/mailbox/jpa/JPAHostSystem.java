@@ -77,8 +77,10 @@ public class JPAHostSystem extends ImapHostSystem {
                 JPASubscription.class.getName() + ")");
         userManager = new InMemoryUserManager();
         entityManagerFactory = OpenJPAPersistence.getEntityManagerFactory(properties);
-        JPAMailboxSessionMapperFactory mf = new JPAMailboxSessionMapperFactory(entityManagerFactory);
-        mailboxManager = new OpenJPAMailboxManager(mf, userManager);
+        JPACachingUidProvider uidProvider = new JPACachingUidProvider(entityManagerFactory);
+
+        JPAMailboxSessionMapperFactory mf = new JPAMailboxSessionMapperFactory(entityManagerFactory, uidProvider);
+        mailboxManager = new OpenJPAMailboxManager(mf, userManager, uidProvider);
         SubscriptionManager subscriptionManager = new JPASubscriptionManager(mf);
         final ImapProcessor defaultImapProcessorFactory = DefaultImapProcessorFactory.createDefaultProcessor(mailboxManager, subscriptionManager);
         resetUserMetaData();

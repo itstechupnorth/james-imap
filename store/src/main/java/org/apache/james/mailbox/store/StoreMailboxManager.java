@@ -24,9 +24,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Random;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.atomic.AtomicLong;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -74,15 +71,16 @@ public abstract class StoreMailboxManager<Id> implements MailboxManager {
     private final static Random RANDOM = new Random();
     
     private Log log = LogFactory.getLog("org.apache.james.imap");
-    private ConcurrentMap<MailboxPath, AtomicLong> lastUids = new ConcurrentHashMap<MailboxPath, AtomicLong>();
 
     private MailboxPathLocker locker;
+
+    private UidProvider<Id> uidProvider;
     
-    public StoreMailboxManager(MailboxMapperFactory<Id> mailboxSessionMapperFactory, final Authenticator authenticator, final MailboxPathLocker locker) {
+    public StoreMailboxManager(MailboxMapperFactory<Id> mailboxSessionMapperFactory, final Authenticator authenticator, final UidProvider<Id> uidProvider,final MailboxPathLocker locker) {
         this.authenticator = authenticator;
         this.locker = locker;
         this.mailboxSessionMapperFactory = mailboxSessionMapperFactory;
-        
+        this.uidProvider = uidProvider;
         // The dispatcher need to have the delegating listener added
         dispatcher.addMailboxListener(delegatingListener);
     }
@@ -178,7 +176,7 @@ public abstract class StoreMailboxManager<Id> implements MailboxManager {
      * @param mailboxRow
      * @return storeMailbox
      */
-    protected abstract StoreMessageManager<Id> createMessageManager(AtomicLong lastUid,MailboxEventDispatcher dispatcher, Mailbox<Id> mailboxRow, MailboxSession session) throws MailboxException;
+    protected abstract StoreMessageManager<Id> createMessageManager(UidProvider<Id> uidProvider,MailboxEventDispatcher dispatcher, Mailbox<Id> mailboxRow, MailboxSession session) throws MailboxException;
 
     /**
      * Create a Mailbox for the given namespace
@@ -204,29 +202,12 @@ public abstract class StoreMailboxManager<Id> implements MailboxManager {
         } else {
             getLog().debug("Loaded mailbox " + mailboxPath);
             
-            // Get the lastuid for the mailbox and register the LastUidTracker to update it when messages 
-            // are added to the mailbox
-            final AtomicLong lastUid = getLastUid(mailboxPath);
-            StoreMessageManager<Id>  m = createMessageManager(lastUid, dispatcher, mailboxRow, session);
-            addListener(mailboxPath, new LastUidTracker(lastUids, session), session);
+            StoreMessageManager<Id>  m = createMessageManager(uidProvider, dispatcher, mailboxRow, session);
             return m;
         }
     }
 
     
-    /**
-     * Return the lastUid for the mailbox. 
-     * 
-     * 
-     * @param mailboxId
-     * @return lastUid
-     * 
-     * TODO: Maybe we should do something smart here and remove it from the {@link ConcurrentHashMap} once its not needed anymore
-     */
-    private AtomicLong getLastUid(MailboxPath path) {
-        lastUids.putIfAbsent(path, new AtomicLong(0));
-        return lastUids.get(path); 
-    }
     
     /*
      * (non-Javadoc)

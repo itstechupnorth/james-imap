@@ -55,8 +55,8 @@ public class MaildirMessageMapper extends NonTransactionalMapper implements Mess
     private final MaildirStore maildirStore;
     private final int BUF_SIZE = 2048;
 
-    public MaildirMessageMapper(String  maildirLocation) {
-        this.maildirStore = new MaildirStore(maildirLocation);
+    public MaildirMessageMapper(MaildirStore  maildirStore) {
+        this.maildirStore = maildirStore;
     }
     
 

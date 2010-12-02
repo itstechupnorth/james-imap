@@ -58,7 +58,8 @@ public class InMemoryHostSystem extends ImapHostSystem {
     private void initFields() {
         userManager = new InMemoryUserManager();
         factory = new InMemoryMailboxSessionMapperFactory();
-        mailboxManager = new InMemoryMailboxManager(factory, userManager);
+        InMemoryCachingUidProvider uidProvider = new InMemoryCachingUidProvider();
+        mailboxManager = new InMemoryMailboxManager(factory, userManager, uidProvider);
         final ImapProcessor defaultImapProcessorFactory = DefaultImapProcessorFactory.createDefaultProcessor(mailboxManager, new InMemorySubscriptionManager(factory));
         configure(new DefaultImapDecoderFactory().buildImapDecoder(),
                 new DefaultImapEncoderFactory().buildImapEncoder(),

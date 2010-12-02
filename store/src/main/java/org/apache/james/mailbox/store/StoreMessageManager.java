@@ -31,7 +31,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
-import java.util.concurrent.atomic.AtomicLong;
 
 import javax.mail.Flags;
 import javax.mail.MessagingException;
@@ -68,12 +67,12 @@ public abstract class StoreMessageManager<Id> implements org.apache.james.mailbo
     
     private final MailboxEventDispatcher dispatcher;    
     
-    private final AtomicLong lastUid;
+    protected final UidProvider<Id> uidProvider;
     
-    public StoreMessageManager(final AtomicLong lastUid, final MailboxEventDispatcher dispatcher, final Mailbox<Id> mailbox) throws MailboxException {
+    public StoreMessageManager(final UidProvider<Id> uidProvider, final MailboxEventDispatcher dispatcher, final Mailbox<Id> mailbox) throws MailboxException {
         this.mailbox = mailbox;
         this.dispatcher = dispatcher;
-        this.lastUid = lastUid;
+        this.uidProvider = uidProvider;
     }
     
     
@@ -373,7 +372,7 @@ public abstract class StoreMessageManager<Id> implements org.apache.james.mailbo
         final List<Long> recent = recent(resetRecent, mailboxSession);
         final Flags permanentFlags = getPermanentFlags();
         final long uidValidity = getMailboxEntity().getUidValidity();
-        final long uidNext = lastUid.get() +1;
+        final long uidNext = uidProvider.lastUid(mailboxSession, mailbox) +1;
         final long messageCount = getMessageCount(mailboxSession);
         final long unseenCount;
         final Long firstUnseen;

@@ -66,7 +66,9 @@ import org.apache.openjpa.persistence.jdbc.Index;
     @NamedQuery(name="countMessagesInMailbox",
             query="SELECT COUNT(membership) FROM Membership membership WHERE membership.mailboxId = :idParam"),                    
     @NamedQuery(name="deleteMessages",
-            query="DELETE FROM Membership membership WHERE membership.mailboxId = :idParam") 
+            query="DELETE FROM Membership membership WHERE membership.mailboxId = :idParam"),
+    @NamedQuery(name="findLastUidInMailbox",
+            query="SELECT membership FROM Membership membership WHERE membership.mailboxId = :idParam ORDER BY membership.uid ASC")
 })
 public abstract class AbstractJPAMailboxMembership extends AbstractMailboxMembership<Long> {
 

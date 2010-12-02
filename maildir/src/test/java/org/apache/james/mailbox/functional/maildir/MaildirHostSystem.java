@@ -29,6 +29,7 @@ import org.apache.james.imap.main.DefaultImapDecoderFactory;
 import org.apache.james.imap.processor.main.DefaultImapProcessorFactory;
 import org.apache.james.mailbox.maildir.MaildirMailboxManager;
 import org.apache.james.mailbox.maildir.MaildirMailboxSessionMapperFactory;
+import org.apache.james.mailbox.maildir.MaildirStore;
 import org.apache.james.mailbox.maildir.MaildirSubscriptionManager;
 import org.apache.james.test.functional.HostSystem;
 
@@ -47,9 +48,10 @@ public class MaildirHostSystem extends ImapHostSystem {
     
     public MaildirHostSystem() {
         userManager = new InMemoryUserManager();
-        mailboxSessionMapperFactory = new MaildirMailboxSessionMapperFactory(MAILDIR_HOME + "/%user");
+        MaildirStore store = new MaildirStore(MAILDIR_HOME + "/%user");
+        mailboxSessionMapperFactory = new MaildirMailboxSessionMapperFactory(store);
         MaildirSubscriptionManager sm = new MaildirSubscriptionManager(mailboxSessionMapperFactory);
-        mailboxManager = new MaildirMailboxManager(mailboxSessionMapperFactory, userManager);
+        mailboxManager = new MaildirMailboxManager(mailboxSessionMapperFactory, userManager, store);
         
         final ImapProcessor defaultImapProcessorFactory = DefaultImapProcessorFactory.createDefaultProcessor(mailboxManager, sm);
         configure(new DefaultImapDecoderFactory().buildImapDecoder(),

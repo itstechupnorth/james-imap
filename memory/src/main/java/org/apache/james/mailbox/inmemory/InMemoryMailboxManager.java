@@ -19,8 +19,6 @@
 
 package org.apache.james.mailbox.inmemory;
 
-import java.util.concurrent.atomic.AtomicLong;
-
 import org.apache.james.mailbox.MailboxException;
 import org.apache.james.mailbox.MailboxPath;
 import org.apache.james.mailbox.MailboxSession;
@@ -30,18 +28,19 @@ import org.apache.james.mailbox.store.JVMMailboxPathLocker;
 import org.apache.james.mailbox.store.MailboxSessionMapperFactory;
 import org.apache.james.mailbox.store.MapperStoreMessageManager;
 import org.apache.james.mailbox.store.StoreMailboxManager;
+import org.apache.james.mailbox.store.UidProvider;
 import org.apache.james.mailbox.store.mail.model.Mailbox;
 import org.apache.james.mailbox.util.MailboxEventDispatcher;
 
 public class InMemoryMailboxManager extends StoreMailboxManager<Long> {
 
-    public InMemoryMailboxManager(MailboxSessionMapperFactory<Long> mapperFactory, Authenticator authenticator) {
-        super(mapperFactory, authenticator, new JVMMailboxPathLocker());
+    public InMemoryMailboxManager(MailboxSessionMapperFactory<Long> mapperFactory, Authenticator authenticator, UidProvider<Long> uidProvider) {
+        super(mapperFactory, authenticator, uidProvider, new JVMMailboxPathLocker());
     }
 
     @Override
-    protected MapperStoreMessageManager<Long> createMessageManager(AtomicLong lastUid, MailboxEventDispatcher dispatcher, Mailbox<Long> mailboxRow, MailboxSession session) throws MailboxException {
-        return new InMemoryStoreMessageManager((MailboxSessionMapperFactory<Long>)mailboxSessionMapperFactory, lastUid, dispatcher, (InMemoryMailbox)mailboxRow);
+    protected MapperStoreMessageManager<Long> createMessageManager(UidProvider<Long> uidProvider, MailboxEventDispatcher dispatcher, Mailbox<Long> mailboxRow, MailboxSession session) throws MailboxException {
+        return new InMemoryStoreMessageManager((MailboxSessionMapperFactory<Long>)mailboxSessionMapperFactory, uidProvider, dispatcher, (InMemoryMailbox)mailboxRow);
     }
 
     @Override

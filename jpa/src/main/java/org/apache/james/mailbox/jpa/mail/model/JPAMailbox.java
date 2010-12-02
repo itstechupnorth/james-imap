@@ -61,10 +61,6 @@ public class JPAMailbox implements Mailbox<Long> {
     /** The value for the uidValidity field */
     @Basic(optional=false) private long uidValidity;
 
-    
-    /** The value for the lastUid field */
-    @Basic(optional=false) private long lastUid = 0;
-    
     @Basic(optional=false) @Column(nullable = true)  private String user;
     @Basic(optional=false) @Column(nullable = false) private String namespace;
 
@@ -82,13 +78,6 @@ public class JPAMailbox implements Mailbox<Long> {
         this.user = path.getUser();
         this.namespace = path.getNamespace();
         this.uidValidity = uidValidity;
-    }
-
-    /**
-     * @see org.apache.james.mailbox.store.mail.model.Mailbox#getLastUid()
-     */
-    public long getLastUid() {
-        return lastUid;
     }
 
     /**
@@ -113,12 +102,6 @@ public class JPAMailbox implements Mailbox<Long> {
         return uidValidity;
     }
 
-    /**
-     * @see org.apache.james.mailbox.store.mail.model.Mailbox#consumeUid()
-     */
-    public void consumeUid() {
-        ++lastUid;
-    }
     
     /**
      * @see org.apache.james.mailbox.store.mail.model.Mailbox#setName(java.lang.String)
@@ -134,7 +117,6 @@ public class JPAMailbox implements Mailbox<Long> {
             + "mailboxId = " + this.mailboxId + TAB
             + "name = " + this.name + TAB
             + "uidValidity = " + this.uidValidity + TAB
-            + "lastUid = " + this.lastUid + TAB
             + " )";
         return retValue;
     }
@@ -192,9 +174,5 @@ public class JPAMailbox implements Mailbox<Long> {
      */
     public void setUser(String user) {
         this.user = user;
-    }
-
-    public void setLastUid(long uid) {
-        this.lastUid = uid;
     }
 }

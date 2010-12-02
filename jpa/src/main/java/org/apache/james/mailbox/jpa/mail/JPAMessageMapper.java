@@ -21,24 +21,23 @@ package org.apache.james.mailbox.jpa.mail;
 import java.util.Iterator;
 import java.util.List;
 
-import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
-import javax.persistence.LockModeType;
 import javax.persistence.PersistenceException;
 import javax.persistence.Query;
 
 import org.apache.james.mailbox.MailboxException;
+import org.apache.james.mailbox.MailboxSession;
 import org.apache.james.mailbox.MessageRange;
-import org.apache.james.mailbox.SearchQuery;
 import org.apache.james.mailbox.MessageRange.Type;
+import org.apache.james.mailbox.SearchQuery;
 import org.apache.james.mailbox.SearchQuery.Criterion;
 import org.apache.james.mailbox.SearchQuery.NumericRange;
 import org.apache.james.mailbox.jpa.JPATransactionalMapper;
-import org.apache.james.mailbox.jpa.mail.model.JPAMailbox;
 import org.apache.james.mailbox.jpa.mail.model.openjpa.AbstractJPAMailboxMembership;
 import org.apache.james.mailbox.jpa.mail.model.openjpa.JPAMailboxMembership;
 import org.apache.james.mailbox.jpa.mail.model.openjpa.JPAStreamingMailboxMembership;
 import org.apache.james.mailbox.store.SearchQueryIterator;
+import org.apache.james.mailbox.store.UidProvider;
 import org.apache.james.mailbox.store.mail.MessageMapper;
 import org.apache.james.mailbox.store.mail.model.Mailbox;
 import org.apache.james.mailbox.store.mail.model.MailboxMembership;
@@ -50,8 +49,13 @@ import org.apache.james.mailbox.store.mail.model.MailboxMembership;
  */
 public class JPAMessageMapper extends JPATransactionalMapper implements MessageMapper<Long> {
     
-    public JPAMessageMapper(final EntityManagerFactory entityManagerFactory) {
+    private final UidProvider<Long> uidGenerator;
+    private MailboxSession session;
+
+    public JPAMessageMapper(final MailboxSession session, final EntityManagerFactory entityManagerFactory, UidProvider<Long> uidGenerator) {
         super(entityManagerFactory);
+        this.session = session;
+        this.uidGenerator = uidGenerator;
     }
 
     /**
@@ -301,7 +305,7 @@ public class JPAMessageMapper extends JPATransactionalMapper implements MessageM
         try {
             
             if (message.getUid() == 0) {
-                ((AbstractJPAMailboxMembership) message).setUid(reserveUid((JPAMailbox)mailbox));
+                ((AbstractJPAMailboxMembership) message).setUid(uidGenerator.nextUid(session,mailbox));
             }
             getEntityManager().persist(message);
             return message.getUid();
@@ -325,21 +329,4 @@ public class JPAMessageMapper extends JPATransactionalMapper implements MessageM
         return save(mailbox, copy);
     }
     
-    /**
-     * Reserve the uid for the next {@link MailboxMembership} in the given {@link JPAMailbox}.
-     * This is done by using a row lock.
-     * 
-     * @param mailbox
-     * @return uid
-     */
-    protected long reserveUid(JPAMailbox mailbox) {
-        EntityManager manager = getEntityManager();
-
-        // we need to set a pessimistic write lock to be sure we don't get any problems with dirty reads etc.
-        JPAMailbox m = manager.find(JPAMailbox.class, mailbox.getMailboxId(), LockModeType.PESSIMISTIC_WRITE);
-        manager.refresh(m);
-        m.consumeUid();
-        manager.persist(m);
-        return m.getLastUid();
-    }
 }

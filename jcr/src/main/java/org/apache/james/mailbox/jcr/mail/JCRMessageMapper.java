@@ -28,7 +28,6 @@ import java.util.List;
 import javax.jcr.ItemNotFoundException;
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
-import javax.jcr.Property;
 import javax.jcr.RepositoryException;
 import javax.jcr.query.Query;
 import javax.jcr.query.QueryManager;
@@ -49,9 +48,9 @@ import org.apache.james.mailbox.jcr.AbstractJCRMapper;
 import org.apache.james.mailbox.jcr.MailboxSessionJCRRepository;
 import org.apache.james.mailbox.jcr.NodeLocker;
 import org.apache.james.mailbox.jcr.NodeLocker.NodeLockedExecution;
-import org.apache.james.mailbox.jcr.mail.model.JCRMailbox;
 import org.apache.james.mailbox.jcr.mail.model.JCRMessage;
 import org.apache.james.mailbox.store.SearchQueryIterator;
+import org.apache.james.mailbox.store.UidProvider;
 import org.apache.james.mailbox.store.mail.MessageMapper;
 import org.apache.james.mailbox.store.mail.model.Mailbox;
 import org.apache.james.mailbox.store.mail.model.MailboxMembership;
@@ -100,6 +99,8 @@ public class JCRMessageMapper extends AbstractJCRMapper implements MessageMapper
     public final static int MESSAGE_SCALE_MINUTE = 5;
 
     private final int scaleType;
+
+    private UidProvider<String> uidGenerator;
     
 
     /**
@@ -108,8 +109,8 @@ public class JCRMessageMapper extends AbstractJCRMapper implements MessageMapper
      * 
      * In this case {@link #MESSAGE_SCALE_DAY} is used
      */
-    public JCRMessageMapper(final MailboxSessionJCRRepository repos, MailboxSession session, NodeLocker locker, final Log logger) {
-        this(repos, session, locker, logger, MESSAGE_SCALE_DAY);
+    public JCRMessageMapper(final MailboxSessionJCRRepository repos, MailboxSession session, NodeLocker locker, final UidProvider<String> uidGenerator, final Log logger) {
+        this(repos, session, locker, uidGenerator, logger, MESSAGE_SCALE_DAY);
     }
 
     /**
@@ -122,9 +123,10 @@ public class JCRMessageMapper extends AbstractJCRMapper implements MessageMapper
      * @param scaleType the scale type to use when storing messages. See {@link #MESSAGE_SCALE_NONE}, {@link #MESSAGE_SCALE_YEAR}, {@link #MESSAGE_SCALE_MONTH}, {@link #MESSAGE_SCALE_DAY},
      *                  {@link #MESSAGE_SCALE_HOUR}, {@link #MESSAGE_SCALE_MINUTE}  
      */
-    public JCRMessageMapper(final MailboxSessionJCRRepository repos, MailboxSession session, NodeLocker locker, final Log logger, int scaleType) {
+    public JCRMessageMapper(final MailboxSessionJCRRepository repos, MailboxSession session, NodeLocker locker, final UidProvider<String> uidGenerator, final Log logger, int scaleType) {
         super(repos, session, locker, logger);
         this.scaleType = scaleType;
+        this.uidGenerator = uidGenerator;
     }
     
     /**
@@ -496,7 +498,8 @@ public class JCRMessageMapper extends AbstractJCRMapper implements MessageMapper
                 Node node = null;
                 Node mailboxNode = getSession().getNodeByIdentifier(mailbox.getMailboxId());
 
-                final long nextUid = reserveNextUid((JCRMailbox) mailbox);
+                final long nextUid = uidGenerator.nextUid(mSession, mailbox);
+
                 
                 NodeLocker locker = getNodeLocker();
 
@@ -700,7 +703,7 @@ public class JCRMessageMapper extends AbstractJCRMapper implements MessageMapper
      */
     public long copy(Mailbox<String> mailbox, MailboxMembership<String> oldmessage) throws MailboxException{
         try {
-            long uid = reserveNextUid((JCRMailbox) mailbox);
+            long uid = uidGenerator.nextUid(mSession, mailbox);
             String newMessagePath = getSession().getNodeByIdentifier(mailbox.getMailboxId()).getPath() + NODE_DELIMITER + String.valueOf(uid);
             getSession().getWorkspace().copy(((JCRMessage)oldmessage).getNode().getPath(), getSession().getNodeByIdentifier(mailbox.getMailboxId()).getPath() + NODE_DELIMITER + String.valueOf(uid));
             Node node = getSession().getNode(newMessagePath);
@@ -709,30 +712,9 @@ public class JCRMessageMapper extends AbstractJCRMapper implements MessageMapper
             return uid;
         } catch (RepositoryException e) {
             throw new MailboxException("Unable to copy message " +oldmessage + " in mailbox " + mailbox, e);
-        } catch (InterruptedException e) {
-            throw new MailboxException("Unable to copy message " +oldmessage + " in mailbox " + mailbox, e);
         }
     }
     
-    protected long reserveNextUid(Mailbox<String> mailbox) throws RepositoryException, InterruptedException {
-        long result = getNodeLocker().execute(new NodeLocker.NodeLockedExecution<Long>() {
-
-            public Long execute(Node node) throws RepositoryException {
-                Property uidProp = node.getProperty(JCRMailbox.LASTUID_PROPERTY);
-                long uid = uidProp.getLong();
-                uid++;
-                uidProp.setValue(uid);
-                uidProp.getSession().save();
-                return uid;
-            }
-
-            public boolean isDeepLocked() {
-                return true;
-            }
-            
-        }, getSession().getNodeByIdentifier(mailbox.getMailboxId()), Long.class);
-        return result;
-        
-    }
+    
 
 }

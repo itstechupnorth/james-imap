@@ -24,7 +24,6 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.TreeSet;
-import java.util.concurrent.atomic.AtomicLong;
 
 import javax.mail.Flags;
 import javax.mail.MessagingException;
@@ -54,8 +53,8 @@ public abstract class MapperStoreMessageManager<Id> extends StoreMessageManager<
     private MessageMapperFactory<Id> mapperFactory;
 
     
-    public MapperStoreMessageManager(MessageMapperFactory<Id> mapperFactory, final AtomicLong lastUid, final MailboxEventDispatcher dispatcher, final Mailbox<Id> mailbox) throws MailboxException {
-        super(lastUid, dispatcher, mailbox);
+    public MapperStoreMessageManager(MessageMapperFactory<Id> mapperFactory, final UidProvider<Id> uidProvider, final MailboxEventDispatcher dispatcher, final Mailbox<Id> mailbox) throws MailboxException {
+        super(uidProvider, dispatcher, mailbox);
         this.mapperFactory = mapperFactory;
     }
 

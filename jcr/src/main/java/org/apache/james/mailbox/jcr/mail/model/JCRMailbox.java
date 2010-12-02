@@ -42,11 +42,9 @@ public class JCRMailbox implements Mailbox<String>, JCRImapConstants, Persistent
     public final static String NAMESPACE_PROPERTY = "jamesMailbox:mailboxNamespace";
     public final static String NAME_PROPERTY = "jamesMailbox:mailboxName";
     public final static String UIDVALIDITY_PROPERTY = "jamesMailbox:mailboxUidValidity";
-    public final static String LASTUID_PROPERTY = "jamesMailbox:mailboxLastUid";
 
     private String name;
     private long uidValidity;
-    private long lastUid = 0;
     private final Log logger;
     private Node node;
 
@@ -54,10 +52,6 @@ public class JCRMailbox implements Mailbox<String>, JCRImapConstants, Persistent
     private String namespace;
     private String user;
     
-    public JCRMailbox(final MailboxPath path, final long uidValidity, final long lastUid, Log logger) {
-        this(path, uidValidity, logger);
-        this.lastUid = lastUid;
-    }
     
     public JCRMailbox( final MailboxPath path, final long uidValidity, Log logger) {
         this.name = path.getName();
@@ -74,21 +68,6 @@ public class JCRMailbox implements Mailbox<String>, JCRImapConstants, Persistent
     
     public Log getLog() {
         return logger;
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see org.apache.james.mailbox.store.mail.model.Mailbox#getLastUid()
-     */
-    public long getLastUid() {
-        if (isPersistent()) {
-            try {
-                return node.getProperty(LASTUID_PROPERTY).getLong();
-            } catch (RepositoryException e) {
-                logger.error("Unable to access property " + LASTUID_PROPERTY, e);
-            }
-        }
-        return lastUid;
     }
 
    
@@ -165,7 +144,6 @@ public class JCRMailbox implements Mailbox<String>, JCRImapConstants, Persistent
     public void  merge(Node node) throws RepositoryException {
         node.setProperty(NAME_PROPERTY, getName());
         node.setProperty(UIDVALIDITY_PROPERTY, getUidValidity());
-        node.setProperty(LASTUID_PROPERTY, getLastUid());   
         String user = getUser();
         if (user == null) {
             user = "";
@@ -181,7 +159,6 @@ public class JCRMailbox implements Mailbox<String>, JCRImapConstants, Persistent
             + "mailboxUID = " + this.getMailboxId() + TAB
             + "name = " + this.getName() + TAB
             + "uidValidity = " + this.getUidValidity() + TAB
-            + "lastUid = " + this.getLastUid() + TAB
             + " )";
         return retValue;
     }

@@ -60,10 +60,12 @@ public class JCRStressTest extends AbstractStressTest{
 
         // Register imap cnd file
         JCRUtils.registerCnd(repository, workspace, user, pass);
-
         MailboxSessionJCRRepository sessionRepos = new GlobalMailboxSessionJCRRepository(repository, workspace, user, pass);
-        JCRMailboxSessionMapperFactory mf = new JCRMailboxSessionMapperFactory(sessionRepos, new JCRVmNodeLocker());
-        mailboxManager = new JCRMailboxManager(mf, null);
+
+        JCRCachingUidProvider uidProvider = new JCRCachingUidProvider(sessionRepos);
+
+        JCRMailboxSessionMapperFactory mf = new JCRMailboxSessionMapperFactory(sessionRepos, new JCRVmNodeLocker(), uidProvider);
+        mailboxManager = new JCRMailboxManager(mf, null, uidProvider);
 
     }
     

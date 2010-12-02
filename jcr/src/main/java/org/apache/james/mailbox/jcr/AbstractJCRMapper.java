@@ -37,7 +37,7 @@ public abstract class AbstractJCRMapper extends TransactionalMapper implements J
 
     private final Log logger;
     private final MailboxSessionJCRRepository repository;
-    private final MailboxSession mSession;
+    protected final MailboxSession mSession;
     private final NodeLocker locker;
 
     

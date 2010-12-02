@@ -32,28 +32,28 @@ import org.apache.james.mailbox.store.user.SubscriptionMapper;
 public class MaildirMailboxSessionMapperFactory extends
         MailboxSessionMapperFactory<Integer> {
 
-    private final String root;
+    private final MaildirStore store;
     
-    public MaildirMailboxSessionMapperFactory(String root) {
-        this.root = root;
+    public MaildirMailboxSessionMapperFactory(MaildirStore store) {
+        this.store = store;
     }
     
     @Override
     protected MailboxMapper<Integer> createMailboxMapper(MailboxSession session)
             throws MailboxException {
-        return new MaildirMailboxMapper(root);
+        return new MaildirMailboxMapper(store);
     }
 
     @Override
     protected MessageMapper<Integer> createMessageMapper(MailboxSession session)
             throws MailboxException {
-        return new MaildirMessageMapper(root);
+        return new MaildirMessageMapper(store);
     }
 
     @Override
     protected SubscriptionMapper createSubscriptionMapper(MailboxSession session)
             throws SubscriptionException {
-        return new MaildirSubscriptionMapper(root);
+        return new MaildirSubscriptionMapper(store.getMaildirLocation());
     }
 
 }

@@ -23,7 +23,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.util.Date;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicLong;
 
 import javax.mail.Flags;
 
@@ -33,6 +32,7 @@ import org.apache.james.mailbox.inmemory.mail.model.SimpleHeader;
 import org.apache.james.mailbox.inmemory.mail.model.SimpleMailboxMembership;
 import org.apache.james.mailbox.store.MailboxSessionMapperFactory;
 import org.apache.james.mailbox.store.MapperStoreMessageManager;
+import org.apache.james.mailbox.store.UidProvider;
 import org.apache.james.mailbox.store.mail.model.Header;
 import org.apache.james.mailbox.store.mail.model.MailboxMembership;
 import org.apache.james.mailbox.store.mail.model.PropertyBuilder;
@@ -40,9 +40,9 @@ import org.apache.james.mailbox.util.MailboxEventDispatcher;
 
 public class InMemoryStoreMessageManager extends MapperStoreMessageManager<Long> {
 
-    public InMemoryStoreMessageManager(MailboxSessionMapperFactory<Long> mapperFactory, AtomicLong lastUid,
+    public InMemoryStoreMessageManager(MailboxSessionMapperFactory<Long> mapperFactory, UidProvider<Long> uidProvider,
             MailboxEventDispatcher dispatcher, InMemoryMailbox mailbox) throws MailboxException {
-        super(mapperFactory, lastUid, dispatcher,mailbox);
+        super(mapperFactory, uidProvider, dispatcher,mailbox);
     }
     
     @Override
@@ -70,8 +70,7 @@ public class InMemoryStoreMessageManager extends MapperStoreMessageManager<Long>
             byteContent = new byte[0];
         }
         InMemoryMailbox mailbox = (InMemoryMailbox) getMailboxEntity();
-        ((InMemoryMailbox) mailbox).consumeUid();
-        return new SimpleMailboxMembership(internalDate, mailbox.getLastUid(), size, bodyStartOctet, byteContent, flags, headers, propertyBuilder, mailbox.getMailboxId());
+        return new SimpleMailboxMembership(internalDate, uidProvider.nextUid(null, mailbox), size, bodyStartOctet, byteContent, flags, headers, propertyBuilder, mailbox.getMailboxId());
     }
     
 }

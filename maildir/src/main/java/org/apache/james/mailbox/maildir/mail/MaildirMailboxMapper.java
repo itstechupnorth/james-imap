@@ -50,8 +50,8 @@ public class MaildirMailboxMapper extends NonTransactionalMapper implements Mail
      */
     private ArrayList<Mailbox<Integer>> mailboxCache = new ArrayList<Mailbox<Integer>>();
     
-    public MaildirMailboxMapper(String maildirLocation) {
-        this.maildirStore = new MaildirStore(maildirLocation);
+    public MaildirMailboxMapper(MaildirStore maildirStore) {
+        this.maildirStore = maildirStore;
     }
 
     /*

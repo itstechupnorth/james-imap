@@ -24,10 +24,12 @@ import java.io.IOException;
 import org.apache.james.mailbox.MailboxException;
 import org.apache.james.mailbox.MailboxNotFoundException;
 import org.apache.james.mailbox.MailboxPath;
+import org.apache.james.mailbox.MailboxSession;
 import org.apache.james.mailbox.maildir.mail.model.MaildirMailbox;
+import org.apache.james.mailbox.store.UidProvider;
 import org.apache.james.mailbox.store.mail.model.Mailbox;
 
-public class MaildirStore {
+public class MaildirStore implements UidProvider<Integer>{
 
     public static final String PATH_USER = "%user";
     public static final String PATH_DOMAIN = "%domain";
@@ -52,6 +54,9 @@ public class MaildirStore {
         this.maildirLocation = maildirLocation;
     }
     
+    public String getMaildirLocation() {
+        return maildirLocation;
+    }
     /**
      * Create a {@link MaildirFolder} for a mailbox
      * @param mailbox
@@ -195,5 +200,21 @@ public class MaildirStore {
      */
     public String getFolderName(MailboxPath mailboxPath) {
         return getFolderName(mailboxPath.getNamespace(), mailboxPath.getUser(), mailboxPath.getName());
+    }
+
+    public long nextUid(MailboxSession session, Mailbox<Integer> mailbox) throws MailboxException {
+        try {
+            return createMaildirFolder(mailbox).getLastUid() +1;
+        } catch (IOException e) {
+            throw new MailboxException("Unable to generate next uid", e);
+        }
+    }
+
+    public long lastUid(MailboxSession session, Mailbox<Integer> mailbox) throws MailboxException {
+        try {
+            return createMaildirFolder(mailbox).getLastUid();
+        } catch (IOException e) {
+            throw new MailboxException("Unable to get last uid", e);
+        }
     }
 }
