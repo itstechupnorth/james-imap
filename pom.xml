@@ -34,18 +34,11 @@
   <inceptionYear>2002</inceptionYear>
   <packaging>pom</packaging>
   <modules>
-    <module>protocol-tester</module>
+    <module>parent</module>
     <module>api</module>
     <module>message</module>
-    <module>mailbox</module>
-    <module>store</module>
     <module>processor</module>
-    <module>jpa</module>
-    <module>jcr</module>
-    <module>memory</module>
-    <module>parent</module>
-    <module>torque</module>
-    <module>maildir</module>
+    <module>protocol-tester</module>
   </modules>
   <distributionManagement>
     <site>
@@ -53,13 +46,11 @@
       <url>scp://people.apache.org/www/james.apache.org/imap</url>
     </site>
   </distributionManagement>
-  
   <scm>
     <connection>scm:svn:http://svn.apache.org/repos/asf/james/imap/trunk</connection>
     <developerConnection>scm:svn:https://svn.apache.org/repos/asf/james/imap/trunk</developerConnection>
     <url>http://svn.apache.org/viewcvs.cgi/james/imap/trunk?root=Apache-SVN</url>
   </scm>
-
   <profiles>
     <profile>
       <id>geronimo</id>
@@ -77,5 +68,4 @@
     <javax.mail.groupId>javax.mail</javax.mail.groupId>
     <javax.mail.artifactId>mail</javax.mail.artifactId>
   </properties>
-
 </project>
