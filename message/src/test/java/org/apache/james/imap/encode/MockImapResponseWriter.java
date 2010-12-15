@@ -279,6 +279,17 @@ public class MockImapResponseWriter implements ImapResponseWriter {
 
     }
 
+    public static class ContinuationOperation {
+        public boolean equals(Object obj) {
+            return obj instanceof ContinuationOperation;
+        }
+
+        public int hashCode() {
+            return 3;
+        }
+
+    }
+    
     public void closeParen() {
         operations.add(new BracketOperation(false, false));
     }
@@ -441,5 +452,9 @@ public class MockImapResponseWriter implements ImapResponseWriter {
     }
 
     public void space() {
+    }
+    
+    public void continuation(String message) {
+        operations.add(new ContinuationOperation());
     }
 }

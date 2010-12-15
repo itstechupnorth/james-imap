@@ -19,8 +19,10 @@
 
 package org.apache.james.imap.decode;
 
+import java.io.IOException;
 import java.io.InputStream;
 
+import org.apache.james.imap.api.ContinuationReader;
 import org.apache.james.imap.api.display.HumanReadableText;
 
 /**
@@ -30,7 +32,7 @@ import org.apache.james.imap.api.display.HumanReadableText;
  * 
  * @version $Revision: 109034 $
  */
-public abstract class ImapRequestLineReader {
+public abstract class ImapRequestLineReader implements ContinuationReader {
     
 
     protected boolean nextSeen = false;
@@ -153,5 +155,23 @@ public abstract class ImapRequestLineReader {
             next = nextChar();
         }
         consume();
+    }
+    
+    public String readContinuation() throws IOException {
+        // Consume the '\n' from the previous line.
+        consume();
+        
+        StringBuilder sb = new StringBuilder();
+        char next = nextChar();
+        while (next != '\r') {
+            sb.append(next);
+            consume();
+            next = nextChar();
+        }
+        consume();
+
+        // NOTE: This code leaves the '\n' as next char. This seems to be what is expected by the code which parses commands.
+        
+        return sb.toString();
     }
 }

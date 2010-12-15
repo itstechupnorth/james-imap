@@ -84,8 +84,10 @@ public class DefaultProcessorChain {
                 appendProcessor, mailboxManager, statusResponseFactory);
         final NoopProcessor noopProcessor = new NoopProcessor(storeProcessor,
                 mailboxManager, statusResponseFactory);
+        final IdleProcessor idleProcessor = new IdleProcessor(noopProcessor,
+                mailboxManager, statusResponseFactory);
         final StatusProcessor statusProcessor = new StatusProcessor(
-                noopProcessor, mailboxManager, statusResponseFactory);
+                idleProcessor, mailboxManager, statusResponseFactory);
         final LSubProcessor lsubProcessor = new LSubProcessor(statusProcessor,
                 mailboxManager, subscriptionManager, statusResponseFactory);
         final ListProcessor listProcessor = new ListProcessor(lsubProcessor,
@@ -97,6 +99,7 @@ public class DefaultProcessorChain {
         final NamespaceProcessor namespaceProcessor = new NamespaceProcessor(
                 selectProcessor, mailboxManager, statusResponseFactory);
         
+        capabilityProcessor.addProcessor(idleProcessor);
         capabilityProcessor.addProcessor(namespaceProcessor);
         
         final ImapProcessor fetchProcessor = new FetchProcessor(namespaceProcessor,

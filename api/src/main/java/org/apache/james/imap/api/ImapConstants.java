@@ -31,6 +31,8 @@ public interface ImapConstants {
 
     public static final String UNTAGGED = "*";
 
+    public static final String CONTINUATION = "+";
+    
     public static final String SP = " ";
 
     public static final String NIL = "NIL";
@@ -105,6 +107,8 @@ public interface ImapConstants {
 
     public static final String SUPPORTS_STARTTLS = "STARTTLS";
 
+    public static final String SUPPORTS_IDLE = "IDLE";
+    
     public static final char HIERARCHY_DELIMITER_CHAR = '.';
 
     public static final char NAMESPACE_PREFIX_CHAR = '#';
@@ -183,6 +187,8 @@ public interface ImapConstants {
 
     public static final String NOOP_COMMAND_NAME = "NOOP";
 
+    public static final String IDLE_COMMAND_NAME = "IDLE";
+    
     public static final String LSUB_COMMAND_NAME = "LSUB";
 
     public static final String LOGOUT_COMMAND_NAME = "LOGOUT";

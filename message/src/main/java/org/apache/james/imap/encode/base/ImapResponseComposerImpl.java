@@ -90,6 +90,15 @@ public class ImapResponseComposerImpl implements ImapConstants, ImapResponseComp
 
     /**
      * @throws IOException
+     * @see org.apache.james.imap.encode.ImapResponseComposer#continuationResponse(String)
+     */
+    public void continuationResponse(String message) throws IOException {
+        writer.continuation(message);
+        end();
+    }
+    
+    /**
+     * @throws IOException
      * @see org.apache.james.imap.encode.ImapResponseComposer#flagsResponse(javax.mail.Flags)
      */
     public void flagsResponse(Flags flags) throws IOException {

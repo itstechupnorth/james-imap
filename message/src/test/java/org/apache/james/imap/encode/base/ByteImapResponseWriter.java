@@ -204,4 +204,8 @@ public class ByteImapResponseWriter implements ImapConstants, ImapResponseWriter
     public void quoteUpperCaseAscii(String message) {
         upperCaseAscii(message, true);
     }
+    
+    public void continuation(String message) throws IOException {
+        writer.print(CONTINUATION + SP + message);
+    }
 }

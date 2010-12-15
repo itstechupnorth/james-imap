@@ -104,7 +104,7 @@ public class ImapParserFactory implements
         // _imapCommands.put( "MYRIGHTS", MyRightsCommand.class );
 
         // Commands only valid in SELECTED state.
-        // CHECK, CLOSE, EXPUNGE, SEARCH, FETCH, STORE, COPY, and UID
+        // CHECK, CLOSE, EXPUNGE, SEARCH, FETCH, STORE, COPY, UID and IDLE
         _imapCommands.put(ImapConstants.CHECK_COMMAND_NAME,
                 CheckCommandParser.class);
         _imapCommands.put(ImapConstants.CLOSE_COMMAND_NAME,
@@ -121,6 +121,8 @@ public class ImapParserFactory implements
                 StoreCommandParser.class);
         _imapCommands.put(ImapConstants.UID_COMMAND_NAME,
                 UidCommandParser.class);
+        _imapCommands.put(ImapConstants.IDLE_COMMAND_NAME,
+                IdleCommandParser.class);
         _imapCommands.put(ImapConstants.STARTTLS, StartTLSCommandParser.class);
     }
 

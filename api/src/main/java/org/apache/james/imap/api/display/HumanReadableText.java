@@ -196,6 +196,9 @@ public class HumanReadableText {
     public static final HumanReadableText BYE_UNKNOWN_COMMAND = new HumanReadableText(
             "org.apache.james.imap.BYE_UNKNOWN_COMMAND", "Unknown command.");
 
+    public static final HumanReadableText IDLING = new HumanReadableText(
+            "org.apache.james.imap.IDLING", "Idling");
+    
     private final String defaultValue;
 
     private final String key;

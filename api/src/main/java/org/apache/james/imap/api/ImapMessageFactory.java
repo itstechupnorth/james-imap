@@ -68,6 +68,9 @@ public interface ImapMessageFactory {
     public ImapMessage createNoopMessage(final ImapCommand command,
             final String tag);
 
+    public ImapMessage createIdleMessage(final ImapCommand command,
+            final ContinuationReader reader, final String tag);
+    
     public ImapMessage createCloseMessage(final ImapCommand command,
             final String tag);
 

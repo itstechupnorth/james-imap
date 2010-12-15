@@ -293,4 +293,13 @@ public interface ImapResponseComposer {
      * @throws IOException 
      */
     public ImapResponseComposer capabilities(List<String> capabilities) throws IOException;
+    
+    /**
+     * Writes a continuation response.
+     * 
+     * @param message
+     *            message for display, not null
+     */
+    public abstract void continuationResponse(String message) throws IOException;
+
 }

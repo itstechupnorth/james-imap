@@ -21,6 +21,7 @@ package org.apache.james.imap.encode.main;
 
 import org.apache.james.imap.api.display.Localizer;
 import org.apache.james.imap.encode.CapabilityResponseEncoder;
+import org.apache.james.imap.encode.ContinuationResponseEncoder;
 import org.apache.james.imap.encode.ExistsResponseEncoder;
 import org.apache.james.imap.encode.ExpungeResponseEncoder;
 import org.apache.james.imap.encode.FetchResponseEncoder;
@@ -73,7 +74,9 @@ public class DefaultImapEncoderFactory implements ImapEncoderFactory {
                 listResponseEncoder);
         final CapabilityResponseEncoder capabilityResponseEncoder = new CapabilityResponseEncoder(
                 flagsResponseEncoder);
-        return capabilityResponseEncoder;
+        final ContinuationResponseEncoder continuationResponseEncoder = new ContinuationResponseEncoder(
+                capabilityResponseEncoder, localizer);
+        return continuationResponseEncoder;
     }
 
     private final Localizer localizer;

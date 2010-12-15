@@ -47,6 +47,14 @@ public interface ImapResponseWriter {
     void tag(String tag) throws IOException;
 
     /**
+     * Starts a continuation response.
+     * 
+     * @param message
+     *            the message, not null
+     */
+    void continuation(String message) throws IOException;
+    
+    /**
      * Writes a command name.
      * 
      * @param commandName

@@ -23,6 +23,7 @@ import java.util.Date;
 
 import javax.mail.Flags;
 
+import org.apache.james.imap.api.ContinuationReader;
 import org.apache.james.imap.api.ImapMessageFactory;
 import org.apache.james.imap.api.ImapCommand;
 import org.apache.james.imap.api.ImapMessage;
@@ -83,6 +84,14 @@ public class BaseImap4Rev1MessageFactory implements ImapMessageFactory {
         return new NoopRequest(command, tag);
     }
 
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.api.ImapMessageFactory#createNoopMessage(org.apache.james.imap.api.ImapCommand, java.lang.String)
+     */
+    public ImapMessage createIdleMessage(ImapCommand command, ContinuationReader reader, String tag) {
+        return new IdleRequest(command, reader, tag);
+    }
+    
     /*
      * (non-Javadoc)
      * @see org.apache.james.imap.api.ImapMessageFactory#createCloseMessage(org.apache.james.imap.api.ImapCommand, java.lang.String)

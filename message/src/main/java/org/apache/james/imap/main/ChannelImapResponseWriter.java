@@ -253,4 +253,8 @@ public class ChannelImapResponseWriter implements ImapConstants, ImapResponseWri
     public void quoteUpperCaseAscii(String message) throws IOException {
         upperCaseAscii(message, true);
     }
+    
+    public void continuation(String message) throws IOException {
+        writeASCII(CONTINUATION + SP + message);
+    }
 }
