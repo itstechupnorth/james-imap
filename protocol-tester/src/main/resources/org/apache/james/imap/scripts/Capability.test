@@ -17,7 +17,7 @@
 # under the License.                                           #
 ################################################################
 C: abcd CAPABILITY
-S: \* CAPABILITY IMAP4rev1 LITERAL\+ CHILDREN NAMESPACE
+S: \* CAPABILITY IMAP4rev1 .+
 S: abcd OK CAPABILITY completed.
 
 C: abcd CAPABILITY extra stuff
