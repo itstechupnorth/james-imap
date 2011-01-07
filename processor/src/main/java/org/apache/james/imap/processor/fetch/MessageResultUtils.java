@@ -64,7 +64,7 @@ public class MessageResultUtils {
      * @throws MessagingException
      */
     public static List<MessageResult.Header> getMatching(final String[] names, final Iterator<MessageResult.Header> iterator)
-            throws MessagingException {
+            throws MailboxException {
         final List<MessageResult.Header> results = new ArrayList<MessageResult.Header>(20);
         if (iterator != null) {
             while (iterator.hasNext()) {
@@ -98,7 +98,7 @@ public class MessageResultUtils {
      * @throws MessagingException
      */
     public static List<MessageResult.Header> getMatching(final Collection<String> names,
-            final Iterator<MessageResult.Header> iterator) throws MessagingException {
+            final Iterator<MessageResult.Header> iterator) throws MailboxException {
         final List<MessageResult.Header> result = matching(names, iterator, false);
         return result;
     }
@@ -149,7 +149,7 @@ public class MessageResultUtils {
      * @throws MessagingException
      */
     public static List<MessageResult.Header> getNotMatching(final Collection<String> names,
-            final Iterator<MessageResult.Header> iterator) throws MessagingException {
+            final Iterator<MessageResult.Header> iterator) throws MailboxException {
         final List<MessageResult.Header> result = matching(names, iterator, true);
         return result;
     }
@@ -167,7 +167,7 @@ public class MessageResultUtils {
      * @throws MessagingException
      */
     public static MessageResult.Header getMatching(final String name,
-            final Iterator<MessageResult.Header> iterator) throws MessagingException {
+            final Iterator<MessageResult.Header> iterator) throws MailboxException {
         MessageResult.Header result = null;
         if (name != null) {
             while (iterator.hasNext()) {
@@ -194,7 +194,7 @@ public class MessageResultUtils {
      * @throws MessagingException
      */
     public static List<MessageResult.Header> getNotMatching(final String[] names,
-            final Iterator<MessageResult.Header> iterator) throws MessagingException {
+            final Iterator<MessageResult.Header> iterator) throws MailboxException {
         final List<MessageResult.Header> results = new ArrayList<MessageResult.Header>(20);
         if (iterator != null) {
             while (iterator.hasNext()) {

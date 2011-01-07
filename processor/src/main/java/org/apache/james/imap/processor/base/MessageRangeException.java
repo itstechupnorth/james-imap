@@ -19,14 +19,13 @@
 
 package org.apache.james.imap.processor.base;
 
-import javax.mail.MessagingException;
 
 /**
  * Exception which should get thrown if an invalid message set was specified 
  * via an IMAP command
  *
  */
-public class MessageRangeException extends MessagingException{
+public class MessageRangeException extends Exception {
     
     /**
      * 

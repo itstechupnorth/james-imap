@@ -25,8 +25,6 @@ package org.apache.james.imap.processor.fetch;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.mail.MessagingException;
-
 import org.apache.commons.logging.Log;
 import org.apache.james.imap.api.ImapConstants;
 import org.apache.james.imap.message.response.FetchResponse;
@@ -50,7 +48,7 @@ final class EnvelopeBuilder {
     }
 
     public FetchResponse.Envelope buildEnvelope(final Headers headers)
-            throws MessagingException, ParseException {
+            throws MailboxException, ParseException {
         final String date = headerValue(headers, ImapConstants.RFC822_DATE);
         final String subject = headerValue(headers,
                 ImapConstants.RFC822_SUBJECT);
@@ -77,7 +75,7 @@ final class EnvelopeBuilder {
     }
 
     private String headerValue(final Headers message, final String headerName)
-            throws MessagingException, MailboxException {
+            throws MailboxException {
         final MessageResult.Header header = MessageResultUtils.getMatching(
                 headerName, message.headers());
         final String result;
@@ -97,7 +95,7 @@ final class EnvelopeBuilder {
     private FetchResponse.Envelope.Address[] buildAddresses(
             final Headers message, final String headerName,
             final FetchResponse.Envelope.Address[] defaults)
-            throws ParseException, MessagingException {
+            throws ParseException, MailboxException {
         final FetchResponse.Envelope.Address[] results;
         final FetchResponse.Envelope.Address[] addresses = buildAddresses(
                 message, headerName);
@@ -111,7 +109,7 @@ final class EnvelopeBuilder {
 
     private FetchResponse.Envelope.Address[] buildAddresses(
             final Headers message, final String headerName)
-            throws ParseException, MessagingException {
+            throws ParseException, MailboxException {
         final MessageResult.Header header = MessageResultUtils.getMatching(
                 headerName, message.headers());
         final FetchResponse.Envelope.Address[] results;

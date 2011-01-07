@@ -43,15 +43,16 @@ import org.apache.james.imap.message.response.FetchResponse;
 import org.apache.james.imap.processor.AbstractMailboxProcessor;
 import org.apache.james.imap.processor.base.ImapSessionUtils;
 import org.apache.james.imap.processor.base.MessageRangeException;
+import org.apache.james.mailbox.MailboxException;
 import org.apache.james.mailbox.MailboxManager;
 import org.apache.james.mailbox.MailboxSession;
 import org.apache.james.mailbox.MessageManager;
 import org.apache.james.mailbox.MessageRange;
-import org.apache.james.mailbox.MessageResult;
-import org.apache.james.mailbox.UnsupportedCriteriaException;
 import org.apache.james.mailbox.MessageRange.Type;
+import org.apache.james.mailbox.MessageResult;
 import org.apache.james.mailbox.MessageResult.FetchGroup;
 import org.apache.james.mailbox.MessageResult.MimePath;
+import org.apache.james.mailbox.UnsupportedCriteriaException;
 import org.apache.james.mailbox.util.FetchGroupImpl;
 import org.apache.james.mime4j.field.address.parser.ParseException;
 
@@ -88,7 +89,7 @@ public class FetchProcessor extends AbstractMailboxProcessor {
             final MessageManager mailbox = getSelectedMailbox(session);
 
             if (mailbox == null) {
-                throw new MessagingException("Session not in SELECTED state");
+                throw new MailboxException("Session not in SELECTED state");
             }
             
             for (int i = 0; i < idSet.length; i++) {
@@ -124,7 +125,7 @@ public class FetchProcessor extends AbstractMailboxProcessor {
                     HumanReadableText.UNSUPPORTED_SEARCH_CRITERIA);
         } catch (MessageRangeException e) {
             taggedBad(command, tag, responder, HumanReadableText.INVALID_MESSAGESET);
-        } catch (MessagingException e) {
+        } catch (MailboxException e) {
             no(command, tag, responder, HumanReadableText.SEARCH_FAILED);
         } catch (ParseException e) {
             no(command, tag, responder, HumanReadableText.FAILURE_MAIL_PARSE);

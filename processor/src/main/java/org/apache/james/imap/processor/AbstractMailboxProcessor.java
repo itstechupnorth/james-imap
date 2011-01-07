@@ -22,7 +22,6 @@ import java.util.Collection;
 import java.util.Iterator;
 
 import javax.mail.Flags;
-import javax.mail.MessagingException;
 
 import org.apache.james.imap.api.ImapCommand;
 import org.apache.james.imap.api.ImapConstants;
@@ -166,7 +165,7 @@ abstract public class AbstractMailboxProcessor extends AbstractChainedProcessor 
                     addFlagsResponses(session, selected, responder, useUid, messageSet, mailbox, mailboxSession);
                 }
             }
-        } catch (MessagingException e) {
+        } catch (MailboxException e) {
             handleResponseException(responder, e, HumanReadableText.FAILURE_TO_LOAD_FLAGS, session);
         }
     }
@@ -227,7 +226,7 @@ abstract public class AbstractMailboxProcessor extends AbstractChainedProcessor 
     }
 
     private void handleResponseException(final ImapProcessor.Responder responder,
-            MessagingException e, final HumanReadableText message, ImapSession session) {
+            MailboxException e, final HumanReadableText message, ImapSession session) {
         session.getLog().info(message);
         session.getLog().debug(message, e);
         // TODO: consider whether error message should be passed to the user

@@ -27,8 +27,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import javax.mail.MessagingException;
-
 import org.apache.james.imap.message.response.FetchResponse;
 import org.apache.james.imap.message.response.FetchResponse.Envelope;
 import org.apache.james.imap.message.response.FetchResponse.Structure;
@@ -60,7 +58,7 @@ final class MimeDescriptorStructure implements FetchResponse.Structure {
 
     public MimeDescriptorStructure(final boolean allowExtensions,
             MimeDescriptor descriptor, EnvelopeBuilder builder)
-            throws MessagingException, ParseException {
+            throws MailboxException, ParseException {
         super();
         this.descriptor = descriptor;
         parameters = createParameters(descriptor);
@@ -86,7 +84,7 @@ final class MimeDescriptorStructure implements FetchResponse.Structure {
 
     private static List<Structure> createParts(final boolean allowExtensions,
             final MimeDescriptor descriptor, final EnvelopeBuilder builder)
-            throws MessagingException, ParseException {
+            throws MailboxException, ParseException {
         final List<Structure> results = new ArrayList<Structure>();
         for (Iterator<MimeDescriptor> it = descriptor.parts(); it.hasNext();) {
             final MimeDescriptor partDescriptor = it.next();
