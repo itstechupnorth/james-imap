@@ -221,12 +221,6 @@
         <type>test-jar</type>
         <scope>test</scope>
       </dependency>
-      <dependency>
-        <groupId>org.apache.james</groupId>
-        <artifactId>apache-james-imap-protocol-tester</artifactId>
-        <version>${project.version}</version>
-        <scope>test</scope>
-      </dependency>
       <!--
         END Modules
       -->
