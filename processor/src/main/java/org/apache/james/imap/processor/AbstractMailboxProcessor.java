@@ -375,7 +375,7 @@ abstract public class AbstractMailboxProcessor extends AbstractChainedProcessor 
         long highVal = range.getHighVal();
       
         if (useUids == false) {
-            if (lowVal != Long.MAX_VALUE) {
+            if (lowVal != Long.MIN_VALUE) {
                 lowVal = selected.uid((int) lowVal);
                 if (lowVal == SelectedMailbox.NO_SUCH_MESSAGE)
                     throw new MessageRangeException("No message found with msn " + lowVal);

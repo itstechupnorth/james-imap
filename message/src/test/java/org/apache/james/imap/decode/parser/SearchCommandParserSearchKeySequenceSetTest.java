@@ -72,14 +72,14 @@ public class SearchCommandParserSearchKeySequenceSetTest {
 
     @Test
     public void testEndStar() throws Exception {
-        IdRange[] range = { new IdRange(8), new IdRange(9, 10),
+        IdRange[] range = { new IdRange(8), new IdRange(10,11),
                 new IdRange(17), new IdRange(100, Long.MAX_VALUE) };
-        check("8,9:10,17,100:*", range);
+        check("8,10:11,17,100:*", range);
     }
 
     @Test
     public void testStartStar() throws Exception {
-        IdRange[] range = { new IdRange(Long.MAX_VALUE, 9), new IdRange(15),
+        IdRange[] range = { new IdRange(Long.MIN_VALUE, 9), new IdRange(15),
                 new IdRange(799, 820) };
         check("*:9,15,799:820", range);
     }

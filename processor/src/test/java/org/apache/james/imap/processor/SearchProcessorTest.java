@@ -129,7 +129,7 @@ public class SearchProcessorTest {
     @Test
     public void testSequenceSetLowerUnlimited() throws Exception {
         expectsGetSelectedMailbox();
-        final IdRange[] ids = { new IdRange(Long.MAX_VALUE, 1729) };
+        final IdRange[] ids = { new IdRange(Long.MIN_VALUE, 1729) };
         final SearchQuery.NumericRange[] ranges = { new SearchQuery.NumericRange(
                 Long.MAX_VALUE, 1729L) };
         mockery.checking(new Expectations() {{

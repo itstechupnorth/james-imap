@@ -56,14 +56,14 @@ public class SearchCommandParserTopLevelAndTest {
             on(), unanswered(), };
 
     public static Input sequence() {
-        IdRange[] range = { new IdRange(Long.MAX_VALUE, 100), new IdRange(110),
+        IdRange[] range = { new IdRange(Long.MIN_VALUE, 100), new IdRange(110),
                 new IdRange(200, 201), new IdRange(400, Long.MAX_VALUE) };
         SearchKey key = SearchKey.buildSequenceSet(range);
         return new Input("*:100,110,200:201,400:*", key);
     }
 
     public static Input uid() {
-        IdRange[] range = { new IdRange(Long.MAX_VALUE, 100), new IdRange(110),
+        IdRange[] range = { new IdRange(Long.MIN_VALUE, 100), new IdRange(110),
                 new IdRange(200, 201), new IdRange(400, Long.MAX_VALUE) };
         SearchKey key = SearchKey.buildUidSet(range);
         return new Input("UID *:100,110,200:201,400:*", key);

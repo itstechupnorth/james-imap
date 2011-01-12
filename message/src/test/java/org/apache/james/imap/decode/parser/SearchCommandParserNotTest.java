@@ -62,7 +62,7 @@ public class SearchCommandParserNotTest {
 
     @Test
     public void testShouldParseNotSequence() throws Exception {
-        IdRange[] range = { new IdRange(Long.MAX_VALUE, 100), new IdRange(110),
+        IdRange[] range = { new IdRange(Long.MIN_VALUE, 100), new IdRange(110),
                 new IdRange(200, 201), new IdRange(400, Long.MAX_VALUE) };
         SearchKey notdKey = SearchKey.buildSequenceSet(range);
         SearchKey key = SearchKey.buildNot(notdKey);
@@ -71,7 +71,7 @@ public class SearchCommandParserNotTest {
 
     @Test
     public void testShouldParseNotUid() throws Exception {
-        IdRange[] range = { new IdRange(Long.MAX_VALUE, 100), new IdRange(110),
+        IdRange[] range = { new IdRange(Long.MIN_VALUE, 100), new IdRange(110),
                 new IdRange(200, 201), new IdRange(400, Long.MAX_VALUE) };
         SearchKey notdKey = SearchKey.buildUidSet(range);
         SearchKey key = SearchKey.buildNot(notdKey);

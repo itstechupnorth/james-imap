@@ -248,7 +248,7 @@ public class SearchProcessor extends AbstractMailboxProcessor {
                     
                     if (highUid == SelectedMailbox.NO_SUCH_MESSAGE) highUid = selected.getLastUid();
                 }
-                if (lowVal == Long.MAX_VALUE) {
+                if (lowVal == Long.MIN_VALUE) {
                     lowUid = Long.MAX_VALUE;
                 } else {
                     final int lowMsn = (int) lowVal;
@@ -261,7 +261,7 @@ public class SearchProcessor extends AbstractMailboxProcessor {
                 highUid = highVal;
                 
                 
-            	if (lowVal != Long.MAX_VALUE && lowVal < selected.getFirstUid()) {
+            	if (lowVal != Long.MIN_VALUE && lowVal < selected.getFirstUid()) {
             		lowUid = selected.getFirstUid();
             	} 
             	

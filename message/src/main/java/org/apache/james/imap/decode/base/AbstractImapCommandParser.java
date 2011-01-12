@@ -33,6 +33,7 @@ import java.nio.charset.MalformedInputException;
 import java.nio.charset.UnmappableCharacterException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import javax.mail.Flags;
 
@@ -63,7 +64,7 @@ public abstract class AbstractImapCommandParser implements ImapCommandParser, Me
     private static final int QUOTED_BUFFER_INITIAL_CAPACITY = 64;
 
     private static final Charset US_ASCII = Charset.forName("US-ASCII");
-
+    
     private final ImapCommand command;
 
     private ImapMessageFactory messageFactory;
@@ -590,9 +591,14 @@ public abstract class AbstractImapCommandParser implements ImapCommandParser, Me
         }
         String range = nextWord.substring(pos);
         rangeList.add(parseRange(range));
-        return (IdRange[]) rangeList.toArray(new IdRange[rangeList.size()]);
+        
+        // merge the ranges to minimize the needed queries.
+        // See IMAP-211
+        List<IdRange> merged = IdRange.mergeRanges(rangeList);
+        return (IdRange[]) merged.toArray(new IdRange[merged.size()]);
     }
 
+    
     /**
      * Parse a range which use a ":" as delimiter
      * 
@@ -607,15 +613,16 @@ public abstract class AbstractImapCommandParser implements ImapCommandParser, Me
                 long value = parseUnsignedInteger(range);
                 return new IdRange(value);
             } else {
-            	
-            	// Make sure we detect the low and high value 
-            	// See https://issues.apache.org/jira/browse/IMAP-212
+                // Make sure we detect the low and high value
+                // See https://issues.apache.org/jira/browse/IMAP-212
                 long val1 = parseUnsignedInteger(range.substring(0, pos));
                 long val2 = parseUnsignedInteger(range.substring(pos + 1));
-                if (val1 <= val2 || val1 == Long.MAX_VALUE) {
-                	return new IdRange(val1, val2);
+                if (val1 <= val2) {
+                    return new IdRange(val1, val2);
+                } else if(val1 == Long.MAX_VALUE) {
+                    return new IdRange(Long.MIN_VALUE, val2);
                 } else {
-                	return new IdRange(val2, val1);
+                    return new IdRange(val2, val1);
                 }
             }
         } catch (NumberFormatException e) {
@@ -627,10 +634,10 @@ public abstract class AbstractImapCommandParser implements ImapCommandParser, Me
         if (value.length() == 1 && value.charAt(0) == '*') {
             return Long.MAX_VALUE;
         } else {
-        	long number = Long.parseLong(value);
-        	if (number < ImapConstants.MIN_NZ_NUMBER || number > ImapConstants.MAX_NZ_NUMBER) throw new DecodingException(HumanReadableText.ILLEGAL_ARGUMENTS, "Invalid message set. Numbers must be unsigned 32-bit Integers");
-        	return number;
-        	
+            long number = Long.parseLong(value);
+            if (number < ImapConstants.MIN_NZ_NUMBER || number > ImapConstants.MAX_NZ_NUMBER) throw new DecodingException(HumanReadableText.ILLEGAL_ARGUMENTS, "Invalid message set. Numbers must be unsigned 32-bit Integers");
+            return number;
+        
         }
     }
 
@@ -793,4 +800,5 @@ public abstract class AbstractImapCommandParser implements ImapCommandParser, Me
             charBuffer.put(oldBuffer);
         }
     }
+    
 }
