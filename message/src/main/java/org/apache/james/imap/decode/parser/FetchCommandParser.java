@@ -20,7 +20,6 @@ package org.apache.james.imap.decode.parser;
 
 import java.util.List;
 
-import org.apache.james.imap.api.ImapMessageFactory;
 import org.apache.james.imap.api.ImapCommand;
 import org.apache.james.imap.api.ImapConstants;
 import org.apache.james.imap.api.ImapMessage;
@@ -32,6 +31,7 @@ import org.apache.james.imap.api.process.ImapSession;
 import org.apache.james.imap.decode.FetchPartPathDecoder;
 import org.apache.james.imap.decode.ImapRequestLineReader;
 import org.apache.james.imap.decode.DecodingException;
+import org.apache.james.imap.message.request.FetchRequest;
 
 /**
  * Parse FETCH commands
@@ -238,8 +238,7 @@ public class FetchCommandParser extends AbstractUidCommandParser {
         FetchData fetch = fetchRequest(request);
         endLine(request);
 
-        final ImapMessageFactory factory = getMessageFactory();
-        final ImapMessage result = factory.createFetchMessage(command, useUids,
+        final ImapMessage result = new FetchRequest(command, useUids,
                 idSet, fetch, tag);
         return result;
     }

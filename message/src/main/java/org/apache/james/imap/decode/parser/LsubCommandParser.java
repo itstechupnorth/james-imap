@@ -21,6 +21,7 @@ package org.apache.james.imap.decode.parser;
 import org.apache.james.imap.api.ImapCommand;
 import org.apache.james.imap.api.ImapConstants;
 import org.apache.james.imap.api.ImapMessage;
+import org.apache.james.imap.message.request.LsubRequest;
 
 /**
  * Parse LSUB commands
@@ -38,8 +39,7 @@ public class LsubCommandParser extends ListCommandParser {
      */
     protected ImapMessage createMessage(ImapCommand command,
             String referenceName, String mailboxPattern, String tag) {
-        final ImapMessage result = getMessageFactory().createLsubMessage(
-                command, referenceName, mailboxPattern, tag);
+        final ImapMessage result = new LsubRequest(command, referenceName, mailboxPattern, tag);
         return result;
     }
 }

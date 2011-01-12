@@ -25,6 +25,7 @@ import org.apache.james.imap.api.process.ImapSession;
 import org.apache.james.imap.decode.ImapRequestLineReader;
 import org.apache.james.imap.decode.DecodingException;
 import org.apache.james.imap.decode.base.AbstractImapCommandParser;
+import org.apache.james.imap.message.request.RenameRequest;
 
 /**
  * Parses RENAME command
@@ -46,8 +47,7 @@ public class RenameCommandParser extends AbstractImapCommandParser {
         final String existingName = mailbox(request);
         final String newName = mailbox(request);
         endLine(request);
-        final ImapMessage result = getMessageFactory().createRenameMessage(
-                command, existingName, newName, tag);
+        final ImapMessage result =new RenameRequest(command, existingName, newName, tag);
         return result;
     }
 

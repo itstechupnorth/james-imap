@@ -25,6 +25,7 @@ import org.apache.james.imap.api.process.ImapSession;
 import org.apache.james.imap.decode.ImapRequestLineReader;
 import org.apache.james.imap.decode.DecodingException;
 import org.apache.james.imap.decode.base.AbstractImapCommandParser;
+import org.apache.james.imap.message.request.UnsubscribeRequest;
 
 /**
  * Parse UNSUBSCRIBE commands
@@ -45,9 +46,7 @@ public class UnsubscribeCommandParser extends AbstractImapCommandParser {
             ImapRequestLineReader request, String tag, ImapSession session) throws DecodingException {
         final String mailboxName = mailbox(request);
         endLine(request);
-        final ImapMessage result = getMessageFactory()
-                .createUnsubscribeMessage(command, mailboxName, tag);
-        return result;
+        return new UnsubscribeRequest(command, mailboxName, tag);
     }
 
 }

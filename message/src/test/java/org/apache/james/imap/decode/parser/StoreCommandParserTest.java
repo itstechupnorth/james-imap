@@ -24,7 +24,6 @@ import java.io.ByteArrayOutputStream;
 
 import javax.mail.Flags;
 
-import org.apache.james.imap.api.ImapMessageFactory;
 import org.apache.james.imap.api.ImapCommand;
 import org.apache.james.imap.api.ImapMessage;
 import org.apache.james.imap.api.message.IdRange;
@@ -45,8 +44,6 @@ public class StoreCommandParserTest {
     StoreCommandParser parser;
 
 
-    ImapMessageFactory mockMessageFactory;
-
     ImapCommand command;
 
     ImapMessage message;
@@ -59,12 +56,10 @@ public class StoreCommandParserTest {
     @Before
     public void setUp() throws Exception {
         parser = new StoreCommandParser();
-        mockMessageFactory = mockery.mock(ImapMessageFactory.class);
         command = ImapCommand.anyStateCommand("Command");
         message = mockery.mock(ImapMessage.class);
         session = mockery.mock(ImapSession.class);
 
-        parser.setMessageFactory(mockMessageFactory);
     }
 
     @Test
@@ -84,17 +79,6 @@ public class StoreCommandParserTest {
                 new ByteArrayInputStream(input.getBytes("US-ASCII")),
                 new ByteArrayOutputStream());
 
-        mockery.checking(new Expectations() {{
-            oneOf (mockMessageFactory).createStoreMessage(
-                    with(equal(command)), 
-                    with(equal(idSet)), 
-                    with(equal(silent)),
-                    with(equal(sign)), 
-                    with(equal(flags)), 
-                    with(equal(useUids)), 
-                    with(same(tag))
-                    );will(returnValue(message));
-        }});
         parser.decode(command, reader, tag, useUids, session);
     }
 }

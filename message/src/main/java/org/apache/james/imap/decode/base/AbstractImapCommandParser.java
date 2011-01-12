@@ -38,7 +38,6 @@ import java.util.List;
 import javax.mail.Flags;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.james.imap.api.ImapMessageFactory;
 import org.apache.james.imap.api.ImapCommand;
 import org.apache.james.imap.api.ImapConstants;
 import org.apache.james.imap.api.ImapMessage;
@@ -67,8 +66,6 @@ public abstract class AbstractImapCommandParser implements ImapCommandParser, Me
     
     private final ImapCommand command;
 
-    private ImapMessageFactory messageFactory;
-
     private StatusResponseFactory statusResponseFactory;
 
     public AbstractImapCommandParser(final ImapCommand command) {
@@ -80,20 +77,6 @@ public abstract class AbstractImapCommandParser implements ImapCommandParser, Me
         return command;
     }
 
-
-    /**
-     * @see org.apache.james.imap.decode.MessagingImapCommandParser#getMessageFactory()
-     */
-    public ImapMessageFactory getMessageFactory() {
-        return messageFactory;
-    }
-
-    /**
-     * @see org.apache.james.imap.decode.MessagingImapCommandParser#setMessageFactory(org.apache.james.imap.api.ImapMessageFactory)
-     */
-    public void setMessageFactory(ImapMessageFactory messageFactory) {
-        this.messageFactory = messageFactory;
-    }
 
     public final StatusResponseFactory getStatusResponseFactory() {
         return statusResponseFactory;
@@ -122,7 +105,7 @@ public abstract class AbstractImapCommandParser implements ImapCommandParser, Me
                 result = decode(command, request, tag, session);
             } catch (DecodingException e) {
                 session.getLog().debug("Cannot parse protocol ", e);
-                result = messageFactory.taggedBad(tag, command, e.getKey());
+                result = statusResponseFactory.taggedBad(tag, command, e.getKey());
             }
         }
         return result;

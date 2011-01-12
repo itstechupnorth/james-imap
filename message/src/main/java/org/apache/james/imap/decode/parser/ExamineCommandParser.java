@@ -25,6 +25,7 @@ import org.apache.james.imap.api.process.ImapSession;
 import org.apache.james.imap.decode.ImapRequestLineReader;
 import org.apache.james.imap.decode.DecodingException;
 import org.apache.james.imap.decode.base.AbstractImapCommandParser;
+import org.apache.james.imap.message.request.ExamineRequest;
 
 /**
  * Parse EXAMINE commands
@@ -44,8 +45,7 @@ public class ExamineCommandParser extends AbstractImapCommandParser {
             ImapRequestLineReader request, String tag, ImapSession session) throws DecodingException {
         final String mailboxName = mailbox(request);
         endLine(request);
-        final ImapMessage result = getMessageFactory().createExamineMessage(
-                command, mailboxName, tag);
+        final ImapMessage result = new ExamineRequest(command, mailboxName, tag);
         return result;
     }
 

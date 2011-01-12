@@ -24,7 +24,6 @@ import static org.junit.Assert.assertEquals;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 
-import org.apache.james.imap.api.ImapMessageFactory;
 import org.apache.james.imap.api.ImapCommand;
 import org.apache.james.imap.api.ImapMessage;
 import org.apache.james.imap.api.message.IdRange;
@@ -43,8 +42,6 @@ import org.junit.runner.RunWith;
 public class SearchCommandParserOrTest {
     SearchCommandParser parser;
 
-    ImapMessageFactory mockMessageFactory;
-
     ImapCommand command;
 
     ImapMessage message;
@@ -54,10 +51,8 @@ public class SearchCommandParserOrTest {
     @Before
     public void setUp() throws Exception {
         parser = new SearchCommandParser();
-        mockMessageFactory = context.mock(ImapMessageFactory.class);
         command = ImapCommand.anyStateCommand("Command");
         message = context.mock(ImapMessage.class);
-        parser.setMessageFactory(mockMessageFactory);
     }
     
     public Input sequence() {

@@ -27,7 +27,6 @@ import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.james.imap.api.ImapMessageFactory;
 import org.apache.james.imap.api.ImapCommand;
 import org.apache.james.imap.api.ImapMessage;
 import org.apache.james.imap.api.message.IdRange;
@@ -150,7 +149,6 @@ public class SearchCommandParserAndParenthesesTest {
 
     SearchCommandParser parser;
 
-    ImapMessageFactory mockMessageFactory;
 
     ImapCommand command;
 
@@ -159,10 +157,8 @@ public class SearchCommandParserAndParenthesesTest {
     @Before
     public void setUp() throws Exception {
         parser = new SearchCommandParser();
-        mockMessageFactory = context.mock(ImapMessageFactory.class);
         command = ImapCommand.anyStateCommand("Command");
         message = context.mock(ImapMessage.class);
-        parser.setMessageFactory(mockMessageFactory);
     }
 
     @Test

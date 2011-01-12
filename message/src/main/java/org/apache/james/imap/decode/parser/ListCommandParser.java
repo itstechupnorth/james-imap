@@ -18,13 +18,13 @@
  ****************************************************************/
 package org.apache.james.imap.decode.parser;
 
-import org.apache.james.imap.api.ImapMessageFactory;
 import org.apache.james.imap.api.ImapCommand;
 import org.apache.james.imap.api.ImapConstants;
 import org.apache.james.imap.api.ImapMessage;
 import org.apache.james.imap.api.process.ImapSession;
 import org.apache.james.imap.decode.ImapRequestLineReader;
 import org.apache.james.imap.decode.DecodingException;
+import org.apache.james.imap.message.request.ListRequest;
 
 /**
  * Parse LIST commands
@@ -89,8 +89,7 @@ public class ListCommandParser extends AbstractUidCommandParser {
     protected ImapMessage createMessage(ImapCommand command,
             final String referenceName, final String mailboxPattern,
             final String tag) {
-        final ImapMessageFactory factory = getMessageFactory();
-        final ImapMessage result = factory.createListMessage(command,
+        final ImapMessage result = new ListRequest(command,
                 referenceName, mailboxPattern, tag);
         return result;
     }

@@ -25,6 +25,7 @@ import org.apache.james.imap.api.process.ImapSession;
 import org.apache.james.imap.decode.DecodingException;
 import org.apache.james.imap.decode.ImapRequestLineReader;
 import org.apache.james.imap.decode.base.AbstractImapCommandParser;
+import org.apache.james.imap.message.request.StartTLSRequest;
 
 /**
  * Parse STARTTLS commands
@@ -42,7 +43,7 @@ public class StartTLSCommandParser extends AbstractImapCommandParser{
      */
     protected ImapMessage decode(ImapCommand command, ImapRequestLineReader request, String tag, ImapSession session) throws DecodingException {
         endLine(request);
-        return getMessageFactory().createStartTLSMessage(command, tag);
+        return new StartTLSRequest(tag, command);
     }
 
 }

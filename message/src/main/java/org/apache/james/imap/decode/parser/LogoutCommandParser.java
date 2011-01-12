@@ -25,6 +25,7 @@ import org.apache.james.imap.api.process.ImapSession;
 import org.apache.james.imap.decode.ImapRequestLineReader;
 import org.apache.james.imap.decode.DecodingException;
 import org.apache.james.imap.decode.base.AbstractImapCommandParser;
+import org.apache.james.imap.message.request.LogoutRequest;
 
 /**
  * Parse LOGOUT commands
@@ -45,8 +46,7 @@ public class LogoutCommandParser extends AbstractImapCommandParser {
     protected ImapMessage decode(ImapCommand command,
             ImapRequestLineReader request, String tag, ImapSession session) throws DecodingException {
         endLine(request);
-        final ImapMessage result = getMessageFactory().createLogoutMessage(
-                command, tag);
+        final ImapMessage result = new LogoutRequest(command, tag);
         return result;
     }
 

@@ -41,6 +41,7 @@ import org.apache.james.imap.api.message.response.StatusResponse.ResponseCode;
 import org.apache.james.imap.api.process.ImapSession;
 import org.apache.james.imap.decode.ImapRequestLineReader;
 import org.apache.james.imap.decode.DecodingException;
+import org.apache.james.imap.message.request.SearchRequest;
 
 /**
  * Parse SEARCH commands
@@ -954,8 +955,7 @@ public class SearchCommandParser extends AbstractUidCommandParser {
             // Parse the search term from the request
             final SearchKey key = decode(request);
 
-            final ImapMessage result = getMessageFactory().createSearchMessage(
-                    command, key, useUids, tag);
+            final ImapMessage result = new SearchRequest(command, key, useUids, tag);
             return result;
         } catch (IllegalCharsetNameException e) {
             session.getLog().debug("Unable to decode request", e);

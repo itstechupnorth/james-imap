@@ -25,6 +25,7 @@ import org.apache.james.imap.api.process.ImapSession;
 import org.apache.james.imap.decode.ImapRequestLineReader;
 import org.apache.james.imap.decode.DecodingException;
 import org.apache.james.imap.decode.base.AbstractImapCommandParser;
+import org.apache.james.imap.message.request.CheckRequest;
 
 /**
  * Parses CHECK commands
@@ -44,8 +45,7 @@ public class CheckCommandParser extends AbstractImapCommandParser {
     protected ImapMessage decode(ImapCommand command,
             ImapRequestLineReader request, String tag, ImapSession session) throws DecodingException {
         endLine(request);
-        final ImapMessage result = getMessageFactory().createCheckMessage(
-                command, tag);
+        final ImapMessage result = new CheckRequest(command, tag);
         return result;
     }
 

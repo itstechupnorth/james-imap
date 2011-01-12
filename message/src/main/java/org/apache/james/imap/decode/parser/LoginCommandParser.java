@@ -25,6 +25,7 @@ import org.apache.james.imap.api.process.ImapSession;
 import org.apache.james.imap.decode.ImapRequestLineReader;
 import org.apache.james.imap.decode.DecodingException;
 import org.apache.james.imap.decode.base.AbstractImapCommandParser;
+import org.apache.james.imap.message.request.LoginRequest;
 
 /**
  * Parse LOGIN commands
@@ -46,8 +47,7 @@ public class LoginCommandParser extends AbstractImapCommandParser {
         final String userid = astring(request);
         final String password = astring(request);
         endLine(request);
-        final ImapMessage result = getMessageFactory().createLoginMessage(
-                command, userid, password, tag);
+        final ImapMessage result = new LoginRequest(command, userid, password, tag);
         return result;
     }
 

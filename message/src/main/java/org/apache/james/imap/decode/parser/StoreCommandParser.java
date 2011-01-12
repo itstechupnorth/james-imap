@@ -28,6 +28,7 @@ import org.apache.james.imap.api.message.IdRange;
 import org.apache.james.imap.api.process.ImapSession;
 import org.apache.james.imap.decode.ImapRequestLineReader;
 import org.apache.james.imap.decode.DecodingException;
+import org.apache.james.imap.message.request.StoreRequest;
 
 /**
  * Parse STORE commands
@@ -73,8 +74,7 @@ public class StoreCommandParser extends AbstractUidCommandParser  {
 
         final Flags flags = flagList(request);
         endLine(request);
-        final ImapMessage result = getMessageFactory().createStoreMessage(
-                command, idSet, silent, sign, flags, useUids, tag);
+        final ImapMessage result = new StoreRequest(command, idSet, silent, flags, useUids, tag, sign);
         return result;
     }
 }

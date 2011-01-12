@@ -22,7 +22,6 @@ package org.apache.james.imap.decode.parser;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 
-import org.apache.james.imap.api.ImapMessageFactory;
 import org.apache.james.imap.api.ImapCommand;
 import org.apache.james.imap.api.ImapMessage;
 import org.apache.james.imap.api.message.BodyFetchElement;
@@ -36,7 +35,6 @@ import org.apache.james.imap.decode.parser.FetchCommandParser;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.jmock.Expectations;
 import org.jmock.Mockery;
 import org.jmock.integration.junit4.JMock;
 import org.jmock.integration.junit4.JUnit4Mockery;
@@ -48,7 +46,6 @@ public class FetchCommandParserPartialFetchTest  {
     
     FetchCommandParser parser;
 
-    ImapMessageFactory mockMessageFactory;
     ImapCommand command;
 
     ImapMessage message;
@@ -57,12 +54,10 @@ public class FetchCommandParserPartialFetchTest  {
     @Before
     public void setUp() throws Exception {
         parser = new FetchCommandParser();
-        mockMessageFactory = context.mock(ImapMessageFactory.class);
         command = ImapCommand.anyStateCommand("Command");
         message = context.mock(ImapMessage.class);
         session = context.mock(ImapSession.class);
         
-        parser.setMessageFactory(mockMessageFactory);
     }
 
 
@@ -103,10 +98,7 @@ public class FetchCommandParserPartialFetchTest  {
         ImapRequestLineReader reader = new ImapRequestStreamLineReader(
                 new ByteArrayInputStream(input.getBytes("US-ASCII")),
                 new ByteArrayOutputStream());
-        context.checking(new Expectations() {{
-            oneOf (mockMessageFactory).createFetchMessage( with(equal(command)), with(equal(useUids)), 
-                    with(equal(idSet)),with(equal(data)), with(same(tag)));will(returnValue(message));
-        }});
+
         parser.decode(command, reader, tag, useUids, session);
     }
 }

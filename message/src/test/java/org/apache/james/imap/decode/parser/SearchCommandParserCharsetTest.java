@@ -29,7 +29,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
-import org.apache.james.imap.api.ImapMessageFactory;
 import org.apache.james.imap.api.ImapCommand;
 import org.apache.james.imap.api.ImapMessage;
 import org.apache.james.imap.api.display.HumanReadableText;
@@ -76,7 +75,6 @@ public class SearchCommandParserCharsetTest {
 
     private Mockery context = new JUnit4Mockery();
 
-    ImapMessageFactory mockMessageFactory;
     
     ImapCommand command;
 
@@ -87,13 +85,11 @@ public class SearchCommandParserCharsetTest {
     @Before
     public void setUp() throws Exception {
         parser = new SearchCommandParser();
-        mockMessageFactory = context.mock(ImapMessageFactory.class);
         command = ImapCommand.anyStateCommand("Command");
         message = context.mock(ImapMessage.class);
         session = context.mock(ImapSession.class);
 
         mockStatusResponseFactory = context.mock(StatusResponseFactory.class);
-        parser.setMessageFactory(mockMessageFactory);
         parser.setStatusResponseFactory(mockStatusResponseFactory);
     }
 

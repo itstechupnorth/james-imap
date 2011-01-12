@@ -18,16 +18,11 @@
  ****************************************************************/
 package org.apache.james.imap.decode;
 
-import org.apache.james.imap.api.ImapMessageFactory;
 import org.apache.james.imap.api.message.response.StatusResponseFactory;
 
 public interface MessagingImapCommandParser {
 
-    public abstract ImapMessageFactory getMessageFactory();
-
-    public abstract void setMessageFactory(
-            ImapMessageFactory messageFactory);
-
+  
     public abstract StatusResponseFactory getStatusResponseFactory();
 
     public abstract void setStatusResponseFactory(

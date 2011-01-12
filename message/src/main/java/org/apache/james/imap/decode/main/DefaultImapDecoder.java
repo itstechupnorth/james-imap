@@ -19,10 +19,10 @@
 package org.apache.james.imap.decode.main;
 
 import org.apache.commons.logging.Log;
-import org.apache.james.imap.api.ImapMessageFactory;
 import org.apache.james.imap.api.ImapMessage;
 import org.apache.james.imap.api.ImapSessionState;
 import org.apache.james.imap.api.display.HumanReadableText;
+import org.apache.james.imap.api.message.response.StatusResponseFactory;
 import org.apache.james.imap.api.process.ImapSession;
 import org.apache.james.imap.decode.ImapCommandParser;
 import org.apache.james.imap.decode.ImapCommandParserFactory;
@@ -38,13 +38,13 @@ import org.apache.james.imap.decode.base.AbstractImapCommandParser;
  */
 public class DefaultImapDecoder implements ImapDecoder {
 
-    private final ImapMessageFactory messageFactory;
+    private final StatusResponseFactory responseFactory;
 
     private final ImapCommandParserFactory imapCommands;
 
-    public DefaultImapDecoder(final ImapMessageFactory messageFactory,
+    public DefaultImapDecoder(final StatusResponseFactory responseFactory,
             final ImapCommandParserFactory imapCommands) {
-        this.messageFactory = messageFactory;
+        this.responseFactory = responseFactory;
         this.imapCommands = imapCommands;
     }
     
@@ -65,7 +65,7 @@ public class DefaultImapDecoder implements ImapDecoder {
             // When the tag cannot be read, there is something seriously wrong.
             // It is probably not possible to recover
             // and (since this may indicate an attack) wiser not to try
-            message = messageFactory.bye(HumanReadableText.ILLEGAL_TAG);
+            message = responseFactory.bye(HumanReadableText.ILLEGAL_TAG);
             session.logout();
         }
         return message;
@@ -94,11 +94,11 @@ public class DefaultImapDecoder implements ImapDecoder {
             final ImapSession session) {
         ImapMessage message;
         if (session.getState() == ImapSessionState.NON_AUTHENTICATED) {
-            message = messageFactory
+            message = responseFactory
                     .bye(HumanReadableText.BYE_UNKNOWN_COMMAND);
             session.logout();
         } else {
-            message = messageFactory.taggedBad(tag, null,
+            message = responseFactory.taggedBad(tag, null,
                     HumanReadableText.UNKNOWN_COMMAND);
         }
         return message;
