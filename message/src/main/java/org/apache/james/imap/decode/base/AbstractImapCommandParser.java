@@ -113,15 +113,18 @@ public abstract class AbstractImapCommandParser implements ImapCommandParser, Me
      */
     public final ImapMessage parse(ImapRequestLineReader request, String tag, Log logger, ImapSession session) {
         ImapMessage result;
-        try {
-
-            ImapMessage message = decode(command, request, tag, logger, session);
-            result = message;
-
-        } catch (DecodingException e) {
-            logger.debug("Cannot parse protocol ", e);
-            e.printStackTrace();
-            result = messageFactory.taggedBad(tag, command, e.getKey());
+        if (!command.validForState(session.getState())) {
+            result = statusResponseFactory.taggedNo(tag, command,
+                    HumanReadableText.INVALID_COMMAND);
+        } else {
+            try {
+           
+                result = decode(command, request, tag, logger, session);
+            } catch (DecodingException e) {
+                logger.debug("Cannot parse protocol ", e);
+                e.printStackTrace();
+                result = messageFactory.taggedBad(tag, command, e.getKey());
+            }
         }
         return result;
     }
