@@ -19,7 +19,6 @@
 
 package org.apache.james.imap.message.response;
 
-import org.apache.james.imap.api.ImapConstants;
 
 /**
  * <code>LIST</code> and <code>LSUB</code> return identical data.
@@ -38,14 +37,15 @@ public abstract class AbstractListingResponse {
 
     private final boolean unmarked;
 
-    private final String hierarchyDelimiter = ImapConstants.HIERARCHY_DELIMITER;
+    private final char hierarchyDelimiter;
 
     private final String name;
 
     public AbstractListingResponse(final boolean noInferiors,
             final boolean noSelect, final boolean marked,
             final boolean unmarked, boolean hasChildren,
-            boolean hasNoChildren, final String name) {
+            boolean hasNoChildren, final String name, 
+            final char hierarchyDelimiter) {
         super();
         this.noInferiors = noInferiors;
         this.noSelect = noSelect;
@@ -54,6 +54,7 @@ public abstract class AbstractListingResponse {
         this.children = hasChildren;
         this.noChildren = hasNoChildren;
         this.name = name;
+        this.hierarchyDelimiter = hierarchyDelimiter;
     }
 
     /**
@@ -61,7 +62,7 @@ public abstract class AbstractListingResponse {
      * 
      * @return hierarchy delimiter, or null if no hierarchy exists
      */
-    public final String getHierarchyDelimiter() {
+    public final char getHierarchyDelimiter() {
         return hierarchyDelimiter;
     }
 
@@ -142,7 +143,7 @@ public abstract class AbstractListingResponse {
         final int PRIME = 31;
         int result = 1;
         result = PRIME * result + (children ? 1231 : 1237);
-        result = PRIME * result + ((hierarchyDelimiter == null) ? 0 : hierarchyDelimiter.hashCode());
+        result = PRIME * result + hierarchyDelimiter;
         result = PRIME * result + (marked ? 1231 : 1237);
         result = PRIME * result + ((name == null) ? 0 : name.hashCode());
         result = PRIME * result + (noChildren ? 1231 : 1237);
@@ -163,10 +164,7 @@ public abstract class AbstractListingResponse {
         final AbstractListingResponse other = (AbstractListingResponse) obj;
         if (children != other.children)
             return false;
-        if (hierarchyDelimiter == null) {
-            if (other.hierarchyDelimiter != null)
-                return false;
-        } else if (!hierarchyDelimiter.equals(other.hierarchyDelimiter))
+        if (hierarchyDelimiter != other.hierarchyDelimiter)
             return false;
         if (marked != other.marked)
             return false;

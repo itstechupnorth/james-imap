@@ -25,6 +25,7 @@ import java.util.Collection;
 import org.apache.james.imap.api.ImapCommand;
 import org.apache.james.imap.api.ImapConstants;
 import org.apache.james.imap.api.ImapMessage;
+import org.apache.james.imap.api.ImapSessionUtils;
 import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.api.message.request.ImapRequest;
 import org.apache.james.imap.api.message.response.StatusResponseFactory;
@@ -32,7 +33,6 @@ import org.apache.james.imap.api.process.ImapProcessor;
 import org.apache.james.imap.api.process.ImapSession;
 import org.apache.james.imap.message.request.LsubRequest;
 import org.apache.james.imap.message.response.LSubResponse;
-import org.apache.james.imap.processor.base.ImapSessionUtils;
 import org.apache.james.mailbox.MailboxConstants;
 import org.apache.james.mailbox.MailboxException;
 import org.apache.james.mailbox.MailboxManager;
@@ -76,29 +76,29 @@ public class LSubProcessor extends AbstractSubscriptionProcessor {
         }
        
 
-        final MailboxQuery expression = new MailboxQuery(basePath, mailboxName, '*', '%');
+        final MailboxQuery expression = new MailboxQuery(basePath, mailboxName, '*', '%', mailboxSession.getPathDelimiter());
         final Collection<String> mailboxResponses = new ArrayList<String>();
         for (final String mailbox: mailboxes) {
-            respond(responder, expression, mailbox, true, mailboxes, mailboxResponses);
+            respond(responder, expression, mailbox, true, mailboxes, mailboxResponses, mailboxSession.getPathDelimiter());
         }
     }
 
     private void respond(Responder responder, final MailboxQuery expression,
             final String mailboxName, final boolean originalSubscription,
-            final Collection<String> mailboxes, final Collection<String> mailboxResponses) {
+            final Collection<String> mailboxes, final Collection<String> mailboxResponses, final char delimiter) {
         if (expression.isExpressionMatch(mailboxName)) {
             if (!mailboxResponses.contains(mailboxName)) {
-                final LSubResponse response = new LSubResponse(mailboxName, !originalSubscription);
+                final LSubResponse response = new LSubResponse(mailboxName, !originalSubscription, delimiter);
                 responder.respond(response);
                 mailboxResponses.add(mailboxName);
             }
         }
         else {
-            final int lastDelimiter = mailboxName.lastIndexOf(ImapConstants.HIERARCHY_DELIMITER_CHAR);
+            final int lastDelimiter = mailboxName.lastIndexOf(delimiter);
             if (lastDelimiter > 0) {
                 final String parentMailbox = mailboxName.substring(0, lastDelimiter);
                 if (!mailboxes.contains(parentMailbox)) {
-                    respond(responder, expression, parentMailbox, false, mailboxes, mailboxResponses);
+                    respond(responder, expression, parentMailbox, false, mailboxes, mailboxResponses, delimiter);
                 }
             }
         }
@@ -111,8 +111,8 @@ public class LSubProcessor extends AbstractSubscriptionProcessor {
      * @param referenceName
      *            IMAP reference name, possibly null
      */
-    private void respondWithHierarchyDelimiter(final Responder responder) {
-        final LSubResponse response = new LSubResponse("", true);
+    private void respondWithHierarchyDelimiter(final Responder responder, final char delimiter) {
+        final LSubResponse response = new LSubResponse("", true, delimiter);
         responder.respond(response);
     }
 
@@ -121,10 +121,11 @@ public class LSubProcessor extends AbstractSubscriptionProcessor {
         final LsubRequest request = (LsubRequest) message;
         final String referenceName = request.getBaseReferenceName();
         final String mailboxPattern = request.getMailboxPattern();
-
+        final MailboxSession mailboxSession = ImapSessionUtils.getMailboxSession(session);
+        
         try {
             if (mailboxPattern.length() == 0) {
-                respondWithHierarchyDelimiter(responder);
+                respondWithHierarchyDelimiter(responder, mailboxSession.getPathDelimiter());
             } else {
                 listSubscriptions(session, responder, referenceName, mailboxPattern);
             }

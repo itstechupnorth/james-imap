@@ -25,7 +25,7 @@ import java.util.List;
 import java.util.Locale;
 
 import org.apache.james.imap.api.ImapCommand;
-import org.apache.james.imap.api.ImapConstants;
+import org.apache.james.imap.api.ImapSessionUtils;
 import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.api.message.response.StatusResponse;
 import org.apache.james.imap.api.message.response.StatusResponseFactory;
@@ -33,7 +33,6 @@ import org.apache.james.imap.api.process.ImapProcessor;
 import org.apache.james.imap.api.process.ImapSession;
 import org.apache.james.imap.message.request.LsubRequest;
 import org.apache.james.imap.message.response.LSubResponse;
-import org.apache.james.imap.processor.base.ImapSessionUtils;
 import org.apache.james.mailbox.MailboxManager;
 import org.apache.james.mailbox.MailboxMetaData;
 import org.apache.james.mailbox.MailboxSession;
@@ -50,15 +49,17 @@ import org.junit.runner.RunWith;
 public class LSubProcessorTest {
 
     private static final String ROOT = "ROOT";
+    
+    private static final char HIERARCHY_DELIMITER = '.';
 
     private static final String PARENT = ROOT
-            + ImapConstants.HIERARCHY_DELIMITER + "PARENT";
+            + HIERARCHY_DELIMITER + "PARENT";
 
     private static final String CHILD_ONE = PARENT
-            + ImapConstants.HIERARCHY_DELIMITER + "CHILD_ONE";
+            + HIERARCHY_DELIMITER + "CHILD_ONE";
 
     private static final String CHILD_TWO = PARENT
-            + ImapConstants.HIERARCHY_DELIMITER + "CHILD_TWO";
+            + HIERARCHY_DELIMITER + "CHILD_TWO";
 
     private static final String MAILBOX_C = "C.MAILBOX";
 
@@ -118,8 +119,9 @@ public class LSubProcessorTest {
 
         mockery.checking(new Expectations() {{
             allowing(session).getAttribute(ImapSessionUtils.MAILBOX_SESSION_ATTRIBUTE_SESSION_KEY); will(returnValue(mailboxSession));
+            allowing(mailboxSession).getPathDelimiter(); will(returnValue(HIERARCHY_DELIMITER));
             oneOf(responder).respond(with(
-                    equal(new LSubResponse("", true))));
+                    equal(new LSubResponse("", true, HIERARCHY_DELIMITER))));
         }});
 
         expectOk();
@@ -140,16 +142,16 @@ public class LSubProcessorTest {
 
         mockery.checking(new Expectations() {{
             oneOf(responder).respond(with(
-                    equal(new LSubResponse(CHILD_ONE, false))));
+                    equal(new LSubResponse(CHILD_ONE, false, HIERARCHY_DELIMITER))));
             oneOf(responder).respond(with(
-                    equal(new LSubResponse(CHILD_TWO, false))));
+                    equal(new LSubResponse(CHILD_TWO, false, HIERARCHY_DELIMITER))));
         }});
-
+        
         expectSubscriptions();
         expectOk();
 
         LsubRequest request = new LsubRequest(command, "", PARENT
-                + ImapConstants.HIERARCHY_DELIMITER + "%", TAG);
+                + HIERARCHY_DELIMITER + "%", TAG);
         processor.doProcessRequest(request, session, TAG, command, responderImpl);
 
     }
@@ -165,14 +167,14 @@ public class LSubProcessorTest {
 
         mockery.checking(new Expectations() {{
             oneOf(responder).respond(with(
-                    equal(new LSubResponse(PARENT, true))));
+                    equal(new LSubResponse(PARENT, true, HIERARCHY_DELIMITER))));
         }});
 
         expectSubscriptions();
         expectOk();
 
         LsubRequest request = new LsubRequest(command, "", ROOT
-                + ImapConstants.HIERARCHY_DELIMITER + "%", TAG);
+                + HIERARCHY_DELIMITER + "%", TAG);
         processor.doProcessRequest(request, session, TAG, command, responderImpl);
 
     }
@@ -189,14 +191,14 @@ public class LSubProcessorTest {
 
         mockery.checking(new Expectations() {{
             oneOf(responder).respond(with(
-                    equal(new LSubResponse(PARENT, false))));
+                    equal(new LSubResponse(PARENT, false, HIERARCHY_DELIMITER))));
         }});
 
         expectSubscriptions();
         expectOk();
 
         LsubRequest request = new LsubRequest(command, "", ROOT
-                + ImapConstants.HIERARCHY_DELIMITER + "%", TAG);
+                + HIERARCHY_DELIMITER + "%", TAG);
         processor.doProcessRequest(request, session, TAG, command, responderImpl);
 
     }
@@ -205,11 +207,11 @@ public class LSubProcessorTest {
     public void testSelectAll() throws Exception {
         mockery.checking(new Expectations() {{
             oneOf(responder).respond(with(equal(
-                    new LSubResponse(MAILBOX_A, false))));
+                    new LSubResponse(MAILBOX_A, false, HIERARCHY_DELIMITER))));
             oneOf(responder).respond(with(equal(
-                    new LSubResponse(MAILBOX_B, false))));
+                    new LSubResponse(MAILBOX_B, false, HIERARCHY_DELIMITER))));
             oneOf(responder).respond(with(equal(
-                    new LSubResponse(MAILBOX_C, false))));
+                    new LSubResponse(MAILBOX_C, false, HIERARCHY_DELIMITER))));
         }});
         subscriptions.add(MAILBOX_A);
         subscriptions.add(MAILBOX_B);
@@ -236,8 +238,9 @@ public class LSubProcessorTest {
 
     private void expectSubscriptions() throws Exception {
         mockery.checking(new Expectations() {{
-            oneOf(session).getAttribute(ImapSessionUtils.MAILBOX_SESSION_ATTRIBUTE_SESSION_KEY);
+            exactly(2).of(session).getAttribute(ImapSessionUtils.MAILBOX_SESSION_ATTRIBUTE_SESSION_KEY);
                     will(returnValue(mailboxSession));
+                    allowing(mailboxSession).getPathDelimiter(); will(returnValue(HIERARCHY_DELIMITER));
             oneOf(mailboxSession).getUser(); will(returnValue(new MailboxSession.User() {
 
                 /*

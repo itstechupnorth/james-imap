@@ -19,14 +19,16 @@
 package org.apache.james.imap.decode.parser;
 
 import org.apache.commons.logging.Log;
-import org.apache.james.imap.api.ImapMessageFactory;
 import org.apache.james.imap.api.ImapCommand;
 import org.apache.james.imap.api.ImapConstants;
 import org.apache.james.imap.api.ImapMessage;
-import org.apache.james.imap.decode.ImapRequestLineReader;
+import org.apache.james.imap.api.ImapMessageFactory;
+import org.apache.james.imap.api.ImapSessionUtils;
+import org.apache.james.imap.api.process.ImapSession;
 import org.apache.james.imap.decode.DecodingException;
+import org.apache.james.imap.decode.ImapRequestLineReader;
 import org.apache.james.imap.decode.base.AbstractImapCommandParser;
-import org.apache.james.mailbox.MailboxConstants;
+import org.apache.james.mailbox.MailboxSession;
 
 /**
  * Parse CREATE commands
@@ -43,14 +45,21 @@ public class CreateCommandParser extends AbstractImapCommandParser  {
      * @see org.apache.james.imap.decode.base.AbstractImapCommandParser#decode(org.apache.james.imap.api.ImapCommand, org.apache.james.imap.decode.ImapRequestLineReader, java.lang.String, org.apache.commons.logging.Log)
      */
     protected ImapMessage decode(ImapCommand command,
-            ImapRequestLineReader request, String tag, Log logger) throws DecodingException {
+            ImapRequestLineReader request, String tag, Log logger, ImapSession session) throws DecodingException {
         String mailboxName = mailbox(request);
+
         
-        // RFC3501@6.3.3p2
-        // When mailbox name is suffixed with hierarchy separator
-        // name created must remove tailing delimiter
-        if (mailboxName.endsWith(MailboxConstants.DEFAULT_DELIMITER_STRING)) {
-            mailboxName = mailboxName.substring(0, mailboxName.length() -1);
+        MailboxSession mailboxSession = ImapSessionUtils.getMailboxSession(session);
+
+        // Check if we have an mailboxsession. This is a workaround for IMAP-240:
+        // https://issues.apache.org/jira/browse/IMAP-240
+        if (mailboxSession != null) {
+            // RFC3501@6.3.3p2
+            // When mailbox name is suffixed with hierarchy separator
+            // name created must remove tailing delimiter
+            if (mailboxName.endsWith(Character.toString(mailboxSession.getPathDelimiter()))) {
+                mailboxName = mailboxName.substring(0, mailboxName.length() -1);
+            }
         }
         endLine(request);
         final ImapMessageFactory factory = getMessageFactory();

@@ -161,7 +161,7 @@ public interface ImapResponseComposer {
      *            mailbox name
      */
     public abstract void listResponse(String typeName, List<String> attributes,
-            String hierarchyDelimiter, String name) throws IOException;
+            char hierarchyDelimiter, String name) throws IOException;
 
     /**
      * Writes the message provided to the client, prepended with the request

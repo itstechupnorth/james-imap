@@ -46,6 +46,7 @@ import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.api.message.IdRange;
 import org.apache.james.imap.api.message.request.DayMonthYear;
 import org.apache.james.imap.api.message.response.StatusResponseFactory;
+import org.apache.james.imap.api.process.ImapSession;
 import org.apache.james.imap.decode.DecoderUtils;
 import org.apache.james.imap.decode.ImapCommandParser;
 import org.apache.james.imap.decode.ImapRequestLineReader;
@@ -110,11 +111,11 @@ public abstract class AbstractImapCommandParser implements ImapCommandParser, Me
      *            <code>ImapRequestLineReader</code>, not null
      * @return <code>ImapCommandMessage</code>, not null
      */
-    public final ImapMessage parse(ImapRequestLineReader request, String tag, Log logger) {
+    public final ImapMessage parse(ImapRequestLineReader request, String tag, Log logger, ImapSession session) {
         ImapMessage result;
         try {
 
-            ImapMessage message = decode(command, request, tag, logger);
+            ImapMessage message = decode(command, request, tag, logger, session);
             result = message;
 
         } catch (DecodingException e) {
@@ -125,6 +126,8 @@ public abstract class AbstractImapCommandParser implements ImapCommandParser, Me
         return result;
     }
 
+ 
+    
     /**
      * Parses a request into a command message for later processing.
      * @param command
@@ -133,13 +136,14 @@ public abstract class AbstractImapCommandParser implements ImapCommandParser, Me
      *            <code>ImapRequestLineReader</code>, not null
      * @param tag command tag, not null
      * @param logger TODO
-     * @param logger TODO
+     * @param session imap session 
      * @return <code>ImapCommandMessage</code>, not null
      * @throws DecodingException
      *             if the request cannot be parsed
      */
     protected abstract ImapMessage decode(ImapCommand command,
-            ImapRequestLineReader request, String tag, Log logger) throws DecodingException;
+            ImapRequestLineReader request, String tag, Log logger, ImapSession session) throws DecodingException;
+    
 
     /**
      * Reads an argument of type "atom" from the request.

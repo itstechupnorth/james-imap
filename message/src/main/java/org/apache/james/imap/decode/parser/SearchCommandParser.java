@@ -39,6 +39,7 @@ import org.apache.james.imap.api.message.request.SearchKey;
 import org.apache.james.imap.api.message.response.StatusResponse;
 import org.apache.james.imap.api.message.response.StatusResponseFactory;
 import org.apache.james.imap.api.message.response.StatusResponse.ResponseCode;
+import org.apache.james.imap.api.process.ImapSession;
 import org.apache.james.imap.decode.ImapRequestLineReader;
 import org.apache.james.imap.decode.DecodingException;
 
@@ -943,8 +944,12 @@ public class SearchCommandParser extends AbstractUidCommandParser {
         }
     }
 
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.decode.parser.AbstractUidCommandParser#decode(org.apache.james.imap.api.ImapCommand, org.apache.james.imap.decode.ImapRequestLineReader, java.lang.String, boolean, org.apache.commons.logging.Log, org.apache.james.imap.api.process.ImapSession)
+     */
     protected ImapMessage decode(ImapCommand command,
-            ImapRequestLineReader request, String tag, boolean useUids, Log logger)
+            ImapRequestLineReader request, String tag, boolean useUids, Log logger, ImapSession session)
             throws DecodingException {
         try {
             // Parse the search term from the request

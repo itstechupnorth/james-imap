@@ -60,8 +60,8 @@ public class SearchResponseEncoderTest {
     @Test
     public void testIsAcceptable() {
         assertTrue(encoder.isAcceptable(new ListResponse(true, true, true,
-                true, false, false, "name")));
-        assertFalse(encoder.isAcceptable(new LSubResponse("name", true)));
+                true, false, false, "name", '.')));
+        assertFalse(encoder.isAcceptable(new LSubResponse("name", true, '.')));
         assertFalse(encoder.isAcceptable(context.mock(ImapMessage.class)));
         assertFalse(encoder.isAcceptable(null));
     }
@@ -73,10 +73,10 @@ public class SearchResponseEncoderTest {
             oneOf(composer).listResponse(
                             with(equal("LIST")), 
                             with(aNull(List.class)), 
-                            with(equal(".")), 
+                            with(equal('.')), 
                             with(equal("INBOX.name")));
         }});
-        encoder.encode(new ListResponse(false, false, false, false, false, false, "INBOX.name"), composer, new FakeImapSession());
+        encoder.encode(new ListResponse(false, false, false, false, false, false, "INBOX.name", '.'), composer, new FakeImapSession());
     }
 
     @Test
@@ -86,10 +86,10 @@ public class SearchResponseEncoderTest {
             oneOf(composer).listResponse(
                             with(equal("LIST")), 
                             with(aNull(List.class)), 
-                            with(equal(".")), 
+                            with(equal('.')), 
                             with(equal("INBOX.name")));
         }});
-        encoder.encode(new ListResponse(false, false, false, false, false, false, "INBOX.name"), composer, new FakeImapSession());
+        encoder.encode(new ListResponse(false, false, false, false, false, false, "INBOX.name", '.'), composer, new FakeImapSession());
     }
 
 
@@ -103,10 +103,10 @@ public class SearchResponseEncoderTest {
             oneOf(composer).listResponse(
                             with(equal("LIST")), 
                             with(equal(Arrays.asList(all))), 
-                            with(equal(".")), 
+                            with(equal('.')), 
                             with(equal("INBOX.name")));
         }});
-        encoder.encode(new ListResponse(true, true, true, true, false, false, "INBOX.name"), composer, new FakeImapSession());
+        encoder.encode(new ListResponse(true, true, true, true, false, false, "INBOX.name", '.'), composer, new FakeImapSession());
     }
 
     @Test
@@ -116,10 +116,10 @@ public class SearchResponseEncoderTest {
             oneOf(composer).listResponse(
                             with(equal("LIST")), 
                             with(equal(Arrays.asList(values))), 
-                            with(equal(".")), 
+                            with(equal('.')), 
                             with(equal("INBOX.name")));
         }});
-        encoder.encode(new ListResponse(true, false, false, false, false, false, "INBOX.name"), composer, new FakeImapSession());
+        encoder.encode(new ListResponse(true, false, false, false, false, false, "INBOX.name", '.'), composer, new FakeImapSession());
     }
 
     @Test
@@ -129,10 +129,10 @@ public class SearchResponseEncoderTest {
             oneOf(composer).listResponse(
                             with(equal("LIST")), 
                             with(equal(Arrays.asList(values))), 
-                            with(equal(".")), 
+                            with(equal('.')), 
                             with(equal("INBOX.name")));
         }});
-        encoder.encode(new ListResponse(false, true, false, false, false, false, "INBOX.name"), composer, new FakeImapSession());
+        encoder.encode(new ListResponse(false, true, false, false, false, false, "INBOX.name", '.'), composer, new FakeImapSession());
     }
 
     @Test
@@ -142,10 +142,10 @@ public class SearchResponseEncoderTest {
             oneOf(composer).listResponse(
                             with(equal("LIST")), 
                             with(equal(Arrays.asList(values))), 
-                            with(equal(".")), 
+                            with(equal('.')), 
                             with(equal("INBOX.name")));
         }});
-        encoder.encode(new ListResponse(false, false, true, false, false, false, "INBOX.name"), composer, new FakeImapSession());
+        encoder.encode(new ListResponse(false, false, true, false, false, false, "INBOX.name", '.'), composer, new FakeImapSession());
     }
 
     @Test
@@ -155,9 +155,9 @@ public class SearchResponseEncoderTest {
             oneOf(composer).listResponse(
                             with(equal("LIST")), 
                             with(equal(Arrays.asList(values))), 
-                            with(equal(".")), 
+                            with(equal('.')), 
                             with(equal("INBOX.name")));
         }});
-        encoder.encode(new ListResponse(false, false, false, true, false, false, "INBOX.name"), composer, new FakeImapSession());
+        encoder.encode(new ListResponse(false, false, false, true, false, false, "INBOX.name", '.'), composer, new FakeImapSession());
     }
 }

@@ -28,6 +28,7 @@ import org.apache.james.imap.api.ImapMessageFactory;
 import org.apache.james.imap.api.ImapCommand;
 import org.apache.james.imap.api.ImapMessage;
 import org.apache.james.imap.api.message.IdRange;
+import org.apache.james.imap.api.process.ImapSession;
 import org.apache.james.imap.decode.ImapRequestLineReader;
 import org.apache.james.imap.decode.ImapRequestStreamLineReader;
 import org.jmock.Expectations;
@@ -52,12 +53,17 @@ public class StoreCommandParserTest {
 
     private Mockery mockery = new JUnit4Mockery();
 
+
+	private ImapSession session;
+
     @Before
     public void setUp() throws Exception {
         parser = new StoreCommandParser();
         mockMessageFactory = mockery.mock(ImapMessageFactory.class);
         command = ImapCommand.anyStateCommand("Command");
         message = mockery.mock(ImapMessage.class);
+        session = mockery.mock(ImapSession.class);
+
         parser.setMessageFactory(mockMessageFactory);
     }
 
@@ -89,6 +95,6 @@ public class StoreCommandParserTest {
                     with(same(tag))
                     );will(returnValue(message));
         }});
-        parser.decode(command, reader, tag, useUids, new MockLogger());
+        parser.decode(command, reader, tag, useUids, new MockLogger(), session);
     }
 }

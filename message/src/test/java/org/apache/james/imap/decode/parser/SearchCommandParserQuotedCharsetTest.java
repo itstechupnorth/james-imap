@@ -36,6 +36,7 @@ import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.api.message.request.SearchKey;
 import org.apache.james.imap.api.message.response.StatusResponse;
 import org.apache.james.imap.api.message.response.StatusResponseFactory;
+import org.apache.james.imap.api.process.ImapSession;
 import org.apache.james.imap.decode.ImapRequestLineReader;
 import org.apache.james.imap.decode.DecodingException;
 import org.apache.james.imap.decode.ImapRequestStreamLineReader;
@@ -144,6 +145,8 @@ public class SearchCommandParserQuotedCharsetTest {
     ImapMessage message;
 
     private Mockery mockery = new JUnit4Mockery();
+
+	private ImapSession session;
     
     @Before
     public void setUp() throws Exception {
@@ -152,6 +155,8 @@ public class SearchCommandParserQuotedCharsetTest {
         command = ImapCommand.anyStateCommand("Command");
         message = mockery.mock(ImapMessage.class);
         mockStatusResponseFactory = mockery.mock(StatusResponseFactory.class);
+        session = mockery.mock(ImapSession.class);
+
         parser.setMessageFactory(mockMessageFactory);
         parser.setStatusResponseFactory(mockStatusResponseFactory);
     }
@@ -199,7 +204,7 @@ public class SearchCommandParserQuotedCharsetTest {
         ImapRequestLineReader reader = new ImapRequestStreamLineReader(
                 new ByteArrayInputStream("CHARSET BOGUS ".getBytes("US-ASCII")),
                 new ByteArrayOutputStream());
-        parser.decode(command, reader, TAG, false, new MockLogger());
+        parser.decode(command, reader, TAG, false, new MockLogger(), session);
     }
 
     @Test
@@ -210,7 +215,7 @@ public class SearchCommandParserQuotedCharsetTest {
                     new ByteArrayInputStream(add("CHARSET US-ASCII BCC "
                             .getBytes("US-ASCII"), BYTES_NON_ASCII_SEARCH_TERM)),
                     new ByteArrayOutputStream());
-            parser.decode(command, reader, TAG, false, new MockLogger());
+            parser.decode(command, reader, TAG, false, new MockLogger(), session);
             fail("A protocol exception should be thrown when charset is incompatible with input");
         } catch (DecodingException e) {
             // expected

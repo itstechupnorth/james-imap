@@ -30,6 +30,7 @@ import org.apache.james.imap.api.ImapCommand;
 import org.apache.james.imap.api.ImapConstants;
 import org.apache.james.imap.api.ImapMessage;
 import org.apache.james.imap.api.message.IdRange;
+import org.apache.james.imap.api.process.ImapSession;
 import org.apache.james.imap.decode.DecodingException;
 import org.apache.james.imap.decode.ImapRequestLineReader;
 import org.apache.james.imap.decode.ImapRequestStreamLineReader;
@@ -42,7 +43,7 @@ public class IdRangeParseTest  {
 
 		@Override
 		protected ImapMessage decode(ImapCommand command,
-				ImapRequestLineReader request, String tag, Log logger)
+				ImapRequestLineReader request, String tag, Log logger, ImapSession session)
 				throws DecodingException {
 			return null;
 		}

@@ -116,7 +116,7 @@ public class DefaultImapDecoder implements ImapDecoder {
             logger.info("Missing command implementation.");
             message = unknownCommand(tag, session);
         } else {
-            message = command.parse(request, tag, logger);
+            message = command.parse(request, tag, logger, session);
         }
         return message;
     }

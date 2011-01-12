@@ -26,6 +26,7 @@ import javax.mail.Flags;
 import org.apache.james.imap.api.ImapCommand;
 import org.apache.james.imap.api.ImapConstants;
 import org.apache.james.imap.api.ImapMessage;
+import org.apache.james.imap.api.ImapSessionUtils;
 import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.api.message.IdRange;
 import org.apache.james.imap.api.message.request.ImapRequest;
@@ -40,7 +41,6 @@ import org.apache.james.imap.message.response.ExpungeResponse;
 import org.apache.james.imap.message.response.FetchResponse;
 import org.apache.james.imap.message.response.RecentResponse;
 import org.apache.james.imap.processor.base.AbstractChainedProcessor;
-import org.apache.james.imap.processor.base.ImapSessionUtils;
 import org.apache.james.imap.processor.base.MessageRangeException;
 import org.apache.james.mailbox.MailboxConstants;
 import org.apache.james.mailbox.MailboxException;
@@ -283,12 +283,13 @@ abstract public class AbstractMailboxProcessor extends AbstractChainedProcessor 
     public MailboxPath buildFullPath(final ImapSession session, String mailboxName) {
         String namespace = null;
         String name = null;
+        final MailboxSession mailboxSession = ImapSessionUtils.getMailboxSession(session);
         
         if (mailboxName == null || mailboxName.length() == 0) {
             return new MailboxPath("", "", "");
         }
         if (mailboxName.charAt(0) == ImapConstants.NAMESPACE_PREFIX_CHAR) {
-            int namespaceLength = mailboxName.indexOf(MailboxConstants.DEFAULT_DELIMITER);
+            int namespaceLength = mailboxName.indexOf(mailboxSession.getPathDelimiter());
             if (namespaceLength > -1) {
                 namespace = mailboxName.substring(0, namespaceLength);
                 if (mailboxName.length() > namespaceLength)
@@ -317,29 +318,29 @@ abstract public class AbstractMailboxProcessor extends AbstractChainedProcessor 
      * @param mailboxPath
      * @return
      */
-    private String joinMailboxPath(MailboxPath mailboxPath) {
+    private String joinMailboxPath(MailboxPath mailboxPath, char delimiter) {
         StringBuffer sb = new StringBuffer("");
         if (mailboxPath.getNamespace() != null && !mailboxPath.getNamespace().equals("")) {
             sb.append(mailboxPath.getNamespace());
         }
         if (mailboxPath.getUser() != null && !mailboxPath.getUser().equals("")) {
             if (sb.length() > 0)
-                sb.append(MailboxConstants.DEFAULT_DELIMITER);
+                sb.append(delimiter);
             sb.append(mailboxPath.getUser());
         }
         if (mailboxPath.getName() != null && !mailboxPath.getName().equals("")) {
             if (sb.length() > 0)
-                sb.append(MailboxConstants.DEFAULT_DELIMITER);
+                sb.append(delimiter);
             sb.append(mailboxPath.getName());
         }
         return sb.toString();
     }
 
-    public String mailboxName(final boolean relative, final MailboxPath path) {
+    public String mailboxName(final boolean relative, final MailboxPath path, final char delimiter) {
         if (relative) {
             return path.getName();
         } else {
-            return joinMailboxPath(path);
+            return joinMailboxPath(path, delimiter);
         }
     }
     

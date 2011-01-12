@@ -49,55 +49,55 @@ public abstract class AbstractTestImapResponseComposer {
     @Test
     public void testQuotedDelimiter() throws Exception {
         checkListResponseEncode("* LSUB () \"\\\"\" \"#news\"\r\n", "LSUB",
-                null, "\"", "#news");
+                null, '\"', "#news");
         checkListResponseEncode("* LIST () \"\\\"\" \"#INBOX\"\r\n", "LIST",
-                null, "\"", "#INBOX");
+                null, '\"', "#INBOX");
         checkListResponseEncode("* LSUB () \"\\\\\" \"#news\"\r\n", "LSUB",
-                null, "\\", "#news");
+                null, '\\', "#news");
         checkListResponseEncode("* LIST () \"\\\\\" \"#INBOX\"\r\n", "LIST",
-                null, "\\", "#INBOX");
+                null, '\\', "#INBOX");
     }
     
     @Test
     public void testNilDelimiter() throws Exception {
         checkListResponseEncode("* LSUB () NIL \"#news\"\r\n", "LSUB", null,
-                null, "#news");
+                (char)Character.UNASSIGNED, "#news");
         checkListResponseEncode("* LIST () NIL \"#INBOX\"\r\n", "LIST", null,
-                null, "#INBOX");
+        		(char)Character.UNASSIGNED, "#INBOX");
     }
 
     @Test
     public void testSimple() throws Exception {
         checkListResponseEncode("* LSUB () \".\" \"#news\"\r\n", "LSUB", null,
-                ".", "#news");
+                '.', "#news");
         checkListResponseEncode("* LIST () \".\" \"#INBOX\"\r\n", "LIST", null,
-                ".", "#INBOX");
+                '.', "#INBOX");
         checkListResponseEncode("* LSUB () \".\" \"#news.sub\"\r\n", "LSUB",
-                null, ".", "#news.sub");
+                null, '.', "#news.sub");
         checkListResponseEncode("* LIST () \".\" \"#INBOX.sub\"\r\n", "LIST",
-                null, ".", "#INBOX.sub");
+                null, '.', "#INBOX.sub");
     }
 
     @Test
     public void testSpecialNames() throws Exception {
         checkListResponseEncode(
                 "* LSUB () \"\\\\\" \"#news\\\\sub\\\\directory\"\r\n", "LSUB",
-                null, "\\", "#news\\sub\\directory");
+                null, '\\', "#news\\sub\\directory");
         checkListResponseEncode(
                 "* LIST () \"\\\\\" \"#INBOX\\\\sub\\\\directory\"\r\n",
-                "LIST", null, "\\", "#INBOX\\sub\\directory");
+                "LIST", null, '\\', "#INBOX\\sub\\directory");
         checkListResponseEncode(
                 "* LSUB () \".\" \"#news.sub directory.what\"\r\n", "LSUB",
-                null, ".", "#news.sub directory.what");
+                null, '.', "#news.sub directory.what");
         checkListResponseEncode(
                 "* LIST () \".\" \"#INBOX.sub directory.what\"\r\n", "LIST",
-                null, ".", "#INBOX.sub directory.what");
+                null, '.', "#INBOX.sub directory.what");
         checkListResponseEncode(
                 "* LSUB () \".\" \"#news.\\\"sub directory\\\".what\"\r\n",
-                "LSUB", null, ".", "#news.\"sub directory\".what");
+                "LSUB", null, '.', "#news.\"sub directory\".what");
         checkListResponseEncode(
                 "* LIST () \".\" \"#INBOX.\\\"sub directory\\\".what\"\r\n",
-                "LIST", null, ".", "#INBOX.\"sub directory\".what");
+                "LIST", null, '.', "#INBOX.\"sub directory\".what");
     }
 
     @Test
@@ -109,10 +109,10 @@ public abstract class AbstractTestImapResponseComposer {
         attributes.add("\\four");
         checkListResponseEncode(
                 "* LSUB (\\one \\two \\three \\four) \".\" \"#news\"\r\n",
-                "LSUB", attributes, ".", "#news");
+                "LSUB", attributes, '.', "#news");
         checkListResponseEncode(
                 "* LIST (\\one \\two \\three \\four) \".\" \"#INBOX\"\r\n",
-                "LIST", attributes, ".", "#INBOX");
+                "LIST", attributes, '.', "#INBOX");
     }
 
     @Test
@@ -206,7 +206,7 @@ public abstract class AbstractTestImapResponseComposer {
     protected abstract byte[] encodeSearchResponse(long[] ids) throws Exception;
 
     private void checkListResponseEncode(String expected, String typeName,
-            List<String> attributes, String hierarchyDelimiter, String name)
+            List<String> attributes, char hierarchyDelimiter, String name)
             throws Exception {
         StringBuffer buffer = new StringBuffer();
         byte[] output = encodeListResponse(typeName, attributes,
@@ -219,7 +219,7 @@ public abstract class AbstractTestImapResponseComposer {
     }
 
     protected abstract byte[] encodeListResponse(String typeName,
-            List<String> attributes, String hierarchyDelimiter, String name)
+            List<String> attributes, char hierarchyDelimiter, String name)
             throws Exception;
 
     private void checkStatusResponseEncode(String expected, Long messages,

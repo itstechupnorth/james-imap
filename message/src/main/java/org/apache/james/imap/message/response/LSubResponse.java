@@ -25,7 +25,7 @@ import org.apache.james.imap.api.message.response.ImapResponseMessage;
  */
 public final class LSubResponse extends AbstractListingResponse implements
         ImapResponseMessage {
-    public LSubResponse(final String name, final boolean noSelect) {
-        super(false, noSelect, false, false, false, false, name);
+    public LSubResponse(final String name, final boolean noSelect, final char delimiter) {
+        super(false, noSelect, false, false, false, false, name, delimiter);
     }
 }

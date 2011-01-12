@@ -19,16 +19,14 @@
 
 package org.apache.james.imap.encode;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
 import java.util.List;
 
 import org.apache.james.imap.api.ImapConstants;
 import org.apache.james.imap.api.ImapMessage;
-import org.apache.james.imap.encode.ImapEncoder;
-import org.apache.james.imap.encode.ImapResponseComposer;
-import org.apache.james.imap.encode.LSubResponseEncoder;
 import org.apache.james.imap.message.response.LSubResponse;
 import org.apache.james.imap.message.response.ListResponse;
 import org.jmock.Expectations;
@@ -60,8 +58,8 @@ public class LSubResponseEncoderTest  {
     @Test
     public void testIsAcceptable() {
         assertFalse(encoder.isAcceptable(new ListResponse(true, true, true,
-                true, false, false, "name")));
-        assertTrue(encoder.isAcceptable(new LSubResponse("name", true)));
+                true, false, false, "name", '.')));
+        assertTrue(encoder.isAcceptable(new LSubResponse("name", true, '.')));
         assertFalse(encoder.isAcceptable(context.mock(ImapMessage.class)));
         assertFalse(encoder.isAcceptable(null));
     }
@@ -70,26 +68,26 @@ public class LSubResponseEncoderTest  {
     @SuppressWarnings("unchecked")
 	public void testName() throws Exception {
         context.checking(new Expectations() {{
-            oneOf(composer).listResponse(with(equal("LSUB")),with(aNull(List.class)), with(equal(".")), with(equal("INBOX.name")));
+            oneOf(composer).listResponse(with(equal("LSUB")),with(aNull(List.class)), with(equal('.')), with(equal("INBOX.name")));
         }});
-        encoder.encode(new LSubResponse("INBOX.name", false), composer, new FakeImapSession());
+        encoder.encode(new LSubResponse("INBOX.name", false, '.'), composer, new FakeImapSession());
     }
 
     @Test
     @SuppressWarnings("unchecked")
 	public void testDelimiter() throws Exception {
         context.checking(new Expectations() {{
-            oneOf(composer).listResponse(with(equal("LSUB")),with(aNull(List.class)), with(equal(".")), with(equal("INBOX.name")));
+            oneOf(composer).listResponse(with(equal("LSUB")),with(aNull(List.class)), with(equal('.')), with(equal("INBOX.name")));
         }});
-        encoder.encode(new LSubResponse("INBOX.name", false), composer, new FakeImapSession());
+        encoder.encode(new LSubResponse("INBOX.name", false, '.'), composer, new FakeImapSession());
     }
 
     @Test
     public void testNoSelect() throws Exception {
         final String[] values = { ImapConstants.NAME_ATTRIBUTE_NOSELECT };
         context.checking(new Expectations() {{
-            oneOf(composer).listResponse(with(equal("LSUB")),with(equal(Arrays.asList(values))), with(equal(".")), with(equal("INBOX.name")));
+            oneOf(composer).listResponse(with(equal("LSUB")),with(equal(Arrays.asList(values))), with(equal('.')), with(equal("INBOX.name")));
         }});
-        encoder.encode(new LSubResponse("INBOX.name", true), composer, new FakeImapSession());
+        encoder.encode(new LSubResponse("INBOX.name", true, '.'), composer, new FakeImapSession());
     }
 }

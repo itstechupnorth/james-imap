@@ -352,7 +352,7 @@ public class ImapResponseComposerImpl implements ImapConstants, ImapResponseComp
      * @see org.apache.james.imap.encode.ImapResponseComposer#listResponse(java.lang.String, java.util.List, java.lang.String, java.lang.String)
      */
     public void listResponse(String typeName, List<String> attributes,
-            String hierarchyDelimiter, String name) throws IOException {
+            char hierarchyDelimiter, String name) throws IOException {
         untagged();
         message(typeName);
         openParen();
@@ -364,12 +364,11 @@ public class ImapResponseComposerImpl implements ImapConstants, ImapResponseComp
         }
         closeParen();
 
-        if (hierarchyDelimiter == null) {
+        if (hierarchyDelimiter == Character.UNASSIGNED) {
             message(NIL);
         } else {
-            quote(hierarchyDelimiter);
+            quote(Character.toString(hierarchyDelimiter));
         }
-
         quote(name);
 
         end();

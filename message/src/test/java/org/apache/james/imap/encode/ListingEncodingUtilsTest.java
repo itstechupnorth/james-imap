@@ -49,7 +49,7 @@ public class ListingEncodingUtilsTest  {
         
         context.checking (new Expectations() {{
             oneOf(mock).listResponse(with(equal(typeNameParameters)), with(equal(attributesOutput)), 
-                    with(equal(".")), with(equal(nameParameter)));
+                    with(equal('.')), with(equal(nameParameter)));
         }});
     }
 
@@ -57,7 +57,7 @@ public class ListingEncodingUtilsTest  {
     public void testShouldAddHasChildrenToAttributes() throws Exception {
         // Setup 
         attributesOutput.add("\\HasChildren");
-        ListResponse input = new ListResponse(false, false, false, false, true, false, nameParameter);
+        ListResponse input = new ListResponse(false, false, false, false, true, false, nameParameter, '.');
             
         // Exercise
         ListingEncodingUtils.encodeListingResponse(typeNameParameters, mock, input);
@@ -67,7 +67,7 @@ public class ListingEncodingUtilsTest  {
     public void testShouldAddHasNoChildrenToAttributes() throws Exception {
         // Setup 
         attributesOutput.add("\\HasNoChildren");
-        ListResponse input = new ListResponse(false, false, false, false, false, true, nameParameter);
+        ListResponse input = new ListResponse(false, false, false, false, false, true, nameParameter, '.');
             
         // Exercise
         ListingEncodingUtils.encodeListingResponse(typeNameParameters, mock, input);

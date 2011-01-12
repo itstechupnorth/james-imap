@@ -28,6 +28,7 @@ import org.apache.james.imap.api.ImapMessage;
 import org.apache.james.imap.api.message.BodyFetchElement;
 import org.apache.james.imap.api.message.FetchData;
 import org.apache.james.imap.api.message.IdRange;
+import org.apache.james.imap.api.process.ImapSession;
 import org.apache.james.imap.decode.ImapRequestLineReader;
 import org.apache.james.imap.decode.DecodingException;
 import org.apache.james.imap.decode.ImapRequestStreamLineReader;
@@ -51,6 +52,7 @@ public class FetchCommandParserPartialFetchTest  {
     ImapCommand command;
 
     ImapMessage message;
+    ImapSession session;
 
     @Before
     public void setUp() throws Exception {
@@ -58,6 +60,8 @@ public class FetchCommandParserPartialFetchTest  {
         mockMessageFactory = context.mock(ImapMessageFactory.class);
         command = ImapCommand.anyStateCommand("Command");
         message = context.mock(ImapMessage.class);
+        session = context.mock(ImapSession.class);
+        
         parser.setMessageFactory(mockMessageFactory);
     }
 
@@ -86,7 +90,7 @@ public class FetchCommandParserPartialFetchTest  {
             ImapRequestLineReader reader = new ImapRequestStreamLineReader(
                     new ByteArrayInputStream("1 (BODY[]<20.0>)\r\n"
                             .getBytes("US-ASCII")), new ByteArrayOutputStream());
-            parser.decode(command, reader, "A01", false, new MockLogger());                
+            parser.decode(command, reader, "A01", false, new MockLogger(), session);                
             throw new Exception("Number of octets must be non-zero");
 
         } catch (DecodingException e) {
@@ -103,6 +107,6 @@ public class FetchCommandParserPartialFetchTest  {
             oneOf (mockMessageFactory).createFetchMessage( with(equal(command)), with(equal(useUids)), 
                     with(equal(idSet)),with(equal(data)), with(same(tag)));will(returnValue(message));
         }});
-        parser.decode(command, reader, tag, useUids, new MockLogger());
+        parser.decode(command, reader, tag, useUids, new MockLogger(), session);
     }
 }

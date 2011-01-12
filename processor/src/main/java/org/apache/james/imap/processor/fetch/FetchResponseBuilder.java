@@ -30,12 +30,12 @@ import java.util.List;
 
 import javax.mail.Flags;
 
+import org.apache.james.imap.api.ImapSessionUtils;
 import org.apache.james.imap.api.message.BodyFetchElement;
 import org.apache.james.imap.api.message.FetchData;
 import org.apache.james.imap.api.process.ImapSession;
 import org.apache.james.imap.api.process.SelectedMailbox;
 import org.apache.james.imap.message.response.FetchResponse;
-import org.apache.james.imap.processor.base.ImapSessionUtils;
 import org.apache.james.imap.processor.base.MessageRangeException;
 import org.apache.james.mailbox.Content;
 import org.apache.james.mailbox.MailboxException;

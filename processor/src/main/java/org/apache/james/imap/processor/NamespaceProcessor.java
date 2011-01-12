@@ -27,14 +27,13 @@ import java.util.List;
 
 import org.apache.james.imap.api.ImapCommand;
 import org.apache.james.imap.api.ImapMessage;
+import org.apache.james.imap.api.ImapSessionUtils;
 import org.apache.james.imap.api.message.request.ImapRequest;
 import org.apache.james.imap.api.message.response.StatusResponseFactory;
 import org.apache.james.imap.api.process.ImapProcessor;
 import org.apache.james.imap.api.process.ImapSession;
 import org.apache.james.imap.message.request.NamespaceRequest;
 import org.apache.james.imap.message.response.NamespaceResponse;
-import org.apache.james.imap.processor.base.ImapSessionUtils;
-import org.apache.james.mailbox.MailboxConstants;
 import org.apache.james.mailbox.MailboxManager;
 import org.apache.james.mailbox.MailboxSession;
 
@@ -69,7 +68,7 @@ public class NamespaceProcessor extends AbstractMailboxProcessor implements Capa
      */
     private List<NamespaceResponse.Namespace> buildPersonalNamespaces(final MailboxSession mailboxSession) {
         final List<NamespaceResponse.Namespace> personalSpaces = new ArrayList<NamespaceResponse.Namespace>();
-        personalSpaces.add(new NamespaceResponse.Namespace(mailboxSession.getPersonalSpace(), MailboxConstants.DEFAULT_DELIMITER));
+        personalSpaces.add(new NamespaceResponse.Namespace(mailboxSession.getPersonalSpace(), mailboxSession.getPathDelimiter()));
         return personalSpaces;
     }
 
@@ -80,7 +79,7 @@ public class NamespaceProcessor extends AbstractMailboxProcessor implements Capa
             otherUsersSpaces = null;
         } else {
             otherUsersSpaces = new ArrayList<NamespaceResponse.Namespace>(1);
-            otherUsersSpaces.add(new NamespaceResponse.Namespace(otherUsersSpace, MailboxConstants.DEFAULT_DELIMITER));
+            otherUsersSpaces.add(new NamespaceResponse.Namespace(otherUsersSpace, mailboxSession.getPathDelimiter()));
         }
         return otherUsersSpaces;
     }
@@ -91,7 +90,7 @@ public class NamespaceProcessor extends AbstractMailboxProcessor implements Capa
         if (!sharedSpaces.isEmpty()) {
             sharedNamespaces = new ArrayList<NamespaceResponse.Namespace>(sharedSpaces.size());
             for (String space: sharedSpaces) {
-                sharedNamespaces.add(new NamespaceResponse.Namespace(space, MailboxConstants.DEFAULT_DELIMITER));
+                sharedNamespaces.add(new NamespaceResponse.Namespace(space, mailboxSession.getPathDelimiter()));
             }    
         }
         return sharedNamespaces;

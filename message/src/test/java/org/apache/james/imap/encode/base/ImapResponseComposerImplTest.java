@@ -43,7 +43,7 @@ public class ImapResponseComposerImplTest extends
 
 
     protected byte[] encodeListResponse(String typeName, List<String> attributes,
-            String hierarchyDelimiter, String name) throws Exception {
+            char hierarchyDelimiter, String name) throws Exception {
         composer.listResponse(typeName, attributes, hierarchyDelimiter, name);
         return writer.getBytes();
     }

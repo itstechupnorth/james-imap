@@ -25,6 +25,7 @@ import java.util.List;
 import org.apache.james.imap.api.ImapCommand;
 import org.apache.james.imap.api.ImapConstants;
 import org.apache.james.imap.api.ImapMessage;
+import org.apache.james.imap.api.ImapSessionUtils;
 import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.api.message.request.ImapRequest;
 import org.apache.james.imap.api.message.response.ImapResponseMessage;
@@ -33,13 +34,13 @@ import org.apache.james.imap.api.process.ImapProcessor;
 import org.apache.james.imap.api.process.ImapSession;
 import org.apache.james.imap.message.request.ListRequest;
 import org.apache.james.imap.message.response.ListResponse;
-import org.apache.james.imap.processor.base.ImapSessionUtils;
 import org.apache.james.mailbox.MailboxConstants;
 import org.apache.james.mailbox.MailboxException;
 import org.apache.james.mailbox.MailboxManager;
 import org.apache.james.mailbox.MailboxMetaData;
 import org.apache.james.mailbox.MailboxPath;
 import org.apache.james.mailbox.MailboxQuery;
+import org.apache.james.mailbox.MailboxSession;
 import org.apache.james.mailbox.MailboxMetaData.Children;
 import org.apache.james.mailbox.util.SimpleMailboxMetaData;
 
@@ -66,9 +67,9 @@ public class ListProcessor extends AbstractMailboxProcessor {
 
     protected ImapResponseMessage createResponse(boolean noInferior,
             boolean noSelect, boolean marked, boolean unmarked,
-            boolean hasChildren, boolean hasNoChildren, String mailboxName) {
+            boolean hasChildren, boolean hasNoChildren, String mailboxName, char delimiter) {
         return new ListResponse(noInferior, noSelect, marked, unmarked,
-                hasChildren, hasNoChildren, mailboxName);
+                hasChildren, hasNoChildren, mailboxName, delimiter);
     }
 
     /**
@@ -101,6 +102,7 @@ public class ListProcessor extends AbstractMailboxProcessor {
             final List<MailboxMetaData> results;
 
             final String user = ImapSessionUtils.getUserName(session);
+            final MailboxSession mailboxSession = ImapSessionUtils.getMailboxSession(session);
 
             if (mailboxName.length() == 0) {
                 // An empty mailboxName signifies a request for the hierarchy
@@ -110,7 +112,7 @@ public class ListProcessor extends AbstractMailboxProcessor {
                 if (referenceName.startsWith(ImapConstants.NAMESPACE_PREFIX)) {
                     // A qualified reference name - get the root element
                     isRelative = false;
-                    int firstDelimiter = referenceName.indexOf(ImapConstants.HIERARCHY_DELIMITER_CHAR);
+                    int firstDelimiter = referenceName.indexOf(mailboxSession.getPathDelimiter());
                     if (firstDelimiter == -1) {
                         referenceRoot = referenceName;
                     }
@@ -126,7 +128,7 @@ public class ListProcessor extends AbstractMailboxProcessor {
                 // Get the mailbox for the reference name.
                 MailboxPath rootPath = new MailboxPath(referenceRoot, "", "");
                 results = new ArrayList<MailboxMetaData>(1);
-                results.add(SimpleMailboxMetaData.createNoSelect(rootPath, ImapConstants.HIERARCHY_DELIMITER));
+                results.add(SimpleMailboxMetaData.createNoSelect(rootPath, mailboxSession.getPathDelimiter()));
             }
             else {
                 // If the mailboxPattern is fully qualified, ignore the reference name.
@@ -145,8 +147,8 @@ public class ListProcessor extends AbstractMailboxProcessor {
                     basePath = buildFullPath(session, finalReferencename);
                 }
 
-                results = getMailboxManager().search(new MailboxQuery(basePath, mailboxName, '*', '%'),
-                                                     ImapSessionUtils.getMailboxSession(session));
+                results = getMailboxManager().search(new MailboxQuery(basePath, mailboxName, '*', '%', mailboxSession.getPathDelimiter()),
+                                                     mailboxSession);
             }
 
             for (final MailboxMetaData metaData: results) {
@@ -160,8 +162,8 @@ public class ListProcessor extends AbstractMailboxProcessor {
     }
 
     void processResult(final Responder responder, final boolean relative, final MailboxMetaData listResult) {
-        final String delimiter = listResult.getHierarchyDelimiter();
-        final String mailboxName = mailboxName(relative, listResult.getPath());
+        final char delimiter = listResult.getHierarchyDelimiter();
+        final String mailboxName = mailboxName(relative, listResult.getPath(), delimiter);
 
         final Children inferiors = listResult.inferiors();
         final boolean noInferior = MailboxMetaData.Children.NO_INFERIORS.equals(inferiors);
@@ -182,7 +184,7 @@ public class ListProcessor extends AbstractMailboxProcessor {
                 break;
         }
         responder.respond(createResponse(noInferior, noSelect, marked,
-                unmarked, hasChildren, hasNoChildren, mailboxName));
+                unmarked, hasChildren, hasNoChildren, mailboxName, delimiter));
     }
 
 }
