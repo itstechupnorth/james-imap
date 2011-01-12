@@ -28,7 +28,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.logging.Log;
 import org.apache.james.imap.api.ImapCommand;
 import org.apache.james.imap.api.ImapConstants;
 import org.apache.james.imap.api.ImapMessage;
@@ -946,10 +945,10 @@ public class SearchCommandParser extends AbstractUidCommandParser {
 
     /*
      * (non-Javadoc)
-     * @see org.apache.james.imap.decode.parser.AbstractUidCommandParser#decode(org.apache.james.imap.api.ImapCommand, org.apache.james.imap.decode.ImapRequestLineReader, java.lang.String, boolean, org.apache.commons.logging.Log, org.apache.james.imap.api.process.ImapSession)
+     * @see org.apache.james.imap.decode.parser.AbstractUidCommandParser#decode(org.apache.james.imap.api.ImapCommand, org.apache.james.imap.decode.ImapRequestLineReader, java.lang.String, boolean, org.apache.james.imap.api.process.ImapSession)
      */
     protected ImapMessage decode(ImapCommand command,
-            ImapRequestLineReader request, String tag, boolean useUids, Log logger, ImapSession session)
+            ImapRequestLineReader request, String tag, boolean useUids, ImapSession session)
             throws DecodingException {
         try {
             // Parse the search term from the request
@@ -959,10 +958,10 @@ public class SearchCommandParser extends AbstractUidCommandParser {
                     command, key, useUids, tag);
             return result;
         } catch (IllegalCharsetNameException e) {
-            logger.debug(e.getMessage());
+            session.getLog().debug("Unable to decode request", e);
             return unsupportedCharset(tag, command);
         } catch (UnsupportedCharsetException e) {
-            logger.debug(e.getMessage());
+            session.getLog().debug("Unable to decode request", e);
             return unsupportedCharset(tag, command);
         }
     }

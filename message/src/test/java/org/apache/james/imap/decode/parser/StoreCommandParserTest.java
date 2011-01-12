@@ -95,6 +95,6 @@ public class StoreCommandParserTest {
                     with(same(tag))
                     );will(returnValue(message));
         }});
-        parser.decode(command, reader, tag, useUids, new MockLogger(), session);
+        parser.decode(command, reader, tag, useUids, session);
     }
 }

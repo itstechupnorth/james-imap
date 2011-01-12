@@ -37,7 +37,6 @@ import java.util.Date;
 import javax.mail.Flags;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.logging.Log;
 import org.apache.james.imap.api.ImapMessageFactory;
 import org.apache.james.imap.api.ImapCommand;
 import org.apache.james.imap.api.ImapConstants;
@@ -111,7 +110,7 @@ public abstract class AbstractImapCommandParser implements ImapCommandParser, Me
      *            <code>ImapRequestLineReader</code>, not null
      * @return <code>ImapCommandMessage</code>, not null
      */
-    public final ImapMessage parse(ImapRequestLineReader request, String tag, Log logger, ImapSession session) {
+    public final ImapMessage parse(ImapRequestLineReader request, String tag, ImapSession session) {
         ImapMessage result;
         if (!command.validForState(session.getState())) {
             result = statusResponseFactory.taggedNo(tag, command,
@@ -119,10 +118,9 @@ public abstract class AbstractImapCommandParser implements ImapCommandParser, Me
         } else {
             try {
            
-                result = decode(command, request, tag, logger, session);
+                result = decode(command, request, tag, session);
             } catch (DecodingException e) {
-                logger.debug("Cannot parse protocol ", e);
-                e.printStackTrace();
+                session.getLog().debug("Cannot parse protocol ", e);
                 result = messageFactory.taggedBad(tag, command, e.getKey());
             }
         }
@@ -138,14 +136,13 @@ public abstract class AbstractImapCommandParser implements ImapCommandParser, Me
      * @param request
      *            <code>ImapRequestLineReader</code>, not null
      * @param tag command tag, not null
-     * @param logger TODO
      * @param session imap session 
      * @return <code>ImapCommandMessage</code>, not null
      * @throws DecodingException
      *             if the request cannot be parsed
      */
     protected abstract ImapMessage decode(ImapCommand command,
-            ImapRequestLineReader request, String tag, Log logger, ImapSession session) throws DecodingException;
+            ImapRequestLineReader request, String tag, ImapSession session) throws DecodingException;
     
 
     /**

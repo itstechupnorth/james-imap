@@ -20,7 +20,6 @@ package org.apache.james.imap.decode.parser;
 
 import javax.mail.Flags;
 
-import org.apache.commons.logging.Log;
 import org.apache.james.imap.api.ImapCommand;
 import org.apache.james.imap.api.ImapConstants;
 import org.apache.james.imap.api.ImapMessage;
@@ -42,10 +41,10 @@ public class StoreCommandParser extends AbstractUidCommandParser  {
 
     /*
      * (non-Javadoc)
-     * @see org.apache.james.imap.decode.parser.AbstractUidCommandParser#decode(org.apache.james.imap.api.ImapCommand, org.apache.james.imap.decode.ImapRequestLineReader, java.lang.String, boolean, org.apache.commons.logging.Log, org.apache.james.imap.api.process.ImapSession)
+     * @see org.apache.james.imap.decode.parser.AbstractUidCommandParser#decode(org.apache.james.imap.api.ImapCommand, org.apache.james.imap.decode.ImapRequestLineReader, java.lang.String, boolean, org.apache.james.imap.api.process.ImapSession)
      */
     protected ImapMessage decode(ImapCommand command,
-            ImapRequestLineReader request, String tag, boolean useUids, Log logger, ImapSession session)
+            ImapRequestLineReader request, String tag, boolean useUids, ImapSession session)
             throws DecodingException {
         final IdRange[] idSet = parseIdRange(request);
         final Boolean sign;

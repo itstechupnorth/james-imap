@@ -25,7 +25,6 @@ import java.io.ByteArrayOutputStream;
 
 import junit.framework.Assert;
 
-import org.apache.commons.logging.Log;
 import org.apache.james.imap.api.ImapCommand;
 import org.apache.james.imap.api.ImapConstants;
 import org.apache.james.imap.api.ImapMessage;
@@ -43,7 +42,7 @@ public class IdRangeParseTest  {
 
 		@Override
 		protected ImapMessage decode(ImapCommand command,
-				ImapRequestLineReader request, String tag, Log logger, ImapSession session)
+				ImapRequestLineReader request, String tag, ImapSession session)
 				throws DecodingException {
 			return null;
 		}

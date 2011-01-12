@@ -113,11 +113,12 @@ public class SearchCommandParserCharsetTest {
                     with(same(command)), 
                     with(equal(HumanReadableText.BAD_CHARSET)),
                     with(equal(StatusResponse.ResponseCode.badCharset(charsetNames))));
+            oneOf (session).getLog(); returnValue(new MockLogger());
         }});
         ImapRequestLineReader reader = new ImapRequestStreamLineReader(
                 new ByteArrayInputStream("CHARSET BOGUS ".getBytes("US-ASCII")),
                 new ByteArrayOutputStream());
-        parser.decode(command, reader, TAG, false, new MockLogger(), session);
+        parser.decode(command, reader, TAG, false, session);
     }
 
     @Test

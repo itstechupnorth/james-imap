@@ -200,11 +200,12 @@ public class SearchCommandParserQuotedCharsetTest {
                     with(same(command)), 
                     with(equal(HumanReadableText.BAD_CHARSET)),
                     with(equal(StatusResponse.ResponseCode.badCharset(charsetNames))));
+            oneOf(session).getLog(); returnValue(new MockLogger());
         }});
         ImapRequestLineReader reader = new ImapRequestStreamLineReader(
                 new ByteArrayInputStream("CHARSET BOGUS ".getBytes("US-ASCII")),
                 new ByteArrayOutputStream());
-        parser.decode(command, reader, TAG, false, new MockLogger(), session);
+        parser.decode(command, reader, TAG, false, session);
     }
 
     @Test
@@ -215,7 +216,7 @@ public class SearchCommandParserQuotedCharsetTest {
                     new ByteArrayInputStream(add("CHARSET US-ASCII BCC "
                             .getBytes("US-ASCII"), BYTES_NON_ASCII_SEARCH_TERM)),
                     new ByteArrayOutputStream());
-            parser.decode(command, reader, TAG, false, new MockLogger(), session);
+            parser.decode(command, reader, TAG, false, session);
             fail("A protocol exception should be thrown when charset is incompatible with input");
         } catch (DecodingException e) {
             // expected
