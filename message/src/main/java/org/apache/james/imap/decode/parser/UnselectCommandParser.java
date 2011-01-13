@@ -40,7 +40,7 @@ public class UnselectCommandParser extends AbstractImapCommandParser  {
     public UnselectCommandParser() {
         // from the RFC it seems like the command should be valid in any state. At least kind of, as
         // we will return a "BAD" response if no mailbox is currently selected in the UnselectProcessor
-        super(ImapCommand.anyStateCommand(ImapConstants.UNSELECT_COMMAND_NAME));
+        super(ImapCommand.authenticatedStateCommand(ImapConstants.UNSELECT_COMMAND_NAME));
 
     }
 
