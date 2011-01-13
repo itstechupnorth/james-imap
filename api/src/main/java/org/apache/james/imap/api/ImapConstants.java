@@ -177,6 +177,8 @@ public interface ImapConstants {
 
     public static final String SELECT_COMMAND_NAME = "SELECT";
 
+    public static final String UNSELECT_COMMAND_NAME = "UNSELECT";
+
     public static final String SEARCH_COMMAND_NAME = "SEARCH";
 
     public static final String RENAME_COMMAND_NAME = "RENAME";

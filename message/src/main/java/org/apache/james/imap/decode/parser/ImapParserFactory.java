@@ -118,6 +118,9 @@ public class ImapParserFactory implements
         _imapCommands.put(ImapConstants.IDLE_COMMAND_NAME,
                 IdleCommandParser.class);
         _imapCommands.put(ImapConstants.STARTTLS, StartTLSCommandParser.class);
+        
+        // RFC3691 
+        _imapCommands.put(ImapConstants.UNSELECT_COMMAND_NAME, UnselectCommandParser.class);
     }
 
     /**

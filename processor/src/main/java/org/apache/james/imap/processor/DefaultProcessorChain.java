@@ -99,16 +99,23 @@ public class DefaultProcessorChain {
         final NamespaceProcessor namespaceProcessor = new NamespaceProcessor(
                 selectProcessor, mailboxManager, statusResponseFactory);
         
+        
+        final ImapProcessor fetchProcessor = new FetchProcessor(namespaceProcessor,
+                mailboxManager, statusResponseFactory, batchSize);
+        final StartTLSProcessor startTLSProcessor = new StartTLSProcessor(fetchProcessor, statusResponseFactory);
+        
+        final UnselectProcessor unselectProcessor = new UnselectProcessor(startTLSProcessor, mailboxManager, statusResponseFactory);
+        
+        capabilityProcessor.addProcessor(startTLSProcessor);
         capabilityProcessor.addProcessor(idleProcessor);
         capabilityProcessor.addProcessor(namespaceProcessor);
         // added to announce UIDPLUS support
         capabilityProcessor.addProcessor(expungeProcessor);
         
-        final ImapProcessor fetchProcessor = new FetchProcessor(namespaceProcessor,
-                mailboxManager, statusResponseFactory, batchSize);
-        final StartTLSProcessor startTLSProcessor = new StartTLSProcessor(fetchProcessor, statusResponseFactory);
-        capabilityProcessor.addProcessor(startTLSProcessor);
-        return startTLSProcessor;
+        // announce the UNSELECT extension. See RFC3691
+        capabilityProcessor.addProcessor(unselectProcessor);
+
+        return unselectProcessor;
         
     }  
         

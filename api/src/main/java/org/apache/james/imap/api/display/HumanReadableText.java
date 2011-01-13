@@ -199,6 +199,8 @@ public class HumanReadableText {
     public static final HumanReadableText IDLING = new HumanReadableText(
             "org.apache.james.imap.IDLING", "Idling");
     
+    public static final HumanReadableText UNSELECT = new HumanReadableText(
+            "org.apache.james.imap.UNSELECT", "No Mailbox selected.");
     private final String defaultValue;
 
     private final String key;
