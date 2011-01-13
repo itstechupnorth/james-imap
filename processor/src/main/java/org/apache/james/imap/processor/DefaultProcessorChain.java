@@ -101,6 +101,8 @@ public class DefaultProcessorChain {
         
         capabilityProcessor.addProcessor(idleProcessor);
         capabilityProcessor.addProcessor(namespaceProcessor);
+        // added to announce UIDPLUS support
+        capabilityProcessor.addProcessor(expungeProcessor);
         
         final ImapProcessor fetchProcessor = new FetchProcessor(namespaceProcessor,
                 mailboxManager, statusResponseFactory, batchSize);
