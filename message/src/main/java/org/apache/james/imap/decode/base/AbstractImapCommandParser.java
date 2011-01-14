@@ -324,7 +324,7 @@ public abstract class AbstractImapCommandParser implements ImapCommandParser, Me
         }
     }
 
-    protected InputStream  consumeLiteral(final ImapRequestLineReader request) throws DecodingException {
+    protected int  consumeLiteral(final ImapRequestLineReader request) throws DecodingException {
         // The 1st character must be '{'
         consumeChar(request, '{');
 
@@ -357,7 +357,7 @@ public abstract class AbstractImapCommandParser implements ImapCommandParser, Me
         }
 
         final int size = Integer.parseInt(digits.toString());
-        return request.read(size);
+        return size;
     }
 
     private String decode(final Charset charset, final ByteBuffer buffer)

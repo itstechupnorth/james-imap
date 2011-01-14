@@ -30,6 +30,7 @@ import org.apache.james.imap.api.process.SelectedMailbox;
 import org.apache.james.imap.api.process.ImapProcessor.Responder;
 import org.apache.james.imap.decode.ImapDecoder;
 import org.apache.james.imap.decode.ImapRequestLineReader;
+import org.apache.james.imap.decode.parser.AppendCommandParser;
 import org.apache.james.imap.encode.ImapEncoder;
 import org.apache.james.imap.encode.ImapResponseComposer;
 
@@ -59,26 +60,38 @@ public abstract class AbstractImapRequestHandler {
     
     protected boolean doProcessRequest(ImapRequestLineReader request,
             ImapResponseComposer response, ImapSession session) {
-        ImapMessage message = decoder.decode(request, session);
-        final ResponseEncoder responseEncoder = new ResponseEncoder(encoder,
-                response, session);
-        processor.process(message, responseEncoder, session);
-        
-        final boolean result;
-        final IOException failure = responseEncoder.getFailure();
-        if (failure == null) {
-            result = true;
-        } else {
-            result = false;
-            final Log logger = session.getLog();
-            logger.info(failure.getMessage());
-            if (logger.isDebugEnabled()) {
-                logger.debug("Failed to write " + message, failure);
+        ImapDecoder nextDecoder = getDecoder(session);
+        ImapMessage message = nextDecoder.decode(request, session);
+        if (message != null) {
+            final ResponseEncoder responseEncoder = new ResponseEncoder(encoder, response, session);
+            processor.process(message, responseEncoder, session);
+
+            final boolean result;
+            final IOException failure = responseEncoder.getFailure();
+            if (failure == null) {
+                result = true;
+            } else {
+                result = false;
+                final Log logger = session.getLog();
+                logger.info(failure.getMessage());
+                if (logger.isDebugEnabled()) {
+                    logger.debug("Failed to write " + message, failure);
+                }
             }
+            return result;
         }
-        return result;
+        return true;
+        
     }
 
+    private ImapDecoder getDecoder(ImapSession session) {
+        ImapDecoder nextDecoder = (ImapDecoder) session.getAttribute(AppendCommandParser.NEXT_DECODER);
+        if (nextDecoder == null) {
+            return this.decoder;
+        } else {
+            return nextDecoder;
+        }
+    }
 
     protected boolean isSelectedMailboxDeleted(ImapSession session) {
         final boolean selectedMailboxIsDeleted;

@@ -18,6 +18,12 @@
  ****************************************************************/
 package org.apache.james.imap.decode.parser;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.FilterInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Date;
 
 import javax.mail.Flags;
@@ -26,18 +32,22 @@ import org.apache.james.imap.api.ImapCommand;
 import org.apache.james.imap.api.ImapConstants;
 import org.apache.james.imap.api.ImapMessage;
 import org.apache.james.imap.api.process.ImapSession;
+import org.apache.james.imap.decode.ImapDecoder;
 import org.apache.james.imap.decode.ImapRequestLineReader;
 import org.apache.james.imap.decode.DecodingException;
 import org.apache.james.imap.decode.base.AbstractImapCommandParser;
-import org.apache.james.imap.decode.base.EolInputStream;
 import org.apache.james.imap.message.request.AppendRequest;
+import org.apache.james.imap.message.request.ContinuationRequest;
 
 /**
  * Parses APPEND command
  *
  */
 public class AppendCommandParser extends AbstractImapCommandParser {
-
+    
+    public final String BYTES_WRITTEN = AppendCommandParser.class.getName() + "_BYTES_WRITTEN";
+    public final static String NEXT_DECODER = "NEXT_DECODER";
+    
     public AppendCommandParser() {
     	super(ImapCommand.authenticatedStateCommand(ImapConstants.APPEND_COMMAND_NAME));
     }
@@ -76,23 +86,88 @@ public class AppendCommandParser extends AbstractImapCommandParser {
      * (non-Javadoc)
      * @see org.apache.james.imap.decode.base.AbstractImapCommandParser#decode(org.apache.james.imap.api.ImapCommand, org.apache.james.imap.decode.ImapRequestLineReader, java.lang.String, org.apache.commons.logging.Log, org.apache.james.imap.api.process.ImapSession)
      */
-    protected ImapMessage decode(ImapCommand command,
-            ImapRequestLineReader request, String tag, ImapSession session) throws DecodingException {
-        String mailboxName = mailbox(request);
+    protected ImapMessage decode(final ImapCommand command,
+            ImapRequestLineReader request, final String tag, ImapSession session) throws DecodingException {
+        final String mailboxName = mailbox(request);
         Flags flags = optionalAppendFlags(request);
         if (flags == null) {
             flags = new Flags();
         }
+        final Flags f = flags;
+        
         Date datetime = optionalDateTime(request);
         if (datetime == null) {
             datetime = new Date();
         }
+        final Date dt = datetime;
         request.nextWordChar();
         
+        try {
+            final File file = File.createTempFile("imap-append", ".m64");
+            final FileOutputStream out = new FileOutputStream(file);
+            final int size = consumeLiteral(request);
+            session.setAttribute(BYTES_WRITTEN, 0);
+            
+            ImapDecoder nextDecoder = new ImapDecoder() {
+                
+                public ImapMessage decode(ImapRequestLineReader request, ImapSession session) {
+                    int bytes = (Integer)session.getAttribute(BYTES_WRITTEN);
+                    try {
+                        while(bytes < size) {
+                            out.write((byte)request.consume());
+                            bytes++;
+                        }
+                        if (bytes == size) {
+                            request.eol();
+                            session.setAttribute(NEXT_DECODER, null);
+                            return new AppendRequest(command, mailboxName, f, dt, new DeleteOnCloseInputStream(new FileInputStream(file), file) , tag);
+                        }
+                        
+                    } catch (DecodingException e) {
+                       // expected on end of line
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    return null;
+                }
+            };
+            session.setAttribute(NEXT_DECODER, nextDecoder);
+
+            
+            return new ContinuationRequest(command, tag, nextDecoder); 
+            
+        } catch (IOException e1) {
+            // TODO Auto-generated catch block
+            e1.printStackTrace();
+        }
+
+       
+        /*
         // Use a EolInputStream so it will call eol when the message was read
         final EolInputStream message = new EolInputStream(request, consumeLiteral(request));
         final ImapMessage result = new AppendRequest(command,
                 mailboxName, flags, datetime, message, tag);
         return result;
+        */
+        
+        //TODO: fix me!
+        return null;
+    }
+    
+    private class DeleteOnCloseInputStream extends FilterInputStream {
+
+        private File f;
+
+        protected DeleteOnCloseInputStream(InputStream in, File f) {
+            super(in);
+            this.f = f;
+        }
+
+        @Override
+        public void close() throws IOException {
+            super.close();
+            f.delete();
+        }
+        
     }
 }

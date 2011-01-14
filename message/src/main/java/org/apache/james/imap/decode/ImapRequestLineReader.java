@@ -20,7 +20,6 @@
 package org.apache.james.imap.decode;
 
 import java.io.IOException;
-import java.io.InputStream;
 
 import org.apache.james.imap.api.ContinuationReader;
 import org.apache.james.imap.api.display.HumanReadableText;
@@ -130,19 +129,7 @@ public abstract class ImapRequestLineReader implements ContinuationReader {
         return current;
     }
 
-    /**
-     * Reads and consumes a number of characters from the underlying reader,
-     * filling the char array provided. TODO: remove unnecessary copying of
-     * bits; line reader should maintain an internal ByteBuffer;
-     * 
-     * @param holder
-     *            A char array which will be filled with chars read from the
-     *            underlying reader.
-     * @throws DecodingException
-     *             If a char can't be read into each array element.
-     */
-    public abstract InputStream read(int size) throws DecodingException;
-
+    
 
     /**
      * Consume the rest of the line
