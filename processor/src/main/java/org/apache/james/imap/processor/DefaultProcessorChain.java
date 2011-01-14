@@ -106,6 +106,8 @@ public class DefaultProcessorChain {
         
         final UnselectProcessor unselectProcessor = new UnselectProcessor(startTLSProcessor, mailboxManager, statusResponseFactory);
         
+        final ContinuationProcessor contProcessor = new ContinuationProcessor(unselectProcessor);
+        
         capabilityProcessor.addProcessor(startTLSProcessor);
         capabilityProcessor.addProcessor(idleProcessor);
         capabilityProcessor.addProcessor(namespaceProcessor);
@@ -115,7 +117,7 @@ public class DefaultProcessorChain {
         // announce the UNSELECT extension. See RFC3691
         capabilityProcessor.addProcessor(unselectProcessor);
 
-        return unselectProcessor;
+        return contProcessor;
         
     }  
         

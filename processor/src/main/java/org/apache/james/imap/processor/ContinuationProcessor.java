@@ -16,30 +16,29 @@
  * specific language governing permissions and limitations      *
  * under the License.                                           *
  ****************************************************************/
-
-package org.apache.james.imap.encode;
-
-import java.io.IOException;
+package org.apache.james.imap.processor;
 
 import org.apache.james.imap.api.ImapMessage;
+import org.apache.james.imap.api.process.ImapProcessor;
 import org.apache.james.imap.api.process.ImapSession;
-import org.apache.james.imap.encode.base.AbstractChainedImapEncoder;
+import org.apache.james.imap.message.request.ContinuationRequest;
 import org.apache.james.imap.message.response.ContinuationRequestResponse;
+import org.apache.james.imap.processor.base.AbstractChainedProcessor;
 
-public class ContinuationRequestEncoder extends AbstractChainedImapEncoder {
-    
-    public ContinuationRequestEncoder(ImapEncoder next) {
+public class ContinuationProcessor extends AbstractChainedProcessor{
+
+    public ContinuationProcessor(ImapProcessor next) {
         super(next);
     }
 
-    protected void doEncode(ImapMessage acceptableMessage,
-            ImapResponseComposer composer, ImapSession session) throws IOException {
-        composer.commandContinuationRequest();        
+    @Override
+    protected boolean isAcceptable(ImapMessage message) {
+        return message instanceof ContinuationRequest;
     }
 
-
-    protected boolean isAcceptable(ImapMessage message) {
-        return (message instanceof ContinuationRequestResponse);
+    @Override
+    protected void doProcess(ImapMessage acceptableMessage, Responder responder, ImapSession session) {
+        responder.respond(new ContinuationRequestResponse());       
     }
 
 }

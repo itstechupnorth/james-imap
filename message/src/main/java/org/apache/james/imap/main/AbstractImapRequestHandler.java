@@ -31,7 +31,6 @@ import org.apache.james.imap.api.process.SelectedMailbox;
 import org.apache.james.imap.api.process.ImapProcessor.Responder;
 import org.apache.james.imap.decode.ImapDecoder;
 import org.apache.james.imap.decode.ImapRequestLineReader;
-import org.apache.james.imap.decode.parser.AppendCommandParser;
 import org.apache.james.imap.encode.ImapEncoder;
 import org.apache.james.imap.encode.ImapResponseComposer;
 

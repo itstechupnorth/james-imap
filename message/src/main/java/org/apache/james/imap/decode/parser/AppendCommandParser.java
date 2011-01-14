@@ -31,6 +31,7 @@ import javax.mail.Flags;
 import org.apache.james.imap.api.ImapCommand;
 import org.apache.james.imap.api.ImapConstants;
 import org.apache.james.imap.api.ImapMessage;
+import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.api.process.ImapSession;
 import org.apache.james.imap.decode.ImapDecoder;
 import org.apache.james.imap.decode.ImapRequestLineReader;
@@ -112,18 +113,21 @@ public class AppendCommandParser extends AbstractImapCommandParser {
                 public ImapMessage decode(ImapRequestLineReader request, ImapSession session) {
                     int bytes = (Integer)session.getAttribute(BYTES_WRITTEN);
                     try {
-                        while(bytes < size) {
+                        while(request.isConsumed() == false && bytes < size) {
                             out.write((byte)request.consume());
                             bytes++;
                         }
                         if (bytes == size) {
                             request.eol();
                             session.setAttribute(ImapConstants.NEXT_DECODER, null);
+                            session.setAttribute(BYTES_WRITTEN, null);
                             return new AppendRequest(command, mailboxName, f, dt, new DeleteOnCloseInputStream(new FileInputStream(file), file) , tag);
+                        } else {
+                            session.setAttribute(BYTES_WRITTEN, bytes);
                         }
                         
                     } catch (DecodingException e) {
-                       // expected on end of line
+                        e.printStackTrace();
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -136,21 +140,11 @@ public class AppendCommandParser extends AbstractImapCommandParser {
             return new ContinuationRequest(command, tag, nextDecoder); 
             
         } catch (IOException e1) {
-            // TODO Auto-generated catch block
             e1.printStackTrace();
+            throw new DecodingException(HumanReadableText.GENERIC_FAILURE_DURING_PROCESSING,e1.getMessage());
         }
 
        
-        /*
-        // Use a EolInputStream so it will call eol when the message was read
-        final EolInputStream message = new EolInputStream(request, consumeLiteral(request));
-        final ImapMessage result = new AppendRequest(command,
-                mailboxName, flags, datetime, message, tag);
-        return result;
-        */
-        
-        //TODO: fix me!
-        return null;
     }
     
     private class DeleteOnCloseInputStream extends FilterInputStream {
