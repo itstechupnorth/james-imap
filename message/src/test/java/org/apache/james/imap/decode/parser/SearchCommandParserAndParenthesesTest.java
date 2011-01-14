@@ -22,7 +22,6 @@ package org.apache.james.imap.decode.parser;
 import static org.junit.Assert.assertEquals;
 
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
@@ -35,6 +34,7 @@ import org.apache.james.imap.api.message.request.SearchKey;
 import org.apache.james.imap.decode.ImapRequestLineReader;
 import org.apache.james.imap.decode.DecodingException;
 import org.apache.james.imap.decode.ImapRequestStreamLineReader;
+import org.apache.james.imap.encode.MockImapResponseComposer;
 import org.jmock.Mockery;
 import org.jmock.integration.junit4.JMock;
 import org.jmock.integration.junit4.JUnit4Mockery;
@@ -193,7 +193,7 @@ public class SearchCommandParserAndParenthesesTest {
         String input = in.input + "\r\n";
         ImapRequestLineReader reader = new ImapRequestStreamLineReader(
                 new ByteArrayInputStream(input.getBytes("US-ASCII")),
-                new ByteArrayOutputStream());
+                new MockImapResponseComposer());
 
         final SearchKey result = parser.decode(reader);
         assertEquals(in.key, result);

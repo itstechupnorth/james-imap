@@ -20,7 +20,6 @@
 package org.apache.james.imap.decode.parser;
 
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 
 import javax.mail.Flags;
 
@@ -30,7 +29,7 @@ import org.apache.james.imap.api.message.IdRange;
 import org.apache.james.imap.api.process.ImapSession;
 import org.apache.james.imap.decode.ImapRequestLineReader;
 import org.apache.james.imap.decode.ImapRequestStreamLineReader;
-import org.jmock.Expectations;
+import org.apache.james.imap.encode.MockImapResponseComposer;
 import org.jmock.Mockery;
 import org.jmock.integration.junit4.JMock;
 import org.jmock.integration.junit4.JUnit4Mockery;
@@ -77,7 +76,7 @@ public class StoreCommandParserTest {
             throws Exception {
         ImapRequestLineReader reader = new ImapRequestStreamLineReader(
                 new ByteArrayInputStream(input.getBytes("US-ASCII")),
-                new ByteArrayOutputStream());
+                new MockImapResponseComposer());
 
         parser.decode(command, reader, tag, useUids, session);
     }

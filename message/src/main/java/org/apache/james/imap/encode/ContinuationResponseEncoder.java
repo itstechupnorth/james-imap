@@ -45,7 +45,7 @@ public class ContinuationResponseEncoder extends AbstractChainedImapEncoder {
         
         ContinuationResponse response = (ContinuationResponse) acceptableMessage;
         final String message = response.getData() != null ? response.getData() : asString(response.getTextKey(), session);
-        composer.continuationResponse(message);
+        composer.continuation(message);
     }
 
     private String asString(HumanReadableText text, ImapSession session) {

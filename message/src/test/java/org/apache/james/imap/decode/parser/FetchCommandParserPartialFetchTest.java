@@ -20,7 +20,6 @@
 package org.apache.james.imap.decode.parser;
 
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 
 import org.apache.james.imap.api.ImapCommand;
 import org.apache.james.imap.api.ImapMessage;
@@ -32,6 +31,7 @@ import org.apache.james.imap.decode.ImapRequestLineReader;
 import org.apache.james.imap.decode.DecodingException;
 import org.apache.james.imap.decode.ImapRequestStreamLineReader;
 import org.apache.james.imap.decode.parser.FetchCommandParser;
+import org.apache.james.imap.encode.MockImapResponseComposer;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -84,7 +84,7 @@ public class FetchCommandParserPartialFetchTest  {
         try {
             ImapRequestLineReader reader = new ImapRequestStreamLineReader(
                     new ByteArrayInputStream("1 (BODY[]<20.0>)\r\n"
-                            .getBytes("US-ASCII")), new ByteArrayOutputStream());
+                            .getBytes("US-ASCII")), new MockImapResponseComposer());
             parser.decode(command, reader, "A01", false, session);                
             throw new Exception("Number of octets must be non-zero");
 
@@ -97,7 +97,7 @@ public class FetchCommandParserPartialFetchTest  {
             final boolean useUids, final FetchData data, final String tag) throws Exception {
         ImapRequestLineReader reader = new ImapRequestStreamLineReader(
                 new ByteArrayInputStream(input.getBytes("US-ASCII")),
-                new ByteArrayOutputStream());
+                new MockImapResponseComposer());
 
         parser.decode(command, reader, tag, useUids, session);
     }

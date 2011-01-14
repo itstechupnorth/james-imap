@@ -22,7 +22,6 @@ package org.apache.james.imap.decode.parser;
 import static org.junit.Assert.assertEquals;
 
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.nio.charset.Charset;
 import java.util.Collection;
 import java.util.HashSet;
@@ -38,6 +37,7 @@ import org.apache.james.imap.api.message.response.StatusResponseFactory;
 import org.apache.james.imap.api.process.ImapSession;
 import org.apache.james.imap.decode.ImapRequestLineReader;
 import org.apache.james.imap.decode.ImapRequestStreamLineReader;
+import org.apache.james.imap.encode.MockImapResponseComposer;
 import org.jmock.Expectations;
 import org.jmock.Mockery;
 import org.jmock.integration.junit4.JMock;
@@ -113,7 +113,7 @@ public class SearchCommandParserCharsetTest {
         }});
         ImapRequestLineReader reader = new ImapRequestStreamLineReader(
                 new ByteArrayInputStream("CHARSET BOGUS ".getBytes("US-ASCII")),
-                new ByteArrayOutputStream());
+                new MockImapResponseComposer());
         parser.decode(command, reader, TAG, false, session);
     }
 
@@ -185,7 +185,7 @@ public class SearchCommandParserCharsetTest {
         ImapRequestLineReader reader = new ImapRequestStreamLineReader(
                 new ByteArrayInputStream(NioUtils.add(NioUtils.add(CHARSET,
                         term), BYTES_UTF8_NON_ASCII_SEARCH_TERM)),
-                new ByteArrayOutputStream());
+                new MockImapResponseComposer());
         final SearchKey searchKey = parser.searchKey(reader, null, true);
         assertEquals(key, searchKey);
     }
@@ -194,7 +194,7 @@ public class SearchCommandParserCharsetTest {
             String charset) throws Exception {
         ImapRequestLineReader reader = new ImapRequestStreamLineReader(
                 new ByteArrayInputStream(input.getBytes(charset)),
-                new ByteArrayOutputStream());
+                new MockImapResponseComposer());
 
         final SearchKey searchKey = parser.searchKey(reader, null, isFirst);
         assertEquals(key, searchKey);

@@ -165,8 +165,8 @@ public class FetchResponseEncoder extends AbstractChainedImapEncoder {
         final List<String> languages = structure.getLanguages();
         final String location = structure.getLocation();
         composer.nillableQuote(md5);
-        bodyFldDsp(structure, composer, session).nillableQuotes(languages)
-                .nillableQuote(location);
+        bodyFldDsp(structure, composer, session).nillableQuotes(languages);
+        composer.nillableQuote(location);
     }
 
     private ImapResponseComposer bodyFldDsp(final Structure structure,
@@ -219,10 +219,14 @@ public class FetchResponseEncoder extends AbstractChainedImapEncoder {
         final String description = structure.getDescription();
         final String encoding = structure.getEncoding();
         final long octets = structure.getOctets();
-        composer.openParen().quoteUpperCaseAscii(mediaType)
-                .quoteUpperCaseAscii(subType).nillableQuotes(bodyParams)
-                .nillableQuote(id).nillableQuote(description)
-                .quoteUpperCaseAscii(encoding).message(octets);
+        composer.openParen();
+        composer.quoteUpperCaseAscii(mediaType);
+        composer.quoteUpperCaseAscii(subType);
+        composer.nillableQuotes(bodyParams);
+        composer.nillableQuote(id);
+        composer.nillableQuote(description);
+        composer.quoteUpperCaseAscii(encoding);
+        composer.message(octets);
     }
 
     private void encodeMultipart(ImapResponseComposer composer,
@@ -239,8 +243,8 @@ public class FetchResponseEncoder extends AbstractChainedImapEncoder {
         if (includeExtensions) {
             final List<String> languages = structure.getLanguages();
             composer.nillableQuotes(structure.getParameters());
-            bodyFldDsp(structure, composer, session).nillableQuotes(languages)
-                    .nillableQuote(structure.getLocation());
+            bodyFldDsp(structure, composer, session).nillableQuotes(languages);
+            composer.nillableQuote(structure.getLocation());
         }
         composer.closeParen();
     }

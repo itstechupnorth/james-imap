@@ -16,40 +16,46 @@
  * specific language governing permissions and limitations      *
  * under the License.                                           *
  ****************************************************************/
+package org.apache.james.imap.encode.base;
 
-package org.apache.james.imap.main;
+import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.channels.WritableByteChannel;
 
-import static org.junit.Assert.*;
+import org.apache.james.imap.message.response.Literal;
 
-import java.io.ByteArrayOutputStream;
+public class ChannelImapResponseComposer extends AbstractImapResponseComposer{
 
-import org.apache.james.imap.main.stream.OutputStreamImapResponseComposer;
-import org.junit.Before;
+    private final WritableByteChannel out;
 
-public abstract class AbstractTestOutputStreamImapResponseWriter {
 
-    OutputStreamImapResponseComposer writer;
-
-    ByteArrayOutputStream out;
-
-    public AbstractTestOutputStreamImapResponseWriter() {
+    public ChannelImapResponseComposer(final WritableByteChannel out) {
         super();
+        this.out = out;
     }
 
-    @Before
-    public void setUp() throws Exception {
-        out = new ByteArrayOutputStream();
-        writer = new OutputStreamImapResponseComposer(out);
+    public ChannelImapResponseComposer(final WritableByteChannel out,
+            final int bufferSize) {
+        super(bufferSize);
+        this.out = out;
+      
     }
 
-    protected void checkExpected(String expected) throws Exception {
-        StringBuffer buffer = new StringBuffer();
-        out.flush();
-        byte[] output = out.toByteArray();
-        for (int i = 0; i < output.length; i++) {
-            buffer.append((char) output[i]);
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.encode.base.AbstractImapResponseComposer#write(java.nio.ByteBuffer)
+     */
+    protected void write(final ByteBuffer buffer) throws IOException {
+        while (out.write(buffer) > 0) {
+            // Write all
         }
-        assertEquals(expected, buffer.toString());
     }
 
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.encode.base.AbstractImapResponseComposer#writeLiteral(org.apache.james.imap.message.response.Literal)
+     */
+    protected void writeLiteral(Literal literal) throws IOException {
+        literal.writeTo(out);
+    }
 }

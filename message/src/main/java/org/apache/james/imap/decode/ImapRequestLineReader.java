@@ -24,6 +24,7 @@ import java.io.InputStream;
 
 import org.apache.james.imap.api.ContinuationReader;
 import org.apache.james.imap.api.display.HumanReadableText;
+import org.apache.james.imap.encode.ImapResponseComposer;
 
 /**
  * Wraps the client input reader with a bunch of convenience methods, allowing
@@ -39,6 +40,11 @@ public abstract class ImapRequestLineReader implements ContinuationReader {
 
     protected char nextChar; // unknown
 
+    private ImapResponseComposer composer;
+
+    public ImapRequestLineReader(ImapResponseComposer composer) {
+        this.composer = composer;
+    }
     /**
      * Reads the next regular, non-space character in the current line. Spaces
      * are skipped over, but end-of-line characters will cause a
@@ -137,11 +143,6 @@ public abstract class ImapRequestLineReader implements ContinuationReader {
      */
     public abstract InputStream read(int size) throws DecodingException;
 
-    /**
-     * Sends a server command continuation request '+' back to the client,
-     * requesting more data to be sent.
-     */
-    public abstract void commandContinuationRequest() throws DecodingException;
 
     /**
      * Consume the rest of the line
@@ -173,5 +174,21 @@ public abstract class ImapRequestLineReader implements ContinuationReader {
         // NOTE: This code leaves the '\n' as next char. This seems to be what is expected by the code which parses commands.
         
         return sb.toString();
+    }
+    
+    
+    /**
+     * Sends a server command continuation request '+' back to the client,
+     * requesting more data to be sent.
+     */
+    public void commandContinuationRequest() throws DecodingException {
+        try {
+            composer.commandContinuationRequest();
+        } catch (IOException e) {
+            throw new DecodingException(
+                    HumanReadableText.SOCKET_IO_FAILURE, 
+                    "Unexpected exception in sending command continuation request.",
+                    e);
+        }
     }
 }

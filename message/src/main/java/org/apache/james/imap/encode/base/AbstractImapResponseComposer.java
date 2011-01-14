@@ -20,6 +20,8 @@
 package org.apache.james.imap.encode.base;
 
 import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.charset.Charset;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -29,14 +31,13 @@ import javax.mail.Flags;
 import org.apache.james.imap.api.ImapCommand;
 import org.apache.james.imap.api.ImapConstants;
 import org.apache.james.imap.encode.ImapResponseComposer;
-import org.apache.james.imap.encode.ImapResponseWriter;
 import org.apache.james.imap.message.response.Literal;
 
 /**
  * Class providing methods to send response messages from the server to the
  * client.
  */
-public class ImapResponseComposerImpl implements ImapConstants, ImapResponseComposer {
+public abstract class AbstractImapResponseComposer implements ImapConstants, ImapResponseComposer {
 
     public static final String ENVELOPE = "ENVELOPE";
 
@@ -52,13 +53,299 @@ public class ImapResponseComposerImpl implements ImapConstants, ImapResponseComp
 
     public static final String FAILED = "failed.";
 
-    private final ImapResponseWriter writer;
+    private static final int LOWER_CASE_OFFSET = 'a' - 'A';
 
-    public ImapResponseComposerImpl(final ImapResponseWriter writer) {
-        this.writer = writer;
+    private static final int DEFAULT_BUFFER_SIZE = 128;
+
+    private final Charset usAscii;
+
+    private final ByteBuffer buffer;
+
+    private boolean skipNextSpace;
+
+    public AbstractImapResponseComposer() {
+        this(DEFAULT_BUFFER_SIZE);
+    }
+
+    public AbstractImapResponseComposer(final int bufferSize) {
+        skipNextSpace = false;
+        buffer = ByteBuffer.allocate(bufferSize);
+        usAscii = Charset.forName("US-ASCII");
     }
 
 
+    /**
+     * Write the {@link ByteBuffer} to the client
+     * 
+     * @param buffer
+     * @throws IOException
+     */
+    protected abstract void write(final ByteBuffer buffer) throws IOException ;
+
+    /**
+     * Write the {@link Literal} to the client
+     * 
+     * @param literal
+     * @throws IOException
+     */
+    protected abstract void writeLiteral(final Literal literal) throws IOException ;
+
+    
+    private void writeASCII(final String string) throws IOException {
+        final ByteBuffer buffer = usAscii.encode(string);
+        write(buffer);
+    }
+
+    
+    private void write(byte[] bytes) throws IOException {
+        final ByteBuffer wrap = ByteBuffer.wrap(bytes);
+        write(wrap);
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.encode.ImapResponseWriter#untagged()
+     */
+    public void untagged() throws IOException {
+        writeASCII(UNTAGGED);
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.encode.ImapResponseWriter#tag(java.lang.String)
+     */
+    public void tag(String tag) throws IOException {
+        writeASCII(tag);
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.encode.ImapResponseWriter#message(java.lang.String)
+     */
+    public void message(String message) throws IOException {
+        if (message != null) {
+            space();
+            writeASCII(message);
+        }
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.encode.ImapResponseWriter#message(long)
+     */
+    public void message(long number) throws IOException {
+        space();
+        writeASCII(Long.toString(number));
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.encode.ImapResponseWriter#responseCode(java.lang.String)
+     */
+    public void responseCode(String responseCode) throws IOException {
+        if (responseCode != null && !"".equals(responseCode)) {
+            writeASCII(" [");
+            writeASCII(responseCode);
+            write(BYTES_CLOSE_SQUARE_BRACKET);
+        }
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.encode.ImapResponseWriter#end()
+     */
+    public void end() throws IOException {
+        write(BYTES_LINE_END);
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.encode.ImapResponseWriter#commandName(java.lang.String)
+     */
+    public void commandName(String commandName) throws IOException {
+        space();
+        writeASCII(commandName);
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.encode.ImapResponseWriter#quote(java.lang.String)
+     */
+    public void quote(String message) throws IOException {
+        space();
+        final int length = message.length();
+        buffer.clear();
+        buffer.put(BYTE_DQUOTE);
+        for (int i = 0; i < length; i++) {
+            writeIfFull();
+            char character = message.charAt(i);
+            if (character == ImapConstants.BACK_SLASH || character == DQUOTE) {
+                buffer.put(BYTE_BACK_SLASH);
+            }
+            writeIfFull();
+            // 7-bit ASCII only
+            if (character > 128) {
+                buffer.put(BYTE_QUESTION);
+            } else {
+                buffer.put((byte) character);
+            }
+        }
+        writeIfFull();
+        buffer.put(BYTE_DQUOTE);
+        buffer.flip();
+        write(buffer);
+    }
+
+    private void writeIfFull() throws IOException {
+        if (!buffer.hasRemaining()) {
+            buffer.flip();
+            write(buffer);
+            buffer.clear();
+        }
+    }
+    
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.encode.ImapResponseWriter#closeParen()
+     */
+    public void closeParen() throws IOException {
+        closeBracket(BYTES_CLOSING_PARENTHESIS);
+    }
+
+    private void closeBracket(final byte[] bracket) throws IOException {
+        write(bracket);
+        clearSkipNextSpace();
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.encode.ImapResponseWriter#openParen()
+     */
+    public void openParen() throws IOException {
+        openBracket(BYTES_OPENING_PARENTHESIS);
+    }
+
+    private void openBracket(final byte[] bracket) throws IOException {
+        space();
+        write(bracket);
+        skipNextSpace();
+    }
+
+    private void clearSkipNextSpace() {
+        skipNextSpace = false;
+    }
+
+    
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.encode.ImapResponseWriter#skipNextSpace()
+     */
+    public void skipNextSpace() {
+        skipNextSpace = true;
+    }
+
+    private void space() throws IOException {
+        if (skipNextSpace) {
+            skipNextSpace = false;
+        } else {
+            write(BYTES_SPACE);
+        }
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.encode.ImapResponseWriter#literal(org.apache.james.imap.message.response.Literal)
+     */
+    public void literal(Literal literal) throws IOException {
+        space();
+        write(BYTES_OPEN_BRACE);
+        final long size = literal.size();
+        writeASCII(Long.toString(size));
+        write(BYTES_CLOSE_BRACE);
+        write(BYTES_LINE_END);
+        if (size > 0) {
+            writeLiteral(literal);
+        }
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.encode.ImapResponseWriter#closeSquareBracket()
+     */
+    public void closeSquareBracket() throws IOException {
+        closeBracket(BYTES_CLOSE_SQUARE_BRACKET);
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.encode.ImapResponseWriter#openSquareBracket()
+     */
+    public void openSquareBracket() throws IOException {
+        openBracket(BYTES_OPEN_SQUARE_BRACKET);
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.encode.ImapResponseWriter#upperCaseAscii(java.lang.String)
+     */
+    public void upperCaseAscii(String message) throws IOException {
+        upperCaseAscii(message, false);
+    }
+
+    private void upperCaseAscii(String message, boolean quote)
+            throws IOException {
+        if (message == null) {
+            nil();
+        } else {
+            space();
+            final int length = message.length();
+            buffer.clear();
+            if (quote) {
+                buffer.put(BYTE_DQUOTE);
+            }
+            for (int i = 0; i < length; i++) {
+                writeIfFull();
+                final char next = message.charAt(i);
+                if (next >= 'a' && next <= 'z') {
+                    buffer.put((byte) (next - LOWER_CASE_OFFSET));
+                } else {
+                    buffer.put((byte) (next));
+                }
+            }
+            writeIfFull();
+            if (quote) {
+                buffer.put(BYTE_DQUOTE);
+            }
+            buffer.flip();
+            write(buffer);
+        }
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.encode.ImapResponseWriter#quoteUpperCaseAscii(java.lang.String)
+     */
+    public void quoteUpperCaseAscii(String message) throws IOException {
+        upperCaseAscii(message, true);
+    }
+    
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.encode.ImapResponseWriter#continuation(java.lang.String)
+     */
+    public void continuation(String message) throws IOException {
+        writeASCII(CONTINUATION + SP + message);
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.encode.ImapResponseWriter#commandContinuationRequest()
+     */
+    public void commandContinuationRequest() throws IOException {
+        writeASCII(CONTINUATION + SP);
+    }
+    
+    
     /**
      * @throws IOException
      * @see org.apache.james.imap.encode.ImapResponseComposer#commandComplete(org.apache.james.imap.api.ImapCommand,
@@ -88,14 +375,6 @@ public class ImapResponseComposerImpl implements ImapConstants, ImapResponseComp
         end();
     }
 
-    /**
-     * @throws IOException
-     * @see org.apache.james.imap.encode.ImapResponseComposer#continuationResponse(String)
-     */
-    public void continuationResponse(String message) throws IOException {
-        writer.continuation(message);
-        end();
-    }
     
     /**
      * @throws IOException
@@ -190,74 +469,10 @@ public class ImapResponseComposerImpl implements ImapConstants, ImapResponseComp
         untaggedResponse(OK + SP + message);
     }
 
-    /**
-     * @throws IOException
-     * @see org.apache.james.imap.encode.ImapResponseComposer#untagged()
-     */
-    public void untagged() throws IOException {
-        writer.untagged();
-    }
 
     private void commandName(final ImapCommand command) throws IOException {
         final String name = command.getName();
         commandName(name);
-    }
-
-    /**
-     * @throws IOException
-     * @see org.apache.james.imap.encode.ImapResponseComposer#commandName(java.lang.String)
-     */
-    public void commandName(final String name) throws IOException {
-        writer.commandName(name);
-    }
-
-    /**
-     * @throws IOException
-     * @see org.apache.james.imap.encode.ImapResponseComposer#message(java.lang.String)
-     */
-    public ImapResponseComposer message(final String message)
-            throws IOException {
-        if (message != null) {
-            // TODO: consider message normalisation
-            // TODO: CR/NFs in message must be replaced
-            // TODO: probably best done in the writer
-            writer.message(message);
-        }
-        return this;
-    }
-
-    /**
-     * @throws IOException
-     * @see org.apache.james.imap.encode.ImapResponseComposer#message(long)
-     */
-    public void message(final long number) throws IOException {
-        writer.message(number);
-    }
-
-    /**
-     * @throws IOException
-     * @see org.apache.james.imap.encode.ImapResponseComposer#responseCode(java.lang.String)
-     */
-    public void responseCode(final String responseCode) throws IOException {
-        if (responseCode != null && !"".equals(responseCode)) {
-            writer.responseCode(responseCode);
-        }
-    }
-
-    /**
-     * @throws IOException
-     * @see org.apache.james.imap.encode.ImapResponseComposer#end()
-     */
-    public void end() throws IOException {
-        writer.end();
-    }
-
-    /**
-     * @throws IOException
-     * @see org.apache.james.imap.encode.ImapResponseComposer#tag(java.lang.String)
-     */
-    public void tag(String tag) throws IOException {
-        writer.tag(tag);
     }
 
     /**
@@ -376,32 +591,6 @@ public class ImapResponseComposerImpl implements ImapConstants, ImapResponseComp
 
     /*
      * (non-Javadoc)
-     * @see org.apache.james.imap.encode.ImapResponseComposer#quote(java.lang.String)
-     */
-    public void quote(String message) throws IOException {
-        writer.quote(message);
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see org.apache.james.imap.encode.ImapResponseComposer#closeParen()
-     */
-    public ImapResponseComposer closeParen() throws IOException {
-        writer.closeParen();
-        return this;
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see org.apache.james.imap.encode.ImapResponseComposer#openParen()
-     */
-    public ImapResponseComposer openParen() throws IOException {
-        writer.openParen();
-        return this;
-    }
-
-    /*
-     * (non-Javadoc)
      * @see org.apache.james.imap.encode.ImapResponseComposer#searchResponse(long[])
      */
     public void searchResponse(long[] ids) throws IOException {
@@ -467,14 +656,6 @@ public class ImapResponseComposerImpl implements ImapConstants, ImapResponseComp
         message(msn);
         message(FETCH);
         openParen();
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see org.apache.james.imap.encode.ImapResponseComposer#literal(org.apache.james.imap.message.response.Literal)
-     */
-    public void literal(Literal literal) throws IOException {
-        writer.literal(literal);
     }
 
     /*
@@ -545,37 +726,20 @@ public class ImapResponseComposerImpl implements ImapConstants, ImapResponseComp
      * (non-Javadoc)
      * @see org.apache.james.imap.encode.ImapResponseComposer#nillableQuote(java.lang.String)
      */
-    public ImapResponseComposer nillableQuote(String message)
+    public void nillableQuote(String message)
             throws IOException {
         if (message == null) {
             nil();
         } else {
             quote(message);
         }
-        return this;
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see org.apache.james.imap.encode.ImapResponseComposer#skipNextSpace()
-     */
-    public void skipNextSpace() throws IOException {
-        writer.skipNextSpace();
-    }
-
-    public void closeSquareBracket() throws IOException {
-        writer.closeSquareBracket();
-    }
-
-    public void openSquareBracket() throws IOException {
-        writer.openSquareBracket();
     }
 
     /*
      * (non-Javadoc)
      * @see org.apache.james.imap.encode.ImapResponseComposer#nillableComposition(java.lang.String, java.util.List)
      */
-    public ImapResponseComposer nillableComposition(String masterQuote,
+    public void nillableComposition(String masterQuote,
             List<String> quotes) throws IOException {
         if (masterQuote == null) {
             nil();
@@ -585,14 +749,13 @@ public class ImapResponseComposerImpl implements ImapConstants, ImapResponseComp
             nillableQuotes(quotes);
             closeParen();
         }
-        return this;
     }
 
     /*
      * (non-Javadoc)
      * @see org.apache.james.imap.encode.ImapResponseComposer#nillableQuotes(java.util.List)
      */
-    public ImapResponseComposer nillableQuotes(List<String> quotes)
+    public void nillableQuotes(List<String> quotes)
             throws IOException {
         if (quotes == null || quotes.size() == 0) {
             nil();
@@ -603,48 +766,19 @@ public class ImapResponseComposerImpl implements ImapConstants, ImapResponseComp
             }
             closeParen();
         }
-        return this;
     }
 
-    /*
-     * (non-Javadoc)
-     * @see org.apache.james.imap.encode.ImapResponseComposer#upperCaseAscii(java.lang.String)
-     */
-    public ImapResponseComposer upperCaseAscii(String message)
-            throws IOException {
-        if (message == null) {
-            nil();
-        } else {
-            writer.upperCaseAscii(message);
-        }
-        return this;
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see org.apache.james.imap.encode.ImapResponseComposer#quoteUpperCaseAscii(java.lang.String)
-     */
-    public ImapResponseComposer quoteUpperCaseAscii(String message)
-            throws IOException {
-        if (message == null) {
-            nil();
-        } else {
-            writer.quoteUpperCaseAscii(message);
-        }
-        return this;
-    }
 
     /*
      * (non-Javadoc)
      * @see org.apache.james.imap.encode.ImapResponseComposer#capabilities(java.util.List)
      */
-    public ImapResponseComposer capabilities(List<String> capabilities) throws IOException {
+    public void capabilities(List<String> capabilities) throws IOException {
         untagged();
         message(CAPABILITY_COMMAND_NAME);
         for(String capability:capabilities) {
             message(capability);
         }
         end();
-        return this;
     }
 }

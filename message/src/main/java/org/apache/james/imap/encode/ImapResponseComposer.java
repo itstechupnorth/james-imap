@@ -190,7 +190,7 @@ public interface ImapResponseComposer {
 
     public abstract void commandName(final String name) throws IOException;
 
-    public ImapResponseComposer message(final String message)
+    public void message(final String message)
             throws IOException;
 
     public abstract void message(final long number) throws IOException;
@@ -211,9 +211,9 @@ public interface ImapResponseComposer {
 
     public void literal(Literal literal) throws IOException;
 
-    public ImapResponseComposer openParen() throws IOException;
+    public void openParen() throws IOException;
 
-    public ImapResponseComposer closeParen() throws IOException;
+    public void closeParen() throws IOException;
 
     /**
      * Appends the given message after conversion to upper case. The message may
@@ -225,7 +225,7 @@ public interface ImapResponseComposer {
      * @return self, not null
      * @throws IOException
      */
-    public ImapResponseComposer upperCaseAscii(final String message)
+    public void upperCaseAscii(final String message)
             throws IOException;
 
     /**
@@ -238,7 +238,7 @@ public interface ImapResponseComposer {
      * @return self, not null
      * @throws IOException
      */
-    public ImapResponseComposer quoteUpperCaseAscii(final String message)
+    public void quoteUpperCaseAscii(final String message)
             throws IOException;
 
     /**
@@ -250,7 +250,7 @@ public interface ImapResponseComposer {
      * @return self, not null
      * @throws IOException
      */
-    public ImapResponseComposer nillableQuote(String message)
+    public void nillableQuote(String message)
             throws IOException;
 
     /**
@@ -263,7 +263,7 @@ public interface ImapResponseComposer {
      * @return self, not null
      * @throws IOException
      */
-    public ImapResponseComposer nillableQuotes(List<String> quotes)
+    public void nillableQuotes(List<String> quotes)
             throws IOException;
 
     /**
@@ -280,7 +280,7 @@ public interface ImapResponseComposer {
      * @return self, not null
      * @throws IOException
      */
-    public ImapResponseComposer nillableComposition(String masterQuote,
+    public void nillableComposition(String masterQuote,
             List<String> quotes) throws IOException;
 
     public void skipNextSpace() throws IOException;
@@ -292,14 +292,45 @@ public interface ImapResponseComposer {
      * @param capabilities not null
      * @throws IOException 
      */
-    public ImapResponseComposer capabilities(List<String> capabilities) throws IOException;
-    
+    public void capabilities(List<String> capabilities) throws IOException;
+   
     /**
-     * Writes a continuation response.
+     * Starts a continuation response.
      * 
      * @param message
-     *            message for display, not null
+     *            the message, not null
      */
-    public abstract void continuationResponse(String message) throws IOException;
+    public void continuation(String message) throws IOException;
+
+    /**
+     * Writes a response code.
+     * 
+     * @param responseCode
+     *            the response code, not null
+     */
+     public void responseCode(String responseCode) throws IOException;
+
+
+    /**
+     * Closes a square bracket - writes a <code>[</code>.
+     * 
+     * @throws IOException
+     */
+     public void openSquareBracket() throws IOException;
+
+    /**
+     * Closes a square bracket - writes a <code>]</code>.
+     * 
+     * @throws IOException
+     */
+     public void closeSquareBracket() throws IOException;
+
+    
+    
+    /**
+     * Sends a server command continuation request '+' back to the client,
+     * requesting more data to be sent.
+     */
+     public void commandContinuationRequest() throws IOException;
 
 }

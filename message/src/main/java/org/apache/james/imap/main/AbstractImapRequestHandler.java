@@ -95,7 +95,7 @@ public abstract class AbstractImapRequestHandler {
     /**
      * Silents swallows all responses.
      */
-    static final class SilentResponder implements Responder {
+    public static final class SilentResponder implements Responder {
 
         public void respond(ImapResponseMessage message) {
             // Swallow

@@ -19,6 +19,7 @@
 
 package org.apache.james.imap.encode.base;
 
+import java.io.ByteArrayOutputStream;
 import java.util.Collection;
 import java.util.List;
 
@@ -26,40 +27,40 @@ import javax.mail.Flags;
 
 import org.apache.james.imap.api.ImapCommand;
 import org.apache.james.imap.encode.AbstractTestImapResponseComposer;
+import org.apache.james.imap.main.stream.OutputStreamImapResponseComposer;
 import org.junit.Before;
 
-public class ImapResponseComposerImplTest extends
+public class OutputStreamImapResponseComposerTest extends
         AbstractTestImapResponseComposer {
 
-    ImapResponseComposerImpl composer;
+    private OutputStreamImapResponseComposer composer;
 
-    ByteImapResponseWriter writer;
+    private ByteArrayOutputStream out = new ByteArrayOutputStream();
 
     @Before
     public void setUp() throws Exception {
-        writer = new ByteImapResponseWriter();
-        composer = new ImapResponseComposerImpl(writer);
+        composer = new OutputStreamImapResponseComposer(out);
     }
 
 
     protected byte[] encodeListResponse(String typeName, List<String> attributes,
             char hierarchyDelimiter, String name) throws Exception {
         composer.listResponse(typeName, attributes, hierarchyDelimiter, name);
-        return writer.getBytes();
+        return out.toByteArray();
     }
 
     protected void clear() throws Exception {
-        writer.clear();
+        out.reset();
     }
 
     protected byte[] encodeSearchResponse(long[] ids) throws Exception {
         composer.searchResponse(ids);
-        return writer.getBytes();
+        return out.toByteArray();
     }
 
     protected byte[] encodeFlagsResponse(Flags flags) throws Exception {
         composer.flags(flags);
-        return writer.getBytes();
+        return out.toByteArray();
     }
 
     protected byte[] encodeStatusResponse(Long messages, Long recent,
@@ -67,7 +68,7 @@ public class ImapResponseComposerImplTest extends
             throws Exception {
         composer.statusResponse(messages, recent, uidNext, uidValidity, unseen,
                 mailbox);
-        return writer.getBytes();
+        return out.toByteArray();
     }
 
     protected byte[] encodeStatusResponse(String tag, ImapCommand command,
@@ -75,7 +76,7 @@ public class ImapResponseComposerImplTest extends
             int number, String text) throws Exception {
         composer.statusResponse(tag, command, type, responseCode, parameters,
                 number, text);
-        return writer.getBytes();
+        return out.toByteArray();
     }
 
 }

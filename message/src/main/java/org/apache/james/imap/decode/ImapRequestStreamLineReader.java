@@ -21,24 +21,21 @@ package org.apache.james.imap.decode;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 
 import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.decode.base.FixedLengthInputStream;
+import org.apache.james.imap.encode.ImapResponseComposer;
 
 /**
  * {@link ImapRequestLineReader} which use normal IO Streaming
  *
  */
 public class ImapRequestStreamLineReader extends ImapRequestLineReader{
-    private InputStream input;
+    private InputStream input;    
 
-    private OutputStream output;
-    
-
-    public ImapRequestStreamLineReader(InputStream input, OutputStream output) {
+    public ImapRequestStreamLineReader(InputStream input, ImapResponseComposer composer) {
+        super(composer);
         this.input = input;
-        this.output = output;
     }
 
 
@@ -93,24 +90,6 @@ public class ImapRequestStreamLineReader extends ImapRequestLineReader{
         nextChar = 0;
         return new FixedLengthInputStream(input, size);
 
-    }
-    
-    /**
-     * Sends a server command continuation request '+' back to the client,
-     * requesting more data to be sent.
-     */
-    public void commandContinuationRequest() throws DecodingException {
-        try {
-            output.write('+');
-            output.write('\r');
-            output.write('\n');
-            output.flush();
-        } catch (IOException e) {
-            throw new DecodingException(
-                    HumanReadableText.SOCKET_IO_FAILURE, 
-                    "Unexpected exception in sending command continuation request.",
-                    e);
-        }
     }
 
 }

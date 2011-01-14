@@ -27,6 +27,7 @@ import org.apache.james.imap.api.process.ImapProcessor;
 import org.apache.james.imap.api.process.ImapSession;
 import org.apache.james.imap.decode.ImapDecoder;
 import org.apache.james.imap.encode.ImapEncoder;
+import org.apache.james.imap.main.stream.ImapRequestStreamHandler;
 import org.jmock.Expectations;
 import org.jmock.Mockery;
 import org.jmock.integration.junit4.JMock;

@@ -21,7 +21,6 @@ package org.apache.james.imap.decode.main;
 import static org.junit.Assert.assertEquals;
 
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 
 import junit.framework.Assert;
 
@@ -34,6 +33,7 @@ import org.apache.james.imap.decode.DecodingException;
 import org.apache.james.imap.decode.ImapRequestLineReader;
 import org.apache.james.imap.decode.ImapRequestStreamLineReader;
 import org.apache.james.imap.decode.base.AbstractImapCommandParser;
+import org.apache.james.imap.encode.MockImapResponseComposer;
 import org.junit.Test;
 
 public class IdRangeParseTest  {
@@ -104,7 +104,7 @@ public class IdRangeParseTest  {
 
         ImapRequestLineReader reader = new ImapRequestStreamLineReader(
                 new ByteArrayInputStream((rangesAsString + "\r\n").getBytes()),
-                new ByteArrayOutputStream());
+                new MockImapResponseComposer());
         
 		return parser.parseIdRange(reader);
 	}

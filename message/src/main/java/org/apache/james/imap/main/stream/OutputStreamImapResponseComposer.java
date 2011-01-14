@@ -17,28 +17,22 @@
  * under the License.                                           *
  ****************************************************************/
 
-package org.apache.james.imap.main;
+package org.apache.james.imap.main.stream;
 
-import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.channels.Channels;
+
+import org.apache.james.imap.encode.base.ChannelImapResponseComposer;
 
 /**
  * Class providing methods to send response messages from the server to the
  * client.
  */
-public class OutputStreamImapResponseWriter extends ChannelImapResponseWriter {
+public class OutputStreamImapResponseComposer extends ChannelImapResponseComposer {
 
-    private final OutputStream output;
 
-    public OutputStreamImapResponseWriter(OutputStream output) {
+    public OutputStreamImapResponseComposer(OutputStream output) {
         super(Channels.newChannel(output));
-        this.output = output;
-    }
-
-    public void flush() throws IOException {
-        super.flush();
-        output.flush();
     }
 
 }

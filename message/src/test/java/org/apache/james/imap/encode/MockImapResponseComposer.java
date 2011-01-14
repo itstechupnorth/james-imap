@@ -21,12 +21,15 @@ package org.apache.james.imap.encode;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
-import org.apache.james.imap.encode.ImapResponseWriter;
+import javax.mail.Flags;
+
+import org.apache.james.imap.api.ImapCommand;
 import org.apache.james.imap.message.response.Literal;
 
-public class MockImapResponseWriter implements ImapResponseWriter {
+public class MockImapResponseComposer implements ImapResponseComposer {
 
     public final List<Object> operations = new ArrayList<Object>();
 
@@ -290,6 +293,17 @@ public class MockImapResponseWriter implements ImapResponseWriter {
 
     }
     
+    public static class CommandContinuationOperation {
+        public boolean equals(Object obj) {
+            return obj instanceof CommandContinuationOperation;
+        }
+
+        public int hashCode() {
+            return 4;
+        }
+
+    }
+    
     public void closeParen() {
         operations.add(new BracketOperation(false, false));
     }
@@ -456,5 +470,143 @@ public class MockImapResponseWriter implements ImapResponseWriter {
     
     public void continuation(String message) {
         operations.add(new ContinuationOperation());
+    }
+
+    public void commandContinuationRequest() throws IOException {
+        operations.add(new CommandContinuationOperation());        
+    }
+
+    public void untaggedNoResponse(String displayMessage, String responseCode) throws IOException {
+        operations.add(new Object());
+    }
+
+    public void flags(Flags flags) throws IOException {
+        operations.add(new Object());
+        
+    }
+
+    public void flagsResponse(Flags flags) throws IOException {
+        operations.add(new Object());
+        
+    }
+
+    public void existsResponse(long count) throws IOException {
+        operations.add(new Object());
+        
+    }
+
+    public void recentResponse(long count) throws IOException {
+        operations.add(new Object());
+        
+    }
+
+    public void expungeResponse(long msn) throws IOException {
+        operations.add(new Object());
+        
+    }
+
+    public void searchResponse(long[] ids) throws IOException {
+        operations.add(new Object());
+        
+    }
+
+    public void openFetchResponse(long msn) throws IOException {
+        operations.add(new Object());
+        
+    }
+
+    public void closeFetchResponse() throws IOException {
+        operations.add(new Object());
+        
+    }
+
+    public void startEnvelope(String date, String subject, boolean prefixWithName) throws IOException {
+        operations.add(new Object());
+        
+    }
+
+    public void startAddresses() throws IOException {
+        operations.add(new Object());
+        
+    }
+
+    public void address(String name, String domainList, String mailbox, String host) throws IOException {
+        operations.add(new Object());
+        
+    }
+
+    public void endAddresses() throws IOException {
+        operations.add(new Object());
+        
+    }
+
+    public void endEnvelope(String inReplyTo, String messageId) throws IOException {
+        operations.add(new Object());
+        
+    }
+
+    public void nil() throws IOException {
+        operations.add(new Object());
+        
+    }
+
+    public void commandResponse(ImapCommand command, String message) throws IOException {
+        operations.add(new Object());
+        
+    }
+
+    public void listResponse(String typeName, List<String> attributes, char hierarchyDelimiter, String name) throws IOException {
+        operations.add(new Object());
+        
+    }
+
+    public void taggedResponse(String message, String tag) throws IOException {
+        operations.add(new Object());
+        
+    }
+
+    public void untaggedResponse(String message) throws IOException {
+        operations.add(new Object());
+        
+    }
+
+    public void byeResponse(String message) throws IOException {
+        operations.add(new Object());
+        
+    }
+
+    public void hello(String message) throws IOException {
+        operations.add(new Object());
+        
+    }
+
+
+    
+    public void statusResponse(String tag, ImapCommand command, String type, String responseCode, Collection<String> parameters, long number, String text) throws IOException {
+        operations.add(new Object());
+    }
+
+    public void statusResponse(Long messages, Long recent, Long uidNext, Long uidValidity, Long unseen, String mailboxName) throws IOException {
+        operations.add(new Object());
+        
+    }
+
+    public void nillableQuote(String message) throws IOException {
+        operations.add(new Object());
+        
+    }
+
+    public void nillableQuotes(List<String> quotes) throws IOException {
+        operations.add(new Object());
+        
+    }
+
+    public void nillableComposition(String masterQuote, List<String> quotes) throws IOException {
+        operations.add(new Object());
+
+    }
+
+    public void capabilities(List<String> capabilities) throws IOException {
+        operations.add(new Object());
     }
 }

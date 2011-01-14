@@ -17,7 +17,7 @@
  * under the License.                                           *
  ****************************************************************/
 
-package org.apache.james.imap.main;
+package org.apache.james.imap.main.stream;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -32,7 +32,8 @@ import org.apache.james.imap.decode.ImapDecoder;
 import org.apache.james.imap.decode.ImapRequestLineReader;
 import org.apache.james.imap.decode.ImapRequestStreamLineReader;
 import org.apache.james.imap.encode.ImapEncoder;
-import org.apache.james.imap.encode.base.ImapResponseComposerImpl;
+import org.apache.james.imap.encode.ImapResponseComposer;
+import org.apache.james.imap.main.AbstractImapRequestHandler;
 import org.apache.james.imap.message.request.SystemMessage;
 
 /**
@@ -63,8 +64,10 @@ public final class ImapRequestStreamHandler extends AbstractImapRequestHandler{
             writeSignoff(output, session);
             result = false;
         } else {
+            ImapResponseComposer composer = new OutputStreamImapResponseComposer(output);
+
             ImapRequestLineReader request = new ImapRequestStreamLineReader(input,
-                    output);
+                    composer);
 
             final Log logger = session.getLog();
             try {
@@ -76,10 +79,7 @@ public final class ImapRequestStreamHandler extends AbstractImapRequestHandler{
                 return false;
             }
 
-            ImapResponseComposerImpl response = new ImapResponseComposerImpl(
-                    new OutputStreamImapResponseWriter(output));
-
-            if (doProcessRequest(request, response, session)) {
+            if (doProcessRequest(request, composer, session)) {
 
                 try {
                     // Consume the rest of the line, throwing away any extras.
