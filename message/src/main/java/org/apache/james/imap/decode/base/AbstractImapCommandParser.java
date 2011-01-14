@@ -355,7 +355,6 @@ public abstract class AbstractImapCommandParser implements ImapCommandParser, Me
 
         // Consume the '}' and the newline
         consumeChar(request, '}');
-        consumeCRLF(request);
 
         if (synchronizedLiteral) {
             request.commandContinuationRequest();
@@ -384,21 +383,6 @@ public abstract class AbstractImapCommandParser implements ImapCommandParser, Me
         }
     }
 
-    /**
-     * Consumes a CRLF from the request. 
-     * TODO: This is too liberal, the spec insists on \r\n for new lines.
-     * 
-     * @param request
-     * @throws DecodingException
-     */
-    private void consumeCRLF(ImapRequestLineReader request)
-            throws DecodingException {
-        char next = request.nextChar();
-        if (next != '\n') {
-            consumeChar(request, '\r');
-        }
-        consumeChar(request, '\n');
-    }
 
     /**
      * Consumes the next character in the request, checking that it matches the

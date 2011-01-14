@@ -166,12 +166,10 @@ public class ImapRequestLineReader {
      * @throws DecodingException
      */
     public void consumeLine() throws DecodingException {
-        char next = nextChar();
-        while (next != '\n') {
+        while (isConsumed() == false) {
+            nextChar();
             consume();
-            next = nextChar();
         }
-        consume();
     }
     
     public String readContinuation() throws IOException {

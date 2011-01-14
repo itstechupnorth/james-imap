@@ -61,7 +61,7 @@ public class SearchCommandParserCharsetTest {
             NON_ASCII_SEARCH_TERM, UTF8);
 
     private static final byte[] BYTES_UTF8_NON_ASCII_SEARCH_TERM = NioUtils
-            .add(NioUtils.toBytes(" {16}\r\n", ASCII),
+            .add(NioUtils.toBytes(" {16}", ASCII),
                     BYTES_NON_ASCII_SEARCH_TERM);
 
     private static final byte[] CHARSET = NioUtils.toBytes("CHARSET UTF-8 ",

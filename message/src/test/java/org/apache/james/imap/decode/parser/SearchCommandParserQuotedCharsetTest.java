@@ -19,9 +19,9 @@
 
 package org.apache.james.imap.decode.parser;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
-import java.io.ByteArrayInputStream;
 import java.nio.charset.Charset;
 import java.util.Collection;
 import java.util.HashSet;
@@ -35,7 +35,6 @@ import org.apache.james.imap.api.message.request.SearchKey;
 import org.apache.james.imap.api.message.response.StatusResponse;
 import org.apache.james.imap.api.message.response.StatusResponseFactory;
 import org.apache.james.imap.api.process.ImapSession;
-import org.apache.james.imap.decode.ImapRequestLineReader;
 import org.apache.james.imap.decode.DecodingException;
 import org.apache.james.imap.decode.ImapRequestLineReader;
 import org.apache.james.imap.encode.MockImapResponseComposer;
@@ -121,7 +120,7 @@ public class SearchCommandParserQuotedCharsetTest {
             NioUtils.toBytes("\"", ASCII));
 
     private static final byte[] BYTES_UTF8_NON_ASCII_SEARCH_TERM = add(NioUtils
-            .toBytes(" {16}\r\n", ASCII), BYTES_NON_ASCII_SEARCH_TERM);
+            .toBytes(" {16}", ASCII), BYTES_NON_ASCII_SEARCH_TERM);
 
     private static final byte[] CHARSET = NioUtils.toBytes("CHARSET UTF-8 ",
             ASCII);

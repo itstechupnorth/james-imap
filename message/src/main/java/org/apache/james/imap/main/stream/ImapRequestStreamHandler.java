@@ -70,9 +70,7 @@ public final class ImapRequestStreamHandler extends AbstractImapRequestHandler {
             try {
 
                 BufferedReader reader = new BufferedReader(new InputStreamReader(input));
-                ImapRequestLineReader request = new ImapRequestLineReader((reader.readLine() + "\r\n").getBytes(), composer);
-
-                System.out.println(request.nextChar());
+                ImapRequestLineReader request = new ImapRequestLineReader((reader.readLine()).getBytes(), composer);
 
                 if (doProcessRequest(request, composer, session)) {
 
@@ -83,6 +81,7 @@ public final class ImapRequestStreamHandler extends AbstractImapRequestHandler {
                         // to clean up after a protocol error.
                         request.consumeLine();
                     } catch (DecodingException e) {
+                        e.printStackTrace();
                         // Cannot clean up. No recovery is therefore possible.
                         // Abandon connection.
                         if (logger.isInfoEnabled()) {
@@ -103,10 +102,14 @@ public final class ImapRequestStreamHandler extends AbstractImapRequestHandler {
 
                 return result;
             } catch (DecodingException e) {
+                e.printStackTrace();
+
                 logger.debug("Unexpected end of line. Cannot handle request: ", e);
                 abandon(output, session);
                 return false;
             } catch (IOException e) {
+                e.printStackTrace();
+
                 logger.debug("Unexpected end of line. Cannot handle request: ", e);
                 abandon(output, session);
                 return false;
