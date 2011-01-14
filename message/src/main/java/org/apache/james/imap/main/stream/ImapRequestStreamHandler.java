@@ -74,24 +74,6 @@ public final class ImapRequestStreamHandler extends AbstractImapRequestHandler {
 
                 if (doProcessRequest(request, composer, session)) {
 
-                    try {
-                        // Consume the rest of the line, throwing away any
-                        // extras.
-                        // This allows us
-                        // to clean up after a protocol error.
-                        request.consumeLine();
-                    } catch (DecodingException e) {
-                        e.printStackTrace();
-                        // Cannot clean up. No recovery is therefore possible.
-                        // Abandon connection.
-                        if (logger.isInfoEnabled()) {
-                            logger.info("Fault during clean up: " + e.getMessage());
-                        }
-                        logger.debug("Abandoning after fault in clean up", e);
-                        abandon(output, session);
-                        return false;
-                    }
-
                     result = !(ImapSessionState.LOGOUT == session.getState());
                 } else {
                     logger.debug("Connection was abandoned after request processing failed.");
