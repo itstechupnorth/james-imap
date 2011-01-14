@@ -49,6 +49,11 @@ public class ImapRequestLineReader {
     }
     
     
+    /**
+     * Return true if the whole line of data was consumed
+     * 
+     * @return consumed
+     */
     public boolean isConsumed() {
         return data.length == pos;
     }

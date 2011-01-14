@@ -321,7 +321,7 @@ public abstract class AbstractImapCommandParser implements ImapCommandParser, Me
                     data[read++] = (byte) request.nextChar();
                     request.consume();
                 }
-                return new String(data, charset);
+                return decode(charset, ByteBuffer.wrap(data));
                 //IOUtils.copy(consumeLiteral(request),out);
             } catch (IOException e) {
                 throw new DecodingException(HumanReadableText.BAD_IO_ENCODING, "Bad character encoding",  e);
