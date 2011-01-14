@@ -46,7 +46,6 @@ import org.apache.james.imap.message.request.ContinuationRequest;
 public class AppendCommandParser extends AbstractImapCommandParser {
     
     public final String BYTES_WRITTEN = AppendCommandParser.class.getName() + "_BYTES_WRITTEN";
-    public final static String NEXT_DECODER = "NEXT_DECODER";
     
     public AppendCommandParser() {
     	super(ImapCommand.authenticatedStateCommand(ImapConstants.APPEND_COMMAND_NAME));
@@ -105,7 +104,7 @@ public class AppendCommandParser extends AbstractImapCommandParser {
         try {
             final File file = File.createTempFile("imap-append", ".m64");
             final FileOutputStream out = new FileOutputStream(file);
-            final int size = consumeLiteral(request);
+            final int size = consumeLiteralSize(request);
             session.setAttribute(BYTES_WRITTEN, 0);
             
             ImapDecoder nextDecoder = new ImapDecoder() {
@@ -119,7 +118,7 @@ public class AppendCommandParser extends AbstractImapCommandParser {
                         }
                         if (bytes == size) {
                             request.eol();
-                            session.setAttribute(NEXT_DECODER, null);
+                            session.setAttribute(ImapConstants.NEXT_DECODER, null);
                             return new AppendRequest(command, mailboxName, f, dt, new DeleteOnCloseInputStream(new FileInputStream(file), file) , tag);
                         }
                         
@@ -131,7 +130,7 @@ public class AppendCommandParser extends AbstractImapCommandParser {
                     return null;
                 }
             };
-            session.setAttribute(NEXT_DECODER, nextDecoder);
+            session.setAttribute(ImapConstants.NEXT_DECODER, nextDecoder);
 
             
             return new ContinuationRequest(command, tag, nextDecoder); 

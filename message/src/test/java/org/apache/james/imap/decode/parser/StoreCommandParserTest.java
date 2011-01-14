@@ -28,7 +28,7 @@ import org.apache.james.imap.api.ImapMessage;
 import org.apache.james.imap.api.message.IdRange;
 import org.apache.james.imap.api.process.ImapSession;
 import org.apache.james.imap.decode.ImapRequestLineReader;
-import org.apache.james.imap.decode.ImapRequestStreamLineReader;
+import org.apache.james.imap.decode.ImapRequestLineReader;
 import org.apache.james.imap.encode.MockImapResponseComposer;
 import org.jmock.Mockery;
 import org.jmock.integration.junit4.JMock;
@@ -74,8 +74,8 @@ public class StoreCommandParserTest {
     private void check(String input, final IdRange[] idSet,final boolean silent,
             final Boolean sign, final Flags flags, final boolean useUids, final String tag)
             throws Exception {
-        ImapRequestLineReader reader = new ImapRequestStreamLineReader(
-                new ByteArrayInputStream(input.getBytes("US-ASCII")),
+        ImapRequestLineReader reader = new ImapRequestLineReader(
+                (input.getBytes("US-ASCII")),
                 new MockImapResponseComposer());
 
         parser.decode(command, reader, tag, useUids, session);

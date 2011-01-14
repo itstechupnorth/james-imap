@@ -18,19 +18,14 @@
  ****************************************************************/
 package org.apache.james.imap.message.request;
 
-import org.apache.james.imap.api.ContinuationReader;
 import org.apache.james.imap.api.ImapCommand;
 
 public class IdleRequest extends AbstractImapRequest {
     
-    private final ContinuationReader reader;
 
-    public IdleRequest(ImapCommand command, ContinuationReader reader, String tag) {
+    public IdleRequest(ImapCommand command, String tag) {
         super(tag, command);
-        this.reader = reader;
     }
     
-    public ContinuationReader getContinuationReader() {
-        return reader;
-    }
+
 }

@@ -19,25 +19,21 @@
 
 package org.apache.james.imap.decode.parser;
 
-import java.io.ByteArrayInputStream;
-
 import org.apache.james.imap.api.ImapCommand;
 import org.apache.james.imap.api.ImapMessage;
 import org.apache.james.imap.api.message.BodyFetchElement;
 import org.apache.james.imap.api.message.FetchData;
 import org.apache.james.imap.api.message.IdRange;
 import org.apache.james.imap.api.process.ImapSession;
-import org.apache.james.imap.decode.ImapRequestLineReader;
 import org.apache.james.imap.decode.DecodingException;
-import org.apache.james.imap.decode.ImapRequestStreamLineReader;
-import org.apache.james.imap.decode.parser.FetchCommandParser;
+import org.apache.james.imap.decode.ImapRequestLineReader;
 import org.apache.james.imap.encode.MockImapResponseComposer;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.jmock.Mockery;
 import org.jmock.integration.junit4.JMock;
 import org.jmock.integration.junit4.JUnit4Mockery;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
 @RunWith(JMock.class)
 public class FetchCommandParserPartialFetchTest  {
@@ -82,9 +78,8 @@ public class FetchCommandParserPartialFetchTest  {
     @Test
     public void testShouldNotParseZeroLength() throws Exception {
         try {
-            ImapRequestLineReader reader = new ImapRequestStreamLineReader(
-                    new ByteArrayInputStream("1 (BODY[]<20.0>)\r\n"
-                            .getBytes("US-ASCII")), new MockImapResponseComposer());
+            ImapRequestLineReader reader = new ImapRequestLineReader("1 (BODY[]<20.0>)\r\n"
+                            .getBytes("US-ASCII"), new MockImapResponseComposer());
             parser.decode(command, reader, "A01", false, session);                
             throw new Exception("Number of octets must be non-zero");
 
@@ -95,8 +90,8 @@ public class FetchCommandParserPartialFetchTest  {
 
     private void check(String input, final IdRange[] idSet,
             final boolean useUids, final FetchData data, final String tag) throws Exception {
-        ImapRequestLineReader reader = new ImapRequestStreamLineReader(
-                new ByteArrayInputStream(input.getBytes("US-ASCII")),
+        ImapRequestLineReader reader = new ImapRequestLineReader(
+                input.getBytes("US-ASCII"),
                 new MockImapResponseComposer());
 
         parser.decode(command, reader, tag, useUids, session);

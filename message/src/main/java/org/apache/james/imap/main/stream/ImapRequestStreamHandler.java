@@ -19,8 +19,10 @@
 
 package org.apache.james.imap.main.stream;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 
 import org.apache.commons.logging.Log;
@@ -30,7 +32,6 @@ import org.apache.james.imap.api.process.ImapSession;
 import org.apache.james.imap.decode.DecodingException;
 import org.apache.james.imap.decode.ImapDecoder;
 import org.apache.james.imap.decode.ImapRequestLineReader;
-import org.apache.james.imap.decode.ImapRequestStreamLineReader;
 import org.apache.james.imap.encode.ImapEncoder;
 import org.apache.james.imap.encode.ImapResponseComposer;
 import org.apache.james.imap.main.AbstractImapRequestHandler;
@@ -39,10 +40,9 @@ import org.apache.james.imap.message.request.SystemMessage;
 /**
  * @version $Revision: 109034 $
  */
-public final class ImapRequestStreamHandler extends AbstractImapRequestHandler{
+public final class ImapRequestStreamHandler extends AbstractImapRequestHandler {
 
-    public ImapRequestStreamHandler(final ImapDecoder decoder,
-            final ImapProcessor processor, final ImapEncoder encoder) {
+    public ImapRequestStreamHandler(final ImapDecoder decoder, final ImapProcessor processor, final ImapEncoder encoder) {
         super(decoder, processor, encoder);
     }
 
@@ -57,54 +57,62 @@ public final class ImapRequestStreamHandler extends AbstractImapRequestHandler{
      * 
      * @return whether additional commands are expected.
      */
-    public boolean handleRequest(InputStream input, OutputStream output,
-            ImapSession session) {
+    public boolean handleRequest(InputStream input, OutputStream output, ImapSession session) {
         final boolean result;
         if (isSelectedMailboxDeleted(session)) {
             writeSignoff(output, session);
             result = false;
+            return result;
         } else {
             ImapResponseComposer composer = new OutputStreamImapResponseComposer(output);
-
-            ImapRequestLineReader request = new ImapRequestStreamLineReader(input,
-                    composer);
-
             final Log logger = session.getLog();
+
             try {
-                request.nextChar();
+
+                BufferedReader reader = new BufferedReader(new InputStreamReader(input));
+                ImapRequestLineReader request = new ImapRequestLineReader((reader.readLine() + "\r\n").getBytes(), composer);
+
+                System.out.println(request.nextChar());
+
+                if (doProcessRequest(request, composer, session)) {
+
+                    try {
+                        // Consume the rest of the line, throwing away any
+                        // extras.
+                        // This allows us
+                        // to clean up after a protocol error.
+                        request.consumeLine();
+                    } catch (DecodingException e) {
+                        // Cannot clean up. No recovery is therefore possible.
+                        // Abandon connection.
+                        if (logger.isInfoEnabled()) {
+                            logger.info("Fault during clean up: " + e.getMessage());
+                        }
+                        logger.debug("Abandoning after fault in clean up", e);
+                        abandon(output, session);
+                        return false;
+                    }
+
+                    result = !(ImapSessionState.LOGOUT == session.getState());
+                } else {
+                    logger.debug("Connection was abandoned after request processing failed.");
+                    result = false;
+                    abandon(output, session);
+                    
+                }
+
+                return result;
             } catch (DecodingException e) {
-                logger.debug("Unexpected end of line. Cannot handle request: ",
-                        e);
+                logger.debug("Unexpected end of line. Cannot handle request: ", e);
+                abandon(output, session);
+                return false;
+            } catch (IOException e) {
+                logger.debug("Unexpected end of line. Cannot handle request: ", e);
                 abandon(output, session);
                 return false;
             }
 
-            if (doProcessRequest(request, composer, session)) {
-
-                try {
-                    // Consume the rest of the line, throwing away any extras.
-                    // This allows us
-                    // to clean up after a protocol error.
-                    request.consumeLine();
-                } catch (DecodingException e) {
-                    // Cannot clean up. No recovery is therefore possible.
-                    // Abandon connection.
-                    if (logger.isInfoEnabled()) {
-                        logger.info("Fault during clean up: " + e.getMessage());
-                    }
-                    logger.debug("Abandoning after fault in clean up", e);
-                    abandon(output, session);
-                    return false;
-                }
-
-                result = !(ImapSessionState.LOGOUT == session.getState());
-            } else {
-                logger.debug("Connection was abandoned after request processing failed.");
-                result = false;
-                abandon(output, session);
-            }
         }
-        return result;
     }
 
     private void writeSignoff(OutputStream output, ImapSession session) {
@@ -117,7 +125,7 @@ public final class ImapRequestStreamHandler extends AbstractImapRequestHandler{
     }
 
     private void abandon(OutputStream out, ImapSession session) {
-        if (session != null){
+        if (session != null) {
             try {
                 session.logout();
             } catch (Throwable t) {
@@ -131,6 +139,5 @@ public final class ImapRequestStreamHandler extends AbstractImapRequestHandler{
         }
         processor.process(SystemMessage.FORCE_LOGOUT, new SilentResponder(), session);
     }
-
 
 }

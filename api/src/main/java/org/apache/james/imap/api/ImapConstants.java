@@ -20,6 +20,10 @@
 package org.apache.james.imap.api;
 
 public interface ImapConstants {
+	
+    public final static String NEXT_DECODER = "NEXT_DECODER";
+
+    
     // Basic response types
     public static final String OK = "OK";
 

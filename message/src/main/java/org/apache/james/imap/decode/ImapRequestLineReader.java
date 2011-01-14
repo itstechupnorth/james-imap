@@ -21,7 +21,6 @@ package org.apache.james.imap.decode;
 
 import java.io.IOException;
 
-import org.apache.james.imap.api.ContinuationReader;
 import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.encode.ImapResponseComposer;
 
@@ -32,7 +31,7 @@ import org.apache.james.imap.encode.ImapResponseComposer;
  * 
  * @version $Revision: 109034 $
  */
-public abstract class ImapRequestLineReader implements ContinuationReader {
+public class ImapRequestLineReader {
     
 
     protected boolean nextSeen = false;
@@ -41,9 +40,45 @@ public abstract class ImapRequestLineReader implements ContinuationReader {
 
     private ImapResponseComposer composer;
 
-    public ImapRequestLineReader(ImapResponseComposer composer) {
+    private byte[] data;
+    private int pos = 0;
+
+    public ImapRequestLineReader(byte [] data, ImapResponseComposer composer) {
         this.composer = composer;
+        this.data = data;
     }
+    
+
+    /**
+     * Reads the next character in the current line. This method will continue
+     * to return the same character until the {@link #consume()} method is
+     * called.
+     * 
+     * @return The next character TODO: character encoding is variable and
+     *         cannot be determine at the token level; this char is not accurate
+     *         reported; should be an octet
+     * @throws DecodingException
+     *             If the end-of-stream is reached.
+     */
+    public char nextChar() throws DecodingException {
+        if (!nextSeen) {
+            int next = -1;
+
+            if (pos == data.length) {
+                throw new DecodingException(HumanReadableText.ILLEGAL_ARGUMENTS, 
+                        "Unexpected end of stream.");
+            } 
+            next = data[pos++];
+
+           
+
+            nextSeen = true;
+            nextChar = (char) next;
+        }
+        return nextChar;
+    }
+
+    
     /**
      * Reads the next regular, non-space character in the current line. Spaces
      * are skipped over, but end-of-line characters will cause a
@@ -68,18 +103,6 @@ public abstract class ImapRequestLineReader implements ContinuationReader {
         return next;
     }
 
-    /**
-     * Reads the next character in the current line. This method will continue
-     * to return the same character until the {@link #consume()} method is
-     * called.
-     * 
-     * @return The next character TODO: character encoding is variable and
-     *         cannot be determine at the token level; this char is not accurate
-     *         reported; should be an octet
-     * @throws DecodingException
-     *             If the end-of-stream is reached.
-     */
-    public abstract char nextChar() throws DecodingException;
 
     /**
      * Moves the request line reader to end of the line, checking that no
@@ -147,7 +170,7 @@ public abstract class ImapRequestLineReader implements ContinuationReader {
     
     public String readContinuation() throws IOException {
         // Consume the '\n' from the previous line.
-        consume();
+        //consume();
         
         StringBuilder sb = new StringBuilder();
         char next = nextChar();

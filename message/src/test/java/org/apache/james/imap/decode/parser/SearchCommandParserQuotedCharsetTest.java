@@ -37,7 +37,7 @@ import org.apache.james.imap.api.message.response.StatusResponseFactory;
 import org.apache.james.imap.api.process.ImapSession;
 import org.apache.james.imap.decode.ImapRequestLineReader;
 import org.apache.james.imap.decode.DecodingException;
-import org.apache.james.imap.decode.ImapRequestStreamLineReader;
+import org.apache.james.imap.decode.ImapRequestLineReader;
 import org.apache.james.imap.encode.MockImapResponseComposer;
 import org.jmock.Expectations;
 import org.jmock.Mockery;
@@ -159,8 +159,8 @@ public class SearchCommandParserQuotedCharsetTest {
     @Test
     public void testShouldDecoderLengthyQuotedCharset() throws Exception {
         SearchKey key = SearchKey.buildBcc(LENGTHY_NON_ASCII_SEARCH_TERM);
-        ImapRequestLineReader reader = new ImapRequestStreamLineReader(
-                new ByteArrayInputStream(add(add(CHARSET, "BCC"
+        ImapRequestLineReader reader = new ImapRequestLineReader(
+                (add(add(CHARSET, "BCC"
                         .getBytes("US-ASCII")),
                         BYTES_QUOTED_UTF8_LENGTHY_NON_ASCII_SEARCH_TERM)),
                 new MockImapResponseComposer());
@@ -171,8 +171,8 @@ public class SearchCommandParserQuotedCharsetTest {
     @Test
     public void testShouldDecoderQuotedCharset() throws Exception {
         SearchKey key = SearchKey.buildBcc(NON_ASCII_SEARCH_TERM);
-        ImapRequestLineReader reader = new ImapRequestStreamLineReader(
-                new ByteArrayInputStream(add(add(CHARSET, "BCC"
+        ImapRequestLineReader reader = new ImapRequestLineReader(
+                (add(add(CHARSET, "BCC"
                         .getBytes("US-ASCII")),
                         BYTES_QUOTED_UTF8_NON_ASCII_SEARCH_TERM)),
                 new MockImapResponseComposer());
@@ -197,8 +197,7 @@ public class SearchCommandParserQuotedCharsetTest {
                     with(equal(StatusResponse.ResponseCode.badCharset(charsetNames))));
             oneOf(session).getLog(); returnValue(new MockLogger());
         }});
-        ImapRequestLineReader reader = new ImapRequestStreamLineReader(
-                new ByteArrayInputStream("CHARSET BOGUS ".getBytes("US-ASCII")),
+        ImapRequestLineReader reader = new ImapRequestLineReader("CHARSET BOGUS ".getBytes("US-ASCII"),
                 new MockImapResponseComposer());
         parser.decode(command, reader, TAG, false, session);
     }
@@ -207,9 +206,8 @@ public class SearchCommandParserQuotedCharsetTest {
     public void testShouldThrowProtocolExceptionWhenBytesAreNotEncodedByCharset()
             throws Exception {
         try {
-            ImapRequestLineReader reader = new ImapRequestStreamLineReader(
-                    new ByteArrayInputStream(add("CHARSET US-ASCII BCC "
-                            .getBytes("US-ASCII"), BYTES_NON_ASCII_SEARCH_TERM)),
+            ImapRequestLineReader reader = new ImapRequestLineReader(add("CHARSET US-ASCII BCC "
+                            .getBytes("US-ASCII"), BYTES_NON_ASCII_SEARCH_TERM),
                     new MockImapResponseComposer());
             parser.decode(command, reader, TAG, false, session);
             fail("A protocol exception should be thrown when charset is incompatible with input");
@@ -283,9 +281,8 @@ public class SearchCommandParserQuotedCharsetTest {
 
     private void checkUTF8Valid(byte[] term, final SearchKey key)
             throws Exception {
-        ImapRequestLineReader reader = new ImapRequestStreamLineReader(
-                new ByteArrayInputStream(add(add(CHARSET, term),
-                        BYTES_UTF8_NON_ASCII_SEARCH_TERM)),
+        ImapRequestLineReader reader = new ImapRequestLineReader(add(add(CHARSET, term),
+                        BYTES_UTF8_NON_ASCII_SEARCH_TERM),
                 new MockImapResponseComposer());
         final SearchKey searchKey = parser.searchKey(reader, null, true);
         assertEquals(key, searchKey);
@@ -293,8 +290,7 @@ public class SearchCommandParserQuotedCharsetTest {
 
     private void checkValid(String input, final SearchKey key, boolean isFirst,
             String charset) throws Exception {
-        ImapRequestLineReader reader = new ImapRequestStreamLineReader(
-                new ByteArrayInputStream(input.getBytes(charset)),
+        ImapRequestLineReader reader = new ImapRequestLineReader(input.getBytes(charset),
                 new MockImapResponseComposer());
 
         final SearchKey searchKey = parser.searchKey(reader, null, isFirst);

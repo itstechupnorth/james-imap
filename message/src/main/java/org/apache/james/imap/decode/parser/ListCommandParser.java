@@ -55,7 +55,7 @@ public class ListCommandParser extends AbstractUidCommandParser {
             case '"':
                 return consumeQuoted(request);
             case '{':
-                return consumeLiteral(request, null);
+                return consumeLiteralLine(request, null);
             default:
                 return consumeWord(request, new ListCharValidator());
         }

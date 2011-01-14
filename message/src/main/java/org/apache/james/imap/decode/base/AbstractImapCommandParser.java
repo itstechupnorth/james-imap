@@ -19,9 +19,7 @@
 
 package org.apache.james.imap.decode.base;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.charset.CharacterCodingException;
@@ -37,7 +35,6 @@ import java.util.List;
 
 import javax.mail.Flags;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.james.imap.api.ImapCommand;
 import org.apache.james.imap.api.ImapConstants;
 import org.apache.james.imap.api.ImapMessage;
@@ -47,10 +44,10 @@ import org.apache.james.imap.api.message.request.DayMonthYear;
 import org.apache.james.imap.api.message.response.StatusResponseFactory;
 import org.apache.james.imap.api.process.ImapSession;
 import org.apache.james.imap.decode.DecoderUtils;
+import org.apache.james.imap.decode.DecodingException;
 import org.apache.james.imap.decode.ImapCommandParser;
 import org.apache.james.imap.decode.ImapRequestLineReader;
 import org.apache.james.imap.decode.MessagingImapCommandParser;
-import org.apache.james.imap.decode.DecodingException;
 
 /**
  * <p>
@@ -164,7 +161,7 @@ public abstract class AbstractImapCommandParser implements ImapCommandParser, Me
             case '"':
                 return consumeQuoted(request, charset);
             case '{':
-                return consumeLiteral(request, charset);
+                return consumeLiteralLine(request, charset);
             default:
                 return atom(request);
         }
@@ -180,7 +177,7 @@ public abstract class AbstractImapCommandParser implements ImapCommandParser, Me
             case '"':
                 return consumeQuoted(request);
             case '{':
-                return consumeLiteral(request, null);
+                return consumeLiteralLine(request, null);
             default:
                 String value = atom(request);
                 if ("NIL".equals(value)) {
@@ -307,24 +304,31 @@ public abstract class AbstractImapCommandParser implements ImapCommandParser, Me
      * @param charset ,
      *            or null for <code>US-ASCII</code>
      */
-    protected String consumeLiteral(final ImapRequestLineReader request,
+    protected String consumeLiteralLine(final ImapRequestLineReader request,
             final Charset charset) throws DecodingException {
         if (charset == null) {
-            return consumeLiteral(request, US_ASCII);
+            return consumeLiteralLine(request, US_ASCII);
         } else {
-            ByteArrayOutputStream out = new ByteArrayOutputStream();
             try {
-                IOUtils.copy(consumeLiteral(request),out);
+            
+                //TODO: This is not really RFC conform
+                int size = consumeLiteralSize(request);
+                byte[] data = new byte[size];
+                
+                int read = 0;
+                while( read < size) {
+                    data[read++] = (byte) request.nextChar();
+                    request.consume();
+                }
+                return new String(data, charset);
+                //IOUtils.copy(consumeLiteral(request),out);
             } catch (IOException e) {
                 throw new DecodingException(HumanReadableText.BAD_IO_ENCODING, "Bad character encoding",  e);
             }
-            final byte[] bytes = out.toByteArray();
-            final ByteBuffer buffer = ByteBuffer.wrap(bytes);
-            return decode(charset, buffer);
         }
     }
 
-    protected int  consumeLiteral(final ImapRequestLineReader request) throws DecodingException {
+    protected int consumeLiteralSize(final ImapRequestLineReader request) throws DecodingException {
         // The 1st character must be '{'
         consumeChar(request, '{');
 

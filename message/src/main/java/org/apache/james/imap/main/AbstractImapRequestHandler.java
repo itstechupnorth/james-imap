@@ -22,6 +22,7 @@ package org.apache.james.imap.main;
 import java.io.IOException;
 
 import org.apache.commons.logging.Log;
+import org.apache.james.imap.api.ImapConstants;
 import org.apache.james.imap.api.ImapMessage;
 import org.apache.james.imap.api.message.response.ImapResponseMessage;
 import org.apache.james.imap.api.process.ImapProcessor;
@@ -85,11 +86,11 @@ public abstract class AbstractImapRequestHandler {
     }
 
     private ImapDecoder getDecoder(ImapSession session) {
-        ImapDecoder nextDecoder = (ImapDecoder) session.getAttribute(AppendCommandParser.NEXT_DECODER);
-        if (nextDecoder == null) {
+        Object nextDecoder =  session.getAttribute(ImapConstants.NEXT_DECODER);
+        if (nextDecoder == null || !(nextDecoder instanceof ImapDecoder)) {
             return this.decoder;
         } else {
-            return nextDecoder;
+            return (ImapDecoder)nextDecoder;
         }
     }
 

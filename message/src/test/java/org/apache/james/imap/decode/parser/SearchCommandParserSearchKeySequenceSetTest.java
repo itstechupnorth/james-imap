@@ -28,7 +28,7 @@ import org.apache.james.imap.api.ImapMessage;
 import org.apache.james.imap.api.message.IdRange;
 import org.apache.james.imap.api.message.request.SearchKey;
 import org.apache.james.imap.decode.ImapRequestLineReader;
-import org.apache.james.imap.decode.ImapRequestStreamLineReader;
+import org.apache.james.imap.decode.ImapRequestLineReader;
 import org.apache.james.imap.encode.MockImapResponseComposer;
 import org.jmock.Mockery;
 import org.jmock.integration.junit4.JMock;
@@ -102,8 +102,8 @@ public class SearchCommandParserSearchKeySequenceSetTest {
 
     private void checkValid(String input, final SearchKey key) throws Exception {
         input = input + "\r\n";
-        ImapRequestLineReader reader = new ImapRequestStreamLineReader(
-                new ByteArrayInputStream(input.getBytes("US-ASCII")),
+        ImapRequestLineReader reader = new ImapRequestLineReader(
+               (input.getBytes("US-ASCII")),
                 new MockImapResponseComposer());
 
         final SearchKey searchKey = parser.searchKey(reader, null, false);
