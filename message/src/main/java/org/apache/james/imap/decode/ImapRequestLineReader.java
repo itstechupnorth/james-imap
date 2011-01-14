@@ -48,6 +48,10 @@ public class ImapRequestLineReader {
         this.data = data;
     }
     
+    
+    public boolean isConsumed() {
+        return data.length == pos;
+    }
 
     /**
      * Reads the next character in the current line. This method will continue
@@ -64,7 +68,7 @@ public class ImapRequestLineReader {
         if (!nextSeen) {
             int next = -1;
 
-            if (pos == data.length) {
+            if (isConsumed()) {
                 throw new DecodingException(HumanReadableText.ILLEGAL_ARGUMENTS, 
                         "Unexpected end of stream.");
             } 
@@ -113,6 +117,8 @@ public class ImapRequestLineReader {
      *             end-of-file is reached.
      */
     public void eol() throws DecodingException {
+        if (isConsumed()) return;
+        
         char next = nextChar();
 
         // Ignore trailing spaces.
@@ -120,15 +126,10 @@ public class ImapRequestLineReader {
             consume();
             next = nextChar();
         }
-
-        // handle DOS and unix end-of-lines
-        if (next == '\r') {
-            consume();
-            next = nextChar();
-        }
+        consume();
 
         // Check if we found extra characters.
-        if (next != '\n') {
+        if (isConsumed() == false) {
             throw new DecodingException(HumanReadableText.ILLEGAL_ARGUMENTS, 
                     "Expected end-of-line, found '" + (char) next + "'.");
         }

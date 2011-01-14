@@ -286,6 +286,7 @@ public abstract class AbstractImapCommandParser implements ImapCommandParser, Me
             } else {
                 throw new DecodingException(HumanReadableText.ILLEGAL_ARGUMENTS, "Invalid character: '" + next + "'");
             }
+            if (request.isConsumed()) break;
             next = request.nextChar();
         }
         return atom.toString();

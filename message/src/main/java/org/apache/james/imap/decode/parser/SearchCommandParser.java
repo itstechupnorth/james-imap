@@ -905,10 +905,10 @@ public class SearchCommandParser extends AbstractUidCommandParser {
         request.nextWordChar();
         final SearchKey firstKey = searchKey(request, null, true);
         final SearchKey result;
-        if (request.nextChar() == ' ') {
+        if (request.isConsumed() == false && request.nextChar() == ' ') {
             List<SearchKey> keys = new ArrayList<SearchKey>();
             keys.add(firstKey);
-            while (request.nextChar() == ' ') {
+            while (request.isConsumed() == false && request.nextChar() == ' ') {
                 request.nextWordChar();
                 final SearchKey key = searchKey(request, null, false);
                 keys.add(key);

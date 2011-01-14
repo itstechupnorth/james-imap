@@ -190,7 +190,7 @@ public class SearchCommandParserTopLevelAndTest {
 
     private void check(List<SearchKey> keys, StringBuffer buffer)
             throws UnsupportedEncodingException, DecodingException {
-        buffer.append("\r\n");
+        //buffer.append("\r\n");
         String input = buffer.toString();
         SearchKey key = SearchKey.buildAnd(keys);
         ImapRequestLineReader reader = new ImapRequestLineReader(

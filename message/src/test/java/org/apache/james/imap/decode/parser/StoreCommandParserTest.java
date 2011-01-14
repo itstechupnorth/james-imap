@@ -67,7 +67,7 @@ public class StoreCommandParserTest {
         Flags flags = new Flags();
         flags.add(Flags.Flag.DRAFT);
         flags.add(Flags.Flag.FLAGGED);
-        check("1 FLAGS.SILENT (\\Draft \\Flagged)\r\n", ranges, true, null,
+        check("1 FLAGS.SILENT (\\Draft \\Flagged)", ranges, true, null,
                 flags, false, "A01");
     }
 

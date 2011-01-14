@@ -189,7 +189,7 @@ public class SearchCommandParserAndParenthesesTest {
 
     private void check(Input in) throws UnsupportedEncodingException,
             DecodingException {
-        String input = in.input + "\r\n";
+        String input = in.input;
         ImapRequestLineReader reader = new ImapRequestLineReader(input.getBytes("US-ASCII"),
                 new MockImapResponseComposer());
 
