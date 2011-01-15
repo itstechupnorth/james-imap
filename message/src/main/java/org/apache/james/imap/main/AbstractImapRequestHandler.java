@@ -65,7 +65,7 @@ public abstract class AbstractImapRequestHandler {
         if (message != null) {
             final ResponseEncoder responseEncoder = new ResponseEncoder(encoder, response, session);
             processor.process(message, responseEncoder, session);
-
+            
             final boolean result;
             final IOException failure = responseEncoder.getFailure();
             if (failure == null) {
@@ -78,6 +78,7 @@ public abstract class AbstractImapRequestHandler {
                     logger.debug("Failed to write " + message, failure);
                 }
             }
+
             return result;
         }
         return true;

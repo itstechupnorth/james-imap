@@ -137,7 +137,7 @@ public class AppendCommandParser extends AbstractImapCommandParser {
             session.setAttribute(ImapConstants.NEXT_DECODER, nextDecoder);
 
             
-            return new ContinuationRequest(command, tag, nextDecoder); 
+            return null;
             
         } catch (IOException e1) {
             e1.printStackTrace();

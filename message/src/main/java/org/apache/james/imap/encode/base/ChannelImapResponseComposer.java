@@ -46,6 +46,7 @@ public class ChannelImapResponseComposer extends AbstractImapResponseComposer{
      * @see org.apache.james.imap.encode.base.AbstractImapResponseComposer#write(java.nio.ByteBuffer)
      */
     protected void write(final ByteBuffer buffer) throws IOException {
+        //System.err.print(new String(buffer.array()));
         while (out.write(buffer) > 0) {
             // Write all
         }

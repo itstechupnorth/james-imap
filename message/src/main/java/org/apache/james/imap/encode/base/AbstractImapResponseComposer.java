@@ -339,10 +339,11 @@ public abstract class AbstractImapResponseComposer implements ImapConstants, Ima
 
     /*
      * (non-Javadoc)
-     * @see org.apache.james.imap.encode.ImapResponseWriter#commandContinuationRequest()
+     * @see org.apache.james.imap.encode.ImapResponseWriter#()
      */
     public void commandContinuationRequest() throws IOException {
-        writeASCII(CONTINUATION + SP);
+        writeASCII(CONTINUATION);
+        end();
     }
     
     
