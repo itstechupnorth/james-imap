@@ -36,6 +36,7 @@ import org.apache.james.imap.api.message.response.StatusResponse;
 import org.apache.james.imap.api.message.response.StatusResponseFactory;
 import org.apache.james.imap.api.process.ImapProcessor;
 import org.apache.james.imap.api.process.ImapSession;
+import org.apache.james.imap.api.process.SelectedMailbox;
 import org.apache.james.imap.decode.ImapDecoder;
 import org.apache.james.imap.decode.ImapRequestLineReader;
 import org.apache.james.imap.message.request.IdleRequest;
@@ -99,12 +100,10 @@ public class IdleProcessor extends AbstractMailboxProcessor implements Capabilit
             });
             MailboxManager mailboxManager = getMailboxManager();
             MailboxSession mailboxSession = ImapSessionUtils.getMailboxSession(session);
-
-            try {
-                mailboxManager.addListener(session.getSelected().getPath(), new IdleMailboxListener(closed, session, responder), mailboxSession);
-
-            } finally {
-
+            
+            SelectedMailbox sm = session.getSelected();
+            if (sm != null) {
+                mailboxManager.addListener(sm.getPath(), new IdleMailboxListener(closed, session, responder), mailboxSession);
             }
         } catch (MailboxException e) {
             // TODO: What should we do here?
