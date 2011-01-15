@@ -38,7 +38,6 @@ import org.apache.james.imap.decode.ImapRequestLineReader;
 import org.apache.james.imap.decode.DecodingException;
 import org.apache.james.imap.decode.base.AbstractImapCommandParser;
 import org.apache.james.imap.message.request.AppendRequest;
-import org.apache.james.imap.message.request.ContinuationRequest;
 
 /**
  * Parses APPEND command
@@ -117,6 +116,18 @@ public class AppendCommandParser extends AbstractImapCommandParser {
                             out.write((byte)request.consume());
                             bytes++;
                         }
+
+                        // as we push data without delimiters we need to put them in back
+                        if (bytes != size) {
+                            out.write('\r');
+                            bytes++;
+                        }
+                        
+                        if (bytes != size) {
+                            out.write('\n');
+                            bytes++;
+                        }
+                        
                         if (bytes == size) {
                             request.eol();
                             session.setAttribute(ImapConstants.NEXT_DECODER, null);
