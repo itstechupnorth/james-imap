@@ -35,7 +35,7 @@ import org.apache.james.imap.message.request.IdleRequest;
 public class IdleCommandParser extends AbstractImapCommandParser {
 
     public IdleCommandParser() {
-        super(ImapCommand.selectedStateCommand(ImapConstants.IDLE_COMMAND_NAME));
+    	super(ImapCommand.authenticatedStateCommand(ImapConstants.IDLE_COMMAND_NAME));
     }
 
 

@@ -36,6 +36,7 @@ import org.apache.james.imap.api.message.response.StatusResponse;
 import org.apache.james.imap.api.message.response.StatusResponseFactory;
 import org.apache.james.imap.api.process.ImapProcessor;
 import org.apache.james.imap.api.process.ImapSession;
+import org.apache.james.imap.api.process.SelectedMailbox;
 import org.apache.james.imap.message.request.IdleRequest;
 import org.apache.james.imap.message.response.ContinuationResponse;
 import org.apache.james.mailbox.MailboxException;
@@ -74,8 +75,11 @@ public class IdleProcessor extends AbstractMailboxProcessor implements Capabilit
             
             String line = null;
             try {
-                mailboxManager.addListener(session.getSelected().getPath(), 
+                SelectedMailbox sm = session.getSelected();
+                if(sm != null) {
+                    mailboxManager.addListener(sm.getPath(), 
                         new IdleMailboxListener(closed, session, responder), mailboxSession);
+                }
             
                 line = reader.readContinuation();
             } finally {
