@@ -166,7 +166,7 @@ public class ImapSessionImpl implements ImapSession, ImapConstants {
     }
 
 
-    public boolean IsCompressionSupported() {
+    public boolean isCompressionSupported() {
         return false;
     }
 
