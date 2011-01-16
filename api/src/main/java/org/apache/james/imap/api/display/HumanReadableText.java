@@ -199,6 +199,14 @@ public class HumanReadableText {
     public static final HumanReadableText IDLING = new HumanReadableText(
             "org.apache.james.imap.IDLING", "Idling");
     
+    public static final HumanReadableText DEFLATE_ACTIVE = new HumanReadableText(
+            "org.apache.james.imap.DEFLATE", "DEFLATE active");
+    
+    public static final HumanReadableText COMPRESS_ALREADY_ACTIVE = new HumanReadableText(
+            "org.apache.james.imap.DEFLATE", "already active");
+    
+
+    
     public static final HumanReadableText UNSELECT = new HumanReadableText(
             "org.apache.james.imap.UNSELECT", "No Mailbox selected.");
     private final String defaultValue;

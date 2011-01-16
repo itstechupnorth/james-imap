@@ -121,7 +121,12 @@ public class ImapParserFactory implements
         
         // RFC3691 
         _imapCommands.put(ImapConstants.UNSELECT_COMMAND_NAME, UnselectCommandParser.class);
+    
+        // RFC4978
+        _imapCommands.put(ImapConstants.COMPRESS_COMMAND_NAME, CompressCommandParser.class);
+
     }
+    
 
     /**
      * @see org.apache.james.imap.decode.parser.ImapCommandParserFactory#getParser(java.lang.String)

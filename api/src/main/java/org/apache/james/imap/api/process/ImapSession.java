@@ -31,6 +31,7 @@ import org.apache.james.imap.api.ImapSessionState;
  */
 public interface ImapSession {
     
+    
     /**
      * Gets the context sensitive log for this session.
      * Understanding the context of a log message is an important
@@ -122,6 +123,8 @@ public interface ImapSession {
      */
     public boolean supportStartTLS();
     
+    public boolean isCompressionSupported();
     
+    public boolean startCompression();
     
 }

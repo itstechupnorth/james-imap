@@ -164,4 +164,14 @@ public class ImapSessionImpl implements ImapSession, ImapConstants {
     public boolean supportStartTLS() {
         return false;
     }
+
+
+    public boolean IsCompressionSupported() {
+        return false;
+    }
+
+
+    public boolean startCompression() {
+        return false;
+    }
 }

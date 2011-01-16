@@ -106,6 +106,7 @@ public class DefaultProcessorChain {
         
         final UnselectProcessor unselectProcessor = new UnselectProcessor(startTLSProcessor, mailboxManager, statusResponseFactory);
         
+        final CompressProcessor compressProcessor = new CompressProcessor(unselectProcessor, statusResponseFactory);
         capabilityProcessor.addProcessor(startTLSProcessor);
         capabilityProcessor.addProcessor(idleProcessor);
         capabilityProcessor.addProcessor(namespaceProcessor);
@@ -115,7 +116,10 @@ public class DefaultProcessorChain {
         // announce the UNSELECT extension. See RFC3691
         capabilityProcessor.addProcessor(unselectProcessor);
 
-        return unselectProcessor;
+        // announce the COMPRESS extension. Sew RFC4978
+        capabilityProcessor.addProcessor(compressProcessor);
+
+        return compressProcessor;
         
     }  
         
