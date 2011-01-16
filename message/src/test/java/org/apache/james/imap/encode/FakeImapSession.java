@@ -102,7 +102,7 @@ public class FakeImapSession implements ImapSession {
         return false;
     }
 
-    public boolean IsCompressionSupported() {
+    public boolean isCompressionSupported() {
         return false;
     }
 
