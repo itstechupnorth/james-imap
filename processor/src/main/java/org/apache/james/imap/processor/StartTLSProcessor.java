@@ -54,7 +54,7 @@ public class StartTLSProcessor extends AbstractChainedProcessor implements Capab
             session.startTLS();
             responder.respond(factory.taggedOk(request.getTag(), request.getCommand(), HumanReadableText.STARTTLS));
         } else {
-            responder.respond(factory.taggedBad(request.getTag(), request.getCommand(), HumanReadableText.INVALID_COMMAND));
+            responder.respond(factory.taggedBad(request.getTag(), request.getCommand(), HumanReadableText.UNKNOWN_COMMAND));
         }
 
     }
