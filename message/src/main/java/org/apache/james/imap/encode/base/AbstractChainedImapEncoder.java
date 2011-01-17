@@ -22,9 +22,9 @@ package org.apache.james.imap.encode.base;
 import java.io.IOException;
 
 import org.apache.james.imap.api.ImapMessage;
+import org.apache.james.imap.api.message.response.ImapResponseComposer;
 import org.apache.james.imap.api.process.ImapSession;
 import org.apache.james.imap.encode.ImapEncoder;
-import org.apache.james.imap.encode.ImapResponseComposer;
 
 /**
  * Abstract base class for chained {@link ImapEncoder} implementations. Implementations of this

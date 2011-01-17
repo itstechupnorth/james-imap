@@ -20,7 +20,7 @@
 package org.apache.james.imap.message.request;
 
 import org.apache.james.imap.api.ImapCommand;
-import org.apache.james.imap.decode.ImapDecoder;
+import org.apache.james.imap.api.process.ImapDecoder;
 
 public class ContinuationRequest extends AbstractImapRequest {
 

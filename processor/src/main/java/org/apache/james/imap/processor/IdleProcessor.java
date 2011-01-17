@@ -21,14 +21,15 @@ package org.apache.james.imap.processor;
 
 import static org.apache.james.imap.api.ImapConstants.SUPPORTS_IDLE;
 
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.james.imap.api.ImapCommand;
 import org.apache.james.imap.api.ImapConstants;
+import org.apache.james.imap.api.ImapLineHandler;
 import org.apache.james.imap.api.ImapMessage;
+import org.apache.james.imap.api.ImapMessageCallback;
 import org.apache.james.imap.api.ImapSessionUtils;
 import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.api.message.request.ImapRequest;
@@ -37,8 +38,6 @@ import org.apache.james.imap.api.message.response.StatusResponseFactory;
 import org.apache.james.imap.api.process.ImapProcessor;
 import org.apache.james.imap.api.process.ImapSession;
 import org.apache.james.imap.api.process.SelectedMailbox;
-import org.apache.james.imap.decode.ImapDecoder;
-import org.apache.james.imap.decode.ImapRequestLineReader;
 import org.apache.james.imap.message.request.IdleRequest;
 import org.apache.james.imap.message.response.ContinuationResponse;
 import org.apache.james.mailbox.MailboxException;
@@ -68,17 +67,22 @@ public class IdleProcessor extends AbstractMailboxProcessor implements Capabilit
             unsolicitedResponses(session, responder, false);
             final AtomicBoolean closed = new AtomicBoolean(false);
 
-            session.setAttribute(ImapConstants.NEXT_DECODER, new ImapDecoder() {
-
-                public ImapMessage decode(ImapRequestLineReader request, ImapSession session) {
-                    String line;
+            session.pushImapLineHandler(new ImapLineHandler() {
+                
+                public void onLine(ImapSession session, byte[] data, ImapMessageCallback callback) {
                     try {
-                        line = request.readContinuation();
+                        String line = new String(data);
+                        session.popImapLineHandler();
 
-                    } catch (IOException e) {
-                        // TODO: What should we do here?
-                        final StatusResponse response = factory.taggedNo(tag, command, HumanReadableText.GENERIC_FAILURE_DURING_PROCESSING);
-                        return response;
+                        if (!"DONE".equals(line.toUpperCase())) {
+                            
+                            StatusResponse response = factory.taggedBad(tag, command, HumanReadableText.INVALID_COMMAND);
+                            session.setAttribute(ImapConstants.NEXT_DECODER, null);
+                            callback.onMessage(response);
+                        } else {
+                            final StatusResponse response = factory.taggedOk(tag, command, HumanReadableText.COMPLETED);
+                            callback.onMessage(response);
+                        }
                     } finally {
                         synchronized (session) {
                             closed.set(true);
@@ -86,16 +90,7 @@ public class IdleProcessor extends AbstractMailboxProcessor implements Capabilit
                         }
                     }
 
-                    if (!"DONE".equals(line.toUpperCase())) {
-                        
-                        StatusResponse response = factory.taggedBad(tag, command, HumanReadableText.INVALID_COMMAND);
-                        session.setAttribute(ImapConstants.NEXT_DECODER, null);
-                        return response;
-                    } else {
-                        final StatusResponse response = factory.taggedOk(tag, command, HumanReadableText.COMPLETED);
-                        return response;
-                    }
-
+                                        
                 }
             });
             MailboxManager mailboxManager = getMailboxManager();

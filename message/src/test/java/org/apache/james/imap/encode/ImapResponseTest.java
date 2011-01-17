@@ -29,6 +29,10 @@ import org.junit.Test;
 
 public class ImapResponseTest  {
 
+    @Test
+    public void stub() {
+        
+    }
     /*
     private static final String TAG = "TAG";
 

@@ -18,12 +18,13 @@
  ****************************************************************/
 package org.apache.james.imap.decode.parser;
 
+import org.apache.james.imap.api.DecodingException;
 import org.apache.james.imap.api.ImapCommand;
 import org.apache.james.imap.api.ImapConstants;
 import org.apache.james.imap.api.ImapMessage;
+import org.apache.james.imap.api.ImapMessageCallback;
+import org.apache.james.imap.api.ImapRequestLine;
 import org.apache.james.imap.api.process.ImapSession;
-import org.apache.james.imap.decode.ImapRequestLineReader;
-import org.apache.james.imap.decode.DecodingException;
 import org.apache.james.imap.decode.base.AbstractImapCommandParser;
 import org.apache.james.imap.message.request.LoginRequest;
 
@@ -37,18 +38,22 @@ public class LoginCommandParser extends AbstractImapCommandParser {
         super(ImapCommand.nonAuthenticatedStateCommand(ImapConstants.LOGIN_COMMAND_NAME));
     }
 
-
     /*
      * (non-Javadoc)
-     * @see org.apache.james.imap.decode.base.AbstractImapCommandParser#decode(org.apache.james.imap.api.ImapCommand, org.apache.james.imap.decode.ImapRequestLineReader, java.lang.String, org.apache.james.imap.api.process.ImapSession)
+     * @see org.apache.james.imap.decode.base.AbstractImapCommandParser#decode(org.apache.james.imap.api.ImapCommand, org.apache.james.imap.decode.ImapRequestLineReader, java.lang.String, org.apache.james.imap.api.process.ImapSession, org.apache.james.imap.api.ImapMessageCallback)
      */
-    protected ImapMessage decode(ImapCommand command,
-            ImapRequestLineReader request, String tag, ImapSession session) throws DecodingException {
-        final String userid = astring(request);
-        final String password = astring(request);
-        endLine(request);
-        final ImapMessage result = new LoginRequest(command, userid, password, tag);
-        return result;
+    protected void decode(ImapCommand command, ImapRequestLine request, String tag, ImapSession session, ImapMessageCallback callback) {
+        try {
+            final String userid = astring(request);
+            final String password = astring(request);
+            endLine(request);
+            final ImapMessage result = new LoginRequest(command, userid, password, tag);
+            callback.onMessage(result);
+        } catch (DecodingException e) {
+            callback.onException(e);
+        }
     }
+
+
 
 }

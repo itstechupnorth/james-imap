@@ -28,6 +28,7 @@ import java.util.Map;
 import javax.mail.Flags;
 
 import org.apache.james.imap.api.message.response.ImapResponseMessage;
+import org.apache.james.imap.api.message.response.Literal;
 
 public final class FetchResponse implements ImapResponseMessage {
 

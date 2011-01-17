@@ -24,6 +24,7 @@ import static org.junit.Assert.*;
 import java.util.Collection;
 import java.util.Iterator;
 
+import org.apache.james.imap.api.DecodingException;
 import org.junit.Before;
 import org.junit.Test;
 

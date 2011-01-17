@@ -27,7 +27,8 @@ import java.util.List;
 import javax.mail.Flags;
 
 import org.apache.james.imap.api.ImapCommand;
-import org.apache.james.imap.message.response.Literal;
+import org.apache.james.imap.api.message.response.ImapResponseComposer;
+import org.apache.james.imap.api.message.response.Literal;
 
 public class MockImapResponseComposer implements ImapResponseComposer {
 

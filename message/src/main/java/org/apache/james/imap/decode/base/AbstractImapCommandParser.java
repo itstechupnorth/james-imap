@@ -35,18 +35,19 @@ import java.util.List;
 
 import javax.mail.Flags;
 
+import org.apache.james.imap.api.DecodingException;
 import org.apache.james.imap.api.ImapCommand;
 import org.apache.james.imap.api.ImapConstants;
 import org.apache.james.imap.api.ImapMessage;
+import org.apache.james.imap.api.ImapMessageCallback;
+import org.apache.james.imap.api.ImapRequestLine;
 import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.api.message.IdRange;
 import org.apache.james.imap.api.message.request.DayMonthYear;
 import org.apache.james.imap.api.message.response.StatusResponseFactory;
 import org.apache.james.imap.api.process.ImapSession;
 import org.apache.james.imap.decode.DecoderUtils;
-import org.apache.james.imap.decode.DecodingException;
 import org.apache.james.imap.decode.ImapCommandParser;
-import org.apache.james.imap.decode.ImapRequestLineReader;
 import org.apache.james.imap.decode.MessagingImapCommandParser;
 
 /**
@@ -91,21 +92,25 @@ public abstract class AbstractImapCommandParser implements ImapCommandParser, Me
      *            <code>ImapRequestLineReader</code>, not null
      * @return <code>ImapCommandMessage</code>, not null
      */
-    public final ImapMessage parse(ImapRequestLineReader request, String tag, ImapSession session) {
-        ImapMessage result;
+    public final void parse(ImapRequestLine request, final String tag, final ImapSession session, final ImapMessageCallback callback) {
         if (!command.validForState(session.getState())) {
-            result = statusResponseFactory.taggedNo(tag, command,
+            ImapMessage result = statusResponseFactory.taggedNo(tag, command,
                     HumanReadableText.INVALID_COMMAND);
+            callback.onMessage(result);
         } else {
-            try {
-           
-                result = decode(command, request, tag, session);
-            } catch (DecodingException e) {
-                session.getLog().debug("Cannot parse protocol ", e);
-                result = statusResponseFactory.taggedBad(tag, command, e.getKey());
-            }
+            decode(command, request, tag, session, new ImapMessageCallback() {
+                    
+                public void onMessage(ImapMessage message) {
+                    callback.onMessage(message);
+                }
+                    
+                public void onException(DecodingException ex) {
+                    session.getLog().debug("Cannot parse protocol ", ex);
+                    ImapMessage result = statusResponseFactory.taggedBad(tag, command, ex.getKey());
+                    onMessage(result);                        
+                }
+            });
         }
-        return result;
     }
 
  
@@ -122,14 +127,14 @@ public abstract class AbstractImapCommandParser implements ImapCommandParser, Me
      * @throws DecodingException
      *             if the request cannot be parsed
      */
-    protected abstract ImapMessage decode(ImapCommand command,
-            ImapRequestLineReader request, String tag, ImapSession session) throws DecodingException;
+    protected abstract void decode(ImapCommand command,
+            ImapRequestLine request, String tag, ImapSession session, ImapMessageCallback callback);
     
 
     /**
      * Reads an argument of type "atom" from the request.
      */
-    public static String atom(ImapRequestLineReader request)
+    public static String atom(ImapRequestLine request)
             throws DecodingException {
         return consumeWord(request, new ATOM_CHARValidator());
     }
@@ -137,7 +142,7 @@ public abstract class AbstractImapCommandParser implements ImapCommandParser, Me
     /**
      * Reads a command "tag" from the request.
      */
-    public static String tag(ImapRequestLineReader request)
+    public static String tag(ImapRequestLine request)
             throws DecodingException {
         CharacterValidator validator = new TagCharValidator();
         return consumeWord(request, validator);
@@ -146,7 +151,7 @@ public abstract class AbstractImapCommandParser implements ImapCommandParser, Me
     /**
      * Reads an argument of type "astring" from the request.
      */
-    public String astring(ImapRequestLineReader request)
+    public String astring(ImapRequestLine request)
             throws DecodingException {
         return astring(request, null);
     }
@@ -154,7 +159,7 @@ public abstract class AbstractImapCommandParser implements ImapCommandParser, Me
     /**
      * Reads an argument of type "astring" from the request.
      */
-    public String astring(ImapRequestLineReader request, Charset charset)
+    public String astring(ImapRequestLine request, Charset charset)
             throws DecodingException {
         char next = request.nextWordChar();
         switch (next) {
@@ -170,6 +175,7 @@ public abstract class AbstractImapCommandParser implements ImapCommandParser, Me
     /**
      * Reads an argument of type "nstring" from the request.
      */
+    /*
     public String nstring(ImapRequestLineReader request)
             throws DecodingException {
         char next = request.nextWordChar();
@@ -188,6 +194,7 @@ public abstract class AbstractImapCommandParser implements ImapCommandParser, Me
                 }
         }
     }
+    */
 
     /**
      * Reads a "mailbox" argument from the request. Not implemented *exactly* as
@@ -198,7 +205,7 @@ public abstract class AbstractImapCommandParser implements ImapCommandParser, Me
      * variants of ;; INBOX (e.g. "iNbOx") MUST be interpreted as INBOX ;; not
      * as an astring.
      */
-    public String mailbox(ImapRequestLineReader request)
+    public String mailbox(ImapRequestLine request)
             throws DecodingException {
         String mailbox = astring(request);
         if (mailbox.equalsIgnoreCase(ImapConstants.INBOX_NAME)) {
@@ -216,7 +223,7 @@ public abstract class AbstractImapCommandParser implements ImapCommandParser, Me
      * @return <code>DayMonthYear</code>, not null
      * @throws DecodingException
      */
-    public DayMonthYear date(ImapRequestLineReader request)
+    public DayMonthYear date(ImapRequestLine request)
             throws DecodingException {
 
         final char one = request.consume();
@@ -245,7 +252,7 @@ public abstract class AbstractImapCommandParser implements ImapCommandParser, Me
         return result;
     }
 
-    private void nextIsDash(ImapRequestLineReader request)
+    private void nextIsDash(ImapRequestLine request)
             throws DecodingException {
         final char next = request.consume();
         if (next != '-') {
@@ -256,7 +263,7 @@ public abstract class AbstractImapCommandParser implements ImapCommandParser, Me
     /**
      * Reads a "date-time" argument from the request.
      */
-    public Date dateTime(ImapRequestLineReader request)
+    public Date dateTime(ImapRequestLine request)
             throws DecodingException {
         char next = request.nextWordChar();
         String dateString;
@@ -274,7 +281,7 @@ public abstract class AbstractImapCommandParser implements ImapCommandParser, Me
      * the next SPACE. Characters are tested by the supplied CharacterValidator,
      * and an exception is thrown if invalid characters are encountered.
      */
-    protected static String consumeWord(ImapRequestLineReader request,
+    protected static String consumeWord(ImapRequestLine request,
             CharacterValidator validator) throws DecodingException {
         StringBuffer atom = new StringBuffer();
 
@@ -305,7 +312,7 @@ public abstract class AbstractImapCommandParser implements ImapCommandParser, Me
      * @param charset ,
      *            or null for <code>US-ASCII</code>
      */
-    protected String consumeLiteralLine(final ImapRequestLineReader request,
+    protected String consumeLiteralLine(final ImapRequestLine request,
             final Charset charset) throws DecodingException {
         if (charset == null) {
             return consumeLiteralLine(request, US_ASCII);
@@ -329,7 +336,7 @@ public abstract class AbstractImapCommandParser implements ImapCommandParser, Me
         }
     }
 
-    protected int consumeLiteralSize(final ImapRequestLineReader request) throws DecodingException {
+    protected int consumeLiteralSize(final ImapRequestLine request) throws DecodingException {
         // The 1st character must be '{'
         consumeChar(request, '{');
 
@@ -388,7 +395,7 @@ public abstract class AbstractImapCommandParser implements ImapCommandParser, Me
      * Consumes the next character in the request, checking that it matches the
      * expected one. This method should be used when the
      */
-    protected void consumeChar(ImapRequestLineReader request, char expected)
+    protected void consumeChar(ImapRequestLine request, char expected)
             throws DecodingException {
         char consumed = request.consume();
         if (consumed != expected) {
@@ -400,7 +407,7 @@ public abstract class AbstractImapCommandParser implements ImapCommandParser, Me
     /**
      * Reads a quoted string value from the request.
      */
-    protected String consumeQuoted(ImapRequestLineReader request)
+    protected String consumeQuoted(ImapRequestLine request)
             throws DecodingException {
         return consumeQuoted(request, null);
     }
@@ -408,7 +415,7 @@ public abstract class AbstractImapCommandParser implements ImapCommandParser, Me
     /**
      * Reads a quoted string value from the request.
      */
-    protected String consumeQuoted(ImapRequestLineReader request,
+    protected String consumeQuoted(ImapRequestLine request,
             Charset charset) throws DecodingException {
         if (charset == null) {
             return consumeQuoted(request, US_ASCII);
@@ -425,7 +432,7 @@ public abstract class AbstractImapCommandParser implements ImapCommandParser, Me
     /**
      * Reads a "flags" argument from the request.
      */
-    public Flags flagList(ImapRequestLineReader request)
+    public Flags flagList(ImapRequestLine request)
             throws DecodingException {
         Flags flags = new Flags();
         request.nextWordChar();
@@ -451,11 +458,11 @@ public abstract class AbstractImapCommandParser implements ImapCommandParser, Me
     /**
      * Reads an argument of type "number" from the request.
      */
-    public long number(ImapRequestLineReader request) throws DecodingException {
+    public long number(ImapRequestLine request) throws DecodingException {
         return readDigits(request, 0, 0, true);
     }
 
-    private long readDigits(final ImapRequestLineReader request, int add,
+    private long readDigits(final ImapRequestLine request, int add,
             final long total, final boolean first) throws DecodingException {
         final char next;
         if (first) {
@@ -504,7 +511,7 @@ public abstract class AbstractImapCommandParser implements ImapCommandParser, Me
      * as nzNumbers (although it's ok as a "number". I think the spec is a bit
      * shonky.)
      */
-    public long nzNumber(ImapRequestLineReader request)
+    public long nzNumber(ImapRequestLine request)
             throws DecodingException {
         long number = number(request);
         if (number == 0) {
@@ -533,7 +540,7 @@ public abstract class AbstractImapCommandParser implements ImapCommandParser, Me
      * @throws DecodingException
      *             If characters are encountered before the endLine.
      */
-    public void endLine(ImapRequestLineReader request) throws DecodingException {
+    public void endLine(ImapRequestLine request) throws DecodingException {
         request.eol();
     }
 
@@ -541,7 +548,7 @@ public abstract class AbstractImapCommandParser implements ImapCommandParser, Me
      * Reads a "message set" argument, and parses into an IdSet. Currently only
      * supports a single range of values.
      */
-    public IdRange[] parseIdRange(ImapRequestLineReader request)
+    public IdRange[] parseIdRange(ImapRequestLine request)
             throws DecodingException {
         CharacterValidator validator = new MessageSetCharValidator();
         String nextWord = consumeWord(request, validator);
@@ -682,7 +689,7 @@ public abstract class AbstractImapCommandParser implements ImapCommandParser, Me
             charBuffer = CharBuffer.allocate(QUOTED_BUFFER_INITIAL_CAPACITY);
         }
 
-        public String decode(ImapRequestLineReader request)
+        public String decode(ImapRequestLine request)
                 throws DecodingException {
             try {
                 decoder.reset();

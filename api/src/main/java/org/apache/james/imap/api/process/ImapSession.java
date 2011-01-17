@@ -20,6 +20,7 @@
 package org.apache.james.imap.api.process;
 
 import org.apache.commons.logging.Log;
+import org.apache.james.imap.api.ImapLineHandler;
 import org.apache.james.imap.api.ImapSessionState;
 
 /**
@@ -31,6 +32,9 @@ import org.apache.james.imap.api.ImapSessionState;
  */
 public interface ImapSession {
     
+    ImapDecoder decoder = null;
+
+
     /**
      * Gets the context sensitive log for this session.
      * Understanding the context of a log message is an important
@@ -123,5 +127,7 @@ public interface ImapSession {
     public boolean supportStartTLS();
     
     
+    public void pushImapLineHandler(ImapLineHandler handler);
     
+    public void popImapLineHandler();
 }

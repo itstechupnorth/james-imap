@@ -30,8 +30,8 @@ import javax.mail.Flags;
 
 import org.apache.james.imap.api.ImapCommand;
 import org.apache.james.imap.api.ImapConstants;
-import org.apache.james.imap.encode.ImapResponseComposer;
-import org.apache.james.imap.message.response.Literal;
+import org.apache.james.imap.api.message.response.ImapResponseComposer;
+import org.apache.james.imap.api.message.response.Literal;
 
 /**
  * Class providing methods to send response messages from the server to the
@@ -349,7 +349,7 @@ public abstract class AbstractImapResponseComposer implements ImapConstants, Ima
     
     /**
      * @throws IOException
-     * @see org.apache.james.imap.encode.ImapResponseComposer#commandComplete(org.apache.james.imap.api.ImapCommand,
+     * @see org.apache.james.imap.api.message.response.ImapResponseComposer#commandComplete(org.apache.james.imap.api.ImapCommand,
      *      java.lang.String, java.lang.String)
      */
     public void commandComplete(final ImapCommand command,
@@ -364,7 +364,7 @@ public abstract class AbstractImapResponseComposer implements ImapConstants, Ima
     
     /**
      * @throws IOException
-     * @see org.apache.james.imap.encode.ImapResponseComposer#untaggedNoResponse(java.lang.String,
+     * @see org.apache.james.imap.api.message.response.ImapResponseComposer#untaggedNoResponse(java.lang.String,
      *      java.lang.String)
      */
     public void untaggedNoResponse(String displayMessage, String responseCode)
@@ -379,7 +379,7 @@ public abstract class AbstractImapResponseComposer implements ImapConstants, Ima
     
     /**
      * @throws IOException
-     * @see org.apache.james.imap.encode.ImapResponseComposer#flagsResponse(javax.mail.Flags)
+     * @see org.apache.james.imap.api.message.response.ImapResponseComposer#flagsResponse(javax.mail.Flags)
      */
     public void flagsResponse(Flags flags) throws IOException {
         untagged();
@@ -422,7 +422,7 @@ public abstract class AbstractImapResponseComposer implements ImapConstants, Ima
 
     /**
      * @throws IOException
-     * @see org.apache.james.imap.encode.ImapResponseComposer#commandResponse(org.apache.james.imap.api.ImapCommand,
+     * @see org.apache.james.imap.api.message.response.ImapResponseComposer#commandResponse(org.apache.james.imap.api.ImapCommand,
      *      java.lang.String)
      */
     public void commandResponse(ImapCommand command, String message)
@@ -435,7 +435,7 @@ public abstract class AbstractImapResponseComposer implements ImapConstants, Ima
 
     /**
      * @throws IOException
-     * @see org.apache.james.imap.encode.ImapResponseComposer#taggedResponse(java.lang.String,
+     * @see org.apache.james.imap.api.message.response.ImapResponseComposer#taggedResponse(java.lang.String,
      *      java.lang.String)
      */
     public void taggedResponse(String message, String tag) throws IOException {
@@ -446,7 +446,7 @@ public abstract class AbstractImapResponseComposer implements ImapConstants, Ima
 
     /**
      * @throws IOException
-     * @see org.apache.james.imap.encode.ImapResponseComposer#untaggedResponse(java.lang.String)
+     * @see org.apache.james.imap.api.message.response.ImapResponseComposer#untaggedResponse(java.lang.String)
      */
     public void untaggedResponse(String message) throws IOException {
         untagged();
@@ -456,7 +456,7 @@ public abstract class AbstractImapResponseComposer implements ImapConstants, Ima
 
     /**
      * @throws IOException
-     * @see org.apache.james.imap.encode.ImapResponseComposer#byeResponse(java.lang.String)
+     * @see org.apache.james.imap.api.message.response.ImapResponseComposer#byeResponse(java.lang.String)
      */
     public void byeResponse(String message) throws IOException {
         untaggedResponse(BYE + SP + message);
@@ -464,7 +464,7 @@ public abstract class AbstractImapResponseComposer implements ImapConstants, Ima
     
     /**
      * @throws IOException
-     * @see org.apache.james.imap.encode.ImapResponseComposer#hello(java.lang.String)
+     * @see org.apache.james.imap.api.message.response.ImapResponseComposer#hello(java.lang.String)
      */
     public void hello(String message) throws IOException {
         untaggedResponse(OK + SP + message);
@@ -478,7 +478,7 @@ public abstract class AbstractImapResponseComposer implements ImapConstants, Ima
 
     /**
      * @throws IOException
-     * @see org.apache.james.imap.encode.ImapResponseComposer#statusResponse(java.lang.String,
+     * @see org.apache.james.imap.api.message.response.ImapResponseComposer#statusResponse(java.lang.String,
      *      org.apache.james.imap.api.ImapCommand, java.lang.String,
      *      java.lang.String, Collection, long, java.lang.String)
      */
@@ -518,7 +518,7 @@ public abstract class AbstractImapResponseComposer implements ImapConstants, Ima
 
     /**
      * @throws IOException
-     * @see org.apache.james.imap.encode.ImapResponseComposer#statusResponse(Long,
+     * @see org.apache.james.imap.api.message.response.ImapResponseComposer#statusResponse(Long,
      *      Long, Long, Long, Long, String)
      */
     public void statusResponse(Long messages, Long recent, Long uidNext,

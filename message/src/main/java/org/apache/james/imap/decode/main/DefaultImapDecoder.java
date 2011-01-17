@@ -19,16 +19,17 @@
 package org.apache.james.imap.decode.main;
 
 import org.apache.commons.logging.Log;
+import org.apache.james.imap.api.DecodingException;
 import org.apache.james.imap.api.ImapMessage;
+import org.apache.james.imap.api.ImapMessageCallback;
+import org.apache.james.imap.api.ImapRequestLine;
 import org.apache.james.imap.api.ImapSessionState;
 import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.api.message.response.StatusResponseFactory;
+import org.apache.james.imap.api.process.ImapDecoder;
 import org.apache.james.imap.api.process.ImapSession;
 import org.apache.james.imap.decode.ImapCommandParser;
 import org.apache.james.imap.decode.ImapCommandParserFactory;
-import org.apache.james.imap.decode.ImapDecoder;
-import org.apache.james.imap.decode.ImapRequestLineReader;
-import org.apache.james.imap.decode.DecodingException;
 import org.apache.james.imap.decode.base.AbstractImapCommandParser;
 
 /**
@@ -52,42 +53,39 @@ public class DefaultImapDecoder implements ImapDecoder {
      * (non-Javadoc)
      * @see org.apache.james.imap.decode.ImapDecoder#decode(org.apache.james.imap.decode.ImapRequestLineReader, org.apache.james.imap.api.process.ImapSession)
      */
-    public ImapMessage decode(ImapRequestLineReader request, ImapSession session) {
-        ImapMessage message;
+    public void decode(ImapRequestLine request, ImapSession session, ImapMessageCallback callback) {
         final Log logger = session.getLog();
-
         try {
             final String tag = AbstractImapCommandParser.tag(request);
-            message = decodeCommandTagged(request, tag, session);
+            decodeCommandTagged(request, tag, session, callback);
+
         } catch (DecodingException e) {
             logger.debug("Cannot parse tag", e);
 
             // When the tag cannot be read, there is something seriously wrong.
             // It is probably not possible to recover
             // and (since this may indicate an attack) wiser not to try
-            message = responseFactory.bye(HumanReadableText.ILLEGAL_TAG);
+            ImapMessage  message = responseFactory.bye(HumanReadableText.ILLEGAL_TAG);
+            callback.onMessage(message);
             session.logout();
         }
-        return message;
     }
 
     
-    private ImapMessage decodeCommandTagged(
-            final ImapRequestLineReader request, 
-            final String tag, final ImapSession session) {
-        ImapMessage message;
+    private void decodeCommandTagged(
+            final ImapRequestLine request, 
+            final String tag, final ImapSession session, ImapMessageCallback callback) {
         if (session.getLog().isDebugEnabled()) {
             session.getLog().debug("Got <tag>: " + tag);
         }
         try {
             final String commandName = AbstractImapCommandParser.atom(request);
-            message = decodeCommandNamed(request, tag, commandName,
-                    session);
+            decodeCommandNamed(request, tag, commandName,
+                    session, callback);
         } catch (DecodingException e) {
             session.getLog().debug("Error during initial request parsing", e);
-            message = unknownCommand(tag, session);
+            callback.onMessage(unknownCommand(tag, session));
         }
-        return message;
     }
 
     private ImapMessage unknownCommand(final String tag,
@@ -104,20 +102,18 @@ public class DefaultImapDecoder implements ImapDecoder {
         return message;
     }
 
-    private ImapMessage decodeCommandNamed(final ImapRequestLineReader request,
+    private void decodeCommandNamed(final ImapRequestLine request,
             final String tag, String commandName,
-            final ImapSession session) {
-        ImapMessage message;
+            final ImapSession session, ImapMessageCallback callback) {
         if (session.getLog().isDebugEnabled()) {
             session.getLog().debug("Got <command>: " + commandName);
         }
         final ImapCommandParser command = imapCommands.getParser(commandName);
         if (command == null) {
             session.getLog().info("Missing command implementation.");
-            message = unknownCommand(tag, session);
+            callback.onMessage(unknownCommand(tag, session));
         } else {
-            message = command.parse(request, tag, session);
+            command.parse(request, tag, session, callback);
         }
-        return message;
     }
 }

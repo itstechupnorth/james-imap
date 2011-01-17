@@ -18,14 +18,14 @@
  ****************************************************************/
 package org.apache.james.imap.decode.parser;
 
+import org.apache.james.imap.api.DecodingException;
 import org.apache.james.imap.api.ImapCommand;
 import org.apache.james.imap.api.ImapConstants;
-import org.apache.james.imap.api.ImapMessage;
+import org.apache.james.imap.api.ImapMessageCallback;
+import org.apache.james.imap.api.ImapRequestLine;
 import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.api.message.StatusDataItems;
 import org.apache.james.imap.api.process.ImapSession;
-import org.apache.james.imap.decode.ImapRequestLineReader;
-import org.apache.james.imap.decode.DecodingException;
 import org.apache.james.imap.decode.base.AbstractImapCommandParser;
 import org.apache.james.imap.message.request.StatusRequest;
 
@@ -38,7 +38,7 @@ public class StatusCommandParser extends AbstractImapCommandParser {
         super(ImapCommand.authenticatedStateCommand(ImapConstants.STATUS_COMMAND_NAME));
     }
 
-    StatusDataItems statusDataItems(ImapRequestLineReader request)
+    StatusDataItems statusDataItems(ImapRequestLine request)
             throws DecodingException {
         StatusDataItems items = new StatusDataItems();
 
@@ -78,15 +78,17 @@ public class StatusCommandParser extends AbstractImapCommandParser {
         }
     }
 
-    /*
-     * (non-Javadoc)
-     * @see org.apache.james.imap.decode.base.AbstractImapCommandParser#decode(org.apache.james.imap.api.ImapCommand, org.apache.james.imap.decode.ImapRequestLineReader, java.lang.String, org.apache.james.imap.api.process.ImapSession)
-     */
-    protected ImapMessage decode(ImapCommand command,
-            ImapRequestLineReader request, String tag, ImapSession session) throws DecodingException {
-        final String mailboxName = mailbox(request);
-        final StatusDataItems statusDataItems = statusDataItems(request);
-        endLine(request);
-        return new StatusRequest(command, mailboxName, statusDataItems, tag);
+    @Override
+    protected void decode(ImapCommand command, ImapRequestLine request, String tag, ImapSession session, ImapMessageCallback callback) {
+        try {
+            final String mailboxName = mailbox(request);
+            final StatusDataItems statusDataItems = statusDataItems(request);
+            endLine(request);
+            callback.onMessage(new StatusRequest(command, mailboxName, statusDataItems, tag));        
+        } catch (DecodingException e) {
+            callback.onException(e);
+        }
+        
     }
+
 }

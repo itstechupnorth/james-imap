@@ -20,10 +20,9 @@
 package org.apache.james.imap.decode.parser;
 
 import org.apache.james.imap.api.ImapCommand;
-import org.apache.james.imap.api.ImapMessage;
+import org.apache.james.imap.api.ImapMessageCallback;
+import org.apache.james.imap.api.ImapRequestLine;
 import org.apache.james.imap.api.process.ImapSession;
-import org.apache.james.imap.decode.ImapRequestLineReader;
-import org.apache.james.imap.decode.DecodingException;
 import org.apache.james.imap.decode.base.AbstractImapCommandParser;
 
 abstract class AbstractUidCommandParser extends AbstractImapCommandParser {
@@ -32,20 +31,17 @@ abstract class AbstractUidCommandParser extends AbstractImapCommandParser {
     	super(command);
     }
 
-    protected ImapMessage decode(ImapCommand command,
-            ImapRequestLineReader request, String tag, ImapSession session) throws DecodingException {
-        final ImapMessage result = decode(command, request, tag, false, session);
-        return result;
+    protected void decode(ImapCommand command,
+            ImapRequestLine request, String tag, ImapSession session, ImapMessageCallback callback) {
+        decode(command, request, tag, false, session, callback);
     }
 
-    public ImapMessage decode(ImapRequestLineReader request, String tag,
-            boolean useUids, ImapSession session) throws DecodingException {
+    public void decode(ImapRequestLine request, String tag,
+            boolean useUids, ImapSession session, ImapMessageCallback callback) {
         final ImapCommand command = getCommand();
-        final ImapMessage result = decode(command, request, tag, useUids, session);
-        return result;
+        decode(command, request, tag, useUids, session, callback);
     }
 
-    protected abstract ImapMessage decode(ImapCommand command,
-            ImapRequestLineReader request, String tag, boolean useUids, ImapSession session)
-            throws DecodingException;
+    protected abstract void decode(ImapCommand command,
+            ImapRequestLine request, String tag, boolean useUids, ImapSession session, ImapMessageCallback callback);
 }

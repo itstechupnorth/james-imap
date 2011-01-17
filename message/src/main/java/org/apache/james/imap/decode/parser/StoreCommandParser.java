@@ -20,14 +20,15 @@ package org.apache.james.imap.decode.parser;
 
 import javax.mail.Flags;
 
+import org.apache.james.imap.api.DecodingException;
 import org.apache.james.imap.api.ImapCommand;
 import org.apache.james.imap.api.ImapConstants;
 import org.apache.james.imap.api.ImapMessage;
+import org.apache.james.imap.api.ImapMessageCallback;
+import org.apache.james.imap.api.ImapRequestLine;
 import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.api.message.IdRange;
 import org.apache.james.imap.api.process.ImapSession;
-import org.apache.james.imap.decode.ImapRequestLineReader;
-import org.apache.james.imap.decode.DecodingException;
 import org.apache.james.imap.message.request.StoreRequest;
 
 /**
@@ -40,41 +41,44 @@ public class StoreCommandParser extends AbstractUidCommandParser  {
         super(ImapCommand.selectedStateCommand(ImapConstants.STORE_COMMAND_NAME));
     }
 
+
     /*
      * (non-Javadoc)
-     * @see org.apache.james.imap.decode.parser.AbstractUidCommandParser#decode(org.apache.james.imap.api.ImapCommand, org.apache.james.imap.decode.ImapRequestLineReader, java.lang.String, boolean, org.apache.james.imap.api.process.ImapSession)
+     * @see org.apache.james.imap.decode.parser.AbstractUidCommandParser#decode(org.apache.james.imap.api.ImapCommand, org.apache.james.imap.decode.ImapRequestLineReader, java.lang.String, boolean, org.apache.james.imap.api.process.ImapSession, org.apache.james.imap.api.ImapMessageCallback)
      */
-    protected ImapMessage decode(ImapCommand command,
-            ImapRequestLineReader request, String tag, boolean useUids, ImapSession session)
-            throws DecodingException {
-        final IdRange[] idSet = parseIdRange(request);
-        final Boolean sign;
-        boolean silent = false;
+    protected void decode(ImapCommand command,
+            ImapRequestLine request, String tag, boolean useUids, ImapSession session, ImapMessageCallback callback) {
+        try {
+            final IdRange[] idSet = parseIdRange(request);
+            final Boolean sign;
+            boolean silent = false;
 
-        char next = request.nextWordChar();
-        if (next == '+') {
-            sign = Boolean.TRUE;
-            request.consume();
-        } else if (next == '-') {
-            sign = Boolean.FALSE;
-            request.consume();
-        } else {
-            sign = null;
+            char next = request.nextWordChar();
+            if (next == '+') {
+                sign = Boolean.TRUE;
+                request.consume();
+            } else if (next == '-') {
+                sign = Boolean.FALSE;
+                request.consume();
+            } else {
+                sign = null;
+            }
+
+            String directive = consumeWord(request, new NoopCharValidator());
+            if ("FLAGS".equalsIgnoreCase(directive)) {
+                silent = false;
+            } else if ("FLAGS.SILENT".equalsIgnoreCase(directive)) {
+                silent = true;
+            } else {
+                throw new DecodingException(HumanReadableText.ILLEGAL_ARGUMENTS, "Invalid Store Directive: '" + directive + "'");
+            }
+
+            final Flags flags = flagList(request);
+            endLine(request);
+            final ImapMessage result = new StoreRequest(command, idSet, silent, flags, useUids, tag, sign);
+            callback.onMessage(result);
+        } catch (DecodingException e) {
+            callback.onException(e);
         }
-
-        String directive = consumeWord(request, new NoopCharValidator());
-        if ("FLAGS".equalsIgnoreCase(directive)) {
-            silent = false;
-        } else if ("FLAGS.SILENT".equalsIgnoreCase(directive)) {
-            silent = true;
-        } else {
-            throw new DecodingException(HumanReadableText.ILLEGAL_ARGUMENTS, 
-                    "Invalid Store Directive: '" + directive + "'");
-        }
-
-        final Flags flags = flagList(request);
-        endLine(request);
-        final ImapMessage result = new StoreRequest(command, idSet, silent, flags, useUids, tag, sign);
-        return result;
     }
 }

@@ -28,9 +28,12 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.james.imap.api.DecodingException;
 import org.apache.james.imap.api.ImapCommand;
 import org.apache.james.imap.api.ImapConstants;
 import org.apache.james.imap.api.ImapMessage;
+import org.apache.james.imap.api.ImapMessageCallback;
+import org.apache.james.imap.api.ImapRequestLine;
 import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.api.message.IdRange;
 import org.apache.james.imap.api.message.request.DayMonthYear;
@@ -39,8 +42,6 @@ import org.apache.james.imap.api.message.response.StatusResponse;
 import org.apache.james.imap.api.message.response.StatusResponseFactory;
 import org.apache.james.imap.api.message.response.StatusResponse.ResponseCode;
 import org.apache.james.imap.api.process.ImapSession;
-import org.apache.james.imap.decode.ImapRequestLineReader;
-import org.apache.james.imap.decode.DecodingException;
 import org.apache.james.imap.message.request.SearchRequest;
 
 /**
@@ -66,7 +67,7 @@ public class SearchCommandParser extends AbstractUidCommandParser {
      * @param isFirstToken
      *            true when this is the first token read, false otherwise
      */
-    protected SearchKey searchKey(ImapRequestLineReader request, Charset charset,
+    protected SearchKey searchKey(ImapRequestLine request, Charset charset,
             boolean isFirstToken) throws DecodingException,
             IllegalCharsetNameException, UnsupportedCharsetException {
         final char next = request.nextChar();
@@ -125,7 +126,7 @@ public class SearchCommandParser extends AbstractUidCommandParser {
         }
     }
 
-    private SearchKey paren(ImapRequestLineReader request, Charset charset)
+    private SearchKey paren(ImapRequestLine request, Charset charset)
             throws DecodingException {
         request.consume();
         List<SearchKey> keys = new ArrayList<SearchKey>();
@@ -133,7 +134,7 @@ public class SearchCommandParser extends AbstractUidCommandParser {
         return SearchKey.buildAnd(keys);
     }
 
-    private void addUntilParen(ImapRequestLineReader request, List<SearchKey> keys,
+    private void addUntilParen(ImapRequestLine request, List<SearchKey> keys,
             Charset charset) throws DecodingException {
         final char next = request.nextWordChar();
         if (next == ')') {
@@ -145,14 +146,14 @@ public class SearchCommandParser extends AbstractUidCommandParser {
         }
     }
 
-    private int consumeAndCap(ImapRequestLineReader request)
+    private int consumeAndCap(ImapRequestLine request)
             throws DecodingException {
         final char next = request.consume();
         final int cap = next > 'Z' ? next ^ 32 : next;
         return cap;
     }
 
-    private SearchKey cc(ImapRequestLineReader request, final Charset charset)
+    private SearchKey cc(ImapRequestLine request, final Charset charset)
             throws DecodingException {
         final SearchKey result;
         nextIsSpace(request);
@@ -161,7 +162,7 @@ public class SearchCommandParser extends AbstractUidCommandParser {
         return result;
     }
 
-    private SearchKey c(ImapRequestLineReader request,
+    private SearchKey c(ImapRequestLine request,
             final boolean isFirstToken, final Charset charset)
             throws DecodingException, IllegalCharsetNameException,
             UnsupportedCharsetException {
@@ -176,7 +177,7 @@ public class SearchCommandParser extends AbstractUidCommandParser {
         }
     }
 
-    private SearchKey charset(ImapRequestLineReader request,
+    private SearchKey charset(ImapRequestLine request,
             final boolean isFirstToken) throws DecodingException,
             IllegalCharsetNameException, UnsupportedCharsetException {
         final SearchKey result;
@@ -196,7 +197,7 @@ public class SearchCommandParser extends AbstractUidCommandParser {
         return result;
     }
 
-    private SearchKey u(ImapRequestLineReader request) throws DecodingException {
+    private SearchKey u(ImapRequestLine request) throws DecodingException {
         final int next = consumeAndCap(request);
         switch (next) {
             case 'I':
@@ -208,7 +209,7 @@ public class SearchCommandParser extends AbstractUidCommandParser {
         }
     }
 
-    private SearchKey un(ImapRequestLineReader request)
+    private SearchKey un(ImapRequestLine request)
             throws DecodingException {
         final int next = consumeAndCap(request);
         switch (next) {
@@ -227,7 +228,7 @@ public class SearchCommandParser extends AbstractUidCommandParser {
         }
     }
 
-    private SearchKey und(ImapRequestLineReader request)
+    private SearchKey und(ImapRequestLine request)
             throws DecodingException {
         final int next = consumeAndCap(request);
         switch (next) {
@@ -240,7 +241,7 @@ public class SearchCommandParser extends AbstractUidCommandParser {
         }
     }
 
-    private SearchKey t(ImapRequestLineReader request, final Charset charset)
+    private SearchKey t(ImapRequestLine request, final Charset charset)
             throws DecodingException {
         final int next = consumeAndCap(request);
         switch (next) {
@@ -253,7 +254,7 @@ public class SearchCommandParser extends AbstractUidCommandParser {
         }
     }
 
-    private SearchKey s(ImapRequestLineReader request, final Charset charset)
+    private SearchKey s(ImapRequestLine request, final Charset charset)
             throws DecodingException {
         final int next = consumeAndCap(request);
         switch (next) {
@@ -270,7 +271,7 @@ public class SearchCommandParser extends AbstractUidCommandParser {
         }
     }
 
-    private SearchKey se(ImapRequestLineReader request)
+    private SearchKey se(ImapRequestLine request)
             throws DecodingException {
         final int next = consumeAndCap(request);
         switch (next) {
@@ -283,7 +284,7 @@ public class SearchCommandParser extends AbstractUidCommandParser {
         }
     }
 
-    private SearchKey sen(ImapRequestLineReader request)
+    private SearchKey sen(ImapRequestLine request)
             throws DecodingException {
         final int next = consumeAndCap(request);
         switch (next) {
@@ -294,7 +295,7 @@ public class SearchCommandParser extends AbstractUidCommandParser {
         }
     }
 
-    private SearchKey sent(ImapRequestLineReader request)
+    private SearchKey sent(ImapRequestLine request)
             throws DecodingException {
         final int next = consumeAndCap(request);
         switch (next) {
@@ -309,7 +310,7 @@ public class SearchCommandParser extends AbstractUidCommandParser {
         }
     }
 
-    private SearchKey o(ImapRequestLineReader request, Charset charset)
+    private SearchKey o(ImapRequestLine request, Charset charset)
             throws DecodingException {
         final int next = consumeAndCap(request);
         switch (next) {
@@ -324,7 +325,7 @@ public class SearchCommandParser extends AbstractUidCommandParser {
         }
     }
 
-    private SearchKey n(ImapRequestLineReader request, Charset charset)
+    private SearchKey n(ImapRequestLine request, Charset charset)
             throws DecodingException {
         final int next = consumeAndCap(request);
         switch (next) {
@@ -337,7 +338,7 @@ public class SearchCommandParser extends AbstractUidCommandParser {
         }
     }
 
-    private SearchKey f(ImapRequestLineReader request, final Charset charset)
+    private SearchKey f(ImapRequestLine request, final Charset charset)
             throws DecodingException {
         final int next = consumeAndCap(request);
         switch (next) {
@@ -350,7 +351,7 @@ public class SearchCommandParser extends AbstractUidCommandParser {
         }
     }
 
-    private SearchKey d(ImapRequestLineReader request) throws DecodingException {
+    private SearchKey d(ImapRequestLine request) throws DecodingException {
         final int next = consumeAndCap(request);
         switch (next) {
             case 'E':
@@ -362,7 +363,7 @@ public class SearchCommandParser extends AbstractUidCommandParser {
         }
     }
 
-    private SearchKey keyword(ImapRequestLineReader request)
+    private SearchKey keyword(ImapRequestLine request)
             throws DecodingException {
         final SearchKey result;
         nextIsE(request);
@@ -377,7 +378,7 @@ public class SearchCommandParser extends AbstractUidCommandParser {
         return result;
     }
 
-    private SearchKey unkeyword(ImapRequestLineReader request)
+    private SearchKey unkeyword(ImapRequestLine request)
             throws DecodingException {
         final SearchKey result;
         nextIsE(request);
@@ -392,7 +393,7 @@ public class SearchCommandParser extends AbstractUidCommandParser {
         return result;
     }
 
-    private SearchKey header(ImapRequestLineReader request,
+    private SearchKey header(ImapRequestLine request,
             final Charset charset) throws DecodingException {
         final SearchKey result;
         nextIsE(request);
@@ -408,7 +409,7 @@ public class SearchCommandParser extends AbstractUidCommandParser {
         return result;
     }
 
-    private SearchKey larger(ImapRequestLineReader request)
+    private SearchKey larger(ImapRequestLine request)
             throws DecodingException {
         final SearchKey result;
         nextIsA(request);
@@ -422,7 +423,7 @@ public class SearchCommandParser extends AbstractUidCommandParser {
         return result;
     }
 
-    private SearchKey smaller(ImapRequestLineReader request)
+    private SearchKey smaller(ImapRequestLine request)
             throws DecodingException {
         final SearchKey result;
         nextIsA(request);
@@ -436,7 +437,7 @@ public class SearchCommandParser extends AbstractUidCommandParser {
         return result;
     }
 
-    private SearchKey from(ImapRequestLineReader request, final Charset charset)
+    private SearchKey from(ImapRequestLine request, final Charset charset)
             throws DecodingException {
         final SearchKey result;
         nextIsO(request);
@@ -447,7 +448,7 @@ public class SearchCommandParser extends AbstractUidCommandParser {
         return result;
     }
 
-    private SearchKey flagged(ImapRequestLineReader request)
+    private SearchKey flagged(ImapRequestLine request)
             throws DecodingException {
         final SearchKey result;
         nextIsA(request);
@@ -459,7 +460,7 @@ public class SearchCommandParser extends AbstractUidCommandParser {
         return result;
     }
 
-    private SearchKey unseen(ImapRequestLineReader request)
+    private SearchKey unseen(ImapRequestLine request)
             throws DecodingException {
         final SearchKey result;
         nextIsE(request);
@@ -469,7 +470,7 @@ public class SearchCommandParser extends AbstractUidCommandParser {
         return result;
     }
 
-    private SearchKey undraft(ImapRequestLineReader request)
+    private SearchKey undraft(ImapRequestLine request)
             throws DecodingException {
         final SearchKey result;
         nextIsA(request);
@@ -479,7 +480,7 @@ public class SearchCommandParser extends AbstractUidCommandParser {
         return result;
     }
 
-    private SearchKey undeleted(ImapRequestLineReader request)
+    private SearchKey undeleted(ImapRequestLine request)
             throws DecodingException {
         final SearchKey result;
         nextIsL(request);
@@ -491,7 +492,7 @@ public class SearchCommandParser extends AbstractUidCommandParser {
         return result;
     }
 
-    private SearchKey unflagged(ImapRequestLineReader request)
+    private SearchKey unflagged(ImapRequestLine request)
             throws DecodingException {
         final SearchKey result;
         nextIsL(request);
@@ -504,7 +505,7 @@ public class SearchCommandParser extends AbstractUidCommandParser {
         return result;
     }
 
-    private SearchKey unanswered(ImapRequestLineReader request)
+    private SearchKey unanswered(ImapRequestLine request)
             throws DecodingException {
         final SearchKey result;
         nextIsN(request);
@@ -518,7 +519,7 @@ public class SearchCommandParser extends AbstractUidCommandParser {
         return result;
     }
 
-    private SearchKey old(ImapRequestLineReader request)
+    private SearchKey old(ImapRequestLine request)
             throws DecodingException {
         final SearchKey result;
         nextIsD(request);
@@ -526,7 +527,7 @@ public class SearchCommandParser extends AbstractUidCommandParser {
         return result;
     }
 
-    private SearchKey or(ImapRequestLineReader request, Charset charset)
+    private SearchKey or(ImapRequestLine request, Charset charset)
             throws DecodingException {
         final SearchKey result;
         nextIsSpace(request);
@@ -537,7 +538,7 @@ public class SearchCommandParser extends AbstractUidCommandParser {
         return result;
     }
 
-    private SearchKey not(ImapRequestLineReader request, Charset charset)
+    private SearchKey not(ImapRequestLine request, Charset charset)
             throws DecodingException {
         final SearchKey result;
         nextIsT(request);
@@ -547,7 +548,7 @@ public class SearchCommandParser extends AbstractUidCommandParser {
         return result;
     }
 
-    private SearchKey _new(ImapRequestLineReader request)
+    private SearchKey _new(ImapRequestLine request)
             throws DecodingException {
         final SearchKey result;
         nextIsW(request);
@@ -555,7 +556,7 @@ public class SearchCommandParser extends AbstractUidCommandParser {
         return result;
     }
 
-    private SearchKey recent(ImapRequestLineReader request)
+    private SearchKey recent(ImapRequestLine request)
             throws DecodingException {
         final SearchKey result;
         nextIsE(request);
@@ -567,7 +568,7 @@ public class SearchCommandParser extends AbstractUidCommandParser {
         return result;
     }
 
-    private SearchKey seen(ImapRequestLineReader request)
+    private SearchKey seen(ImapRequestLine request)
             throws DecodingException {
         final SearchKey result;
         nextIsN(request);
@@ -575,7 +576,7 @@ public class SearchCommandParser extends AbstractUidCommandParser {
         return result;
     }
 
-    private SearchKey draft(ImapRequestLineReader request)
+    private SearchKey draft(ImapRequestLine request)
             throws DecodingException {
         final SearchKey result;
         nextIsA(request);
@@ -585,7 +586,7 @@ public class SearchCommandParser extends AbstractUidCommandParser {
         return result;
     }
 
-    private SearchKey deleted(ImapRequestLineReader request)
+    private SearchKey deleted(ImapRequestLine request)
             throws DecodingException {
         final SearchKey result;
         nextIsL(request);
@@ -597,7 +598,7 @@ public class SearchCommandParser extends AbstractUidCommandParser {
         return result;
     }
 
-    private SearchKey b(ImapRequestLineReader request, Charset charset)
+    private SearchKey b(ImapRequestLine request, Charset charset)
             throws DecodingException {
         final int next = consumeAndCap(request);
         switch (next) {
@@ -612,7 +613,7 @@ public class SearchCommandParser extends AbstractUidCommandParser {
         }
     }
 
-    private SearchKey body(ImapRequestLineReader request, final Charset charset)
+    private SearchKey body(ImapRequestLine request, final Charset charset)
             throws DecodingException {
         final SearchKey result;
         nextIsD(request);
@@ -623,7 +624,7 @@ public class SearchCommandParser extends AbstractUidCommandParser {
         return result;
     }
 
-    private SearchKey on(ImapRequestLineReader request)
+    private SearchKey on(ImapRequestLine request)
             throws DecodingException {
         final SearchKey result;
         nextIsSpace(request);
@@ -632,7 +633,7 @@ public class SearchCommandParser extends AbstractUidCommandParser {
         return result;
     }
 
-    private SearchKey sentBefore(ImapRequestLineReader request)
+    private SearchKey sentBefore(ImapRequestLine request)
             throws DecodingException {
         final SearchKey result;
         nextIsE(request);
@@ -646,7 +647,7 @@ public class SearchCommandParser extends AbstractUidCommandParser {
         return result;
     }
 
-    private SearchKey sentSince(ImapRequestLineReader request)
+    private SearchKey sentSince(ImapRequestLine request)
             throws DecodingException {
         final SearchKey result;
         nextIsI(request);
@@ -659,7 +660,7 @@ public class SearchCommandParser extends AbstractUidCommandParser {
         return result;
     }
 
-    private SearchKey since(ImapRequestLineReader request)
+    private SearchKey since(ImapRequestLine request)
             throws DecodingException {
         final SearchKey result;
         nextIsN(request);
@@ -671,7 +672,7 @@ public class SearchCommandParser extends AbstractUidCommandParser {
         return result;
     }
 
-    private SearchKey sentOn(ImapRequestLineReader request)
+    private SearchKey sentOn(ImapRequestLine request)
             throws DecodingException {
         final SearchKey result;
         nextIsN(request);
@@ -681,7 +682,7 @@ public class SearchCommandParser extends AbstractUidCommandParser {
         return result;
     }
 
-    private SearchKey before(ImapRequestLineReader request)
+    private SearchKey before(ImapRequestLine request)
             throws DecodingException {
         final SearchKey result;
         nextIsF(request);
@@ -694,7 +695,7 @@ public class SearchCommandParser extends AbstractUidCommandParser {
         return result;
     }
 
-    private SearchKey bcc(ImapRequestLineReader request, Charset charset)
+    private SearchKey bcc(ImapRequestLine request, Charset charset)
             throws DecodingException {
         final SearchKey result;
         nextIsC(request);
@@ -704,7 +705,7 @@ public class SearchCommandParser extends AbstractUidCommandParser {
         return result;
     }
 
-    private SearchKey text(ImapRequestLineReader request, final Charset charset)
+    private SearchKey text(ImapRequestLine request, final Charset charset)
             throws DecodingException {
         final SearchKey result;
         nextIsX(request);
@@ -715,7 +716,7 @@ public class SearchCommandParser extends AbstractUidCommandParser {
         return result;
     }
 
-    private SearchKey uid(ImapRequestLineReader request)
+    private SearchKey uid(ImapRequestLine request)
             throws DecodingException {
         final SearchKey result;
         nextIsD(request);
@@ -725,14 +726,14 @@ public class SearchCommandParser extends AbstractUidCommandParser {
         return result;
     }
 
-    private SearchKey sequenceSet(ImapRequestLineReader request)
+    private SearchKey sequenceSet(ImapRequestLine request)
             throws DecodingException {
         final IdRange[] range = parseIdRange(request);
         final SearchKey result = SearchKey.buildSequenceSet(range);
         return result;
     }
 
-    private SearchKey to(ImapRequestLineReader request, final Charset charset)
+    private SearchKey to(ImapRequestLine request, final Charset charset)
             throws DecodingException {
         final SearchKey result;
         nextIsSpace(request);
@@ -741,7 +742,7 @@ public class SearchCommandParser extends AbstractUidCommandParser {
         return result;
     }
 
-    private SearchKey subject(ImapRequestLineReader request,
+    private SearchKey subject(ImapRequestLine request,
             final Charset charset) throws DecodingException {
         final SearchKey result;
         nextIsB(request);
@@ -755,7 +756,7 @@ public class SearchCommandParser extends AbstractUidCommandParser {
         return result;
     }
 
-    private SearchKey a(ImapRequestLineReader request) throws DecodingException {
+    private SearchKey a(ImapRequestLine request) throws DecodingException {
         final int next = consumeAndCap(request);
         switch (next) {
             case 'L':
@@ -767,7 +768,7 @@ public class SearchCommandParser extends AbstractUidCommandParser {
         }
     }
 
-    private SearchKey answered(ImapRequestLineReader request)
+    private SearchKey answered(ImapRequestLine request)
             throws DecodingException {
         final SearchKey result;
         nextIsS(request);
@@ -780,7 +781,7 @@ public class SearchCommandParser extends AbstractUidCommandParser {
         return result;
     }
 
-    private SearchKey all(ImapRequestLineReader request)
+    private SearchKey all(ImapRequestLine request)
             throws DecodingException {
         final SearchKey result;
         nextIsL(request);
@@ -788,7 +789,7 @@ public class SearchCommandParser extends AbstractUidCommandParser {
         return result;
     }
 
-    private void nextIsSpace(ImapRequestLineReader request)
+    private void nextIsSpace(ImapRequestLine request)
             throws DecodingException {
         final char next = request.consume();
         if (next != ' ') {
@@ -796,102 +797,102 @@ public class SearchCommandParser extends AbstractUidCommandParser {
         }
     }
 
-    private void nextIsG(ImapRequestLineReader request)
+    private void nextIsG(ImapRequestLine request)
             throws DecodingException {
         nextIs(request, 'G', 'g');
     }
 
-    private void nextIsM(ImapRequestLineReader request)
+    private void nextIsM(ImapRequestLine request)
             throws DecodingException {
         nextIs(request, 'M', 'm');
     }
 
-    private void nextIsI(ImapRequestLineReader request)
+    private void nextIsI(ImapRequestLine request)
             throws DecodingException {
         nextIs(request, 'I', 'i');
     }
 
-    private void nextIsN(ImapRequestLineReader request)
+    private void nextIsN(ImapRequestLine request)
             throws DecodingException {
         nextIs(request, 'N', 'n');
     }
 
-    private void nextIsA(ImapRequestLineReader request)
+    private void nextIsA(ImapRequestLine request)
             throws DecodingException {
         nextIs(request, 'A', 'a');
     }
 
-    private void nextIsT(ImapRequestLineReader request)
+    private void nextIsT(ImapRequestLine request)
             throws DecodingException {
         nextIs(request, 'T', 't');
     }
 
-    private void nextIsY(ImapRequestLineReader request)
+    private void nextIsY(ImapRequestLine request)
             throws DecodingException {
         nextIs(request, 'Y', 'y');
     }
 
-    private void nextIsX(ImapRequestLineReader request)
+    private void nextIsX(ImapRequestLine request)
             throws DecodingException {
         nextIs(request, 'X', 'x');
     }
 
-    private void nextIsO(ImapRequestLineReader request)
+    private void nextIsO(ImapRequestLine request)
             throws DecodingException {
         nextIs(request, 'O', 'o');
     }
 
-    private void nextIsF(ImapRequestLineReader request)
+    private void nextIsF(ImapRequestLine request)
             throws DecodingException {
         nextIs(request, 'F', 'f');
     }
 
-    private void nextIsJ(ImapRequestLineReader request)
+    private void nextIsJ(ImapRequestLine request)
             throws DecodingException {
         nextIs(request, 'J', 'j');
     }
 
-    private void nextIsC(ImapRequestLineReader request)
+    private void nextIsC(ImapRequestLine request)
             throws DecodingException {
         nextIs(request, 'C', 'c');
     }
 
-    private void nextIsD(ImapRequestLineReader request)
+    private void nextIsD(ImapRequestLine request)
             throws DecodingException {
         nextIs(request, 'D', 'd');
     }
 
-    private void nextIsB(ImapRequestLineReader request)
+    private void nextIsB(ImapRequestLine request)
             throws DecodingException {
         nextIs(request, 'B', 'b');
     }
 
-    private void nextIsR(ImapRequestLineReader request)
+    private void nextIsR(ImapRequestLine request)
             throws DecodingException {
         nextIs(request, 'R', 'r');
     }
 
-    private void nextIsE(ImapRequestLineReader request)
+    private void nextIsE(ImapRequestLine request)
             throws DecodingException {
         nextIs(request, 'E', 'e');
     }
 
-    private void nextIsW(ImapRequestLineReader request)
+    private void nextIsW(ImapRequestLine request)
             throws DecodingException {
         nextIs(request, 'W', 'w');
     }
 
-    private void nextIsS(ImapRequestLineReader request)
+    private void nextIsS(ImapRequestLine request)
             throws DecodingException {
         nextIs(request, 'S', 's');
     }
 
-    private void nextIsL(ImapRequestLineReader request)
+    private void nextIsL(ImapRequestLine request)
             throws DecodingException {
         nextIs(request, 'L', 'l');
     }
 
-    private void nextIs(ImapRequestLineReader request, final char upper,
+    private void nextIs(ImapRequestLine request, final char upper,
             final char lower) throws DecodingException {
         final char next = request.consume();
         if (next != upper && next != lower) {
@@ -899,7 +900,7 @@ public class SearchCommandParser extends AbstractUidCommandParser {
         }
     }
 
-    public SearchKey decode(ImapRequestLineReader request)
+    public SearchKey decode(ImapRequestLine request)
             throws DecodingException, IllegalCharsetNameException,
             UnsupportedCharsetException {
         request.nextWordChar();
@@ -948,21 +949,23 @@ public class SearchCommandParser extends AbstractUidCommandParser {
      * (non-Javadoc)
      * @see org.apache.james.imap.decode.parser.AbstractUidCommandParser#decode(org.apache.james.imap.api.ImapCommand, org.apache.james.imap.decode.ImapRequestLineReader, java.lang.String, boolean, org.apache.james.imap.api.process.ImapSession)
      */
-    protected ImapMessage decode(ImapCommand command,
-            ImapRequestLineReader request, String tag, boolean useUids, ImapSession session)
-            throws DecodingException {
+    protected void decode(ImapCommand command,
+            ImapRequestLine request, String tag, boolean useUids, ImapSession session, ImapMessageCallback callback) {
         try {
             // Parse the search term from the request
             final SearchKey key = decode(request);
 
             final ImapMessage result = new SearchRequest(command, key, useUids, tag);
-            return result;
+            callback.onMessage(result);
         } catch (IllegalCharsetNameException e) {
             session.getLog().debug("Unable to decode request", e);
-            return unsupportedCharset(tag, command);
+            callback.onMessage(unsupportedCharset(tag, command));
         } catch (UnsupportedCharsetException e) {
             session.getLog().debug("Unable to decode request", e);
-            return unsupportedCharset(tag, command);
+            callback.onMessage(unsupportedCharset(tag, command));
+        } catch (DecodingException e) {
+            callback.onException(e);
         }
+       
     }
 }

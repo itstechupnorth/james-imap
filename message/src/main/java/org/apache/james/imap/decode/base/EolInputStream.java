@@ -23,20 +23,20 @@ import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import org.apache.james.imap.decode.ImapRequestLineReader;
+import org.apache.james.imap.api.ImapRequestLine;
 
 /**
- * {@link FileInputStream} which call the eol() method of the {@link ImapRequestLineReader} when the end 
+ * {@link FileInputStream} which call the eol() method of the {@link ImapRequestLine} when the end 
  * of the wrapped {@link InputStream} is reached
  * 
  *
  */
 public class EolInputStream extends FilterInputStream{
 
-    private ImapRequestLineReader reader;
+    private ImapRequestLine reader;
     private boolean eolCalled = false;
     
-    public EolInputStream(ImapRequestLineReader reader, InputStream in) {
+    public EolInputStream(ImapRequestLine reader, InputStream in) {
         super(in);
         this.reader = reader;
     }

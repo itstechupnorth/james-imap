@@ -18,13 +18,14 @@
  ****************************************************************/
 package org.apache.james.imap.decode.parser;
 
+import org.apache.james.imap.api.DecodingException;
 import org.apache.james.imap.api.ImapCommand;
 import org.apache.james.imap.api.ImapConstants;
 import org.apache.james.imap.api.ImapMessage;
+import org.apache.james.imap.api.ImapMessageCallback;
+import org.apache.james.imap.api.ImapRequestLine;
 import org.apache.james.imap.api.message.IdRange;
 import org.apache.james.imap.api.process.ImapSession;
-import org.apache.james.imap.decode.ImapRequestLineReader;
-import org.apache.james.imap.decode.DecodingException;
 import org.apache.james.imap.message.request.CopyRequest;
 
 /**
@@ -39,17 +40,21 @@ public class CopyCommandParser extends AbstractUidCommandParser {
 
     /*
      * (non-Javadoc)
-     * @see org.apache.james.imap.decode.parser.AbstractUidCommandParser#decode(org.apache.james.imap.api.ImapCommand, org.apache.james.imap.decode.ImapRequestLineReader, java.lang.String, boolean, org.apache.james.imap.api.process.ImapSession)
+     * @see org.apache.james.imap.decode.parser.AbstractUidCommandParser#decode(org.apache.james.imap.api.ImapCommand, org.apache.james.imap.decode.ImapRequestLineReader, java.lang.String, boolean, org.apache.james.imap.api.process.ImapSession, org.apache.james.imap.api.ImapMessageCallback)
      */
-    protected ImapMessage decode(ImapCommand command,
-            ImapRequestLineReader request, String tag, boolean useUids, ImapSession session)
-            throws DecodingException {
-        IdRange[] idSet = parseIdRange(request);
-        String mailboxName = mailbox(request);
-        endLine(request);
-        final ImapMessage result = new CopyRequest(
-                command, idSet, mailboxName, useUids, tag);
-        return result;
+    protected void decode(ImapCommand command,
+            ImapRequestLine request, String tag, boolean useUids, ImapSession session, ImapMessageCallback callback) {
+        try {
+            IdRange[] idSet = parseIdRange(request);
+            String mailboxName = mailbox(request);
+            endLine(request);
+            final ImapMessage result = new CopyRequest(
+                    command, idSet, mailboxName, useUids, tag);
+            callback.onMessage(result);
+        } catch (DecodingException e) {
+            callback.onException(e);
+        }
+       
     }
 
 }

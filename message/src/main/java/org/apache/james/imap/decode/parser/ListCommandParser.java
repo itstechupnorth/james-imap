@@ -18,12 +18,13 @@
  ****************************************************************/
 package org.apache.james.imap.decode.parser;
 
+import org.apache.james.imap.api.DecodingException;
 import org.apache.james.imap.api.ImapCommand;
 import org.apache.james.imap.api.ImapConstants;
 import org.apache.james.imap.api.ImapMessage;
+import org.apache.james.imap.api.ImapMessageCallback;
+import org.apache.james.imap.api.ImapRequestLine;
 import org.apache.james.imap.api.process.ImapSession;
-import org.apache.james.imap.decode.ImapRequestLineReader;
-import org.apache.james.imap.decode.DecodingException;
 import org.apache.james.imap.message.request.ListRequest;
 
 /**
@@ -48,7 +49,7 @@ public class ListCommandParser extends AbstractUidCommandParser {
      * 
      * @return An argument of type "list_mailbox"
      */
-    public String listMailbox(ImapRequestLineReader request)
+    public String listMailbox(ImapRequestLine request)
             throws DecodingException {
         char next = request.nextWordChar();
         switch (next) {
@@ -75,15 +76,18 @@ public class ListCommandParser extends AbstractUidCommandParser {
      * (non-Javadoc)
      * @see org.apache.james.imap.decode.parser.AbstractUidCommandParser#decode(org.apache.james.imap.api.ImapCommand, org.apache.james.imap.decode.ImapRequestLineReader, java.lang.String, boolean, org.apache.james.imap.api.process.ImapSession)
      */
-    protected ImapMessage decode(ImapCommand command,
-            ImapRequestLineReader request, String tag, boolean useUids, ImapSession session)
-            throws DecodingException {
-        String referenceName = mailbox(request);
-        String mailboxPattern = listMailbox(request);
-        endLine(request);
-        final ImapMessage result = createMessage(command, referenceName,
-                mailboxPattern, tag);
-        return result;
+    protected void decode(ImapCommand command,
+            ImapRequestLine request, String tag, boolean useUids, ImapSession session, ImapMessageCallback callback) {
+        try {
+            String referenceName = mailbox(request);
+            String mailboxPattern = listMailbox(request);
+            endLine(request);
+            final ImapMessage result = createMessage(command, referenceName, mailboxPattern, tag);
+            callback.onMessage(result);
+
+        } catch (DecodingException ex) {
+            callback.onException(ex);
+        }
     }
 
     protected ImapMessage createMessage(ImapCommand command,

@@ -21,14 +21,12 @@ package org.apache.james.imap.decode.parser;
 
 import static org.junit.Assert.assertEquals;
 
-import java.io.ByteArrayInputStream;
-
 import org.apache.james.imap.api.ImapCommand;
 import org.apache.james.imap.api.ImapMessage;
+import org.apache.james.imap.api.ImapRequestLine;
 import org.apache.james.imap.api.message.IdRange;
 import org.apache.james.imap.api.message.request.DayMonthYear;
 import org.apache.james.imap.api.message.request.SearchKey;
-import org.apache.james.imap.decode.ImapRequestLineReader;
 import org.apache.james.imap.encode.MockImapResponseComposer;
 import org.jmock.Mockery;
 import org.jmock.integration.junit4.JMock;
@@ -114,7 +112,7 @@ public class SearchCommandParserNotTest {
     }
 
     private void checkValid(String input, final SearchKey key) throws Exception {
-        ImapRequestLineReader reader = new ImapRequestLineReader(input.getBytes("US-ASCII"),
+        ImapRequestLine reader = new ImapRequestLine(input.getBytes("US-ASCII"),
                 new MockImapResponseComposer());
 
         assertEquals(key, parser.searchKey(reader, null, false));

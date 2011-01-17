@@ -22,6 +22,7 @@ package org.apache.james.imap.decode;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.james.imap.api.DecodingException;
 import org.apache.james.imap.api.display.HumanReadableText;
 
 

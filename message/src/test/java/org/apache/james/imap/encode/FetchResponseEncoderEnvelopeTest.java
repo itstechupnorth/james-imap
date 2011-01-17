@@ -22,9 +22,9 @@ package org.apache.james.imap.encode;
 import javax.mail.Flags;
 
 import org.apache.james.imap.api.ImapCommand;
+import org.apache.james.imap.api.message.response.ImapResponseComposer;
 import org.apache.james.imap.encode.FetchResponseEncoder;
 import org.apache.james.imap.encode.ImapEncoder;
-import org.apache.james.imap.encode.ImapResponseComposer;
 import org.apache.james.imap.message.response.FetchResponse;
 import org.apache.james.imap.message.response.FetchResponse.Envelope.Address;
 import org.jmock.Expectations;

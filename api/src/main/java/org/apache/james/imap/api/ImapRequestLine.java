@@ -17,12 +17,12 @@
  * under the License.                                           *
  ****************************************************************/
 
-package org.apache.james.imap.decode;
+package org.apache.james.imap.api;
 
 import java.io.IOException;
 
 import org.apache.james.imap.api.display.HumanReadableText;
-import org.apache.james.imap.encode.ImapResponseComposer;
+import org.apache.james.imap.api.message.response.ImapResponseComposer;
 
 /**
  * Wraps the client input reader with a bunch of convenience methods, allowing
@@ -31,7 +31,7 @@ import org.apache.james.imap.encode.ImapResponseComposer;
  * 
  * @version $Revision: 109034 $
  */
-public class ImapRequestLineReader {
+public class ImapRequestLine {
     
 
     protected boolean nextSeen = false;
@@ -43,7 +43,7 @@ public class ImapRequestLineReader {
     private byte[] data;
     private int pos = 0;
 
-    public ImapRequestLineReader(byte [] data, ImapResponseComposer composer) {
+    public ImapRequestLine(byte [] data, ImapResponseComposer composer) {
         this.composer = composer;
         this.data = data;
     }

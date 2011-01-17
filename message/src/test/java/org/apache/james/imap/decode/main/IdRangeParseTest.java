@@ -21,13 +21,13 @@ package org.apache.james.imap.decode.main;
 import static org.junit.Assert.assertEquals;
 import junit.framework.Assert;
 
+import org.apache.james.imap.api.DecodingException;
 import org.apache.james.imap.api.ImapCommand;
 import org.apache.james.imap.api.ImapConstants;
-import org.apache.james.imap.api.ImapMessage;
+import org.apache.james.imap.api.ImapMessageCallback;
+import org.apache.james.imap.api.ImapRequestLine;
 import org.apache.james.imap.api.message.IdRange;
 import org.apache.james.imap.api.process.ImapSession;
-import org.apache.james.imap.decode.DecodingException;
-import org.apache.james.imap.decode.ImapRequestLineReader;
 import org.apache.james.imap.decode.base.AbstractImapCommandParser;
 import org.apache.james.imap.encode.MockImapResponseComposer;
 import org.junit.Test;
@@ -36,12 +36,15 @@ public class IdRangeParseTest  {
 
 	private final AbstractImapCommandParser parser = new AbstractImapCommandParser(null) {
 
-		@Override
-		protected ImapMessage decode(ImapCommand command,
-				ImapRequestLineReader request, String tag, ImapSession session)
-				throws DecodingException {
-			return null;
-		}
+        /*
+         * (non-Javadoc)
+         * @see org.apache.james.imap.decode.base.AbstractImapCommandParser#decode(org.apache.james.imap.api.ImapCommand, org.apache.james.imap.decode.ImapRequestLineReader, java.lang.String, org.apache.james.imap.api.process.ImapSession, org.apache.james.imap.api.ImapMessageCallback)
+         */
+        protected void decode(ImapCommand command, ImapRequestLine request, String tag, ImapSession session, ImapMessageCallback callback) {
+            // TODO Auto-generated method stub
+            
+        }
+
 		
 	};
 	
@@ -98,7 +101,7 @@ public class IdRangeParseTest  {
 	
 	private IdRange[] ranges(String rangesAsString) throws DecodingException {
 
-        ImapRequestLineReader reader = new ImapRequestLineReader((rangesAsString + "\r\n").getBytes(),
+        ImapRequestLine reader = new ImapRequestLine((rangesAsString + "\r\n").getBytes(),
                 new MockImapResponseComposer());
         
 		return parser.parseIdRange(reader);

@@ -23,9 +23,9 @@ import java.io.IOException;
 
 import org.apache.commons.logging.Log;
 import org.apache.james.imap.api.ImapMessage;
+import org.apache.james.imap.api.message.response.ImapResponseComposer;
 import org.apache.james.imap.api.process.ImapSession;
 import org.apache.james.imap.encode.ImapEncoder;
-import org.apache.james.imap.encode.ImapResponseComposer;
 
 /**
  * {@link ImapEncoder} which should get added to the end of the encoder chain. It will handle the response

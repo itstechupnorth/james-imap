@@ -22,7 +22,7 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.WritableByteChannel;
 
-import org.apache.james.imap.message.response.Literal;
+import org.apache.james.imap.api.message.response.Literal;
 
 public class ChannelImapResponseComposer extends AbstractImapResponseComposer{
 

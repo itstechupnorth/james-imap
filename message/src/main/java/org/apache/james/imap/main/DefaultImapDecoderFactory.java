@@ -19,8 +19,8 @@
 
 package org.apache.james.imap.main;
 
+import org.apache.james.imap.api.process.ImapDecoder;
 import org.apache.james.imap.decode.ImapCommandParserFactory;
-import org.apache.james.imap.decode.ImapDecoder;
 import org.apache.james.imap.decode.ImapDecoderFactory;
 import org.apache.james.imap.decode.main.DefaultImapDecoder;
 import org.apache.james.imap.decode.parser.ImapParserFactory;

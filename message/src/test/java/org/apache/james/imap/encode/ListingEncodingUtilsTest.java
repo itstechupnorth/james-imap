@@ -21,6 +21,7 @@ package org.apache.james.imap.encode;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.james.imap.api.message.response.ImapResponseComposer;
 import org.apache.james.imap.message.response.ListResponse;
 import org.jmock.Expectations;
 import org.jmock.Mockery;

@@ -16,12 +16,27 @@
  * specific language governing permissions and limitations      *
  * under the License.                                           *
  ****************************************************************/
-package org.apache.james.imap.decode;
 
-import org.apache.james.imap.api.ImapMessage;
-import org.apache.james.imap.api.process.ImapSession;
+package org.apache.james.imap.api.message.response;
 
-public interface ImapDecoder {
-    public ImapMessage decode(final ImapRequestLineReader request,
-            ImapSession session);
+import java.io.IOException;
+import java.nio.channels.WritableByteChannel;
+
+public interface Literal {
+    /**
+     * Size of the literal content data.
+     * 
+     * @return number of octets which {@link #writeTo(WritableByteChannel)} will
+     *         put onto the channel
+     */
+    public long size();
+
+    /**
+     * Writes the contents of this body element to the channel.
+     * 
+     * @param channel
+     *            <code>Channel</code>, not null
+     * @throws IOException
+     */
+    public void writeTo(WritableByteChannel channel) throws IOException;
 }

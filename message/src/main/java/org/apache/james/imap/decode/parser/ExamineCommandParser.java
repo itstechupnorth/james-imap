@@ -18,12 +18,13 @@
  ****************************************************************/
 package org.apache.james.imap.decode.parser;
 
+import org.apache.james.imap.api.DecodingException;
 import org.apache.james.imap.api.ImapCommand;
 import org.apache.james.imap.api.ImapConstants;
 import org.apache.james.imap.api.ImapMessage;
+import org.apache.james.imap.api.ImapMessageCallback;
+import org.apache.james.imap.api.ImapRequestLine;
 import org.apache.james.imap.api.process.ImapSession;
-import org.apache.james.imap.decode.ImapRequestLineReader;
-import org.apache.james.imap.decode.DecodingException;
 import org.apache.james.imap.decode.base.AbstractImapCommandParser;
 import org.apache.james.imap.message.request.ExamineRequest;
 
@@ -41,12 +42,17 @@ public class ExamineCommandParser extends AbstractImapCommandParser {
      * (non-Javadoc)
      * @see org.apache.james.imap.decode.base.AbstractImapCommandParser#decode(org.apache.james.imap.api.ImapCommand, org.apache.james.imap.decode.ImapRequestLineReader, java.lang.String, org.apache.james.imap.api.process.ImapSession)
      */
-    protected ImapMessage decode(ImapCommand command,
-            ImapRequestLineReader request, String tag, ImapSession session) throws DecodingException {
-        final String mailboxName = mailbox(request);
-        endLine(request);
-        final ImapMessage result = new ExamineRequest(command, mailboxName, tag);
-        return result;
+    protected void decode(ImapCommand command,
+            ImapRequestLine request, String tag, ImapSession session, ImapMessageCallback callback) {
+        try {
+            String mailboxName = mailbox(request);
+            endLine(request);
+            final ImapMessage result = new ExamineRequest(command, mailboxName, tag);
+            callback.onMessage(result);
+        } catch (DecodingException e) {
+            callback.onException(e);
+        }
+       
     }
 
 }

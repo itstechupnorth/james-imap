@@ -18,12 +18,12 @@
  ****************************************************************/
 package org.apache.james.imap.decode.parser;
 
+import org.apache.james.imap.api.DecodingException;
 import org.apache.james.imap.api.ImapCommand;
 import org.apache.james.imap.api.ImapConstants;
-import org.apache.james.imap.api.ImapMessage;
+import org.apache.james.imap.api.ImapMessageCallback;
+import org.apache.james.imap.api.ImapRequestLine;
 import org.apache.james.imap.api.process.ImapSession;
-import org.apache.james.imap.decode.DecodingException;
-import org.apache.james.imap.decode.ImapRequestLineReader;
 import org.apache.james.imap.decode.base.AbstractImapCommandParser;
 import org.apache.james.imap.message.request.StartTLSRequest;
 
@@ -37,13 +37,15 @@ public class StartTLSCommandParser extends AbstractImapCommandParser{
         super(ImapCommand.nonAuthenticatedStateCommand(ImapConstants.STARTTLS));
     }
 
-    /*
-     * (non-Javadoc)
-     * @see org.apache.james.imap.decode.base.AbstractImapCommandParser#decode(org.apache.james.imap.api.ImapCommand, org.apache.james.imap.decode.ImapRequestLineReader, java.lang.String, org.apache.commons.logging.Log, org.apache.james.imap.api.process.ImapSession)
-     */
-    protected ImapMessage decode(ImapCommand command, ImapRequestLineReader request, String tag, ImapSession session) throws DecodingException {
-        endLine(request);
-        return new StartTLSRequest(tag, command);
+    @Override
+    protected void decode(ImapCommand command, ImapRequestLine request, String tag, ImapSession session, ImapMessageCallback callback) {
+        try {
+            endLine(request);
+            callback.onMessage(new StartTLSRequest(tag, command));        
+        } catch (DecodingException e) {
+            callback.onException(e);
+        }
     }
+
 
 }

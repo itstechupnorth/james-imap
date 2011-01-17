@@ -22,8 +22,8 @@ package org.apache.james.imap.encode;
 import static org.junit.Assert.*;
 
 import org.apache.james.imap.api.ImapMessage;
+import org.apache.james.imap.api.message.response.ImapResponseComposer;
 import org.apache.james.imap.encode.ImapEncoder;
-import org.apache.james.imap.encode.ImapResponseComposer;
 import org.apache.james.imap.encode.MailboxStatusResponseEncoder;
 import org.apache.james.imap.message.response.MailboxStatusResponse;
 import org.jmock.Expectations;

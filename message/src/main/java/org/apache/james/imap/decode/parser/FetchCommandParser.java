@@ -20,17 +20,18 @@ package org.apache.james.imap.decode.parser;
 
 import java.util.List;
 
+import org.apache.james.imap.api.DecodingException;
 import org.apache.james.imap.api.ImapCommand;
 import org.apache.james.imap.api.ImapConstants;
 import org.apache.james.imap.api.ImapMessage;
+import org.apache.james.imap.api.ImapMessageCallback;
+import org.apache.james.imap.api.ImapRequestLine;
 import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.api.message.BodyFetchElement;
 import org.apache.james.imap.api.message.FetchData;
 import org.apache.james.imap.api.message.IdRange;
 import org.apache.james.imap.api.process.ImapSession;
 import org.apache.james.imap.decode.FetchPartPathDecoder;
-import org.apache.james.imap.decode.ImapRequestLineReader;
-import org.apache.james.imap.decode.DecodingException;
 import org.apache.james.imap.message.request.FetchRequest;
 
 /**
@@ -44,13 +45,13 @@ public class FetchCommandParser extends AbstractUidCommandParser {
     }
 
     /**
-     * Create a {@link FetchData} by reading from the {@link ImapRequestLineReader}
+     * Create a {@link FetchData} by reading from the {@link ImapRequestLine}
      * 
      * @param request
      * @return fetchData
      * @throws DecodingException
      */
-    protected FetchData fetchRequest(ImapRequestLineReader request)
+    protected FetchData fetchRequest(ImapRequestLine request)
             throws DecodingException {
         FetchData fetch = new FetchData();
 
@@ -72,7 +73,7 @@ public class FetchCommandParser extends AbstractUidCommandParser {
         return fetch;
     }
 
-    private void addNextElement(ImapRequestLineReader reader, FetchData fetch)
+    private void addNextElement(ImapRequestLine reader, FetchData fetch)
             throws DecodingException {
         // String name = element.toString();
         String name = readWord(reader, " [)\r\n");
@@ -205,7 +206,7 @@ public class FetchCommandParser extends AbstractUidCommandParser {
         return sectionType;
     }
 
-    private String readWord(ImapRequestLineReader request, String terminator)
+    private String readWord(ImapRequestLine request, String terminator)
             throws DecodingException {
         StringBuffer buf = new StringBuffer();
         char next = request.nextChar();
@@ -217,7 +218,7 @@ public class FetchCommandParser extends AbstractUidCommandParser {
         return buf.toString();
     }
 
-    private char nextNonSpaceChar(ImapRequestLineReader request)
+    private char nextNonSpaceChar(ImapRequestLine request)
             throws DecodingException {
         char next = request.nextChar();
         while (next == ' ') {
@@ -231,16 +232,17 @@ public class FetchCommandParser extends AbstractUidCommandParser {
      * (non-Javadoc)
      * @see org.apache.james.imap.decode.parser.AbstractUidCommandParser#decode(org.apache.james.imap.api.ImapCommand, org.apache.james.imap.decode.ImapRequestLineReader, java.lang.String, boolean, org.apache.james.imap.api.process.ImapSession)
      */
-    protected ImapMessage decode(ImapCommand command,
-            ImapRequestLineReader request, String tag, boolean useUids, ImapSession session)
-            throws DecodingException {
-        IdRange[] idSet = parseIdRange(request);
-        FetchData fetch = fetchRequest(request);
-        endLine(request);
+    protected void decode(ImapCommand command, ImapRequestLine request, String tag, boolean useUids, ImapSession session, ImapMessageCallback callback) {
+        try {
+            IdRange[] idSet = parseIdRange(request);
+            FetchData fetch = fetchRequest(request);
+            endLine(request);
 
-        final ImapMessage result = new FetchRequest(command, useUids,
-                idSet, fetch, tag);
-        return result;
+            final ImapMessage result = new FetchRequest(command, useUids, idSet, fetch, tag);
+            callback.onMessage(result);
+        } catch (DecodingException ex) {
+            callback.onException(ex);
+        }
     }
 
 }

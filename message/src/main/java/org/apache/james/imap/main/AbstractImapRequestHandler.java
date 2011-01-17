@@ -24,15 +24,16 @@ import java.io.IOException;
 import org.apache.commons.logging.Log;
 import org.apache.james.imap.api.ImapConstants;
 import org.apache.james.imap.api.ImapMessage;
+import org.apache.james.imap.api.ImapMessageCallback;
+import org.apache.james.imap.api.ImapRequestLine;
+import org.apache.james.imap.api.message.response.ImapResponseComposer;
 import org.apache.james.imap.api.message.response.ImapResponseMessage;
+import org.apache.james.imap.api.process.ImapDecoder;
 import org.apache.james.imap.api.process.ImapProcessor;
 import org.apache.james.imap.api.process.ImapSession;
 import org.apache.james.imap.api.process.SelectedMailbox;
 import org.apache.james.imap.api.process.ImapProcessor.Responder;
-import org.apache.james.imap.decode.ImapDecoder;
-import org.apache.james.imap.decode.ImapRequestLineReader;
 import org.apache.james.imap.encode.ImapEncoder;
-import org.apache.james.imap.encode.ImapResponseComposer;
 
 public abstract class AbstractImapRequestHandler {
 
@@ -49,7 +50,7 @@ public abstract class AbstractImapRequestHandler {
     
     private final ImapDecoder decoder;
     protected final ImapProcessor processor;
-    private final ImapEncoder encoder;
+    protected final ImapEncoder encoder;
 
     public AbstractImapRequestHandler(final ImapDecoder decoder,
             final ImapProcessor processor, final ImapEncoder encoder) {
@@ -58,30 +59,11 @@ public abstract class AbstractImapRequestHandler {
         this.encoder = encoder;
     }
     
-    protected boolean doProcessRequest(ImapRequestLineReader request,
-            ImapResponseComposer response, ImapSession session) {
+    protected void doProcessRequest(ImapRequestLine request,
+            ImapResponseComposer response, ImapSession session, ImapMessageCallback callback) {
         ImapDecoder nextDecoder = getDecoder(session);
-        ImapMessage message = nextDecoder.decode(request, session);
-        if (message != null) {
-            final ResponseEncoder responseEncoder = new ResponseEncoder(encoder, response, session);
-            processor.process(message, responseEncoder, session);
-            
-            final boolean result;
-            final IOException failure = responseEncoder.getFailure();
-            if (failure == null) {
-                result = true;
-            } else {
-                result = false;
-                final Log logger = session.getLog();
-                logger.info(failure.getMessage());
-                if (logger.isDebugEnabled()) {
-                    logger.debug("Failed to write " + message, failure);
-                }
-            }
+        nextDecoder.decode(request, session, callback);
 
-            return result;
-        }
-        return true;
         
     }
 
@@ -116,7 +98,7 @@ public abstract class AbstractImapRequestHandler {
         }
     }
     
-    private static final class ResponseEncoder implements Responder {
+    public static final class ResponseEncoder implements Responder {
         private final ImapEncoder encoder;
         private final ImapSession session;
         private final ImapResponseComposer composer;

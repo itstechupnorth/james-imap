@@ -27,6 +27,7 @@ import java.util.TimeZone;
 
 import javax.mail.Flags;
 
+import org.apache.james.imap.api.DecodingException;
 import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.api.message.MessageFlags;
 

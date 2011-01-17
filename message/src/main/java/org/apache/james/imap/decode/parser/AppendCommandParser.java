@@ -28,14 +28,15 @@ import java.util.Date;
 
 import javax.mail.Flags;
 
+import org.apache.james.imap.api.DecodingException;
 import org.apache.james.imap.api.ImapCommand;
 import org.apache.james.imap.api.ImapConstants;
+import org.apache.james.imap.api.ImapLineHandler;
 import org.apache.james.imap.api.ImapMessage;
+import org.apache.james.imap.api.ImapMessageCallback;
+import org.apache.james.imap.api.ImapRequestLine;
 import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.api.process.ImapSession;
-import org.apache.james.imap.decode.ImapDecoder;
-import org.apache.james.imap.decode.ImapRequestLineReader;
-import org.apache.james.imap.decode.DecodingException;
 import org.apache.james.imap.decode.base.AbstractImapCommandParser;
 import org.apache.james.imap.message.request.AppendRequest;
 
@@ -56,7 +57,7 @@ public class AppendCommandParser extends AbstractImapCommandParser {
      * "flag_list" argument from the request. If not, returns a MessageFlags
      * with no flags set.
      */
-    public Flags optionalAppendFlags(ImapRequestLineReader request)
+    public Flags optionalAppendFlags(ImapRequestLine request)
             throws DecodingException {
         char next = request.nextWordChar();
         if (next == '(') {
@@ -70,7 +71,7 @@ public class AppendCommandParser extends AbstractImapCommandParser {
      * If the next character in the request is a '"', tries to read a DateTime
      * argument. If not, returns null.
      */
-    public Date optionalDateTime(ImapRequestLineReader request)
+    public Date optionalDateTime(ImapRequestLine request)
             throws DecodingException {
         char next = request.nextWordChar();
         if (next == '"') {
@@ -81,82 +82,7 @@ public class AppendCommandParser extends AbstractImapCommandParser {
     }
 
 
-    /*
-     * (non-Javadoc)
-     * @see org.apache.james.imap.decode.base.AbstractImapCommandParser#decode(org.apache.james.imap.api.ImapCommand, org.apache.james.imap.decode.ImapRequestLineReader, java.lang.String, org.apache.commons.logging.Log, org.apache.james.imap.api.process.ImapSession)
-     */
-    protected ImapMessage decode(final ImapCommand command,
-            ImapRequestLineReader request, final String tag, ImapSession session) throws DecodingException {
-        final String mailboxName = mailbox(request);
-        Flags flags = optionalAppendFlags(request);
-        if (flags == null) {
-            flags = new Flags();
-        }
-        final Flags f = flags;
-        
-        Date datetime = optionalDateTime(request);
-        if (datetime == null) {
-            datetime = new Date();
-        }
-        final Date dt = datetime;
-        request.nextWordChar();
-        
-        try {
-            final File file = File.createTempFile("imap-append", ".m64");
-            final FileOutputStream out = new FileOutputStream(file);
-            final int size = consumeLiteralSize(request);
-            session.setAttribute(BYTES_WRITTEN, 0);
-            
-            ImapDecoder nextDecoder = new ImapDecoder() {
-                
-                public ImapMessage decode(ImapRequestLineReader request, ImapSession session) {
-                    int bytes = (Integer)session.getAttribute(BYTES_WRITTEN);
-                    try {
-                        while(request.isConsumed() == false && bytes < size) {
-                            out.write((byte)request.consume());
-                            bytes++;
-                        }
 
-                        // as we push data without delimiters we need to put them in back
-                        if (bytes != size) {
-                            out.write('\r');
-                            bytes++;
-                        }
-                        
-                        if (bytes != size) {
-                            out.write('\n');
-                            bytes++;
-                        }
-                        
-                        if (bytes == size) {
-                            request.eol();
-                            session.setAttribute(ImapConstants.NEXT_DECODER, null);
-                            session.setAttribute(BYTES_WRITTEN, null);
-                            return new AppendRequest(command, mailboxName, f, dt, new DeleteOnCloseInputStream(new FileInputStream(file), file) , tag);
-                        } else {
-                            session.setAttribute(BYTES_WRITTEN, bytes);
-                        }
-                        
-                    } catch (DecodingException e) {
-                        e.printStackTrace();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                    return null;
-                }
-            };
-            session.setAttribute(ImapConstants.NEXT_DECODER, nextDecoder);
-
-            
-            return null;
-            
-        } catch (IOException e1) {
-            e1.printStackTrace();
-            throw new DecodingException(HumanReadableText.GENERIC_FAILURE_DURING_PROCESSING,e1.getMessage());
-        }
-
-       
-    }
     
     private class DeleteOnCloseInputStream extends FilterInputStream {
 
@@ -171,6 +97,82 @@ public class AppendCommandParser extends AbstractImapCommandParser {
         public void close() throws IOException {
             super.close();
             f.delete();
+        }
+        
+    }
+
+    @Override
+    protected void decode(final ImapCommand command, ImapRequestLine request, final String tag, final ImapSession session, final ImapMessageCallback callback) {
+        try {
+            final String mailboxName = mailbox(request);
+            Flags flags = optionalAppendFlags(request);
+            if (flags == null) {
+                flags = new Flags();
+            }
+            final Flags f = flags;
+            
+            Date datetime = optionalDateTime(request);
+            if (datetime == null) {
+                datetime = new Date();
+            }
+            final Date dt = datetime;
+            request.nextWordChar();
+            
+            try {
+                final File file = File.createTempFile("imap-append", ".m64");
+                final FileOutputStream out = new FileOutputStream(file);
+                final int size = consumeLiteralSize(request);
+                session.setAttribute(BYTES_WRITTEN, 0);
+                session.pushImapLineHandler( new ImapLineHandler() {
+                    
+                    public void onLine(ImapSession session, byte[] data, ImapMessageCallback callback) {
+                        int bytes = (Integer)session.getAttribute(BYTES_WRITTEN);
+                        try {
+                            int left = size - bytes;
+                            if (left -2 > data.length) {
+                                out.write(data);
+                                bytes += data.length;
+                             
+                                // as we push data without delimiters we need to put them in back
+                                if (bytes != size) {
+                                    out.write("\r\n".getBytes());
+                                    bytes += 2;
+                                }
+                            } else {
+                                out.write(data, 0, left);
+                                bytes = size;
+                            }
+                            
+
+                            
+                            
+                            if (bytes == size) {
+                                session.popImapLineHandler();
+                                session.setAttribute(BYTES_WRITTEN, null);
+                                ImapMessage message =  new AppendRequest(command, mailboxName, f, dt, new DeleteOnCloseInputStream(new FileInputStream(file), file) , tag);
+                                callback.onMessage(message);
+                            } else {
+                                
+                                session.setAttribute(BYTES_WRITTEN, bytes);
+                            }
+                            
+                        } catch (DecodingException e) {
+                            session.popImapLineHandler();
+                            callback.onException(e);
+                        } catch (IOException e) {
+                            session.popImapLineHandler();
+                            callback.onException(new DecodingException(HumanReadableText.GENERIC_FAILURE_DURING_PROCESSING,e.getMessage()));
+                        }
+                    }
+                });
+                            
+            } catch (IOException e1) {            
+                callback.onException(new DecodingException(HumanReadableText.GENERIC_FAILURE_DURING_PROCESSING,e1.getMessage()));
+            }
+            
+        } catch (DecodingException e2) {
+            callback.onException(e2);
+
         }
         
     }

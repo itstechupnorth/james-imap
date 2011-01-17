@@ -19,16 +19,17 @@
 
 package org.apache.james.imap.decode.parser;
 
-import java.io.ByteArrayInputStream;
-
 import javax.mail.Flags;
 
+import junit.framework.Assert;
+
+import org.apache.james.imap.api.DecodingException;
 import org.apache.james.imap.api.ImapCommand;
 import org.apache.james.imap.api.ImapMessage;
+import org.apache.james.imap.api.ImapMessageCallback;
+import org.apache.james.imap.api.ImapRequestLine;
 import org.apache.james.imap.api.message.IdRange;
 import org.apache.james.imap.api.process.ImapSession;
-import org.apache.james.imap.decode.ImapRequestLineReader;
-import org.apache.james.imap.decode.ImapRequestLineReader;
 import org.apache.james.imap.encode.MockImapResponseComposer;
 import org.jmock.Mockery;
 import org.jmock.integration.junit4.JMock;
@@ -74,10 +75,18 @@ public class StoreCommandParserTest {
     private void check(String input, final IdRange[] idSet,final boolean silent,
             final Boolean sign, final Flags flags, final boolean useUids, final String tag)
             throws Exception {
-        ImapRequestLineReader reader = new ImapRequestLineReader(
+        ImapRequestLine reader = new ImapRequestLine(
                 (input.getBytes("US-ASCII")),
                 new MockImapResponseComposer());
 
-        parser.decode(command, reader, tag, useUids, session);
+        parser.decode(command, reader, tag, useUids, session, new ImapMessageCallback() {
+            
+            public void onMessage(ImapMessage message) {                
+            }
+            
+            public void onException(DecodingException ex) {
+                Assert.fail();
+            }
+        });
     }
 }

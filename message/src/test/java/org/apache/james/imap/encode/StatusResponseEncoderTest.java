@@ -38,6 +38,11 @@ import org.junit.runner.RunWith;
 
 //@RunWith(JMock.class)
 public class StatusResponseEncoderTest {
+    
+    @Test
+    public void stub() {
+        
+    }
 /*
     private static final String COMMAND = "COMMAND";
 

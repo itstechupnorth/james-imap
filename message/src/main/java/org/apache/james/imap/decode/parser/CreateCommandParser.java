@@ -18,13 +18,14 @@
  ****************************************************************/
 package org.apache.james.imap.decode.parser;
 
+import org.apache.james.imap.api.DecodingException;
 import org.apache.james.imap.api.ImapCommand;
 import org.apache.james.imap.api.ImapConstants;
 import org.apache.james.imap.api.ImapMessage;
+import org.apache.james.imap.api.ImapMessageCallback;
+import org.apache.james.imap.api.ImapRequestLine;
 import org.apache.james.imap.api.ImapSessionUtils;
 import org.apache.james.imap.api.process.ImapSession;
-import org.apache.james.imap.decode.DecodingException;
-import org.apache.james.imap.decode.ImapRequestLineReader;
 import org.apache.james.imap.decode.base.AbstractImapCommandParser;
 import org.apache.james.imap.message.request.CreateRequest;
 import org.apache.james.mailbox.MailboxSession;
@@ -39,31 +40,32 @@ public class CreateCommandParser extends AbstractImapCommandParser  {
         super(ImapCommand.authenticatedStateCommand(ImapConstants.CREATE_COMMAND_NAME));
     }
 
+    @Override
+    protected void decode(ImapCommand command, ImapRequestLine request, String tag, ImapSession session, ImapMessageCallback callback) {
+        try {
+            String mailboxName = mailbox(request);
 
-    /*
-     * (non-Javadoc)
-     * @see org.apache.james.imap.decode.base.AbstractImapCommandParser#decode(org.apache.james.imap.api.ImapCommand, org.apache.james.imap.decode.ImapRequestLineReader, java.lang.String, org.apache.james.imap.api.process.ImapSession)
-     */
-    protected ImapMessage decode(ImapCommand command,
-            ImapRequestLineReader request, String tag, ImapSession session) throws DecodingException {
-        String mailboxName = mailbox(request);
+            
+            MailboxSession mailboxSession = ImapSessionUtils.getMailboxSession(session);
 
-        
-        MailboxSession mailboxSession = ImapSessionUtils.getMailboxSession(session);
-
-        // Check if we have an mailboxsession. This is a workaround for IMAP-240:
-        // https://issues.apache.org/jira/browse/IMAP-240
-        if (mailboxSession != null) {
-            // RFC3501@6.3.3p2
-            // When mailbox name is suffixed with hierarchy separator
-            // name created must remove tailing delimiter
-            if (mailboxName.endsWith(Character.toString(mailboxSession.getPathDelimiter()))) {
-                mailboxName = mailboxName.substring(0, mailboxName.length() -1);
+            // Check if we have an mailboxsession. This is a workaround for IMAP-240:
+            // https://issues.apache.org/jira/browse/IMAP-240
+            if (mailboxSession != null) {
+                // RFC3501@6.3.3p2
+                // When mailbox name is suffixed with hierarchy separator
+                // name created must remove tailing delimiter
+                if (mailboxName.endsWith(Character.toString(mailboxSession.getPathDelimiter()))) {
+                    mailboxName = mailboxName.substring(0, mailboxName.length() -1);
+                }
             }
+            endLine(request);
+            final ImapMessage result = new CreateRequest(command, mailboxName, tag);
+            callback.onMessage(result);
+        } catch (DecodingException e) {
+            callback.onException(e);
         }
-        endLine(request);
-        final ImapMessage result = new CreateRequest(command, mailboxName, tag);
-        return result;
+
     }
+
 
 }

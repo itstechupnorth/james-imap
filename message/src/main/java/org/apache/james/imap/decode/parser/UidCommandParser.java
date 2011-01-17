@@ -18,16 +18,16 @@
  ****************************************************************/
 package org.apache.james.imap.decode.parser;
 
+import org.apache.james.imap.api.DecodingException;
 import org.apache.james.imap.api.ImapCommand;
 import org.apache.james.imap.api.ImapConstants;
-import org.apache.james.imap.api.ImapMessage;
+import org.apache.james.imap.api.ImapMessageCallback;
+import org.apache.james.imap.api.ImapRequestLine;
 import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.api.process.ImapSession;
 import org.apache.james.imap.decode.DelegatingImapCommandParser;
 import org.apache.james.imap.decode.ImapCommandParser;
 import org.apache.james.imap.decode.ImapCommandParserFactory;
-import org.apache.james.imap.decode.ImapRequestLineReader;
-import org.apache.james.imap.decode.DecodingException;
 import org.apache.james.imap.decode.base.AbstractImapCommandParser;
 
 /**
@@ -56,30 +56,37 @@ public class UidCommandParser extends AbstractImapCommandParser implements
     public void setParserFactory(ImapCommandParserFactory imapCommandFactory) {
         this.parserFactory = imapCommandFactory;
     }
+
     
 
     /*
      * (non-Javadoc)
-     * @see org.apache.james.imap.decode.base.AbstractImapCommandParser#decode(org.apache.james.imap.api.ImapCommand, org.apache.james.imap.decode.ImapRequestLineReader, java.lang.String, org.apache.james.imap.api.process.ImapSession)
+     * @see org.apache.james.imap.decode.base.AbstractImapCommandParser#decode(org.apache.james.imap.api.ImapCommand, org.apache.james.imap.decode.ImapRequestLineReader, java.lang.String, org.apache.james.imap.api.process.ImapSession, org.apache.james.imap.api.ImapMessageCallback)
      */
-    protected ImapMessage decode(ImapCommand command,
-            ImapRequestLineReader request, String tag, ImapSession session) throws DecodingException {
+    protected void decode(ImapCommand command, ImapRequestLine request, String tag, ImapSession session, ImapMessageCallback callback) {
         // TODO: check the logic against the specification:
         // TODO: suspect that it is now bust
         // TODO: the command written may be wrong
         // TODO: this will be easier to fix a little later
         // TODO: also not sure whether the old implementation shares this flaw
-        String commandName = atom(request);
-        ImapCommandParser helperCommand = parserFactory.getParser(commandName);
-        // TODO: replace abstract class with interface
-        if (helperCommand == null
-                || !(helperCommand instanceof AbstractUidCommandParser)) {
-            throw new DecodingException(HumanReadableText.ILLEGAL_ARGUMENTS, 
-                    "Invalid UID command: '" + commandName + "'");
+        try {
+            String commandName = atom(request);
+            ImapCommandParser helperCommand = parserFactory.getParser(commandName);
+            // TODO: replace abstract class with interface
+            if (helperCommand == null
+                    || !(helperCommand instanceof AbstractUidCommandParser)) {
+                throw new DecodingException(HumanReadableText.ILLEGAL_ARGUMENTS, 
+                        "Invalid UID command: '" + commandName + "'");
+            }
+            final AbstractUidCommandParser uidEnabled = (AbstractUidCommandParser) helperCommand;
+            
+            uidEnabled.decode(request, tag, true, session, callback);
+        } catch (DecodingException e) {
+            callback.onException(e);
         }
-        final AbstractUidCommandParser uidEnabled = (AbstractUidCommandParser) helperCommand;
-        final ImapMessage result = uidEnabled.decode(request, tag, true, session);
-        return result;
+        
     }
+    
+    
 
 }
