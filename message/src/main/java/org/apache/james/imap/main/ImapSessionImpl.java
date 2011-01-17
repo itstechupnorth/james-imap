@@ -19,8 +19,8 @@
 
 package org.apache.james.imap.main;
 
+import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -45,7 +45,7 @@ public class ImapSessionImpl implements ImapSession, ImapConstants {
     private final Map<String, Object> attributesByKey;
 
     public ImapSessionImpl() {
-        this.attributesByKey = new ConcurrentHashMap<String, Object>();    
+        this.attributesByKey = new HashMap<String, Object>();    
     }
 
 
@@ -116,7 +116,7 @@ public class ImapSessionImpl implements ImapSession, ImapConstants {
         return this.state;
     }
 
-    public void closeMailbox() {
+    private void closeMailbox() {
         if (selectedMailbox != null) {
             selectedMailbox.deselect();
             selectedMailbox = null;
