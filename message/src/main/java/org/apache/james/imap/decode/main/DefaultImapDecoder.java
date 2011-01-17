@@ -22,14 +22,14 @@ import org.apache.commons.logging.Log;
 import org.apache.james.imap.api.DecodingException;
 import org.apache.james.imap.api.ImapMessage;
 import org.apache.james.imap.api.ImapMessageCallback;
-import org.apache.james.imap.api.ImapRequestLine;
+import org.apache.james.imap.api.ImapSession;
 import org.apache.james.imap.api.ImapSessionState;
 import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.api.message.response.StatusResponseFactory;
-import org.apache.james.imap.api.process.ImapDecoder;
-import org.apache.james.imap.api.process.ImapSession;
 import org.apache.james.imap.decode.ImapCommandParser;
 import org.apache.james.imap.decode.ImapCommandParserFactory;
+import org.apache.james.imap.decode.ImapDecoder;
+import org.apache.james.imap.decode.ImapRequestLine;
 import org.apache.james.imap.decode.base.AbstractImapCommandParser;
 
 /**

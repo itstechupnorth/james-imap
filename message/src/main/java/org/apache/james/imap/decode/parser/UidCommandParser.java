@@ -22,12 +22,12 @@ import org.apache.james.imap.api.DecodingException;
 import org.apache.james.imap.api.ImapCommand;
 import org.apache.james.imap.api.ImapConstants;
 import org.apache.james.imap.api.ImapMessageCallback;
-import org.apache.james.imap.api.ImapRequestLine;
+import org.apache.james.imap.api.ImapSession;
 import org.apache.james.imap.api.display.HumanReadableText;
-import org.apache.james.imap.api.process.ImapSession;
 import org.apache.james.imap.decode.DelegatingImapCommandParser;
 import org.apache.james.imap.decode.ImapCommandParser;
 import org.apache.james.imap.decode.ImapCommandParserFactory;
+import org.apache.james.imap.decode.ImapRequestLine;
 import org.apache.james.imap.decode.base.AbstractImapCommandParser;
 
 /**

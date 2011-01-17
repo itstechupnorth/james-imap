@@ -25,14 +25,14 @@ import org.apache.commons.logging.Log;
 import org.apache.james.imap.api.ImapConstants;
 import org.apache.james.imap.api.ImapMessage;
 import org.apache.james.imap.api.ImapMessageCallback;
-import org.apache.james.imap.api.ImapRequestLine;
+import org.apache.james.imap.api.ImapSession;
 import org.apache.james.imap.api.message.response.ImapResponseComposer;
 import org.apache.james.imap.api.message.response.ImapResponseMessage;
-import org.apache.james.imap.api.process.ImapDecoder;
 import org.apache.james.imap.api.process.ImapProcessor;
-import org.apache.james.imap.api.process.ImapSession;
 import org.apache.james.imap.api.process.SelectedMailbox;
 import org.apache.james.imap.api.process.ImapProcessor.Responder;
+import org.apache.james.imap.decode.ImapDecoder;
+import org.apache.james.imap.decode.ImapRequestLine;
 import org.apache.james.imap.encode.ImapEncoder;
 
 public abstract class AbstractImapRequestHandler {

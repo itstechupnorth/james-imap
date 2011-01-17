@@ -23,8 +23,8 @@ import java.util.List;
 
 import org.apache.james.imap.api.ImapConstants;
 import org.apache.james.imap.api.ImapMessage;
+import org.apache.james.imap.api.ImapSession;
 import org.apache.james.imap.api.message.response.ImapResponseComposer;
-import org.apache.james.imap.api.process.ImapSession;
 import org.apache.james.imap.encode.base.AbstractChainedImapEncoder;
 import org.apache.james.imap.message.response.NamespaceResponse;
 import org.apache.james.imap.message.response.NamespaceResponse.Namespace;

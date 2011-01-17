@@ -23,7 +23,7 @@ import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import org.apache.james.imap.api.ImapRequestLine;
+import org.apache.james.imap.decode.ImapRequestLine;
 
 /**
  * {@link FileInputStream} which call the eol() method of the {@link ImapRequestLine} when the end 

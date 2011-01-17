@@ -19,7 +19,6 @@
 
 package org.apache.james.imap.decode;
 
-import org.apache.james.imap.api.process.ImapDecoder;
 
 public interface ImapDecoderFactory {
 

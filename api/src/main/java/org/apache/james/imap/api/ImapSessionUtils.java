@@ -19,7 +19,6 @@
 
 package org.apache.james.imap.api;
 
-import org.apache.james.imap.api.process.ImapSession;
 import org.apache.james.mailbox.MailboxSession;
 
 public class ImapSessionUtils {

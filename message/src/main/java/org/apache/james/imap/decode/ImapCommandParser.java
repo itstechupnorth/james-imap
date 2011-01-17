@@ -20,8 +20,7 @@
 package org.apache.james.imap.decode;
 
 import org.apache.james.imap.api.ImapMessageCallback;
-import org.apache.james.imap.api.ImapRequestLine;
-import org.apache.james.imap.api.process.ImapSession;
+import org.apache.james.imap.api.ImapSession;
 
 /**
  * <p>

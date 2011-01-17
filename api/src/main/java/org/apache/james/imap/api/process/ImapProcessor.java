@@ -20,6 +20,7 @@
 package org.apache.james.imap.api.process;
 
 import org.apache.james.imap.api.ImapMessage;
+import org.apache.james.imap.api.ImapSession;
 import org.apache.james.imap.api.message.response.ImapResponseMessage;
 
 /**

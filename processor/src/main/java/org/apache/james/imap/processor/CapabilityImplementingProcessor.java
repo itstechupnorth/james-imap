@@ -21,8 +21,8 @@ package org.apache.james.imap.processor;
 
 import java.util.List;
 
+import org.apache.james.imap.api.ImapSession;
 import org.apache.james.imap.api.process.ImapProcessor;
-import org.apache.james.imap.api.process.ImapSession;
 
 /**
  * {@link ImapProcessor} which implements one ore more Capabilities

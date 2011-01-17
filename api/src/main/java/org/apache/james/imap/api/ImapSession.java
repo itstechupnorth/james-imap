@@ -17,11 +17,10 @@
  * under the License.                                           *
  ****************************************************************/
 
-package org.apache.james.imap.api.process;
+package org.apache.james.imap.api;
 
 import org.apache.commons.logging.Log;
-import org.apache.james.imap.api.ImapLineHandler;
-import org.apache.james.imap.api.ImapSessionState;
+import org.apache.james.imap.api.process.SelectedMailbox;
 
 /**
  * Encapsulates all state held for an ongoing Imap session, which commences when
@@ -32,8 +31,6 @@ import org.apache.james.imap.api.ImapSessionState;
  */
 public interface ImapSession {
     
-    ImapDecoder decoder = null;
-
 
     /**
      * Gets the context sensitive log for this session.

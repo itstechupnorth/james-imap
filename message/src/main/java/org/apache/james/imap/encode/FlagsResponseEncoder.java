@@ -24,8 +24,8 @@ import java.io.IOException;
 import javax.mail.Flags;
 
 import org.apache.james.imap.api.ImapMessage;
+import org.apache.james.imap.api.ImapSession;
 import org.apache.james.imap.api.message.response.ImapResponseComposer;
-import org.apache.james.imap.api.process.ImapSession;
 import org.apache.james.imap.encode.base.AbstractChainedImapEncoder;
 import org.apache.james.imap.message.response.FlagsResponse;
 

@@ -40,14 +40,14 @@ import org.apache.james.imap.api.ImapCommand;
 import org.apache.james.imap.api.ImapConstants;
 import org.apache.james.imap.api.ImapMessage;
 import org.apache.james.imap.api.ImapMessageCallback;
-import org.apache.james.imap.api.ImapRequestLine;
+import org.apache.james.imap.api.ImapSession;
 import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.api.message.IdRange;
 import org.apache.james.imap.api.message.request.DayMonthYear;
 import org.apache.james.imap.api.message.response.StatusResponseFactory;
-import org.apache.james.imap.api.process.ImapSession;
 import org.apache.james.imap.decode.DecoderUtils;
 import org.apache.james.imap.decode.ImapCommandParser;
+import org.apache.james.imap.decode.ImapRequestLine;
 import org.apache.james.imap.decode.MessagingImapCommandParser;
 
 /**

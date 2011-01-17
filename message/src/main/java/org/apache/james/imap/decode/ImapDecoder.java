@@ -16,10 +16,10 @@
  * specific language governing permissions and limitations      *
  * under the License.                                           *
  ****************************************************************/
-package org.apache.james.imap.api.process;
+package org.apache.james.imap.decode;
 
 import org.apache.james.imap.api.ImapMessageCallback;
-import org.apache.james.imap.api.ImapRequestLine;
+import org.apache.james.imap.api.ImapSession;
 
 public interface ImapDecoder {
     public void decode(final ImapRequestLine request,

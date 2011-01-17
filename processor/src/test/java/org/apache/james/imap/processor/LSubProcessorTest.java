@@ -25,12 +25,12 @@ import java.util.List;
 import java.util.Locale;
 
 import org.apache.james.imap.api.ImapCommand;
+import org.apache.james.imap.api.ImapSession;
 import org.apache.james.imap.api.ImapSessionUtils;
 import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.api.message.response.StatusResponse;
 import org.apache.james.imap.api.message.response.StatusResponseFactory;
 import org.apache.james.imap.api.process.ImapProcessor;
-import org.apache.james.imap.api.process.ImapSession;
 import org.apache.james.imap.message.request.LsubRequest;
 import org.apache.james.imap.message.response.LSubResponse;
 import org.apache.james.mailbox.MailboxManager;

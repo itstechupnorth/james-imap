@@ -29,12 +29,12 @@ import java.util.Set;
 
 import org.apache.james.imap.api.ImapCommand;
 import org.apache.james.imap.api.ImapMessage;
-import org.apache.james.imap.api.ImapRequestLine;
+import org.apache.james.imap.api.ImapSession;
 import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.api.message.request.SearchKey;
 import org.apache.james.imap.api.message.response.StatusResponse;
 import org.apache.james.imap.api.message.response.StatusResponseFactory;
-import org.apache.james.imap.api.process.ImapSession;
+import org.apache.james.imap.decode.ImapRequestLine;
 import org.apache.james.imap.decode.MockImapMessageCallback;
 import org.apache.james.imap.encode.MockImapResponseComposer;
 import org.jmock.Expectations;

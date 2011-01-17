@@ -24,11 +24,11 @@ import java.util.ArrayList;
 import java.util.Locale;
 
 import org.apache.james.imap.api.ImapMessage;
+import org.apache.james.imap.api.ImapSession;
 import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.api.display.Locales;
 import org.apache.james.imap.api.display.Localizer;
 import org.apache.james.imap.api.message.response.ImapResponseComposer;
-import org.apache.james.imap.api.process.ImapSession;
 import org.apache.james.imap.encode.base.AbstractChainedImapEncoder;
 import org.apache.james.imap.message.response.ContinuationResponse;
 

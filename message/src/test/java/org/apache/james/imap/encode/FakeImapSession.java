@@ -24,8 +24,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.james.imap.api.ImapLineHandler;
+import org.apache.james.imap.api.ImapSession;
 import org.apache.james.imap.api.ImapSessionState;
-import org.apache.james.imap.api.process.ImapSession;
 import org.apache.james.imap.api.process.SelectedMailbox;
 
 public class FakeImapSession implements ImapSession {

@@ -19,11 +19,11 @@
 package org.apache.james.imap.processor;
 
 import org.apache.james.imap.api.ImapCommand;
+import org.apache.james.imap.api.ImapSession;
 import org.apache.james.imap.api.ImapSessionUtils;
 import org.apache.james.imap.api.message.request.ImapRequest;
 import org.apache.james.imap.api.message.response.StatusResponseFactory;
 import org.apache.james.imap.api.process.ImapProcessor;
-import org.apache.james.imap.api.process.ImapSession;
 import org.apache.james.mailbox.MailboxManager;
 import org.apache.james.mailbox.MailboxSession;
 import org.apache.james.mailbox.SubscriptionManager;

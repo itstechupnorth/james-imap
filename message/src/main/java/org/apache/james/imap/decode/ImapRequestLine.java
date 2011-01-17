@@ -17,10 +17,11 @@
  * under the License.                                           *
  ****************************************************************/
 
-package org.apache.james.imap.api;
+package org.apache.james.imap.decode;
 
 import java.io.IOException;
 
+import org.apache.james.imap.api.DecodingException;
 import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.api.message.response.ImapResponseComposer;
 
