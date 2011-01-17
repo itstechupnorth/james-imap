@@ -21,7 +21,6 @@ package org.apache.james.imap.processor.main;
 
 import org.apache.james.imap.api.message.response.StatusResponseFactory;
 import org.apache.james.imap.api.process.ImapProcessor;
-import org.apache.james.imap.api.process.ImapProcessorFactory;
 import org.apache.james.imap.message.response.UnpooledStatusResponseFactory;
 import org.apache.james.imap.processor.DefaultProcessorChain;
 import org.apache.james.imap.processor.base.ImapResponseMessageProcessor;
@@ -32,7 +31,7 @@ import org.apache.james.mailbox.SubscriptionManager;
 /**
  * 
  */
-public class DefaultImapProcessorFactory implements ImapProcessorFactory {
+public class DefaultImapProcessorFactory {
 
     public static final ImapProcessor createDefaultProcessor(final MailboxManager mailboxManager, final SubscriptionManager subscriptionManager) {
         final StatusResponseFactory statusResponseFactory = new UnpooledStatusResponseFactory();
@@ -65,11 +64,7 @@ public class DefaultImapProcessorFactory implements ImapProcessorFactory {
     public final void setSubscriptionManager(SubscriptionManager subscriptionManager) {
         this.subscriptionManager = subscriptionManager;
     }
-    
-    /*
-     * (non-Javadoc)
-     * @see org.apache.james.imap.api.process.ImapProcessorFactory#buildImapProcessor()
-     */
+
     public ImapProcessor buildImapProcessor() {
         return createDefaultProcessor(mailboxManager, subscriptionManager);
     }

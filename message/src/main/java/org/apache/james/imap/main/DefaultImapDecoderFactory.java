@@ -21,7 +21,6 @@ package org.apache.james.imap.main;
 
 import org.apache.james.imap.decode.ImapCommandParserFactory;
 import org.apache.james.imap.decode.ImapDecoder;
-import org.apache.james.imap.decode.ImapDecoderFactory;
 import org.apache.james.imap.decode.main.DefaultImapDecoder;
 import org.apache.james.imap.decode.parser.ImapParserFactory;
 import org.apache.james.imap.message.response.UnpooledStatusResponseFactory;
@@ -30,7 +29,7 @@ import org.apache.james.imap.message.response.UnpooledStatusResponseFactory;
  * TODO: this is temporary: should let the container do the coupling. TODO:
  * convert to POJO
  */
-public class DefaultImapDecoderFactory implements ImapDecoderFactory {
+public class DefaultImapDecoderFactory {
 
     public static final ImapDecoder createDecoder() {
         final UnpooledStatusResponseFactory unpooledStatusResponseFactory = new UnpooledStatusResponseFactory();
