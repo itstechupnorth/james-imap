@@ -58,23 +58,22 @@ public class CompressProcessor extends AbstractChainedProcessor implements Capab
     protected void doProcess(ImapMessage acceptableMessage, Responder responder, ImapSession session) {
         CompressRequest request = (CompressRequest) acceptableMessage;
         if (session.isCompressionSupported()) {
-            boolean compressed = (Boolean) session.getAttribute(COMPRESSED);
-            if (compressed) {
+            Object obj = session.getAttribute(COMPRESSED);
+            if (obj != null) {
                 responder.respond(factory.taggedNo(request.getTag(), request.getCommand(), HumanReadableText.COMPRESS_ALREADY_ACTIVE));
             } else {
                 if (request.getAlgorithm().equalsIgnoreCase(ALGO) == false) {
                     responder.respond(factory.taggedBad(request.getTag(), request.getCommand(), HumanReadableText.ILLEGAL_ARGUMENTS));
                 } else {
+                    responder.respond(factory.taggedOk(request.getTag(), request.getCommand(), HumanReadableText.DEFLATE_ACTIVE));
+
                     if (session.startCompression()) {
                         session.setAttribute(COMPRESSED, true);
-                        responder.respond(factory.taggedOk(request.getTag(), request.getCommand(), HumanReadableText.DEFLATE_ACTIVE));
-                    } else {
-                        
                     }
                 }
             }
         } else {
-            responder.respond(factory.taggedBad(request.getTag(), request.getCommand(), HumanReadableText.INVALID_COMMAND));
+            responder.respond(factory.taggedBad(request.getTag(), request.getCommand(), HumanReadableText.UNKNOWN_COMMAND));
         }
     }
 
