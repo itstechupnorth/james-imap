@@ -47,7 +47,7 @@ public class StoreCommandParser extends AbstractUidCommandParser  {
     protected ImapMessage decode(ImapCommand command,
             ImapRequestLineReader request, String tag, boolean useUids, ImapSession session)
             throws DecodingException {
-        final IdRange[] idSet = parseIdRange(request);
+        final IdRange[] idSet = request.parseIdRange();
         final Boolean sign;
         boolean silent = false;
 
@@ -62,7 +62,7 @@ public class StoreCommandParser extends AbstractUidCommandParser  {
             sign = null;
         }
 
-        String directive = consumeWord(request, new NoopCharValidator());
+        String directive = request.consumeWord(new ImapRequestLineReader.NoopCharValidator());
         if ("FLAGS".equalsIgnoreCase(directive)) {
             silent = false;
         } else if ("FLAGS.SILENT".equalsIgnoreCase(directive)) {
@@ -72,8 +72,8 @@ public class StoreCommandParser extends AbstractUidCommandParser  {
                     "Invalid Store Directive: '" + directive + "'");
         }
 
-        final Flags flags = flagList(request);
-        endLine(request);
+        final Flags flags = request.flagList();
+        request.eol();
         final ImapMessage result = new StoreRequest(command, idSet, silent, flags, useUids, tag, sign);
         return result;
     }

@@ -44,9 +44,10 @@ public class LoginCommandParser extends AbstractImapCommandParser {
      */
     protected ImapMessage decode(ImapCommand command,
             ImapRequestLineReader request, String tag, ImapSession session) throws DecodingException {
-        final String userid = astring(request);
-        final String password = astring(request);
-        endLine(request);
+        final String userid = request.astring();
+        final String password = request.astring();
+        request.eol();
+        
         final ImapMessage result = new LoginRequest(command, userid, password, tag);
         return result;
     }

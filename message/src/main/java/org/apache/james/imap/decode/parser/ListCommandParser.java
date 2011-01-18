@@ -24,6 +24,7 @@ import org.apache.james.imap.api.ImapMessage;
 import org.apache.james.imap.api.process.ImapSession;
 import org.apache.james.imap.decode.ImapRequestLineReader;
 import org.apache.james.imap.decode.DecodingException;
+import org.apache.james.imap.decode.ImapRequestLineReader.ATOM_CHARValidator;
 import org.apache.james.imap.message.request.ListRequest;
 
 /**
@@ -53,17 +54,17 @@ public class ListCommandParser extends AbstractUidCommandParser {
         char next = request.nextWordChar();
         switch (next) {
             case '"':
-                return consumeQuoted(request);
+                return request.consumeQuoted();
             case '{':
-                return consumeLiteral(request, null);
+                return request.consumeLiteral(null);
             default:
-                return consumeWord(request, new ListCharValidator());
+                return request.consumeWord(new ListCharValidator());
         }
     }
 
     private class ListCharValidator extends ATOM_CHARValidator {
         public boolean isValid(char chr) {
-            if (isListWildcard(chr)) {
+            if (ImapRequestLineReader.isListWildcard(chr)) {
                 return true;
             }
             return super.isValid(chr);
@@ -78,9 +79,9 @@ public class ListCommandParser extends AbstractUidCommandParser {
     protected ImapMessage decode(ImapCommand command,
             ImapRequestLineReader request, String tag, boolean useUids, ImapSession session)
             throws DecodingException {
-        String referenceName = mailbox(request);
+        String referenceName = request.mailbox();
         String mailboxPattern = listMailbox(request);
-        endLine(request);
+        request.eol();
         final ImapMessage result = createMessage(command, referenceName,
                 mailboxPattern, tag);
         return result;

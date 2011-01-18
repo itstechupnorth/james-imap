@@ -46,7 +46,7 @@ public class CreateCommandParser extends AbstractImapCommandParser  {
      */
     protected ImapMessage decode(ImapCommand command,
             ImapRequestLineReader request, String tag, ImapSession session) throws DecodingException {
-        String mailboxName = mailbox(request);
+        String mailboxName = request.mailbox();
 
         
         MailboxSession mailboxSession = ImapSessionUtils.getMailboxSession(session);
@@ -61,7 +61,7 @@ public class CreateCommandParser extends AbstractImapCommandParser  {
                 mailboxName = mailboxName.substring(0, mailboxName.length() -1);
             }
         }
-        endLine(request);
+        request.eol();
         final ImapMessage result = new CreateRequest(command, mailboxName, tag);
         return result;
     }

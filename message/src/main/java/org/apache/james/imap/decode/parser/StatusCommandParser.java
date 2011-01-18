@@ -26,6 +26,7 @@ import org.apache.james.imap.api.message.StatusDataItems;
 import org.apache.james.imap.api.process.ImapSession;
 import org.apache.james.imap.decode.ImapRequestLineReader;
 import org.apache.james.imap.decode.DecodingException;
+import org.apache.james.imap.decode.ImapRequestLineReader.CharacterValidator;
 import org.apache.james.imap.decode.base.AbstractImapCommandParser;
 import org.apache.james.imap.message.request.StatusRequest;
 
@@ -43,13 +44,13 @@ public class StatusCommandParser extends AbstractImapCommandParser {
         StatusDataItems items = new StatusDataItems();
 
         request.nextWordChar();
-        consumeChar(request, '(');
-        CharacterValidator validator = new NoopCharValidator();
-        String nextWord = consumeWord(request, validator);
+        request.consumeChar('(');
+        CharacterValidator validator = new ImapRequestLineReader.NoopCharValidator();
+        String nextWord = request.consumeWord(validator);
 
         while (!nextWord.endsWith(")")) {
             addItem(nextWord, items);
-            nextWord = consumeWord(request, validator);
+            nextWord = request.consumeWord(validator);
         }
         // Got the closing ")", may be attached to a word.
         if (nextWord.length() > 1) {
@@ -84,9 +85,9 @@ public class StatusCommandParser extends AbstractImapCommandParser {
      */
     protected ImapMessage decode(ImapCommand command,
             ImapRequestLineReader request, String tag, ImapSession session) throws DecodingException {
-        final String mailboxName = mailbox(request);
+        final String mailboxName = request.mailbox();
         final StatusDataItems statusDataItems = statusDataItems(request);
-        endLine(request);
+        request.eol();
         return new StatusRequest(command, mailboxName, statusDataItems, tag);
     }
 }

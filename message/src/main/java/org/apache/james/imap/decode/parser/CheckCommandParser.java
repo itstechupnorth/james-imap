@@ -44,7 +44,7 @@ public class CheckCommandParser extends AbstractImapCommandParser {
      */
     protected ImapMessage decode(ImapCommand command,
             ImapRequestLineReader request, String tag, ImapSession session) throws DecodingException {
-        endLine(request);
+        request.eol();
         final ImapMessage result = new CheckRequest(command, tag);
         return result;
     }

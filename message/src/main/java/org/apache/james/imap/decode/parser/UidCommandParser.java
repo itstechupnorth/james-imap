@@ -69,7 +69,7 @@ public class UidCommandParser extends AbstractImapCommandParser implements
         // TODO: the command written may be wrong
         // TODO: this will be easier to fix a little later
         // TODO: also not sure whether the old implementation shares this flaw
-        String commandName = atom(request);
+        String commandName = request.atom();
         ImapCommandParser helperCommand = parserFactory.getParser(commandName);
         // TODO: replace abstract class with interface
         if (helperCommand == null

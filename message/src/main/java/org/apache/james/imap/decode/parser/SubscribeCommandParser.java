@@ -43,8 +43,8 @@ public class SubscribeCommandParser extends AbstractImapCommandParser {
      */
     protected ImapMessage decode(ImapCommand command,
             ImapRequestLineReader request, String tag, ImapSession session) throws DecodingException {
-        final String mailboxName = mailbox(request);
-        endLine(request);
+        final String mailboxName = request.mailbox();
+        request.eol();
 
         final ImapMessage result = new SubscribeRequest(command, mailboxName, tag);
         return result;

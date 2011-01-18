@@ -44,9 +44,9 @@ public class CopyCommandParser extends AbstractUidCommandParser {
     protected ImapMessage decode(ImapCommand command,
             ImapRequestLineReader request, String tag, boolean useUids, ImapSession session)
             throws DecodingException {
-        IdRange[] idSet = parseIdRange(request);
-        String mailboxName = mailbox(request);
-        endLine(request);
+        IdRange[] idSet = request.parseIdRange();
+        String mailboxName = request.mailbox();
+        request.eol();
         final ImapMessage result = new CopyRequest(
                 command, idSet, mailboxName, useUids, tag);
         return result;

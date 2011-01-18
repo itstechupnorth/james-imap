@@ -45,8 +45,8 @@ public class AuthenticateCommandParser extends AbstractImapCommandParser {
      */
     protected ImapMessage decode(ImapCommand command,
             ImapRequestLineReader request, String tag, ImapSession session) throws DecodingException {
-        String authType = astring(request);
-        endLine(request);
+        String authType = request.astring();
+        request.eol();
         final ImapMessage result = new AuthenticateRequest(command,
                 authType, tag);
         return result;

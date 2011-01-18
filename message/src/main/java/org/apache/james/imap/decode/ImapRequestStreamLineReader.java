@@ -99,7 +99,7 @@ public class ImapRequestStreamLineReader extends ImapRequestLineReader{
      * Sends a server command continuation request '+' back to the client,
      * requesting more data to be sent.
      */
-    public void commandContinuationRequest() throws DecodingException {
+    protected void commandContinuationRequest() throws DecodingException {
         try {
             output.write('+');
             output.write('\r');

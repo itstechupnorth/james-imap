@@ -51,7 +51,7 @@ public class AppendCommandParser extends AbstractImapCommandParser {
             throws DecodingException {
         char next = request.nextWordChar();
         if (next == '(') {
-            return flagList(request);
+            return request.flagList();
         } else {
             return null;
         }
@@ -65,7 +65,7 @@ public class AppendCommandParser extends AbstractImapCommandParser {
             throws DecodingException {
         char next = request.nextWordChar();
         if (next == '"') {
-            return dateTime(request);
+            return request.dateTime();
         } else {
             return null;
         }
@@ -78,7 +78,7 @@ public class AppendCommandParser extends AbstractImapCommandParser {
      */
     protected ImapMessage decode(ImapCommand command,
             ImapRequestLineReader request, String tag, ImapSession session) throws DecodingException {
-        String mailboxName = mailbox(request);
+        String mailboxName = request.mailbox();
         Flags flags = optionalAppendFlags(request);
         if (flags == null) {
             flags = new Flags();
@@ -90,7 +90,7 @@ public class AppendCommandParser extends AbstractImapCommandParser {
         request.nextWordChar();
         
         // Use a EolInputStream so it will call eol when the message was read
-        final EolInputStream message = new EolInputStream(request, consumeLiteral(request));
+        final EolInputStream message = new EolInputStream(request, request.consumeLiteral());
         final ImapMessage result = new AppendRequest(command,
                 mailboxName, flags, datetime, message, tag);
         return result;

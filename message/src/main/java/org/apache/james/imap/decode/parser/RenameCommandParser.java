@@ -44,9 +44,9 @@ public class RenameCommandParser extends AbstractImapCommandParser {
      */
     protected ImapMessage decode(ImapCommand command,
             ImapRequestLineReader request, String tag, ImapSession session) throws DecodingException {
-        final String existingName = mailbox(request);
-        final String newName = mailbox(request);
-        endLine(request);
+        final String existingName = request.mailbox();
+        final String newName = request.mailbox();
+        request.eol();
         final ImapMessage result =new RenameRequest(command, existingName, newName, tag);
         return result;
     }

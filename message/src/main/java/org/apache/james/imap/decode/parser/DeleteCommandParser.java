@@ -44,8 +44,9 @@ public class DeleteCommandParser extends AbstractImapCommandParser {
      */
     protected ImapMessage decode(ImapCommand command,
             ImapRequestLineReader request, String tag, ImapSession session) throws DecodingException {
-        String mailboxName = mailbox(request);
-        endLine(request);
+        String mailboxName = request.mailbox();
+        request.eol();
+
         final ImapMessage result = new DeleteRequest(command,
                 mailboxName, tag);
         return result;

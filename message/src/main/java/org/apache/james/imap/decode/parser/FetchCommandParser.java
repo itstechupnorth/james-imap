@@ -56,14 +56,14 @@ public class FetchCommandParser extends AbstractUidCommandParser {
 
         char next = nextNonSpaceChar(request);
         if (request.nextChar() == '(') {
-            consumeChar(request, '(');
+            request.consumeChar('(');
 
             next = nextNonSpaceChar(request);
             while (next != ')') {
                 addNextElement(request, fetch);
                 next = nextNonSpaceChar(request);
             }
-            consumeChar(request, ')');
+            request.consumeChar(')');
         } else {
             addNextElement(request, fetch);
 
@@ -118,24 +118,24 @@ public class FetchCommandParser extends AbstractUidCommandParser {
                 throw new DecodingException(HumanReadableText.ILLEGAL_ARGUMENTS, "Invalid fetch attribute: " + name);
             }
         } else {
-            consumeChar(reader, '[');
+            reader.consumeChar('[');
 
             String parameter = readWord(reader, "]");
 
-            consumeChar(reader, ']');
+            reader.consumeChar(']');
 
             final Long firstOctet;
             final Long numberOfOctets;
             if (reader.nextChar() == '<') {
-                consumeChar(reader, '<');
-                firstOctet = new Long(number(reader));
+                reader.consumeChar('<');
+                firstOctet = new Long(reader.number());
                 if (reader.nextChar() == '.') {
-                    consumeChar(reader, '.');
-                    numberOfOctets = new Long(nzNumber(reader));
+                    reader.consumeChar('.');
+                    numberOfOctets = new Long(reader.nzNumber());
                 } else {
                     numberOfOctets = null;
                 }
-                consumeChar(reader, '>');
+                reader.consumeChar('>');
             } else {
                 firstOctet = null;
                 numberOfOctets = null;
@@ -234,10 +234,10 @@ public class FetchCommandParser extends AbstractUidCommandParser {
     protected ImapMessage decode(ImapCommand command,
             ImapRequestLineReader request, String tag, boolean useUids, ImapSession session)
             throws DecodingException {
-        IdRange[] idSet = parseIdRange(request);
+        IdRange[] idSet = request.parseIdRange();
         FetchData fetch = fetchRequest(request);
-        endLine(request);
-
+        request.eol();
+        
         final ImapMessage result = new FetchRequest(command, useUids,
                 idSet, fetch, tag);
         return result;

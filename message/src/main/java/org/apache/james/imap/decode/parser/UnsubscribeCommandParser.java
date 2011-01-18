@@ -44,8 +44,8 @@ public class UnsubscribeCommandParser extends AbstractImapCommandParser {
      */
     protected ImapMessage decode(ImapCommand command,
             ImapRequestLineReader request, String tag, ImapSession session) throws DecodingException {
-        final String mailboxName = mailbox(request);
-        endLine(request);
+        final String mailboxName = request.mailbox();
+        request.eol();
         return new UnsubscribeRequest(command, mailboxName, tag);
     }
 

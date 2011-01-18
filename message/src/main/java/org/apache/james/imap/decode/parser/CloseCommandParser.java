@@ -44,7 +44,7 @@ class CloseCommandParser extends AbstractImapCommandParser  {
      */
     protected ImapMessage decode(ImapCommand command,
             ImapRequestLineReader request, String tag, ImapSession session) throws DecodingException {
-        endLine(request);
+        request.eol();
         final ImapMessage result = new CloseRequest(command, tag);
         return result;
     }
