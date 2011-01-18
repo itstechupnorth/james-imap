@@ -26,10 +26,9 @@ import org.apache.james.imap.api.ImapCommand;
 import org.apache.james.imap.api.ImapConstants;
 import org.apache.james.imap.api.ImapMessage;
 import org.apache.james.imap.api.process.ImapSession;
-import org.apache.james.imap.decode.ImapRequestLineReader;
 import org.apache.james.imap.decode.DecodingException;
+import org.apache.james.imap.decode.ImapRequestLineReader;
 import org.apache.james.imap.decode.base.AbstractImapCommandParser;
-import org.apache.james.imap.decode.base.EolInputStream;
 import org.apache.james.imap.message.request.AppendRequest;
 
 /**
@@ -89,10 +88,9 @@ public class AppendCommandParser extends AbstractImapCommandParser {
         }
         request.nextWordChar();
         
-        // Use a EolInputStream so it will call eol when the message was read
-        final EolInputStream message = new EolInputStream(request, request.consumeLiteral());
+        
         final ImapMessage result = new AppendRequest(command,
-                mailboxName, flags, datetime, message, tag);
+                mailboxName, flags, datetime, request.consumeLiteral(), tag);
         return result;
     }
 }
