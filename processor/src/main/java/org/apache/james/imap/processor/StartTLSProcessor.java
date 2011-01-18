@@ -51,8 +51,9 @@ public class StartTLSProcessor extends AbstractChainedProcessor implements Capab
             Responder responder, ImapSession session) {
         ImapRequest request = (ImapRequest) acceptableMessage;     
         if (session.supportStartTLS()) {
-            session.startTLS();
             responder.respond(factory.taggedOk(request.getTag(), request.getCommand(), HumanReadableText.STARTTLS));
+            session.startTLS();
+
         } else {
             responder.respond(factory.taggedBad(request.getTag(), request.getCommand(), HumanReadableText.UNKNOWN_COMMAND));
         }
