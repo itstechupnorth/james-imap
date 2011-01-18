@@ -46,7 +46,7 @@ public class IdleCommandParser extends AbstractImapCommandParser {
     protected ImapMessage decode(ImapCommand command,
             ImapRequestLineReader request, String tag, ImapSession session) throws DecodingException {
         request.eol();
-        final ImapMessage result = new IdleRequest(command, request, tag);
+        final ImapMessage result = new IdleRequest(command, tag);
         return result;
     }
 
