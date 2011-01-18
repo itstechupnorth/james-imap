@@ -127,4 +127,8 @@ public interface ImapSession {
     
     public boolean startCompression();
     
+    public void pushLineHandler(ImapLineHandler lineHandler);
+    
+    public void popLineHandler();
+    
 }

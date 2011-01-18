@@ -21,12 +21,10 @@ package org.apache.james.imap.processor;
 
 import static org.apache.james.imap.api.ImapConstants.SUPPORTS_IDLE;
 
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.apache.james.imap.api.ContinuationReader;
 import org.apache.james.imap.api.ImapCommand;
 import org.apache.james.imap.api.ImapMessage;
 import org.apache.james.imap.api.ImapSessionUtils;
@@ -34,6 +32,7 @@ import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.api.message.request.ImapRequest;
 import org.apache.james.imap.api.message.response.StatusResponse;
 import org.apache.james.imap.api.message.response.StatusResponseFactory;
+import org.apache.james.imap.api.process.ImapLineHandler;
 import org.apache.james.imap.api.process.ImapProcessor;
 import org.apache.james.imap.api.process.ImapSession;
 import org.apache.james.imap.api.process.SelectedMailbox;
@@ -59,45 +58,50 @@ public class IdleProcessor extends AbstractMailboxProcessor implements Capabilit
         return (message instanceof IdleRequest);
     }
 
-    protected void doProcess(ImapRequest message, ImapSession session,
-            String tag, ImapCommand command, Responder responder) {
+    protected void doProcess(final ImapRequest message, final ImapSession session,
+            final String tag, final ImapCommand command, final Responder responder) {
+        final AtomicBoolean closed = new AtomicBoolean(false);
 
-        try {
-            IdleRequest request = (IdleRequest) message;
-            ContinuationReader reader = request.getContinuationReader();
-        
+        try {        
             responder.respond(new ContinuationResponse(HumanReadableText.IDLING));
             unsolicitedResponses(session, responder, false);
 
-            MailboxManager mailboxManager = getMailboxManager();
-            MailboxSession mailboxSession = ImapSessionUtils.getMailboxSession(session);
-            AtomicBoolean closed = new AtomicBoolean(false);
+            final MailboxManager mailboxManager = getMailboxManager();
+            final MailboxSession mailboxSession = ImapSessionUtils.getMailboxSession(session);
+            SelectedMailbox sm = session.getSelected();
+            if(sm != null) {
+                mailboxManager.addListener(sm.getPath(), 
+                    new IdleMailboxListener(closed, session, responder), mailboxSession);
+            }
+        
             
-            String line = null;
-            try {
-                SelectedMailbox sm = session.getSelected();
-                if(sm != null) {
-                    mailboxManager.addListener(sm.getPath(), 
-                        new IdleMailboxListener(closed, session, responder), mailboxSession);
-                }
-            
-                line = reader.readContinuation();
-            } finally {
-                synchronized (session) {
+            session.pushLineHandler(new ImapLineHandler() {
+                
+                /*
+                 * (non-Javadoc)
+                 * @see org.apache.james.imap.api.process.ImapLineHandler#onLine(org.apache.james.imap.api.process.ImapSession, byte[])
+                 */
+                public void onLine(ImapSession session, byte[] data) {
+                    String line;
+                    if (data.length > 2) {
+                        line = new String(data, 0, data.length -2 );
+                    } else {
+                        line = "";
+                    }
+                        
                     closed.set(true);
+                    session.popLineHandler();
+                    if (!"DONE".equals(line.toUpperCase())) {
+                        StatusResponse response = factory.taggedBad(tag, command,
+                                HumanReadableText.INVALID_COMMAND);
+                        responder.respond(response);
+                    } else {
+                        okComplete(command, tag, responder);
+                    }                    
                 }
-            }
-            if (!"DONE".equals(line.toUpperCase())) {
-                StatusResponse response = factory.taggedBad(tag, command,
-                        HumanReadableText.INVALID_COMMAND);
-                responder.respond(response);
-            } else {
-                okComplete(command, tag, responder);
-            }
-        } catch (IOException e) {
-            // TODO: What should we do here?
-            no(command, tag, responder, HumanReadableText.GENERIC_FAILURE_DURING_PROCESSING);
+            });
         } catch (MailboxException e) {
+            closed.set(true);
             // TODO: What should we do here?
             no(command, tag, responder, HumanReadableText.GENERIC_FAILURE_DURING_PROCESSING);
         }

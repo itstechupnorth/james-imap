@@ -24,6 +24,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.james.imap.api.ImapSessionState;
+import org.apache.james.imap.api.process.ImapLineHandler;
 import org.apache.james.imap.api.process.ImapSession;
 import org.apache.james.imap.api.process.SelectedMailbox;
 
@@ -108,6 +109,16 @@ public class FakeImapSession implements ImapSession {
 
     public boolean startCompression() {
         return false;
+    }
+
+    public void pushLineHandler(ImapLineHandler lineHandler) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    public void popLineHandler() {
+        // TODO Auto-generated method stub
+        
     }
 
 }

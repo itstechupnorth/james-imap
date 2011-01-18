@@ -102,38 +102,5 @@ public abstract class AbstractImapRequestHandler {
         }
     }
     
-    private static final class ResponseEncoder implements Responder {
-        private final ImapEncoder encoder;
-        private final ImapSession session;
-        private final ImapResponseComposer composer;
 
-        private IOException failure;
-        
-
-        public ResponseEncoder(final ImapEncoder encoder,
-                final ImapResponseComposer composer, final ImapSession session) {
-            super();
-            this.encoder = encoder;
-            this.composer = composer;
-            this.session = session;
-        }
-
-        public void respond(final ImapResponseMessage message) {
-            try {
-                encoder.encode(message, composer, session);
-            } catch (IOException failure) {
-                this.failure = failure;
-            }
-        }
-
-        /**
-         * Gets the recorded failure.
-         * 
-         * @return the failure, or null when no failure has occurred
-         */
-        public final IOException getFailure() {
-            return failure;
-        }
-
-    }
 }

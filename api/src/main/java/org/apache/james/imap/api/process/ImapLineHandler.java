@@ -17,27 +17,9 @@
  * under the License.                                           *
  ****************************************************************/
 
-package org.apache.james.imap.main;
+package org.apache.james.imap.api.process;
 
-import java.io.IOException;
-import java.io.OutputStream;
-import java.nio.channels.Channels;
+public interface ImapLineHandler {
 
-/**
- * Class providing methods to send response messages from the server to the
- * client.
- */
-public class OutputStreamImapResponseWriter extends ChannelImapResponseWriter {
-
-    private final OutputStream output;
-
-    public OutputStreamImapResponseWriter(OutputStream output) {
-        super(Channels.newChannel(output));
-        this.output = output;
-    }
-
-    public void flush() throws IOException {
-        output.flush();
-    }
-
+    public void onLine(ImapSession session, byte[] data);
 }

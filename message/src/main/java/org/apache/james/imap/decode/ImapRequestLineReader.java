@@ -38,7 +38,6 @@ import java.util.List;
 import javax.mail.Flags;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.james.imap.api.ContinuationReader;
 import org.apache.james.imap.api.ImapConstants;
 import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.api.message.IdRange;
@@ -52,7 +51,7 @@ import org.apache.james.imap.api.message.request.DayMonthYear;
  * 
  * @version $Revision: 109034 $
  */
-public abstract class ImapRequestLineReader implements ContinuationReader {
+public abstract class ImapRequestLineReader {
     
     private static final int QUOTED_BUFFER_INITIAL_CAPACITY = 64;
 
@@ -178,24 +177,6 @@ public abstract class ImapRequestLineReader implements ContinuationReader {
             next = nextChar();
         }
         consume();
-    }
-    
-    public String readContinuation() throws IOException {
-        // Consume the '\n' from the previous line.
-        consume();
-        
-        StringBuilder sb = new StringBuilder();
-        char next = nextChar();
-        while (next != '\r') {
-            sb.append(next);
-            consume();
-            next = nextChar();
-        }
-        consume();
-
-        // NOTE: This code leaves the '\n' as next char. This seems to be what is expected by the code which parses commands.
-        
-        return sb.toString();
     }
     
 
