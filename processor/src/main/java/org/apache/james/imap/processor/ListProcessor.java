@@ -23,7 +23,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.james.imap.api.ImapCommand;
-import org.apache.james.imap.api.ImapConstants;
 import org.apache.james.imap.api.ImapMessage;
 import org.apache.james.imap.api.ImapSessionUtils;
 import org.apache.james.imap.api.display.HumanReadableText;
@@ -109,7 +108,7 @@ public class ListProcessor extends AbstractMailboxProcessor {
                 // delimiter and root name of the referenceName argument
 
                 String referenceRoot;
-                if (referenceName.startsWith(ImapConstants.NAMESPACE_PREFIX)) {
+                if (referenceName.length() > 0 && referenceName.charAt(0) == MailboxConstants.NAMESPACE_PREFIX_CHAR) {
                     // A qualified reference name - get the root element
                     isRelative = false;
                     int firstDelimiter = referenceName.indexOf(mailboxSession.getPathDelimiter());
@@ -133,11 +132,11 @@ public class ListProcessor extends AbstractMailboxProcessor {
             else {
                 // If the mailboxPattern is fully qualified, ignore the reference name.
                 String finalReferencename = referenceName;
-                if (mailboxName.charAt(0) == ImapConstants.NAMESPACE_PREFIX_CHAR) {
+                if (mailboxName.charAt(0) == MailboxConstants.NAMESPACE_PREFIX_CHAR) {
                     finalReferencename = "";
                 }
                 // Is the interpreted (combined) pattern relative?
-                isRelative = ((finalReferencename + mailboxName).charAt(0) != ImapConstants.NAMESPACE_PREFIX_CHAR);
+                isRelative = ((finalReferencename + mailboxName).charAt(0) != MailboxConstants.NAMESPACE_PREFIX_CHAR);
 
                 MailboxPath basePath = null;
                 if (isRelative) {
@@ -147,7 +146,7 @@ public class ListProcessor extends AbstractMailboxProcessor {
                     basePath = buildFullPath(session, finalReferencename);
                 }
 
-                results = getMailboxManager().search(new MailboxQuery(basePath, mailboxName, '*', '%', mailboxSession.getPathDelimiter()),
+                results = getMailboxManager().search(new MailboxQuery(basePath, mailboxName, mailboxSession.getPathDelimiter()),
                                                      mailboxSession);
             }
 

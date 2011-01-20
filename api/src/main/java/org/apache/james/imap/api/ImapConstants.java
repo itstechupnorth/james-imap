@@ -109,9 +109,6 @@ public interface ImapConstants {
 
     public static final String SUPPORTS_IDLE = "IDLE";
     
-    public static final char NAMESPACE_PREFIX_CHAR = '#';
-
-    public static final String NAMESPACE_PREFIX = String.valueOf(NAMESPACE_PREFIX_CHAR);
 
     public static final String INBOX_NAME = "INBOX";
 

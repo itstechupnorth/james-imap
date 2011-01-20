@@ -24,7 +24,6 @@ import java.util.Iterator;
 import javax.mail.Flags;
 
 import org.apache.james.imap.api.ImapCommand;
-import org.apache.james.imap.api.ImapConstants;
 import org.apache.james.imap.api.ImapMessage;
 import org.apache.james.imap.api.ImapSessionUtils;
 import org.apache.james.imap.api.display.HumanReadableText;
@@ -288,7 +287,7 @@ abstract public class AbstractMailboxProcessor extends AbstractChainedProcessor 
         if (mailboxName == null || mailboxName.length() == 0) {
             return new MailboxPath("", "", "");
         }
-        if (mailboxName.charAt(0) == ImapConstants.NAMESPACE_PREFIX_CHAR) {
+        if (mailboxName.charAt(0) == MailboxConstants.NAMESPACE_PREFIX_CHAR) {
             int namespaceLength = mailboxName.indexOf(mailboxSession.getPathDelimiter());
             if (namespaceLength > -1) {
                 namespace = mailboxName.substring(0, namespaceLength);

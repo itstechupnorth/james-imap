@@ -23,7 +23,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import org.apache.james.imap.api.ImapCommand;
-import org.apache.james.imap.api.ImapConstants;
 import org.apache.james.imap.api.ImapMessage;
 import org.apache.james.imap.api.ImapSessionUtils;
 import org.apache.james.imap.api.display.HumanReadableText;
@@ -60,12 +59,12 @@ public class LSubProcessor extends AbstractSubscriptionProcessor {
         // If the mailboxName is fully qualified, ignore the reference name.
         String finalReferencename = referenceName;
         
-        if (mailboxName.charAt(0) == ImapConstants.NAMESPACE_PREFIX_CHAR) {
+        if (mailboxName.charAt(0) == MailboxConstants.NAMESPACE_PREFIX_CHAR) {
             finalReferencename = "";
         }
       
         // Is the interpreted (combined) pattern relative?
-        boolean isRelative = ((finalReferencename + mailboxName).charAt(0) != ImapConstants.NAMESPACE_PREFIX_CHAR);
+        boolean isRelative = ((finalReferencename + mailboxName).charAt(0) != MailboxConstants.NAMESPACE_PREFIX_CHAR);
         MailboxPath basePath = null;
         if (isRelative) {
             basePath = new MailboxPath(MailboxConstants.USER_NAMESPACE,
@@ -76,7 +75,7 @@ public class LSubProcessor extends AbstractSubscriptionProcessor {
         }
        
 
-        final MailboxQuery expression = new MailboxQuery(basePath, mailboxName, '*', '%', mailboxSession.getPathDelimiter());
+        final MailboxQuery expression = new MailboxQuery(basePath, mailboxName, mailboxSession.getPathDelimiter());
         final Collection<String> mailboxResponses = new ArrayList<String>();
         for (final String mailbox: mailboxes) {
             respond(responder, expression, mailbox, true, mailboxes, mailboxResponses, mailboxSession.getPathDelimiter());
