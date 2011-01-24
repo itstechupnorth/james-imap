@@ -112,9 +112,6 @@ public class AppendProcessor extends AbstractMailboxProcessor {
             Responder responder, MailboxNotFoundException e) {
         
         final Log logger = session.getLog();
-        if (logger.isInfoEnabled()) {
-            logger.info(e.getMessage());
-        }
         if (logger.isDebugEnabled()) {
             logger.debug("Cannot open mailbox: ", e);
         }
