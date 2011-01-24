@@ -24,6 +24,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 import org.apache.james.imap.api.display.HumanReadableText;
+import org.apache.james.imap.decode.base.EolInputStream;
 import org.apache.james.imap.decode.base.FixedLengthInputStream;
 
 /**
@@ -86,13 +87,17 @@ public class ImapRequestStreamLineReader extends ImapRequestLineReader{
      * @throws DecodingException
      *             If a char can't be read into each array element.
      */
-    public InputStream read(int size) throws DecodingException {
+    public InputStream read(int size, boolean extraCRLF) throws DecodingException {
 
         // Unset the next char.
         nextSeen = false;
         nextChar = 0;
-        return new FixedLengthInputStream(input, size);
-
+        FixedLengthInputStream in = new FixedLengthInputStream(input, size);
+        if (extraCRLF) {
+           return new EolInputStream(this, in);
+        } else {
+            return in;
+        }
     }
     
     /**

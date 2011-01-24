@@ -157,7 +157,7 @@ public abstract class ImapRequestLineReader {
      * @throws DecodingException
      *             If a char can't be read into each array element.
      */
-    public abstract InputStream read(int size) throws DecodingException;
+    public abstract InputStream read(int size, boolean extraCRLF) throws DecodingException;
 
     /**
      * Sends a server command continuation request '+' back to the client,
@@ -362,7 +362,7 @@ public abstract class ImapRequestLineReader {
         } else {
             ByteArrayOutputStream out = new ByteArrayOutputStream();
             try {
-                IOUtils.copy(consumeLiteral(),out);
+                IOUtils.copy(consumeLiteral(false),out);
             } catch (IOException e) {
                 throw new DecodingException(HumanReadableText.BAD_IO_ENCODING, "Bad character encoding",  e);
             }
@@ -372,7 +372,7 @@ public abstract class ImapRequestLineReader {
         }
     }
 
-    public InputStream consumeLiteral() throws DecodingException {
+    public InputStream consumeLiteral(boolean extraCRLF) throws DecodingException {
         // The 1st character must be '{'
         consumeChar('{');
 
@@ -405,7 +405,7 @@ public abstract class ImapRequestLineReader {
         }
 
         final int size = Integer.parseInt(digits.toString());
-        return read(size);
+        return read(size, extraCRLF);
     }
 
     private String decode(final Charset charset, final ByteBuffer buffer)

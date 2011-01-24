@@ -18,6 +18,7 @@
  ****************************************************************/
 package org.apache.james.imap.decode.parser;
 
+import java.io.InputStream;
 import java.util.Date;
 
 import javax.mail.Flags;
@@ -88,9 +89,8 @@ public class AppendCommandParser extends AbstractImapCommandParser {
         }
         request.nextWordChar();
         
-        
         final ImapMessage result = new AppendRequest(command,
-                mailboxName, flags, datetime, request.consumeLiteral(), tag);
+                mailboxName, flags, datetime, request.consumeLiteral(true), tag);
         return result;
     }
 }
