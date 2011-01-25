@@ -79,6 +79,11 @@ public abstract class AbstractImapResponseWriter implements ImapResponseWriter, 
         write(wrap);
     }
 
+    private void write(byte b) throws IOException {
+        final ByteBuffer wrap = ByteBuffer.wrap(new byte[] {b});
+        write(wrap);
+    }
+    
     public void untagged() throws IOException {
         writeASCII(UNTAGGED);
     }
@@ -103,12 +108,12 @@ public abstract class AbstractImapResponseWriter implements ImapResponseWriter, 
         if (responseCode != null) {
             writeASCII(" [");
             writeASCII(responseCode);
-            write(BYTES_CLOSE_SQUARE_BRACKET);
+            write(BYTE_CLOSE_SQUARE_BRACKET);
         }
     }
 
     public void end() throws IOException {
-        write(BYTES_LINE_END);
+        write(LINE_END.getBytes());
     }
 
     public void commandName(String commandName) throws IOException {
@@ -150,19 +155,19 @@ public abstract class AbstractImapResponseWriter implements ImapResponseWriter, 
     }
 
     public void closeParen() throws IOException {
-        closeBracket(BYTES_CLOSING_PARENTHESIS);
+        closeBracket(BYTE_CLOSING_PARENTHESIS);
     }
 
-    private void closeBracket(final byte[] bracket) throws IOException {
+    private void closeBracket(final byte bracket) throws IOException {
         write(bracket);
         clearSkipNextSpace();
     }
 
     public void openParen() throws IOException {
-        openBracket(BYTES_OPENING_PARENTHESIS);
+        openBracket(BYTE_OPENING_PARENTHESIS);
     }
 
-    private void openBracket(final byte[] bracket) throws IOException {
+    private void openBracket(final byte bracket) throws IOException {
         space();
         write(bracket);
         skipNextSpace();
@@ -180,17 +185,17 @@ public abstract class AbstractImapResponseWriter implements ImapResponseWriter, 
         if (skipNextSpace) {
             skipNextSpace = false;
         } else {
-            write(BYTES_SPACE);
+            write(SP.getBytes());
         }
     }
 
     public void literal(Literal literal) throws IOException {
         space();
-        write(BYTES_OPEN_BRACE);
+        write(BYTE_OPEN_BRACE);
         final long size = literal.size();
         writeASCII(Long.toString(size));
-        write(BYTES_CLOSE_BRACE);
-        write(BYTES_LINE_END);
+        write(BYTE_CLOSE_BRACE);
+        write(LINE_END.getBytes());
         if (size > 0) {
             write(literal);
         }
@@ -199,11 +204,11 @@ public abstract class AbstractImapResponseWriter implements ImapResponseWriter, 
     protected abstract void write(Literal literal) throws IOException;
 
     public void closeSquareBracket() throws IOException {
-        closeBracket(BYTES_CLOSE_SQUARE_BRACKET);
+        closeBracket(BYTE_CLOSE_SQUARE_BRACKET);
     }
 
     public void openSquareBracket() throws IOException {
-        openBracket(BYTES_OPEN_SQUARE_BRACKET);
+        openBracket(BYTE_OPEN_SQUARE_BRACKET);
     }
 
     public void upperCaseAscii(String message) throws IOException {

@@ -49,15 +49,9 @@ public interface ImapConstants {
 
     public static final byte BYTE_OPENING_PARENTHESIS = 0x28;
 
-    public static final byte[] BYTES_OPENING_PARENTHESIS = { BYTE_OPENING_PARENTHESIS };
-
     public static final byte BYTE_CLOSING_PARENTHESIS = 0x29;
 
-    public static final byte[] BYTES_CLOSING_PARENTHESIS = { BYTE_CLOSING_PARENTHESIS };
-
     public static final byte BYTE_SP = 0x20;
-
-    public static final byte[] BYTES_SPACE = { BYTE_SP };
 
     public static final byte BYTE_DQUOTE = 0x22;
 
@@ -65,25 +59,17 @@ public interface ImapConstants {
 
     public static final byte BYTE_QUESTION = 0x3F;
 
-    public static final byte[] BYTES_DQUOTE = { BYTE_DQUOTE };
-
     public static final byte BYTE_OPEN_SQUARE_BRACKET = 0x5B;
 
-    public static final byte[] BYTES_OPEN_SQUARE_BRACKET = { BYTE_OPEN_SQUARE_BRACKET };
 
     public static final byte BYTE_CLOSE_SQUARE_BRACKET = 0x5D;
 
-    public static final byte[] BYTES_CLOSE_SQUARE_BRACKET = { BYTE_CLOSE_SQUARE_BRACKET };
 
     public static final byte BYTE_OPEN_BRACE = 0x7B;
 
-    public static final byte[] BYTES_OPEN_BRACE = { BYTE_OPEN_BRACE };
 
     public static final byte BYTE_CLOSE_BRACE = 0x7D;
 
-    public static final byte[] BYTES_CLOSE_BRACE = { BYTE_CLOSE_BRACE };
-
-    public static final byte[] BYTES_LINE_END = { 0x0D, 0x0A };
 
     public static final char OPENING_PARENTHESIS = '(';
 
@@ -246,6 +232,7 @@ public interface ImapConstants {
     
     public static final String STARTTLS = "STARTTLS";
     
+    public static final String LINE_END = "\r\n";
     public static final long MAX_NZ_NUMBER = 4294967295L;
     public static final long MIN_NZ_NUMBER = 1L;
 

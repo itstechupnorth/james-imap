@@ -83,7 +83,7 @@ final class HeaderBodyElement implements BodyElement {
      * @see org.apache.james.imap.message.response.FetchResponse.BodyElement#writeTo(java.nio.channels.WritableByteChannel)
      */
     public void writeTo(WritableByteChannel channel) throws IOException {
-        ByteBuffer endLine = ByteBuffer.wrap(ImapConstants.BYTES_LINE_END);
+        ByteBuffer endLine = ByteBuffer.wrap(ImapConstants.LINE_END.getBytes());
         endLine.rewind();
         for (final Iterator<MessageResult.Header> it = headers.iterator(); it.hasNext();) {
             MessageResult.Header header = it.next();
