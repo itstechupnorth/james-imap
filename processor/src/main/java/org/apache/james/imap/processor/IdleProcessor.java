@@ -23,6 +23,7 @@ import static org.apache.james.imap.api.ImapConstants.SUPPORTS_IDLE;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.james.imap.api.ImapCommand;
@@ -91,7 +92,7 @@ public class IdleProcessor extends AbstractMailboxProcessor implements Capabilit
                         
                     closed.set(true);
                     session.popLineHandler();
-                    if (!"DONE".equals(line.toUpperCase())) {
+                    if (!"DONE".equals(line.toUpperCase(Locale.US))) {
                         StatusResponse response = factory.taggedBad(tag, command,
                                 HumanReadableText.INVALID_COMMAND);
                         responder.respond(response);

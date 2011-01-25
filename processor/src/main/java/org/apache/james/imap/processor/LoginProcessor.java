@@ -92,7 +92,7 @@ public class LoginProcessor extends AbstractMailboxProcessor {
                 }
                 if (failures < MAX_FAILURES) {
                     session.setAttribute(ATTRIBUTE_NUMBER_OF_FAILURES,
-                            new Integer(failures));
+                            failures);
                     no(command, tag, responder,
                             HumanReadableText.INVALID_LOGIN);
                 } else {

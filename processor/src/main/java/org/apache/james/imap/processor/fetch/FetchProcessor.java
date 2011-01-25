@@ -232,6 +232,8 @@ public class FetchProcessor extends AbstractMailboxProcessor {
                         addContent(result, path, isBase,
                                 MessageResult.FetchGroup.BODY_CONTENT);
                         break;
+                    default:
+                        break;
                 }
 
             }

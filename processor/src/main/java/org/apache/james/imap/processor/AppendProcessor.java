@@ -46,13 +46,10 @@ import org.apache.james.mailbox.MessageManager;
 
 public class AppendProcessor extends AbstractMailboxProcessor {
 
-    final StatusResponseFactory statusResponseFactory;
-
     public AppendProcessor(final ImapProcessor next,
             final MailboxManager mailboxManager,
             final StatusResponseFactory statusResponseFactory) {
         super(next, mailboxManager, statusResponseFactory);
-        this.statusResponseFactory = statusResponseFactory;
     }
 
     protected boolean isAcceptable(ImapMessage message) {

@@ -108,10 +108,10 @@ public class SearchProcessor extends AbstractMailboxProcessor {
             final long uid = it.next();
             final Long number;
             if (useUids) {
-                number = new Long(uid);
+                number = uid;
             } else {
                 final int msn = session.getSelected().msn(uid);
-                number = new Long(msn);
+                number = (long)msn;
             }
             if (number == SelectedMailbox.NO_SUCH_MESSAGE == false) results.add(number);
         }

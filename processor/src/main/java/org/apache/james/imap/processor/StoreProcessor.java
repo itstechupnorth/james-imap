@@ -95,7 +95,7 @@ public class StoreProcessor extends AbstractMailboxProcessor {
                         final Flags resultFlags = entry.getValue();
                         final Long resultUid;
                         if (useUids) {
-                            resultUid = new Long(uid);
+                            resultUid = uid;
                         } else {
                             resultUid = null;
                         }

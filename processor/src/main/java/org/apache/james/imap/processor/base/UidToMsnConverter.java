@@ -110,7 +110,7 @@ public class UidToMsnConverter implements MailboxListener {
         final int msn = getMsn(uid);
         remove(msn, uid);
         final List<Integer> renumberMsns = new ArrayList<Integer>(msnToUid
-                .tailMap(new Integer(msn + 1)).keySet());
+                .tailMap(msn + 1).keySet());
         for (final Integer msnInteger: renumberMsns) {
             int aMsn = msnInteger.intValue();
             long aUid = getUid(aMsn);
@@ -131,7 +131,7 @@ public class UidToMsnConverter implements MailboxListener {
      * @param uid
      */
     public synchronized void add(long uid) {
-        if (!uidToMsn.containsKey(new Long(uid))) {
+        if (!uidToMsn.containsKey(uid)) {
             highestMsn++;
             add(highestMsn, uid);
         }

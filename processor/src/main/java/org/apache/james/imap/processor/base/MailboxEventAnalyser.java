@@ -95,11 +95,11 @@ public class MailboxEventAnalyser implements MailboxListener {
                     FlagsUpdated updated = (FlagsUpdated) messageEvent;
                     if (interestingFlags(updated)
                             && (sessionId != eventSessionId || !silentFlagChanges)) {
-                        final Long uidObject = new Long(uid);
+                        final Long uidObject = uid;
                         flagUpdateUids.add(uidObject);
                     }
                 } else if (messageEvent instanceof Expunged) {
-                    final Long uidObject = new Long(uid);
+                    final Long uidObject = uid;
                     expungedUids.add(uidObject);
                 }
             } else if (event instanceof MailboxDeletion) {

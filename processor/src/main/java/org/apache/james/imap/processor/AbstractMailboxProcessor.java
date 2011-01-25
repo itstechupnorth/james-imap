@@ -182,7 +182,7 @@ abstract public class AbstractMailboxProcessor extends AbstractChainedProcessor 
             final Flags flags = mr.getFlags();
             final Long uidOut;
             if (useUid) {
-                uidOut = new Long(uid);
+                uidOut = uid;
             } else {
                 uidOut = null;
             }

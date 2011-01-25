@@ -50,6 +50,8 @@ public class SystemMessageProcessor extends AbstractChainedProcessor {
                 case FORCE_LOGOUT:
                     forceLogout(session);
                     break;
+                default:
+                    break;
             } 
         } catch (MailboxException e) {
             final Log log = session.getLog();

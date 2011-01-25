@@ -181,6 +181,8 @@ public class ListProcessor extends AbstractMailboxProcessor {
             case NOSELECT:
                 noSelect = true;
                 break;
+            default:
+                break;
         }
         responder.respond(createResponse(noInferior, noSelect, marked,
                 unmarked, hasChildren, hasNoChildren, mailboxName, delimiter));
