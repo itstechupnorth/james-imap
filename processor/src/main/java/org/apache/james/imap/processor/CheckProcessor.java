@@ -20,26 +20,20 @@
 package org.apache.james.imap.processor;
 
 import org.apache.james.imap.api.ImapCommand;
-import org.apache.james.imap.api.ImapMessage;
-import org.apache.james.imap.api.message.request.ImapRequest;
 import org.apache.james.imap.api.message.response.StatusResponseFactory;
 import org.apache.james.imap.api.process.ImapProcessor;
 import org.apache.james.imap.api.process.ImapSession;
 import org.apache.james.imap.message.request.CheckRequest;
 import org.apache.james.mailbox.MailboxManager;
 
-public class CheckProcessor extends AbstractMailboxProcessor {
+public class CheckProcessor extends AbstractMailboxProcessor<CheckRequest> {
 
     public CheckProcessor(final ImapProcessor next, final MailboxManager mailboxManager,
             final StatusResponseFactory factory) {
-        super(next, mailboxManager, factory);
+        super(CheckRequest.class, next, mailboxManager, factory);
     }
 
-    protected boolean isAcceptable(ImapMessage message) {
-        return (message instanceof CheckRequest);
-    }
-
-    protected void doProcess(ImapRequest message, ImapSession session,
+    protected void doProcess(CheckRequest message, ImapSession session,
             String tag, ImapCommand command, Responder responder) {
         unsolicitedResponses(session, responder, false);
         okComplete(command, tag, responder);

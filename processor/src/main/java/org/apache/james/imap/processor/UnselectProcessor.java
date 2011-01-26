@@ -22,9 +22,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.apache.james.imap.api.ImapCommand;
-import org.apache.james.imap.api.ImapMessage;
 import org.apache.james.imap.api.display.HumanReadableText;
-import org.apache.james.imap.api.message.request.ImapRequest;
 import org.apache.james.imap.api.message.response.StatusResponseFactory;
 import org.apache.james.imap.api.process.ImapProcessor;
 import org.apache.james.imap.api.process.ImapSession;
@@ -37,19 +35,19 @@ import org.apache.james.mailbox.MailboxManager;
  * See RFC3691
  *
  */
-public class UnselectProcessor extends AbstractMailboxProcessor implements CapabilityImplementingProcessor{
+public class UnselectProcessor extends AbstractMailboxProcessor<UnselectRequest> implements CapabilityImplementingProcessor{
 
     private final static List<String> UNSELECT = Arrays.asList("UNSELECT");
     
     public UnselectProcessor(ImapProcessor next, MailboxManager mailboxManager, StatusResponseFactory factory) {
-        super(next, mailboxManager, factory);
+        super(UnselectRequest.class, next, mailboxManager, factory);
     }
 
     /*
      * (non-Javadoc)
      * @see org.apache.james.imap.processor.AbstractMailboxProcessor#doProcess(org.apache.james.imap.api.message.request.ImapRequest, org.apache.james.imap.api.process.ImapSession, java.lang.String, org.apache.james.imap.api.ImapCommand, org.apache.james.imap.api.process.ImapProcessor.Responder)
      */
-    protected void doProcess(ImapRequest message, ImapSession session, String tag, ImapCommand command, Responder responder) {
+    protected void doProcess(UnselectRequest message, ImapSession session, String tag, ImapCommand command, Responder responder) {
         if (session.getSelected() != null) {
             session.deselect();
             okComplete(command, tag, responder);
@@ -58,15 +56,6 @@ public class UnselectProcessor extends AbstractMailboxProcessor implements Capab
         }
        
     }
-
-    /*
-     * (non-Javadoc)
-     * @see org.apache.james.imap.processor.base.AbstractChainedProcessor#isAcceptable(org.apache.james.imap.api.ImapMessage)
-     */
-    protected boolean isAcceptable(ImapMessage message) {
-        return message instanceof UnselectRequest;
-    }
-
     /*
      * (non-Javadoc)
      * @see org.apache.james.imap.processor.CapabilityImplementingProcessor#getImplementedCapabilities(org.apache.james.imap.api.process.ImapSession)

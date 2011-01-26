@@ -24,11 +24,9 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.apache.james.imap.api.ImapCommand;
-import org.apache.james.imap.api.ImapMessage;
 import org.apache.james.imap.api.ImapSessionUtils;
 import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.api.message.IdRange;
-import org.apache.james.imap.api.message.request.ImapRequest;
 import org.apache.james.imap.api.message.response.StatusResponseFactory;
 import org.apache.james.imap.api.process.ImapProcessor;
 import org.apache.james.imap.api.process.ImapSession;
@@ -41,26 +39,21 @@ import org.apache.james.mailbox.MailboxSession;
 import org.apache.james.mailbox.MessageManager;
 import org.apache.james.mailbox.MessageRange;
 
-public class ExpungeProcessor extends AbstractMailboxProcessor implements CapabilityImplementingProcessor{
+public class ExpungeProcessor extends AbstractMailboxProcessor<ExpungeRequest> implements CapabilityImplementingProcessor{
 
     private final static List<String> UIDPLUS = Arrays.asList("UIDPLUS");
     
     public ExpungeProcessor(final ImapProcessor next,
             final MailboxManager mailboxManager,
             final StatusResponseFactory factory) {
-        super(next, mailboxManager, factory);
+        super(ExpungeRequest.class, next, mailboxManager, factory);
     }
 
-    protected boolean isAcceptable(ImapMessage message) {
-        return (message instanceof ExpungeRequest);
-    }
-
-    protected void doProcess(ImapRequest message, ImapSession session,
+    protected void doProcess(ExpungeRequest request, ImapSession session,
             String tag, ImapCommand command, Responder responder) {
         try {
             final MessageManager mailbox = getSelectedMailbox(session);
             final MailboxSession mailboxSession = ImapSessionUtils.getMailboxSession(session);
-            final ExpungeRequest request = (ExpungeRequest) message;
             
             if (!mailbox.isWriteable(mailboxSession)) {
                 no(command, tag, responder,

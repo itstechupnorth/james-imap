@@ -23,9 +23,10 @@ import org.apache.james.imap.api.ImapMessage;
 import org.apache.james.imap.api.process.ImapProcessor;
 import org.apache.james.imap.api.process.ImapSession;
 
-abstract public class AbstractChainedProcessor implements ImapProcessor {
+abstract public class AbstractChainedProcessor<M extends ImapMessage> implements ImapProcessor {
 
     private final ImapProcessor next;
+    private Class<M> acceptableClass;
 
     /**
      * Constructs a chainable <code>ImapProcessor</code>.
@@ -33,15 +34,21 @@ abstract public class AbstractChainedProcessor implements ImapProcessor {
      * @param next
      *            next <code>ImapProcessor</code> in the chain, not null
      */
-    public AbstractChainedProcessor(final ImapProcessor next) {
+    public AbstractChainedProcessor(Class<M> acceptableClass, final ImapProcessor next) {
         this.next = next;
+        this.acceptableClass = acceptableClass;
     }
 
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.api.process.ImapProcessor#process(org.apache.james.imap.api.ImapMessage, org.apache.james.imap.api.process.ImapProcessor.Responder, org.apache.james.imap.api.process.ImapSession)
+     */
+    @SuppressWarnings("unchecked")
     public void process(ImapMessage message, Responder responder,
             ImapSession session) {
         final boolean isAcceptable = isAcceptable(message);
         if (isAcceptable) {
-            doProcess(message, responder, session);
+            doProcess((M)message, responder, session);
         } else {
             next.process(message, responder, session);
         }
@@ -54,20 +61,22 @@ abstract public class AbstractChainedProcessor implements ImapProcessor {
      *            <code>ImapMessage</code>, not null
      * @return true if the given message is processable by this processable
      */
-    abstract protected boolean isAcceptable(final ImapMessage message);
+    private boolean isAcceptable(final ImapMessage message) {
+        return acceptableClass.isInstance(message);
+    }
 
     /**
      * Processes an acceptable message. Only messages passing
      * {@link #isAcceptable(ImapMessage)} should be passed to this method.
      * 
      * @param acceptableMessage
-     *            <code>ImapMessage</code>, not null
+     *            <code>M</code>, not null
      * @param responder
      *            <code>Responder</code>, not null
      * @param session
      *            <code>ImapSession</code>, not null
      * @return <code>ImapResponseMessage</code>, not null
      */
-    abstract protected void doProcess(final ImapMessage acceptableMessage,
+    abstract protected void doProcess(final M acceptableMessage,
             final Responder responder, final ImapSession session);
 }

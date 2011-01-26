@@ -24,7 +24,6 @@ import java.util.Iterator;
 import javax.mail.Flags;
 
 import org.apache.james.imap.api.ImapCommand;
-import org.apache.james.imap.api.ImapMessage;
 import org.apache.james.imap.api.ImapSessionUtils;
 import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.api.message.IdRange;
@@ -51,27 +50,30 @@ import org.apache.james.mailbox.MessageRange;
 import org.apache.james.mailbox.MessageResult;
 import org.apache.james.mailbox.util.FetchGroupImpl;
 
-abstract public class AbstractMailboxProcessor extends AbstractChainedProcessor {
+abstract public class AbstractMailboxProcessor<M extends ImapRequest> extends AbstractChainedProcessor<M> {
 
     private final MailboxManager mailboxManager;
 
     private final StatusResponseFactory factory;
 
-    public AbstractMailboxProcessor(final ImapProcessor next,
+    public AbstractMailboxProcessor(final Class<M> acceptableClass, final ImapProcessor next,
             final MailboxManager mailboxManager,
             final StatusResponseFactory factory) {
-        super(next);
+        super(acceptableClass, next);
         this.mailboxManager = mailboxManager;
         this.factory = factory;
     }
 
-    protected final void doProcess(final ImapMessage acceptableMessage,
+    /*
+     * 
+     */
+    protected final void doProcess(final M acceptableMessage,
             final Responder responder, final ImapSession session) {
-        final ImapRequest request = (ImapRequest) acceptableMessage;
+        final M request = acceptableMessage;
         process(request, responder, session);
     }
 
-    protected final void process(final ImapRequest message,
+    protected final void process(final M message,
             final Responder responder, final ImapSession session) {
         final ImapCommand command = message.getCommand();
         final String tag = message.getTag();
@@ -79,7 +81,7 @@ abstract public class AbstractMailboxProcessor extends AbstractChainedProcessor 
     }
 
    
-    final void doProcess(final ImapRequest message, final ImapCommand command,
+    final void doProcess(final M message, final ImapCommand command,
             final String tag, Responder responder, ImapSession session) {
         if (!command.validForState(session.getState())) {
             ImapResponseMessage response = factory.taggedNo(tag, command,
@@ -275,7 +277,7 @@ abstract public class AbstractMailboxProcessor extends AbstractChainedProcessor 
         responder.respond(response);
     }
 
-    protected abstract void doProcess(final ImapRequest message,
+    protected abstract void doProcess(final M message,
             ImapSession session, String tag, ImapCommand command,
             Responder responder);
 
@@ -343,8 +345,12 @@ abstract public class AbstractMailboxProcessor extends AbstractChainedProcessor 
         }
     }
     
-    public MailboxManager getMailboxManager() {
+    protected MailboxManager getMailboxManager() {
         return mailboxManager;
+    }
+    
+    protected StatusResponseFactory getStatusResponseFactory() {
+        return factory;
     }
 
     public MessageManager getSelectedMailbox(final ImapSession session) throws MailboxException {

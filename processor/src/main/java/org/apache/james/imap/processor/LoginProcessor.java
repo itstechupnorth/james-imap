@@ -20,10 +20,8 @@
 package org.apache.james.imap.processor;
 
 import org.apache.james.imap.api.ImapCommand;
-import org.apache.james.imap.api.ImapMessage;
 import org.apache.james.imap.api.ImapSessionUtils;
 import org.apache.james.imap.api.display.HumanReadableText;
-import org.apache.james.imap.api.message.request.ImapRequest;
 import org.apache.james.imap.api.message.response.StatusResponseFactory;
 import org.apache.james.imap.api.process.ImapProcessor;
 import org.apache.james.imap.api.process.ImapSession;
@@ -38,7 +36,7 @@ import org.apache.james.mailbox.MailboxSession;
 /**
  * Processes a <code>LOGIN</code> command.
  */
-public class LoginProcessor extends AbstractMailboxProcessor {
+public class LoginProcessor extends AbstractMailboxProcessor<LoginRequest> {
 
     public static final String INBOX = "INBOX";
     
@@ -50,17 +48,17 @@ public class LoginProcessor extends AbstractMailboxProcessor {
     public LoginProcessor(final ImapProcessor next,
             final MailboxManager mailboxManager,
             final StatusResponseFactory factory) {
-        super(next, mailboxManager, factory);
+        super(LoginRequest.class, next, mailboxManager, factory);
     }
 
-    protected boolean isAcceptable(ImapMessage message) {
-        return (message instanceof LoginRequest);
-    }
 
-    protected void doProcess(ImapRequest message, ImapSession session,
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.processor.AbstractMailboxProcessor#doProcess(org.apache.james.imap.api.message.request.ImapRequest, org.apache.james.imap.api.process.ImapSession, java.lang.String, org.apache.james.imap.api.ImapCommand, org.apache.james.imap.api.process.ImapProcessor.Responder)
+     */
+    protected void doProcess(LoginRequest request, ImapSession session,
             String tag, ImapCommand command, Responder responder) {
         try {
-            final LoginRequest request = (LoginRequest) message;
             final String userid = request.getUserid();
             final String passwd = request.getPassword();
             final MailboxManager mailboxManager = getMailboxManager();

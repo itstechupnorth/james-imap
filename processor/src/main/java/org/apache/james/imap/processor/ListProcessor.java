@@ -23,10 +23,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.james.imap.api.ImapCommand;
-import org.apache.james.imap.api.ImapMessage;
 import org.apache.james.imap.api.ImapSessionUtils;
 import org.apache.james.imap.api.display.HumanReadableText;
-import org.apache.james.imap.api.message.request.ImapRequest;
 import org.apache.james.imap.api.message.response.ImapResponseMessage;
 import org.apache.james.imap.api.message.response.StatusResponseFactory;
 import org.apache.james.imap.api.process.ImapProcessor;
@@ -43,21 +41,20 @@ import org.apache.james.mailbox.MailboxSession;
 import org.apache.james.mailbox.MailboxMetaData.Children;
 import org.apache.james.mailbox.util.SimpleMailboxMetaData;
 
-public class ListProcessor extends AbstractMailboxProcessor {
+public class ListProcessor extends AbstractMailboxProcessor<ListRequest>{
 
     public ListProcessor(final ImapProcessor next,
             final MailboxManager mailboxManager,
             final StatusResponseFactory factory) {
-        super(next, mailboxManager, factory);
+        super(ListRequest.class, next, mailboxManager, factory);
     }
 
-    protected boolean isAcceptable(ImapMessage message) {
-        return (message instanceof ListRequest);
-    }
-
-    protected void doProcess(ImapRequest message, ImapSession session,
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.processor.AbstractMailboxProcessor#doProcess(org.apache.james.imap.api.message.request.ImapRequest, org.apache.james.imap.api.process.ImapSession, java.lang.String, org.apache.james.imap.api.ImapCommand, org.apache.james.imap.api.process.ImapProcessor.Responder)
+     */
+    protected void doProcess(ListRequest request, ImapSession session,
             String tag, ImapCommand command, Responder responder) {
-        final ListRequest request = (ListRequest) message;
         final String baseReferenceName = request.getBaseReferenceName();
         final String mailboxPatternString = request.getMailboxPattern();
         doProcess(baseReferenceName, mailboxPatternString, session, tag,

@@ -20,10 +20,8 @@
 package org.apache.james.imap.processor;
 
 import org.apache.james.imap.api.ImapCommand;
-import org.apache.james.imap.api.ImapMessage;
 import org.apache.james.imap.api.ImapSessionUtils;
 import org.apache.james.imap.api.display.HumanReadableText;
-import org.apache.james.imap.api.message.request.ImapRequest;
 import org.apache.james.imap.api.message.response.StatusResponseFactory;
 import org.apache.james.imap.api.process.ImapProcessor;
 import org.apache.james.imap.api.process.ImapSession;
@@ -34,18 +32,15 @@ import org.apache.james.mailbox.MailboxSession;
 import org.apache.james.mailbox.MessageManager;
 import org.apache.james.mailbox.MessageRange;
 
-public class CloseProcessor extends AbstractMailboxProcessor {
+public class CloseProcessor extends AbstractMailboxProcessor<CloseRequest> {
 
     public CloseProcessor(final ImapProcessor next, final MailboxManager mailboxManager,
             final StatusResponseFactory factory) {
-        super(next, mailboxManager, factory);
+        super(CloseRequest.class, next, mailboxManager, factory);
     }
 
-    protected boolean isAcceptable(ImapMessage message) {
-        return (message instanceof CloseRequest);
-    }
 
-    protected void doProcess(ImapRequest message, ImapSession session,
+    protected void doProcess(CloseRequest message, ImapSession session,
             String tag, ImapCommand command, Responder responder) {
         try {
             MessageManager mailbox = getSelectedMailbox(session);

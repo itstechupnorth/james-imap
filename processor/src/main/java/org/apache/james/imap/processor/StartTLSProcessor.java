@@ -23,9 +23,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.apache.james.imap.api.ImapConstants;
-import org.apache.james.imap.api.ImapMessage;
 import org.apache.james.imap.api.display.HumanReadableText;
-import org.apache.james.imap.api.message.request.ImapRequest;
 import org.apache.james.imap.api.message.response.StatusResponseFactory;
 import org.apache.james.imap.api.process.ImapProcessor;
 import org.apache.james.imap.api.process.ImapSession;
@@ -37,19 +35,21 @@ import org.apache.james.imap.processor.base.AbstractChainedProcessor;
  * Processing STARTLS commands
  *
  */
-public class StartTLSProcessor extends AbstractChainedProcessor implements CapabilityImplementingProcessor{
+public class StartTLSProcessor extends AbstractChainedProcessor<StartTLSRequest> implements CapabilityImplementingProcessor{
 
     private StatusResponseFactory factory;
 
     public StartTLSProcessor(final ImapProcessor next, final StatusResponseFactory factory) {
-        super(next);
+        super(StartTLSRequest.class, next);
         this.factory = factory;
     }
 
-    @Override
-    protected void doProcess(ImapMessage acceptableMessage,
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.processor.base.AbstractChainedProcessor#doProcess(org.apache.james.imap.api.ImapMessage, org.apache.james.imap.api.process.ImapProcessor.Responder, org.apache.james.imap.api.process.ImapSession)
+     */
+    protected void doProcess(StartTLSRequest request,
             Responder responder, ImapSession session) {
-        ImapRequest request = (ImapRequest) acceptableMessage;     
         if (session.supportStartTLS()) {
             responder.respond(factory.taggedOk(request.getTag(), request.getCommand(), HumanReadableText.STARTTLS));
             session.startTLS();
@@ -59,12 +59,6 @@ public class StartTLSProcessor extends AbstractChainedProcessor implements Capab
         }
 
     }
-
-    @Override
-    protected boolean isAcceptable(ImapMessage message) {
-        return message instanceof StartTLSRequest;
-    }
-
 
     /*
      * (non-Javadoc)

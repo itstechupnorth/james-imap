@@ -27,10 +27,8 @@ import javax.mail.Flags;
 
 import org.apache.commons.logging.Log;
 import org.apache.james.imap.api.ImapCommand;
-import org.apache.james.imap.api.ImapMessage;
 import org.apache.james.imap.api.ImapSessionUtils;
 import org.apache.james.imap.api.display.HumanReadableText;
-import org.apache.james.imap.api.message.request.ImapRequest;
 import org.apache.james.imap.api.message.response.StatusResponse;
 import org.apache.james.imap.api.message.response.StatusResponseFactory;
 import org.apache.james.imap.api.process.ImapProcessor;
@@ -44,21 +42,20 @@ import org.apache.james.mailbox.MailboxPath;
 import org.apache.james.mailbox.MailboxSession;
 import org.apache.james.mailbox.MessageManager;
 
-public class AppendProcessor extends AbstractMailboxProcessor {
+public class AppendProcessor extends AbstractMailboxProcessor<AppendRequest> {
 
     public AppendProcessor(final ImapProcessor next,
             final MailboxManager mailboxManager,
             final StatusResponseFactory statusResponseFactory) {
-        super(next, mailboxManager, statusResponseFactory);
+        super(AppendRequest.class,next, mailboxManager, statusResponseFactory);
     }
-
-    protected boolean isAcceptable(ImapMessage message) {
-        return (message instanceof AppendRequest);
-    }
-
-    protected void doProcess(ImapRequest message, ImapSession session,
+    
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.processor.AbstractMailboxProcessor#doProcess(org.apache.james.imap.api.message.request.ImapRequest, org.apache.james.imap.api.process.ImapSession, java.lang.String, org.apache.james.imap.api.ImapCommand, org.apache.james.imap.api.process.ImapProcessor.Responder)
+     */
+    protected void doProcess(AppendRequest request, ImapSession session,
             String tag, ImapCommand command, Responder responder) {
-        final AppendRequest request = (AppendRequest) message;
         final String mailboxName = request.getMailboxName();
         final InputStream messageIn = request.getMessage();
         final Date datetime = request.getDatetime();

@@ -26,9 +26,7 @@ import java.util.Collection;
 import java.util.List;
 
 import org.apache.james.imap.api.ImapCommand;
-import org.apache.james.imap.api.ImapMessage;
 import org.apache.james.imap.api.ImapSessionUtils;
-import org.apache.james.imap.api.message.request.ImapRequest;
 import org.apache.james.imap.api.message.response.StatusResponseFactory;
 import org.apache.james.imap.api.process.ImapProcessor;
 import org.apache.james.imap.api.process.ImapSession;
@@ -40,16 +38,16 @@ import org.apache.james.mailbox.MailboxSession;
 /**
  * Processes a NAMESPACE command into a suitable set of responses.
  */
-public class NamespaceProcessor extends AbstractMailboxProcessor implements CapabilityImplementingProcessor{
+public class NamespaceProcessor extends AbstractMailboxProcessor<NamespaceRequest> implements CapabilityImplementingProcessor{
     
     public NamespaceProcessor(ImapProcessor next,
             MailboxManager mailboxManager,
             StatusResponseFactory factory) {
-        super(next, mailboxManager, factory);
+        super(NamespaceRequest.class,next, mailboxManager, factory);
     }
 
     @Override
-    protected void doProcess(ImapRequest message, ImapSession session,
+    protected void doProcess(NamespaceRequest request, ImapSession session,
             String tag, ImapCommand command, Responder responder) {
         final MailboxSession mailboxSession = ImapSessionUtils.getMailboxSession(session);
         final List<NamespaceResponse.Namespace> personalNamespaces = buildPersonalNamespaces(mailboxSession);
@@ -95,12 +93,6 @@ public class NamespaceProcessor extends AbstractMailboxProcessor implements Capa
         }
         return sharedNamespaces;
     }
-
-    @Override
-    protected boolean isAcceptable(ImapMessage message) {
-        return message instanceof NamespaceRequest;
-    }
-
 
     /*
      * (non-Javadoc)

@@ -20,10 +20,8 @@
 package org.apache.james.imap.processor;
 
 import org.apache.james.imap.api.ImapCommand;
-import org.apache.james.imap.api.ImapMessage;
 import org.apache.james.imap.api.ImapSessionUtils;
 import org.apache.james.imap.api.display.HumanReadableText;
-import org.apache.james.imap.api.message.request.ImapRequest;
 import org.apache.james.imap.api.message.response.StatusResponseFactory;
 import org.apache.james.imap.api.process.ImapProcessor;
 import org.apache.james.imap.api.process.ImapSession;
@@ -32,18 +30,14 @@ import org.apache.james.mailbox.MailboxException;
 import org.apache.james.mailbox.MailboxManager;
 import org.apache.james.mailbox.MailboxSession;
 
-public class LogoutProcessor extends AbstractMailboxProcessor {
+public class LogoutProcessor extends AbstractMailboxProcessor<LogoutRequest> {
 
     public LogoutProcessor(final ImapProcessor next, final MailboxManager mailboxManager,
             final StatusResponseFactory factory) {
-        super(next, mailboxManager, factory);
+        super(LogoutRequest.class, next, mailboxManager, factory);
     }
-
-    protected boolean isAcceptable(ImapMessage message) {
-        return (message instanceof LogoutRequest);
-    }
-
-    protected void doProcess(ImapRequest message, ImapSession session,
+    
+    protected void doProcess(LogoutRequest request, ImapSession session,
             String tag, ImapCommand command, Responder responder) {
         final MailboxSession mailboxSession = ImapSessionUtils.getMailboxSession(session);
         try {

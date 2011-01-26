@@ -18,25 +18,21 @@
  ****************************************************************/
 package org.apache.james.imap.processor;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
 import org.apache.james.imap.api.ImapCommand;
-import org.apache.james.imap.api.ImapMessage;
 import org.apache.james.imap.api.ImapSessionState;
 import org.apache.james.imap.api.ImapSessionUtils;
 import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.api.message.response.StatusResponse;
-import org.apache.james.imap.api.message.response.StatusResponseFactory;
 import org.apache.james.imap.api.message.response.StatusResponse.ResponseCode;
+import org.apache.james.imap.api.message.response.StatusResponseFactory;
 import org.apache.james.imap.api.process.ImapProcessor;
-import org.apache.james.imap.api.process.ImapSession;
 import org.apache.james.imap.api.process.ImapProcessor.Responder;
+import org.apache.james.imap.api.process.ImapSession;
 import org.apache.james.imap.message.request.NamespaceRequest;
 import org.apache.james.imap.message.response.NamespaceResponse;
 import org.apache.james.mailbox.MailboxConstants;
@@ -83,25 +79,7 @@ public class NamespaceProcessorTest {
        
     }
     
-    @Test
-    public void testShouldAcceptNamespaceRequests() throws Exception {
-        mockery.checking (new Expectations() {{
-            allowing(imapSessionStub).getAttribute(ImapSessionUtils.MAILBOX_SESSION_ATTRIBUTE_SESSION_KEY); will(returnValue(mailboxSessionStub));
-            allowing(mailboxSessionStub).getPersonalSpace(); will(returnValue(PERSONAL_PREFIX));
-            allowing(mailboxSessionStub).getOtherUsersSpace(); will(returnValue(USERS_PREFIX));
-            allowing(mailboxSessionStub).getSharedSpaces();will(returnValue(Arrays.asList(SHARED_PREFIX)));
-            allowing(imapSessionStub).getState();will(returnValue(ImapSessionState.AUTHENTICATED));
-            allowing(statusResponseStub).taggedOk(
-                    with(any(String.class)), with(any(ImapCommand.class)), 
-                    with(any(HumanReadableText.class)), with(any(ResponseCode.class))); will(returnValue(mockery.mock(StatusResponse.class)));
-            ignoring(imapSessionStub);
-            ignoring(mailboxSessionStub);
-            ignoring(mailboxManagerStub);
-            ignoring(statusResponseStub);
-        }});
-        assertFalse(subject.isAcceptable(mockery.mock(ImapMessage.class)));
-        assertTrue(subject.isAcceptable(namespaceRequest));
-    }
+
     
     @Test
     public void testNamespaceResponseShouldContainPersonalAndUserSpaces() throws Exception {

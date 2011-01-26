@@ -20,7 +20,6 @@
 package org.apache.james.imap.processor;
 
 import org.apache.commons.logging.Log;
-import org.apache.james.imap.api.ImapMessage;
 import org.apache.james.imap.api.ImapSessionUtils;
 import org.apache.james.imap.api.process.ImapProcessor;
 import org.apache.james.imap.api.process.ImapSession;
@@ -33,19 +32,18 @@ import org.apache.james.mailbox.MailboxSession;
 /**
  * Processes system messages unrelated to IMAP.
  */
-public class SystemMessageProcessor extends AbstractChainedProcessor {
+public class SystemMessageProcessor extends AbstractChainedProcessor<SystemMessage>{
 
     private final MailboxManager mailboxManager;
     
     public SystemMessageProcessor(ImapProcessor next, final MailboxManager mailboxManager) {
-        super(next);
+        super(SystemMessage.class, next);
         this.mailboxManager = mailboxManager;
     }
 
     @Override
-    protected void doProcess(ImapMessage acceptableMessage, Responder responder, ImapSession session) {
+    protected void doProcess(SystemMessage message, Responder responder, ImapSession session) {
         try {
-            final SystemMessage message = (SystemMessage) acceptableMessage;
             switch (message) {
                 case FORCE_LOGOUT:
                     forceLogout(session);
@@ -73,11 +71,6 @@ public class SystemMessageProcessor extends AbstractChainedProcessor {
             session.close();
             mailboxManager.logout(session, true);
         }
-    }
-
-    @Override
-    protected boolean isAcceptable(ImapMessage message) {
-        return message instanceof SystemMessage;
     }
 
 }

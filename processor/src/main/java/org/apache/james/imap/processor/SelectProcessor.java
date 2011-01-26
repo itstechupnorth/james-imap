@@ -19,22 +19,17 @@
 
 package org.apache.james.imap.processor;
 
-import org.apache.james.imap.api.ImapMessage;
 import org.apache.james.imap.api.message.response.StatusResponseFactory;
 import org.apache.james.imap.api.process.ImapProcessor;
 import org.apache.james.imap.message.request.SelectRequest;
 import org.apache.james.mailbox.MailboxManager;
 
-public class SelectProcessor extends AbstractSelectionProcessor {
+public class SelectProcessor extends AbstractSelectionProcessor<SelectRequest> {
 
     public SelectProcessor(final ImapProcessor next,
             final MailboxManager mailboxManager,
             final StatusResponseFactory statusResponseFactory) {
-        super(next, mailboxManager, statusResponseFactory, false);
-    }
-
-    protected boolean isAcceptable(ImapMessage message) {
-        return (message instanceof SelectRequest);
+        super(SelectRequest.class, next, mailboxManager, statusResponseFactory, false);
     }
 
 }

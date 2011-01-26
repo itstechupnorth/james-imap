@@ -26,13 +26,11 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.apache.james.imap.api.ImapCommand;
-import org.apache.james.imap.api.ImapMessage;
 import org.apache.james.imap.api.ImapSessionUtils;
 import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.api.message.BodyFetchElement;
 import org.apache.james.imap.api.message.FetchData;
 import org.apache.james.imap.api.message.IdRange;
-import org.apache.james.imap.api.message.request.ImapRequest;
 import org.apache.james.imap.api.message.response.StatusResponseFactory;
 import org.apache.james.imap.api.process.ImapProcessor;
 import org.apache.james.imap.api.process.ImapSession;
@@ -46,39 +44,31 @@ import org.apache.james.mailbox.MailboxManager;
 import org.apache.james.mailbox.MailboxSession;
 import org.apache.james.mailbox.MessageManager;
 import org.apache.james.mailbox.MessageRange;
-import org.apache.james.mailbox.MessageResult;
-import org.apache.james.mailbox.UnsupportedCriteriaException;
 import org.apache.james.mailbox.MessageRange.Type;
+import org.apache.james.mailbox.MessageResult;
 import org.apache.james.mailbox.MessageResult.FetchGroup;
 import org.apache.james.mailbox.MessageResult.MimePath;
+import org.apache.james.mailbox.UnsupportedCriteriaException;
 import org.apache.james.mailbox.util.FetchGroupImpl;
 import org.apache.james.mime4j.field.address.parser.ParseException;
 
-public class FetchProcessor extends AbstractMailboxProcessor {
+public class FetchProcessor extends AbstractMailboxProcessor<FetchRequest> {
 
     private int batchSize;
 
     public FetchProcessor(final ImapProcessor next, final MailboxManager mailboxManager,
             final StatusResponseFactory factory, int batchSize) {
-        super(next, mailboxManager, factory);
+        super(FetchRequest.class,next, mailboxManager, factory);
         this.batchSize = batchSize;
     }
 
-    /*
-     * (non-Javadoc)
-     * @see org.apache.james.imap.processor.base.AbstractChainedProcessor#isAcceptable(org.apache.james.imap.api.ImapMessage)
-     */
-    protected boolean isAcceptable(ImapMessage message) {
-        return (message instanceof FetchRequest);
-    }
 
     /*
      * (non-Javadoc)
      * @see org.apache.james.imap.processor.AbstractMailboxProcessor#doProcess(org.apache.james.imap.api.message.request.ImapRequest, org.apache.james.imap.api.process.ImapSession, java.lang.String, org.apache.james.imap.api.ImapCommand, org.apache.james.imap.api.process.ImapProcessor.Responder)
      */
-    protected void doProcess(ImapRequest message, ImapSession session,
+    protected void doProcess(FetchRequest request, ImapSession session,
             String tag, ImapCommand command, Responder responder) {
-        final FetchRequest request = (FetchRequest) message;
         final boolean useUids = request.isUseUids();
         final IdRange[] idSet = request.getIdSet();
         final FetchData fetch = request.getFetch();
@@ -250,4 +240,5 @@ public class FetchProcessor extends AbstractMailboxProcessor {
             result.addPartContent(mimePath, content);
         }
     }
+
 }

@@ -20,26 +20,21 @@
 package org.apache.james.imap.processor;
 
 import org.apache.james.imap.api.ImapCommand;
-import org.apache.james.imap.api.ImapMessage;
-import org.apache.james.imap.api.message.request.ImapRequest;
 import org.apache.james.imap.api.message.response.StatusResponseFactory;
 import org.apache.james.imap.api.process.ImapProcessor;
 import org.apache.james.imap.api.process.ImapSession;
 import org.apache.james.imap.message.request.NoopRequest;
 import org.apache.james.mailbox.MailboxManager;
 
-public class NoopProcessor extends AbstractMailboxProcessor {
+public class NoopProcessor extends AbstractMailboxProcessor<NoopRequest> {
 
     public NoopProcessor(final ImapProcessor next, final MailboxManager mailboxManager,
             final StatusResponseFactory factory) {
-        super(next, mailboxManager, factory);
+        super(NoopRequest.class, next, mailboxManager, factory);
     }
 
-    protected boolean isAcceptable(ImapMessage message) {
-        return (message instanceof NoopRequest);
-    }
 
-    protected void doProcess(ImapRequest message, ImapSession session,
+    protected void doProcess(NoopRequest message, ImapSession session,
             String tag, ImapCommand command, Responder responder) {
         // So, unsolicated responses are returned to check for new mail
         unsolicitedResponses(session, responder, false);

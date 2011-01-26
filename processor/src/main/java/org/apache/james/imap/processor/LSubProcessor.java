@@ -23,10 +23,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import org.apache.james.imap.api.ImapCommand;
-import org.apache.james.imap.api.ImapMessage;
 import org.apache.james.imap.api.ImapSessionUtils;
 import org.apache.james.imap.api.display.HumanReadableText;
-import org.apache.james.imap.api.message.request.ImapRequest;
 import org.apache.james.imap.api.message.response.StatusResponseFactory;
 import org.apache.james.imap.api.process.ImapProcessor;
 import org.apache.james.imap.api.process.ImapSession;
@@ -41,16 +39,11 @@ import org.apache.james.mailbox.MailboxSession;
 import org.apache.james.mailbox.SubscriptionException;
 import org.apache.james.mailbox.SubscriptionManager;
 
-public class LSubProcessor extends AbstractSubscriptionProcessor {
+public class LSubProcessor extends AbstractSubscriptionProcessor<LsubRequest> {
 
     public LSubProcessor(ImapProcessor next, MailboxManager mailboxManager, SubscriptionManager subscriptionManager, StatusResponseFactory factory) {
-        super(next, mailboxManager, subscriptionManager, factory);
+        super(LsubRequest.class, next, mailboxManager, subscriptionManager, factory);
     }
-
-    protected boolean isAcceptable(ImapMessage message) {
-        return (message instanceof LsubRequest);
-    }
-
     private void listSubscriptions(ImapSession session, Responder responder,
             final String referenceName, final String mailboxName)
             throws SubscriptionException, MailboxException {
@@ -115,9 +108,11 @@ public class LSubProcessor extends AbstractSubscriptionProcessor {
         responder.respond(response);
     }
 
-    @Override
-    protected void doProcessRequest(ImapRequest message, ImapSession session, String tag, ImapCommand command, Responder responder) {
-        final LsubRequest request = (LsubRequest) message;
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.processor.AbstractSubscriptionProcessor#doProcessRequest(org.apache.james.imap.api.message.request.ImapRequest, org.apache.james.imap.api.process.ImapSession, java.lang.String, org.apache.james.imap.api.ImapCommand, org.apache.james.imap.api.process.ImapProcessor.Responder)
+     */
+    protected void doProcessRequest(LsubRequest request, ImapSession session, String tag, ImapCommand command, Responder responder) {
         final String referenceName = request.getBaseReferenceName();
         final String mailboxPattern = request.getMailboxPattern();
         final MailboxSession mailboxSession = ImapSessionUtils.getMailboxSession(session);

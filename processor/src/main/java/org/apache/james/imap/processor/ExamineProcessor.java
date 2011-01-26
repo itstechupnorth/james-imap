@@ -19,21 +19,16 @@
 
 package org.apache.james.imap.processor;
 
-import org.apache.james.imap.api.ImapMessage;
 import org.apache.james.imap.api.message.response.StatusResponseFactory;
 import org.apache.james.imap.api.process.ImapProcessor;
 import org.apache.james.imap.message.request.ExamineRequest;
 import org.apache.james.mailbox.MailboxManager;
 
-public class ExamineProcessor extends AbstractSelectionProcessor {
+public class ExamineProcessor extends AbstractSelectionProcessor<ExamineRequest> {
 
     public ExamineProcessor(final ImapProcessor next,
             final MailboxManager mailboxManager,
             final StatusResponseFactory statusResponseFactory) {
-        super(next, mailboxManager, statusResponseFactory, true);
-    }
-
-    protected boolean isAcceptable(ImapMessage message) {
-        return (message instanceof ExamineRequest);
+        super(ExamineRequest.class,next, mailboxManager, statusResponseFactory, true);
     }
 }

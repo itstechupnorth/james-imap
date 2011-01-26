@@ -20,13 +20,11 @@
 package org.apache.james.imap.processor;
 
 import org.apache.james.imap.api.ImapCommand;
-import org.apache.james.imap.api.ImapMessage;
 import org.apache.james.imap.api.ImapSessionUtils;
 import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.api.message.IdRange;
-import org.apache.james.imap.api.message.request.ImapRequest;
-import org.apache.james.imap.api.message.response.StatusResponseFactory;
 import org.apache.james.imap.api.message.response.StatusResponse.ResponseCode;
+import org.apache.james.imap.api.message.response.StatusResponseFactory;
 import org.apache.james.imap.api.process.ImapProcessor;
 import org.apache.james.imap.api.process.ImapSession;
 import org.apache.james.imap.api.process.SelectedMailbox;
@@ -38,21 +36,20 @@ import org.apache.james.mailbox.MailboxPath;
 import org.apache.james.mailbox.MailboxSession;
 import org.apache.james.mailbox.MessageRange;
 
-public class CopyProcessor extends AbstractMailboxProcessor {
+public class CopyProcessor extends AbstractMailboxProcessor<CopyRequest> {
 
     public CopyProcessor(final ImapProcessor next,
             final MailboxManager mailboxManager,
             final StatusResponseFactory factory) {
-        super(next, mailboxManager, factory);
+        super(CopyRequest.class, next, mailboxManager, factory);
     }
 
-    protected boolean isAcceptable(ImapMessage message) {
-        return (message instanceof CopyRequest);
-    }
-
-    protected void doProcess(ImapRequest message, ImapSession session,
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.processor.AbstractMailboxProcessor#doProcess(org.apache.james.imap.api.message.request.ImapRequest, org.apache.james.imap.api.process.ImapSession, java.lang.String, org.apache.james.imap.api.ImapCommand, org.apache.james.imap.api.process.ImapProcessor.Responder)
+     */
+    protected void doProcess(CopyRequest  request, ImapSession session,
             String tag, ImapCommand command, Responder responder) {
-        final CopyRequest request = (CopyRequest) message;
         final MailboxPath targetMailbox = buildFullPath(session, request.getMailboxName());
         final IdRange[] idSet = request.getIdSet();
         final boolean useUids = request.isUseUids();

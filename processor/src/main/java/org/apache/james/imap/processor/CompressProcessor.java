@@ -23,7 +23,6 @@ import java.util.Collections;
 import java.util.List;
 
 import org.apache.james.imap.api.ImapConstants;
-import org.apache.james.imap.api.ImapMessage;
 import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.api.message.response.StatusResponseFactory;
 import org.apache.james.imap.api.process.ImapProcessor;
@@ -31,32 +30,24 @@ import org.apache.james.imap.api.process.ImapSession;
 import org.apache.james.imap.message.request.CompressRequest;
 import org.apache.james.imap.processor.base.AbstractChainedProcessor;
 
-public class CompressProcessor extends AbstractChainedProcessor implements CapabilityImplementingProcessor{
+public class CompressProcessor extends AbstractChainedProcessor<CompressRequest> implements CapabilityImplementingProcessor{
     private final static String ALGO = "DEFLATE";
     private final static List<String> CAPA = Arrays.asList(ImapConstants.COMPRESS_COMMAND_NAME + "=" + ALGO);
     private StatusResponseFactory factory;
     private final static String COMPRESSED = "COMPRESSED";
     
     public CompressProcessor(ImapProcessor next, final StatusResponseFactory factory) {
-        super(next);
+        super(CompressRequest.class, next);
         this.factory = factory;
     }
     
 
-    /*
-     * (non-Javadoc)
-     * @see org.apache.james.imap.processor.base.AbstractChainedProcessor#isAcceptable(org.apache.james.imap.api.ImapMessage)
-     */
-    protected boolean isAcceptable(ImapMessage message) {
-        return message instanceof CompressRequest;
-    }
 
     /*
      * (non-Javadoc)
      * @see org.apache.james.imap.processor.base.AbstractChainedProcessor#doProcess(org.apache.james.imap.api.ImapMessage, org.apache.james.imap.api.process.ImapProcessor.Responder, org.apache.james.imap.api.process.ImapSession)
      */
-    protected void doProcess(ImapMessage acceptableMessage, Responder responder, ImapSession session) {
-        CompressRequest request = (CompressRequest) acceptableMessage;
+    protected void doProcess(CompressRequest request, Responder responder, ImapSession session) {
         if (session.isCompressionSupported()) {
             Object obj = session.getAttribute(COMPRESSED);
             if (obj != null) {

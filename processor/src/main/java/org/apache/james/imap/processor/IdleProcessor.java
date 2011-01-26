@@ -27,10 +27,8 @@ import java.util.Locale;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.james.imap.api.ImapCommand;
-import org.apache.james.imap.api.ImapMessage;
 import org.apache.james.imap.api.ImapSessionUtils;
 import org.apache.james.imap.api.display.HumanReadableText;
-import org.apache.james.imap.api.message.request.ImapRequest;
 import org.apache.james.imap.api.message.response.StatusResponse;
 import org.apache.james.imap.api.message.response.StatusResponseFactory;
 import org.apache.james.imap.api.process.ImapLineHandler;
@@ -44,22 +42,16 @@ import org.apache.james.mailbox.MailboxListener;
 import org.apache.james.mailbox.MailboxManager;
 import org.apache.james.mailbox.MailboxSession;
 
-public class IdleProcessor extends AbstractMailboxProcessor implements CapabilityImplementingProcessor {
-
-    private final StatusResponseFactory factory;
+public class IdleProcessor extends AbstractMailboxProcessor<IdleRequest> implements CapabilityImplementingProcessor {
     
     public IdleProcessor(final ImapProcessor next, final MailboxManager mailboxManager,
             final StatusResponseFactory factory) {
-        super(next, mailboxManager, factory);
+        super(IdleRequest.class, next, mailboxManager, factory);
         
-        this.factory = factory;
     }
 
-    protected boolean isAcceptable(ImapMessage message) {
-        return (message instanceof IdleRequest);
-    }
 
-    protected void doProcess(final ImapRequest message, final ImapSession session,
+    protected void doProcess(final IdleRequest message, final ImapSession session,
             final String tag, final ImapCommand command, final Responder responder) {
         final AtomicBoolean closed = new AtomicBoolean(false);
 
@@ -93,7 +85,7 @@ public class IdleProcessor extends AbstractMailboxProcessor implements Capabilit
                     closed.set(true);
                     session.popLineHandler();
                     if (!"DONE".equals(line.toUpperCase(Locale.US))) {
-                        StatusResponse response = factory.taggedBad(tag, command,
+                        StatusResponse response = getStatusResponseFactory().taggedBad(tag, command,
                                 HumanReadableText.INVALID_COMMAND);
                         responder.respond(response);
                     } else {

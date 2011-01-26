@@ -24,11 +24,9 @@ import java.util.Map;
 import javax.mail.Flags;
 
 import org.apache.james.imap.api.ImapCommand;
-import org.apache.james.imap.api.ImapMessage;
 import org.apache.james.imap.api.ImapSessionUtils;
 import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.api.message.IdRange;
-import org.apache.james.imap.api.message.request.ImapRequest;
 import org.apache.james.imap.api.message.response.StatusResponseFactory;
 import org.apache.james.imap.api.process.ImapProcessor;
 import org.apache.james.imap.api.process.ImapSession;
@@ -42,20 +40,15 @@ import org.apache.james.mailbox.MailboxSession;
 import org.apache.james.mailbox.MessageManager;
 import org.apache.james.mailbox.MessageRange;
 
-public class StoreProcessor extends AbstractMailboxProcessor {
+public class StoreProcessor extends AbstractMailboxProcessor<StoreRequest> {
     
     public StoreProcessor(final ImapProcessor next, final MailboxManager mailboxManager,
             final StatusResponseFactory factory) {
-        super(next, mailboxManager, factory);
+        super(StoreRequest.class, next, mailboxManager, factory);
     }
 
-    protected boolean isAcceptable(ImapMessage message) {
-        return (message instanceof StoreRequest);
-    }
-
-    protected void doProcess(ImapRequest message, ImapSession session,
+    protected void doProcess(StoreRequest request, ImapSession session,
             String tag, ImapCommand command, Responder responder) {
-        final StoreRequest request = (StoreRequest) message;
         final IdRange[] idSet = request.getIdSet();
         final Flags flags = request.getFlags();
         final boolean useUids = request.isUseUids();

@@ -19,25 +19,19 @@
 
 package org.apache.james.imap.processor.base;
 
-import org.apache.james.imap.api.ImapMessage;
 import org.apache.james.imap.api.message.response.ImapResponseMessage;
 import org.apache.james.imap.api.process.ImapProcessor;
 import org.apache.james.imap.api.process.ImapSession;
 
-public class ImapResponseMessageProcessor extends AbstractChainedProcessor {
+public class ImapResponseMessageProcessor extends AbstractChainedProcessor<ImapResponseMessage> {
 
     public ImapResponseMessageProcessor(final ImapProcessor next) {
-        super(next);
+        super(ImapResponseMessage.class,next);
     }
 
-    protected boolean isAcceptable(ImapMessage message) {
-        final boolean result = (message instanceof ImapResponseMessage);
-        return result;
-    }
 
-    protected void doProcess(ImapMessage acceptableMessage,
+    protected void doProcess(ImapResponseMessage acceptableMessage,
             Responder responder, ImapSession session) {
-        final ImapResponseMessage result = (ImapResponseMessage) acceptableMessage;
-        responder.respond(result);
+        responder.respond(acceptableMessage);
     }
 }

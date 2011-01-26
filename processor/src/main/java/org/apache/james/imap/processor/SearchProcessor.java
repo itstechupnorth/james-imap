@@ -29,12 +29,10 @@ import javax.mail.Flags.Flag;
 
 import org.apache.james.imap.api.ImapCommand;
 import org.apache.james.imap.api.ImapConstants;
-import org.apache.james.imap.api.ImapMessage;
 import org.apache.james.imap.api.ImapSessionUtils;
 import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.api.message.IdRange;
 import org.apache.james.imap.api.message.request.DayMonthYear;
-import org.apache.james.imap.api.message.request.ImapRequest;
 import org.apache.james.imap.api.message.request.SearchKey;
 import org.apache.james.imap.api.message.response.StatusResponseFactory;
 import org.apache.james.imap.api.process.ImapProcessor;
@@ -49,21 +47,20 @@ import org.apache.james.mailbox.MessageManager;
 import org.apache.james.mailbox.SearchQuery;
 import org.apache.james.mailbox.SearchQuery.Criterion;
 
-public class SearchProcessor extends AbstractMailboxProcessor {
+public class SearchProcessor extends AbstractMailboxProcessor<SearchRequest> {
 
     public SearchProcessor(final ImapProcessor next, final MailboxManager mailboxManager,
             final StatusResponseFactory factory) {
-        super(next, mailboxManager, factory);
+        super(SearchRequest.class, next, mailboxManager, factory);
     }
 
-    protected boolean isAcceptable(ImapMessage message) {
-        return (message instanceof SearchRequest);
-    }
-
-    protected void doProcess(ImapRequest message, ImapSession session,
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.processor.AbstractMailboxProcessor#doProcess(org.apache.james.imap.api.message.request.ImapRequest, org.apache.james.imap.api.process.ImapSession, java.lang.String, org.apache.james.imap.api.ImapCommand, org.apache.james.imap.api.process.ImapProcessor.Responder)
+     */
+    protected void doProcess(SearchRequest request, ImapSession session,
             String tag, ImapCommand command, Responder responder) {
         try {
-            final SearchRequest request = (SearchRequest) message;
             final SearchKey searchKey = request.getSearchKey();
             final boolean useUids = request.isUseUids();
             final MessageManager mailbox = getSelectedMailbox(session);

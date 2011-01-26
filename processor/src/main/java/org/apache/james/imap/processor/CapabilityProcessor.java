@@ -27,8 +27,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.james.imap.api.ImapCommand;
-import org.apache.james.imap.api.ImapMessage;
-import org.apache.james.imap.api.message.request.ImapRequest;
 import org.apache.james.imap.api.message.response.ImapResponseMessage;
 import org.apache.james.imap.api.message.response.StatusResponseFactory;
 import org.apache.james.imap.api.process.ImapProcessor;
@@ -37,7 +35,7 @@ import org.apache.james.imap.message.request.CapabilityRequest;
 import org.apache.james.imap.message.response.CapabilityResponse;
 import org.apache.james.mailbox.MailboxManager;
 
-public class CapabilityProcessor extends AbstractMailboxProcessor implements CapabilityImplementingProcessor {
+public class CapabilityProcessor extends AbstractMailboxProcessor<CapabilityRequest> implements CapabilityImplementingProcessor {
 
     private final List<CapabilityImplementingProcessor> capabilities = new ArrayList<CapabilityImplementingProcessor>();
 
@@ -50,17 +48,17 @@ public class CapabilityProcessor extends AbstractMailboxProcessor implements Cap
 
     public CapabilityProcessor(final ImapProcessor next, final MailboxManager mailboxManager,
             final StatusResponseFactory factory) {
-        super(next, mailboxManager, factory);
+        super(CapabilityRequest.class,next, mailboxManager, factory);
         this.capabilities.add(this);
 
     }
-    protected boolean isAcceptable(ImapMessage message) {
-        return (message instanceof CapabilityRequest);
-    }
 
-    protected void doProcess(ImapRequest message, ImapSession session,
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.processor.AbstractMailboxProcessor#doProcess(org.apache.james.imap.api.message.request.ImapRequest, org.apache.james.imap.api.process.ImapSession, java.lang.String, org.apache.james.imap.api.ImapCommand, org.apache.james.imap.api.process.ImapProcessor.Responder)
+     */
+    protected void doProcess(CapabilityRequest request, ImapSession session,
             String tag, ImapCommand command, Responder responder) {
-        final CapabilityRequest request = (CapabilityRequest) message;
         final ImapResponseMessage result = doProcess(request, session, tag,
                 command);
         responder.respond(result);

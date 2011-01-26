@@ -32,12 +32,12 @@ import org.apache.james.mailbox.SubscriptionManager;
  * Abstract base class which should be used by implementations which need to access the {@link SubscriptionManager}
  *
  */
-public abstract class AbstractSubscriptionProcessor extends AbstractMailboxProcessor{
+public abstract class AbstractSubscriptionProcessor<M extends ImapRequest> extends AbstractMailboxProcessor<M>{
 
     private final SubscriptionManager subscriptionManager;
 
-    public AbstractSubscriptionProcessor(ImapProcessor next, MailboxManager mailboxManager, final SubscriptionManager subscriptionManager,StatusResponseFactory factory) {
-        super(next, mailboxManager, factory);
+    public AbstractSubscriptionProcessor(Class<M> acceptableClass, ImapProcessor next, MailboxManager mailboxManager, final SubscriptionManager subscriptionManager,StatusResponseFactory factory) {
+        super(acceptableClass, next, mailboxManager, factory);
         this.subscriptionManager = subscriptionManager;
     }
 
@@ -51,7 +51,7 @@ public abstract class AbstractSubscriptionProcessor extends AbstractMailboxProce
     }
 
     @Override
-    protected final void doProcess(ImapRequest message, ImapSession session, String tag, ImapCommand command, Responder responder) {
+    protected final void doProcess(M message, ImapSession session, String tag, ImapCommand command, Responder responder) {
         
         // take care of calling the start/end processing 
         MailboxSession mSession = ImapSessionUtils.getMailboxSession(session);
@@ -69,6 +69,6 @@ public abstract class AbstractSubscriptionProcessor extends AbstractMailboxProce
      * @param command
      * @param responder
      */
-    protected abstract void doProcessRequest(ImapRequest message, ImapSession session, String tag, ImapCommand command, Responder responder);
+    protected abstract void doProcessRequest(M message, ImapSession session, String tag, ImapCommand command, Responder responder);
     
 }

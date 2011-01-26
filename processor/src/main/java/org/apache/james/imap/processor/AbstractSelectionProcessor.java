@@ -27,7 +27,6 @@ import javax.mail.Flags;
 import org.apache.james.imap.api.ImapCommand;
 import org.apache.james.imap.api.ImapSessionUtils;
 import org.apache.james.imap.api.display.HumanReadableText;
-import org.apache.james.imap.api.message.request.ImapRequest;
 import org.apache.james.imap.api.message.response.StatusResponse;
 import org.apache.james.imap.api.message.response.StatusResponseFactory;
 import org.apache.james.imap.api.message.response.StatusResponse.ResponseCode;
@@ -48,7 +47,7 @@ import org.apache.james.mailbox.MessageManager;
 import org.apache.james.mailbox.SearchQuery;
 import org.apache.james.mailbox.MessageManager.MetaData;
 
-abstract class AbstractSelectionProcessor extends AbstractMailboxProcessor {
+abstract class AbstractSelectionProcessor<M extends AbstractMailboxSelectionRequest> extends AbstractMailboxProcessor<M> {
 
     private final FlagsResponse standardFlags;
 
@@ -56,11 +55,11 @@ abstract class AbstractSelectionProcessor extends AbstractMailboxProcessor {
 
     private final boolean openReadOnly;
 
-    public AbstractSelectionProcessor(final ImapProcessor next,
+    public AbstractSelectionProcessor(final Class<M> acceptableClass,final ImapProcessor next,
             final MailboxManager mailboxManager,
             final StatusResponseFactory statusResponseFactory,
             final boolean openReadOnly) {
-        super(next, mailboxManager, statusResponseFactory);
+        super(acceptableClass, next, mailboxManager, statusResponseFactory);
         this.statusResponseFactory = statusResponseFactory;
         this.openReadOnly = openReadOnly;
         final Flags flags = new Flags();
@@ -72,9 +71,12 @@ abstract class AbstractSelectionProcessor extends AbstractMailboxProcessor {
         standardFlags = new FlagsResponse(flags);
     }
 
-    protected void doProcess(ImapRequest message, ImapSession session,
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.processor.AbstractMailboxProcessor#doProcess(org.apache.james.imap.api.message.request.ImapRequest, org.apache.james.imap.api.process.ImapSession, java.lang.String, org.apache.james.imap.api.ImapCommand, org.apache.james.imap.api.process.ImapProcessor.Responder)
+     */
+    protected void doProcess(AbstractMailboxSelectionRequest request, ImapSession session,
             String tag, ImapCommand command, Responder responder) {
-        final AbstractMailboxSelectionRequest request = (AbstractMailboxSelectionRequest) message;
         final String mailboxName = request.getMailboxName();
         try {
             final MailboxPath fullMailboxPath = buildFullPath(session, mailboxName);
