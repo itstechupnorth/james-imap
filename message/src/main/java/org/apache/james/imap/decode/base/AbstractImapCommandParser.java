@@ -25,7 +25,6 @@ import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.api.message.response.StatusResponseFactory;
 import org.apache.james.imap.api.process.ImapSession;
 import org.apache.james.imap.decode.DecodingException;
-import org.apache.james.imap.decode.ImapCommandParser;
 import org.apache.james.imap.decode.ImapRequestLineReader;
 import org.apache.james.imap.decode.MessagingImapCommandParser;
 
@@ -36,7 +35,7 @@ import org.apache.james.imap.decode.MessagingImapCommandParser;
  * 
  * @version $Revision: 109034 $
  */
-public abstract class AbstractImapCommandParser implements ImapCommandParser, MessagingImapCommandParser {
+public abstract class AbstractImapCommandParser implements MessagingImapCommandParser {
     
     private final ImapCommand command;
 
@@ -52,10 +51,18 @@ public abstract class AbstractImapCommandParser implements ImapCommandParser, Me
     }
 
 
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.decode.MessagingImapCommandParser#getStatusResponseFactory()
+     */
     public final StatusResponseFactory getStatusResponseFactory() {
         return statusResponseFactory;
     }
 
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.decode.MessagingImapCommandParser#setStatusResponseFactory(org.apache.james.imap.api.message.response.StatusResponseFactory)
+     */
     public final void setStatusResponseFactory(
             StatusResponseFactory statusResponseFactory) {
         this.statusResponseFactory = statusResponseFactory;

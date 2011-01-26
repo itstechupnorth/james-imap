@@ -20,7 +20,7 @@ package org.apache.james.imap.decode;
 
 import org.apache.james.imap.api.message.response.StatusResponseFactory;
 
-public interface MessagingImapCommandParser {
+public interface MessagingImapCommandParser extends ImapCommandParser{
 
   
     public abstract StatusResponseFactory getStatusResponseFactory();

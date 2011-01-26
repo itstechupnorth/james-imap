@@ -20,12 +20,13 @@
 package org.apache.james.imap.api.message.request;
 
 import org.apache.james.imap.api.ImapCommand;
+import org.apache.james.imap.api.ImapMessage;
 
 /**
  * The actual Imap request
  *
  */
-public interface ImapRequest {
+public interface ImapRequest extends ImapMessage{
 
     /**
      * Gets the IMAP command whose execution is requested by the client.
