@@ -71,10 +71,10 @@ public class ImapResponseComposerImplTest extends
     }
 
     protected byte[] encodeStatusResponse(String tag, ImapCommand command,
-            String type, String responseCode, Collection<String> parameters,
-            int number, String text) throws Exception {
+            String type, String responseCode, Collection<String> parameters, 
+            boolean useParens, int number, String text) throws Exception {
         composer.statusResponse(tag, command, type, responseCode, parameters,
-                number, text);
+                useParens, number, text);
         return writer.getBytes();
     }
 

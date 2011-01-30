@@ -19,6 +19,7 @@
 
 package org.apache.james.imap.api.message.response;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -26,6 +27,7 @@ import javax.mail.Flags;
 
 import org.apache.james.imap.api.ImapCommand;
 import org.apache.james.imap.api.display.HumanReadableText;
+import org.apache.james.imap.api.message.IdRange;
 import org.apache.james.imap.api.message.MessageFlags;
 
 /**
@@ -126,6 +128,33 @@ public interface StatusResponse extends ImapResponseMessage {
         /** RFC2060 <code>TRYCREATE</code> response code */
         private static final ResponseCode TRYCREATE = new ResponseCode(
                 "TRYCREATE");
+
+        /** RFC4315 <code>APPENDUID</code> response code */
+        public static final ResponseCode appendUid(long uidValidity, IdRange[] uids) {
+            String uidParam = formatRanges(uids);
+            return new ResponseCode("APPENDUID", Arrays.asList(uidParam), uidValidity, false);
+        }
+
+        /** RFC4315 <code>COPYUID</code> response code */
+        public static final ResponseCode copyUid(long uidValidity, IdRange[] sourceRanges, IdRange[] targetRanges) {
+            String source = formatRanges(sourceRanges);
+            String target = formatRanges(targetRanges);
+
+            return new ResponseCode("COPYUID", Arrays.asList(new String[] { source, target }), uidValidity, false);
+        }
+
+        private static String formatRanges(IdRange[] ranges) {
+            if (ranges == null || ranges.length == 0)
+                return "*";
+            StringBuilder rangeBuilder = new StringBuilder();
+            for (int i = 0; i < ranges.length; i++) {
+                rangeBuilder.append(ranges[i].getFormattedString());
+                if (i + 1 < ranges.length) {
+                    rangeBuilder.append(",");
+                }
+            }
+            return rangeBuilder.toString();
+        }
 
         /**
          * Creates a RFC2060 <code>ALERT</code> response code.
@@ -251,24 +280,27 @@ public interface StatusResponse extends ImapResponseMessage {
         private final Collection<String> parameters;
 
         private final long number;
+        
+        private final boolean useParens;
 
         @SuppressWarnings ("unchecked")
         private ResponseCode(final String code) {
-            this(code, Collections.EMPTY_LIST, 0);
+            this(code, Collections.EMPTY_LIST, 0, true);
         }
 
         @SuppressWarnings ("unchecked")
         private ResponseCode(final String code, final long number) {
-            this(code, Collections.EMPTY_LIST, number);
+            this(code, Collections.EMPTY_LIST, number, true);
         }
 
         private ResponseCode(final String code, final Collection<String> parameters) {
-            this(code, parameters, 0);
+            this(code, parameters, 0, true);
         }
 
         private ResponseCode(final String code, final Collection<String> parameters,
-                final long number) {
+                final long number, final boolean useParens) {
             super();
+            this.useParens = useParens;
             this.code = code;
             this.parameters = parameters;
             this.number = number;
@@ -287,6 +319,10 @@ public interface StatusResponse extends ImapResponseMessage {
             return number;
         }
 
+        public final boolean useParens() {
+            return useParens;
+        }
+        
         /**
          * Gets parameters for this code.
          * 

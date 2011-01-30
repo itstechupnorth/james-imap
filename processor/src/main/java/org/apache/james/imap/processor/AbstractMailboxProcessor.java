@@ -31,6 +31,7 @@ import org.apache.james.imap.api.message.request.ImapRequest;
 import org.apache.james.imap.api.message.response.ImapResponseMessage;
 import org.apache.james.imap.api.message.response.StatusResponse;
 import org.apache.james.imap.api.message.response.StatusResponseFactory;
+import org.apache.james.imap.api.message.response.StatusResponse.ResponseCode;
 import org.apache.james.imap.api.process.ImapProcessor;
 import org.apache.james.imap.api.process.ImapSession;
 import org.apache.james.imap.api.process.SelectedMailbox;
@@ -239,6 +240,13 @@ abstract public class AbstractMailboxProcessor<M extends ImapRequest> extends Ab
             final ImapProcessor.Responder responder) {
         final StatusResponse response = factory.taggedOk(tag, command,
                 HumanReadableText.COMPLETED);
+        responder.respond(response);
+    }
+    
+    protected void okComplete(final ImapCommand command, final String tag, 
+    		final ResponseCode code, final ImapProcessor.Responder responder) {
+        final StatusResponse response = factory.taggedOk(tag, command,
+                HumanReadableText.COMPLETED, code);
         responder.respond(response);
     }
 

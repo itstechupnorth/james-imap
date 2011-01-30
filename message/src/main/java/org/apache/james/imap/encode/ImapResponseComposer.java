@@ -201,7 +201,7 @@ public interface ImapResponseComposer {
 
     public abstract void statusResponse(String tag, ImapCommand command,
             String type, String responseCode, Collection<String> parameters,
-            long number, String text) throws IOException;
+            boolean useParens, long number, String text) throws IOException;
 
     public abstract void statusResponse(Long messages, Long recent,
             Long uidNext, Long uidValidity, Long unseen, String mailboxName)

@@ -29,8 +29,10 @@ import org.apache.commons.logging.Log;
 import org.apache.james.imap.api.ImapCommand;
 import org.apache.james.imap.api.ImapSessionUtils;
 import org.apache.james.imap.api.display.HumanReadableText;
+import org.apache.james.imap.api.message.IdRange;
 import org.apache.james.imap.api.message.response.StatusResponse;
 import org.apache.james.imap.api.message.response.StatusResponseFactory;
+import org.apache.james.imap.api.message.response.StatusResponse.ResponseCode;
 import org.apache.james.imap.api.process.ImapProcessor;
 import org.apache.james.imap.api.process.ImapSession;
 import org.apache.james.imap.api.process.SelectedMailbox;
@@ -41,6 +43,7 @@ import org.apache.james.mailbox.MailboxNotFoundException;
 import org.apache.james.mailbox.MailboxPath;
 import org.apache.james.mailbox.MailboxSession;
 import org.apache.james.mailbox.MessageManager;
+import org.apache.james.mailbox.MessageManager.MetaData.FetchGroup;
 
 public class AppendProcessor extends AbstractMailboxProcessor<AppendRequest> {
 
@@ -69,7 +72,7 @@ public class AppendProcessor extends AbstractMailboxProcessor<AppendRequest> {
                     command, mailbox, responder, mailboxPath);
         } catch (MailboxNotFoundException e) {
             // consume message on exception
-            cosume(messageIn);
+            consume(messageIn);
             
 //          Indicates that the mailbox does not exist
 //          So TRY CREATE
@@ -77,7 +80,7 @@ public class AppendProcessor extends AbstractMailboxProcessor<AppendRequest> {
             
         } catch (MailboxException e) {
             // consume message on exception
-            cosume(messageIn);
+            consume(messageIn);
             
 //          Some other issue
             no(command, tag, responder, HumanReadableText.GENERIC_FAILURE_DURING_PROCESSING);
@@ -86,7 +89,7 @@ public class AppendProcessor extends AbstractMailboxProcessor<AppendRequest> {
 
     }
     
-    private void cosume(InputStream in) {
+    private void consume(InputStream in) {
         try {
             while(in.read() != -1);
         } catch (IOException e1) {
@@ -121,6 +124,7 @@ public class AppendProcessor extends AbstractMailboxProcessor<AppendRequest> {
         try {
             final MailboxSession mailboxSession = ImapSessionUtils.getMailboxSession(session);
             final SelectedMailbox selectedMailbox = session.getSelected();
+            final MailboxManager mailboxManager = getMailboxManager();
             final boolean isSelectedMailbox = selectedMailbox != null
                     && selectedMailbox.getPath().equals(mailboxPath);
             final long uid  = mailbox.appendMessage(message, datetime, mailboxSession, 
@@ -128,8 +132,14 @@ public class AppendProcessor extends AbstractMailboxProcessor<AppendRequest> {
             if (isSelectedMailbox) {
                 selectedMailbox.addRecent(uid);
             }
+            
+            // get folder UIDVALIDITY
+            Long uidValidity = mailboxManager.getMailbox(mailboxPath, mailboxSession).getMetaData(false, mailboxSession, FetchGroup.NO_UNSEEN).getUidValidity();
+
             unsolicitedResponses(session, responder, false);
-            okComplete(command, tag, responder);
+
+            // in case of MULTIAPPEND support we will push more then one UID here
+            okComplete(command, tag, ResponseCode.appendUid(uidValidity, new IdRange[] { new IdRange(uid) }), responder);
         } catch (MailboxNotFoundException e) {
 //          Indicates that the mailbox does not exist
 //          So TRY CREATE

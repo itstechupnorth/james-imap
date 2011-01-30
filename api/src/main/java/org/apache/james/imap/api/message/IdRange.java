@@ -113,6 +113,13 @@ public class IdRange {
         return retValue;
     }
     
+    public String getFormattedString() {
+    	if(this._lowVal == this._highVal)
+    		return Long.toString(this._lowVal);
+    	else
+    		return this._lowVal+":"+this._highVal;
+    }
+    
     /**
      * Utility method which will copy the given {@link List} and try to merge the
      * {@link IdRange} in the copy before return it.

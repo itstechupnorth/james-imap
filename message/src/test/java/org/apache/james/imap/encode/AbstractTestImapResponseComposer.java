@@ -155,11 +155,11 @@ public abstract class AbstractTestImapResponseComposer {
     @Test
     public void testShouldEncodeUnparameterisedStatus() throws Exception {
         checkStatusResponseEncode("A1 NO [ALERT] APPEND failed\r\n", "A1",
-                command("APPEND"), "NO", "ALERT", new ArrayList<String>(), 0,
+                command("APPEND"), "NO", "ALERT", new ArrayList<String>(), true, 0,
                 "failed");
         checkStatusResponseEncode("A1 BAD [TRYCREATE] SELECT whatever\r\n",
                 "A1", command("SELECT"), "BAD", "TRYCREATE",
-                new ArrayList<String>(), 0, "whatever");
+                new ArrayList<String>(), true, 0, "whatever");
     }
 
     @Test
@@ -170,15 +170,31 @@ public abstract class AbstractTestImapResponseComposer {
         parameters.add("THREE");
         checkStatusResponseEncode(
                 "A1 NO [BADCHARSET (ONE TWO THREE)] APPEND failed\r\n", "A1",
-                command("APPEND"), "NO", "BADCHARSET", parameters, 0, "failed");
+                command("APPEND"), "NO", "BADCHARSET", parameters, true, 0, "failed");
     }
 
     @Test
     public void testShouldEncodeNumberParameterStatus() throws Exception {
         checkStatusResponseEncode("A1 NO [UIDNEXT 10] APPEND failed\r\n", "A1",
-                command("APPEND"), "NO", "UIDNEXT", null, 10, "failed");
+                command("APPEND"), "NO", "UIDNEXT", null, true, 10, "failed");
     }
 
+    @Test
+    public void testShouldEncodeNumberAndListParameterStatus() throws Exception {
+        Collection<String> parameters = new ArrayList<String>();
+        parameters.add("1:2");
+        parameters.add("3:4");
+        
+        checkStatusResponseEncode("A1 OK [COPYUID 10 1:2 3:4] COPY completed\r\n", "A1",
+                command("COPY"), "OK", "COPYUID", parameters, false, 10, "completed");
+        
+        parameters.clear();
+        parameters.add("3");
+        
+        checkStatusResponseEncode("A1 OK [APPENDUID 10 3] APPEND completed\r\n", "A1",
+                command("APPEND"), "OK", "APPENDUID", parameters, false, 10, "completed");
+    }
+    
     private void checkFlagsEncode(String expected, Flags flags)
             throws Exception {
         StringBuffer buffer = new StringBuffer();
@@ -243,14 +259,14 @@ public abstract class AbstractTestImapResponseComposer {
 
     protected abstract byte[] encodeStatusResponse(String tag,
             ImapCommand command, String type, String responseCode,
-            Collection<String> parameters, int number, String text) throws Exception;
+            Collection<String> parameters, boolean useParens, int number, String text) throws Exception;
 
     private void checkStatusResponseEncode(String expected, String tag,
             ImapCommand command, String type, String responseCode,
-            Collection<String> parameters, int number, String text) throws Exception {
+            Collection<String> parameters, boolean useParens, int number, String text) throws Exception {
         StringBuffer buffer = new StringBuffer();
         byte[] output = encodeStatusResponse(tag, command, type, responseCode,
-                parameters, number, text);
+                parameters, useParens, number, text);
         for (int i = 0; i < output.length; i++) {
             buffer.append((char) output[i]);
         }

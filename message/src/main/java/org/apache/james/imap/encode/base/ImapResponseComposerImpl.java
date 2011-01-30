@@ -267,7 +267,7 @@ public class ImapResponseComposerImpl implements ImapConstants, ImapResponseComp
      *      java.lang.String, Collection, long, java.lang.String)
      */
     public void statusResponse(String tag, ImapCommand command, String type,
-            String responseCode, Collection<String> parameters, long number, String text)
+            String responseCode, Collection<String> parameters, boolean useParens, long number, String text)
             throws IOException {
         if (tag == null) {
             untagged();
@@ -278,16 +278,18 @@ public class ImapResponseComposerImpl implements ImapConstants, ImapResponseComp
         if (responseCode != null) {
             openSquareBracket();
             message(responseCode);
+            if (number > 0) {
+                message(number);
+            }
             if (parameters != null && !parameters.isEmpty()) {
-                openParen();
+            	if(useParens)
+            		openParen();
                 for (Iterator<String> it = parameters.iterator(); it.hasNext();) {
                     final String parameter = it.next();
                     message(parameter);
                 }
-                closeParen();
-            }
-            if (number > 0) {
-                message(number);
+                if(useParens)
+                	closeParen();
             }
             closeSquareBracket();
         }

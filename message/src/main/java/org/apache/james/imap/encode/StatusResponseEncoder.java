@@ -57,14 +57,17 @@ public class StatusResponseEncoder extends AbstractChainedImapEncoder {
         final String text = asString(textKey, session);
         final Collection<String> parameters;
         final long number;
+        final boolean useParens;
         if (responseCode == null) {
             parameters = null;
             number = 0;
+            useParens = false;
         } else {
             parameters = responseCode.getParameters();
             number = responseCode.getNumber();
+            useParens = responseCode.useParens();
         }
-        composer.statusResponse(tag, command, type, code, parameters, number,
+        composer.statusResponse(tag, command, type, code, parameters, useParens, number,
                 text);
     }
 
