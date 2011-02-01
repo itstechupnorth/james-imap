@@ -16,20 +16,29 @@
  * specific language governing permissions and limitations      *
  * under the License.                                           *
  ****************************************************************/
-package org.apache.james.imap.message.response;
+package org.apache.james.imap.decode.parser;
 
-import org.apache.james.imap.api.message.response.ImapResponseMessage;
-import org.apache.james.imap.api.process.MailboxType;
+import org.apache.james.imap.api.ImapCommand;
+import org.apache.james.imap.api.ImapConstants;
+import org.apache.james.imap.api.ImapMessage;
+import org.apache.james.imap.message.request.XListRequest;
 
 /**
- * Values an IMAP4rev1 <code>LIST</code> response.
+ * Parse XLIST commands
+ * 
  */
-public final class ListResponse extends AbstractListingResponse implements
-        ImapResponseMessage {
+public class XListCommandParser extends ListCommandParser {
+
+    public XListCommandParser() {
+        super(ImapCommand.authenticatedStateCommand(ImapConstants.XLIST_COMMAND_NAME));
+    }
     
-    public ListResponse(final boolean noInferiors, final boolean noSelect,
-            final boolean marked, final boolean unmarked,
-            boolean hasChildren, boolean hasNoChildren, final String name, final char delimiter) {
-        super(noInferiors, noSelect, marked, unmarked, hasChildren, hasNoChildren, name, delimiter,MailboxType.OTHER);
+    @Override
+     protected ImapMessage createMessage(ImapCommand command,
+            final String referenceName, final String mailboxPattern,
+            final String tag) {
+        final ImapMessage result = new XListRequest(command,
+                referenceName, mailboxPattern, tag);
+        return result;
     }
 }

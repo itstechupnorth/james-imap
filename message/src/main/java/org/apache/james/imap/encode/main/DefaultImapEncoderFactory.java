@@ -35,6 +35,7 @@ import org.apache.james.imap.encode.RecentResponseEncoder;
 import org.apache.james.imap.encode.MailboxStatusResponseEncoder;
 import org.apache.james.imap.encode.SearchResponseEncoder;
 import org.apache.james.imap.encode.StatusResponseEncoder;
+import org.apache.james.imap.encode.XListResponseEncoder;
 import org.apache.james.imap.encode.base.EndImapEncoder;
 
 /**
@@ -70,8 +71,10 @@ public class DefaultImapEncoderFactory implements ImapEncoderFactory {
                 searchResponseEncoder);
         final ListResponseEncoder listResponseEncoder = new ListResponseEncoder(
                 lsubResponseEncoder);
-        final FlagsResponseEncoder flagsResponseEncoder = new FlagsResponseEncoder(
+        final XListResponseEncoder xListResponseEncoder = new XListResponseEncoder(
                 listResponseEncoder);
+        final FlagsResponseEncoder flagsResponseEncoder = new FlagsResponseEncoder(
+                xListResponseEncoder);
         final CapabilityResponseEncoder capabilityResponseEncoder = new CapabilityResponseEncoder(
                 flagsResponseEncoder);
         final ContinuationResponseEncoder continuationResponseEncoder = new ContinuationResponseEncoder(

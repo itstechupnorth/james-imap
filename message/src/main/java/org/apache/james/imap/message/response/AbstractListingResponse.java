@@ -19,6 +19,7 @@
 
 package org.apache.james.imap.message.response;
 
+import org.apache.james.imap.api.process.MailboxType;
 
 /**
  * <code>LIST</code> and <code>LSUB</code> return identical data.
@@ -40,12 +41,14 @@ public abstract class AbstractListingResponse {
     private final char hierarchyDelimiter;
 
     private final String name;
+    
+    private MailboxType type;
 
     public AbstractListingResponse(final boolean noInferiors,
             final boolean noSelect, final boolean marked,
             final boolean unmarked, boolean hasChildren,
             boolean hasNoChildren, final String name, 
-            final char hierarchyDelimiter) {
+            final char hierarchyDelimiter,final MailboxType type) {
         super();
         this.noInferiors = noInferiors;
         this.noSelect = noSelect;
@@ -55,6 +58,7 @@ public abstract class AbstractListingResponse {
         this.noChildren = hasNoChildren;
         this.name = name;
         this.hierarchyDelimiter = hierarchyDelimiter;
+        this.type=type;
     }
 
     /**
@@ -127,6 +131,15 @@ public abstract class AbstractListingResponse {
     public boolean hasChildren() {
         return children;
     }
+
+    /**
+     * returns type of the mailbox
+     * @return mailbox type
+     */
+    public MailboxType getType() {
+        return type;
+    }
+    
     
     /**
      * Are any name attributes set?
@@ -135,7 +148,7 @@ public abstract class AbstractListingResponse {
      *         {@link #isMarked()} or {@link #isUnmarked(){
      */
     public final boolean isNameAttributed() {
-        return noInferiors || noSelect || marked || unmarked || children || noChildren;
+        return noInferiors || noSelect || marked || unmarked || children || noChildren || (!MailboxType.OTHER.equals(type));
     }
 
     @Override
@@ -144,6 +157,7 @@ public abstract class AbstractListingResponse {
         int result = 1;
         result = PRIME * result + (children ? 1231 : 1237);
         result = PRIME * result + hierarchyDelimiter;
+        result = PRIME * result + type.ordinal();
         result = PRIME * result + (marked ? 1231 : 1237);
         result = PRIME * result + ((name == null) ? 0 : name.hashCode());
         result = PRIME * result + (noChildren ? 1231 : 1237);
@@ -181,6 +195,8 @@ public abstract class AbstractListingResponse {
             return false;
         if (unmarked != other.unmarked)
             return false;
+        if (!type.equals(other.type))
+            return false;
         return true;
     }
 
@@ -197,6 +213,7 @@ public abstract class AbstractListingResponse {
                 + "marked = " + this.marked + TAB + "unmarked = "
                 + this.unmarked + TAB + "hierarchyDelimiter = "
                 + this.hierarchyDelimiter + TAB + "name = " + this.name + TAB
+                + "type = " + this.type + TAB
                 + " )";
 
         return retValue;

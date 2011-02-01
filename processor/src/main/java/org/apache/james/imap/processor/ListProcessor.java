@@ -29,6 +29,8 @@ import org.apache.james.imap.api.message.response.ImapResponseMessage;
 import org.apache.james.imap.api.message.response.StatusResponseFactory;
 import org.apache.james.imap.api.process.ImapProcessor;
 import org.apache.james.imap.api.process.ImapSession;
+import org.apache.james.imap.api.process.MailboxType;
+import org.apache.james.imap.api.process.MailboxTyper;
 import org.apache.james.imap.message.request.ListRequest;
 import org.apache.james.imap.message.response.ListResponse;
 import org.apache.james.mailbox.MailboxConstants;
@@ -58,12 +60,12 @@ public class ListProcessor extends AbstractMailboxProcessor<ListRequest>{
         final String baseReferenceName = request.getBaseReferenceName();
         final String mailboxPatternString = request.getMailboxPattern();
         doProcess(baseReferenceName, mailboxPatternString, session, tag,
-                command, responder);
+                command, responder,null);
     }
 
     protected ImapResponseMessage createResponse(boolean noInferior,
             boolean noSelect, boolean marked, boolean unmarked,
-            boolean hasChildren, boolean hasNoChildren, String mailboxName, char delimiter) {
+            boolean hasChildren, boolean hasNoChildren, String mailboxName, char delimiter,MailboxType type) {
         return new ListResponse(noInferior, noSelect, marked, unmarked,
                 hasChildren, hasNoChildren, mailboxName, delimiter);
     }
@@ -90,7 +92,7 @@ public class ListProcessor extends AbstractMailboxProcessor<ListRequest>{
      */
     protected final void doProcess(final String referenceName,
             final String mailboxName, final ImapSession session,
-            final String tag, ImapCommand command, final Responder responder) {
+            final String tag, ImapCommand command, final Responder responder,final MailboxTyper mailboxTyper) {
         try {
             // Should the namespace section be returned or not?
             final boolean isRelative;
@@ -125,7 +127,7 @@ public class ListProcessor extends AbstractMailboxProcessor<ListRequest>{
                 MailboxPath rootPath = new MailboxPath(referenceRoot, "", "");
                 results = new ArrayList<MailboxMetaData>(1);
                 results.add(SimpleMailboxMetaData.createNoSelect(rootPath, mailboxSession.getPathDelimiter()));
-            }
+                }
             else {
                 // If the mailboxPattern is fully qualified, ignore the reference name.
                 String finalReferencename = referenceName;
@@ -148,7 +150,7 @@ public class ListProcessor extends AbstractMailboxProcessor<ListRequest>{
             }
 
             for (final MailboxMetaData metaData: results) {
-                processResult(responder, isRelative, metaData);
+                processResult(responder, isRelative, metaData,getMailboxType(session,mailboxTyper,metaData.getPath()));
             }
 
             okComplete(command, tag, responder);
@@ -157,7 +159,7 @@ public class ListProcessor extends AbstractMailboxProcessor<ListRequest>{
         }
     }
 
-    void processResult(final Responder responder, final boolean relative, final MailboxMetaData listResult) {
+    void processResult(final Responder responder, final boolean relative, final MailboxMetaData listResult,final MailboxType mailboxType) {
         final char delimiter = listResult.getHierarchyDelimiter();
         final String mailboxName = mailboxName(relative, listResult.getPath(), delimiter);
 
@@ -182,7 +184,22 @@ public class ListProcessor extends AbstractMailboxProcessor<ListRequest>{
                 break;
         }
         responder.respond(createResponse(noInferior, noSelect, marked,
-                unmarked, hasChildren, hasNoChildren, mailboxName, delimiter));
+                unmarked, hasChildren, hasNoChildren, mailboxName, delimiter,mailboxType));
+    }
+
+    /**
+     * retrieve mailboxType for specified mailboxPath using provided MailboxTyper
+     * @param session current imap session
+     * @param mailboxTyper provided MailboxTyper used to retrieve mailbox type
+     * @param path mailbox's path
+     * @return MailboxType value
+     */
+    private MailboxType getMailboxType(ImapSession session, MailboxTyper mailboxTyper, MailboxPath path) {
+        MailboxType result = MailboxType.OTHER;
+        if (mailboxTyper != null) {
+            result = mailboxTyper.getMailboxType(session, path);
+        }
+        return result;
     }
 
 }

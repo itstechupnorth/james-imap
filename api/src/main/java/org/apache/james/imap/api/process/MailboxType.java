@@ -16,20 +16,30 @@
  * specific language governing permissions and limitations      *
  * under the License.                                           *
  ****************************************************************/
-package org.apache.james.imap.message.response;
-
-import org.apache.james.imap.api.message.response.ImapResponseMessage;
-import org.apache.james.imap.api.process.MailboxType;
+package org.apache.james.imap.api.process;
 
 /**
- * Values an IMAP4rev1 <code>LIST</code> response.
+ * Represents well-known mailbox types along with their string representations
+ * used by XLIST command
+ * 
  */
-public final class ListResponse extends AbstractListingResponse implements
-        ImapResponseMessage {
-    
-    public ListResponse(final boolean noInferiors, final boolean noSelect,
-            final boolean marked, final boolean unmarked,
-            boolean hasChildren, boolean hasNoChildren, final String name, final char delimiter) {
-        super(noInferiors, noSelect, marked, unmarked, hasChildren, hasNoChildren, name, delimiter,MailboxType.OTHER);
+public enum MailboxType {
+
+    INBOX("\\Inbox"),
+    DRAFTS("\\Drafts"),
+    TRASH("\\Trash"),
+    SPAM("\\Spam"),
+    SENT("\\Sent"),
+    STARRED("\\Starred"),
+    ALLMAIL("\\AllMail"),
+    OTHER(null);
+    private String attributeName;
+
+    MailboxType(String attributeName) {
+        this.attributeName = attributeName;
+    }
+
+    public String getAttributeName() {
+        return attributeName;
     }
 }

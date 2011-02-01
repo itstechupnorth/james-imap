@@ -95,6 +95,11 @@ public interface ImapConstants {
 
     public static final String SUPPORTS_IDLE = "IDLE";
     
+    public static final String SUPPORTS_XLIST = "XLIST";
+    
+    public static final char NAMESPACE_PREFIX_CHAR = '#';
+
+    public static final String NAMESPACE_PREFIX = String.valueOf(NAMESPACE_PREFIX_CHAR);
 
     public static final String INBOX_NAME = "INBOX";
 
@@ -177,6 +182,8 @@ public interface ImapConstants {
     public static final String LOGIN_COMMAND_NAME = "LOGIN";
 
     public static final String LIST_COMMAND_NAME = "LIST";
+    
+    public static final String XLIST_COMMAND_NAME = "XLIST";
 
     public static final String FETCH_COMMAND_NAME = "FETCH";
 
@@ -201,6 +208,8 @@ public interface ImapConstants {
     public static final String APPEND_COMMAND_NAME = "APPEND";
 
     public static final String LIST_RESPONSE_NAME = "LIST";
+    
+    public static final String XLIST_RESPONSE_NAME = "XLIST";
 
     public static final String LSUB_RESPONSE_NAME = "LSUB";
 

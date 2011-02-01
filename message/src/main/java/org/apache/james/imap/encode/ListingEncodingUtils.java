@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.james.imap.api.ImapConstants;
+import org.apache.james.imap.api.process.MailboxType;
 import org.apache.james.imap.message.response.AbstractListingResponse;
 
 /**
@@ -62,6 +63,9 @@ public class ListingEncodingUtils {
             }
             if (response.hasNoChildren()) {
                 attributes.add(ImapConstants.NAME_ATTRIBUTE_HAS_NO_CHILDREN);
+            }
+            if (!MailboxType.OTHER.equals(response.getType())) {
+                attributes.add(response.getType().getAttributeName());
             }
         } else {
             attributes = null;

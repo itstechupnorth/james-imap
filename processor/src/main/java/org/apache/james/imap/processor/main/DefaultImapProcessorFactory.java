@@ -21,6 +21,7 @@ package org.apache.james.imap.processor.main;
 
 import org.apache.james.imap.api.message.response.StatusResponseFactory;
 import org.apache.james.imap.api.process.ImapProcessor;
+import org.apache.james.imap.api.process.MailboxTyper;
 import org.apache.james.imap.message.response.UnpooledStatusResponseFactory;
 import org.apache.james.imap.processor.DefaultProcessorChain;
 import org.apache.james.imap.processor.base.ImapResponseMessageProcessor;
@@ -34,17 +35,21 @@ import org.apache.james.mailbox.SubscriptionManager;
 public class DefaultImapProcessorFactory {
 
     public static final ImapProcessor createDefaultProcessor(final MailboxManager mailboxManager, final SubscriptionManager subscriptionManager) {
+        return createXListSupportingProcessor(mailboxManager, subscriptionManager, null);
+    }
+
+    public static final ImapProcessor createXListSupportingProcessor(final MailboxManager mailboxManager, final SubscriptionManager subscriptionManager, MailboxTyper mailboxTyper) {
         final StatusResponseFactory statusResponseFactory = new UnpooledStatusResponseFactory();
         final UnknownRequestProcessor unknownRequestImapProcessor = new UnknownRequestProcessor(
                 statusResponseFactory);
         final ImapProcessor imap4rev1Chain = DefaultProcessorChain
                 .createDefaultChain(unknownRequestImapProcessor,
-                        mailboxManager, subscriptionManager, statusResponseFactory);
+                        mailboxManager, subscriptionManager, statusResponseFactory, mailboxTyper);
         final ImapProcessor result = new ImapResponseMessageProcessor(
                 imap4rev1Chain);
         return result;
     }
-
+    
     private MailboxManager mailboxManager;
 
     public final MailboxManager getMailboxManager() {
@@ -71,4 +76,15 @@ public class DefaultImapProcessorFactory {
     public ImapProcessor buildImapProcessor() {
         return createDefaultProcessor(mailboxManager, subscriptionManager);
     }
+    
+    private MailboxTyper mailboxTyper;
+
+    public MailboxTyper getMailboxTyper() {
+        return mailboxTyper;
+    }
+
+    public void setMailboxTyper(MailboxTyper mailboxTyper) {
+        this.mailboxTyper = mailboxTyper;
+    }
+
 }

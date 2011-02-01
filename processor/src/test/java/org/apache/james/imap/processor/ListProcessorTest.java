@@ -23,6 +23,7 @@ import org.apache.james.imap.api.ImapCommand;
 import org.apache.james.imap.api.message.response.StatusResponseFactory;
 import org.apache.james.imap.api.process.ImapProcessor;
 import org.apache.james.imap.api.process.ImapSession;
+import org.apache.james.imap.api.process.MailboxType;
 import org.apache.james.imap.message.response.ListResponse;
 import org.apache.james.mailbox.MailboxManager;
 import org.apache.james.mailbox.MailboxMetaData;
@@ -98,7 +99,7 @@ public class ListProcessorTest  {
         mockery.checking(new Expectations() {{
             oneOf(responder).respond(with(equal(createResponse(false, false, false, false, true, false, '.', "INBOX"))));
         }});
-        processor.processResult(responder, false, result);
+        processor.processResult(responder, false, result,MailboxType.OTHER);
     }
 
     @Test
@@ -107,7 +108,7 @@ public class ListProcessorTest  {
         mockery.checking(new Expectations() {{
             oneOf(responder).respond(with(equal(createResponse(false, false, false, false, false, true, '.', "INBOX"))));
         }});
-        processor.processResult(responder, false, result);
+        processor.processResult(responder, false, result,MailboxType.OTHER);
     }
     
     @Test
@@ -116,7 +117,7 @@ public class ListProcessorTest  {
         mockery.checking(new Expectations() {{
             oneOf(responder).respond(with(equal(createResponse(true, false, false, false, false, false, '.', "INBOX"))));
         }});
-        processor.processResult(responder, false, result);
+        processor.processResult(responder, false, result,MailboxType.OTHER);
     }
 
     @Test
@@ -125,7 +126,7 @@ public class ListProcessorTest  {
         mockery.checking(new Expectations() {{
             oneOf(responder).respond(with(equal(createResponse(false, true, false, false, false, false, '.', "INBOX"))));
         }});
-        processor.processResult(responder, false, result);
+        processor.processResult(responder, false, result,MailboxType.OTHER);
     }
 
     @Test
@@ -134,7 +135,7 @@ public class ListProcessorTest  {
         mockery.checking(new Expectations() {{
             oneOf(responder).respond(with(equal(createResponse(false, false, false, true, false, false, '.', "INBOX"))));
         }});
-        processor.processResult(responder, false, result);
+        processor.processResult(responder, false, result,MailboxType.OTHER);
     }
 
     @Test
@@ -143,6 +144,6 @@ public class ListProcessorTest  {
         mockery.checking(new Expectations() {{
             oneOf(responder).respond(with(equal(createResponse(false, false, true, false, false, false, '.', "INBOX"))));
         }});
-        processor.processResult(responder, false, result);
+        processor.processResult(responder, false, result,MailboxType.OTHER);
     }
 }

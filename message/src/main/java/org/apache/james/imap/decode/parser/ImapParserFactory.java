@@ -80,6 +80,8 @@ public class ImapParserFactory implements
                 UnsubscribeCommandParser.class);
         _imapCommands.put(ImapConstants.LIST_COMMAND_NAME,
                 ListCommandParser.class);
+        _imapCommands.put(ImapConstants.XLIST_COMMAND_NAME,
+                XListCommandParser.class);
         _imapCommands.put(ImapConstants.LSUB_COMMAND_NAME,
                 LsubCommandParser.class);
         _imapCommands.put(ImapConstants.STATUS_COMMAND_NAME,

@@ -16,20 +16,22 @@
  * specific language governing permissions and limitations      *
  * under the License.                                           *
  ****************************************************************/
-package org.apache.james.imap.message.response;
+package org.apache.james.imap.api.process;
 
-import org.apache.james.imap.api.message.response.ImapResponseMessage;
-import org.apache.james.imap.api.process.MailboxType;
+import org.apache.james.mailbox.MailboxPath;
 
 /**
- * Values an IMAP4rev1 <code>LIST</code> response.
+ * 
  */
-public final class ListResponse extends AbstractListingResponse implements
-        ImapResponseMessage {
-    
-    public ListResponse(final boolean noInferiors, final boolean noSelect,
-            final boolean marked, final boolean unmarked,
-            boolean hasChildren, boolean hasNoChildren, final String name, final char delimiter) {
-        super(noInferiors, noSelect, marked, unmarked, hasChildren, hasNoChildren, name, delimiter,MailboxType.OTHER);
-    }
+public interface MailboxTyper {
+
+     /**
+     * Returns MailboxType based on mailbox path
+     * 
+     * @param session current ImapSession
+     * @param path path of mailbox, which type is being queried
+     * @return MailboxType value for passed mailbox, if there's no special 
+     * function for particular mailbox, return OTHER.
+     */
+     MailboxType getMailboxType(ImapSession session, MailboxPath path);
 }
