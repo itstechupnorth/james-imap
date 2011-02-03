@@ -48,7 +48,7 @@ final class EnvelopeBuilder {
     }
 
     public FetchResponse.Envelope buildEnvelope(final Headers headers)
-            throws MailboxException, ParseException {
+            throws MailboxException {
         final String date = headerValue(headers, ImapConstants.RFC822_DATE);
         final String subject = headerValue(headers,
                 ImapConstants.RFC822_SUBJECT);
@@ -95,7 +95,7 @@ final class EnvelopeBuilder {
     private FetchResponse.Envelope.Address[] buildAddresses(
             final Headers message, final String headerName,
             final FetchResponse.Envelope.Address[] defaults)
-            throws ParseException, MailboxException {
+            throws MailboxException {
         final FetchResponse.Envelope.Address[] results;
         final FetchResponse.Envelope.Address[] addresses = buildAddresses(
                 message, headerName);
@@ -107,12 +107,20 @@ final class EnvelopeBuilder {
         return results;
     }
 
+    /**
+     * Try to parse the addresses out of the header. If its not possible because of a {@link ParseException} a null value is returned
+     * 
+     * @param message
+     * @param headerName
+     * @return addresses
+     * @throws MailboxException
+     */
     private FetchResponse.Envelope.Address[] buildAddresses(
             final Headers message, final String headerName)
-            throws ParseException, MailboxException {
+            throws MailboxException {
         final MessageResult.Header header = MessageResultUtils.getMatching(
                 headerName, message.headers());
-        final FetchResponse.Envelope.Address[] results;
+        FetchResponse.Envelope.Address[] results;
         if (header == null) {
             results = null;
         } else {
@@ -126,27 +134,33 @@ final class EnvelopeBuilder {
                 results = null;
             } else {
                
-                final AddressList addressList = AddressList.parse(value);
-                final int size = addressList.size();
-                final List<FetchResponse.Envelope.Address> addresses = new ArrayList<FetchResponse.Envelope.Address>(size);
-                for (int i = 0; i < size; i++) {
-                    final Address address = addressList.get(i);
-                    if (address instanceof Group) {
-                        final Group group = (Group) address;
-                        addAddresses(group, addresses);
+                try {
+                    AddressList addressList = AddressList.parse(value);
+                    final int size = addressList.size();
+                    final List<FetchResponse.Envelope.Address> addresses = new ArrayList<FetchResponse.Envelope.Address>(size);
+                    for (int i = 0; i < size; i++) {
+                        final Address address = addressList.get(i);
+                        if (address instanceof Group) {
+                            final Group group = (Group) address;
+                            addAddresses(group, addresses);
 
-                    } else if (address instanceof org.apache.james.mime4j.field.address.Mailbox) {
-                        final org.apache.james.mime4j.field.address.Mailbox mailbox = (org.apache.james.mime4j.field.address.Mailbox) address;
-                        final FetchResponse.Envelope.Address mailboxAddress = buildMailboxAddress(mailbox);
-                        addresses.add(mailboxAddress);
+                        } else if (address instanceof org.apache.james.mime4j.field.address.Mailbox) {
+                            final org.apache.james.mime4j.field.address.Mailbox mailbox = (org.apache.james.mime4j.field.address.Mailbox) address;
+                            final FetchResponse.Envelope.Address mailboxAddress = buildMailboxAddress(mailbox);
+                            addresses.add(mailboxAddress);
 
-                    } else {
-                        logger.warn("Unknown address type");
+                        } else {
+                            logger.warn("Unknown address type");
+                        }
                     }
-                }
 
-                results = (FetchResponse.Envelope.Address[]) addresses
-                        .toArray(FetchResponse.Envelope.Address.EMPTY);
+                    results = (FetchResponse.Envelope.Address[]) addresses
+                            .toArray(FetchResponse.Envelope.Address.EMPTY);
+                } catch (ParseException e) {
+                    logger.debug("Unable to parse out address", e);
+                }
+                results = null;
+                
             }
         }
         return results;

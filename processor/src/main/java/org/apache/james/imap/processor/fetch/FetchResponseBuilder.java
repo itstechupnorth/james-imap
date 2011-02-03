@@ -107,7 +107,8 @@ final class FetchResponseBuilder {
         
         if (resultMsn == SelectedMailbox.NO_SUCH_MESSAGE) throw new MessageRangeException("No such message found with uid " + resultUid);
         
-        setMsn(resultMsn);
+        reset(resultMsn);
+        //setMsn(resultMsn);
 
         // Check if this fetch will cause the "SEEN" flag to be set on this
         // message
