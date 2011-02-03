@@ -158,8 +158,8 @@ final class EnvelopeBuilder {
                             .toArray(FetchResponse.Envelope.Address.EMPTY);
                 } catch (ParseException e) {
                     logger.debug("Unable to parse out address", e);
+                    results = null;
                 }
-                results = null;
                 
             }
         }
