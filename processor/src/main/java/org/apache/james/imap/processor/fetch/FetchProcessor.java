@@ -100,9 +100,13 @@ public class FetchProcessor extends AbstractMailboxProcessor<FetchRequest> {
                     final Iterator<MessageResult> it = mailbox.getMessages(batchSet.get(a), resultToFetch, mailboxSession);
                     while (it.hasNext()) {
                         final MessageResult result = (MessageResult) it.next();
-                        final FetchResponse response = builder.build(fetch, result, mailbox, 
-                                session, useUids);
-                        responder.respond(response);
+                        try {
+                            final FetchResponse response = builder.build(fetch, result, mailbox, session, useUids);
+                            responder.respond(response);
+                        } catch (ParseException e) {
+                            // we can't for whatever reason parse the message so just skip it and log it to debug
+                            session.getLog().debug("Unable to parse message with uid " + result.getUid(), e);
+                        }
                     }
                 }
             }
@@ -115,8 +119,6 @@ public class FetchProcessor extends AbstractMailboxProcessor<FetchRequest> {
             taggedBad(command, tag, responder, HumanReadableText.INVALID_MESSAGESET);
         } catch (MailboxException e) {
             no(command, tag, responder, HumanReadableText.SEARCH_FAILED);
-        } catch (ParseException e) {
-            no(command, tag, responder, HumanReadableText.FAILURE_MAIL_PARSE);
         }
     }
 
