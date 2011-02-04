@@ -81,7 +81,6 @@ public class AppendProcessor extends AbstractMailboxProcessor<AppendRequest> {
         } catch (MailboxException e) {
             // consume message on exception
             consume(messageIn);
-            
 //          Some other issue
             no(command, tag, responder, HumanReadableText.GENERIC_FAILURE_DURING_PROCESSING);
             
@@ -148,6 +147,8 @@ public class AppendProcessor extends AbstractMailboxProcessor<AppendRequest> {
             taggedBad(command, tag, responder, e.getKey());
         */   
         } catch (MailboxException e) {
+            session.getLog().debug("Unable to append message", e);
+
 //          Some other issue
             no(command, tag, responder, HumanReadableText.SAVE_FAILED);
         }
