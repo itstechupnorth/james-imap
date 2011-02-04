@@ -62,7 +62,7 @@ public class MailboxEventAnalyser implements MailboxListener {
      * 
      * @return name
      */
-    public MailboxPath getMailboxPath() {
+    public synchronized MailboxPath getMailboxPath() {
         return mailboxPath;
     }
 
@@ -71,7 +71,7 @@ public class MailboxEventAnalyser implements MailboxListener {
      * 
      * @param mailboxName
      */
-    public void setMailboxPath(MailboxPath mailboxPath) {
+    public synchronized void setMailboxPath(MailboxPath mailboxPath) {
         this.mailboxPath = mailboxPath;
     }
 
@@ -96,11 +96,15 @@ public class MailboxEventAnalyser implements MailboxListener {
                     if (interestingFlags(updated)
                             && (sessionId != eventSessionId || !silentFlagChanges)) {
                         final Long uidObject = uid;
-                        flagUpdateUids.add(uidObject);
+                        synchronized (flagUpdateUids) {
+                            flagUpdateUids.add(uidObject);
+                        }
                     }
                 } else if (messageEvent instanceof Expunged) {
                     final Long uidObject = uid;
-                    expungedUids.add(uidObject);
+                    synchronized (expungedUids) {
+                        expungedUids.add(uidObject);
+                    }
                 }
             } else if (event instanceof MailboxDeletion) {
                 if (eventSessionId != sessionId) {
@@ -132,7 +136,7 @@ public class MailboxEventAnalyser implements MailboxListener {
     /**
      * Reset the analyzer
      */
-    public void reset() {
+    public synchronized void reset() {
         sizeChanged = false;
         flagUpdateUids.clear();
         expungedUids.clear();
@@ -186,7 +190,9 @@ public class MailboxEventAnalyser implements MailboxListener {
      */
     
     public Collection<Long> flagUpdateUids() {
-        return Collections.unmodifiableSet(flagUpdateUids);
+        synchronized (flagUpdateUids) {
+            return Collections.unmodifiableSet(flagUpdateUids);
+        }
     }
 
     /**
@@ -195,7 +201,9 @@ public class MailboxEventAnalyser implements MailboxListener {
      * @return uids
      */
     public Collection<Long> expungedUids() {
-        return Collections.unmodifiableSet(expungedUids);
+        synchronized (expungedUids) {
+            return Collections.unmodifiableSet(expungedUids);
+        }
     }
 
     /**
@@ -204,7 +212,9 @@ public class MailboxEventAnalyser implements MailboxListener {
      * @return hasUids
      */
     public boolean hasExpungedUids() {
-        return !expungedUids.isEmpty();
+        synchronized (expungedUids) {
+            return !expungedUids.isEmpty();
+        }
     }
 
     /**
