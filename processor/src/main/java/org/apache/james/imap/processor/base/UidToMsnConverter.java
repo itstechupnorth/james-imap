@@ -178,9 +178,7 @@ public class UidToMsnConverter implements MailboxListener {
      */
     public synchronized void close() {
         uidToMsn.clear();
-        uidToMsn = null;
         msnToUid.clear();
-        msnToUid = null;
         closed = true;
     }
     
