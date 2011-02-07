@@ -20,34 +20,22 @@
 package org.apache.james.imap.processor.base;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
-import java.util.concurrent.atomic.AtomicInteger;
-
 
 import org.apache.james.imap.api.process.SelectedMailbox;
-import org.apache.james.mailbox.MailboxException;
 import org.apache.james.mailbox.MailboxListener;
-import org.apache.james.mailbox.MailboxManager;
-import org.apache.james.mailbox.MailboxPath;
-import org.apache.james.mailbox.MailboxSession;
-import org.apache.james.mailbox.SearchQuery;
 
 /**
- * {@link UidToMsnConverter} takes care of maintaining a mapping between message uids and msn (index) by register a {@link MailboxListener} for a {@link MailboxPath}
- * 
- * See {@link UidToMsnConverter} is shared across different {@link MailboxSession}'s for the same {@link MailboxPath} to reduce memory usage. See IMAP-255
+ * {@link MailboxListener} which takes care of maintaining a mapping between message uids and msn (index)
  * 
  *
+ * TODO: This is a major memory hog
+ * TODO: Each concurrent session requires one, and typical clients now open many
  */
-public class UidToMsnConverter {
-    // Hold all cached UidToMsnConverter
-    private final static Map<MailboxPath, UidToMsnConverter> converters = new HashMap<MailboxPath, UidToMsnConverter>();
-    
+public class UidToMsnConverter implements MailboxListener {
     private SortedMap<Integer, Long> msnToUid;
 
     private SortedMap<Long, Integer> uidToMsn;
@@ -56,89 +44,9 @@ public class UidToMsnConverter {
 
     private int highestMsn = 0;
 
-    // hold the reference count for a shared UidToMsnConverter
-    private AtomicInteger references = new AtomicInteger(0);
+    private boolean closed = false;
 
-    private MailboxPath path;
-    
-    /**
-     * Return a instance of the {@link UidToMsnConverter} which can be a new one or a shared if there is already a {@link UidToMsnConverter} for the given
-     * {@link MailboxPath}.
-     * 
-     * @param manager
-     * @param path
-     * @param session
-     * @return converter
-     * @throws MailboxException
-     */
-    public static UidToMsnConverter get(MailboxManager manager, MailboxPath path, MailboxSession session) throws MailboxException {
-        boolean found = false;
-        UidToMsnConverter converter = null;
-        
-        // see if we have a converter for the path
-        synchronized (converters) {
-            converter = converters.get(path);
-            if (converter == null) {
-                converter = new UidToMsnConverter();
-                converters.put(path, converter);
-            } else {
-                found = true;
-            }
-        }
-        
-        // now be sure we only return the converter if the one which exists is init. So to be sure we synchronize on it
-        synchronized (converter) {
-            final UidToMsnConverter c = converter;
-            // the converter was not found before so we need to init it to get a list of all uids
-            if (!found) {
-                converter.init(manager, path, session);
-                manager.addListener(path, new MailboxListener() {
-                    
-                    /*
-                     * (non-Javadoc)
-                     * @see org.apache.james.mailbox.MailboxListener#isClosed()
-                     */
-                    public synchronized boolean isClosed() {
-                        return c.references.get() < 1;
-                    }
-                    
-                    /*
-                     * (non-Javadoc)
-                     * @see org.apache.james.mailbox.MailboxListener#event(org.apache.james.mailbox.MailboxListener.Event)
-                     */
-                    public void event(Event event) {
-                        if (event instanceof MessageEvent) {
-                            final MessageEvent messageEvent = (MessageEvent) event;
-                            final long uid = messageEvent.getSubjectUid();
-                            if (event instanceof Added) {
-                                c.add(uid);
-                            }
-
-                        }                    
-                    }
-                }, session);
-            }
-            
-            // increment the reference count so can handle the close operations in the right manner
-            converter.references.incrementAndGet();
-            return converter;
-        }
-        
-    }
-    
-    // Should only get accessed throw the static factory method
-    private UidToMsnConverter() {
-    }
-
-    private void init(MailboxManager manager, MailboxPath path, MailboxSession mailboxSession) throws MailboxException {
-       
-        SearchQuery query = new SearchQuery();
-        query.andCriteria(SearchQuery.all());
-
-        // use search here to allow implementation a better way to improve
-        // selects on mailboxes.
-        // See https://issues.apache.org/jira/browse/IMAP-192
-        final Iterator<Long> uids = manager.getMailbox(path, mailboxSession).search(query, mailboxSession);
+    public UidToMsnConverter(final Iterator<Long> uids) {
         msnToUid = new TreeMap<Integer, Long>();
         uidToMsn = new TreeMap<Long, Integer>();
         if (uids != null) {
@@ -149,12 +57,11 @@ public class UidToMsnConverter {
                 highestMsn = msn;
                 msnToUid.put(msn, uid);
                 uidToMsn.put(uid, msn);
-
+                
                 msn++;
             }
 
         }
-        this.path = path;
     }
 
     /**
@@ -230,7 +137,18 @@ public class UidToMsnConverter {
         }
     }
 
- 
+    /**
+     * @see org.apache.james.mailbox.MailboxListener#event(org.apache.james.mailbox.MailboxListener.Event)
+     */
+    public synchronized void event(Event event) {
+        if (event instanceof MessageEvent) {
+            final MessageEvent messageEvent = (MessageEvent) event;
+            final long uid = messageEvent.getSubjectUid();
+            if (event instanceof Added) {
+                add(uid);
+            }
+        }
+    }
 
     
     /**
@@ -258,17 +176,17 @@ public class UidToMsnConverter {
     /**
      * Close this {@link MailboxListener} and dispose all stored stuff 
      */
-    public void close() {
-        // check if we can clear all resources which are wired with this UidToMsnConverter
-        synchronized (converters) {
-            if (references.decrementAndGet() == 0) {
-                converters.remove(path);
-                uidToMsn.clear();
-                msnToUid.clear();
-            }
-        }
-        
+    public synchronized void close() {
+        uidToMsn.clear();
+        msnToUid.clear();
+        closed = true;
     }
     
-
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.mailbox.MailboxListener#isClosed()
+     */
+    public synchronized boolean isClosed() {
+        return closed;
+    }
 }
