@@ -21,7 +21,6 @@ package org.apache.james.imap.processor.base;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -45,7 +44,7 @@ public class SelectedMailboxImpl implements SelectedMailbox {
 
     private boolean recentUidRemoved;
 
-    public SelectedMailboxImpl(final MailboxManager mailboxManager, final Iterator<Long> uids,
+    public SelectedMailboxImpl(final MailboxManager mailboxManager,
             final MailboxSession mailboxSession, final MailboxPath path) throws MailboxException {
         recentUids = new TreeSet<Long>();
         recentUidRemoved = false;
@@ -54,8 +53,7 @@ public class SelectedMailboxImpl implements SelectedMailbox {
         // Ignore events from our session
         events.setSilentFlagChanges(true);
         mailboxManager.addListener(path, events, mailboxSession);
-        converter = new UidToMsnConverter(uids);
-        mailboxManager.addListener(path, converter, mailboxSession);
+        converter = UidToMsnConverter.get(mailboxManager, path, mailboxSession);
     }
 
     /**

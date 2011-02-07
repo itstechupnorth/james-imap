@@ -19,7 +19,6 @@
 
 package org.apache.james.imap.processor;
 
-import java.util.Iterator;
 import java.util.List;
 
 import javax.mail.Flags;
@@ -28,8 +27,8 @@ import org.apache.james.imap.api.ImapCommand;
 import org.apache.james.imap.api.ImapSessionUtils;
 import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.api.message.response.StatusResponse;
-import org.apache.james.imap.api.message.response.StatusResponseFactory;
 import org.apache.james.imap.api.message.response.StatusResponse.ResponseCode;
+import org.apache.james.imap.api.message.response.StatusResponseFactory;
 import org.apache.james.imap.api.process.ImapProcessor;
 import org.apache.james.imap.api.process.ImapSession;
 import org.apache.james.imap.api.process.SelectedMailbox;
@@ -44,7 +43,6 @@ import org.apache.james.mailbox.MailboxNotFoundException;
 import org.apache.james.mailbox.MailboxPath;
 import org.apache.james.mailbox.MailboxSession;
 import org.apache.james.mailbox.MessageManager;
-import org.apache.james.mailbox.SearchQuery;
 import org.apache.james.mailbox.MessageManager.MetaData;
 
 abstract class AbstractSelectionProcessor<M extends AbstractMailboxSelectionRequest> extends AbstractMailboxProcessor<M> {
@@ -197,14 +195,9 @@ abstract class AbstractSelectionProcessor<M extends AbstractMailboxSelectionRequ
     private SelectedMailbox createNewSelectedMailbox(final MessageManager mailbox,
             final MailboxSession mailboxSession, ImapSession session, MailboxPath path)
             throws MailboxException {
-        SearchQuery query = new SearchQuery();
-        query.andCriteria(SearchQuery.all());
-        
-        // use search here to allow implementation a better way to improve selects on mailboxes. 
-        // See https://issues.apache.org/jira/browse/IMAP-192
-        final Iterator<Long> it = mailbox.search(query, mailboxSession);
+       
 
-        final SelectedMailbox sessionMailbox = new SelectedMailboxImpl(getMailboxManager(), it, mailboxSession, path);
+        final SelectedMailbox sessionMailbox = new SelectedMailboxImpl(getMailboxManager(), mailboxSession, path);
         session.selected(sessionMailbox);
         return sessionMailbox;
     }
