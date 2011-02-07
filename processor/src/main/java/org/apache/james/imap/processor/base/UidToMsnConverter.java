@@ -35,7 +35,6 @@ import org.apache.james.mailbox.MailboxListener;
 import org.apache.james.mailbox.MailboxManager;
 import org.apache.james.mailbox.MailboxPath;
 import org.apache.james.mailbox.MailboxSession;
-import org.apache.james.mailbox.MessageManager;
 import org.apache.james.mailbox.SearchQuery;
 
 /**
@@ -59,6 +58,8 @@ public class UidToMsnConverter {
 
     // hold the reference count for a shared UidToMsnConverter
     private AtomicInteger references = new AtomicInteger(0);
+
+    private MailboxPath path;
     
     /**
      * Return a instance of the {@link UidToMsnConverter} which can be a new one or a shared if there is already a {@link UidToMsnConverter} for the given
@@ -90,7 +91,7 @@ public class UidToMsnConverter {
             final UidToMsnConverter c = converter;
             // the converter was not found before so we need to init it to get a list of all uids
             if (!found) {
-                converter.init(manager.getMailbox(path, session), session);
+                converter.init(manager, path, session);
                 manager.addListener(path, new MailboxListener() {
                     
                     /*
@@ -129,15 +130,15 @@ public class UidToMsnConverter {
     private UidToMsnConverter() {
     }
 
-    private void init(MessageManager mailbox, MailboxSession mailboxSession) throws MailboxException {
+    private void init(MailboxManager manager, MailboxPath path, MailboxSession mailboxSession) throws MailboxException {
+       
         SearchQuery query = new SearchQuery();
         query.andCriteria(SearchQuery.all());
 
         // use search here to allow implementation a better way to improve
         // selects on mailboxes.
         // See https://issues.apache.org/jira/browse/IMAP-192
-        final Iterator<Long> uids = mailbox.search(query, mailboxSession);
-
+        final Iterator<Long> uids = manager.getMailbox(path, mailboxSession).search(query, mailboxSession);
         msnToUid = new TreeMap<Integer, Long>();
         uidToMsn = new TreeMap<Long, Integer>();
         if (uids != null) {
@@ -153,6 +154,7 @@ public class UidToMsnConverter {
             }
 
         }
+        this.path = path;
     }
 
     /**
@@ -256,11 +258,16 @@ public class UidToMsnConverter {
     /**
      * Close this {@link MailboxListener} and dispose all stored stuff 
      */
-    public synchronized void close() {
-        if (references.incrementAndGet() == 0) {
-            uidToMsn.clear();
-            msnToUid.clear();
+    public void close() {
+        // check if we can clear all resources which are wired with this UidToMsnConverter
+        synchronized (converters) {
+            if (references.decrementAndGet() == 0) {
+                converters.remove(path);
+                uidToMsn.clear();
+                msnToUid.clear();
+            }
         }
+        
     }
     
 

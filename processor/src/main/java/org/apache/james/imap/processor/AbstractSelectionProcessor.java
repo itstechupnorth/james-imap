@@ -84,6 +84,7 @@ abstract class AbstractSelectionProcessor<M extends AbstractMailboxSelectionRequ
             responder.respond(statusResponseFactory.taggedNo(tag, command,
                     HumanReadableText.FAILURE_NO_SUCH_MAILBOX));
         } catch (MailboxException e) {
+            e.printStackTrace();
             no(command, tag, responder, HumanReadableText.SELECT);
         }
     }
