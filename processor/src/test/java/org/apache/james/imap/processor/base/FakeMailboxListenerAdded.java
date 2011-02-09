@@ -21,15 +21,14 @@ package org.apache.james.imap.processor.base;
 
 import org.apache.james.mailbox.MailboxListener;
 import org.apache.james.mailbox.MailboxPath;
+import org.apache.james.mailbox.MailboxSession;
 
 public class FakeMailboxListenerAdded extends MailboxListener.Added {
 
     public long subjectUid;
 
-    public long sessionId;
-
-    public FakeMailboxListenerAdded(long subjectUid, long sessionId, MailboxPath path) {
-        super(sessionId, path);
+    public FakeMailboxListenerAdded(MailboxSession session, long subjectUid, MailboxPath path) {
+        super(session, path);
         this.subjectUid = subjectUid;
     }
 

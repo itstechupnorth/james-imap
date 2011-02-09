@@ -24,12 +24,16 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.util.Collection;
 import java.util.Iterator;
+import java.util.Map;
 
 import javax.mail.Flags;
 
+import org.apache.commons.logging.Log;
 import org.apache.james.mailbox.MailboxListener;
 import org.apache.james.mailbox.MailboxPath;
+import org.apache.james.mailbox.MailboxSession;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -37,8 +41,63 @@ public class MailboxEventAnalyserTest {
 
     private static final long BASE_SESSION_ID = 99;
 
+    
     private MailboxEventAnalyser analyser;
     MailboxPath mailboxPath = new MailboxPath("namespace", "user", "name");
+    
+    private final class MyMailboxSession implements MailboxSession {
+        private long sessionId;
+
+        public MyMailboxSession(long sessionId) {
+            this.sessionId = sessionId;
+        }
+
+        /*
+         * (non-Javadoc)
+         * @see org.apache.james.mailbox.mock.MockMailboxSession#getSessionId()
+         */
+        public long getSessionId() {
+            return sessionId;
+        }
+
+        public void close() {            
+        }
+
+        public Map<Object, Object> getAttributes() {
+            return null;
+        }
+
+        public Log getLog() {
+            return null;
+        }
+
+        public String getOtherUsersSpace() {
+            return null;
+        }
+
+        public char getPathDelimiter() {
+            return 0;
+        }
+
+        public String getPersonalSpace() {
+            return null;
+        }
+
+        public Collection<String> getSharedSpaces() {
+            return null;
+        }
+
+        public User getUser() {
+            return null;
+        }
+
+        public boolean isOpen() {
+            return false;
+        }
+        
+        
+    }
+    
     @Before
     public void setUp() throws Exception {
         analyser = new MailboxEventAnalyser(BASE_SESSION_ID, mailboxPath);
@@ -46,7 +105,7 @@ public class MailboxEventAnalyserTest {
 
     @Test
     public void testShouldBeNoSizeChangeOnOtherEvent() throws Exception {
-        final MailboxListener.Event event = new MailboxListener.Event(0, mailboxPath) {};
+        final MailboxListener.Event event = new MailboxListener.Event(new MyMailboxSession(0), mailboxPath) {};
       
         analyser.event(event);
         assertFalse(analyser.isSizeChanged());
@@ -54,13 +113,13 @@ public class MailboxEventAnalyserTest {
 
     @Test
     public void testShouldBeNoSizeChangeOnAdded() throws Exception {
-        analyser.event(new FakeMailboxListenerAdded(78, 11, mailboxPath));
+        analyser.event(new FakeMailboxListenerAdded(new MyMailboxSession(0), 11, mailboxPath));
         assertTrue(analyser.isSizeChanged());
     }
 
     @Test
     public void testShouldNoSizeChangeAfterReset() throws Exception {
-        analyser.event(new FakeMailboxListenerAdded(99, 11, mailboxPath));
+        analyser.event(new FakeMailboxListenerAdded(new MyMailboxSession(99), 11, mailboxPath));
         analyser.reset();
         assertFalse(analyser.isSizeChanged());
     }
@@ -68,7 +127,7 @@ public class MailboxEventAnalyserTest {
     @Test
     public void testShouldNotSetUidWhenNoSystemFlagChange() throws Exception {
         final FakeMailboxListenerFlagsUpdate update = new FakeMailboxListenerFlagsUpdate(
-                90, new Flags(), 11, mailboxPath);
+                new MyMailboxSession(11), 90, new Flags(), mailboxPath);
         analyser.event(update);
         assertNotNull(analyser.flagUpdateUids());
         assertFalse(analyser.flagUpdateUids().iterator().hasNext());
@@ -78,7 +137,7 @@ public class MailboxEventAnalyserTest {
     public void testShouldSetUidWhenSystemFlagChange() throws Exception {
         final long uid = 900L;
         final FakeMailboxListenerFlagsUpdate update = new FakeMailboxListenerFlagsUpdate(
-                uid, new Flags(), 11, mailboxPath);
+                new MyMailboxSession(11), uid, new Flags(), mailboxPath);
         update.flags.add(Flags.Flag.ANSWERED);
         analyser.event(update);
         final Iterator<Long> iterator = analyser.flagUpdateUids().iterator();
@@ -92,7 +151,7 @@ public class MailboxEventAnalyserTest {
     public void testShouldClearFlagUidsUponReset() throws Exception {
         final long uid = 900L;
         final FakeMailboxListenerFlagsUpdate update = new FakeMailboxListenerFlagsUpdate(
-                uid, new Flags(), 11, mailboxPath);
+                new MyMailboxSession(11), uid, new Flags(), mailboxPath);
         update.flags.add(Flags.Flag.ANSWERED);
         analyser.event(update);
         analyser.reset();
@@ -105,7 +164,7 @@ public class MailboxEventAnalyserTest {
             throws Exception {
         final long uid = 900L;
         final FakeMailboxListenerFlagsUpdate update = new FakeMailboxListenerFlagsUpdate(
-                uid, new Flags(), 11, mailboxPath);
+                new MyMailboxSession(11), uid, new Flags(), mailboxPath);
         update.flags.add(Flags.Flag.ANSWERED);
         analyser.setSilentFlagChanges(true);
         analyser.event(update);
@@ -120,7 +179,7 @@ public class MailboxEventAnalyserTest {
     public void testShouldNotSetUidWhenSystemFlagChangeSameSessionInSilentMode()
             throws Exception {
         final FakeMailboxListenerFlagsUpdate update = new FakeMailboxListenerFlagsUpdate(
-                345, new Flags(), BASE_SESSION_ID, mailboxPath);
+                new MyMailboxSession(BASE_SESSION_ID) ,345, new Flags(), mailboxPath);
         update.flags.add(Flags.Flag.ANSWERED);
         analyser.setSilentFlagChanges(true);
         analyser.event(update);
@@ -132,7 +191,7 @@ public class MailboxEventAnalyserTest {
     @Test
     public void testShouldNotSetUidWhenOnlyRecentFlagUpdated() throws Exception {
         final FakeMailboxListenerFlagsUpdate update = new FakeMailboxListenerFlagsUpdate(
-                886, new Flags(), BASE_SESSION_ID ,mailboxPath);
+                new MyMailboxSession(BASE_SESSION_ID), 886, new Flags() ,mailboxPath);
         update.flags.add(Flags.Flag.RECENT);
         analyser.event(update);
         final Iterator<Long> iterator = analyser.flagUpdateUids().iterator();
