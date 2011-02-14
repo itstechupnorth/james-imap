@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.james.imap.api.ImapCommand;
+import org.apache.james.imap.api.ImapMessage;
 import org.apache.james.imap.api.ImapSessionUtils;
 import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.api.message.response.ImapResponseMessage;
@@ -202,4 +203,7 @@ public class ListProcessor extends AbstractMailboxProcessor<ListRequest>{
         return result;
     }
 
+    protected boolean isAcceptable(final ImapMessage message) {
+        return ListRequest.class.equals(message.getClass());
+    }
 }
