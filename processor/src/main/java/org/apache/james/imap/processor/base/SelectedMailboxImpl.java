@@ -64,6 +64,7 @@ public class SelectedMailboxImpl implements SelectedMailbox {
     public void deselect() {
         converter.close();
         events.close();
+        recentUids.clear();
     }
 
     /*
