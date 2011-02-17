@@ -18,7 +18,6 @@
  ****************************************************************/
 package org.apache.james.imap.decode.parser;
 
-import java.io.InputStream;
 import java.util.Date;
 
 import javax.mail.Flags;
