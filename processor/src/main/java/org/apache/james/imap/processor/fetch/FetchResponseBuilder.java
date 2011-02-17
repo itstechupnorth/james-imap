@@ -196,10 +196,6 @@ final class FetchResponseBuilder {
         this.internalDate = internalDate;
     }
 
-    private void setMsn(int msn) {
-        reset(msn);
-    }
-
     private FetchResponse.BodyElement bodyFetch(
             final MessageResult messageResult, BodyFetchElement fetchElement)
             throws MailboxException {
