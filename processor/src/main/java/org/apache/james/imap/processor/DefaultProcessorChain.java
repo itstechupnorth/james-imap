@@ -36,16 +36,7 @@ public class DefaultProcessorChain {
             final ImapProcessor chainEndProcessor,
             final MailboxManager mailboxManager,
             final SubscriptionManager subscriptionManager,
-            final StatusResponseFactory statusResponseFactory,MailboxTyper mailboxTyper) {
-        return createDefaultChain(chainEndProcessor, mailboxManager, subscriptionManager, statusResponseFactory, mailboxTyper,100);
-        
-    }  
-    
-    public static final ImapProcessor createDefaultChain(
-            final ImapProcessor chainEndProcessor,
-            final MailboxManager mailboxManager,
-            final SubscriptionManager subscriptionManager,
-            final StatusResponseFactory statusResponseFactory, MailboxTyper mailboxTyper,int batchSize) {
+            final StatusResponseFactory statusResponseFactory, MailboxTyper mailboxTyper, int batchSize) {
         final SystemMessageProcessor systemProcessor = new SystemMessageProcessor(chainEndProcessor, mailboxManager);
         final LogoutProcessor logoutProcessor = new LogoutProcessor(
                 systemProcessor, mailboxManager, statusResponseFactory);

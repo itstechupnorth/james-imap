@@ -242,5 +242,7 @@ public interface ImapConstants {
     public static final long MIN_NZ_NUMBER = 1L;
 
     public static final String COMPRESS_COMMAND_NAME = "COMPRESS";
+    
+    public static final int DEFAULT_BATCH_SIZE = 100;
 
 }
