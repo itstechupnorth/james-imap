@@ -19,11 +19,8 @@
 
 package org.apache.james.imap.processor.fetch;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.List;
 
 import org.apache.james.imap.api.ImapCommand;
 import org.apache.james.imap.api.ImapSessionUtils;
@@ -38,17 +35,18 @@ import org.apache.james.imap.api.process.SelectedMailbox;
 import org.apache.james.imap.message.request.FetchRequest;
 import org.apache.james.imap.message.response.FetchResponse;
 import org.apache.james.imap.processor.AbstractMailboxProcessor;
-import org.apache.james.imap.processor.base.MessageRangeException;
 import org.apache.james.mailbox.MailboxException;
 import org.apache.james.mailbox.MailboxManager;
 import org.apache.james.mailbox.MailboxSession;
 import org.apache.james.mailbox.MessageManager;
 import org.apache.james.mailbox.MessageRange;
-import org.apache.james.mailbox.MessageRange.Type;
+import org.apache.james.mailbox.MessageRangeException;
 import org.apache.james.mailbox.MessageResult;
+import org.apache.james.mailbox.UnsupportedCriteriaException;
+import org.apache.james.mailbox.MessageManager.MessageCallback;
+import org.apache.james.mailbox.MessageRange.Type;
 import org.apache.james.mailbox.MessageResult.FetchGroup;
 import org.apache.james.mailbox.MessageResult.MimePath;
-import org.apache.james.mailbox.UnsupportedCriteriaException;
 import org.apache.james.mailbox.util.FetchGroupImpl;
 import org.apache.james.mime4j.field.address.parser.ParseException;
 
@@ -67,8 +65,8 @@ public class FetchProcessor extends AbstractMailboxProcessor<FetchRequest> {
      * (non-Javadoc)
      * @see org.apache.james.imap.processor.AbstractMailboxProcessor#doProcess(org.apache.james.imap.api.message.request.ImapRequest, org.apache.james.imap.api.process.ImapSession, java.lang.String, org.apache.james.imap.api.ImapCommand, org.apache.james.imap.api.process.ImapProcessor.Responder)
      */
-    protected void doProcess(FetchRequest request, ImapSession session,
-            String tag, ImapCommand command, Responder responder) {
+    protected void doProcess(FetchRequest request, final ImapSession session,
+            String tag, ImapCommand command, final Responder responder) {
         final boolean useUids = request.isUseUids();
         final IdRange[] idSet = request.getIdSet();
         final FetchData fetch = request.getFetch();
@@ -80,36 +78,33 @@ public class FetchProcessor extends AbstractMailboxProcessor<FetchRequest> {
                 throw new MailboxException("Session not in SELECTED state");
             }
             
+            final MailboxSession mailboxSession = ImapSessionUtils.getMailboxSession(session);
+            final FetchResponseBuilder builder = new FetchResponseBuilder(new EnvelopeBuilder(session.getLog()));
+            
             for (int i = 0; i < idSet.length; i++) {
-                final FetchResponseBuilder builder = new FetchResponseBuilder(
-                        new EnvelopeBuilder(session.getLog()));
                 MessageRange messageSet = messageRange(session.getSelected(), idSet[i], useUids);
-                
-                // TODO: Maybe this should better be handled by the mailbox..
-                //
-                // split the MessageRange to not risk an OOM on big ranges
-                List<MessageRange> batchSet;
-                if (batchSize > 0) {
-                    batchSet = splitMessageRange(session.getSelected(), messageSet);
-                } else {
-                    batchSet = Arrays.asList(messageSet);
-                }
-                for (int a = 0; a < batchSet.size(); a++) {
-                    final MailboxSession mailboxSession = ImapSessionUtils
-                            .getMailboxSession(session);
-                    final Iterator<MessageResult> it = mailbox.getMessages(batchSet.get(a), resultToFetch, mailboxSession);
-                    while (it.hasNext()) {
-                        final MessageResult result = (MessageResult) it.next();
-                        try {
-                            final FetchResponse response = builder.build(fetch, result, mailbox, session, useUids);
-                            responder.respond(response);
-                        } catch (ParseException e) {
-                            // we can't for whatever reason parse the message so just skip it and log it to debug
-                            session.getLog().debug("Unable to parse message with uid " + result.getUid(), e);
-                        }
-                    }
-                }
+                MessageRange normalizedMessageSet = normalizeMessageRange(session.getSelected(), messageSet);
+                MessageRange batchedMessageSet = MessageRange.range(normalizedMessageSet.getUidFrom(), normalizedMessageSet.getUidTo(), batchSize);
+                mailbox.getMessages(batchedMessageSet, resultToFetch, mailboxSession, new MessageCallback() {
+					
+					public void onMessages(Iterator<MessageResult> it) throws MailboxException {
+						while (it.hasNext()) {
+				            final MessageResult result = it.next();
+				            try {
+				                final FetchResponse response = builder.build(fetch, result, mailbox, session, useUids);
+				                responder.respond(response);
+				            } catch (ParseException e) {
+				                // we can't for whatever reason parse the message so just skip it and log it to debug
+				                session.getLog().debug("Unable to parse message with uid " + result.getUid(), e);
+				            } catch (MessageRangeException e) {
+				            	// we can't for whatever reason find the message so just skip it and log it to debug
+				                session.getLog().debug("Unable to find message with uid " + result.getUid(), e);
+							}
+				        }
+					}
+				});
             }
+            
             unsolicitedResponses(session, responder, useUids);
             okComplete(command, tag, responder);
         } catch (UnsupportedCriteriaException e) {
@@ -119,68 +114,50 @@ public class FetchProcessor extends AbstractMailboxProcessor<FetchRequest> {
             taggedBad(command, tag, responder, HumanReadableText.INVALID_MESSAGESET);
         } catch (MailboxException e) {
             no(command, tag, responder, HumanReadableText.SEARCH_FAILED);
-        }
+        } 
     }
-
+    
     /**
-     * Split the given MessageRange in pieces
+     * Format MessageRange to RANGE format applying selected folder min & max UIDs constraints
      * 
-     * @param selected
-     * @param range
-     * @return splitted
+     * @param selected currently selected mailbox
+     * @param range input range
+     * @return normalized message range
+     * @throws MessageRangeException 
      */
-    private List<MessageRange> splitMessageRange(SelectedMailbox selected, MessageRange range) {
+    private MessageRange normalizeMessageRange(SelectedMailbox selected, MessageRange range) throws MessageRangeException {
         Type rangeType = range.getType();
         long start;
         long end;
+        
         switch (rangeType) {
         case ONE:
-            Arrays.asList(range);
-            break;
+            return range;
         case ALL:
             start = selected.getFirstUid();
             end = selected.getLastUid();
-            return createRanges(start, end);
-
+            return MessageRange.range(start, end);
         case RANGE:
             start = range.getUidFrom();
-            if (start < 1 || start == Long.MAX_VALUE) {
+            if (start < 1 || start == Long.MAX_VALUE || start < selected.getFirstUid()) {
                 start = selected.getFirstUid();
             }
             end = range.getUidTo();
-            if (end < 1 || end == Long.MAX_VALUE) {
+            if (end < 1 || end == Long.MAX_VALUE || end > selected.getLastUid()) {
                 end = selected.getLastUid();
             }
-            return createRanges(start, end);
+            return MessageRange.range(start, end);
         case FROM:
             start = range.getUidFrom();
-            end = range.getUidTo();
-            if (end < 1 || end == Long.MAX_VALUE) {
-                end = selected.getLastUid();
+            if (start < 1 || start == Long.MAX_VALUE || start < selected.getFirstUid()) {
+                start = selected.getFirstUid();
             }
-            return createRanges(start, end);
+            
+            end = selected.getLastUid();
+            return MessageRange.range(start, end);
         default:
-            break;
+            throw new MessageRangeException("Unknown message range type: "+rangeType);
         }
-        return Arrays.asList(range);
-    }
-
-    private List<MessageRange> createRanges(long start, long end) {
-        List<MessageRange> ranges = new ArrayList<MessageRange>();
-        if (start == end) {
-            ranges.add(MessageRange.one(start));
-        } else {
-            while (start < end) {
-                long to = start + batchSize;
-                if (to > end) {
-                    to = end;
-                }
-                MessageRange r = MessageRange.range(start, to);
-                ranges.add(r);
-                start = to;
-            }
-        }
-        return ranges;
     }
     
     private FetchGroup getFetchGroup(FetchData fetch) {

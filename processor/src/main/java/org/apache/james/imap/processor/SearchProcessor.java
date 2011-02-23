@@ -40,10 +40,10 @@ import org.apache.james.imap.api.process.ImapSession;
 import org.apache.james.imap.api.process.SelectedMailbox;
 import org.apache.james.imap.message.request.SearchRequest;
 import org.apache.james.imap.message.response.SearchResponse;
-import org.apache.james.imap.processor.base.MessageRangeException;
 import org.apache.james.mailbox.MailboxException;
 import org.apache.james.mailbox.MailboxManager;
 import org.apache.james.mailbox.MessageManager;
+import org.apache.james.mailbox.MessageRangeException;
 import org.apache.james.mailbox.SearchQuery;
 import org.apache.james.mailbox.SearchQuery.Criterion;
 
