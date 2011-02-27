@@ -19,11 +19,11 @@
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <parent>
+    <artifactId>james-project</artifactId>
     <groupId>org.apache.james</groupId>
-    <artifactId>apache-james-imap-parent</artifactId>
-    <version>0.2-M2-SNAPSHOT</version>
-    <relativePath>./parent/pom.xml</relativePath>
+    <version>1.5</version>
   </parent>
+
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.apache.james</groupId>
   <artifactId>apache-james-imap</artifactId>
@@ -33,38 +33,396 @@
   <url>http://james.apache.org/imap/</url>
   <inceptionYear>2002</inceptionYear>
   <packaging>pom</packaging>
+
   <modules>
-    <module>parent</module>
     <module>api</module>
     <module>message</module>
     <module>processor</module>
   </modules>
+
   <distributionManagement>
     <site>
       <id>imap-website</id>
       <url>scp://people.apache.org/www/james.apache.org/imap</url>
     </site>
   </distributionManagement>
+
   <scm>
     <connection>scm:svn:http://svn.apache.org/repos/asf/james/imap/trunk</connection>
     <developerConnection>scm:svn:https://svn.apache.org/repos/asf/james/imap/trunk</developerConnection>
     <url>http://svn.apache.org/viewcvs.cgi/james/imap/trunk?root=Apache-SVN</url>
   </scm>
+
+  <repositories>
+    <!-- needed for javamail -->
+    <repository>
+      <id>maven2-repository.dev.java.net</id>
+      <name>Java.net Repository for Maven</name>
+      <url>http://download.java.net/maven/2/</url>
+      <layout>default</layout>
+    </repository>
+  </repositories>
+
+  <build>
+    <plugins>
+      <plugin>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <optimize>true</optimize>
+          <source>${target.jdk}</source>
+          <target>${target.jdk}</target>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <executions>
+          <execution>
+            <goals>
+              <goal>jar</goal>
+              <goal>test-jar</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <useDefaultManifestFile>true</useDefaultManifestFile>
+          <archive>
+            <manifest>
+              <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+              <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
+            </manifest>
+          </archive>
+        </configuration>
+      </plugin>
+      <plugin>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <configuration>
+          <descriptorRefs>
+            <descriptorRef>bin</descriptorRef>
+            <descriptorRef>src</descriptorRef>
+          </descriptorRefs>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.felix</groupId>
+        <artifactId>maven-bundle-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>bundle-manifest</id>
+            <phase>process-classes</phase>
+            <goals>
+              <goal>manifest</goal>
+            </goals>
+          </execution>
+        </executions>
+        <extensions>true</extensions>
+        <configuration>
+          <instructions>
+            <Export-Package>org.apache.james.imap.*</Export-Package>
+            <Embed-Dependency>*;scope=runtime</Embed-Dependency>
+          </instructions>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
+  <dependencyManagement>
+    <dependencies>
+      <!--
+        START Modules
+      -->
+      <dependency>
+        <groupId>org.apache.james</groupId>
+        <artifactId>apache-james-mailbox-api</artifactId>
+        <version>0.2-M2-SNAPSHOT</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.james</groupId>
+        <artifactId>apache-james-mailbox-api</artifactId>
+        <version>${project.version}</version>
+        <type>test-jar</type>
+        <scope>test</scope>
+      </dependency>
+
+      <dependency>
+        <groupId>org.apache.james</groupId>
+        <artifactId>apache-james-imap-message</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.apache.james</groupId>
+        <artifactId>apache-james-imap-processor</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.apache.james</groupId>
+        <artifactId>apache-james-imap-api</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.james</groupId>
+        <artifactId>apache-james-imap-api</artifactId>
+        <version>${project.version}</version>
+        <type>test-jar</type>
+        <scope>test</scope>
+      </dependency>
+      <!--
+        END Modules
+      -->
+
+      <!--
+        START Mail
+      -->
+      <dependency>
+        <groupId>org.apache.james</groupId>
+        <artifactId>apache-mime4j</artifactId>
+        <version>${version.apache-mime4j}</version>
+      </dependency>
+      <!-- Declare javamail as provided to be able to easily switch -->
+      <!-- to different implementations (Geronimo) -->
+      <dependency>
+        <groupId>javax.mail</groupId>
+        <artifactId>mail</artifactId>
+        <version>${version.javax.mail}</version>
+      </dependency>
+      <dependency>
+        <groupId>javax.activation</groupId>
+        <artifactId>activation</artifactId>
+        <version>${version.activation}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.geronimo.specs</groupId>
+        <artifactId>geronimo-activation_1.1_spec</artifactId>
+        <version>1.0.2</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.geronimo.javamail</groupId>
+        <artifactId>geronimo-javamail_1.4_mail</artifactId>
+        <version>1.6</version>
+      </dependency>
+      <!--
+        END Mail
+      -->
+
+      <!--
+        Start James Mailet
+      -->
+      <dependency>
+        <groupId>org.apache.james</groupId>
+        <artifactId>apache-mailet</artifactId>
+        <version>2.4</version>
+        <exclusions>
+          <exclusion>
+            <groupId>javax.mail</groupId>
+            <artifactId>mail</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+
+      <!--
+        Start Commons
+      -->
+      <dependency>
+        <groupId>commons-collections</groupId>
+        <artifactId>commons-collections</artifactId>
+        <version>${version.commons-collections}</version>
+      </dependency>
+      <dependency>
+        <groupId>commons-logging</groupId>
+        <artifactId>commons-logging</artifactId>
+        <version>${version.commons-logging}</version>
+        <exclusions>
+          <exclusion>
+            <artifactId>logkit</artifactId>
+            <groupId>logkit</groupId>
+          </exclusion>
+          <exclusion>
+            <artifactId>avalon-framework</artifactId>
+            <groupId>avalon-framework</groupId>
+          </exclusion>
+          <exclusion>
+            <artifactId>log4j</artifactId>
+            <groupId>log4j</groupId>
+          </exclusion>
+          <exclusion>
+            <groupId>javax.servlet</groupId>
+            <artifactId>servlet-api</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>commons-lang</groupId>
+        <artifactId>commons-lang</artifactId>
+        <version>${version.commons-lang}</version>
+      </dependency>
+
+
+      <dependency>
+        <groupId>commons-beanutils</groupId>
+        <artifactId>commons-beanutils</artifactId>
+        <version>1.7.0</version>
+      </dependency>
+      <!-- 
+        END Commons
+      -->
+      
+      <!--
+        START Testing
+      -->
+      <!--
+        Use to build protocol tester.
+        Convert this to testing once MPT has been released. 
+      -->
+      <dependency>
+        <groupId>junit</groupId>
+        <artifactId>junit</artifactId>
+        <version>4.8.1</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>junit</groupId>
+        <artifactId>junit-dep</artifactId>
+        <version>4.4</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.jmock</groupId>
+        <artifactId>jmock</artifactId>
+        <version>${version.jmock}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.jmock</groupId>
+        <artifactId>jmock-junit4</artifactId>
+        <version>${version.jmock}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>com.h2database</groupId>
+        <artifactId>h2</artifactId>
+        <version>1.2.134</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.derby</groupId>
+        <artifactId>derby</artifactId>
+        <version>10.2.2.0</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>commons-io</groupId>
+        <artifactId>commons-io</artifactId>
+        <version>1.4</version>
+      </dependency>
+      
+
+      <!--
+        END Testing
+      -->
+
+
+    </dependencies>
+  </dependencyManagement>
+
+  <reporting>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <forkMode>pertest</forkMode>
+          <argLine>-Xms256m -Xmx512m</argLine>
+          <testFailureIgnore>false</testFailureIgnore>
+          <skip>false</skip>
+          <includes>
+            <include>**/*Test.java</include>
+          </includes>
+        </configuration>
+      </plugin>
+      <plugin>
+        <artifactId>maven-jxr-plugin</artifactId>
+        <configuration>
+          <aggregate>true</aggregate>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>rat-maven-plugin</artifactId>
+        <version>1.0-alpha-3</version>
+        <configuration>
+          <excludes>
+            <exclude>NOTICE.*</exclude>
+            <exclude>LICENSE.*</exclude>
+            <!-- Generated by Maven -->
+            <exclude>release.properties</exclude>
+            <exclude>dist/**/*</exclude>
+            <!-- Eclipse -->
+            <exclude>**/.*</exclude>
+            <exclude>.*/**/*</exclude>
+
+          </excludes>
+        </configuration>
+      </plugin>
+      <plugin>
+        <artifactId>maven-pmd-plugin</artifactId>
+        <configuration>
+          <aggregate>true</aggregate>
+          <targetjdk>${target.jdk}</targetjdk>
+          <rulesets>
+            <ruleset>/rulesets/basic.xml</ruleset>
+            <ruleset>/rulesets/unusedcode.xml</ruleset>
+            <ruleset>/rulesets/imports.xml</ruleset>
+          </rulesets>
+          <format>xml</format>
+          <linkXref>true</linkXref>
+          <sourceEncoding>utf-8</sourceEncoding>
+          <minimumTokens>100</minimumTokens>
+        </configuration>
+      </plugin>
+      <plugin>
+        <artifactId>maven-site-plugin</artifactId>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>findbugs-maven-plugin</artifactId>
+        <version>2.0.1</version>
+      </plugin>
+    </plugins>
+  </reporting>
+
   <profiles>
     <profile>
       <id>geronimo</id>
       <properties>
-		    <javax.mail.groupId>org.apache.geronimo.javamail</javax.mail.groupId>
-		    <javax.mail.artifactId>geronimo-javamail_1.4_mail</javax.mail.artifactId>
-		    <javax.activation.groupId>org.apache.geronimo.specs</javax.activation.groupId>
-		    <javax.activation.artifactId>geronimo-activation_1.1_spec</javax.activation.artifactId>
+        <javax.mail.groupId>org.apache.geronimo.javamail</javax.mail.groupId>
+        <javax.mail.artifactId>geronimo-javamail_1.4_mail</javax.mail.artifactId>
+        <javax.activation.groupId>org.apache.geronimo.specs</javax.activation.groupId>
+        <javax.activation.artifactId>geronimo-activation_1.1_spec</javax.activation.artifactId>
+        <version.javax.mail>1.6</version.javax.mail>
+        <version.activation>1.0.2</version.activation>
       </properties>
     </profile>
   </profiles>
+
   <properties>
     <javax.activation.groupId>javax.activation</javax.activation.groupId>
     <javax.activation.artifactId>activation</javax.activation.artifactId>
     <javax.mail.groupId>javax.mail</javax.mail.groupId>
     <javax.mail.artifactId>mail</javax.mail.artifactId>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <version.james-server>3.0-SNAPSHOT</version.james-server>
+    <version.openjpa>2.0.1</version.openjpa>
+    <version.javax.persistence>1.0.2</version.javax.persistence>
+    <version.commons-lang>2.4</version.commons-lang>
+    <version.commons-collections>3.2.1</version.commons-collections>
+    <version.commons-logging>1.1</version.commons-logging>
+    <version.apache-mime4j>0.6</version.apache-mime4j>
+    <version.javax.mail>1.4.3</version.javax.mail>
+    <version.activation>1.1.1</version.activation>
+    <version.torque>3.3</version.torque>
+    <version.jmock>2.5.1</version.jmock>
+    <target.jdk>1.5</target.jdk>
   </properties>
 </project>
