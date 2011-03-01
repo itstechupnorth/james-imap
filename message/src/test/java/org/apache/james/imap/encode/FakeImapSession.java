@@ -21,16 +21,16 @@ package org.apache.james.imap.encode;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.james.imap.api.ImapSessionState;
 import org.apache.james.imap.api.process.ImapLineHandler;
 import org.apache.james.imap.api.process.ImapSession;
 import org.apache.james.imap.api.process.SelectedMailbox;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class FakeImapSession implements ImapSession {
     
-    private static final Log LOG = LogFactory.getLog(FakeImapSession.class);
+    private static final Logger LOG = LoggerFactory.getLogger(FakeImapSession.class);
     
     private ImapSessionState state = ImapSessionState.NON_AUTHENTICATED;
 
@@ -90,7 +90,7 @@ public class FakeImapSession implements ImapSession {
         }
     }
 
-    public Log getLog() {
+    public Logger getLog() {
         return LOG;
     }
 

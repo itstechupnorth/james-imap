@@ -18,98 +18,80 @@
  ****************************************************************/
 package org.apache.james.imap.main;
 
-import org.apache.commons.logging.Log;
+import org.slf4j.Logger;
+import org.slf4j.Marker;
 
 /**
  * Decorates a log adding contextual information.
  */
-public class ContextualLog implements Log {
+public class ContextualLog implements Logger {
     
     private final Object context;
-    private final Log decoratedLog;
+    private final Logger decoratedLog;
     
-    public ContextualLog(final Object context, final Log decoratedLog) {
+    public ContextualLog(final Object context, final Logger decoratedLog) {
         super();
         this.context = context;
         this.decoratedLog = decoratedLog;
     }
 
-    public void debug(Object message) {
+
+    public void debug(String message) {
         if (isDebugEnabled()) {
             if (context == null) {
                 decoratedLog.debug(message);
             } else {
-                decoratedLog.debug(new Message(context, message));
+                decoratedLog.debug(new Message(context, message).toString());
             }
         }
     }
 
-    public void debug(Object message, Throwable t) {
+    public void debug(String message, Throwable t) {
         if (isDebugEnabled()) {
             if (context == null) {
                 decoratedLog.debug(message, t);
             } else {
-                decoratedLog.debug(new Message(context, message), t);
+                decoratedLog.debug(new Message(context, message).toString(), t);
             }
         }
     }
 
-    public void error(Object message) {
+    public void error(String message) {
         if (isErrorEnabled()) {
             if (context == null) {
                 decoratedLog.error(message);
             } else {
-                decoratedLog.error(new Message(context, message));
+                decoratedLog.error(new Message(context, message).toString());
             }
         }
     }
 
-    public void error(Object message, Throwable t) {
+    public void error(String message, Throwable t) {
         if (isErrorEnabled()) {
             if (context == null) {
                 decoratedLog.error(message, t);
             } else {
-                decoratedLog.error(new Message(context, message), t);
+                decoratedLog.error(new Message(context, message).toString(), t);
             }
         }
     }
 
-    public void fatal(Object message) {
-        if (isFatalEnabled()) {
-            if (context == null) {
-                decoratedLog.fatal(message);
-            } else {
-                decoratedLog.fatal(new Message(context, message));
-            }
-        }
-    }
-
-    public void fatal(Object message, Throwable t) {
-        if (isFatalEnabled()) {
-            if (context == null) {
-                decoratedLog.fatal(message, t);
-            } else {
-                decoratedLog.fatal(new Message(context, message), t);
-            }
-        }
-    }
-
-    public void info(Object message) {
+    public void info(String message) {
         if (isInfoEnabled()) {
             if (context == null) {
                 decoratedLog.info(message);
             } else {
-                decoratedLog.info(new Message(context, message));
+                decoratedLog.info(new Message(context, message).toString());
             }
         }
     }
 
-    public void info(Object message, Throwable t) {
+    public void info(String message, Throwable t) {
         if (isInfoEnabled()) {
             if (context == null) {
                 decoratedLog.info(message, t);
             } else {
-                decoratedLog.info(new Message(context, message), t);
+                decoratedLog.info(new Message(context, message).toString(), t);
             }
         }
     }
@@ -120,10 +102,6 @@ public class ContextualLog implements Log {
 
     public boolean isErrorEnabled() {
         return decoratedLog.isErrorEnabled();
-    }
-
-    public boolean isFatalEnabled() {
-        return decoratedLog.isFatalEnabled();
     }
 
     public boolean isInfoEnabled() {
@@ -138,42 +116,42 @@ public class ContextualLog implements Log {
         return decoratedLog.isWarnEnabled();
     }
 
-    public void trace(Object message) {
+    public void trace(String message) {
         if (isTraceEnabled()) {
             if (context == null) {
                 decoratedLog.trace(message);
             } else {
-                decoratedLog.trace(new Message(context, message));
+                decoratedLog.trace(new Message(context, message).toString());
             }
         }
     }
 
-    public void trace(Object message, Throwable t) {
+    public void trace(String message, Throwable t) {
         if (isTraceEnabled()) {
             if (context == null) {
                 decoratedLog.trace(message, t);
             } else {
-                decoratedLog.trace(new Message(context, message), t);
+                decoratedLog.trace(new Message(context, message).toString(), t);
             }
         }
     }
 
-    public void warn(Object message) {
+    public void warn(String message) {
         if (isWarnEnabled()) {
             if (context == null) {
                 decoratedLog.warn(message);
             } else {
-                decoratedLog.warn(new Message(context, message));
+                decoratedLog.warn(new Message(context, message).toString());
             }
         }        
     }
 
-    public void warn(Object message, Throwable t) {
+    public void warn(String message, Throwable t) {
         if (isWarnEnabled()) {
             if (context == null) {
                 decoratedLog.warn(message, t);
             } else {
-                decoratedLog.warn(new Message(context, message), t);
+                decoratedLog.warn(new Message(context, message).toString(), t);
             }
         }        
     }
@@ -219,5 +197,475 @@ public class ContextualLog implements Log {
         public String toString() {
             return context + " " + message;
         }
+    }
+
+    public String getName() {
+	return decoratedLog.getName();
+    }
+
+
+    public void trace(String message, Object arg) {
+        if (isTraceEnabled()) {
+            if (context == null) {
+                decoratedLog.trace(message, arg);
+            } else {
+                decoratedLog.trace(new Message(context, message).toString(), arg);
+            }
+        }
+    }
+
+
+    public void trace(String message, Object arg1, Object arg2) {
+        if (isTraceEnabled()) {
+            if (context == null) {
+                decoratedLog.trace(message, arg1, arg2);
+            } else {
+                decoratedLog.trace(new Message(context, message).toString(), arg1, arg2);
+            }
+        }
+	
+    }
+
+
+    public void trace(String message, Object[] argArray) {
+        if (isTraceEnabled()) {
+            if (context == null) {
+                decoratedLog.trace(message, argArray);
+            } else {
+                decoratedLog.trace(new Message(context, message).toString(), argArray);
+            }
+        }
+    }
+
+
+    public boolean isTraceEnabled(Marker marker) {
+	return decoratedLog.isTraceEnabled(marker);
+    }
+
+
+    public void trace(Marker marker, String msg) {
+        if (isTraceEnabled(marker)) {
+            if (context == null) {
+                decoratedLog.trace(marker, msg);
+            } else {
+                decoratedLog.trace(marker, new Message(context, msg).toString());
+            }
+        }
+    }
+
+
+    public void trace(Marker marker, String message, Object arg) {
+        if (isTraceEnabled(marker)) {
+            if (context == null) {
+                decoratedLog.trace(marker, message, arg);
+            } else {
+                decoratedLog.trace(marker, new Message(context, message).toString(), arg);
+            }
+        }
+    }
+
+
+    public void trace(Marker marker, String message, Object arg1, Object arg2) {
+        if (isTraceEnabled(marker)) {
+            if (context == null) {
+                decoratedLog.trace(marker, message, arg1, arg2);
+            } else {
+                decoratedLog.trace(marker, new Message(context, message).toString(), arg1, arg2);
+            }
+        }
+    }
+
+
+    public void trace(Marker marker, String message, Object[] argArray) {
+        if (isTraceEnabled(marker)) {
+            if (context == null) {
+                decoratedLog.trace(marker, message, argArray);
+            } else {
+                decoratedLog.trace(marker, new Message(context, message).toString(), argArray);
+            }
+        }
+    }
+
+
+    public void trace(Marker marker, String msg, Throwable t) {
+        if (isTraceEnabled(marker)) {
+            if (context == null) {
+                decoratedLog.trace(marker, msg, t);
+            } else {
+                decoratedLog.trace(marker, new Message(context, msg).toString(), t);
+            }
+        }
+    }
+
+
+    public void debug(String message, Object arg) {
+        if (isDebugEnabled()) {
+            if (context == null) {
+                decoratedLog.debug(message, arg);
+            } else {
+                decoratedLog.debug(new Message(context, message).toString(), arg);
+            }
+        }
+    }
+
+
+    public void debug(String message, Object arg1, Object arg2) {
+        if (isDebugEnabled()) {
+            if (context == null) {
+                decoratedLog.debug(message, arg1, arg2);
+            } else {
+                decoratedLog.debug(new Message(context, message).toString(), arg1, arg2);
+            }
+        }
+    }
+
+
+    public void debug(String message, Object[] argArray) {
+        if (isDebugEnabled()) {
+            if (context == null) {
+                decoratedLog.debug(message, argArray);
+            } else {
+                decoratedLog.debug(new Message(context, message).toString(), argArray);
+            }
+        }
+    }
+
+
+    public boolean isDebugEnabled(Marker marker) {
+	return decoratedLog.isDebugEnabled(marker);
+    }
+
+
+    public void debug(Marker marker, String msg) {
+        if (isDebugEnabled(marker)) {
+            if (context == null) {
+                decoratedLog.debug(marker, msg);
+            } else {
+                decoratedLog.debug(marker, new Message(context, msg).toString());
+            }
+        }
+    }
+
+
+    public void debug(Marker marker, String message, Object arg) {
+        if (isDebugEnabled(marker)) {
+            if (context == null) {
+                decoratedLog.debug(marker, message, arg);
+            } else {
+                decoratedLog.debug(marker, new Message(context, message).toString(), arg);
+            }
+        }
+    }
+
+
+    public void debug(Marker marker, String message, Object arg1, Object arg2) {
+        if (isDebugEnabled(marker)) {
+            if (context == null) {
+                decoratedLog.debug(marker, message, arg1, arg2);
+            } else {
+                decoratedLog.debug(new Message(context, message).toString(), arg1, arg2);
+            }
+        }
+    }
+
+
+    public void debug(Marker marker, String message, Object[] argArray) {
+        if (isDebugEnabled(marker)) {
+            if (context == null) {
+                decoratedLog.debug(marker, message, argArray);
+            } else {
+                decoratedLog.debug(marker, new Message(context, message).toString(), argArray);
+            }
+        }
+    }
+
+
+    public void debug(Marker marker, String msg, Throwable t) {
+        if (isDebugEnabled(marker)) {
+            if (context == null) {
+                decoratedLog.debug(marker, msg, t);
+            } else {
+                decoratedLog.debug(marker, new Message(context, msg).toString(), t);
+            }
+        }
+    }
+
+
+    public void info(String message, Object arg) {
+        if (isInfoEnabled()) {
+            if (context == null) {
+                decoratedLog.info(message, arg);
+            } else {
+                decoratedLog.info(new Message(context, message).toString(), arg);
+            }
+        }
+    }
+
+
+    public void info(String message, Object arg1, Object arg2) {
+        if (isInfoEnabled()) {
+            if (context == null) {
+                decoratedLog.info(message, arg1, arg2);
+            } else {
+                decoratedLog.info(new Message(context, message).toString(), arg1, arg2);
+            }
+        }
+    }
+
+
+    public void info(String message, Object[] argArray) {
+        if (isInfoEnabled()) {
+            if (context == null) {
+                decoratedLog.info(message, argArray);
+            } else {
+                decoratedLog.info(new Message(context, message).toString(), argArray);
+            }
+        }
+    }
+
+
+    public boolean isInfoEnabled(Marker marker) {
+	return decoratedLog.isInfoEnabled(marker);
+    }
+
+
+    public void info(Marker marker, String msg) {
+        if (isInfoEnabled(marker)) {
+            if (context == null) {
+                decoratedLog.info(marker, msg);
+            } else {
+                decoratedLog.info(marker, new Message(context, msg).toString());
+            }
+        }
+    }
+
+
+    public void info(Marker marker, String message, Object arg) {
+        if (isInfoEnabled(marker)) {
+            if (context == null) {
+                decoratedLog.info(marker, message, arg);
+            } else {
+                decoratedLog.info(marker, new Message(context, message).toString(), arg);
+            }
+        }
+    }
+
+
+    public void info(Marker marker, String message, Object arg1, Object arg2) {
+        if (isInfoEnabled(marker)) {
+            if (context == null) {
+                decoratedLog.info(marker, message, arg1, arg2);
+            } else {
+                decoratedLog.info(marker, new Message(context, message).toString(), arg1, arg2);
+            }
+        }
+    }
+
+
+    public void info(Marker marker, String message, Object[] argArray) {
+        if (isInfoEnabled(marker)) {
+            if (context == null) {
+                decoratedLog.info(marker, message, argArray);
+            } else {
+                decoratedLog.info(marker, new Message(context, message).toString(), argArray);
+            }
+        }
+    }
+
+
+    public void info(Marker marker, String msg, Throwable t) {
+        if (isInfoEnabled(marker)) {
+            if (context == null) {
+                decoratedLog.info(marker, msg, t);
+            } else {
+                decoratedLog.info(marker, new Message(context, msg).toString(), t);
+            }
+        }
+    }
+
+
+    public void warn(String message, Object arg) {
+        if (isWarnEnabled()) {
+            if (context == null) {
+                decoratedLog.warn(message, arg);
+            } else {
+                decoratedLog.warn(new Message(context, message).toString(), arg);
+            }
+        }        
+    }
+
+
+    public void warn(String message, Object[] argArray) {
+        if (isWarnEnabled()) {
+            if (context == null) {
+                decoratedLog.warn(message, argArray);
+            } else {
+                decoratedLog.warn(new Message(context, message).toString(), argArray);
+            }
+        }        
+    }
+
+
+    public void warn(String message, Object arg1, Object arg2) {
+        if (isWarnEnabled()) {
+            if (context == null) {
+                decoratedLog.warn(message, arg1, arg2);
+            } else {
+                decoratedLog.warn(new Message(context, message).toString(), arg1, arg2);
+            }
+        }        
+    }
+
+
+    public boolean isWarnEnabled(Marker marker) {
+	return decoratedLog.isWarnEnabled(marker);
+    }
+
+
+    public void warn(Marker marker, String msg) {
+        if (isWarnEnabled(marker)) {
+            if (context == null) {
+                decoratedLog.warn(marker, msg);
+            } else {
+                decoratedLog.warn(marker, new Message(context, msg).toString());
+            }
+        }        
+    }
+
+
+    public void warn(Marker marker, String message, Object arg) {
+        if (isWarnEnabled(marker)) {
+            if (context == null) {
+                decoratedLog.warn(marker, message, arg);
+            } else {
+                decoratedLog.warn(marker, new Message(context, message).toString(), arg);
+            }
+        }        
+    }
+
+
+    public void warn(Marker marker, String message, Object arg1, Object arg2) {
+        if (isWarnEnabled(marker)) {
+            if (context == null) {
+                decoratedLog.warn(marker, message, arg1, arg2);
+            } else {
+                decoratedLog.warn(marker, new Message(context, message).toString(), arg1, arg2);
+            }
+        }        
+    }
+
+
+    public void warn(Marker marker, String message, Object[] argArray) {
+        if (isWarnEnabled(marker)) {
+            if (context == null) {
+                decoratedLog.warn(marker, message, argArray);
+            } else {
+                decoratedLog.warn(marker, new Message(context, message).toString(), argArray);
+            }
+        }        
+    }
+
+
+    public void warn(Marker marker, String msg, Throwable t) {
+        if (isWarnEnabled(marker)) {
+            if (context == null) {
+                decoratedLog.warn(marker, msg, t);
+            } else {
+                decoratedLog.warn(marker, new Message(context, msg).toString(), t);
+            }
+        }        
+    }
+
+
+    public void error(String message, Object arg) {
+        if (isErrorEnabled()) {
+            if (context == null) {
+                decoratedLog.warn(message, arg);
+            } else {
+                decoratedLog.warn(new Message(context, message).toString(), arg);
+            }
+        }        
+    }
+
+
+    public void error(String message, Object arg1, Object arg2) {
+        if (isErrorEnabled()) {
+            if (context == null) {
+                decoratedLog.warn(message, arg1, arg2);
+            } else {
+                decoratedLog.warn(new Message(context, message).toString(), arg1, arg2);
+            }
+        }        
+    }
+
+
+    public void error(String message, Object[] argArray) {
+        if (isErrorEnabled()) {
+            if (context == null) {
+                decoratedLog.warn(message, argArray);
+            } else {
+                decoratedLog.warn(new Message(context, message).toString(), argArray);
+            }
+        }        
+    }
+
+
+    public boolean isErrorEnabled(Marker marker) {
+	return decoratedLog.isErrorEnabled(marker);
+    }
+
+
+    public void error(Marker marker, String msg) {
+        if (isErrorEnabled(marker)) {
+            if (context == null) {
+                decoratedLog.warn(msg);
+            } else {
+                decoratedLog.warn(marker, new Message(context, msg).toString());
+            }
+        }        
+    }
+
+
+    public void error(Marker marker, String message, Object arg) {
+        if (isErrorEnabled(marker)) {
+            if (context == null) {
+                decoratedLog.warn(marker, message, arg);
+            } else {
+                decoratedLog.warn(marker, new Message(context, message).toString(), arg);
+            }
+        }        
+    }
+
+
+    public void error(Marker marker, String message, Object arg1, Object arg2) {
+        if (isErrorEnabled(marker)) {
+            if (context == null) {
+                decoratedLog.warn(marker, message, arg1, arg2);
+            } else {
+                decoratedLog.warn(marker, new Message(context, message).toString(), arg1, arg2);
+            }
+        }        
+    }
+
+
+    public void error(Marker marker, String message, Object[] argArray) {
+        if (isErrorEnabled(marker)) {
+            if (context == null) {
+                decoratedLog.warn(marker, message, argArray);
+            } else {
+                decoratedLog.warn(marker, new Message(context, message).toString(), argArray);
+            }
+        }        
+    }
+
+
+    public void error(Marker marker, String msg, Throwable t) {
+        if (isErrorEnabled(marker)) {
+            if (context == null) {
+                decoratedLog.warn(marker, msg, t);
+            } else {
+                decoratedLog.warn(marker, new Message(context, msg).toString(), t);
+            }
+        }        
     }
 }

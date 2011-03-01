@@ -30,12 +30,12 @@ import java.util.Map;
 
 import javax.mail.Flags;
 
-import org.apache.commons.logging.Log;
 import org.apache.james.mailbox.MailboxListener;
 import org.apache.james.mailbox.MailboxPath;
 import org.apache.james.mailbox.MailboxSession;
 import org.junit.Before;
 import org.junit.Test;
+import org.slf4j.Logger;
 
 public class MailboxEventAnalyserTest {
 
@@ -67,7 +67,7 @@ public class MailboxEventAnalyserTest {
             return null;
         }
 
-        public Log getLog() {
+        public Logger getLog() {
             return null;
         }
 

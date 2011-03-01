@@ -19,7 +19,6 @@
 
 package org.apache.james.imap.processor.base;
 
-import org.apache.commons.logging.Log;
 import org.apache.james.imap.api.ImapCommand;
 import org.apache.james.imap.api.ImapMessage;
 import org.apache.james.imap.api.display.HumanReadableText;
@@ -28,6 +27,7 @@ import org.apache.james.imap.api.message.response.ImapResponseMessage;
 import org.apache.james.imap.api.message.response.StatusResponseFactory;
 import org.apache.james.imap.api.process.ImapProcessor;
 import org.apache.james.imap.api.process.ImapSession;
+import org.slf4j.Logger;
 
 public class UnknownRequestProcessor implements ImapProcessor {
 
@@ -39,7 +39,7 @@ public class UnknownRequestProcessor implements ImapProcessor {
     }
 
     public ImapResponseMessage process(ImapMessage message, ImapSession session) {
-        Log logger = session.getLog();
+        Logger logger = session.getLog();
         if (logger != null && logger.isDebugEnabled()) {
             logger.debug("Unknown message: " + message);
         }

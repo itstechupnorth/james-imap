@@ -19,7 +19,6 @@
 
 package org.apache.james.imap.processor;
 
-import org.apache.commons.logging.Log;
 import org.apache.james.imap.api.ImapCommand;
 import org.apache.james.imap.api.ImapSessionUtils;
 import org.apache.james.imap.api.display.HumanReadableText;
@@ -34,6 +33,7 @@ import org.apache.james.mailbox.MailboxManager;
 import org.apache.james.mailbox.MailboxPath;
 import org.apache.james.mailbox.MailboxSession;
 import org.apache.james.mailbox.MessageManager;
+import org.slf4j.Logger;
 
 public class StatusProcessor extends AbstractMailboxProcessor<StatusRequest> {
 
@@ -51,7 +51,7 @@ public class StatusProcessor extends AbstractMailboxProcessor<StatusRequest> {
             String tag, ImapCommand command, Responder responder) {
         final MailboxPath mailboxPath = buildFullPath(session, request.getMailboxName());
         final StatusDataItems statusDataItems = request.getStatusDataItems();
-        final Log logger = session.getLog();
+        final Logger logger = session.getLog();
         final MailboxSession mailboxSession = ImapSessionUtils.getMailboxSession(session);
 
         try {

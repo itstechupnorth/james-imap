@@ -21,7 +21,6 @@ package org.apache.james.imap.main;
 
 import java.io.IOException;
 
-import org.apache.commons.logging.Log;
 import org.apache.james.imap.api.ImapMessage;
 import org.apache.james.imap.api.message.response.ImapResponseMessage;
 import org.apache.james.imap.api.process.ImapProcessor;
@@ -32,6 +31,7 @@ import org.apache.james.imap.decode.ImapDecoder;
 import org.apache.james.imap.decode.ImapRequestLineReader;
 import org.apache.james.imap.encode.ImapEncoder;
 import org.apache.james.imap.encode.ImapResponseComposer;
+import org.slf4j.Logger;
 
 public abstract class AbstractImapRequestHandler {
 
@@ -70,7 +70,7 @@ public abstract class AbstractImapRequestHandler {
             result = true;
         } else {
             result = false;
-            final Log logger = session.getLog();
+            final Logger logger = session.getLog();
             logger.info(failure.getMessage());
             if (logger.isDebugEnabled()) {
                 logger.debug("Failed to write " + message, failure);

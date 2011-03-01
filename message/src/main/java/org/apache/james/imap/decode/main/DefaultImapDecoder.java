@@ -18,7 +18,6 @@
  ****************************************************************/
 package org.apache.james.imap.decode.main;
 
-import org.apache.commons.logging.Log;
 import org.apache.james.imap.api.ImapMessage;
 import org.apache.james.imap.api.ImapSessionState;
 import org.apache.james.imap.api.display.HumanReadableText;
@@ -29,6 +28,7 @@ import org.apache.james.imap.decode.ImapCommandParserFactory;
 import org.apache.james.imap.decode.ImapDecoder;
 import org.apache.james.imap.decode.ImapRequestLineReader;
 import org.apache.james.imap.decode.DecodingException;
+import org.slf4j.Logger;
 
 /**
  * {@link ImapDecoder} implementation which parse the data via lookup the right {@link ImapCommandParser} via an {@link ImapCommandParserFactory}. The 
@@ -64,7 +64,7 @@ public class DefaultImapDecoder implements ImapDecoder {
      */
     public ImapMessage decode(ImapRequestLineReader request, ImapSession session) {
         ImapMessage message;
-        final Log logger = session.getLog();
+        final Logger logger = session.getLog();
 
         try {
             final String tag = request.tag();

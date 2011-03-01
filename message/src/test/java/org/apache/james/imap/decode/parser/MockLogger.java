@@ -22,78 +22,205 @@
  */
 package org.apache.james.imap.decode.parser;
 
-import org.apache.commons.logging.Log;
+import org.slf4j.Logger;
+import org.slf4j.Marker;
 
-final class MockLogger implements Log {
-    public void debug(Object arg0) {
+
+final class MockLogger implements Logger {
+
+    public void debug(Marker arg0, String arg1, Object arg2, Object arg3) {
     }
 
-    public void debug(Object arg0, Throwable arg1) {
+    public void debug(Marker arg0, String arg1, Object arg2) {
     }
 
-    public void error(Object arg0) {
+    public void debug(Marker arg0, String arg1, Object[] arg2) {
     }
 
-    public void error(Object arg0, Throwable arg1) {
+    public void debug(Marker arg0, String arg1, Throwable arg2) {
     }
 
-    public void fatalError(Object arg0) {
+    public void debug(Marker arg0, String arg1) {
     }
 
-    public void fatalError(Object arg0, Throwable arg1) {
+    public void debug(String arg0, Object arg1, Object arg2) {
     }
 
-    public void info(Object arg0) {
+    public void debug(String arg0, Object arg1) {
     }
 
-    public void info(Object arg0, Throwable arg1) {
+    public void debug(String arg0, Object[] arg1) {
+    }
+
+    public void debug(String arg0, Throwable arg1) {
+    }
+
+    public void debug(String arg0) {
+    }
+
+    public void error(Marker arg0, String arg1, Object arg2, Object arg3) {
+    }
+
+    public void error(Marker arg0, String arg1, Object arg2) {
+    }
+
+    public void error(Marker arg0, String arg1, Object[] arg2) {
+    }
+
+    public void error(Marker arg0, String arg1, Throwable arg2) {
+    }
+
+    public void error(Marker arg0, String arg1) {
+    }
+
+    public void error(String arg0, Object arg1, Object arg2) {
+    }
+
+    public void error(String arg0, Object arg1) {
+    }
+
+    public void error(String arg0, Object[] arg1) {
+    }
+
+    public void error(String arg0, Throwable arg1) {
+    }
+
+    public void error(String arg0) {
+    }
+
+    public String getName() {
+	// TODO Auto-generated method stub
+	return null;
+    }
+
+    public void info(Marker arg0, String arg1, Object arg2, Object arg3) {
+    }
+
+    public void info(Marker arg0, String arg1, Object arg2) {
+    }
+
+    public void info(Marker arg0, String arg1, Object[] arg2) {
+    }
+
+    public void info(Marker arg0, String arg1, Throwable arg2) {
+    }
+
+    public void info(Marker arg0, String arg1) {
+    }
+
+    public void info(String arg0, Object arg1, Object arg2) {
+    }
+
+    public void info(String arg0, Object arg1) {
+    }
+
+    public void info(String arg0, Object[] arg1) {
+    }
+
+    public void info(String arg0, Throwable arg1) {
+    }
+
+    public void info(String arg0) {
     }
 
     public boolean isDebugEnabled() {
-        return false;
+	return false;
+    }
+
+    public boolean isDebugEnabled(Marker arg0) {
+	return false;
     }
 
     public boolean isErrorEnabled() {
-        return false;
+	return false;
     }
 
-    public boolean isFatalErrorEnabled() {
-        return false;
+    public boolean isErrorEnabled(Marker arg0) {
+	return false;
     }
 
     public boolean isInfoEnabled() {
-        return false;
+	return false;
     }
 
-    public boolean isWarnEnabled() {
-        return false;
-    }
-
-    public void warn(Object arg0) {
-
-    }
-
-    public void warn(Object arg0, Throwable arg1) {
-
-    }
-
-    public void fatal(Object arg0) {
-    }
-
-    public void fatal(Object arg0, Throwable arg1) {
-    }
-
-    public boolean isFatalEnabled() {
-        return false;
+    public boolean isInfoEnabled(Marker arg0) {
+	return false;
     }
 
     public boolean isTraceEnabled() {
-        return false;
+	return false;
     }
 
-    public void trace(Object arg0) {
+    public boolean isTraceEnabled(Marker arg0) {
+	return false;
     }
 
-    public void trace(Object arg0, Throwable arg1) {
+    public boolean isWarnEnabled() {
+	return false;
     }
+
+    public boolean isWarnEnabled(Marker arg0) {
+	return false;
+    }
+
+    public void trace(Marker arg0, String arg1, Object arg2, Object arg3) {
+    }
+
+    public void trace(Marker arg0, String arg1, Object arg2) {
+    }
+
+    public void trace(Marker arg0, String arg1, Object[] arg2) {
+    }
+
+    public void trace(Marker arg0, String arg1, Throwable arg2) {
+    }
+
+    public void trace(Marker arg0, String arg1) {
+    }
+
+    public void trace(String arg0, Object arg1, Object arg2) {
+    }
+
+    public void trace(String arg0, Object arg1) {
+    }
+
+    public void trace(String arg0, Object[] arg1) {
+    }
+
+    public void trace(String arg0, Throwable arg1) {
+    }
+
+    public void trace(String arg0) {
+    }
+
+    public void warn(Marker arg0, String arg1, Object arg2, Object arg3) {
+    }
+
+    public void warn(Marker arg0, String arg1, Object arg2) {
+    }
+
+    public void warn(Marker arg0, String arg1, Object[] arg2) {
+    }
+
+    public void warn(Marker arg0, String arg1, Throwable arg2) {
+    }
+
+    public void warn(Marker arg0, String arg1) {
+    }
+
+    public void warn(String arg0, Object arg1, Object arg2) {
+    }
+
+    public void warn(String arg0, Object arg1) {
+    }
+
+    public void warn(String arg0, Object[] arg1) {
+    }
+
+    public void warn(String arg0, Throwable arg1) {
+    }
+
+    public void warn(String arg0) {
+    }
+
 }

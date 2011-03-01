@@ -25,7 +25,6 @@ package org.apache.james.imap.processor.fetch;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
 import org.apache.james.imap.api.ImapConstants;
 import org.apache.james.imap.message.response.FetchResponse;
 import org.apache.james.mailbox.Headers;
@@ -38,11 +37,12 @@ import org.apache.james.mime4j.field.address.Group;
 import org.apache.james.mime4j.field.address.MailboxList;
 import org.apache.james.mime4j.field.address.parser.ParseException;
 import org.apache.james.mime4j.util.MimeUtil;
+import org.slf4j.Logger;
 
 final class EnvelopeBuilder {
-    private final Log logger;
+    private final Logger logger;
 
-    public EnvelopeBuilder(final Log logger) {
+    public EnvelopeBuilder(final Logger logger) {
         super();
         this.logger = logger;
     }

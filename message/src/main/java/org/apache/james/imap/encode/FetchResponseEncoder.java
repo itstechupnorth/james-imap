@@ -30,13 +30,13 @@ import java.util.TreeSet;
 
 import javax.mail.Flags;
 
-import org.apache.commons.logging.Log;
 import org.apache.james.imap.api.ImapConstants;
 import org.apache.james.imap.api.ImapMessage;
 import org.apache.james.imap.api.process.ImapSession;
 import org.apache.james.imap.encode.base.AbstractChainedImapEncoder;
 import org.apache.james.imap.message.response.FetchResponse;
 import org.apache.james.imap.message.response.FetchResponse.Structure;
+import org.slf4j.Logger;
 
 public class FetchResponseEncoder extends AbstractChainedImapEncoder {
 
@@ -196,7 +196,7 @@ public class FetchResponseEncoder extends AbstractChainedImapEncoder {
                 final String name = iter.next();
                 final String value = params.get(name);
                 if (value == null) {
-                    final Log logger = session.getLog();
+                    final Logger logger = session.getLog();
                     logger.warn("Disposition parameter name has no value.");
                     if (logger.isDebugEnabled()) {
                         logger.debug("Disposition parameter " + name

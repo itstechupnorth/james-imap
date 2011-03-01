@@ -21,11 +21,11 @@ package org.apache.james.imap.encode.base;
 
 import java.io.IOException;
 
-import org.apache.commons.logging.Log;
 import org.apache.james.imap.api.ImapMessage;
 import org.apache.james.imap.api.process.ImapSession;
 import org.apache.james.imap.encode.ImapEncoder;
 import org.apache.james.imap.encode.ImapResponseComposer;
+import org.slf4j.Logger;
 
 /**
  * {@link ImapEncoder} which should get added to the end of the encoder chain. It will handle the response
@@ -41,7 +41,7 @@ public class EndImapEncoder implements ImapEncoder {
      */
     public void encode(ImapMessage message, ImapResponseComposer composer, ImapSession session)
             throws IOException {
-        final Log logger = session.getLog();
+        final Logger logger = session.getLog();
         logger.warn("Unknown message");
         if (logger.isDebugEnabled()) {
             logger.debug("Chain end reached for " + message);

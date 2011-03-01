@@ -19,7 +19,6 @@
 
 package org.apache.james.imap.processor;
 
-import org.apache.commons.logging.Log;
 import org.apache.james.imap.api.ImapSessionUtils;
 import org.apache.james.imap.api.process.ImapProcessor;
 import org.apache.james.imap.api.process.ImapSession;
@@ -28,6 +27,7 @@ import org.apache.james.imap.processor.base.AbstractChainedProcessor;
 import org.apache.james.mailbox.MailboxException;
 import org.apache.james.mailbox.MailboxManager;
 import org.apache.james.mailbox.MailboxSession;
+import org.slf4j.Logger;
 
 /**
  * Processes system messages unrelated to IMAP.
@@ -52,7 +52,7 @@ public class SystemMessageProcessor extends AbstractChainedProcessor<SystemMessa
                     break;
             } 
         } catch (MailboxException e) {
-            final Log log = session.getLog();
+            final Logger log = session.getLog();
             log.warn("Force logout failed " + e.getMessage());
             log.debug("Cannot force logout", e);
         }

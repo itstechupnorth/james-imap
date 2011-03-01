@@ -25,7 +25,6 @@ import java.util.Date;
 
 import javax.mail.Flags;
 
-import org.apache.commons.logging.Log;
 import org.apache.james.imap.api.ImapCommand;
 import org.apache.james.imap.api.ImapSessionUtils;
 import org.apache.james.imap.api.display.HumanReadableText;
@@ -44,6 +43,7 @@ import org.apache.james.mailbox.MailboxPath;
 import org.apache.james.mailbox.MailboxSession;
 import org.apache.james.mailbox.MessageManager;
 import org.apache.james.mailbox.MessageManager.MetaData.FetchGroup;
+import org.slf4j.Logger;
 
 public class AppendProcessor extends AbstractMailboxProcessor<AppendRequest> {
 
@@ -107,7 +107,7 @@ public class AppendProcessor extends AbstractMailboxProcessor<AppendRequest> {
     private void tryCreate(ImapSession session, String tag, ImapCommand command, 
             Responder responder, MailboxNotFoundException e) {
         
-        final Log logger = session.getLog();
+        final Logger logger = session.getLog();
         if (logger.isDebugEnabled()) {
             logger.debug("Cannot open mailbox: ", e);
         }

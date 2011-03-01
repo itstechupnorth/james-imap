@@ -19,8 +19,8 @@
 
 package org.apache.james.imap.api.process;
 
-import org.apache.commons.logging.Log;
 import org.apache.james.imap.api.ImapSessionState;
+import org.slf4j.Logger;
 
 /**
  * Encapsulates all state held for an ongoing Imap session, which commences when
@@ -39,7 +39,7 @@ public interface ImapSession {
      * Using this log allows context information to be associated.
      * @return context sensitive log, not null
      */
-    Log getLog();
+    Logger getLog();
 
     /**
      * Logs out the session. Marks the connection for closure;

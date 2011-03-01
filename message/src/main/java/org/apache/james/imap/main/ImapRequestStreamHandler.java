@@ -23,7 +23,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import org.apache.commons.logging.Log;
 import org.apache.james.imap.api.ImapSessionState;
 import org.apache.james.imap.api.process.ImapProcessor;
 import org.apache.james.imap.api.process.ImapSession;
@@ -34,6 +33,7 @@ import org.apache.james.imap.decode.ImapRequestStreamLineReader;
 import org.apache.james.imap.encode.ImapEncoder;
 import org.apache.james.imap.encode.base.ImapResponseComposerImpl;
 import org.apache.james.imap.message.request.SystemMessage;
+import org.slf4j.Logger;
 
 /**
  * @version $Revision: 109034 $
@@ -66,7 +66,7 @@ public final class ImapRequestStreamHandler extends AbstractImapRequestHandler{
             ImapRequestLineReader request = new ImapRequestStreamLineReader(input,
                     output);
 
-            final Log logger = session.getLog();
+            final Logger logger = session.getLog();
             try {
                 request.nextChar();
             } catch (DecodingException e) {
