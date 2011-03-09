@@ -55,12 +55,12 @@ public class RenameProcessor extends AbstractMailboxProcessor<RenameRequest> {
             MailboxSession mailboxsession = ImapSessionUtils.getMailboxSession(session);
             mailboxManager.renameMailbox(existingPath, newPath, mailboxsession);
 
-            if (existingPath.getName().equalsIgnoreCase(ImapConstants.INBOX_NAME)) {
-                if (mailboxManager.mailboxExists(existingPath, mailboxsession) == false) {
-                    mailboxManager.createMailbox(existingPath, mailboxsession);
-                }
-              
-            }
+	    if (existingPath.getName().equalsIgnoreCase(
+		    ImapConstants.INBOX_NAME)
+		    && mailboxManager.mailboxExists(existingPath,
+			    mailboxsession) == false) {
+		mailboxManager.createMailbox(existingPath, mailboxsession);
+	    }
             okComplete(command, tag, responder);
             unsolicitedResponses(session, responder, false);
         } catch (MailboxExistsException e) {

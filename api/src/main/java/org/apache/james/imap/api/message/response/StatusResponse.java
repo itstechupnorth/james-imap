@@ -130,13 +130,13 @@ public interface StatusResponse extends ImapResponseMessage {
                 "TRYCREATE");
 
         /** RFC4315 <code>APPENDUID</code> response code */
-        public static final ResponseCode appendUid(long uidValidity, IdRange[] uids) {
+        public static ResponseCode appendUid(long uidValidity, IdRange[] uids) {
             String uidParam = formatRanges(uids);
             return new ResponseCode("APPENDUID", Arrays.asList(uidParam), uidValidity, false);
         }
 
         /** RFC4315 <code>COPYUID</code> response code */
-        public static final ResponseCode copyUid(long uidValidity, IdRange[] sourceRanges, IdRange[] targetRanges) {
+        public static ResponseCode copyUid(long uidValidity, IdRange[] sourceRanges, IdRange[] targetRanges) {
             String source = formatRanges(sourceRanges);
             String target = formatRanges(targetRanges);
 
@@ -161,7 +161,7 @@ public interface StatusResponse extends ImapResponseMessage {
          * 
          * @return <code>ResponseCode</code>, not null
          */
-        public static final ResponseCode alert() {
+        public static 	ResponseCode alert() {
             return ALERT;
         }
 
@@ -173,7 +173,7 @@ public interface StatusResponse extends ImapResponseMessage {
          *            names
          * @return <code>ResponseCode</code>, not null
          */
-        public static final ResponseCode badCharset(Collection<String> charsetNames) {
+        public static ResponseCode badCharset(Collection<String> charsetNames) {
             return new ResponseCode("BADCHARSET", charsetNames);
         }
 
@@ -182,7 +182,7 @@ public interface StatusResponse extends ImapResponseMessage {
          * 
          * @return <code>ResponseCode</code>, not null
          */
-        public static final ResponseCode parse() {
+        public static ResponseCode parse() {
             return PARSE;
         }
 
@@ -193,7 +193,7 @@ public interface StatusResponse extends ImapResponseMessage {
          *            <code>Collection<String></code> containing flag names
          * @return <code>ResponseCode</code>, not null
          */
-        public static final ResponseCode permanentFlags(Flags flags) {
+        public static ResponseCode permanentFlags(Flags flags) {
             return new ResponseCode("PERMANENTFLAGS", MessageFlags.names(flags));
         }
 
@@ -202,7 +202,7 @@ public interface StatusResponse extends ImapResponseMessage {
          * 
          * @return <code>ResponseCode</code>, not null
          */
-        public static final ResponseCode readOnly() {
+        public static ResponseCode readOnly() {
             return READ_ONLY;
         }
 
@@ -211,7 +211,7 @@ public interface StatusResponse extends ImapResponseMessage {
          * 
          * @return <code>ResponseCode</code>, not null
          */
-        public static final ResponseCode readWrite() {
+        public static ResponseCode readWrite() {
             return READ_WRITE;
         }
 
@@ -220,7 +220,7 @@ public interface StatusResponse extends ImapResponseMessage {
          * 
          * @return <code>ResponseCode</code>, not null
          */
-        public static final ResponseCode tryCreate() {
+        public static ResponseCode tryCreate() {
             return TRYCREATE;
         }
 
@@ -231,7 +231,7 @@ public interface StatusResponse extends ImapResponseMessage {
          *            positive non-zero integer
          * @return <code>ResponseCode</code>, not null
          */
-        public static final ResponseCode uidValidity(long uid) {
+        public static ResponseCode uidValidity(long uid) {
             return new ResponseCode("UIDVALIDITY", uid);
         }
 
@@ -242,7 +242,7 @@ public interface StatusResponse extends ImapResponseMessage {
          *            positive non-zero integer
          * @return <code>ResponseCode</code>, not null
          */
-        public static final ResponseCode unseen(int numberUnseen) {
+        public static ResponseCode unseen(int numberUnseen) {
             return new ResponseCode("UNSEEN", numberUnseen);
         }
 
@@ -253,7 +253,7 @@ public interface StatusResponse extends ImapResponseMessage {
          *            positive non-zero integer
          * @return <code>ResponseCode</code>, not null
          */
-        public static final ResponseCode uidNext(long uid) {
+        public static ResponseCode uidNext(long uid) {
             return new ResponseCode("UIDNEXT", uid);
         }
 
@@ -306,7 +306,7 @@ public interface StatusResponse extends ImapResponseMessage {
             this.number = number;
         }
 
-        public final String getCode() {
+        public String getCode() {
             return code;
         }
 
@@ -315,11 +315,11 @@ public interface StatusResponse extends ImapResponseMessage {
          * 
          * @return the number, or zero if no number has been set
          */
-        public final long getNumber() {
+        public long getNumber() {
             return number;
         }
 
-        public final boolean useParens() {
+        public boolean useParens() {
             return useParens;
         }
         
@@ -329,7 +329,7 @@ public interface StatusResponse extends ImapResponseMessage {
          * @return the parameters <code>Collection</code> of
          *         <code>String</code> parameters, not null
          */
-        public final Collection<String> getParameters() {
+        public Collection<String> getParameters() {
             return parameters;
         }
 

@@ -77,7 +77,7 @@ public final class DecoderUtils {
         } else if (flagString.equalsIgnoreCase(MessageFlags.SEEN_ALL_CAPS)) {
             flags.add(Flags.Flag.SEEN);
         } else {
-            if (flagString.equalsIgnoreCase(MessageFlags.RECENT_ALL_CAPS)) {
+            if (flagString.equalsIgnoreCase(MessageFlags.RECENT_ALL_CAPS)) { // NOPMD keep comment
                 // RFC3501 specifically excludes /Recent
                 // The /Recent flag should be set automatically by the server
             } else {
@@ -96,7 +96,7 @@ public final class DecoderUtils {
      * @throws DecodingException
      *             when this conversion fails
      */
-    public static final Date decodeDateTime(CharSequence chars)
+    public static Date decodeDateTime(CharSequence chars)
             throws DecodingException {
         if (isDateTime(chars)) {
             final char dayHigh = chars.charAt(0);
@@ -469,7 +469,7 @@ public final class DecoderUtils {
      * @throws DecodingException
      *             if the char is not a digit
      */
-    public static final int decodeDigit(char character)
+    public static int decodeDigit(char character)
             throws DecodingException {
         final int result = character - ASCII_ZERO;
         if (result < 0 || result > 9) {

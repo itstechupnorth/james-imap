@@ -88,11 +88,11 @@ final class HeaderBodyElement implements BodyElement {
         for (final Iterator<MessageResult.Header> it = headers.iterator(); it.hasNext();) {
             MessageResult.Header header = it.next();
             header.writeTo(channel);
-            while (channel.write(endLine) > 0) {
+            while (channel.write(endLine) > 0) { // NOPMD false positive
             }
             endLine.rewind();
         }
-        while (channel.write(endLine) > 0) {
+        while (channel.write(endLine) > 0) { // NOPMD false positive
         }
     }
 

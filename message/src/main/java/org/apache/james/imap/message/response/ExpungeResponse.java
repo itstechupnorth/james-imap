@@ -30,7 +30,7 @@ public final class ExpungeResponse implements ImapResponseMessage {
         this.messageSequenceNumber = messageSequenceNumber;
     }
 
-    public final int getMessageSequenceNumber() {
+    public int getMessageSequenceNumber() {
         return messageSequenceNumber;
     }
 

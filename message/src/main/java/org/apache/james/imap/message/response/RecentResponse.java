@@ -30,7 +30,7 @@ public final class RecentResponse implements ImapResponseMessage {
         this.numberFlaggedRecent = numberFlaggedRecent;
     }
 
-    public final int getNumberFlaggedRecent() {
+    public int getNumberFlaggedRecent() {
         return numberFlaggedRecent;
     }
 }

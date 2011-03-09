@@ -29,7 +29,7 @@ public final class ExistsResponse implements ImapResponseMessage {
         this.numberOfMessages = numberOfMessages;
     }
 
-    public final long getNumberOfMessages() {
+    public long getNumberOfMessages() {
         return numberOfMessages;
     }
 }

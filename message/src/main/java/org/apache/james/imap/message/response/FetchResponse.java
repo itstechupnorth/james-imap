@@ -90,7 +90,7 @@ public final class FetchResponse implements ImapResponseMessage {
      * 
      * @return message number
      */
-    public final int getMessageNumber() {
+    public int getMessageNumber() {
         return messageNumber;
     }
 
@@ -120,7 +120,7 @@ public final class FetchResponse implements ImapResponseMessage {
      * @return the internalDate, or null if the <code>FETCH</code> did not
      *         include <code>INTERNALDATE</code>
      */
-    public final Date getInternalDate() {
+    public Date getInternalDate() {
         return internalDate;
     }
 
@@ -130,7 +130,7 @@ public final class FetchResponse implements ImapResponseMessage {
      * @return the size, or null if the <code>FETCH</code> did not include
      *         <code>SIZE</code>
      */
-    public final Long getSize() {
+    public Long getSize() {
         return size;
     }
 
@@ -140,7 +140,7 @@ public final class FetchResponse implements ImapResponseMessage {
      * @return the envelope, or null if the <code>FETCH</code> did not include
      *         <code>ENVELOPE</code>
      */
-    public final Envelope getEnvelope() {
+    public Envelope getEnvelope() {
         return envelope;
     }
 
@@ -150,7 +150,7 @@ public final class FetchResponse implements ImapResponseMessage {
      * @return <code>List</code> of <code>BodyElement</code>'s, or null if
      *         the <code>FETCH</code> did not include body elements
      */
-    public final List<BodyElement> getElements() {
+    public List<BodyElement> getElements() {
         return elements;
     }
 

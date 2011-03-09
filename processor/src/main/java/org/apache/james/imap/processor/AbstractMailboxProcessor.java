@@ -232,7 +232,7 @@ abstract public class AbstractMailboxProcessor<M extends ImapRequest> extends Ab
         session.getLog().info(message.toString());
         session.getLog().debug(message.toString(), e);
         // TODO: consider whether error message should be passed to the user
-        final StatusResponse response = factory.untaggedNo(message);;
+        final StatusResponse response = factory.untaggedNo(message);
         responder.respond(response);
     }
 

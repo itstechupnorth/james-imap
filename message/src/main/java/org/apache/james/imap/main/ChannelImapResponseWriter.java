@@ -53,7 +53,7 @@ public class ChannelImapResponseWriter extends AbstractImapResponseWriter {
      * @see org.apache.james.imap.main.AbstractImapResponseWriter#write(java.nio.ByteBuffer)
      */
     protected void write(final ByteBuffer buffer) throws IOException {
-        while (out.write(buffer) > 0) {
+        while (out.write(buffer) > 0) { // NOPMD false positive
             // Write all
         }
     }

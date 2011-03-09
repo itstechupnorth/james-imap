@@ -90,8 +90,8 @@ public class AppendProcessor extends AbstractMailboxProcessor<AppendRequest> {
     
     private void consume(InputStream in) {
         try {
-            while(in.read() != -1);
-        } catch (IOException e1) {
+            while(in.read() != -1); // NOPMD false positive
+        } catch (IOException e1) { // NOPMD false positive
             // just consume
         } 
     }

@@ -24,8 +24,6 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
-import javax.mail.MessagingException;
-
 import org.apache.james.mailbox.MailboxException;
 import org.apache.james.mailbox.MessageResult;
 

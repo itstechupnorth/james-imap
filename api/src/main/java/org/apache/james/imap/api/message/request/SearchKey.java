@@ -357,7 +357,7 @@ public final class SearchKey {
      *         {@link #TYPE_SENTBEFORE}, {@link #TYPE_SENTON},
      *         {@link #TYPE_SENTSINCE}, {@link #TYPE_SINCE}; otherwise null
      */
-    public final DayMonthYear getDate() {
+    public DayMonthYear getDate() {
         return date;
     }
 
@@ -367,7 +367,7 @@ public final class SearchKey {
      * @return msn when {@link #TYPE_SEQUENCE_SET}, uids when {@link #TYPE_UID},
      *         null otherwise
      */
-    public final IdRange[] getSequenceNumbers() {
+    public IdRange[] getSequenceNumbers() {
         return sequence;
     }
 
@@ -376,7 +376,7 @@ public final class SearchKey {
      * 
      * @return the field name when {@link #TYPE_HEADER}, null otherwise
      */
-    public final String getName() {
+    public String getName() {
         return name;
     }
 
@@ -386,7 +386,7 @@ public final class SearchKey {
      * @return the size when {@link #TYPE_LARGER} or {@link #TYPE_SMALLER},
      *         otherwise 0
      */
-    public final long getSize() {
+    public long getSize() {
         return size;
     }
 
@@ -397,7 +397,7 @@ public final class SearchKey {
      *         {@link #TYPE_OR}, {@link #TYPE_AND} or {@link #TYPE_NOT}
      *         otherwise null
      */
-    public final List<SearchKey> getKeys() {
+    public List<SearchKey> getKeys() {
         return keys;
     }
 
@@ -406,7 +406,7 @@ public final class SearchKey {
      * 
      * @return the type
      */
-    public final int getType() {
+    public int getType() {
         return type;
     }
 
@@ -415,7 +415,7 @@ public final class SearchKey {
      * 
      * @return the value, or null when this type is not associated with a value.
      */
-    public final String getValue() {
+    public String getValue() {
         return value;
     }
 
