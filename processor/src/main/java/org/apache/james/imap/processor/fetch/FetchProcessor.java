@@ -86,23 +86,25 @@ public class FetchProcessor extends AbstractMailboxProcessor<FetchRequest> {
                 MessageRange normalizedMessageSet = normalizeMessageRange(session.getSelected(), messageSet);
                 MessageRange batchedMessageSet = MessageRange.range(normalizedMessageSet.getUidFrom(), normalizedMessageSet.getUidTo(), batchSize);
                 mailbox.getMessages(batchedMessageSet, resultToFetch, mailboxSession, new MessageCallback() {
-					
-					public void onMessages(Iterator<MessageResult> it) throws MailboxException {
-						while (it.hasNext()) {
-				            final MessageResult result = it.next();
-				            try {
-				                final FetchResponse response = builder.build(fetch, result, mailbox, session, useUids);
-				                responder.respond(response);
-				            } catch (ParseException e) {
-				                // we can't for whatever reason parse the message so just skip it and log it to debug
-				                session.getLog().debug("Unable to parse message with uid " + result.getUid(), e);
-				            } catch (MessageRangeException e) {
-				            	// we can't for whatever reason find the message so just skip it and log it to debug
-				                session.getLog().debug("Unable to find message with uid " + result.getUid(), e);
-							}
-				        }
-					}
-				});
+
+                    public void onMessages(Iterator<MessageResult> it) throws MailboxException {
+                        while (it.hasNext()) {
+                            final MessageResult result = it.next();
+                            try {
+                                final FetchResponse response = builder.build(fetch, result, mailbox, session, useUids);
+                                responder.respond(response);
+                            } catch (ParseException e) {
+                                // we can't for whatever reason parse the
+                                // message so just skip it and log it to debug
+                                session.getLog().debug("Unable to parse message with uid " + result.getUid(), e);
+                            } catch (MessageRangeException e) {
+                                // we can't for whatever reason find the message
+                                // so just skip it and log it to debug
+                                session.getLog().debug("Unable to find message with uid " + result.getUid(), e);
+                            }
+                        }
+                    }
+                });
             }
             
             unsolicitedResponses(session, responder, useUids);
