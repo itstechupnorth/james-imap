@@ -189,4 +189,11 @@ public class UidToMsnConverter implements MailboxListener {
     public synchronized boolean isClosed() {
         return closed;
     }
+
+    /**
+     * @see SelectedMailbox#existsCount()
+     */
+    public synchronized long getCount() {
+        return uidToMsn.size();
+    }
 }

@@ -81,6 +81,13 @@ public interface SelectedMailbox {
      * @return recentCount
      */
     public int recentCount();
+    
+    /**
+     * Return the count of all existing uids
+     * 
+     * @return existsCount
+     */
+    public long existsCount();
 
     /**
      * Return the path of the selected Mailbox
@@ -165,4 +172,5 @@ public interface SelectedMailbox {
      * @return lastUid
      */
     public long getLastUid();
+
 }

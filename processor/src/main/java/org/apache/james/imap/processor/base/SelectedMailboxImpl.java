@@ -138,6 +138,10 @@ public class SelectedMailboxImpl implements SelectedMailbox {
         checkExpungedRecents();
         return recentUids.size();
     }
+    
+    public long existsCount() {
+        return converter.getCount();
+    }
 
     /* (non-Javadoc)
      * @see org.apache.james.imap.api.process.SelectedMailbox#getPath()
