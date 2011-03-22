@@ -168,7 +168,10 @@ final class EnvelopeBuilder {
 
     private FetchResponse.Envelope.Address buildMailboxAddress(
             final org.apache.james.mime4j.field.address.Mailbox mailbox) {
-        final String name = mailbox.getName();
+        // use the encoded string here s owe display the fields correctly
+        // See IMAP-266
+        final String name = mailbox.getEncodedString();
+        
         final String domain = mailbox.getDomain();
         final DomainList route = mailbox.getRoute();
         final String atDomainList;
