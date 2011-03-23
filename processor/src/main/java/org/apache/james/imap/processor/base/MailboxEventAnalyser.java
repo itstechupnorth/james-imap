@@ -84,7 +84,7 @@ public class MailboxEventAnalyser implements MailboxListener {
     public void event(Event event) {
 
         // Check if the event was for the mailbox we are observing
-        if (event.getMailboxPath().equals(mailboxPath)) {
+        if (event.getMailboxPath().equals(getMailboxPath())) {
             final long eventSessionId = event.getSession().getSessionId();
             if (event instanceof MessageEvent) {
                 final MessageEvent messageEvent = (MessageEvent) event;
