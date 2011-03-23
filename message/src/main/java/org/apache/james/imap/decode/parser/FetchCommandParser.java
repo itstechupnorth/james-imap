@@ -128,7 +128,7 @@ public class FetchCommandParser extends AbstractUidCommandParser {
             final Long numberOfOctets;
             if (reader.nextChar() == '<') {
                 reader.consumeChar('<');
-                firstOctet = new Long(reader.number());
+                firstOctet = Long.valueOf(reader.number());
                 if (reader.nextChar() == '.') {
                     reader.consumeChar('.');
                     numberOfOctets = new Long(reader.nzNumber());
