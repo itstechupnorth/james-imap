@@ -187,7 +187,7 @@ public class FetchProcessor extends AbstractMailboxProcessor<FetchRequest> {
         }
     }
     
-    private FetchGroup getFetchGroup(FetchData fetch) {
+    protected FetchGroup getFetchGroup(FetchData fetch) {
         FetchGroupImpl result = new FetchGroupImpl();
 
         if (fetch.isEnvelope()) {
