@@ -19,8 +19,10 @@
 
 package org.apache.james.imap.processor.fetch;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 
 import org.apache.james.imap.api.ImapCommand;
 import org.apache.james.imap.api.ImapSessionUtils;
@@ -71,7 +73,6 @@ public class FetchProcessor extends AbstractMailboxProcessor<FetchRequest> {
         final IdRange[] idSet = request.getIdSet();
         final FetchData fetch = request.getFetch();
         try {
-            FetchGroup resultToFetch = getFetchGroup(fetch);
             final MessageManager mailbox = getSelectedMailbox(session);
 
             if (mailbox == null) {
@@ -79,34 +80,17 @@ public class FetchProcessor extends AbstractMailboxProcessor<FetchRequest> {
             }
             
             final MailboxSession mailboxSession = ImapSessionUtils.getMailboxSession(session);
-            final FetchResponseBuilder builder = new FetchResponseBuilder(new EnvelopeBuilder(session.getLog()));
+            List<MessageRange> ranges = new ArrayList<MessageRange>();
             
             for (int i = 0; i < idSet.length; i++) {
                 MessageRange messageSet = messageRange(session.getSelected(), idSet[i], useUids);
                 MessageRange normalizedMessageSet = normalizeMessageRange(session.getSelected(), messageSet);
                 MessageRange batchedMessageSet = MessageRange.range(normalizedMessageSet.getUidFrom(), normalizedMessageSet.getUidTo(), batchSize);
-                mailbox.getMessages(batchedMessageSet, resultToFetch, mailboxSession, new MessageCallback() {
-
-                    public void onMessages(Iterator<MessageResult> it) throws MailboxException {
-                        while (it.hasNext()) {
-                            final MessageResult result = it.next();
-                            try {
-                                final FetchResponse response = builder.build(fetch, result, mailbox, session, useUids);
-                                responder.respond(response);
-                            } catch (ParseException e) {
-                                // we can't for whatever reason parse the
-                                // message so just skip it and log it to debug
-                                session.getLog().debug("Unable to parse message with uid " + result.getUid(), e);
-                            } catch (MessageRangeException e) {
-                                // we can't for whatever reason find the message
-                                // so just skip it and log it to debug
-                                session.getLog().debug("Unable to find message with uid " + result.getUid(), e);
-                            }
-                        }
-                    }
-                });
+                ranges.add(batchedMessageSet);
             }
             
+            processMessageRanges(session, mailbox, ranges, fetch, useUids, mailboxSession, responder);
+
             unsolicitedResponses(session, responder, useUids);
             okComplete(command, tag, responder);
         } catch (UnsupportedCriteriaException e) {
@@ -117,6 +101,47 @@ public class FetchProcessor extends AbstractMailboxProcessor<FetchRequest> {
         } catch (MailboxException e) {
             no(command, tag, responder, HumanReadableText.SEARCH_FAILED);
         } 
+    }
+    
+    /**
+     * Process the given message ranges by fetch them and pass them to the {@link Responder}
+     * 
+     * @param session
+     * @param mailbox
+     * @param range
+     * @param fetch
+     * @param useUids
+     * @param mailboxSession
+     * @param responder
+     * @throws MailboxException
+     */
+    protected void processMessageRanges(final ImapSession session, final MessageManager mailbox, final List<MessageRange> ranges, final FetchData fetch, final boolean useUids, final MailboxSession mailboxSession, final Responder responder) throws MailboxException {
+        final FetchResponseBuilder builder = new FetchResponseBuilder(new EnvelopeBuilder(session.getLog()));
+        FetchGroup  resultToFetch = getFetchGroup(fetch); 
+        
+        for (int i = 0; i < ranges.size(); i++) {
+            mailbox.getMessages(ranges.get(i), resultToFetch, mailboxSession, new MessageCallback() {
+
+                public void onMessages(Iterator<MessageResult> it) throws MailboxException {
+                    while (it.hasNext()) {
+                        final MessageResult result = it.next();
+                        try {
+                            final FetchResponse response = builder.build(fetch, result, mailbox, session, useUids);
+                            responder.respond(response);
+                        } catch (ParseException e) {
+                            // we can't for whatever reason parse the
+                            // message so just skip it and log it to debug
+                            session.getLog().debug("Unable to parse message with uid " + result.getUid(), e);
+                        } catch (MessageRangeException e) {
+                            // we can't for whatever reason find the message
+                            // so just skip it and log it to debug
+                            session.getLog().debug("Unable to find message with uid " + result.getUid(), e);
+                        }
+                    }
+                }
+            });	
+        }
+        
     }
     
     /**

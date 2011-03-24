@@ -39,7 +39,7 @@ import org.apache.james.mime4j.field.address.parser.ParseException;
 import org.apache.james.mime4j.util.MimeUtil;
 import org.slf4j.Logger;
 
-final class EnvelopeBuilder {
+public final class EnvelopeBuilder {
     private final Logger logger;
 
     public EnvelopeBuilder(final Logger logger) {

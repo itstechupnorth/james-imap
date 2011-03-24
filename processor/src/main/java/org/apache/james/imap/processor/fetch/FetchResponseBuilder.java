@@ -46,7 +46,7 @@ import org.apache.james.mailbox.MessageResult;
 import org.apache.james.mailbox.MimeDescriptor;
 import org.apache.james.mime4j.field.address.parser.ParseException;
 
-final class FetchResponseBuilder {
+public final class FetchResponseBuilder {
 
     private final EnvelopeBuilder envelopeBuilder;
 
