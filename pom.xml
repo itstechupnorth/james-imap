@@ -21,7 +21,7 @@
   <parent>
     <artifactId>james-project</artifactId>
     <groupId>org.apache.james</groupId>
-    <version>1.6-SNAPSHOT</version>
+    <version>1.6</version>
   </parent>
 
   <modelVersion>4.0.0</modelVersion>
@@ -33,10 +33,6 @@
   <url>http://james.apache.org/imap/</url>
   <inceptionYear>2002</inceptionYear>
   <packaging>pom</packaging>
-
-  <prerequisites>
-    <maven>3.0.2</maven>
-  </prerequisites>
 
   <modules>
     <module>api</module>
