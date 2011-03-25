@@ -86,7 +86,11 @@ public final class EnvelopeBuilder {
             if (value == null || "".equals(value)) {
                 result = null;
             } else {
-                result = value;
+                
+                // ENVELOPE header values must be unfolded
+                // See IMAP-269
+                result = MimeUtil.unfold(value);
+                
             }
         }
         return result;
