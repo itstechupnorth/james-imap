@@ -52,8 +52,10 @@ public class IdleProcessor extends AbstractMailboxProcessor<IdleRequest> impleme
     private final ScheduledExecutorService heartbeatExecutor; 
 
     private final static String HEARTBEAT_FUTURE = "IDLE_HEARTBEAT_FUTURE";
-    public final static long DEFAULT_HEARTBEAT_INTERVAL = 2;
-    public final static TimeUnit DEFAULT_HEARTBEAT_INTERVAL_UNIT = TimeUnit.MINUTES;
+    
+    // 2 minutes
+    public final static long DEFAULT_HEARTBEAT_INTERVAL_IN_SECONDS = 2 * 60;
+    public final static TimeUnit DEFAULT_HEARTBEAT_INTERVAL_UNIT = TimeUnit.SECONDS;
     public final static int DEFAULT_SCHEDULED_POOL_CORE_SIZE = 5;
     private final static String DONE = "DONE";
     private final TimeUnit heartbeatIntervalUnit;
@@ -61,7 +63,7 @@ public class IdleProcessor extends AbstractMailboxProcessor<IdleRequest> impleme
     
     public IdleProcessor(final ImapProcessor next, final MailboxManager mailboxManager,
             final StatusResponseFactory factory) {
-        this(next, mailboxManager, factory, DEFAULT_HEARTBEAT_INTERVAL, DEFAULT_HEARTBEAT_INTERVAL_UNIT, Executors.newScheduledThreadPool(DEFAULT_SCHEDULED_POOL_CORE_SIZE));
+        this(next, mailboxManager, factory, DEFAULT_HEARTBEAT_INTERVAL_IN_SECONDS, DEFAULT_HEARTBEAT_INTERVAL_UNIT, Executors.newScheduledThreadPool(DEFAULT_SCHEDULED_POOL_CORE_SIZE));
         
     }
 
