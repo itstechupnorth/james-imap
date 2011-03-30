@@ -198,6 +198,8 @@ public class HumanReadableText {
 
     public static final HumanReadableText IDLING = new HumanReadableText(
             "org.apache.james.imap.IDLING", "Idling");
+    public static final HumanReadableText HEARTBEAT = new HumanReadableText(
+            "org.apache.james.imap.HEARTBEAT", "Still here");
     
     public static final HumanReadableText DEFLATE_ACTIVE = new HumanReadableText(
             "org.apache.james.imap.DEFLATE", "DEFLATE active");

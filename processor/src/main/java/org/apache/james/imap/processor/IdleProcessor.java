@@ -24,6 +24,10 @@ import static org.apache.james.imap.api.ImapConstants.SUPPORTS_IDLE;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.james.imap.api.ImapCommand;
@@ -43,13 +47,32 @@ import org.apache.james.mailbox.MailboxManager;
 import org.apache.james.mailbox.MailboxSession;
 
 public class IdleProcessor extends AbstractMailboxProcessor<IdleRequest> implements CapabilityImplementingProcessor {
+	
+	
+    private final ScheduledExecutorService heartbeatExecutor; 
+
+    private final static String HEARTBEAT_FUTURE = "IDLE_HEARTBEAT_FUTURE";
+    public final static long DEFAULT_HEARTBEAT_INTERVAL = 2;
+    public final static TimeUnit DEFAULT_HEARTBEAT_INTERVAL_UNIT = TimeUnit.MINUTES;
+    public final static int DEFAULT_SCHEDULED_POOL_CORE_SIZE = 5;
+    private final static String DONE = "DONE";
+    private final TimeUnit heartbeatIntervalUnit;
+    private final long heartbeatInterval;
     
     public IdleProcessor(final ImapProcessor next, final MailboxManager mailboxManager,
             final StatusResponseFactory factory) {
-        super(IdleRequest.class, next, mailboxManager, factory);
+        this(next, mailboxManager, factory, DEFAULT_HEARTBEAT_INTERVAL, DEFAULT_HEARTBEAT_INTERVAL_UNIT, Executors.newScheduledThreadPool(DEFAULT_SCHEDULED_POOL_CORE_SIZE));
         
     }
 
+    public IdleProcessor(final ImapProcessor next, final MailboxManager mailboxManager,
+            final StatusResponseFactory factory, long heartbeatInterval, TimeUnit heartbeatIntervalUnit, ScheduledExecutorService heartbeatExecutor) {
+        super(IdleRequest.class, next, mailboxManager, factory);
+        this.heartbeatInterval = heartbeatInterval;
+        this.heartbeatIntervalUnit = heartbeatIntervalUnit;
+        this.heartbeatExecutor = heartbeatExecutor;
+        
+    }
 
     protected void doProcess(final IdleRequest message, final ImapSession session,
             final String tag, final ImapCommand command, final Responder responder) {
@@ -84,15 +107,47 @@ public class IdleProcessor extends AbstractMailboxProcessor<IdleRequest> impleme
                         
                     closed.set(true);
                     session.popLineHandler();
-                    if (!"DONE".equals(line.toUpperCase(Locale.US))) {
+                    if (!DONE.equals(line.toUpperCase(Locale.US))) {
                         StatusResponse response = getStatusResponseFactory().taggedBad(tag, command,
                                 HumanReadableText.INVALID_COMMAND);
                         responder.respond(response);
                     } else {
                         okComplete(command, tag, responder);
+                        
+                        // See if we need to cancel the idle heartbeat handling
+                        Object oFuture = session.getAttribute(HEARTBEAT_FUTURE);
+                        if (oFuture != null) {
+                        	ScheduledFuture<?> future = (ScheduledFuture<?>)oFuture;
+                        	if (future.cancel(true) == false) {
+                        		// unable to cancel the future so better logout now!
+                        		session.getLog().error("Unable to disable idle heartbeat for unknown reason! Force logout");
+                        		session.logout();
+                        	}
+                        }
                     }                    
                 }
             });
+            
+            // Check if we should send heartbeats 
+            if (heartbeatInterval > 0) {
+            	ScheduledFuture<?> heartbeatFuture = heartbeatExecutor.scheduleWithFixedDelay(new Runnable() {
+				
+            		public void run() {
+            			// Send a heartbeat to the client to make sure we reset the idle timeout. This is kind of the same workaround as dovecot use.
+            			//
+            			// This is mostly needed because of the broken outlook client, but can't harm for other clients too.
+            			// See IMAP-272
+            			StatusResponse response = getStatusResponseFactory().untaggedOk(HumanReadableText.HEARTBEAT);
+            			responder.respond(response);
+            		}
+            	}, heartbeatInterval, heartbeatInterval, heartbeatIntervalUnit);
+            	
+            	// store future for later usage
+            	session.setAttribute(HEARTBEAT_FUTURE, heartbeatFuture);
+            }
+            
+            
+            
         } catch (MailboxException e) {
             closed.set(true);
             // TODO: What should we do here?
