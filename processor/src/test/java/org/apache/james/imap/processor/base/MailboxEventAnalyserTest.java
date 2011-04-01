@@ -30,6 +30,11 @@ import java.util.Map;
 
 import javax.mail.Flags;
 
+import org.apache.james.imap.api.ImapSessionState;
+import org.apache.james.imap.api.ImapSessionUtils;
+import org.apache.james.imap.api.process.ImapLineHandler;
+import org.apache.james.imap.api.process.ImapSession;
+import org.apache.james.imap.api.process.SelectedMailbox;
 import org.apache.james.mailbox.MailboxListener;
 import org.apache.james.mailbox.MailboxPath;
 import org.apache.james.mailbox.MailboxSession;
@@ -42,8 +47,7 @@ public class MailboxEventAnalyserTest {
     private static final long BASE_SESSION_ID = 99;
 
     
-    private MailboxEventAnalyser analyser;
-    MailboxPath mailboxPath = new MailboxPath("namespace", "user", "name");
+    private MailboxPath mailboxPath = new MailboxPath("namespace", "user", "name");
     
     private final class MyMailboxSession implements MailboxSession {
         private long sessionId;
@@ -98,14 +102,86 @@ public class MailboxEventAnalyserTest {
         
     }
     
-    @Before
-    public void setUp() throws Exception {
-        analyser = new MailboxEventAnalyser(BASE_SESSION_ID, mailboxPath);
-    }
+    private class MyImapSession implements ImapSession{
+        private MailboxSession mSession;
+
+        public MyImapSession(MailboxSession mSession) {
+            this.mSession = mSession;
+        }
+        
+        public boolean supportStartTLS() {
+            return false;
+        }
+        
+        public boolean startTLS() {
+            return false;
+        }
+        
+        public boolean startCompression() {
+            return false;
+        }
+        
+        public void setAttribute(String key, Object value) {            
+        }
+        
+        public void selected(SelectedMailbox mailbox) {
+            
+        }
+        
+        public void pushLineHandler(ImapLineHandler lineHandler) {
+            
+        }
+        
+        public void popLineHandler() {
+            
+        }
+        
+        public void logout() {
+            
+        }
+        
+        public boolean isCompressionSupported() {
+            return false;
+        }
+        
+        public ImapSessionState getState() {
+            return ImapSessionState.AUTHENTICATED;
+        }
+        
+        public SelectedMailbox getSelected() {
+            return null;
+        }
+        
+        public Logger getLog() {
+            return null;
+        }
+        
+        public Object getAttribute(String key) {
+            if (key.equals(ImapSessionUtils.MAILBOX_SESSION_ATTRIBUTE_SESSION_KEY)) {
+                return mSession;
+            }
+            return null;
+        }
+        
+        public void deselect() {
+            
+        }
+        
+        public void authenticated() {
+            
+        }
+    };
+    
 
     @Test
     public void testShouldBeNoSizeChangeOnOtherEvent() throws Exception {
-        final MailboxListener.Event event = new MailboxListener.Event(new MyMailboxSession(0), mailboxPath) {};
+        MyMailboxSession mSession = new MyMailboxSession(0);
+        
+        MyImapSession imapsession = new MyImapSession(mSession);
+        
+        MailboxEventAnalyser analyser = new MailboxEventAnalyser(imapsession, mailboxPath);
+
+        final MailboxListener.Event event = new MailboxListener.Event(mSession, mailboxPath) {};
       
         analyser.event(event);
         assertFalse(analyser.isSizeChanged());
@@ -113,21 +189,39 @@ public class MailboxEventAnalyserTest {
 
     @Test
     public void testShouldBeNoSizeChangeOnAdded() throws Exception {
-        analyser.event(new FakeMailboxListenerAdded(new MyMailboxSession(0), 11, mailboxPath));
+        MyMailboxSession mSession = new MyMailboxSession(0);
+        
+        MyImapSession imapsession = new MyImapSession(mSession);
+        
+        MailboxEventAnalyser analyser = new MailboxEventAnalyser(imapsession, mailboxPath);
+        
+        analyser.event(new FakeMailboxListenerAdded(mSession, 11, mailboxPath));
         assertTrue(analyser.isSizeChanged());
     }
 
     @Test
     public void testShouldNoSizeChangeAfterReset() throws Exception {
-        analyser.event(new FakeMailboxListenerAdded(new MyMailboxSession(99), 11, mailboxPath));
+        MyMailboxSession mSession = new MyMailboxSession(99);
+        
+        MyImapSession imapsession = new MyImapSession(mSession);
+        
+        MailboxEventAnalyser analyser = new MailboxEventAnalyser(imapsession, mailboxPath);
+        
+        analyser.event(new FakeMailboxListenerAdded(mSession, 11, mailboxPath));
         analyser.reset();
         assertFalse(analyser.isSizeChanged());
     }
 
     @Test
     public void testShouldNotSetUidWhenNoSystemFlagChange() throws Exception {
+        MyMailboxSession mSession = new MyMailboxSession(11);
+        
+        MyImapSession imapsession = new MyImapSession(mSession);
+        
+        MailboxEventAnalyser analyser = new MailboxEventAnalyser(imapsession, mailboxPath);
+        
         final FakeMailboxListenerFlagsUpdate update = new FakeMailboxListenerFlagsUpdate(
-                new MyMailboxSession(11), 90, new Flags(), mailboxPath);
+                mSession, 90, new Flags(), mailboxPath);
         analyser.event(update);
         assertNotNull(analyser.flagUpdateUids());
         assertFalse(analyser.flagUpdateUids().iterator().hasNext());
@@ -136,8 +230,15 @@ public class MailboxEventAnalyserTest {
     @Test
     public void testShouldSetUidWhenSystemFlagChange() throws Exception {
         final long uid = 900L;
+        MyMailboxSession mSession = new MyMailboxSession(11);
+        
+        MyImapSession imapsession = new MyImapSession(mSession);
+        
+        MailboxEventAnalyser analyser = new MailboxEventAnalyser(imapsession, mailboxPath);
+        
+        
         final FakeMailboxListenerFlagsUpdate update = new FakeMailboxListenerFlagsUpdate(
-                new MyMailboxSession(11), uid, new Flags(), mailboxPath);
+                mSession, uid, new Flags(), mailboxPath);
         update.flags.add(Flags.Flag.ANSWERED);
         analyser.event(update);
         final Iterator<Long> iterator = analyser.flagUpdateUids().iterator();
@@ -150,8 +251,12 @@ public class MailboxEventAnalyserTest {
     @Test
     public void testShouldClearFlagUidsUponReset() throws Exception {
         final long uid = 900L;
+        MyMailboxSession mSession = new MyMailboxSession(11);
+        MyImapSession imapsession = new MyImapSession(mSession);
+        MailboxEventAnalyser analyser = new MailboxEventAnalyser(imapsession, mailboxPath);
+        
         final FakeMailboxListenerFlagsUpdate update = new FakeMailboxListenerFlagsUpdate(
-                new MyMailboxSession(11), uid, new Flags(), mailboxPath);
+                mSession, uid, new Flags(), mailboxPath);
         update.flags.add(Flags.Flag.ANSWERED);
         analyser.event(update);
         analyser.reset();
@@ -160,11 +265,16 @@ public class MailboxEventAnalyserTest {
     }
 
     @Test
-    public void testShouldNotSetUidWhenSystemFlagChangeDifferentSessionInSilentMode()
+    public void testShouldSetUidWhenSystemFlagChangeDifferentSessionInSilentMode()
             throws Exception {
         final long uid = 900L;
+        
+        MyMailboxSession mSession = new MyMailboxSession(11);
+        MyImapSession imapsession = new MyImapSession(mSession);
+        MailboxEventAnalyser analyser = new MailboxEventAnalyser(imapsession, mailboxPath);
+        
         final FakeMailboxListenerFlagsUpdate update = new FakeMailboxListenerFlagsUpdate(
-                new MyMailboxSession(11), uid, new Flags(), mailboxPath);
+                new MyMailboxSession(BASE_SESSION_ID), uid, new Flags(), mailboxPath);
         update.flags.add(Flags.Flag.ANSWERED);
         analyser.setSilentFlagChanges(true);
         analyser.event(update);
@@ -178,8 +288,13 @@ public class MailboxEventAnalyserTest {
     @Test
     public void testShouldNotSetUidWhenSystemFlagChangeSameSessionInSilentMode()
             throws Exception {
+        MyMailboxSession mSession = new MyMailboxSession(BASE_SESSION_ID);
+        MyImapSession imapsession = new MyImapSession(mSession);
+        MailboxEventAnalyser analyser = new MailboxEventAnalyser(imapsession, mailboxPath);
+        
+        
         final FakeMailboxListenerFlagsUpdate update = new FakeMailboxListenerFlagsUpdate(
-                new MyMailboxSession(BASE_SESSION_ID) ,345, new Flags(), mailboxPath);
+                mSession ,345, new Flags(), mailboxPath);
         update.flags.add(Flags.Flag.ANSWERED);
         analyser.setSilentFlagChanges(true);
         analyser.event(update);
@@ -190,8 +305,13 @@ public class MailboxEventAnalyserTest {
 
     @Test
     public void testShouldNotSetUidWhenOnlyRecentFlagUpdated() throws Exception {
+        MyMailboxSession mSession = new MyMailboxSession(BASE_SESSION_ID);
+        MyImapSession imapsession = new MyImapSession(mSession);
+        MailboxEventAnalyser analyser = new MailboxEventAnalyser(imapsession, mailboxPath);
+        
+        
         final FakeMailboxListenerFlagsUpdate update = new FakeMailboxListenerFlagsUpdate(
-                new MyMailboxSession(BASE_SESSION_ID), 886, new Flags() ,mailboxPath);
+                mSession, 886, new Flags() ,mailboxPath);
         update.flags.add(Flags.Flag.RECENT);
         analyser.event(update);
         final Iterator<Long> iterator = analyser.flagUpdateUids().iterator();

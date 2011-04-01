@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
+import org.apache.james.imap.api.process.ImapSession;
 import org.apache.james.imap.api.process.SelectedMailbox;
 import org.apache.james.mailbox.MailboxListener;
 
@@ -35,7 +36,7 @@ import org.apache.james.mailbox.MailboxListener;
  * TODO: This is a major memory hog
  * TODO: Each concurrent session requires one, and typical clients now open many
  */
-public class UidToMsnConverter implements MailboxListener {
+public class UidToMsnConverter extends ImapStateAwareMailboxListener {
     private SortedMap<Integer, Long> msnToUid;
 
     private SortedMap<Long, Integer> uidToMsn;
@@ -46,7 +47,8 @@ public class UidToMsnConverter implements MailboxListener {
 
     private boolean closed = false;
 
-    public UidToMsnConverter(final Iterator<Long> uids) {
+    public UidToMsnConverter(final ImapSession session, final Iterator<Long> uids) {
+        super(session);
         msnToUid = new TreeMap<Integer, Long>();
         uidToMsn = new TreeMap<Long, Integer>();
         if (uids != null) {
@@ -182,18 +184,18 @@ public class UidToMsnConverter implements MailboxListener {
         closed = true;
     }
     
-    /*
-     * (non-Javadoc)
-     * @see org.apache.james.mailbox.MailboxListener#isClosed()
-     */
-    public synchronized boolean isClosed() {
-        return closed;
-    }
-
     /**
      * @see SelectedMailbox#existsCount()
      */
     public synchronized long getCount() {
         return uidToMsn.size();
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.processor.ImapSessionAwareMailboxListener#isListenerClosed()
+     */
+    protected synchronized boolean isListenerClosed() {
+        return closed;
     }
 }

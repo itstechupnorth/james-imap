@@ -27,6 +27,8 @@ import java.util.TreeSet;
 
 import javax.mail.Flags;
 
+import org.apache.james.imap.api.ImapSessionUtils;
+import org.apache.james.imap.api.process.ImapSession;
 import org.apache.james.mailbox.MailboxListener;
 import org.apache.james.mailbox.MailboxPath;
 
@@ -35,7 +37,7 @@ import org.apache.james.mailbox.MailboxPath;
  * analyze these. It will only act on {@link Event} notifications which are sent for the registered
  * MailboxPath
  */
-public class MailboxEventAnalyser implements MailboxListener {
+public class MailboxEventAnalyser extends ImapStateAwareMailboxListener {
 
     private final long sessionId;
     private Set<Long> flagUpdateUids;
@@ -48,9 +50,10 @@ public class MailboxEventAnalyser implements MailboxListener {
     private MailboxPath mailboxPath;
     private boolean closed = false;
 
-    public MailboxEventAnalyser(final long sessionId, final MailboxPath mailboxPath) {
-        super();
-        this.sessionId = sessionId;
+    public MailboxEventAnalyser(final ImapSession session, final MailboxPath mailboxPath) {
+        super(session);
+        this.sessionId = ImapSessionUtils.getMailboxSession(session).getSessionId();
+        System.out.println("ID=" +sessionId);
         flagUpdateUids = new TreeSet<Long>();
         expungedUids = new TreeSet<Long>();
         uninterestingFlag = Flags.Flag.RECENT;
@@ -230,11 +233,12 @@ public class MailboxEventAnalyser implements MailboxListener {
         expungedUids = null;
     }
     
+
     /*
      * (non-Javadoc)
-     * @see org.apache.james.mailbox.MailboxListener#isClosed()
+     * @see org.apache.james.imap.processor.base.ImapStateAwareMailboxListener#isListenerClosed()
      */
-    public synchronized boolean isClosed() {
+    protected synchronized boolean isListenerClosed() {
         return closed;
     }
 }

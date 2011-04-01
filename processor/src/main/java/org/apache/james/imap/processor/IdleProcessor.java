@@ -41,8 +41,8 @@ import org.apache.james.imap.api.process.ImapSession;
 import org.apache.james.imap.api.process.SelectedMailbox;
 import org.apache.james.imap.message.request.IdleRequest;
 import org.apache.james.imap.message.response.ContinuationResponse;
+import org.apache.james.imap.processor.base.ImapStateAwareMailboxListener;
 import org.apache.james.mailbox.MailboxException;
-import org.apache.james.mailbox.MailboxListener;
 import org.apache.james.mailbox.MailboxManager;
 import org.apache.james.mailbox.MailboxSession;
 
@@ -161,15 +161,14 @@ public class IdleProcessor extends AbstractMailboxProcessor<IdleRequest> impleme
         return Arrays.asList(SUPPORTS_IDLE);
     }
     
-    private class IdleMailboxListener implements MailboxListener {
+    private class IdleMailboxListener extends ImapStateAwareMailboxListener {
         
         private final AtomicBoolean closed;
-        private final ImapSession session;
         private final Responder responder;
         
         public IdleMailboxListener(AtomicBoolean closed, ImapSession session, Responder responder) {
+            super(session);
             this.closed = closed;
-            this.session = session;
             this.responder = responder;
         }
 
@@ -183,8 +182,12 @@ public class IdleProcessor extends AbstractMailboxProcessor<IdleRequest> impleme
                 }
             }
         }
-
-        public boolean isClosed() {
+        
+        /*
+         * (non-Javadoc)
+         * @see org.apache.james.imap.processor.ImapSessionAwareMailboxListener#isListenerClosed()
+         */
+        protected boolean isListenerClosed() {
             return closed.get();
         }
         

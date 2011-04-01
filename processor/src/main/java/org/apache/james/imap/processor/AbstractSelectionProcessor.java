@@ -204,7 +204,7 @@ abstract class AbstractSelectionProcessor<M extends AbstractMailboxSelectionRequ
         // See https://issues.apache.org/jira/browse/IMAP-192
         final Iterator<Long> it = mailbox.search(query, mailboxSession);
 
-        final SelectedMailbox sessionMailbox = new SelectedMailboxImpl(getMailboxManager(), it, mailboxSession, path);
+        final SelectedMailbox sessionMailbox = new SelectedMailboxImpl(getMailboxManager(), it, session, path);
         session.selected(sessionMailbox);
         return sessionMailbox;
     }
