@@ -31,6 +31,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.james.imap.api.ImapCommand;
+import org.apache.james.imap.api.ImapSessionState;
 import org.apache.james.imap.api.ImapSessionUtils;
 import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.api.message.response.StatusResponse;
@@ -133,18 +134,29 @@ public class IdleProcessor extends AbstractMailboxProcessor<IdleRequest> impleme
 
             // Check if we should send heartbeats
             if (heartbeatInterval > 0) {
-                ScheduledFuture<?> heartbeatFuture = heartbeatExecutor.scheduleWithFixedDelay(new Runnable() {
+                final ScheduledFuture<?> heartbeatFuture = heartbeatExecutor.scheduleWithFixedDelay(new Runnable() {
 
                     public void run() {
-                        // Send a heartbeat to the client to make sure we reset
-                        // the idle timeout. This is kind of the same workaround
-                        // as dovecot use.
-                        //
-                        // This is mostly needed because of the broken outlook
-                        // client, but can't harm for other clients too.
-                        // See IMAP-272
-                        StatusResponse response = getStatusResponseFactory().untaggedOk(HumanReadableText.HEARTBEAT);
-                        responder.respond(response);
+                        // check if we need to cancel the Runnable
+                        // See IMAP-275
+                        if (session.getState() == ImapSessionState.LOGOUT) {
+                            
+                            Object future = session.getAttribute(HEARTBEAT_FUTURE);
+                            if (future != null) {
+                                // cancel the future if needed to be sure it not run infinity
+                                ((ScheduledFuture<?>) future).cancel(true);
+                            }
+                        } else {
+                            // Send a heartbeat to the client to make sure we reset
+                            // the idle timeout. This is kind of the same workaround
+                            // as dovecot use.
+                            //
+                            // This is mostly needed because of the broken outlook
+                            // client, but can't harm for other clients too.
+                            // See IMAP-272
+                            StatusResponse response = getStatusResponseFactory().untaggedOk(HumanReadableText.HEARTBEAT);
+                            responder.respond(response);
+                        }
                     }
                 }, heartbeatInterval, heartbeatInterval, heartbeatIntervalUnit);
 
