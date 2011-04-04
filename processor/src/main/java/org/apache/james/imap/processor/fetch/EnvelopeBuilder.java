@@ -30,6 +30,7 @@ import org.apache.james.imap.message.response.FetchResponse;
 import org.apache.james.mailbox.Headers;
 import org.apache.james.mailbox.MailboxException;
 import org.apache.james.mailbox.MessageResult;
+import org.apache.james.mime4j.codec.EncoderUtil;
 import org.apache.james.mime4j.field.address.Address;
 import org.apache.james.mime4j.field.address.AddressList;
 import org.apache.james.mime4j.field.address.DomainList;
@@ -172,9 +173,12 @@ public final class EnvelopeBuilder {
 
     private FetchResponse.Envelope.Address buildMailboxAddress(
             final org.apache.james.mime4j.field.address.Mailbox mailbox) {
-        // use the encoded string here so we display the fields correctly
+        // Encode the mailbox name 
         // See IMAP-266
-        final String name = mailbox.getEncodedString();
+        String name = mailbox.getName();
+        if (name != null) {
+            name = EncoderUtil.encodeAddressDisplayName(name);
+        }
         
         final String domain = mailbox.getDomain();
         final DomainList route = mailbox.getRoute();
