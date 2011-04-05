@@ -1,6 +1,6 @@
 ####### GENERAL BUILDING NOTES ######
 
-The primary build tool for James IMAP is maven2.
+The primary build tool for James IMAP is maven 3.
 
 On a new checkout start by running
 $ mvn clean package
@@ -8,4 +8,4 @@ $ mvn clean package
 This will compiled all modules
 
 For just building without running junit tests:
-$ mvn clean package -Dmaven.test.skip.exec=true
+$ mvn clean package -DskiTests=true
