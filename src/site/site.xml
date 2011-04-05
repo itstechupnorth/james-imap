@@ -17,7 +17,7 @@
 	specific language governing permissions and limitations
 	under the License.    
 -->
-<project name='IMAP'>
+<project name='Apache James IMAP'>
 
     <skin>
         <groupId>org.apache.james</groupId>
@@ -42,11 +42,14 @@
 
       <menu name="Documentation">
         <item name="Introduction" href="/index.html" />
+        <item name="Source Code" href="/source-code.html" />
       </menu>  
      
       <menu name="References">
-        <item name="Source Code" href="/source-code.html" />
-        <item name="Reports" href="https://hudson.apache.org/hudson/view/G-L/view/James/job/imap-trunk-m2/site/" />
+        <item name="Javadoc" href="/apidocs/index.html" />
+        <item name="Issue Tracker" href="https://issues.apache.org/jira/browse/IMAP" />
+<!--        Report link is unavailable on hudson -->
+<!--        <item name="Reports" href="https://hudson.apache.org/hudson/view/G-L/view/James/job/imap-trunk-m2/site/" />-->
       </menu>
 
 	</body>

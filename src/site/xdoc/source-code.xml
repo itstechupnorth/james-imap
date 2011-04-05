@@ -21,7 +21,7 @@
 <document>
 
  <properties>
-  <title>Apache James - IMAP - Source Code</title>
+  <title>Source Code</title>
   <author email="server-dev@james.apache.org">Apache James Project</author>
  </properties>
 
@@ -30,68 +30,49 @@
   <section name="Get Source Code">
 
     <subsection name="Anonymous Access">
-
       <p>The source can be checked out anonymously from SVN with the following command.</p>
-
       <p><code>$ svn checkout http://svn.apache.org/repos/asf/james/imap/trunk james-imap</code></p>
-    
     </subsection>
 
     <subsection name="Developer Access">
-
       <p>Everyone can access the Subversion repository via HTTP, but Committers must checkout the Subversion repository via HTTPS.</p>
-
       <p><code>$ svn checkout https://svn.apache.org/repos/asf/james/imap/trunk james-imap</code></p>
-      
     </subsection>
 
   </section>
 
-  <section name='Source Projects'>
-  
-    <subsection name="Organization">
-  
+  <section name="Build Source Code">
+    <p>You can read a tutorial on how to build Apache James Server on <a href="http://james.apache.org/server/3/dev-build.html">http://james.apache.org/server/3/dev-build.html</a>.</p>
+    <p>The SVN URLs and the project names must be adapted, but the requirements and process are the same and you can inspire
+       from the build the Apache James IMAP libraries.</p>
+  </section>
+
+  <section name="Source Code Organization">
+    <subsection name="Modules">
       <div style="float:left; margin:4px;">
         <img src="images/uml/org.apache.james.imap-withtest-package.png"/>
       </div>
-    
     </subsection>
-       
     <div style="clear:both; float:none;"/>
-    
-    <subsection name="James IMAP API - apache-james-imap-api">
-    
+    <subsection name="Apache James IMAP API">
       <p><code>apache-james-imap-api</code> contains the interfaces, exceptions and Constants needed by the other projects.</p>
-     
       <p>The following diagram represents some key (not all) interfaces of the IMAP API project.</p>
-    
-      <img src="images/uml/org.apache.james.imap.api.png"/>
-
+<!--      Add an updated image... -->
+<!--      <img src="images/uml/org.apache.james.imap.api.png"/>-->
     </subsection>
-    
-    <subsection name="James IMAP Message - apache-james-imap-message">
-    
+    <subsection name="Apache James IMAP Message">
       <p><code>apache-james-imap-message</code> allows to encode, decode and structure the IMAP requests and responses.</p>
-      
       <p>It will provide among other the ImapRequestMessage and ImapResponseMessage implementation to be processed
          by the apache-james-imap-processor project.</p>
-    
     </subsection>
-    
-    <subsection name="James IMAP Processor - apache-james-imap-processor">
-    
+    <subsection name="Apache James IMAP Processor">
       <p><code>apache-james-imap-processor</code> implements the Chain Of Responsibility design pattern.</p>
-      
       <p>ImapRequestMessage and ImapResponder will be passed to the list of Processors that 
          will execute doProcess if applicable.</p>
-         
     </subsection>
-    
-    <subsection name="James IMAP Protocol Tester - apache-james-imap-protocol-tester">
-    
-      <p><code>apache-james-imap-protocol-tester</code> can be used by other projects to test the IMAP 
-         protocol in conjunction with a <a href="http://james.apache.org/mailbox">James mailbox</a>.</p>
-         
+    <subsection name="Apache James Integeration Test">
+      <p>A <a href="https://svn.apache.org/repos/asf/james/mailbox-integration-tester/trunk/">specific integration project</a> is 
+      responsible to test the IMAP protocol in conjunction with the <a href="http://james.apache.org/mailbox">Apache James mailbox</a> components.</p>
     </subsection>
     
   </section>
