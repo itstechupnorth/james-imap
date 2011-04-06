@@ -19,7 +19,7 @@
 package org.apache.james.imap.message.response;
 
 import java.io.IOException;
-import java.nio.channels.WritableByteChannel;
+import java.io.InputStream;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -295,22 +295,6 @@ public final class FetchResponse implements ImapResponseMessage {
          */
         public String getName();
 
-        /**
-         * Size of the literal content data.
-         * 
-         * @return number of octets which {@link #writeTo(WritableByteChannel)}
-         *         will put onto the channel
-         */
-        public long size();
-
-        /**
-         * Writes the contents of this body element to the channel.
-         * 
-         * @param channel
-         *            <code>Channel</code>, not null
-         * @throws IOException
-         */
-        public void writeTo(WritableByteChannel channel) throws IOException;
     }
 
     /**

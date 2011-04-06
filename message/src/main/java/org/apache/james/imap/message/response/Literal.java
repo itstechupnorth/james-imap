@@ -20,6 +20,7 @@
 package org.apache.james.imap.message.response;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.channels.WritableByteChannel;
 
 public interface Literal {
@@ -39,4 +40,14 @@ public interface Literal {
      * @throws IOException
      */
     public void writeTo(WritableByteChannel channel) throws IOException;
+    
+
+    
+    /**
+     * Return the Literal as {@link InputStream}
+     * 
+     * @return elementIn
+     * @throws IOException
+     */
+    public InputStream getInputStream() throws IOException;
 }

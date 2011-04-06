@@ -19,7 +19,9 @@
 
 package org.apache.james.imap.processor.fetch;
 
+import java.io.FilterInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.channels.WritableByteChannel;
 
 import org.apache.james.imap.message.response.FetchResponse.BodyElement;
@@ -68,6 +70,91 @@ final class PartialFetchBodyElement implements BodyElement {
         PartialWritableByteChannel partialChannel = new PartialWritableByteChannel(
                 channel, firstOctet, size());
         delegate.writeTo(partialChannel);
+    }
+
+    public InputStream getInputStream() throws IOException {
+        return new LimitingInputStream(delegate.getInputStream(), firstOctet, size());
+    }
+    
+    private final class LimitingInputStream  extends FilterInputStream {
+        private long pos = 0;
+        private long length;
+        private long offset;
+
+        public LimitingInputStream(InputStream in, long offset, long length) {
+            super(in);
+            this.length = length;
+            this.offset = offset;
+            
+        }
+        
+        private void checkOffset() throws IOException {
+            if (offset > -1) {
+                while (offset > 0) {
+                    read();
+                    offset--;
+                }
+                offset = -1;
+            }
+        }
+        public int read() throws IOException {
+            checkOffset();
+            if (pos >= length) {
+                return -1;
+            }
+            pos++;
+            return super.read();
+        }
+
+        public int read(byte b[]) throws IOException {
+           
+            return read(b, 0, b.length);
+        }
+
+        public int read(byte b[], int off, int len) throws IOException {
+            checkOffset();
+
+            if (pos >= length) {   
+                return -1;
+            }
+
+            if (pos + len >= length) {
+                int readLimit = (int) length - (int) pos;
+                pos = length;
+
+                return super.read(b, off, readLimit);
+            }
+
+
+            int i =  super.read(b, off, len);
+            pos += i;
+            return i;
+           
+        }
+
+        public long skip(long n) throws IOException {
+            throw new IOException("Not implemented");
+        }
+
+        public int available() throws IOException {
+            int a = in.available() - (int)offset;
+            if (a < -1) {
+                throw new IOException("Unable to calculate size");
+            }
+            return a;
+        }
+
+        public void mark(int readlimit) {
+            // Don't do anything.
+        }
+
+        public synchronized void reset() throws IOException {
+            throw new IOException("mark not supported");
+        }
+
+        public boolean markSupported() {
+            return false;
+        }
     }
 
 }

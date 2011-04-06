@@ -22,11 +22,16 @@
  */
 package org.apache.james.imap.processor.fetch;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.channels.Channels;
 import java.nio.channels.WritableByteChannel;
 
 import org.apache.james.imap.message.response.FetchResponse.BodyElement;
 import org.apache.james.mailbox.Content;
+import org.apache.james.mailbox.InputStreamContent;
 
 final class ContentBodyElement implements BodyElement {
     private final String name;
@@ -58,5 +63,14 @@ final class ContentBodyElement implements BodyElement {
      */
     public void writeTo(WritableByteChannel channel) throws IOException {
         content.writeTo(channel);
+    }
+
+    public InputStream getInputStream() throws IOException {
+        if (content instanceof InputStreamContent) {
+            return ((InputStreamContent) content).getInputStream();
+        }
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        writeTo(Channels.newChannel(out));
+        return new ByteArrayInputStream(out.toByteArray());
     }
 }

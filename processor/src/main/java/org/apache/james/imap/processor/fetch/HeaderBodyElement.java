@@ -22,8 +22,12 @@
  */
 package org.apache.james.imap.processor.fetch;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.ByteBuffer;
+import java.nio.channels.Channels;
 import java.nio.channels.WritableByteChannel;
 import java.util.Iterator;
 import java.util.List;
@@ -94,6 +98,16 @@ final class HeaderBodyElement implements BodyElement {
         }
         while (channel.write(endLine) > 0) { // NOPMD false positive
         }
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.message.response.FetchResponse.BodyElement#getInputStream()
+     */
+    public InputStream getInputStream() throws IOException {
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        writeTo(Channels.newChannel(out));
+        return new ByteArrayInputStream(out.toByteArray());
     }
 
 }
