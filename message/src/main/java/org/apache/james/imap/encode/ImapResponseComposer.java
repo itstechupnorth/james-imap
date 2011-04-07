@@ -39,7 +39,7 @@ public interface ImapResponseComposer {
      * @param responseCode
      *            response code or null when there is no response code
      */
-    public abstract void untaggedNoResponse(String displayMessage,
+    public ImapResponseComposer untaggedNoResponse(String displayMessage,
             String responseCode) throws IOException;
 
     /**
@@ -48,7 +48,7 @@ public interface ImapResponseComposer {
      * @param flags
      *            <code>Flags</code>, not null
      */
-    public abstract void flags(Flags flags) throws IOException;
+    public ImapResponseComposer flags(Flags flags) throws IOException;
 
     /**
      * Writes a complete FLAGS response.
@@ -56,15 +56,15 @@ public interface ImapResponseComposer {
      * @param flags
      *            <code>Flags</code>, not null
      */
-    public abstract void flagsResponse(Flags flags) throws IOException;
+    public ImapResponseComposer flagsResponse(Flags flags) throws IOException;
 
-    public abstract void existsResponse(long count) throws IOException;
+    public ImapResponseComposer existsResponse(long count) throws IOException;
 
-    public abstract void recentResponse(long count) throws IOException;
+    public ImapResponseComposer recentResponse(long count) throws IOException;
 
-    public abstract void expungeResponse(long msn) throws IOException;
+    public ImapResponseComposer expungeResponse(long msn) throws IOException;
 
-    public abstract void searchResponse(long[] ids) throws IOException;
+    public ImapResponseComposer searchResponse(long[] ids) throws IOException;
 
     /**
      * Starts a FETCH response by writing the opening star-FETCH-number-paren
@@ -74,12 +74,12 @@ public interface ImapResponseComposer {
      *            message number
      * @see #closeFetchResponse()
      */
-    public abstract void openFetchResponse(long msn) throws IOException;
+    public ImapResponseComposer openFetchResponse(long msn) throws IOException;
 
     /**
      * Ends a FETCH response by writing the closing paren-crlf sequence.
      */
-    public abstract void closeFetchResponse() throws IOException;
+    public ImapResponseComposer closeFetchResponse() throws IOException;
 
     /**
      * Starts a <code>FETCH ENVELOPE</code> production.
@@ -93,7 +93,7 @@ public interface ImapResponseComposer {
      * @throws IOException
      * @see {@link #endEnvelope(String, String)} must be called
      */
-    public abstract void startEnvelope(String date, String subject,
+    public ImapResponseComposer startEnvelope(String date, String subject,
             boolean prefixWithName) throws IOException;
 
     /**
@@ -101,7 +101,7 @@ public interface ImapResponseComposer {
      * 
      * @throws IOException
      */
-    public abstract void startAddresses() throws IOException;
+    public ImapResponseComposer startAddresses() throws IOException;
 
     /**
      * Composes an address.
@@ -116,7 +116,7 @@ public interface ImapResponseComposer {
      *            host name, or null for <code>NIL</code>
      * @throws IOException
      */
-    public abstract void address(String name, String domainList,
+    public ImapResponseComposer address(String name, String domainList,
             String mailbox, String host) throws IOException;
 
     /**
@@ -124,7 +124,7 @@ public interface ImapResponseComposer {
      * 
      * @throws IOException
      */
-    public abstract void endAddresses() throws IOException;
+    public ImapResponseComposer endAddresses() throws IOException;
 
     /**
      * Ends a <code>FETCH ENVELOPE</code> production.
@@ -135,7 +135,7 @@ public interface ImapResponseComposer {
      *            envelope message-id, or null for <code>NIL</code>
      * @throws IOException
      */
-    public abstract void endEnvelope(String inReplyTo, String messageId)
+    public ImapResponseComposer endEnvelope(String inReplyTo, String messageId)
             throws IOException;
 
     /**
@@ -143,9 +143,9 @@ public interface ImapResponseComposer {
      * 
      * @throws IOException
      */
-    public abstract void nil() throws IOException;
+    public ImapResponseComposer nil() throws IOException;
 
-    public abstract void commandResponse(ImapCommand command, String message)
+    public ImapResponseComposer commandResponse(ImapCommand command, String message)
             throws IOException;
 
     /**
@@ -160,7 +160,7 @@ public interface ImapResponseComposer {
      * @param name
      *            mailbox name
      */
-    public abstract void listResponse(String typeName, List<String> attributes,
+    public ImapResponseComposer listResponse(String typeName, List<String> attributes,
             char hierarchyDelimiter, String name) throws IOException;
 
     /**
@@ -170,7 +170,7 @@ public interface ImapResponseComposer {
      * @param message
      *            The message to write to the client.
      */
-    public abstract void taggedResponse(String message, String tag)
+    public ImapResponseComposer taggedResponse(String message, String tag)
             throws IOException;
 
     /**
@@ -180,30 +180,30 @@ public interface ImapResponseComposer {
      * @param message
      *            The message to write to the client.
      */
-    public abstract void untaggedResponse(String message) throws IOException;
+    public ImapResponseComposer untaggedResponse(String message) throws IOException;
 
-    public abstract void byeResponse(String message) throws IOException;
+    public ImapResponseComposer byeResponse(String message) throws IOException;
     
-    public abstract void hello(String message) throws IOException;
+    public ImapResponseComposer hello(String message) throws IOException;
 
-    public abstract void untagged() throws IOException;
+    public ImapResponseComposer untagged() throws IOException;
 
-    public abstract void commandName(final String name) throws IOException;
+    public ImapResponseComposer commandName(final String name) throws IOException;
 
     public ImapResponseComposer message(final String message)
             throws IOException;
 
-    public abstract void message(final long number) throws IOException;
+    public ImapResponseComposer message(final long number) throws IOException;
 
-    public abstract void end() throws IOException;
+    public ImapResponseComposer end() throws IOException;
 
-    public abstract void tag(String tag) throws IOException;
+    public ImapResponseComposer tag(String tag) throws IOException;
 
-    public abstract void statusResponse(String tag, ImapCommand command,
+    public ImapResponseComposer statusResponse(String tag, ImapCommand command,
             String type, String responseCode, Collection<String> parameters,
             boolean useParens, long number, String text) throws IOException;
 
-    public abstract void statusResponse(Long messages, Long recent,
+    public ImapResponseComposer statusResponse(Long messages, Long recent,
             Long uidNext, Long uidValidity, Long unseen, String mailboxName)
             throws IOException;
 
@@ -300,6 +300,6 @@ public interface ImapResponseComposer {
      * @param message
      *            message for display, not null
      */
-    public abstract void continuationResponse(String message) throws IOException;
+    public ImapResponseComposer continuationResponse(String message) throws IOException;
 
 }
