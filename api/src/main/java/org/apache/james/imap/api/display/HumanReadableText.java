@@ -21,6 +21,8 @@ package org.apache.james.imap.api.display;
 
 import java.util.Arrays;
 
+import javax.mail.Flags;
+
 import org.apache.james.imap.api.ImapConstants;
 
 /**
@@ -34,14 +36,26 @@ public class HumanReadableText {
     public static final HumanReadableText SELECT = new HumanReadableText(
             "org.apache.james.imap.SELECT", "completed.");
 
-    public static final HumanReadableText UNSEEN = new HumanReadableText(
-            "org.apache.james.imap.UNSEEN", "");
+    public static final HumanReadableText unseen(long numberUnseen) {
+        return new HumanReadableText("org.apache.james.imap.UNSEEN","Message "+ numberUnseen + " is first unseen");
+    }
+    
+    public static final HumanReadableText UIDNEXT = new HumanReadableText(
+            "org.apache.james.imap.UIDNEXT", "Predicted next UID");
 
     public static final HumanReadableText UID_VALIDITY = new HumanReadableText(
-            "org.apache.james.imap.UID_VALIDITY", "");
-
-    public static final HumanReadableText PERMANENT_FLAGS = new HumanReadableText(
-            "org.apache.james.imap.PERMANENT_FLAGS", "");
+            "org.apache.james.imap.UID_VALIDITY", "UIDs valid");
+    
+    public static final HumanReadableText permanentFlags(Flags flags) {
+        String text;
+        if (flags.getSystemFlags() != null && flags.getSystemFlags().length > 0) {
+            text = "Limited";
+        } else {
+            text = "No permanent flags permitted";
+        }
+        return new HumanReadableText("org.apache.james.imap.PERMANENT_FLAGS", text);
+    }
+   
 
     public static final HumanReadableText GENERIC_LSUB_FAILURE = new HumanReadableText(
             "org.apache.james.imap.GENERIC_SUBSCRIPTION_FAILURE",

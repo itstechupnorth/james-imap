@@ -109,7 +109,7 @@ abstract class AbstractSelectionProcessor<M extends AbstractMailboxSelectionRequ
     throws MailboxException {
         final long uid = metaData.getUidNext();
         final StatusResponse untaggedOk = statusResponseFactory.untaggedOk(
-                HumanReadableText.UNSEEN, ResponseCode.uidNext(uid));
+                HumanReadableText.UIDNEXT, ResponseCode.uidNext(uid));
         responder.respond(untaggedOk);
     }
     
@@ -134,7 +134,7 @@ abstract class AbstractSelectionProcessor<M extends AbstractMailboxSelectionRequ
     private void permanentFlags(Responder responder, MessageManager.MetaData metaData) {
         final Flags permanentFlags = metaData.getPermanentFlags();
         final StatusResponse untaggedOk = statusResponseFactory.untaggedOk(
-                HumanReadableText.PERMANENT_FLAGS, ResponseCode
+                HumanReadableText.permanentFlags(permanentFlags), ResponseCode
                         .permanentFlags(permanentFlags));
         responder.respond(untaggedOk);
     }
@@ -149,7 +149,7 @@ abstract class AbstractSelectionProcessor<M extends AbstractMailboxSelectionRequ
             if (msn == SelectedMailbox.NO_SUCH_MESSAGE) throw new MailboxException("No message found with uid " + unseenUid);
 
             final StatusResponse untaggedOk = statusResponseFactory.untaggedOk(
-                    HumanReadableText.UNSEEN, ResponseCode.unseen(msn));
+                    HumanReadableText.unseen(msn), ResponseCode.unseen(msn));
             responder.respond(untaggedOk);
         }
 
