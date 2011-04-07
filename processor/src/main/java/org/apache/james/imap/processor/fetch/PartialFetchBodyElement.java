@@ -91,7 +91,8 @@ final class PartialFetchBodyElement implements BodyElement {
         private void checkOffset() throws IOException {
             if (offset > -1) {
                 while (offset > 0) {
-                    read();
+                    // consume the stream till we reach the offset
+                    in.read();
                     offset--;
                 }
                 offset = -1;
