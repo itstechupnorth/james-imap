@@ -83,13 +83,23 @@ final class PartialFetchBodyElement implements BodyElement {
 
         public LimitingInputStream(InputStream in, long offset, long length) {
             super(in);
+            if (length < offset) throw new IllegalArgumentException("Offset need to be <= length");
             this.length = length;
-            this.offset = offset;
-            
+            this.offset = offset;            
         }
         
+        /**
+         * Check if the offset was reached. If not move the wrapped {@link InputStream} to the needed offset
+         * @throws IOException
+         */
         private void checkOffset() throws IOException {
             if (offset > -1) {
+                // first try to skip on the InputStream as it is mostly faster the calling read in a loop
+                try {
+                    offset -= in.skip(offset);
+                } catch (IOException e) {
+                    // maybe because skip is not supported 
+                }
                 while (offset > 0) {
                     // consume the stream till we reach the offset
                     in.read();
@@ -98,6 +108,11 @@ final class PartialFetchBodyElement implements BodyElement {
                 offset = -1;
             }
         }
+        
+        /*
+         * (non-Javadoc)
+         * @see java.io.FilterInputStream#read()
+         */
         public int read() throws IOException {
             checkOffset();
             if (pos >= length) {
@@ -107,11 +122,18 @@ final class PartialFetchBodyElement implements BodyElement {
             return super.read();
         }
 
+        /*
+         * (non-Javadoc)
+         * @see java.io.FilterInputStream#read(byte[])
+         */
         public int read(byte b[]) throws IOException {
-           
             return read(b, 0, b.length);
         }
 
+        /*
+         * (non-Javadoc)
+         * @see java.io.FilterInputStream#read(byte[], int, int)
+         */
         public int read(byte b[], int off, int len) throws IOException {
             checkOffset();
 
@@ -133,12 +155,19 @@ final class PartialFetchBodyElement implements BodyElement {
            
         }
 
+        /**
+         * Throws {@link IOException}
+         */
         public long skip(long n) throws IOException {
             throw new IOException("Not implemented");
         }
 
+        /*
+         * (non-Javadoc)
+         * @see java.io.FilterInputStream#available()
+         */
         public int available() throws IOException {
-            int a = in.available() - (int)offset;
+            int a = in.available() - (int)offset - (int) length;
             if (a < -1) {
                 throw new IOException("Unable to calculate size");
             }
@@ -149,10 +178,13 @@ final class PartialFetchBodyElement implements BodyElement {
             // Don't do anything.
         }
 
-        public synchronized void reset() throws IOException {
+        public void reset() throws IOException {
             throw new IOException("mark not supported");
         }
 
+        /**
+         * Return false as mark is not supported
+         */
         public boolean markSupported() {
             return false;
         }
