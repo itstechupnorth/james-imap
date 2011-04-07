@@ -194,7 +194,9 @@ public class MailboxEventAnalyser extends ImapStateAwareMailboxListener {
     
     public Collection<Long> flagUpdateUids() {
         synchronized (flagUpdateUids) {
-            return Collections.unmodifiableSet(flagUpdateUids);
+            // copy the TreeSet to fix possible java.util.ConcurrentModificationException
+            // See IMAP-278
+            return Collections.unmodifiableSet(new TreeSet<Long>(flagUpdateUids));
         }
     }
 
@@ -205,7 +207,9 @@ public class MailboxEventAnalyser extends ImapStateAwareMailboxListener {
      */
     public Collection<Long> expungedUids() {
         synchronized (expungedUids) {
-            return Collections.unmodifiableSet(expungedUids);
+            // copy the TreeSet to fix possible java.util.ConcurrentModificationException
+            // See IMAP-278
+            return Collections.unmodifiableSet(new TreeSet<Long>(expungedUids));
         }
     }
 
