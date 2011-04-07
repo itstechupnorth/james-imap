@@ -23,13 +23,14 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.WritableByteChannel;
 
+import org.apache.james.imap.encode.ImapResponseWriter;
 import org.apache.james.imap.message.response.Literal;
 
 /**
  * Class providing methods to send response messages from the server to the
  * client.
  */
-public class ChannelImapResponseWriter extends AbstractImapResponseWriter {
+public class ChannelImapResponseWriter implements ImapResponseWriter {
 
 
     private final WritableByteChannel out;
@@ -40,19 +41,12 @@ public class ChannelImapResponseWriter extends AbstractImapResponseWriter {
         this.out = out;
     }
 
-    public ChannelImapResponseWriter(final WritableByteChannel out,
-            final int bufferSize) {
-        super(bufferSize);
-        this.out = out;
-        
-    }
-
 
     /*
      * (non-Javadoc)
-     * @see org.apache.james.imap.main.AbstractImapResponseWriter#write(java.nio.ByteBuffer)
+     * @see org.apache.james.imap.encode.ImapResponseWriter#write(java.nio.ByteBuffer)
      */
-    protected void write(final ByteBuffer buffer) throws IOException {
+    public void write(final ByteBuffer buffer) throws IOException {
         while (out.write(buffer) > 0) { // NOPMD false positive
             // Write all
         }
@@ -61,9 +55,9 @@ public class ChannelImapResponseWriter extends AbstractImapResponseWriter {
 
     /*
      * (non-Javadoc)
-     * @see org.apache.james.imap.main.AbstractImapResponseWriter#write(org.apache.james.imap.message.response.Literal)
+     * @see org.apache.james.imap.encode.ImapResponseWriter#write(org.apache.james.imap.message.response.Literal)
      */
-    protected void write(Literal literal) throws IOException {
+    public void write(Literal literal) throws IOException {
         literal.writeTo(out);
     }
 

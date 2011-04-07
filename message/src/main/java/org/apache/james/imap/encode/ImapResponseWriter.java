@@ -20,6 +20,7 @@
 package org.apache.james.imap.encode;
 
 import java.io.IOException;
+import java.nio.ByteBuffer;
 
 import org.apache.james.imap.message.response.Literal;
 
@@ -32,128 +33,24 @@ import org.apache.james.imap.message.response.Literal;
  * </p>
  */
 public interface ImapResponseWriter {
-
-    /**
-     * Starts an untagged response.
-     */
-    void untagged() throws IOException;
-
-    /**
-     * Starts a tagged response.
-     * 
-     * @param tag
-     *            the tag, not null
-     */
-    void tag(String tag) throws IOException;
-
-    /**
-     * Starts a continuation response.
-     * 
-     * @param message
-     *            the message, not null
-     */
-    void continuation(String message) throws IOException;
+    
     
     /**
-     * Writes a command name.
-     * 
-     * @param commandName
-     *            the command name, not null
-     */
-    void commandName(String commandName) throws IOException;
-
-    /**
-     * Writes a message.
-     * 
-     * @param message
-     *            the message, not null
-     */
-    void message(String message) throws IOException;
-
-    void message(long number) throws IOException;
-
-    /**
-     * Writes a response code.
-     * 
-     * @param responseCode
-     *            the response code, not null
-     */
-    void responseCode(String responseCode) throws IOException;
-
-    /**
-     * Writes a quoted message.
-     * 
-     * @param message
-     *            message, not null
-     */
-    void quote(String message) throws IOException;
-
-    /**
-     * Opens a parenthesis - writes a <code>(</code>.
-     */
-    void openParen() throws IOException;
-
-    /**
-     * Do not write a space before the next production.
-     * 
-     * @throws IOException
-     */
-    public void skipNextSpace() throws IOException;
-
-    /**
-     * Closes a parenthesis - writes a <code>)</code>.
-     */
-    void closeParen() throws IOException;
-
-    /**
-     * Closes a square bracket - writes a <code>[</code>.
-     * 
-     * @throws IOException
-     */
-    void openSquareBracket() throws IOException;
-
-    /**
-     * Closes a square bracket - writes a <code>]</code>.
-     * 
-     * @throws IOException
-     */
-    void closeSquareBracket() throws IOException;
-
-    /**
-     * Ends a response.
-     * 
-     */
-    void end() throws IOException;
-
-    /**
-     * Writes literal content
+     * Writes literal content to the client
      * 
      * @param literal
      *            <code>Literal</code> to be written, not null
      * @throws IOException
      */
-    void literal(Literal literal) throws IOException;
-
+    void write(Literal literal) throws IOException;
+    
     /**
-     * Writes given message converted to upper case. The message may be assumed
-     * to be ASCII encoded. Conversion of characters MUST NOT be performed
-     * according to the current locale but as per ASCII.
+     * Write a ByteBuffer to the client
      * 
-     * @param message
-     *            ASCII encoded, not null
+     * @param buffer 
+     *          <code>ByteBuffer</code> to be written, not null
      * @throws IOException
      */
-    void upperCaseAscii(String message) throws IOException;
+    void write(ByteBuffer buffer) throws IOException;
 
-    /**
-     * Writes given message converted to upper case. The message may be assumed
-     * to be ASCII encoded. Conversion of characters MUST NOT be performed
-     * according to the current locale but as per ASCII. The message is
-     * surrounded by quotes.
-     * 
-     * @param message
-     *            ASCII encoded, not null
-     * @throws IOException
-     */
-    void quoteUpperCaseAscii(String message) throws IOException;
 }
