@@ -60,22 +60,21 @@ public class StatusCommandParser extends AbstractImapCommandParser {
         return items;
     }
 
-    private void addItem(String nextWord, StatusDataItems items)
-            throws DecodingException {
-
-        if (nextWord.equals(ImapConstants.STATUS_MESSAGES)) {
+    private void addItem(String nextWord, StatusDataItems items) throws DecodingException {
+        // All the matching must be done in a case-insensitive fashion.
+        // See rfc3501 9. Formal Syntax and IMAP-282
+        if (nextWord.equalsIgnoreCase(ImapConstants.STATUS_MESSAGES)) {
             items.setMessages(true);
-        } else if (nextWord.equals(ImapConstants.STATUS_RECENT)) {
+        } else if (nextWord.equalsIgnoreCase(ImapConstants.STATUS_RECENT)) {
             items.setRecent(true);
-        } else if (nextWord.equals(ImapConstants.STATUS_UIDNEXT)) {
+        } else if (nextWord.equalsIgnoreCase(ImapConstants.STATUS_UIDNEXT)) {
             items.setUidNext(true);
-        } else if (nextWord.equals(ImapConstants.STATUS_UIDVALIDITY)) {
+        } else if (nextWord.equalsIgnoreCase(ImapConstants.STATUS_UIDVALIDITY)) {
             items.setUidValidity(true);
-        } else if (nextWord.equals(ImapConstants.STATUS_UNSEEN)) {
+        } else if (nextWord.equalsIgnoreCase(ImapConstants.STATUS_UNSEEN)) {
             items.setUnseen(true);
         } else {
-            throw new DecodingException(HumanReadableText.ILLEGAL_ARGUMENTS, 
-                    "Unknown status item: '" + nextWord + "'");
+            throw new DecodingException(HumanReadableText.ILLEGAL_ARGUMENTS, "Unknown status item: '" + nextWord + "'");
         }
     }
 
