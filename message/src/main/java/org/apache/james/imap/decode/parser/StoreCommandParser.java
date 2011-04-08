@@ -71,8 +71,25 @@ public class StoreCommandParser extends AbstractUidCommandParser  {
             throw new DecodingException(HumanReadableText.ILLEGAL_ARGUMENTS, 
                     "Invalid Store Directive: '" + directive + "'");
         }
-
-        final Flags flags = request.flagList();
+        
+        // Handle all kind of "store-att-flags"
+        // See IMAP-281        
+        final Flags flags = new Flags();
+        if (request.nextWordChar() == '(') {
+            flags.add(request.flagList());
+        } else {
+            boolean moreFlags = true;
+            while (moreFlags) {
+                flags.add(request.flag());
+                try {
+                    request.consumeChar(' ');
+                } catch (DecodingException e) {
+                    // seems like no more flags were found
+                    moreFlags = false;
+                }
+            }
+        }
+        
         request.eol();
         final ImapMessage result = new StoreRequest(command, idSet, silent, flags, useUids, tag, sign);
         return result;

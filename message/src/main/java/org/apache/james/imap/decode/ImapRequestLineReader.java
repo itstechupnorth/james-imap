@@ -481,7 +481,7 @@ public abstract class ImapRequestLineReader {
     }
 
     /**
-     * Reads a "flags" argument from the request.
+     * Reads a "flags-list" argument from the request.
      */
     public Flags flagList()
             throws DecodingException {
@@ -506,6 +506,21 @@ public abstract class ImapRequestLineReader {
         return flags;
     }
 
+    /**
+     * Reads a "flag" argument from the request.
+     */
+    public Flags flag()
+            throws DecodingException {
+        Flags flags = new Flags();
+        nextWordChar();
+        
+        CharacterValidator validator = new NoopCharValidator();
+        String nextFlag = consumeWord(validator);
+        DecoderUtils.setFlag(nextFlag, flags);
+        return flags;
+    }
+    
+    
     /**
      * Reads an argument of type "number" from the request.
      */
