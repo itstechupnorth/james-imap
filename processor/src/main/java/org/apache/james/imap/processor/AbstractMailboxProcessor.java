@@ -148,14 +148,13 @@ abstract public class AbstractMailboxProcessor<M extends ImapRequest> extends Ab
         final Collection<Long> expungedUids = selected.expungedUids();
         for (final Long uid: expungedUids) {
             final long uidValue = uid.longValue();
-            final int msn = selected.msn(uidValue);
+            
+            // we need to remove the message in the loop to the sequence numbers are updated correctly
+            // See 7.4.1.  EXPUNGE Response
+            final int msn = selected.remove(uidValue);
             // TODO: use factory
             ExpungeResponse response = new ExpungeResponse(msn);
             responder.respond(response);
-        }
-        for (final Long uid: expungedUids) {
-            final long uidValue = uid.longValue();
-            selected.remove(uidValue);
         }
     }
 
