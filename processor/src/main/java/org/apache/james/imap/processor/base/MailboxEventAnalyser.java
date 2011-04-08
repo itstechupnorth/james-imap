@@ -53,7 +53,6 @@ public class MailboxEventAnalyser extends ImapStateAwareMailboxListener {
     public MailboxEventAnalyser(final ImapSession session, final MailboxPath mailboxPath) {
         super(session);
         this.sessionId = ImapSessionUtils.getMailboxSession(session).getSessionId();
-        System.out.println("ID=" +sessionId);
         flagUpdateUids = new TreeSet<Long>();
         expungedUids = new TreeSet<Long>();
         uninterestingFlag = Flags.Flag.RECENT;
