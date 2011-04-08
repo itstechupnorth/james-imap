@@ -83,7 +83,6 @@ final class PartialFetchBodyElement implements BodyElement {
 
         public LimitingInputStream(InputStream in, long offset, long length) {
             super(in);
-            if (length < offset) throw new IllegalArgumentException("Offset need to be <= length");
             this.length = length;
             this.offset = offset;            
         }
