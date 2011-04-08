@@ -79,7 +79,7 @@ public class ExpungeProcessor extends AbstractMailboxProcessor<ExpungeRequest> i
         } catch (MessageRangeException e) {
             taggedBad(command, tag, responder, HumanReadableText.INVALID_MESSAGESET);
         } catch (MailboxException e) {
-            session.getLog().debug("Error while exbunge", e);
+            session.getLog().debug("Error while expunge", e);
             no(command, tag, responder, HumanReadableText.GENERIC_FAILURE_DURING_PROCESSING);
         }
     }
