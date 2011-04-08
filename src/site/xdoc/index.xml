@@ -35,14 +35,20 @@
     <p><a href='http://james.apache.org/server/rfclist/imap4/rfc2060.txt'>RFC2060 IMAP4</a> 
        is functionally complete, tested and usable. The data access layer is still 
        under optimization on performance perspectives. API is susceptible to change.</p>
-     <p>Other RFCs of interest are:</p>
+     <p>Implemented RFCs:</p>
      <ul>
-       <li>http://www.ietf.org/rfc/rfc2342.txt</li>
-       <li>http://www.ietf.org/rfc/rfc2683.txt</li>
-       <li>http://www.ietf.org/rfc/rfc3501.txt</li>
-       <li>http://www.ietf.org/rfc/rfc4315.txt</li>
-       <li>http://www.ietf.org/rfc/rfc5256.txt</li>
-       <li>http://www.ietf.org/rfc/rfc2177.txt</li>
+       <li>IMAP4rev1 (RFC 3501 http://www.ietf.org/rfc/rfc3501.txt)</li>
+       <li>IMAP4 Namespace (RFC 2342 http://www.ietf.org/rfc/rfc2342.txt)</li>
+       <li>IMAP4 IDLE command (RFC 2177 http://www.ietf.org/rfc/rfc2177.txt)</li>
+     </ul>
+     <p>We follow RFC2683 recommandations for our implementations:</p>
+     <ul>
+       <li>IMAP4 Implementation Recommandations (RFC 2683 http://www.ietf.org/rfc/rfc2683.txt)</li>
+     </ul>
+     <p>Other RFCs of interest we are looking at:</p>
+     <ul>
+       <li>IMAP4 UIDPLUS extension (RFC 4315 http://www.ietf.org/rfc/rfc4315.txt)</li>
+       <li>IMAP4 SORT and THREAD Extensions (RFC 5256 http://www.ietf.org/rfc/rfc5256.txt)</li>
      </ul>
   </section>
 
