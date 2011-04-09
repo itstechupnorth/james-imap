@@ -90,8 +90,10 @@ public class FetchProcessor extends AbstractMailboxProcessor<FetchRequest> {
             }
             
             processMessageRanges(session, mailbox, ranges, fetch, useUids, mailboxSession, responder);
-
-            unsolicitedResponses(session, responder, useUids);
+            
+            // Don't send expunge responses if FETCH is used to trigger this processor. See IMAP-284
+            final boolean omitExpunged = (!useUids);
+            unsolicitedResponses(session, responder, omitExpunged, useUids);
             okComplete(command, tag, responder);
         } catch (UnsupportedCriteriaException e) {
             no(command, tag, responder,
