@@ -126,22 +126,25 @@ abstract public class AbstractMailboxProcessor<M extends ImapRequest> extends Ab
             final SelectedMailbox selected, boolean omitExpunged, boolean useUid) {
         final boolean sizeChanged = selected.isSizeChanged();
         // New message response
-            if (sizeChanged) {
-                addExistsResponses(session, selected, responder);
-            }
-            // Expunged messages
-            if (!omitExpunged) {
-                addExpungedResponses(selected, responder);
-            }
-            if (sizeChanged || (selected.isRecentUidRemoved() && !omitExpunged)) {
-                addRecentResponses(selected, responder);
-                selected.resetRecentUidRemoved();
-            }
+        if (sizeChanged) {
+            addExistsResponses(session, selected, responder);
+        }
+        // Expunged messages
+        if (!omitExpunged) {
+            addExpungedResponses(selected, responder);
+        }
+        if (sizeChanged || (selected.isRecentUidRemoved() && !omitExpunged)) {
+            addRecentResponses(selected, responder);
+            selected.resetRecentUidRemoved();
+        }
     
-            // Message updates
-            addFlagsResponses(session, selected, responder, useUid);
+        // Message updates
+        addFlagsResponses(session, selected, responder, useUid);
     
+        // Only reset the events if we send the EXPUNGE responses. See IMAP-286
+        if (!omitExpunged) {
             selected.resetEvents();
+        }
     }
 
     private void addExpungedResponses(final SelectedMailbox selected, final ImapProcessor.Responder responder) {
