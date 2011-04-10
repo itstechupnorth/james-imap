@@ -85,7 +85,7 @@ public class ExpungeProcessor extends AbstractMailboxProcessor<ExpungeRequest> i
     }
     
     private void expunge(MessageManager mailbox, MessageRange range, ImapSession session, MailboxSession mailboxSession) throws MailboxException {
-        final Iterator<Long> it = mailbox.expunge(MessageRange.all(), mailboxSession);
+        final Iterator<Long> it = mailbox.expunge(range, mailboxSession);
         final SelectedMailbox selected = session.getSelected();
         if (mailboxSession != null) {
             while (it.hasNext()) {
