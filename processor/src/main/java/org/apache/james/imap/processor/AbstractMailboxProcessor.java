@@ -388,6 +388,12 @@ abstract public class AbstractMailboxProcessor<M extends ImapRequest> extends Ab
         long highVal = range.getHighVal();
       
         if (useUids == false) {
+            // Take care of "*" and "*:*" values by return the last message in the mailbox. See IMAP-289
+            if (lowVal == Long.MAX_VALUE && highVal == Long.MAX_VALUE) {
+                lowVal = selected.getLastUid();
+                highVal = lowVal;
+            }
+            
             if (lowVal != Long.MIN_VALUE) {
                 lowVal = selected.uid((int) lowVal);
                 if (lowVal == SelectedMailbox.NO_SUCH_MESSAGE)
@@ -397,6 +403,12 @@ abstract public class AbstractMailboxProcessor<M extends ImapRequest> extends Ab
                 highVal = selected.uid((int) highVal);
                 if (highVal == SelectedMailbox.NO_SUCH_MESSAGE)
                     throw new MessageRangeException("No message found with msn " + highVal);
+            }
+        } else {
+            // Take care of "*" and "*:*" values by return the last message in the mailbox. See IMAP-289
+            if (lowVal == Long.MAX_VALUE && highVal == Long.MAX_VALUE) {
+                lowVal = selected.getLastUid();
+                highVal = lowVal;
             }
         }
         MessageRange mRange = MessageRange.range(lowVal, highVal);

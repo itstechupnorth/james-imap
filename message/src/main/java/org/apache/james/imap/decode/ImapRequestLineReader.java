@@ -643,14 +643,24 @@ public abstract class ImapRequestLineReader {
         int pos = range.indexOf(':');
         try {
             if (pos == -1) {
-                long value = parseUnsignedInteger(range);
-                return new IdRange(value);
+                
+                // Check if its a single "*" and so should return last message in mailbox. See IMAP-289
+                if (range.length() == 1 && range.charAt(0) == '*') {
+                    return new IdRange(Long.MAX_VALUE, Long.MAX_VALUE);
+                } else {
+                    long value = parseUnsignedInteger(range);
+                    return new IdRange(value);
+                }
             } else {
                 // Make sure we detect the low and high value
                 // See https://issues.apache.org/jira/browse/IMAP-212
                 long val1 = parseUnsignedInteger(range.substring(0, pos));
                 long val2 = parseUnsignedInteger(range.substring(pos + 1));
-                if (val1 <= val2) {
+                
+                // handle "*:*" ranges. See IMAP-289
+                if (val1 == Long.MAX_VALUE && val2 == Long.MAX_VALUE) {
+                    return new IdRange(Long.MAX_VALUE, Long.MAX_VALUE);
+                } else if (val1 <= val2) {
                     return new IdRange(val1, val2);
                 } else if(val1 == Long.MAX_VALUE) {
                     return new IdRange(Long.MIN_VALUE, val2);
