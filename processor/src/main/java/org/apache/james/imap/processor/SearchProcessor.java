@@ -182,14 +182,23 @@ public class SearchProcessor extends AbstractMailboxProcessor<SearchRequest> {
             case SearchKey.TYPE_SEEN:
                 return SearchQuery.flagIsSet(Flag.SEEN);
             case SearchKey.TYPE_SENTBEFORE:
-                return SearchQuery.headerDateBefore(ImapConstants.RFC822_DATE,
+                
+                // Include the date which is used as search param. See IMAP-293
+                Criterion beforeC = SearchQuery.headerDateBefore(ImapConstants.RFC822_DATE,
                         date.getDay(), date.getMonth(), date.getYear());
+                Criterion onC = SearchQuery.headerDateBefore(ImapConstants.RFC822_DATE,
+                        date.getDay(), date.getMonth(), date.getYear());
+                return SearchQuery.or(beforeC, onC);
+
             case SearchKey.TYPE_SENTON:
                 return SearchQuery.headerDateOn(ImapConstants.RFC822_DATE, date
                         .getDay(), date.getMonth(), date.getYear());
             case SearchKey.TYPE_SENTSINCE:
-                return SearchQuery.headerDateAfter(ImapConstants.RFC822_DATE,
+                // Include the date which is used as search param. See IMAP-293
+                Criterion onCrit = SearchQuery.headerDateOn(ImapConstants.RFC822_DATE, date.getDay(), date.getMonth(), date.getYear());
+                Criterion afterCrit = SearchQuery.headerDateAfter(ImapConstants.RFC822_DATE,
                         date.getDay(), date.getMonth(), date.getYear());
+                return SearchQuery.or(onCrit, afterCrit);
             case SearchKey.TYPE_SEQUENCE_SET:
                 return sequence(key.getSequenceNumbers(), session, true);
             case SearchKey.TYPE_SINCE:
