@@ -218,17 +218,19 @@ public class SelectedMailboxImpl implements SelectedMailbox {
 
     /*
      * (non-Javadoc)
+     * 
      * @see org.apache.james.imap.api.process.SelectedMailbox#getFirstUid()
      */
-	public long getFirstUid() {
-		return converter.getFirstUid();
-	}
+    public long getFirstUid() {
+        return converter.getFirstUid();
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * @see org.apache.james.imap.api.process.SelectedMailbox#getLastUid()
-	 */
-	public long getLastUid() {
-		return converter.getLastUid();
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.apache.james.imap.api.process.SelectedMailbox#getLastUid()
+     */
+    public long getLastUid() {
+        return converter.getLastUid();
+    }
 }
