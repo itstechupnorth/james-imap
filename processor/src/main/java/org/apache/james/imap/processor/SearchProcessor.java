@@ -43,6 +43,7 @@ import org.apache.james.imap.message.response.SearchResponse;
 import org.apache.james.mailbox.MailboxException;
 import org.apache.james.mailbox.MailboxManager;
 import org.apache.james.mailbox.MessageManager;
+import org.apache.james.mailbox.MessageRange;
 import org.apache.james.mailbox.MessageRangeException;
 import org.apache.james.mailbox.SearchQuery;
 import org.apache.james.mailbox.SearchQuery.Criterion;
@@ -230,45 +231,16 @@ public class SearchProcessor extends AbstractMailboxProcessor<SearchRequest> {
         final SearchQuery.NumericRange[] ranges = new SearchQuery.NumericRange[length];
         for (int i = 0; i < length; i++) {
             final IdRange range = sequenceNumbers[i];
-            long highVal = range.getHighVal();
-            long lowVal = range.getLowVal();
-            long lowUid;
-            long highUid;
+
+            // correctly calculate the ranges. See IMAP-292
             final SelectedMailbox selected = session.getSelected();
-
-            if (msn) {
-                if (highVal == Long.MAX_VALUE) {
-                    highUid = Long.MAX_VALUE;
-                } else {
-                    final int highMsn = (int) highVal;
-                    highUid = selected.uid(highMsn);
-                    
-                    if (highUid == SelectedMailbox.NO_SUCH_MESSAGE) highUid = selected.getLastUid();
-                }
-                if (lowVal == Long.MIN_VALUE) {
-                    lowUid = Long.MAX_VALUE;
-                } else {
-                    final int lowMsn = (int) lowVal;
-                    lowUid = selected.uid(lowMsn);
-                    if (lowUid == SelectedMailbox.NO_SUCH_MESSAGE) lowUid = selected.getFirstUid();
-
-                }
-            } else {
-                lowUid = lowVal;
-                highUid = highVal;
-                
-                
-            	if (lowVal != Long.MIN_VALUE && lowVal < selected.getFirstUid()) {
-            		lowUid = selected.getFirstUid();
-            	} 
-            	
-            	if (highVal != Long.MAX_VALUE && highVal > selected.getLastUid()) {
-            		highUid = selected.getLastUid();
-            	} 
-            }
-            ranges[i] = new SearchQuery.NumericRange(lowUid, highUid);
+            MessageRange mRange = messageRange(selected, range, !msn);
+            mRange = normalizeMessageRange(selected, mRange);
+            ranges[i] = new SearchQuery.NumericRange(mRange.getUidFrom(), mRange.getUidTo());
+            
         }
-        return SearchQuery.uid(ranges);
+        Criterion crit =  SearchQuery.uid(ranges);
+        return crit;
     }
 
     private Criterion or(List<SearchKey> keys, final ImapSession session) throws MessageRangeException {

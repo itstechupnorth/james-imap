@@ -33,7 +33,6 @@ import org.apache.james.imap.api.message.IdRange;
 import org.apache.james.imap.api.message.response.StatusResponseFactory;
 import org.apache.james.imap.api.process.ImapProcessor;
 import org.apache.james.imap.api.process.ImapSession;
-import org.apache.james.imap.api.process.SelectedMailbox;
 import org.apache.james.imap.message.request.FetchRequest;
 import org.apache.james.imap.message.response.FetchResponse;
 import org.apache.james.imap.processor.AbstractMailboxProcessor;
@@ -41,14 +40,13 @@ import org.apache.james.mailbox.MailboxException;
 import org.apache.james.mailbox.MailboxManager;
 import org.apache.james.mailbox.MailboxSession;
 import org.apache.james.mailbox.MessageManager;
+import org.apache.james.mailbox.MessageManager.MessageCallback;
 import org.apache.james.mailbox.MessageRange;
 import org.apache.james.mailbox.MessageRangeException;
 import org.apache.james.mailbox.MessageResult;
-import org.apache.james.mailbox.UnsupportedCriteriaException;
-import org.apache.james.mailbox.MessageManager.MessageCallback;
-import org.apache.james.mailbox.MessageRange.Type;
 import org.apache.james.mailbox.MessageResult.FetchGroup;
 import org.apache.james.mailbox.MessageResult.MimePath;
+import org.apache.james.mailbox.UnsupportedCriteriaException;
 import org.apache.james.mailbox.util.FetchGroupImpl;
 import org.apache.james.mime4j.field.address.parser.ParseException;
 
@@ -145,49 +143,7 @@ public class FetchProcessor extends AbstractMailboxProcessor<FetchRequest> {
         }
         
     }
-    
-    /**
-     * Format MessageRange to RANGE format applying selected folder min & max UIDs constraints
-     * 
-     * @param selected currently selected mailbox
-     * @param range input range
-     * @return normalized message range
-     * @throws MessageRangeException 
-     */
-    private MessageRange normalizeMessageRange(SelectedMailbox selected, MessageRange range) throws MessageRangeException {
-        Type rangeType = range.getType();
-        long start;
-        long end;
-        
-        switch (rangeType) {
-        case ONE:
-            return range;
-        case ALL:
-            start = selected.getFirstUid();
-            end = selected.getLastUid();
-            return MessageRange.range(start, end);
-        case RANGE:
-            start = range.getUidFrom();
-            if (start < 1 || start == Long.MAX_VALUE || start < selected.getFirstUid()) {
-                start = selected.getFirstUid();
-            }
-            end = range.getUidTo();
-            if (end < 1 || end == Long.MAX_VALUE || end > selected.getLastUid()) {
-                end = selected.getLastUid();
-            }
-            return MessageRange.range(start, end);
-        case FROM:
-            start = range.getUidFrom();
-            if (start < 1 || start == Long.MAX_VALUE || start < selected.getFirstUid()) {
-                start = selected.getFirstUid();
-            }
-            
-            end = selected.getLastUid();
-            return MessageRange.range(start, end);
-        default:
-            throw new MessageRangeException("Unknown message range type: "+rangeType);
-        }
-    }
+
     
     protected FetchGroup getFetchGroup(FetchData fetch) {
         FetchGroupImpl result = new FetchGroupImpl();

@@ -49,6 +49,7 @@ import org.apache.james.mailbox.MessageManager;
 import org.apache.james.mailbox.MessageRange;
 import org.apache.james.mailbox.MessageRangeException;
 import org.apache.james.mailbox.MessageResult;
+import org.apache.james.mailbox.MessageRange.Type;
 import org.apache.james.mailbox.util.FetchGroupImpl;
 
 abstract public class AbstractMailboxProcessor<M extends ImapRequest> extends AbstractChainedProcessor<M> {
@@ -407,10 +408,58 @@ abstract public class AbstractMailboxProcessor<M extends ImapRequest> extends Ab
             // Take care of "*" and "*:*" values by return the last message in the mailbox. See IMAP-289
             if (lowVal == Long.MAX_VALUE && highVal == Long.MAX_VALUE) {
                 return MessageRange.one(selected.getLastUid());
+            } else if (highVal == Long.MAX_VALUE && selected.getLastUid() < lowVal) {
+                // Sequence uid ranges which use *:<uid-higher-then-last-uid> MUST return at least the highest uid in the mailbox
+                // See IMAP-291
+                return MessageRange.one(selected.getLastUid());
             }
         }
         MessageRange mRange = MessageRange.range(lowVal, highVal);
         return mRange;
+    }
+    
+    
+    /**
+     * Format MessageRange to RANGE format applying selected folder min & max UIDs constraints
+     * 
+     * @param selected currently selected mailbox
+     * @param range input range
+     * @return normalized message range
+     * @throws MessageRangeException 
+     */
+    protected MessageRange normalizeMessageRange(SelectedMailbox selected, MessageRange range) throws MessageRangeException {
+        Type rangeType = range.getType();
+        long start;
+        long end;
+        
+        switch (rangeType) {
+        case ONE:
+            return range;
+        case ALL:
+            start = selected.getFirstUid();
+            end = selected.getLastUid();
+            return MessageRange.range(start, end);
+        case RANGE:
+            start = range.getUidFrom();
+            if (start < 1 || start == Long.MAX_VALUE || start < selected.getFirstUid()) {
+                start = selected.getFirstUid();
+            }
+            end = range.getUidTo();
+            if (end < 1 || end == Long.MAX_VALUE || end > selected.getLastUid()) {
+                end = selected.getLastUid();
+            }
+            return MessageRange.range(start, end);
+        case FROM:
+            start = range.getUidFrom();
+            if (start < 1 || start == Long.MAX_VALUE || start < selected.getFirstUid()) {
+                start = selected.getFirstUid();
+            }
+            
+            end = selected.getLastUid();
+            return MessageRange.range(start, end);
+        default:
+            throw new MessageRangeException("Unknown message range type: "+rangeType);
+        }
     }
 
 }
