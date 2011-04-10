@@ -131,18 +131,33 @@ public class IdRange {
     public static List<IdRange> mergeRanges(final List<IdRange> ranges) {
         List<IdRange> copy = new ArrayList<IdRange>(ranges);
         Collections.sort(copy, IdRangeComperator.INSTANCE);
-       
+        
+        boolean lastUid = false;
+        
         for (int i = 0; i < copy.size() -1; i++) {
             IdRange current = copy.get(i);
             IdRange next = copy.get(i +1);
-            if (current.getHighVal() >= next.getLowVal() -1) {
-                if (next.getHighVal() > current.getHighVal()) {
-                    current.setHighVal(next.getHighVal());
+            if (next.getLowVal() == Long.MAX_VALUE && next.getHighVal() == Long.MAX_VALUE) {
+                if (lastUid) {
+                    copy.remove(next);
+                    i--;
+                } else {
+                    lastUid = true;
                 }
-                // remove the merged id range and decrease the count
-                copy.remove(next);
-                i--;
+            }  else {
+                // Make sure we handle the "*" and "*:*" correctly and don't remove ranges by error. See IMAP-289
+                if ((current.getLowVal() != Long.MAX_VALUE && current.getHighVal() != Long.MAX_VALUE) && (current.getHighVal() >= next.getLowVal() -1)) {
+                    if (next.getHighVal() > current.getHighVal()) {
+                        current.setHighVal(next.getHighVal());
+                    }
+                    // remove the merged id range and decrease the count
+                    copy.remove(next);
+                    i--;
+                } 
             }
+            
+            
+            
         }
         return copy;
 
@@ -153,7 +168,18 @@ public class IdRange {
         private static IdRangeComperator INSTANCE = new IdRangeComperator();
 
         public int compare(IdRange range1, IdRange range2) {
-            return (int) (range1.getLowVal() - range2.getLowVal());
+            
+            // Correctly sort and respect "*" and "*:*" ranges. See IMAP-289
+            if (range1.getLowVal() == Long.MAX_VALUE && range1.getHighVal() == Long.MAX_VALUE && range2.getLowVal() == Long.MAX_VALUE && range2.getHighVal() == Long.MAX_VALUE) {
+                return 0;
+            }
+            if (range1.getLowVal() == Long.MAX_VALUE && range1.getHighVal() == Long.MAX_VALUE) {
+                return 1;
+            } else if (range2.getLowVal() == Long.MAX_VALUE && range2.getHighVal() == Long.MAX_VALUE) {
+                return -1;
+            } else {
+                return (int) (range1.getLowVal() - range2.getLowVal());
+            }
         }
 
     }

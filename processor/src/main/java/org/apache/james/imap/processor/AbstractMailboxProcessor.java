@@ -390,8 +390,7 @@ abstract public class AbstractMailboxProcessor<M extends ImapRequest> extends Ab
         if (useUids == false) {
             // Take care of "*" and "*:*" values by return the last message in the mailbox. See IMAP-289
             if (lowVal == Long.MAX_VALUE && highVal == Long.MAX_VALUE) {
-                lowVal = selected.getLastUid();
-                highVal = lowVal;
+                return MessageRange.one(selected.getLastUid());
             }
             
             if (lowVal != Long.MIN_VALUE) {
@@ -407,8 +406,7 @@ abstract public class AbstractMailboxProcessor<M extends ImapRequest> extends Ab
         } else {
             // Take care of "*" and "*:*" values by return the last message in the mailbox. See IMAP-289
             if (lowVal == Long.MAX_VALUE && highVal == Long.MAX_VALUE) {
-                lowVal = selected.getLastUid();
-                highVal = lowVal;
+                return MessageRange.one(selected.getLastUid());
             }
         }
         MessageRange mRange = MessageRange.range(lowVal, highVal);
