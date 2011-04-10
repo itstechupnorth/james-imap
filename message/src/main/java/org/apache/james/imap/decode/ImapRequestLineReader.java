@@ -663,7 +663,9 @@ public abstract class ImapRequestLineReader {
                 } else if (val1 <= val2) {
                     return new IdRange(val1, val2);
                 } else if(val1 == Long.MAX_VALUE) {
-                    return new IdRange(Long.MIN_VALUE, val2);
+                    // *:<num> message range must be converted to <num>:*
+                    // See IMAP-290
+                    return new IdRange(val2, Long.MAX_VALUE);
                 } else {
                     return new IdRange(val2, val1);
                 }
