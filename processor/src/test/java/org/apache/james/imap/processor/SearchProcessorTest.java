@@ -344,8 +344,7 @@ public class SearchProcessorTest {
     @Test
     public void testSENTBEFORE() throws Exception {
         expectsGetSelectedMailbox();
-        check(SearchKey.buildSentBefore(DAY_MONTH_YEAR), SearchQuery.or(SearchQuery.headerDateBefore(ImapConstants.RFC822_DATE, DAY, MONTH, YEAR), SearchQuery
-                .headerDateOn(ImapConstants.RFC822_DATE, DAY, MONTH, YEAR)));
+        check(SearchKey.buildSentBefore(DAY_MONTH_YEAR), SearchQuery.headerDateBefore(ImapConstants.RFC822_DATE, DAY, MONTH, YEAR));
     }
 
     @Test
@@ -364,8 +363,9 @@ public class SearchProcessorTest {
     @Test
     public void testSINCE() throws Exception {
         expectsGetSelectedMailbox();
-        check(SearchKey.buildSince(DAY_MONTH_YEAR), SearchQuery
-                .internalDateAfter(DAY, MONTH, YEAR));
+        check(SearchKey.buildSince(DAY_MONTH_YEAR), SearchQuery.or(SearchQuery
+                .internalDateOn(DAY, MONTH, YEAR), SearchQuery
+                .internalDateAfter(DAY, MONTH, YEAR)));
     }
 
     @Test
