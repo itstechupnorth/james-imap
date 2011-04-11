@@ -47,7 +47,7 @@ final class HeaderBodyElement implements BodyElement {
         super();
         this.name = name;
         this.headers = headers;
-        size = calculateSize(headers);
+        this.size = calculateSize(headers);
     }
 
     /*
@@ -62,14 +62,16 @@ final class HeaderBodyElement implements BodyElement {
     private long calculateSize(List<MessageResult.Header> headers) {
         final int result;
         if (headers.isEmpty()) {
-            result = 0;
+            // even if the headers are empty we need to include the headers body seperator
+            // See IMAP-294
+            result = ImapConstants.LINE_END.length();
         } else {
             int count = 0;
             for (final Iterator<MessageResult.Header> it = headers.iterator(); it.hasNext();) {
                 MessageResult.Header header = it.next();
-                count += header.size() + 2;
+                count += header.size() +  ImapConstants.LINE_END.length();
             }
-            result = count + 2;
+            result = count + ImapConstants.LINE_END.length();
         }
         return result;
     }
