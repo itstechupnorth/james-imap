@@ -126,20 +126,6 @@ public class SearchProcessorTest {
         expectOk();
     }
 
-    @Test
-    public void testSequenceSetLowerUnlimited() throws Exception {
-        expectsGetSelectedMailbox();
-        final IdRange[] ids = { new IdRange(Long.MIN_VALUE, 1729) };
-        final SearchQuery.NumericRange[] ranges = { new SearchQuery.NumericRange(
-                Long.MAX_VALUE, 1729L) };
-        mockery.checking(new Expectations() {{
-            oneOf(selectedMailbox).uid(with(equal(1729)));will(returnValue(1729L));
-        }});
-        allowUnsolicitedResponses();
-        
-        check(SearchKey.buildSequenceSet(ids), SearchQuery.uid(ranges));
-    }
-
     private void allowUnsolicitedResponses() {
         mockery.checking(new Expectations() {{
             atMost(1).of(session).getAttribute(
@@ -154,9 +140,11 @@ public class SearchProcessorTest {
         expectsGetSelectedMailbox();
         final IdRange[] ids = { new IdRange(1, Long.MAX_VALUE) };
         final SearchQuery.NumericRange[] ranges = { new SearchQuery.NumericRange(
-                42, Long.MAX_VALUE) };
+                42, 100L) };
         mockery.checking(new Expectations() {{
             oneOf(selectedMailbox).uid(with(equal(1)));will(returnValue(42L));
+            allowing(selectedMailbox).getFirstUid(); will(returnValue(1L));
+            allowing(selectedMailbox).getLastUid(); will(returnValue(100L));
 
         }});
         allowUnsolicitedResponses();
@@ -172,6 +160,8 @@ public class SearchProcessorTest {
         mockery.checking(new Expectations() {{
             oneOf(selectedMailbox).uid(with(equal(1)));will(returnValue(42L));
             oneOf(selectedMailbox).uid(with(equal(5)));will(returnValue(1729L));
+            allowing(selectedMailbox).getFirstUid(); will(returnValue(1L));
+            allowing(selectedMailbox).getLastUid(); will(returnValue(Long.MAX_VALUE));
         }});
         allowUnsolicitedResponses();
         check(SearchKey.buildSequenceSet(ids), SearchQuery.uid(ranges));
@@ -354,8 +344,8 @@ public class SearchProcessorTest {
     @Test
     public void testSENTBEFORE() throws Exception {
         expectsGetSelectedMailbox();
-        check(SearchKey.buildSentBefore(DAY_MONTH_YEAR), SearchQuery
-                .headerDateBefore(ImapConstants.RFC822_DATE, DAY, MONTH, YEAR));
+        check(SearchKey.buildSentBefore(DAY_MONTH_YEAR), SearchQuery.or(SearchQuery.headerDateBefore(ImapConstants.RFC822_DATE, DAY, MONTH, YEAR), SearchQuery
+                .headerDateOn(ImapConstants.RFC822_DATE, DAY, MONTH, YEAR)));
     }
 
     @Test
@@ -367,8 +357,8 @@ public class SearchProcessorTest {
     @Test
     public void testSENTSINCE() throws Exception {
         expectsGetSelectedMailbox();
-        check(SearchKey.buildSentSince(DAY_MONTH_YEAR), SearchQuery
-                .headerDateAfter(ImapConstants.RFC822_DATE, DAY, MONTH, YEAR));
+        check(SearchKey.buildSentSince(DAY_MONTH_YEAR), SearchQuery.or(SearchQuery.headerDateOn(ImapConstants.RFC822_DATE, DAY, MONTH, YEAR), SearchQuery
+                .headerDateAfter(ImapConstants.RFC822_DATE, DAY, MONTH, YEAR)));
     }
 
     @Test
@@ -473,7 +463,7 @@ public class SearchProcessorTest {
                     with(equal(mailboxSession)));will(
                             returnValue(new ArrayList<Long>().iterator()));
             oneOf(responder).respond(with(equal(new SearchResponse(EMPTY))));
-            
+          
         }});
         SearchRequest message = new SearchRequest(command, key, false, TAG);
         processor.doProcess(message, session, TAG, command, responder);

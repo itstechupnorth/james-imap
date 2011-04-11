@@ -186,7 +186,7 @@ public class SearchProcessor extends AbstractMailboxProcessor<SearchRequest> {
                 // Include the date which is used as search param. See IMAP-293
                 Criterion beforeC = SearchQuery.headerDateBefore(ImapConstants.RFC822_DATE,
                         date.getDay(), date.getMonth(), date.getYear());
-                Criterion onC = SearchQuery.headerDateBefore(ImapConstants.RFC822_DATE,
+                Criterion onC = SearchQuery.headerDateOn(ImapConstants.RFC822_DATE,
                         date.getDay(), date.getMonth(), date.getYear());
                 return SearchQuery.or(beforeC, onC);
 
