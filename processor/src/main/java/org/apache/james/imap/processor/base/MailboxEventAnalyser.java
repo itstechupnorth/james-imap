@@ -26,9 +26,11 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import javax.mail.Flags;
+import javax.mail.Flags.Flag;
 
 import org.apache.james.imap.api.ImapSessionUtils;
 import org.apache.james.imap.api.process.ImapSession;
+import org.apache.james.imap.api.process.SelectedMailbox;
 import org.apache.james.mailbox.MailboxListener;
 import org.apache.james.mailbox.MailboxPath;
 
@@ -100,6 +102,17 @@ public class MailboxEventAnalyser extends ImapStateAwareMailboxListener {
                         final Long uidObject = uid;
                         synchronized (flagUpdateUids) {
                             flagUpdateUids.add(uidObject);
+                        }
+                    }
+                    SelectedMailbox sm = session.getSelected();
+                    // We need to add the UID of the message to the recent list if we receive an flag update which contains a \RECENT flag 
+                    // See IMAP-287
+                    Iterator<Flag> flags = updated.flagsIterator();
+                    while(flags.hasNext()) {
+                        if (Flag.RECENT.equals(flags.next())) {
+                            if (sm.getPath().equals(event.getMailboxPath())) {
+                                sm.addRecent(updated.getSubjectUid());
+                            }
                         }
                     }
                 } else if (messageEvent instanceof Expunged) {

@@ -22,6 +22,8 @@ package org.apache.james.imap.processor;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.mail.Flags;
+
 import org.apache.james.imap.api.ImapCommand;
 import org.apache.james.imap.api.ImapSessionUtils;
 import org.apache.james.imap.api.display.HumanReadableText;
@@ -36,6 +38,7 @@ import org.apache.james.mailbox.MailboxException;
 import org.apache.james.mailbox.MailboxManager;
 import org.apache.james.mailbox.MailboxPath;
 import org.apache.james.mailbox.MailboxSession;
+import org.apache.james.mailbox.MessageManager;
 import org.apache.james.mailbox.MessageRangeException;
 import org.apache.james.mailbox.MessageManager.MetaData.FetchGroup;
 import org.apache.james.mailbox.MessageRange;
@@ -62,24 +65,30 @@ public class CopyProcessor extends AbstractMailboxProcessor<CopyRequest> {
             final MailboxSession mailboxSession = ImapSessionUtils.getMailboxSession(session);
             final MailboxManager mailboxManager = getMailboxManager();
             final boolean mailboxExists = mailboxManager.mailboxExists(targetMailbox, mailboxSession);
+
             if (!mailboxExists) {
                 no(command, tag, responder, HumanReadableText.FAILURE_NO_SUCH_MAILBOX,
                         ResponseCode.tryCreate());
             } else {
+                final MessageManager mailbox = mailboxManager.getMailbox(targetMailbox, mailboxSession);
+
                 List<IdRange> resultRanges=new ArrayList<IdRange>(); 
                 for (int i = 0; i < idSet.length; i++) {
                     MessageRange messageSet = messageRange(currentMailbox, idSet[i], useUids);
 
                     List<MessageRange> copiedUids = mailboxManager.copyMessages(messageSet, currentMailbox.getPath(), targetMailbox, mailboxSession);
-                    
                     for (MessageRange mr : copiedUids) {
+                       // Set recent flag on copied message as this SHOULD be done.
+                       // See RFC 3501 6.4.7.  COPY Command
+                       // See IMAP-287
+                       mailbox.setFlags(new Flags(Flags.Flag.RECENT), true,  false, mr, mailboxSession);
                        resultRanges.add(new IdRange(mr.getUidFrom(), mr.getUidTo())); 
                     }
                 }
                 IdRange[] resultUids = IdRange.mergeRanges(resultRanges).toArray(new IdRange[0]);
 
                 // get folder UIDVALIDITY
-                Long uidValidity = mailboxManager.getMailbox(targetMailbox, mailboxSession).getMetaData(false, mailboxSession, FetchGroup.NO_UNSEEN).getUidValidity();
+                Long uidValidity = mailbox.getMetaData(false, mailboxSession, FetchGroup.NO_UNSEEN).getUidValidity();
                 
                 unsolicitedResponses(session, responder, useUids);
                 okComplete(command, tag, ResponseCode.copyUid(uidValidity, idSet, resultUids), responder);
