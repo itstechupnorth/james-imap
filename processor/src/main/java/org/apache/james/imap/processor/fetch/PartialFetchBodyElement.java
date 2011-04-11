@@ -166,11 +166,19 @@ final class PartialFetchBodyElement implements BodyElement {
          * @see java.io.FilterInputStream#available()
          */
         public int available() throws IOException {
-            int a = in.available() - (int)offset - (int) length;
-            if (a < -1) {
-                throw new IOException("Unable to calculate size");
+            // Correctly calculate in available bytes
+            // See IMAP-295
+            checkOffset();
+            int i = in.available();
+            if (i == -1) {
+                return -1;
+            } else {
+                if (i >= length) {
+                    return (int) length - (int) pos;
+                } else {
+                    return i;
+                }
             }
-            return a;
         }
 
         public void mark(int readlimit) {
