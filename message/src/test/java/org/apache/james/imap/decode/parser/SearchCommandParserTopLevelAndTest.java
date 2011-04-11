@@ -25,6 +25,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.james.imap.api.ImapCommand;
@@ -55,16 +56,16 @@ public class SearchCommandParserTopLevelAndTest {
             on(), unanswered(), };
 
     public static Input sequence() {
-        IdRange[] range = { new IdRange(Long.MIN_VALUE, 100), new IdRange(110),
+        IdRange[] range = { new IdRange(100, Long.MAX_VALUE), new IdRange(110),
                 new IdRange(200, 201), new IdRange(400, Long.MAX_VALUE) };
-        SearchKey key = SearchKey.buildSequenceSet(range);
+        SearchKey key = SearchKey.buildSequenceSet(IdRange.mergeRanges(Arrays.asList(range)).toArray(new IdRange[0]));
         return new Input("*:100,110,200:201,400:*", key);
     }
 
     public static Input uid() {
-        IdRange[] range = { new IdRange(Long.MIN_VALUE, 100), new IdRange(110),
+        IdRange[] range = { new IdRange(100, Long.MAX_VALUE), new IdRange(110),
                 new IdRange(200, 201), new IdRange(400, Long.MAX_VALUE) };
-        SearchKey key = SearchKey.buildUidSet(range);
+        SearchKey key = SearchKey.buildUidSet(IdRange.mergeRanges(Arrays.asList(range)).toArray(new IdRange[0]));
         return new Input("UID *:100,110,200:201,400:*", key);
     }
 

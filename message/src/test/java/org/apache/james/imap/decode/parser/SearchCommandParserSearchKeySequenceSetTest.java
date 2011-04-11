@@ -23,6 +23,7 @@ import static org.junit.Assert.*;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.util.Arrays;
 
 import org.apache.james.imap.api.ImapCommand;
 import org.apache.james.imap.api.ImapMessage;
@@ -63,21 +64,21 @@ public class SearchCommandParserSearchKeySequenceSetTest {
                 new IdRange(16), new IdRange(25), new IdRange(36),
                 new IdRange(49), new IdRange(64), new IdRange(81),
                 new IdRange(100) };
-        check("2,4,9,16,25,36,49,64,81,100", range);
+        check("2,4,9,16,25,36,49,64,81,100", IdRange.mergeRanges(Arrays.asList(range)).toArray(new IdRange[0]));
     }
 
     @Test
     public void testEndStar() throws Exception {
         IdRange[] range = { new IdRange(8), new IdRange(10,11),
                 new IdRange(17), new IdRange(100, Long.MAX_VALUE) };
-        check("8,10:11,17,100:*", range);
+        check("8,10:11,17,100:*", IdRange.mergeRanges(Arrays.asList(range)).toArray(new IdRange[0]));
     }
 
     @Test
     public void testStartStar() throws Exception {
-        IdRange[] range = { new IdRange(Long.MIN_VALUE, 9), new IdRange(15),
+        IdRange[] range = { new IdRange(9,Long.MAX_VALUE), new IdRange(15),
                 new IdRange(799, 820) };
-        check("*:9,15,799:820", range);
+        check("*:9,15,799:820", IdRange.mergeRanges(Arrays.asList(range)).toArray(new IdRange[0]));
     }
 
     private void check(String sequence, IdRange[] range) throws Exception {

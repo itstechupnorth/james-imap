@@ -23,6 +23,7 @@ import static org.junit.Assert.assertEquals;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.util.Arrays;
 
 import org.apache.james.imap.api.ImapCommand;
 import org.apache.james.imap.api.ImapMessage;
@@ -58,18 +59,18 @@ public class SearchCommandParserNotTest {
 
     @Test
     public void testShouldParseNotSequence() throws Exception {
-        IdRange[] range = { new IdRange(Long.MIN_VALUE, 100), new IdRange(110),
+        IdRange[] range = { new IdRange(100, Long.MAX_VALUE), new IdRange(110),
                 new IdRange(200, 201), new IdRange(400, Long.MAX_VALUE) };
-        SearchKey notdKey = SearchKey.buildSequenceSet(range);
+        SearchKey notdKey = SearchKey.buildSequenceSet(IdRange.mergeRanges(Arrays.asList(range)).toArray(new IdRange[0]));
         SearchKey key = SearchKey.buildNot(notdKey);
         checkValid("NOT *:100,110,200:201,400:*\r\n", key);
     }
 
     @Test
     public void testShouldParseNotUid() throws Exception {
-        IdRange[] range = { new IdRange(Long.MIN_VALUE, 100), new IdRange(110),
+        IdRange[] range = { new IdRange(100, Long.MAX_VALUE), new IdRange(110),
                 new IdRange(200, 201), new IdRange(400, Long.MAX_VALUE) };
-        SearchKey notdKey = SearchKey.buildUidSet(range);
+        SearchKey notdKey = SearchKey.buildUidSet(IdRange.mergeRanges(Arrays.asList(range)).toArray(new IdRange[0]));
         SearchKey key = SearchKey.buildNot(notdKey);
         checkValid("NOT UID *:100,110,200:201,400:*\r\n", key);
     }
