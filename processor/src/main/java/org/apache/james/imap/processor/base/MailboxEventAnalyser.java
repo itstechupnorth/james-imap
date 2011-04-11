@@ -105,13 +105,19 @@ public class MailboxEventAnalyser extends ImapStateAwareMailboxListener {
                         }
                     }
                     SelectedMailbox sm = session.getSelected();
-                    // We need to add the UID of the message to the recent list if we receive an flag update which contains a \RECENT flag 
-                    // See IMAP-287
-                    Iterator<Flag> flags = updated.flagsIterator();
-                    while(flags.hasNext()) {
-                        if (Flag.RECENT.equals(flags.next())) {
-                            if (sm.getPath().equals(event.getMailboxPath())) {
-                                sm.addRecent(updated.getSubjectUid());
+                    if (sm != null) {
+                        // We need to add the UID of the message to the recent
+                        // list if we receive an flag update which contains a
+                        // \RECENT flag
+                        // See IMAP-287
+                        Iterator<Flag> flags = updated.flagsIterator();
+
+                        while (flags.hasNext()) {
+                            if (Flag.RECENT.equals(flags.next())) {
+                                MailboxPath path = sm.getPath();
+                                if (path != null && path.equals(event.getMailboxPath())) {
+                                    sm.addRecent(updated.getSubjectUid());
+                                }
                             }
                         }
                     }
