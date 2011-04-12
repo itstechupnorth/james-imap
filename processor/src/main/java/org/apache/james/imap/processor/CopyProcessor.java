@@ -21,14 +21,21 @@ package org.apache.james.imap.processor;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 import javax.mail.Flags;
 
 import org.apache.james.imap.api.ImapCommand;
+import org.apache.james.imap.api.ImapSessionState;
 import org.apache.james.imap.api.ImapSessionUtils;
 import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.api.message.IdRange;
 import org.apache.james.imap.api.message.response.StatusResponse.ResponseCode;
+import org.apache.james.imap.api.message.response.ImapResponseMessage;
+import org.apache.james.imap.api.message.response.StatusResponse;
 import org.apache.james.imap.api.message.response.StatusResponseFactory;
 import org.apache.james.imap.api.process.ImapProcessor;
 import org.apache.james.imap.api.process.ImapSession;
@@ -45,6 +52,10 @@ import org.apache.james.mailbox.MessageRange;
 
 public class CopyProcessor extends AbstractMailboxProcessor<CopyRequest> {
 
+    private ScheduledExecutorService heartbeatService = Executors.newScheduledThreadPool(10);
+    private final static String COPY_HEARTBEAT_FUTURE = "COPY_HEARTBEAT_FUTURE";
+    private final static int COPY_HEARTBEAT_INTERVAL = 30;
+    
     public CopyProcessor(final ImapProcessor next,
             final MailboxManager mailboxManager,
             final StatusResponseFactory factory) {
@@ -55,8 +66,8 @@ public class CopyProcessor extends AbstractMailboxProcessor<CopyRequest> {
      * (non-Javadoc)
      * @see org.apache.james.imap.processor.AbstractMailboxProcessor#doProcess(org.apache.james.imap.api.message.request.ImapRequest, org.apache.james.imap.api.process.ImapSession, java.lang.String, org.apache.james.imap.api.ImapCommand, org.apache.james.imap.api.process.ImapProcessor.Responder)
      */
-    protected void doProcess(CopyRequest  request, ImapSession session,
-            String tag, ImapCommand command, Responder responder) {
+    protected void doProcess(CopyRequest  request, final ImapSession session,
+            String tag, ImapCommand command, final Responder responder) {
         final MailboxPath targetMailbox = buildFullPath(session, request.getMailboxName());
         final IdRange[] idSet = request.getIdSet();
         final boolean useUids = request.isUseUids();
@@ -65,11 +76,30 @@ public class CopyProcessor extends AbstractMailboxProcessor<CopyRequest> {
             final MailboxSession mailboxSession = ImapSessionUtils.getMailboxSession(session);
             final MailboxManager mailboxManager = getMailboxManager();
             final boolean mailboxExists = mailboxManager.mailboxExists(targetMailbox, mailboxSession);
-
+            
             if (!mailboxExists) {
                 no(command, tag, responder, HumanReadableText.FAILURE_NO_SUCH_MAILBOX,
                         ResponseCode.tryCreate());
             } else {
+                // Send heartbeats during COPY. See IMAP-296
+                final ScheduledFuture<?> future = heartbeatService.scheduleWithFixedDelay(new Runnable() {
+                    
+                    public void run() {
+                        if (ImapSessionState.LOGOUT.equals(session.getState())) {
+                            Object o = session.getAttribute(COPY_HEARTBEAT_FUTURE);
+                            if (o != null) {
+                                ((ScheduledFuture<?>) o).cancel(true);
+                                session.setAttribute(COPY_HEARTBEAT_FUTURE, null);
+                            }
+                            
+                        } else {
+                            StatusResponse response = getStatusResponseFactory().untaggedOk(HumanReadableText.HEARTBEAT);
+                            responder.respond(response);
+                        }
+                    }
+                }, COPY_HEARTBEAT_INTERVAL, COPY_HEARTBEAT_INTERVAL, TimeUnit.SECONDS);
+                session.setAttribute(COPY_HEARTBEAT_FUTURE, future);
+                
                 final MessageManager mailbox = mailboxManager.getMailbox(targetMailbox, mailboxSession);
 
                 List<IdRange> resultRanges=new ArrayList<IdRange>(); 
@@ -97,6 +127,12 @@ public class CopyProcessor extends AbstractMailboxProcessor<CopyRequest> {
             taggedBad(command, tag, responder, HumanReadableText.INVALID_MESSAGESET);
         } catch (MailboxException e) {
             no(command, tag, responder, HumanReadableText.GENERIC_FAILURE_DURING_PROCESSING);
+        } finally {
+            Object o = session.getAttribute(COPY_HEARTBEAT_FUTURE);
+            if (o != null) {
+                ((ScheduledFuture<?>) o).cancel(true);
+                session.setAttribute(COPY_HEARTBEAT_FUTURE, null);
+            }
         }
     }
 }
