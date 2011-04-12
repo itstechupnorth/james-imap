@@ -127,6 +127,7 @@ public class IdleProcessor extends AbstractMailboxProcessor<IdleRequest> impleme
                                 session.getLog().error("Unable to disable idle heartbeat for unknown reason! Force logout");
                                 session.logout();
                             }
+                            session.setAttribute(HEARTBEAT_FUTURE, null);
                         }
                     }                    
                 }
@@ -145,7 +146,9 @@ public class IdleProcessor extends AbstractMailboxProcessor<IdleRequest> impleme
                             if (future != null) {
                                 // cancel the future if needed to be sure it not run infinity
                                 ((ScheduledFuture<?>) future).cancel(true);
+                                session.setAttribute(HEARTBEAT_FUTURE, null);
                             }
+                            
                         } else {
                             // Send a heartbeat to the client to make sure we reset
                             // the idle timeout. This is kind of the same workaround
