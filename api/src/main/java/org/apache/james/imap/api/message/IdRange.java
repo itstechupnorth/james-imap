@@ -58,7 +58,7 @@ public class IdRange {
     }
     
     public void setHighVal(long highVal) {
-        if (_lowVal > highVal) throw new IllegalArgumentException("LowVal must be <= HighVal");
+        if (_lowVal > highVal) throw new IllegalArgumentException("HighVal must be >= LowVal");
         _highVal = highVal;
     }
 
