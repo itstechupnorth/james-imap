@@ -32,9 +32,7 @@ import org.apache.james.imap.message.response.AbstractListingResponse;
  */
 public class ListingEncodingUtils {
 
-    public static void encodeListingResponse(final String responseTypeName,
-            final ImapResponseComposer composer,
-            final AbstractListingResponse response) throws IOException {
+    public static void encodeListingResponse(final String responseTypeName, final ImapResponseComposer composer, final AbstractListingResponse response) throws IOException {
         final List<String> attributes = getNameAttributes(response);
 
         final String name = response.getName();

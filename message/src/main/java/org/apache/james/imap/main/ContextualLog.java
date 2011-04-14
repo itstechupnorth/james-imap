@@ -25,16 +25,15 @@ import org.slf4j.Marker;
  * Decorates a log adding contextual information.
  */
 public class ContextualLog implements Logger {
-    
+
     private final Object context;
     private final Logger decoratedLog;
-    
+
     public ContextualLog(final Object context, final Logger decoratedLog) {
         super();
         this.context = context;
         this.decoratedLog = decoratedLog;
     }
-
 
     public void debug(String message) {
         if (isDebugEnabled()) {
@@ -143,7 +142,7 @@ public class ContextualLog implements Logger {
             } else {
                 decoratedLog.warn(new Message(context, message).toString());
             }
-        }        
+        }
     }
 
     public void warn(String message, Throwable t) {
@@ -153,56 +152,50 @@ public class ContextualLog implements Logger {
             } else {
                 decoratedLog.warn(new Message(context, message).toString(), t);
             }
-        }        
+        }
     }
 
     /**
      * Renders this object suitably for logging.
      * 
-     * @return a <code>String</code> representation 
-     * of this object.
+     * @return a <code>String</code> representation of this object.
      */
-    public String toString()
-    {
-        final String result  = "ContextualLog ( "
-            + "context = " + this.context
-            + " )";
-    
+    public String toString() {
+        final String result = "ContextualLog ( " + "context = " + this.context + " )";
+
         return result;
     }
 
     /**
-     * Combines context with original message.
-     * For logging systems which support object rendering,
-     * a contextual logging aware renderer should be used.
+     * Combines context with original message. For logging systems which support
+     * object rendering, a contextual logging aware renderer should be used.
      */
     public static final class Message {
         private final Object context;
         private final Object message;
-        
+
         public Message(final Object context, final Object message) {
             super();
             this.context = context;
             this.message = message;
         }
-        
+
         public Object getContext() {
             return context;
         }
-        
+
         public Object getMessage() {
             return message;
         }
-        
+
         public String toString() {
             return context + " " + message;
         }
     }
 
     public String getName() {
-	return decoratedLog.getName();
+        return decoratedLog.getName();
     }
-
 
     public void trace(String message, Object arg) {
         if (isTraceEnabled()) {
@@ -214,7 +207,6 @@ public class ContextualLog implements Logger {
         }
     }
 
-
     public void trace(String message, Object arg1, Object arg2) {
         if (isTraceEnabled()) {
             if (context == null) {
@@ -223,9 +215,8 @@ public class ContextualLog implements Logger {
                 decoratedLog.trace(new Message(context, message).toString(), arg1, arg2);
             }
         }
-	
-    }
 
+    }
 
     public void trace(String message, Object[] argArray) {
         if (isTraceEnabled()) {
@@ -237,11 +228,9 @@ public class ContextualLog implements Logger {
         }
     }
 
-
     public boolean isTraceEnabled(Marker marker) {
-	return decoratedLog.isTraceEnabled(marker);
+        return decoratedLog.isTraceEnabled(marker);
     }
-
 
     public void trace(Marker marker, String msg) {
         if (isTraceEnabled(marker)) {
@@ -253,7 +242,6 @@ public class ContextualLog implements Logger {
         }
     }
 
-
     public void trace(Marker marker, String message, Object arg) {
         if (isTraceEnabled(marker)) {
             if (context == null) {
@@ -263,7 +251,6 @@ public class ContextualLog implements Logger {
             }
         }
     }
-
 
     public void trace(Marker marker, String message, Object arg1, Object arg2) {
         if (isTraceEnabled(marker)) {
@@ -275,7 +262,6 @@ public class ContextualLog implements Logger {
         }
     }
 
-
     public void trace(Marker marker, String message, Object[] argArray) {
         if (isTraceEnabled(marker)) {
             if (context == null) {
@@ -285,7 +271,6 @@ public class ContextualLog implements Logger {
             }
         }
     }
-
 
     public void trace(Marker marker, String msg, Throwable t) {
         if (isTraceEnabled(marker)) {
@@ -297,7 +282,6 @@ public class ContextualLog implements Logger {
         }
     }
 
-
     public void debug(String message, Object arg) {
         if (isDebugEnabled()) {
             if (context == null) {
@@ -307,7 +291,6 @@ public class ContextualLog implements Logger {
             }
         }
     }
-
 
     public void debug(String message, Object arg1, Object arg2) {
         if (isDebugEnabled()) {
@@ -319,7 +302,6 @@ public class ContextualLog implements Logger {
         }
     }
 
-
     public void debug(String message, Object[] argArray) {
         if (isDebugEnabled()) {
             if (context == null) {
@@ -330,11 +312,9 @@ public class ContextualLog implements Logger {
         }
     }
 
-
     public boolean isDebugEnabled(Marker marker) {
-	return decoratedLog.isDebugEnabled(marker);
+        return decoratedLog.isDebugEnabled(marker);
     }
-
 
     public void debug(Marker marker, String msg) {
         if (isDebugEnabled(marker)) {
@@ -346,7 +326,6 @@ public class ContextualLog implements Logger {
         }
     }
 
-
     public void debug(Marker marker, String message, Object arg) {
         if (isDebugEnabled(marker)) {
             if (context == null) {
@@ -356,7 +335,6 @@ public class ContextualLog implements Logger {
             }
         }
     }
-
 
     public void debug(Marker marker, String message, Object arg1, Object arg2) {
         if (isDebugEnabled(marker)) {
@@ -368,7 +346,6 @@ public class ContextualLog implements Logger {
         }
     }
 
-
     public void debug(Marker marker, String message, Object[] argArray) {
         if (isDebugEnabled(marker)) {
             if (context == null) {
@@ -378,7 +355,6 @@ public class ContextualLog implements Logger {
             }
         }
     }
-
 
     public void debug(Marker marker, String msg, Throwable t) {
         if (isDebugEnabled(marker)) {
@@ -390,7 +366,6 @@ public class ContextualLog implements Logger {
         }
     }
 
-
     public void info(String message, Object arg) {
         if (isInfoEnabled()) {
             if (context == null) {
@@ -400,7 +375,6 @@ public class ContextualLog implements Logger {
             }
         }
     }
-
 
     public void info(String message, Object arg1, Object arg2) {
         if (isInfoEnabled()) {
@@ -412,7 +386,6 @@ public class ContextualLog implements Logger {
         }
     }
 
-
     public void info(String message, Object[] argArray) {
         if (isInfoEnabled()) {
             if (context == null) {
@@ -423,11 +396,9 @@ public class ContextualLog implements Logger {
         }
     }
 
-
     public boolean isInfoEnabled(Marker marker) {
-	return decoratedLog.isInfoEnabled(marker);
+        return decoratedLog.isInfoEnabled(marker);
     }
-
 
     public void info(Marker marker, String msg) {
         if (isInfoEnabled(marker)) {
@@ -439,7 +410,6 @@ public class ContextualLog implements Logger {
         }
     }
 
-
     public void info(Marker marker, String message, Object arg) {
         if (isInfoEnabled(marker)) {
             if (context == null) {
@@ -449,7 +419,6 @@ public class ContextualLog implements Logger {
             }
         }
     }
-
 
     public void info(Marker marker, String message, Object arg1, Object arg2) {
         if (isInfoEnabled(marker)) {
@@ -461,7 +430,6 @@ public class ContextualLog implements Logger {
         }
     }
 
-
     public void info(Marker marker, String message, Object[] argArray) {
         if (isInfoEnabled(marker)) {
             if (context == null) {
@@ -471,7 +439,6 @@ public class ContextualLog implements Logger {
             }
         }
     }
-
 
     public void info(Marker marker, String msg, Throwable t) {
         if (isInfoEnabled(marker)) {
@@ -483,7 +450,6 @@ public class ContextualLog implements Logger {
         }
     }
 
-
     public void warn(String message, Object arg) {
         if (isWarnEnabled()) {
             if (context == null) {
@@ -491,9 +457,8 @@ public class ContextualLog implements Logger {
             } else {
                 decoratedLog.warn(new Message(context, message).toString(), arg);
             }
-        }        
+        }
     }
-
 
     public void warn(String message, Object[] argArray) {
         if (isWarnEnabled()) {
@@ -502,9 +467,8 @@ public class ContextualLog implements Logger {
             } else {
                 decoratedLog.warn(new Message(context, message).toString(), argArray);
             }
-        }        
+        }
     }
-
 
     public void warn(String message, Object arg1, Object arg2) {
         if (isWarnEnabled()) {
@@ -513,14 +477,12 @@ public class ContextualLog implements Logger {
             } else {
                 decoratedLog.warn(new Message(context, message).toString(), arg1, arg2);
             }
-        }        
+        }
     }
-
 
     public boolean isWarnEnabled(Marker marker) {
-	return decoratedLog.isWarnEnabled(marker);
+        return decoratedLog.isWarnEnabled(marker);
     }
-
 
     public void warn(Marker marker, String msg) {
         if (isWarnEnabled(marker)) {
@@ -529,9 +491,8 @@ public class ContextualLog implements Logger {
             } else {
                 decoratedLog.warn(marker, new Message(context, msg).toString());
             }
-        }        
+        }
     }
-
 
     public void warn(Marker marker, String message, Object arg) {
         if (isWarnEnabled(marker)) {
@@ -540,9 +501,8 @@ public class ContextualLog implements Logger {
             } else {
                 decoratedLog.warn(marker, new Message(context, message).toString(), arg);
             }
-        }        
+        }
     }
-
 
     public void warn(Marker marker, String message, Object arg1, Object arg2) {
         if (isWarnEnabled(marker)) {
@@ -551,9 +511,8 @@ public class ContextualLog implements Logger {
             } else {
                 decoratedLog.warn(marker, new Message(context, message).toString(), arg1, arg2);
             }
-        }        
+        }
     }
-
 
     public void warn(Marker marker, String message, Object[] argArray) {
         if (isWarnEnabled(marker)) {
@@ -562,9 +521,8 @@ public class ContextualLog implements Logger {
             } else {
                 decoratedLog.warn(marker, new Message(context, message).toString(), argArray);
             }
-        }        
+        }
     }
-
 
     public void warn(Marker marker, String msg, Throwable t) {
         if (isWarnEnabled(marker)) {
@@ -573,9 +531,8 @@ public class ContextualLog implements Logger {
             } else {
                 decoratedLog.warn(marker, new Message(context, msg).toString(), t);
             }
-        }        
+        }
     }
-
 
     public void error(String message, Object arg) {
         if (isErrorEnabled()) {
@@ -584,9 +541,8 @@ public class ContextualLog implements Logger {
             } else {
                 decoratedLog.warn(new Message(context, message).toString(), arg);
             }
-        }        
+        }
     }
-
 
     public void error(String message, Object arg1, Object arg2) {
         if (isErrorEnabled()) {
@@ -595,9 +551,8 @@ public class ContextualLog implements Logger {
             } else {
                 decoratedLog.warn(new Message(context, message).toString(), arg1, arg2);
             }
-        }        
+        }
     }
-
 
     public void error(String message, Object[] argArray) {
         if (isErrorEnabled()) {
@@ -606,14 +561,12 @@ public class ContextualLog implements Logger {
             } else {
                 decoratedLog.warn(new Message(context, message).toString(), argArray);
             }
-        }        
+        }
     }
-
 
     public boolean isErrorEnabled(Marker marker) {
-	return decoratedLog.isErrorEnabled(marker);
+        return decoratedLog.isErrorEnabled(marker);
     }
-
 
     public void error(Marker marker, String msg) {
         if (isErrorEnabled(marker)) {
@@ -622,9 +575,8 @@ public class ContextualLog implements Logger {
             } else {
                 decoratedLog.warn(marker, new Message(context, msg).toString());
             }
-        }        
+        }
     }
-
 
     public void error(Marker marker, String message, Object arg) {
         if (isErrorEnabled(marker)) {
@@ -633,9 +585,8 @@ public class ContextualLog implements Logger {
             } else {
                 decoratedLog.warn(marker, new Message(context, message).toString(), arg);
             }
-        }        
+        }
     }
-
 
     public void error(Marker marker, String message, Object arg1, Object arg2) {
         if (isErrorEnabled(marker)) {
@@ -644,9 +595,8 @@ public class ContextualLog implements Logger {
             } else {
                 decoratedLog.warn(marker, new Message(context, message).toString(), arg1, arg2);
             }
-        }        
+        }
     }
-
 
     public void error(Marker marker, String message, Object[] argArray) {
         if (isErrorEnabled(marker)) {
@@ -655,9 +605,8 @@ public class ContextualLog implements Logger {
             } else {
                 decoratedLog.warn(marker, new Message(context, message).toString(), argArray);
             }
-        }        
+        }
     }
-
 
     public void error(Marker marker, String msg, Throwable t) {
         if (isErrorEnabled(marker)) {
@@ -666,6 +615,6 @@ public class ContextualLog implements Logger {
             } else {
                 decoratedLog.warn(marker, new Message(context, msg).toString(), t);
             }
-        }        
+        }
     }
 }

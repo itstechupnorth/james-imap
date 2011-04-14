@@ -30,13 +30,13 @@ import org.slf4j.Logger;
  * @version $Revision: 109034 $
  */
 public interface ImapSession {
-    
-    
+
     /**
-     * Gets the context sensitive log for this session.
-     * Understanding the context of a log message is an important
-     * comprehension aid when analying multi-threaded systems.
-     * Using this log allows context information to be associated.
+     * Gets the context sensitive log for this session. Understanding the
+     * context of a log message is an important comprehension aid when analying
+     * multi-threaded systems. Using this log allows context information to be
+     * associated.
+     * 
      * @return context sensitive log, not null
      */
     Logger getLog();
@@ -91,8 +91,7 @@ public interface ImapSession {
      * 
      * @param key
      *            name of the key, not null
-     * @return <code>Object</code> value or null if this attribute has
-     *         unvalued
+     * @return <code>Object</code> value or null if this attribute has unvalued
      */
     public Object getAttribute(String key);
 
@@ -107,28 +106,28 @@ public interface ImapSession {
      *            unvalued
      */
     public void setAttribute(String key, Object value);
-    
+
     /**
-     * Start TLS encryption of the session after the next response was written. So you must make sure 
-     * the next response will get send in clear text
+     * Start TLS encryption of the session after the next response was written.
+     * So you must make sure the next response will get send in clear text
      * 
      * @return true if the encryption of the session was successfully
      */
     public boolean startTLS();
-    
+
     /**
-     * Support startTLS ? 
+     * Support startTLS ?
      * 
      * @return true if startTLS is supported
      */
     public boolean supportStartTLS();
-    
+
     public boolean isCompressionSupported();
-    
+
     public boolean startCompression();
-    
+
     public void pushLineHandler(ImapLineHandler lineHandler);
-    
+
     public void popLineHandler();
-    
+
 }

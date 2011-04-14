@@ -28,23 +28,24 @@ import org.apache.james.imap.decode.base.AbstractImapCommandParser;
 import org.apache.james.imap.message.request.IdleRequest;
 
 /**
- *
  * Parses IDLE commands
- *
  */
 public class IdleCommandParser extends AbstractImapCommandParser {
 
     public IdleCommandParser() {
-    	super(ImapCommand.authenticatedStateCommand(ImapConstants.IDLE_COMMAND_NAME));
+        super(ImapCommand.authenticatedStateCommand(ImapConstants.IDLE_COMMAND_NAME));
     }
-
 
     /*
      * (non-Javadoc)
-     * @see org.apache.james.imap.decode.base.AbstractImapCommandParser#decode(org.apache.james.imap.api.ImapCommand, org.apache.james.imap.decode.ImapRequestLineReader, java.lang.String, org.apache.james.imap.api.process.ImapSession)
+     * 
+     * @see
+     * org.apache.james.imap.decode.base.AbstractImapCommandParser#decode(org
+     * .apache.james.imap.api.ImapCommand,
+     * org.apache.james.imap.decode.ImapRequestLineReader, java.lang.String,
+     * org.apache.james.imap.api.process.ImapSession)
      */
-    protected ImapMessage decode(ImapCommand command,
-            ImapRequestLineReader request, String tag, ImapSession session) throws DecodingException {
+    protected ImapMessage decode(ImapCommand command, ImapRequestLineReader request, String tag, ImapSession session) throws DecodingException {
         request.eol();
         final ImapMessage result = new IdleRequest(command, tag);
         return result;

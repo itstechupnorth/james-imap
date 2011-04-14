@@ -25,20 +25,16 @@ import org.apache.james.imap.message.request.XListRequest;
 
 /**
  * Parse XLIST commands
- * 
  */
 public class XListCommandParser extends ListCommandParser {
 
     public XListCommandParser() {
         super(ImapCommand.authenticatedStateCommand(ImapConstants.XLIST_COMMAND_NAME));
     }
-    
+
     @Override
-     protected ImapMessage createMessage(ImapCommand command,
-            final String referenceName, final String mailboxPattern,
-            final String tag) {
-        final ImapMessage result = new XListRequest(command,
-                referenceName, mailboxPattern, tag);
+    protected ImapMessage createMessage(ImapCommand command, final String referenceName, final String mailboxPattern, final String tag) {
+        final ImapMessage result = new XListRequest(command, referenceName, mailboxPattern, tag);
         return result;
     }
 }

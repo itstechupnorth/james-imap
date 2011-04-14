@@ -20,7 +20,7 @@ package org.apache.james.imap.message.request;
 
 import org.apache.james.imap.api.ImapCommand;
 
-public class CompressRequest extends AbstractImapRequest{
+public class CompressRequest extends AbstractImapRequest {
 
     private String algorithm;
 

@@ -34,18 +34,21 @@ import org.apache.james.mailbox.MailboxPath;
 
 public class DeleteProcessor extends AbstractMailboxProcessor<DeleteRequest> {
 
-    public DeleteProcessor(final ImapProcessor next,
-            final MailboxManager mailboxManager,
-            final StatusResponseFactory factory) {
+    public DeleteProcessor(final ImapProcessor next, final MailboxManager mailboxManager, final StatusResponseFactory factory) {
         super(DeleteRequest.class, next, mailboxManager, factory);
     }
 
     /*
      * (non-Javadoc)
-     * @see org.apache.james.imap.processor.AbstractMailboxProcessor#doProcess(org.apache.james.imap.api.message.request.ImapRequest, org.apache.james.imap.api.process.ImapSession, java.lang.String, org.apache.james.imap.api.ImapCommand, org.apache.james.imap.api.process.ImapProcessor.Responder)
+     * 
+     * @see
+     * org.apache.james.imap.processor.AbstractMailboxProcessor#doProcess(org
+     * .apache.james.imap.api.message.request.ImapRequest,
+     * org.apache.james.imap.api.process.ImapSession, java.lang.String,
+     * org.apache.james.imap.api.ImapCommand,
+     * org.apache.james.imap.api.process.ImapProcessor.Responder)
      */
-    protected void doProcess(DeleteRequest request, ImapSession session,
-            String tag, ImapCommand command, Responder responder) {
+    protected void doProcess(DeleteRequest request, ImapSession session, String tag, ImapCommand command, Responder responder) {
         final MailboxPath mailboxPath = buildFullPath(session, request.getMailboxName());
         try {
             final SelectedMailbox selected = session.getSelected();

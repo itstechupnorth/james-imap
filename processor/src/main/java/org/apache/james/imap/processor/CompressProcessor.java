@@ -30,22 +30,25 @@ import org.apache.james.imap.api.process.ImapSession;
 import org.apache.james.imap.message.request.CompressRequest;
 import org.apache.james.imap.processor.base.AbstractChainedProcessor;
 
-public class CompressProcessor extends AbstractChainedProcessor<CompressRequest> implements CapabilityImplementingProcessor{
+public class CompressProcessor extends AbstractChainedProcessor<CompressRequest> implements CapabilityImplementingProcessor {
     private final static String ALGO = "DEFLATE";
     private final static List<String> CAPA = Arrays.asList(ImapConstants.COMPRESS_COMMAND_NAME + "=" + ALGO);
     private StatusResponseFactory factory;
     private final static String COMPRESSED = "COMPRESSED";
-    
+
     public CompressProcessor(ImapProcessor next, final StatusResponseFactory factory) {
         super(CompressRequest.class, next);
         this.factory = factory;
     }
-    
-
 
     /*
      * (non-Javadoc)
-     * @see org.apache.james.imap.processor.base.AbstractChainedProcessor#doProcess(org.apache.james.imap.api.ImapMessage, org.apache.james.imap.api.process.ImapProcessor.Responder, org.apache.james.imap.api.process.ImapSession)
+     * 
+     * @see
+     * org.apache.james.imap.processor.base.AbstractChainedProcessor#doProcess
+     * (org.apache.james.imap.api.ImapMessage,
+     * org.apache.james.imap.api.process.ImapProcessor.Responder,
+     * org.apache.james.imap.api.process.ImapSession)
      */
     protected void doProcess(CompressRequest request, Responder responder, ImapSession session) {
         if (session.isCompressionSupported()) {
@@ -70,7 +73,9 @@ public class CompressProcessor extends AbstractChainedProcessor<CompressRequest>
 
     /*
      * (non-Javadoc)
-     * @see org.apache.james.imap.processor.CapabilityImplementingProcessor#getImplementedCapabilities(org.apache.james.imap.api.process.ImapSession)
+     * 
+     * @see org.apache.james.imap.processor.CapabilityImplementingProcessor#
+     * getImplementedCapabilities(org.apache.james.imap.api.process.ImapSession)
      */
     @SuppressWarnings("unchecked")
     public List<String> getImplementedCapabilities(ImapSession session) {

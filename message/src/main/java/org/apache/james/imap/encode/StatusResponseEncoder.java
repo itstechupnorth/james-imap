@@ -38,14 +38,13 @@ import org.apache.james.imap.encode.base.AbstractChainedImapEncoder;
 public class StatusResponseEncoder extends AbstractChainedImapEncoder {
 
     private final Localizer localizer;
-    
+
     public StatusResponseEncoder(ImapEncoder next, final Localizer localizer) {
         super(next);
         this.localizer = localizer;
     }
 
-    protected void doEncode(ImapMessage acceptableMessage,
-            ImapResponseComposer composer, ImapSession session) throws IOException {
+    protected void doEncode(ImapMessage acceptableMessage, ImapResponseComposer composer, ImapSession session) throws IOException {
         StatusResponse response = (StatusResponse) acceptableMessage;
         final Type serverResponseType = response.getServerResponseType();
         final String type = asString(serverResponseType);
@@ -67,8 +66,7 @@ public class StatusResponseEncoder extends AbstractChainedImapEncoder {
             number = responseCode.getNumber();
             useParens = responseCode.useParens();
         }
-        composer.statusResponse(tag, command, type, code, parameters, useParens, number,
-                text);
+        composer.statusResponse(tag, command, type, code, parameters, useParens, number, text);
     }
 
     private String asString(HumanReadableText text, ImapSession session) {

@@ -32,11 +32,9 @@ import org.apache.james.imap.decode.MessagingImapCommandParser;
  * <p>
  * <strong>Note:</strong>
  * </p>
- * 
- * @version $Revision: 109034 $
  */
 public abstract class AbstractImapCommandParser implements MessagingImapCommandParser {
-    
+
     private final ImapCommand command;
 
     private StatusResponseFactory statusResponseFactory;
@@ -50,10 +48,11 @@ public abstract class AbstractImapCommandParser implements MessagingImapCommandP
         return command;
     }
 
-
     /*
      * (non-Javadoc)
-     * @see org.apache.james.imap.decode.MessagingImapCommandParser#getStatusResponseFactory()
+     * 
+     * @see org.apache.james.imap.decode.MessagingImapCommandParser#
+     * getStatusResponseFactory()
      */
     public final StatusResponseFactory getStatusResponseFactory() {
         return statusResponseFactory;
@@ -61,10 +60,12 @@ public abstract class AbstractImapCommandParser implements MessagingImapCommandP
 
     /*
      * (non-Javadoc)
-     * @see org.apache.james.imap.decode.MessagingImapCommandParser#setStatusResponseFactory(org.apache.james.imap.api.message.response.StatusResponseFactory)
+     * 
+     * @see org.apache.james.imap.decode.MessagingImapCommandParser#
+     * setStatusResponseFactory
+     * (org.apache.james.imap.api.message.response.StatusResponseFactory)
      */
-    public final void setStatusResponseFactory(
-            StatusResponseFactory statusResponseFactory) {
+    public final void setStatusResponseFactory(StatusResponseFactory statusResponseFactory) {
         this.statusResponseFactory = statusResponseFactory;
     }
 
@@ -78,11 +79,10 @@ public abstract class AbstractImapCommandParser implements MessagingImapCommandP
     public final ImapMessage parse(ImapRequestLineReader request, String tag, ImapSession session) {
         ImapMessage result;
         if (!command.validForState(session.getState())) {
-            result = statusResponseFactory.taggedNo(tag, command,
-                    HumanReadableText.INVALID_COMMAND);
+            result = statusResponseFactory.taggedNo(tag, command, HumanReadableText.INVALID_COMMAND);
         } else {
             try {
-           
+
                 result = decode(command, request, tag, session);
             } catch (DecodingException e) {
                 session.getLog().debug("Cannot parse protocol ", e);
@@ -92,22 +92,21 @@ public abstract class AbstractImapCommandParser implements MessagingImapCommandP
         return result;
     }
 
- 
-    
     /**
      * Parses a request into a command message for later processing.
+     * 
      * @param command
      *            <code>ImapCommand</code> to be parsed, not null
      * @param request
      *            <code>ImapRequestLineReader</code>, not null
-     * @param tag command tag, not null
-     * @param session imap session 
+     * @param tag
+     *            command tag, not null
+     * @param session
+     *            imap session
      * @return <code>ImapCommandMessage</code>, not null
      * @throws DecodingException
      *             if the request cannot be parsed
      */
-    protected abstract ImapMessage decode(ImapCommand command,
-            ImapRequestLineReader request, String tag, ImapSession session) throws DecodingException;
-    
+    protected abstract ImapMessage decode(ImapCommand command, ImapRequestLineReader request, String tag, ImapSession session) throws DecodingException;
 
 }

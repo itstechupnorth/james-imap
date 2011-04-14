@@ -29,9 +29,8 @@ import org.apache.james.imap.message.request.StartTLSRequest;
 
 /**
  * Parse STARTTLS commands
- *
  */
-public class StartTLSCommandParser extends AbstractImapCommandParser{
+public class StartTLSCommandParser extends AbstractImapCommandParser {
 
     public StartTLSCommandParser() {
         super(ImapCommand.nonAuthenticatedStateCommand(ImapConstants.STARTTLS));
@@ -39,7 +38,12 @@ public class StartTLSCommandParser extends AbstractImapCommandParser{
 
     /*
      * (non-Javadoc)
-     * @see org.apache.james.imap.decode.base.AbstractImapCommandParser#decode(org.apache.james.imap.api.ImapCommand, org.apache.james.imap.decode.ImapRequestLineReader, java.lang.String, org.apache.james.imap.api.process.ImapSession)
+     * 
+     * @see
+     * org.apache.james.imap.decode.base.AbstractImapCommandParser#decode(org
+     * .apache.james.imap.api.ImapCommand,
+     * org.apache.james.imap.decode.ImapRequestLineReader, java.lang.String,
+     * org.apache.james.imap.api.process.ImapSession)
      */
     protected ImapMessage decode(ImapCommand command, ImapRequestLineReader request, String tag, ImapSession session) throws DecodingException {
         request.eol();

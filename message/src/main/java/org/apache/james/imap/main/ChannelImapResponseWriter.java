@@ -32,19 +32,19 @@ import org.apache.james.imap.message.response.Literal;
  */
 public class ChannelImapResponseWriter implements ImapResponseWriter {
 
-
     private final WritableByteChannel out;
-
 
     public ChannelImapResponseWriter(final WritableByteChannel out) {
         super();
         this.out = out;
     }
 
-
     /*
      * (non-Javadoc)
-     * @see org.apache.james.imap.encode.ImapResponseWriter#write(java.nio.ByteBuffer)
+     * 
+     * @see
+     * org.apache.james.imap.encode.ImapResponseWriter#write(java.nio.ByteBuffer
+     * )
      */
     public void write(final ByteBuffer buffer) throws IOException {
         while (out.write(buffer) > 0) { // NOPMD false positive
@@ -52,10 +52,12 @@ public class ChannelImapResponseWriter implements ImapResponseWriter {
         }
     }
 
-
     /*
      * (non-Javadoc)
-     * @see org.apache.james.imap.encode.ImapResponseWriter#write(org.apache.james.imap.message.response.Literal)
+     * 
+     * @see
+     * org.apache.james.imap.encode.ImapResponseWriter#write(org.apache.james
+     * .imap.message.response.Literal)
      */
     public void write(Literal literal) throws IOException {
         literal.writeTo(out);

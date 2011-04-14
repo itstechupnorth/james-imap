@@ -39,35 +39,36 @@ public class CapabilityProcessor extends AbstractMailboxProcessor<CapabilityRequ
 
     private final List<CapabilityImplementingProcessor> capabilities = new ArrayList<CapabilityImplementingProcessor>();
 
-    public CapabilityProcessor(final ImapProcessor next, final MailboxManager mailboxManager,
-            final StatusResponseFactory factory, final List<CapabilityImplementingProcessor> capabilities) {
+    public CapabilityProcessor(final ImapProcessor next, final MailboxManager mailboxManager, final StatusResponseFactory factory, final List<CapabilityImplementingProcessor> capabilities) {
         this(next, mailboxManager, factory);
         this.capabilities.addAll(capabilities);
 
     }
 
-    public CapabilityProcessor(final ImapProcessor next, final MailboxManager mailboxManager,
-            final StatusResponseFactory factory) {
-        super(CapabilityRequest.class,next, mailboxManager, factory);
+    public CapabilityProcessor(final ImapProcessor next, final MailboxManager mailboxManager, final StatusResponseFactory factory) {
+        super(CapabilityRequest.class, next, mailboxManager, factory);
         this.capabilities.add(this);
 
     }
 
     /*
      * (non-Javadoc)
-     * @see org.apache.james.imap.processor.AbstractMailboxProcessor#doProcess(org.apache.james.imap.api.message.request.ImapRequest, org.apache.james.imap.api.process.ImapSession, java.lang.String, org.apache.james.imap.api.ImapCommand, org.apache.james.imap.api.process.ImapProcessor.Responder)
+     * 
+     * @see
+     * org.apache.james.imap.processor.AbstractMailboxProcessor#doProcess(org
+     * .apache.james.imap.api.message.request.ImapRequest,
+     * org.apache.james.imap.api.process.ImapSession, java.lang.String,
+     * org.apache.james.imap.api.ImapCommand,
+     * org.apache.james.imap.api.process.ImapProcessor.Responder)
      */
-    protected void doProcess(CapabilityRequest request, ImapSession session,
-            String tag, ImapCommand command, Responder responder) {
-        final ImapResponseMessage result = doProcess(request, session, tag,
-                command);
+    protected void doProcess(CapabilityRequest request, ImapSession session, String tag, ImapCommand command, Responder responder) {
+        final ImapResponseMessage result = doProcess(request, session, tag, command);
         responder.respond(result);
         unsolicitedResponses(session, responder, false);
         okComplete(command, tag, responder);
     }
 
-    private ImapResponseMessage doProcess(CapabilityRequest request,
-            ImapSession session, String tag, ImapCommand command) {
+    private ImapResponseMessage doProcess(CapabilityRequest request, ImapSession session, String tag, ImapCommand command) {
         List<String> caps = new ArrayList<String>();
         for (int i = 0; i < capabilities.size(); i++) {
             caps.addAll(capabilities.get(i).getImplementedCapabilities(session));
@@ -75,9 +76,10 @@ public class CapabilityProcessor extends AbstractMailboxProcessor<CapabilityRequ
         final CapabilityResponse result = new CapabilityResponse(caps);
         return result;
     }
-    
+
     /**
-     * Add a {@link CapabilityImplementor} which will get queried for implemented capabilities
+     * Add a {@link CapabilityImplementor} which will get queried for
+     * implemented capabilities
      * 
      * @param implementor
      */
@@ -87,7 +89,9 @@ public class CapabilityProcessor extends AbstractMailboxProcessor<CapabilityRequ
 
     /*
      * (non-Javadoc)
-     * @see org.apache.james.imap.processor.CapabilityImplementingProcessor#getImplementedCapabilities(org.apache.james.imap.api.process.ImapSession)
+     * 
+     * @see org.apache.james.imap.processor.CapabilityImplementingProcessor#
+     * getImplementedCapabilities(org.apache.james.imap.api.process.ImapSession)
      */
     public List<String> getImplementedCapabilities(ImapSession session) {
         final List<String> capabilities = new ArrayList<String>();
@@ -96,6 +100,5 @@ public class CapabilityProcessor extends AbstractMailboxProcessor<CapabilityRequ
         capabilities.add(SUPPORTS_RFC3348);
         return capabilities;
     }
-    
-    
+
 }

@@ -25,72 +25,55 @@ import org.apache.james.imap.api.message.response.StatusResponse;
 import org.apache.james.imap.api.message.response.StatusResponseFactory;
 import org.apache.james.imap.api.message.response.StatusResponse.ResponseCode;
 
-public abstract class AbstactStatusResponseFactory implements
-        StatusResponseFactory {
+public abstract class AbstactStatusResponseFactory implements StatusResponseFactory {
 
     public AbstactStatusResponseFactory() {
         super();
     }
 
-    protected abstract StatusResponse createResponse(StatusResponse.Type type,
-            String tag, ImapCommand command,
-            HumanReadableText displayTextKey, ResponseCode code);
+    protected abstract StatusResponse createResponse(StatusResponse.Type type, String tag, ImapCommand command, HumanReadableText displayTextKey, ResponseCode code);
 
-    public StatusResponse bye(HumanReadableText displayTextKey,
-            ResponseCode code) {
-        return createResponse(StatusResponse.Type.BYE, null, null,
-                displayTextKey, code);
+    public StatusResponse bye(HumanReadableText displayTextKey, ResponseCode code) {
+        return createResponse(StatusResponse.Type.BYE, null, null, displayTextKey, code);
     }
 
     public StatusResponse bye(HumanReadableText displayTextKey) {
         return bye(displayTextKey, null);
     }
 
-    public StatusResponse preauth(HumanReadableText displayTextKey,
-            ResponseCode code) {
-        return createResponse(StatusResponse.Type.PREAUTH, null, null,
-                displayTextKey, code);
+    public StatusResponse preauth(HumanReadableText displayTextKey, ResponseCode code) {
+        return createResponse(StatusResponse.Type.PREAUTH, null, null, displayTextKey, code);
     }
 
     public StatusResponse preauth(HumanReadableText displayTextKey) {
         return preauth(displayTextKey, null);
     }
 
-    public StatusResponse taggedBad(String tag, ImapCommand command,
-            HumanReadableText displayTextKey, ResponseCode code) {
-        return createResponse(StatusResponse.Type.BAD, tag, command,
-                displayTextKey, code);
+    public StatusResponse taggedBad(String tag, ImapCommand command, HumanReadableText displayTextKey, ResponseCode code) {
+        return createResponse(StatusResponse.Type.BAD, tag, command, displayTextKey, code);
     }
 
-    public StatusResponse taggedBad(String tag, ImapCommand command,
-            HumanReadableText displayTextKey) {
+    public StatusResponse taggedBad(String tag, ImapCommand command, HumanReadableText displayTextKey) {
         return taggedBad(tag, command, displayTextKey, null);
     }
 
-    public StatusResponse taggedNo(String tag, ImapCommand command,
-            HumanReadableText displayTextKey, ResponseCode code) {
-        return createResponse(StatusResponse.Type.NO, tag, command,
-                displayTextKey, code);
+    public StatusResponse taggedNo(String tag, ImapCommand command, HumanReadableText displayTextKey, ResponseCode code) {
+        return createResponse(StatusResponse.Type.NO, tag, command, displayTextKey, code);
     }
 
-    public StatusResponse taggedNo(String tag, ImapCommand command,
-            HumanReadableText displayTextKey) {
+    public StatusResponse taggedNo(String tag, ImapCommand command, HumanReadableText displayTextKey) {
         return taggedNo(tag, command, displayTextKey, null);
     }
 
-    public StatusResponse taggedOk(String tag, ImapCommand command,
-            HumanReadableText displayTextKey, ResponseCode code) {
-        return createResponse(StatusResponse.Type.OK, tag, command,
-                displayTextKey, code);
+    public StatusResponse taggedOk(String tag, ImapCommand command, HumanReadableText displayTextKey, ResponseCode code) {
+        return createResponse(StatusResponse.Type.OK, tag, command, displayTextKey, code);
     }
 
-    public StatusResponse taggedOk(String tag, ImapCommand command,
-            HumanReadableText displayTextKey) {
+    public StatusResponse taggedOk(String tag, ImapCommand command, HumanReadableText displayTextKey) {
         return taggedOk(tag, command, displayTextKey, null);
     }
 
-    public StatusResponse untaggedBad(HumanReadableText displayTextKey,
-            ResponseCode code) {
+    public StatusResponse untaggedBad(HumanReadableText displayTextKey, ResponseCode code) {
         return taggedBad(null, null, displayTextKey, code);
     }
 
@@ -98,8 +81,7 @@ public abstract class AbstactStatusResponseFactory implements
         return untaggedBad(displayTextKey, null);
     }
 
-    public StatusResponse untaggedNo(HumanReadableText displayTextKey,
-            ResponseCode code) {
+    public StatusResponse untaggedNo(HumanReadableText displayTextKey, ResponseCode code) {
         return taggedNo(null, null, displayTextKey, code);
     }
 
@@ -107,8 +89,7 @@ public abstract class AbstactStatusResponseFactory implements
         return untaggedNo(displayTextKey, null);
     }
 
-    public StatusResponse untaggedOk(HumanReadableText displayTextKey,
-            ResponseCode code) {
+    public StatusResponse untaggedOk(HumanReadableText displayTextKey, ResponseCode code) {
         return taggedOk(null, null, displayTextKey, code);
     }
 

@@ -48,37 +48,23 @@ public final class EnvelopeBuilder {
         this.logger = logger;
     }
 
-    public FetchResponse.Envelope buildEnvelope(final Headers headers)
-            throws MailboxException {
+    public FetchResponse.Envelope buildEnvelope(final Headers headers) throws MailboxException {
         final String date = headerValue(headers, ImapConstants.RFC822_DATE);
-        final String subject = headerValue(headers,
-                ImapConstants.RFC822_SUBJECT);
-        final FetchResponse.Envelope.Address[] fromAddresses = buildAddresses(
-                headers, ImapConstants.RFC822_FROM);
-        final FetchResponse.Envelope.Address[] senderAddresses = buildAddresses(
-                headers, ImapConstants.RFC822_SENDER, fromAddresses);
-        final FetchResponse.Envelope.Address[] replyToAddresses = buildAddresses(
-                headers, ImapConstants.RFC822_REPLY_TO, fromAddresses);
-        final FetchResponse.Envelope.Address[] toAddresses = buildAddresses(
-                headers, ImapConstants.RFC822_TO);
-        final FetchResponse.Envelope.Address[] ccAddresses = buildAddresses(
-                headers, ImapConstants.RFC822_CC);
-        final FetchResponse.Envelope.Address[] bccAddresses = buildAddresses(
-                headers, ImapConstants.RFC822_BCC);
-        final String inReplyTo = headerValue(headers,
-                ImapConstants.RFC822_IN_REPLY_TO);
-        final String messageId = headerValue(headers,
-                ImapConstants.RFC822_MESSAGE_ID);
-        final FetchResponse.Envelope envelope = new EnvelopeImpl(date, subject,
-                fromAddresses, senderAddresses, replyToAddresses, toAddresses,
-                ccAddresses, bccAddresses, inReplyTo, messageId);
+        final String subject = headerValue(headers, ImapConstants.RFC822_SUBJECT);
+        final FetchResponse.Envelope.Address[] fromAddresses = buildAddresses(headers, ImapConstants.RFC822_FROM);
+        final FetchResponse.Envelope.Address[] senderAddresses = buildAddresses(headers, ImapConstants.RFC822_SENDER, fromAddresses);
+        final FetchResponse.Envelope.Address[] replyToAddresses = buildAddresses(headers, ImapConstants.RFC822_REPLY_TO, fromAddresses);
+        final FetchResponse.Envelope.Address[] toAddresses = buildAddresses(headers, ImapConstants.RFC822_TO);
+        final FetchResponse.Envelope.Address[] ccAddresses = buildAddresses(headers, ImapConstants.RFC822_CC);
+        final FetchResponse.Envelope.Address[] bccAddresses = buildAddresses(headers, ImapConstants.RFC822_BCC);
+        final String inReplyTo = headerValue(headers, ImapConstants.RFC822_IN_REPLY_TO);
+        final String messageId = headerValue(headers, ImapConstants.RFC822_MESSAGE_ID);
+        final FetchResponse.Envelope envelope = new EnvelopeImpl(date, subject, fromAddresses, senderAddresses, replyToAddresses, toAddresses, ccAddresses, bccAddresses, inReplyTo, messageId);
         return envelope;
     }
 
-    private String headerValue(final Headers message, final String headerName)
-            throws MailboxException {
-        final MessageResult.Header header = MessageResultUtils.getMatching(
-                headerName, message.headers());
+    private String headerValue(final Headers message, final String headerName) throws MailboxException {
+        final MessageResult.Header header = MessageResultUtils.getMatching(headerName, message.headers());
         final String result;
         if (header == null) {
             result = null;
@@ -87,23 +73,19 @@ public final class EnvelopeBuilder {
             if (value == null || "".equals(value)) {
                 result = null;
             } else {
-                
+
                 // ENVELOPE header values must be unfolded
                 // See IMAP-269
                 result = MimeUtil.unfold(value);
-                
+
             }
         }
         return result;
     }
 
-    private FetchResponse.Envelope.Address[] buildAddresses(
-            final Headers message, final String headerName,
-            final FetchResponse.Envelope.Address[] defaults)
-            throws MailboxException {
+    private FetchResponse.Envelope.Address[] buildAddresses(final Headers message, final String headerName, final FetchResponse.Envelope.Address[] defaults) throws MailboxException {
         final FetchResponse.Envelope.Address[] results;
-        final FetchResponse.Envelope.Address[] addresses = buildAddresses(
-                message, headerName);
+        final FetchResponse.Envelope.Address[] addresses = buildAddresses(message, headerName);
         if (addresses == null) {
             results = defaults;
         } else {
@@ -113,32 +95,29 @@ public final class EnvelopeBuilder {
     }
 
     /**
-     * Try to parse the addresses out of the header. If its not possible because of a {@link ParseException} a null value is returned
+     * Try to parse the addresses out of the header. If its not possible because
+     * of a {@link ParseException} a null value is returned
      * 
      * @param message
      * @param headerName
      * @return addresses
      * @throws MailboxException
      */
-    private FetchResponse.Envelope.Address[] buildAddresses(
-            final Headers message, final String headerName)
-            throws MailboxException {
-        final MessageResult.Header header = MessageResultUtils.getMatching(
-                headerName, message.headers());
+    private FetchResponse.Envelope.Address[] buildAddresses(final Headers message, final String headerName) throws MailboxException {
+        final MessageResult.Header header = MessageResultUtils.getMatching(headerName, message.headers());
         FetchResponse.Envelope.Address[] results;
         if (header == null) {
             results = null;
         } else {
-            
+
             // We need to unfold the header line.
             // See https://issues.apache.org/jira/browse/IMAP-154
             String value = MimeUtil.unfold(header.getValue());
-           
 
             if ("".equals(value.trim())) {
                 results = null;
             } else {
-               
+
                 try {
                     AddressList addressList = AddressList.parse(value);
                     final int size = addressList.size();
@@ -159,27 +138,25 @@ public final class EnvelopeBuilder {
                         }
                     }
 
-                    results = (FetchResponse.Envelope.Address[]) addresses
-                            .toArray(FetchResponse.Envelope.Address.EMPTY);
+                    results = (FetchResponse.Envelope.Address[]) addresses.toArray(FetchResponse.Envelope.Address.EMPTY);
                 } catch (ParseException e) {
                     logger.debug("Unable to parse out address", e);
                     results = null;
                 }
-                
+
             }
         }
         return results;
     }
 
-    private FetchResponse.Envelope.Address buildMailboxAddress(
-            final org.apache.james.mime4j.field.address.Mailbox mailbox) {
-        // Encode the mailbox name 
+    private FetchResponse.Envelope.Address buildMailboxAddress(final org.apache.james.mime4j.field.address.Mailbox mailbox) {
+        // Encode the mailbox name
         // See IMAP-266
         String name = mailbox.getName();
         if (name != null) {
             name = EncoderUtil.encodeAddressDisplayName(name);
         }
-        
+
         final String domain = mailbox.getDomain();
         final DomainList route = mailbox.getRoute();
         final String atDomainList;
@@ -189,8 +166,7 @@ public final class EnvelopeBuilder {
             atDomainList = route.toRouteString();
         }
         final String localPart = mailbox.getLocalPart();
-        final FetchResponse.Envelope.Address result = buildMailboxAddress(name,
-                atDomainList, localPart, domain);
+        final FetchResponse.Envelope.Address result = buildMailboxAddress(name, atDomainList, localPart, domain);
         return result;
     }
 
@@ -200,8 +176,7 @@ public final class EnvelopeBuilder {
         addresses.add(start);
         final MailboxList mailboxList = group.getMailboxes();
         for (int i = 0; i < mailboxList.size(); i++) {
-            final org.apache.james.mime4j.field.address.Mailbox mailbox = mailboxList
-                    .get(i);
+            final org.apache.james.mime4j.field.address.Mailbox mailbox = mailboxList.get(i);
             final FetchResponse.Envelope.Address address = buildMailboxAddress(mailbox);
             addresses.add(address);
         }
@@ -210,21 +185,17 @@ public final class EnvelopeBuilder {
     }
 
     private FetchResponse.Envelope.Address startGroup(String groupName) {
-        final FetchResponse.Envelope.Address result = new AddressImpl(null,
-                null, groupName, null);
+        final FetchResponse.Envelope.Address result = new AddressImpl(null, null, groupName, null);
         return result;
     }
 
     private FetchResponse.Envelope.Address endGroup() {
-        final FetchResponse.Envelope.Address result = new AddressImpl(null,
-                null, null, null);
+        final FetchResponse.Envelope.Address result = new AddressImpl(null, null, null, null);
         return result;
     }
 
-    private FetchResponse.Envelope.Address buildMailboxAddress(String name,
-            String atDomainList, String mailbox, String domain) {
-        final FetchResponse.Envelope.Address result = new AddressImpl(
-                atDomainList, domain, mailbox, name);
+    private FetchResponse.Envelope.Address buildMailboxAddress(String name, String atDomainList, String mailbox, String domain) {
+        final FetchResponse.Envelope.Address result = new AddressImpl(atDomainList, domain, mailbox, name);
         return result;
     }
 }

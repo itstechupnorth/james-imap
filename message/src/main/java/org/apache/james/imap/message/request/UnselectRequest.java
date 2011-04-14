@@ -20,7 +20,7 @@ package org.apache.james.imap.message.request;
 
 import org.apache.james.imap.api.ImapCommand;
 
-public class UnselectRequest extends AbstractImapRequest{
+public class UnselectRequest extends AbstractImapRequest {
 
     public UnselectRequest(String tag, ImapCommand command) {
         super(tag, command);

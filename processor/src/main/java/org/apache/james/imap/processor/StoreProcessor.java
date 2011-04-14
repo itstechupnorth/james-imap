@@ -41,14 +41,12 @@ import org.apache.james.mailbox.MessageRange;
 import org.apache.james.mailbox.MessageRangeException;
 
 public class StoreProcessor extends AbstractMailboxProcessor<StoreRequest> {
-    
-    public StoreProcessor(final ImapProcessor next, final MailboxManager mailboxManager,
-            final StatusResponseFactory factory) {
+
+    public StoreProcessor(final ImapProcessor next, final MailboxManager mailboxManager, final StatusResponseFactory factory) {
         super(StoreRequest.class, next, mailboxManager, factory);
     }
 
-    protected void doProcess(StoreRequest request, ImapSession session,
-            String tag, ImapCommand command, Responder responder) {
+    protected void doProcess(StoreRequest request, ImapSession session, String tag, ImapCommand command, Responder responder) {
         final IdRange[] idSet = request.getIdSet();
         final Flags flags = request.getFlags();
         final boolean useUids = request.isUseUids();
@@ -74,17 +72,16 @@ public class StoreProcessor extends AbstractMailboxProcessor<StoreRequest> {
                 final SelectedMailbox selected = session.getSelected();
                 MessageRange messageSet = messageRange(selected, idSet[i], useUids);
 
-                final MailboxSession mailboxSession = ImapSessionUtils
-                        .getMailboxSession(session);
-                final Map<Long, Flags> flagsByUid = mailbox.setFlags(flags, value, replace,
-                        messageSet, mailboxSession);
+                final MailboxSession mailboxSession = ImapSessionUtils.getMailboxSession(session);
+                final Map<Long, Flags> flagsByUid = mailbox.setFlags(flags, value, replace, messageSet, mailboxSession);
                 if (!silent) {
-                    for (Map.Entry<Long, Flags> entry: flagsByUid.entrySet()) {
+                    for (Map.Entry<Long, Flags> entry : flagsByUid.entrySet()) {
                         final long uid = entry.getKey();
                         final int msn = selected.msn(uid);
-                        
-                        if (msn == SelectedMailbox.NO_SUCH_MESSAGE) throw new MailboxException("No message found with uid " + uid);
-                        
+
+                        if (msn == SelectedMailbox.NO_SUCH_MESSAGE)
+                            throw new MailboxException("No message found with uid " + uid);
+
                         final Flags resultFlags = entry.getValue();
                         final Long resultUid;
                         if (useUids) {
@@ -95,9 +92,7 @@ public class StoreProcessor extends AbstractMailboxProcessor<StoreRequest> {
                         if (selected.isRecent(uid)) {
                             resultFlags.add(Flags.Flag.RECENT);
                         }
-                        final FetchResponse response = new FetchResponse(msn,
-                                resultFlags, resultUid, null, null, null, null,
-                                null, null);
+                        final FetchResponse response = new FetchResponse(msn, resultFlags, resultUid, null, null, null, null, null, null);
                         responder.respond(response);
                     }
                 }

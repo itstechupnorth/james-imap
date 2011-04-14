@@ -48,12 +48,11 @@ import org.apache.james.mailbox.MailboxManager;
 import org.apache.james.mailbox.MailboxSession;
 
 public class IdleProcessor extends AbstractMailboxProcessor<IdleRequest> implements CapabilityImplementingProcessor {
-	
-	
-    private final ScheduledExecutorService heartbeatExecutor; 
+
+    private final ScheduledExecutorService heartbeatExecutor;
 
     private final static String HEARTBEAT_FUTURE = "IDLE_HEARTBEAT_FUTURE";
-    
+
     // 2 minutes
     public final static long DEFAULT_HEARTBEAT_INTERVAL_IN_SECONDS = 2 * 60;
     public final static TimeUnit DEFAULT_HEARTBEAT_INTERVAL_UNIT = TimeUnit.SECONDS;
@@ -61,62 +60,59 @@ public class IdleProcessor extends AbstractMailboxProcessor<IdleRequest> impleme
     private final static String DONE = "DONE";
     private final TimeUnit heartbeatIntervalUnit;
     private final long heartbeatInterval;
-    
-    public IdleProcessor(final ImapProcessor next, final MailboxManager mailboxManager,
-            final StatusResponseFactory factory) {
+
+    public IdleProcessor(final ImapProcessor next, final MailboxManager mailboxManager, final StatusResponseFactory factory) {
         this(next, mailboxManager, factory, DEFAULT_HEARTBEAT_INTERVAL_IN_SECONDS, DEFAULT_HEARTBEAT_INTERVAL_UNIT, Executors.newScheduledThreadPool(DEFAULT_SCHEDULED_POOL_CORE_SIZE));
-        
+
     }
 
-    public IdleProcessor(final ImapProcessor next, final MailboxManager mailboxManager,
-            final StatusResponseFactory factory, long heartbeatInterval, TimeUnit heartbeatIntervalUnit, ScheduledExecutorService heartbeatExecutor) {
+    public IdleProcessor(final ImapProcessor next, final MailboxManager mailboxManager, final StatusResponseFactory factory, long heartbeatInterval, TimeUnit heartbeatIntervalUnit, ScheduledExecutorService heartbeatExecutor) {
         super(IdleRequest.class, next, mailboxManager, factory);
         this.heartbeatInterval = heartbeatInterval;
         this.heartbeatIntervalUnit = heartbeatIntervalUnit;
         this.heartbeatExecutor = heartbeatExecutor;
-        
+
     }
 
-    protected void doProcess(final IdleRequest message, final ImapSession session,
-            final String tag, final ImapCommand command, final Responder responder) {
+    protected void doProcess(final IdleRequest message, final ImapSession session, final String tag, final ImapCommand command, final Responder responder) {
         final AtomicBoolean closed = new AtomicBoolean(false);
 
-        try {        
+        try {
             responder.respond(new ContinuationResponse(HumanReadableText.IDLING));
             unsolicitedResponses(session, responder, false);
 
             final MailboxManager mailboxManager = getMailboxManager();
             final MailboxSession mailboxSession = ImapSessionUtils.getMailboxSession(session);
             SelectedMailbox sm = session.getSelected();
-            if(sm != null) {
-                mailboxManager.addListener(sm.getPath(), 
-                    new IdleMailboxListener(closed, session, responder), mailboxSession);
+            if (sm != null) {
+                mailboxManager.addListener(sm.getPath(), new IdleMailboxListener(closed, session, responder), mailboxSession);
             }
-        
-            
+
             session.pushLineHandler(new ImapLineHandler() {
-                
+
                 /*
                  * (non-Javadoc)
-                 * @see org.apache.james.imap.api.process.ImapLineHandler#onLine(org.apache.james.imap.api.process.ImapSession, byte[])
+                 * 
+                 * @see
+                 * org.apache.james.imap.api.process.ImapLineHandler#onLine(
+                 * org.apache.james.imap.api.process.ImapSession, byte[])
                  */
                 public void onLine(ImapSession session, byte[] data) {
                     String line;
                     if (data.length > 2) {
-                        line = new String(data, 0, data.length -2 );
+                        line = new String(data, 0, data.length - 2);
                     } else {
                         line = "";
                     }
-                        
+
                     closed.set(true);
                     session.popLineHandler();
                     if (!DONE.equals(line.toUpperCase(Locale.US))) {
-                        StatusResponse response = getStatusResponseFactory().taggedBad(tag, command,
-                                HumanReadableText.INVALID_COMMAND);
+                        StatusResponse response = getStatusResponseFactory().taggedBad(tag, command, HumanReadableText.INVALID_COMMAND);
                         responder.respond(response);
                     } else {
                         okComplete(command, tag, responder);
-                        
+
                         // See if we need to cancel the idle heartbeat handling
                         Object oFuture = session.getAttribute(HEARTBEAT_FUTURE);
                         if (oFuture != null) {
@@ -129,7 +125,7 @@ public class IdleProcessor extends AbstractMailboxProcessor<IdleRequest> impleme
                             }
                             session.setAttribute(HEARTBEAT_FUTURE, null);
                         }
-                    }                    
+                    }
                 }
             });
 
@@ -141,21 +137,23 @@ public class IdleProcessor extends AbstractMailboxProcessor<IdleRequest> impleme
                         // check if we need to cancel the Runnable
                         // See IMAP-275
                         if (session.getState() == ImapSessionState.LOGOUT) {
-                            
+
                             Object future = session.getAttribute(HEARTBEAT_FUTURE);
                             if (future != null) {
-                                // cancel the future if needed to be sure it not run infinity
+                                // cancel the future if needed to be sure it not
+                                // run infinity
                                 ((ScheduledFuture<?>) future).cancel(true);
                                 session.setAttribute(HEARTBEAT_FUTURE, null);
                             }
-                            
+
                         } else {
-                            // Send a heartbeat to the client to make sure we reset
-                            // the idle timeout. This is kind of the same workaround
-                            // as dovecot use.
+                            // Send a heartbeat to the client to make sure we
+                            // reset the idle timeout. This is kind of the same
+                            // workaround as dovecot use.
                             //
-                            // This is mostly needed because of the broken outlook
-                            // client, but can't harm for other clients too.
+                            // This is mostly needed because of the broken
+                            // outlook client, but can't harm for other clients
+                            // too.
                             // See IMAP-272
                             StatusResponse response = getStatusResponseFactory().untaggedOk(HumanReadableText.HEARTBEAT);
                             responder.respond(response);
@@ -177,12 +175,12 @@ public class IdleProcessor extends AbstractMailboxProcessor<IdleRequest> impleme
     public List<String> getImplementedCapabilities(ImapSession session) {
         return Arrays.asList(SUPPORTS_IDLE);
     }
-    
+
     private class IdleMailboxListener extends ImapStateAwareMailboxListener {
-        
+
         private final AtomicBoolean closed;
         private final Responder responder;
-        
+
         public IdleMailboxListener(AtomicBoolean closed, ImapSession session, Responder responder) {
             super(session);
             this.closed = closed;
@@ -199,14 +197,16 @@ public class IdleProcessor extends AbstractMailboxProcessor<IdleRequest> impleme
                 }
             }
         }
-        
+
         /*
          * (non-Javadoc)
-         * @see org.apache.james.imap.processor.ImapSessionAwareMailboxListener#isListenerClosed()
+         * 
+         * @see org.apache.james.imap.processor.ImapSessionAwareMailboxListener#
+         * isListenerClosed()
          */
         protected boolean isListenerClosed() {
             return closed.get();
         }
-        
+
     }
 }

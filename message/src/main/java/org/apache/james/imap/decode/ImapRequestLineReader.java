@@ -43,20 +43,16 @@ import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.api.message.IdRange;
 import org.apache.james.imap.api.message.request.DayMonthYear;
 
-
 /**
  * Wraps the client input reader with a bunch of convenience methods, allowing
- * lookahead=1 on the underlying character stream. TODO need to look at
- * encoding
- * 
- * @version $Revision: 109034 $
+ * lookahead=1 on the underlying character stream. TODO need to look at encoding
  */
 public abstract class ImapRequestLineReader {
-    
+
     private static final int QUOTED_BUFFER_INITIAL_CAPACITY = 64;
 
     private static final Charset US_ASCII = Charset.forName("US-ASCII");
-    
+
     protected boolean nextSeen = false;
 
     protected char nextChar; // unknown
@@ -123,8 +119,7 @@ public abstract class ImapRequestLineReader {
 
         // Check if we found extra characters.
         if (next != '\n') {
-            throw new DecodingException(HumanReadableText.ILLEGAL_ARGUMENTS, 
-                    "Expected end-of-line, found '" + (char) next + "'.");
+            throw new DecodingException(HumanReadableText.ILLEGAL_ARGUMENTS, "Expected end-of-line, found '" + (char) next + "'.");
         }
     }
 
@@ -178,21 +173,18 @@ public abstract class ImapRequestLineReader {
         }
         consume();
     }
-    
 
     /**
      * Reads an argument of type "atom" from the request.
      */
-    public String atom()
-            throws DecodingException {
+    public String atom() throws DecodingException {
         return consumeWord(new ATOM_CHARValidator());
     }
 
     /**
      * Reads a command "tag" from the request.
      */
-    public String tag()
-            throws DecodingException {
+    public String tag() throws DecodingException {
         CharacterValidator validator = new TagCharValidator();
         return consumeWord(validator);
     }
@@ -207,38 +199,35 @@ public abstract class ImapRequestLineReader {
     /**
      * Reads an argument of type "astring" from the request.
      */
-    public String astring(Charset charset)
-            throws DecodingException {
+    public String astring(Charset charset) throws DecodingException {
         char next = nextWordChar();
         switch (next) {
-            case '"':
-                return consumeQuoted(charset);
-            case '{':
-                return consumeLiteral(charset);
-            default:
-                return atom();
+        case '"':
+            return consumeQuoted(charset);
+        case '{':
+            return consumeLiteral(charset);
+        default:
+            return atom();
         }
     }
 
     /**
      * Reads an argument of type "nstring" from the request.
      */
-    public String nstring()
-            throws DecodingException {
+    public String nstring() throws DecodingException {
         char next = nextWordChar();
         switch (next) {
-            case '"':
-                return consumeQuoted();
-            case '{':
-                return consumeLiteral(null);
-            default:
-                String value = atom();
-                if ("NIL".equals(value)) {
-                    return null;
-                } else {
-                    throw new DecodingException(HumanReadableText.ILLEGAL_ARGUMENTS, 
-                            "Invalid nstring value: valid values are '\"...\"', '{12} CRLF *CHAR8', and 'NIL'.");
-                }
+        case '"':
+            return consumeQuoted();
+        case '{':
+            return consumeLiteral(null);
+        default:
+            String value = atom();
+            if ("NIL".equals(value)) {
+                return null;
+            } else {
+                throw new DecodingException(HumanReadableText.ILLEGAL_ARGUMENTS, "Invalid nstring value: valid values are '\"...\"', '{12} CRLF *CHAR8', and 'NIL'.");
+            }
         }
     }
 
@@ -251,8 +240,7 @@ public abstract class ImapRequestLineReader {
      * variants of ;; INBOX (e.g. "iNbOx") MUST be interpreted as INBOX ;; not
      * as an astring.
      */
-    public String mailbox()
-            throws DecodingException {
+    public String mailbox() throws DecodingException {
         String mailbox = astring();
         if (mailbox.equalsIgnoreCase(ImapConstants.INBOX_NAME)) {
             return ImapConstants.INBOX_NAME;
@@ -269,8 +257,7 @@ public abstract class ImapRequestLineReader {
      * @return <code>DayMonthYear</code>, not null
      * @throws DecodingException
      */
-    public DayMonthYear date()
-            throws DecodingException {
+    public DayMonthYear date() throws DecodingException {
 
         final char one = consume();
         final char two = consume();
@@ -285,21 +272,18 @@ public abstract class ImapRequestLineReader {
         final char monthFirstChar = consume();
         final char monthSecondChar = consume();
         final char monthThirdChar = consume();
-        final int month = DecoderUtils.decodeMonth(monthFirstChar,
-                monthSecondChar, monthThirdChar) + 1;
+        final int month = DecoderUtils.decodeMonth(monthFirstChar, monthSecondChar, monthThirdChar) + 1;
         nextIsDash();
         final char milleniumChar = consume();
         final char centuryChar = consume();
         final char decadeChar = consume();
         final char yearChar = consume();
-        final int year = DecoderUtils.decodeYear(milleniumChar, centuryChar,
-                decadeChar, yearChar);
+        final int year = DecoderUtils.decodeYear(milleniumChar, centuryChar, decadeChar, yearChar);
         final DayMonthYear result = new DayMonthYear(day, month, year);
         return result;
     }
 
-    private void nextIsDash()
-            throws DecodingException {
+    private void nextIsDash() throws DecodingException {
         final char next = consume();
         if (next != '-') {
             throw new DecodingException(HumanReadableText.ILLEGAL_ARGUMENTS, "Expected dash but was " + next);
@@ -309,8 +293,7 @@ public abstract class ImapRequestLineReader {
     /**
      * Reads a "date-time" argument from the request.
      */
-    public Date dateTime()
-            throws DecodingException {
+    public Date dateTime() throws DecodingException {
         char next = nextWordChar();
         String dateString;
         if (next == '"') {
@@ -353,18 +336,18 @@ public abstract class ImapRequestLineReader {
      * positioned so that nextChar is '{'. Leading whitespace is not skipped in
      * this method.
      * 
-     * @param charset ,
-     *            or null for <code>US-ASCII</code>
+     * @param charset
+     *            , or null for <code>US-ASCII</code>
      */
     public String consumeLiteral(final Charset charset) throws DecodingException {
         if (charset == null) {
-            return consumeLiteral( US_ASCII);
+            return consumeLiteral(US_ASCII);
         } else {
             ByteArrayOutputStream out = new ByteArrayOutputStream();
             try {
-                IOUtils.copy(consumeLiteral(false),out);
+                IOUtils.copy(consumeLiteral(false), out);
             } catch (IOException e) {
-                throw new DecodingException(HumanReadableText.BAD_IO_ENCODING, "Bad character encoding",  e);
+                throw new DecodingException(HumanReadableText.BAD_IO_ENCODING, "Bad character encoding", e);
             }
             final byte[] bytes = out.toByteArray();
             final ByteBuffer buffer = ByteBuffer.wrap(bytes);
@@ -385,9 +368,8 @@ public abstract class ImapRequestLineReader {
         }
 
         // If the number is *not* suffixed with a '+', we *are* using a
-        // synchronized literal,
-        // and we need to send command continuation request before reading
-        // data.
+        // synchronized literal, and we need to send command continuation
+        // request before reading data.
         boolean synchronizedLiteral = true;
         // '+' indicates a non-synchronized literal (no command continuation
         // request)
@@ -408,12 +390,9 @@ public abstract class ImapRequestLineReader {
         return read(size, extraCRLF);
     }
 
-    private String decode(final Charset charset, final ByteBuffer buffer)
-            throws DecodingException {
+    private String decode(final Charset charset, final ByteBuffer buffer) throws DecodingException {
         try {
-            final String result = charset.newDecoder().onMalformedInput(
-                    CodingErrorAction.REPORT).onUnmappableCharacter(
-                    CodingErrorAction.REPORT).decode(buffer).toString();
+            final String result = charset.newDecoder().onMalformedInput(CodingErrorAction.REPORT).onUnmappableCharacter(CodingErrorAction.REPORT).decode(buffer).toString();
             return result;
 
         } catch (IllegalStateException e) {
@@ -428,39 +407,35 @@ public abstract class ImapRequestLineReader {
     }
 
     /**
-     * Consumes a CRLF from the request. 
-     * TODO: This is too liberal, the spec insists on \r\n for new lines.
+     * Consumes a CRLF from the request. TODO: This is too liberal, the spec
+     * insists on \r\n for new lines.
      * 
      * @param request
      * @throws DecodingException
      */
-    private void consumeCRLF()
-            throws DecodingException {
+    private void consumeCRLF() throws DecodingException {
         char next = nextChar();
         if (next != '\n') {
-            consumeChar( '\r');
+            consumeChar('\r');
         }
-        consumeChar( '\n');
+        consumeChar('\n');
     }
 
     /**
      * Consumes the next character in the request, checking that it matches the
      * expected one. This method should be used when the
      */
-    public void consumeChar(char expected)
-            throws DecodingException {
+    public void consumeChar(char expected) throws DecodingException {
         char consumed = consume();
         if (consumed != expected) {
-            throw new DecodingException(HumanReadableText.ILLEGAL_ARGUMENTS, 
-                    "Expected:'" + expected + "' found:'" + consumed + "'");
+            throw new DecodingException(HumanReadableText.ILLEGAL_ARGUMENTS, "Expected:'" + expected + "' found:'" + consumed + "'");
         }
     }
 
     /**
      * Reads a quoted string value from the request.
      */
-    public String consumeQuoted()
-            throws DecodingException {
+    public String consumeQuoted() throws DecodingException {
         return consumeQuoted(null);
     }
 
@@ -475,7 +450,7 @@ public abstract class ImapRequestLineReader {
             consumeChar('"');
             final QuotedStringDecoder decoder = new QuotedStringDecoder(charset);
             final String result = decoder.decode(this);
-            consumeChar( '"');
+            consumeChar('"');
             return result;
         }
     }
@@ -483,11 +458,10 @@ public abstract class ImapRequestLineReader {
     /**
      * Reads a "flags-list" argument from the request.
      */
-    public Flags flagList()
-            throws DecodingException {
+    public Flags flagList() throws DecodingException {
         Flags flags = new Flags();
         nextWordChar();
-        consumeChar( '(');
+        consumeChar('(');
         CharacterValidator validator = new NoopCharValidator();
         String nextWord = consumeWord(validator);
         while (!nextWord.endsWith(")")) {
@@ -509,65 +483,62 @@ public abstract class ImapRequestLineReader {
     /**
      * Reads a "flag" argument from the request.
      */
-    public Flags flag()
-            throws DecodingException {
+    public Flags flag() throws DecodingException {
         Flags flags = new Flags();
         nextWordChar();
-        
+
         CharacterValidator validator = new NoopCharValidator();
         String nextFlag = consumeWord(validator);
         DecoderUtils.setFlag(nextFlag, flags);
         return flags;
     }
-    
-    
+
     /**
      * Reads an argument of type "number" from the request.
      */
     public long number() throws DecodingException {
-        return readDigits( 0, 0, true);
+        return readDigits(0, 0, true);
     }
 
-    private long readDigits(int add,
-            final long total, final boolean first) throws DecodingException {
+    private long readDigits(int add, final long total, final boolean first) throws DecodingException {
         final char next;
         if (first) {
-            next =nextWordChar();
+            next = nextWordChar();
         } else {
             consume();
             next = nextChar();
         }
         final long currentTotal = (10 * total) + add;
         switch (next) {
-            case '0':
-                return readDigits( 0, currentTotal, false);
-            case '1':
-                return readDigits( 1, currentTotal, false);
-            case '2':
-                return readDigits( 2, currentTotal, false);
-            case '3':
-                return readDigits( 3, currentTotal, false);
-            case '4':
-                return readDigits( 4, currentTotal, false);
-            case '5':
-                return readDigits( 5, currentTotal, false);
-            case '6':
-                return readDigits( 6, currentTotal, false);
-            case '7':
-                return readDigits( 7, currentTotal, false);
-            case '8':
-                return readDigits( 8, currentTotal, false);
-            case '9':
-                return readDigits( 9, currentTotal, false);
-            case '.':
-            case ' ':
-            case '>':
-            case '\r':
-            case '\n':
-            case '\t':
-                return currentTotal;
-            default:
-                throw new DecodingException(HumanReadableText.ILLEGAL_ARGUMENTS, "Expected a digit but was " + next);
+        case '0':
+            return readDigits(0, currentTotal, false);
+        case '1':
+            return readDigits(1, currentTotal, false);
+        case '2':
+            return readDigits(2, currentTotal, false);
+        case '3':
+            return readDigits(3, currentTotal, false);
+        case '4':
+            return readDigits(4, currentTotal, false);
+        case '5':
+            return readDigits(5, currentTotal, false);
+        case '6':
+            return readDigits(6, currentTotal, false);
+        case '7':
+            return readDigits(7, currentTotal, false);
+        case '8':
+            return readDigits(8, currentTotal, false);
+        case '9':
+            return readDigits(9, currentTotal, false);
+        case '.':
+        case ' ':
+        case '>':
+        case '\r':
+        case '\n':
+        case '\t':
+            return currentTotal;
+        default:
+            throw new DecodingException(HumanReadableText.ILLEGAL_ARGUMENTS, "Expected a digit but was " + next);
         }
     }
 
@@ -577,8 +548,7 @@ public abstract class ImapRequestLineReader {
      * as nzNumbers (although it's ok as a "number". I think the spec is a bit
      * shonky.)
      */
-    public long nzNumber()
-            throws DecodingException {
+    public long nzNumber() throws DecodingException {
         long number = number();
         if (number == 0) {
             throw new DecodingException(HumanReadableText.ILLEGAL_ARGUMENTS, "Zero value not permitted.");
@@ -602,8 +572,7 @@ public abstract class ImapRequestLineReader {
      * Reads a "message set" argument, and parses into an IdSet. Currently only
      * supports a single range of values.
      */
-    public IdRange[] parseIdRange()
-            throws DecodingException {
+    public IdRange[] parseIdRange() throws DecodingException {
         CharacterValidator validator = new MessageSetCharValidator();
         String nextWord = consumeWord(validator);
 
@@ -624,14 +593,13 @@ public abstract class ImapRequestLineReader {
         }
         String range = nextWord.substring(pos);
         rangeList.add(parseRange(range));
-        
+
         // merge the ranges to minimize the needed queries.
         // See IMAP-211
         List<IdRange> merged = IdRange.mergeRanges(rangeList);
         return (IdRange[]) merged.toArray(new IdRange[merged.size()]);
     }
 
-    
     /**
      * Parse a range which use a ":" as delimiter
      * 
@@ -643,8 +611,9 @@ public abstract class ImapRequestLineReader {
         int pos = range.indexOf(':');
         try {
             if (pos == -1) {
-                
-                // Check if its a single "*" and so should return last message in mailbox. See IMAP-289
+
+                // Check if its a single "*" and so should return last message
+                // in mailbox. See IMAP-289
                 if (range.length() == 1 && range.charAt(0) == '*') {
                     return new IdRange(Long.MAX_VALUE, Long.MAX_VALUE);
                 } else {
@@ -656,13 +625,13 @@ public abstract class ImapRequestLineReader {
                 // See https://issues.apache.org/jira/browse/IMAP-212
                 long val1 = parseUnsignedInteger(range.substring(0, pos));
                 long val2 = parseUnsignedInteger(range.substring(pos + 1));
-                
+
                 // handle "*:*" ranges. See IMAP-289
                 if (val1 == Long.MAX_VALUE && val2 == Long.MAX_VALUE) {
                     return new IdRange(Long.MAX_VALUE, Long.MAX_VALUE);
                 } else if (val1 <= val2) {
                     return new IdRange(val1, val2);
-                } else if(val1 == Long.MAX_VALUE) {
+                } else if (val1 == Long.MAX_VALUE) {
                     // *:<num> message range must be converted to <num>:*
                     // See IMAP-290
                     return new IdRange(val2, Long.MAX_VALUE);
@@ -675,14 +644,15 @@ public abstract class ImapRequestLineReader {
         }
     }
 
-    private long  parseUnsignedInteger(String value) throws DecodingException{
+    private long parseUnsignedInteger(String value) throws DecodingException {
         if (value.length() == 1 && value.charAt(0) == '*') {
             return Long.MAX_VALUE;
         } else {
             long number = Long.parseLong(value);
-            if (number < ImapConstants.MIN_NZ_NUMBER || number > ImapConstants.MAX_NZ_NUMBER) throw new DecodingException(HumanReadableText.ILLEGAL_ARGUMENTS, "Invalid message set. Numbers must be unsigned 32-bit Integers");
+            if (number < ImapConstants.MIN_NZ_NUMBER || number > ImapConstants.MAX_NZ_NUMBER)
+                throw new DecodingException(HumanReadableText.ILLEGAL_ARGUMENTS, "Invalid message set. Numbers must be unsigned 32-bit Integers");
             return number;
-        
+
         }
     }
 
@@ -695,8 +665,7 @@ public abstract class ImapRequestLineReader {
          * 
          * @param chr
          *            The character to validate.
-         * @return <code>true</code> if chr is valid, <code>false</code> if
-         *         not.
+         * @return <code>true</code> if chr is valid, <code>false</code> if not.
          */
         boolean isValid(char chr);
     }
@@ -755,8 +724,7 @@ public abstract class ImapRequestLineReader {
             charBuffer = CharBuffer.allocate(QUOTED_BUFFER_INITIAL_CAPACITY);
         }
 
-        public String decode(ImapRequestLineReader request)
-                throws DecodingException {
+        public String decode(ImapRequestLineReader request) throws DecodingException {
             try {
                 decoder.reset();
                 char next = request.nextChar();
@@ -769,9 +737,7 @@ public abstract class ImapRequestLineReader {
                         request.consume();
                         next = request.nextChar();
                         if (!isQuotedSpecial(next)) {
-                            throw new DecodingException(HumanReadableText.ILLEGAL_ARGUMENTS, 
-                                    "Invalid escaped character in quote: '"
-                                            + next + "'");
+                            throw new DecodingException(HumanReadableText.ILLEGAL_ARGUMENTS, "Invalid escaped character in quote: '" + next + "'");
                         }
                     }
                     // TODO: nextChar does not report accurate chars so safe to
@@ -812,16 +778,13 @@ public abstract class ImapRequestLineReader {
          * @param endOfInput
          *            is the input ended
          */
-        private CoderResult decodeByteBufferToCharacterBuffer(
-                final boolean endOfInput) throws DecodingException {
+        private CoderResult decodeByteBufferToCharacterBuffer(final boolean endOfInput) throws DecodingException {
             buffer.flip();
             return decodeMoreBytesToCharacterBuffer(endOfInput);
         }
 
-        private CoderResult decodeMoreBytesToCharacterBuffer(
-                final boolean endOfInput) throws DecodingException {
-            final CoderResult coderResult = decoder.decode(buffer, charBuffer,
-                    endOfInput);
+        private CoderResult decodeMoreBytesToCharacterBuffer(final boolean endOfInput) throws DecodingException {
+            final CoderResult coderResult = decoder.decode(buffer, charBuffer, endOfInput);
             if (coderResult.isOverflow()) {
                 upsizeCharBuffer();
                 return decodeMoreBytesToCharacterBuffer(endOfInput);
@@ -839,11 +802,10 @@ public abstract class ImapRequestLineReader {
         private void upsizeCharBuffer() {
             final int oldCapacity = charBuffer.capacity();
             CharBuffer oldBuffer = charBuffer;
-            charBuffer = CharBuffer.allocate(oldCapacity
-                    + QUOTED_BUFFER_INITIAL_CAPACITY);
+            charBuffer = CharBuffer.allocate(oldCapacity + QUOTED_BUFFER_INITIAL_CAPACITY);
             oldBuffer.flip();
             charBuffer.put(oldBuffer);
         }
     }
-    
+
 }

@@ -54,19 +54,22 @@ public class FetchProcessor extends AbstractMailboxProcessor<FetchRequest> {
 
     private int batchSize;
 
-    public FetchProcessor(final ImapProcessor next, final MailboxManager mailboxManager,
-            final StatusResponseFactory factory, int batchSize) {
-        super(FetchRequest.class,next, mailboxManager, factory);
+    public FetchProcessor(final ImapProcessor next, final MailboxManager mailboxManager, final StatusResponseFactory factory, int batchSize) {
+        super(FetchRequest.class, next, mailboxManager, factory);
         this.batchSize = batchSize;
     }
 
-
     /*
      * (non-Javadoc)
-     * @see org.apache.james.imap.processor.AbstractMailboxProcessor#doProcess(org.apache.james.imap.api.message.request.ImapRequest, org.apache.james.imap.api.process.ImapSession, java.lang.String, org.apache.james.imap.api.ImapCommand, org.apache.james.imap.api.process.ImapProcessor.Responder)
+     * 
+     * @see
+     * org.apache.james.imap.processor.AbstractMailboxProcessor#doProcess(org
+     * .apache.james.imap.api.message.request.ImapRequest,
+     * org.apache.james.imap.api.process.ImapSession, java.lang.String,
+     * org.apache.james.imap.api.ImapCommand,
+     * org.apache.james.imap.api.process.ImapProcessor.Responder)
      */
-    protected void doProcess(FetchRequest request, final ImapSession session,
-            String tag, ImapCommand command, final Responder responder) {
+    protected void doProcess(FetchRequest request, final ImapSession session, String tag, ImapCommand command, final Responder responder) {
         final boolean useUids = request.isUseUids();
         final IdRange[] idSet = request.getIdSet();
         final FetchData fetch = request.getFetch();
@@ -76,35 +79,36 @@ public class FetchProcessor extends AbstractMailboxProcessor<FetchRequest> {
             if (mailbox == null) {
                 throw new MailboxException("Session not in SELECTED state");
             }
-            
+
             final MailboxSession mailboxSession = ImapSessionUtils.getMailboxSession(session);
             List<MessageRange> ranges = new ArrayList<MessageRange>();
-            
+
             for (int i = 0; i < idSet.length; i++) {
                 MessageRange messageSet = messageRange(session.getSelected(), idSet[i], useUids);
                 MessageRange normalizedMessageSet = normalizeMessageRange(session.getSelected(), messageSet);
                 MessageRange batchedMessageSet = MessageRange.range(normalizedMessageSet.getUidFrom(), normalizedMessageSet.getUidTo(), batchSize);
                 ranges.add(batchedMessageSet);
             }
-            
+
             processMessageRanges(session, mailbox, ranges, fetch, useUids, mailboxSession, responder);
-            
-            // Don't send expunge responses if FETCH is used to trigger this processor. See IMAP-284
+
+            // Don't send expunge responses if FETCH is used to trigger this
+            // processor. See IMAP-284
             final boolean omitExpunged = (!useUids);
             unsolicitedResponses(session, responder, omitExpunged, useUids);
             okComplete(command, tag, responder);
         } catch (UnsupportedCriteriaException e) {
-            no(command, tag, responder,
-                    HumanReadableText.UNSUPPORTED_SEARCH_CRITERIA);
+            no(command, tag, responder, HumanReadableText.UNSUPPORTED_SEARCH_CRITERIA);
         } catch (MessageRangeException e) {
             taggedBad(command, tag, responder, HumanReadableText.INVALID_MESSAGESET);
         } catch (MailboxException e) {
             no(command, tag, responder, HumanReadableText.SEARCH_FAILED);
-        } 
+        }
     }
-    
+
     /**
-     * Process the given message ranges by fetch them and pass them to the {@link Responder}
+     * Process the given message ranges by fetch them and pass them to the
+     * {@link Responder}
      * 
      * @param session
      * @param mailbox
@@ -117,8 +121,8 @@ public class FetchProcessor extends AbstractMailboxProcessor<FetchRequest> {
      */
     protected void processMessageRanges(final ImapSession session, final MessageManager mailbox, final List<MessageRange> ranges, final FetchData fetch, final boolean useUids, final MailboxSession mailboxSession, final Responder responder) throws MailboxException {
         final FetchResponseBuilder builder = new FetchResponseBuilder(new EnvelopeBuilder(session.getLog()));
-        FetchGroup  resultToFetch = getFetchGroup(fetch); 
-        
+        FetchGroup resultToFetch = getFetchGroup(fetch);
+
         for (int i = 0; i < ranges.size(); i++) {
             mailbox.getMessages(ranges.get(i), resultToFetch, mailboxSession, new MessageCallback() {
 
@@ -129,22 +133,21 @@ public class FetchProcessor extends AbstractMailboxProcessor<FetchRequest> {
                             final FetchResponse response = builder.build(fetch, result, mailbox, session, useUids);
                             responder.respond(response);
                         } catch (ParseException e) {
-                            // we can't for whatever reason parse the
-                            // message so just skip it and log it to debug
+                            // we can't for whatever reason parse the message so
+                            // just skip it and log it to debug
                             session.getLog().debug("Unable to parse message with uid " + result.getUid(), e);
                         } catch (MessageRangeException e) {
-                            // we can't for whatever reason find the message
-                            // so just skip it and log it to debug
+                            // we can't for whatever reason find the message so
+                            // just skip it and log it to debug
                             session.getLog().debug("Unable to find message with uid " + result.getUid(), e);
                         }
                     }
                 }
-            });	
+            });
         }
-        
+
     }
 
-    
     protected FetchGroup getFetchGroup(FetchData fetch) {
         FetchGroupImpl result = new FetchGroupImpl();
 
@@ -163,31 +166,26 @@ public class FetchProcessor extends AbstractMailboxProcessor<FetchRequest> {
                 final int[] path = element.getPath();
                 final boolean isBase = (path == null || path.length == 0);
                 switch (sectionType) {
-                    case BodyFetchElement.CONTENT:
-                        if (isBase) {
-                            addContent(result, path, isBase,
-                                    MessageResult.FetchGroup.FULL_CONTENT);
-                        } else {
-                            addContent(result, path, isBase,
-                                    MessageResult.FetchGroup.MIME_CONTENT);
-                        }
-                        break;
-                    case BodyFetchElement.HEADER:
-                    case BodyFetchElement.HEADER_NOT_FIELDS:
-                    case BodyFetchElement.HEADER_FIELDS:
-                        addContent(result, path, isBase,
-                                MessageResult.FetchGroup.HEADERS);
-                        break;
-                    case BodyFetchElement.MIME:
-                        addContent(result, path, isBase,
-                                MessageResult.FetchGroup.MIME_HEADERS);
-                        break;
-                    case BodyFetchElement.TEXT:
-                        addContent(result, path, isBase,
-                                MessageResult.FetchGroup.BODY_CONTENT);
-                        break;
-                    default:
-                        break;
+                case BodyFetchElement.CONTENT:
+                    if (isBase) {
+                        addContent(result, path, isBase, MessageResult.FetchGroup.FULL_CONTENT);
+                    } else {
+                        addContent(result, path, isBase, MessageResult.FetchGroup.MIME_CONTENT);
+                    }
+                    break;
+                case BodyFetchElement.HEADER:
+                case BodyFetchElement.HEADER_NOT_FIELDS:
+                case BodyFetchElement.HEADER_FIELDS:
+                    addContent(result, path, isBase, MessageResult.FetchGroup.HEADERS);
+                    break;
+                case BodyFetchElement.MIME:
+                    addContent(result, path, isBase, MessageResult.FetchGroup.MIME_HEADERS);
+                    break;
+                case BodyFetchElement.TEXT:
+                    addContent(result, path, isBase, MessageResult.FetchGroup.BODY_CONTENT);
+                    break;
+                default:
+                    break;
                 }
 
             }
@@ -195,8 +193,7 @@ public class FetchProcessor extends AbstractMailboxProcessor<FetchRequest> {
         return result;
     }
 
-    private void addContent(FetchGroupImpl result, final int[] path,
-            final boolean isBase, final int content) {
+    private void addContent(FetchGroupImpl result, final int[] path, final boolean isBase, final int content) {
         if (isBase) {
             result.or(content);
         } else {

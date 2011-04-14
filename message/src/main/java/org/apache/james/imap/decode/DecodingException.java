@@ -24,8 +24,12 @@ import java.io.IOException;
 import org.apache.james.imap.api.display.HumanReadableText;
 
 /**
- * <p>Indicates that decoding failured.</p>
- * <p>All decoding exception should be supplied with:</p>
+ * <p>
+ * Indicates that decoding failured.
+ * </p>
+ * <p>
+ * All decoding exception should be supplied with:
+ * </p>
  * <ul>
  * <li>A finely grained descriptive string</li>
  * <li>A coursely grained key for i18n</li>
@@ -45,11 +49,14 @@ public class DecodingException extends IOException {
     private final HumanReadableText key;
 
     private Throwable t;
-    
+
     /**
      * Constructs a decoding exception
-     * @param key coursely grained i18n, not null
-     * @param s specific description suitable for logging, not null
+     * 
+     * @param key
+     *            coursely grained i18n, not null
+     * @param s
+     *            specific description suitable for logging, not null
      */
     public DecodingException(final HumanReadableText key, final String s) {
         super(s);
@@ -58,9 +65,13 @@ public class DecodingException extends IOException {
 
     /**
      * Constructs a decoding exception.
-     * @param key coursely grained i18n, not null
-     * @param s specific description suitable for logging, not null
-     * @param t cause, not null
+     * 
+     * @param key
+     *            coursely grained i18n, not null
+     * @param s
+     *            specific description suitable for logging, not null
+     * @param t
+     *            cause, not null
      */
     public DecodingException(final HumanReadableText key, final String s, final Throwable t) {
         super(s);
@@ -76,7 +87,7 @@ public class DecodingException extends IOException {
     public final HumanReadableText getKey() {
         final HumanReadableText key;
         if (this.key == null) {
-            // API specifies not null but best to default to generic message 
+            // API specifies not null but best to default to generic message
             key = HumanReadableText.ILLEGAL_ARGUMENTS;
         } else {
             key = this.key;
@@ -87,7 +98,5 @@ public class DecodingException extends IOException {
     public Throwable getCause() {
         return t;
     }
-    
-    
 
 }

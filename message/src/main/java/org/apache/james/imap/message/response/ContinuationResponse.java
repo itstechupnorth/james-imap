@@ -39,11 +39,11 @@ public class ContinuationResponse implements ImapResponseMessage {
         this.data = null;
         this.textKey = textKey;
     }
-    
+
     public String getData() {
         return data;
     }
-    
+
     public HumanReadableText getTextKey() {
         return textKey;
     }

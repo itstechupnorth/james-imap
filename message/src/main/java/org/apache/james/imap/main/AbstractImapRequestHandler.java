@@ -35,35 +35,25 @@ import org.slf4j.Logger;
 
 public abstract class AbstractImapRequestHandler {
 
+    protected static final byte[] ABANDON_SIGNOFF = { '*', ' ', 'B', 'Y', 'E', ' ', 'A', 'b', 'a', 'n', 'd', 'o', 'n', 'e', 'd', '\r', '\n' };
 
-    protected static final byte[] ABANDON_SIGNOFF = { '*', ' ', 'B', 'Y', 'E',
-            ' ', 'A', 'b', 'a', 'n', 'd', 'o', 'n', 'e', 'd', '\r', '\n' };
+    protected static final byte[] MAILBOX_DELETED_SIGNOFF = { '*', ' ', 'B', 'Y', 'E', ' ', 'S', 'e', 'l', 'e', 'c', 't', 'e', 'd', ' ', 'm', 'a', 'i', 'l', 'b', 'o', 'x', ' ', 'h', 'a', 's', ' ', 'b', 'e', 'e', 'n', ' ', 'd', 'e', 'l', 'e', 't', 'e', 'd', '\r', '\n' };
 
-    protected static final byte[] MAILBOX_DELETED_SIGNOFF = { '*', ' ', 'B', 'Y',
-            'E', ' ', 'S', 'e', 'l', 'e', 'c', 't', 'e', 'd', ' ', 'm', 'a',
-            'i', 'l', 'b', 'o', 'x', ' ', 'h', 'a', 's', ' ', 'b', 'e', 'e',
-            'n', ' ', 'd', 'e', 'l', 'e', 't', 'e', 'd', '\r', '\n' };
-    
-
-    
     private final ImapDecoder decoder;
     protected final ImapProcessor processor;
     private final ImapEncoder encoder;
 
-    public AbstractImapRequestHandler(final ImapDecoder decoder,
-            final ImapProcessor processor, final ImapEncoder encoder) {
+    public AbstractImapRequestHandler(final ImapDecoder decoder, final ImapProcessor processor, final ImapEncoder encoder) {
         this.decoder = decoder;
         this.processor = processor;
         this.encoder = encoder;
     }
-    
-    protected boolean doProcessRequest(ImapRequestLineReader request,
-            ImapResponseComposer response, ImapSession session) {
+
+    protected boolean doProcessRequest(ImapRequestLineReader request, ImapResponseComposer response, ImapSession session) {
         ImapMessage message = decoder.decode(request, session);
-        final ResponseEncoder responseEncoder = new ResponseEncoder(encoder,
-                response, session);
+        final ResponseEncoder responseEncoder = new ResponseEncoder(encoder, response, session);
         processor.process(message, responseEncoder, session);
-        
+
         final boolean result;
         final IOException failure = responseEncoder.getFailure();
         if (failure == null) {
@@ -79,7 +69,6 @@ public abstract class AbstractImapRequestHandler {
         return result;
     }
 
-
     protected boolean isSelectedMailboxDeleted(ImapSession session) {
         final boolean selectedMailboxIsDeleted;
         final SelectedMailbox mailbox = session.getSelected();
@@ -91,7 +80,6 @@ public abstract class AbstractImapRequestHandler {
         return selectedMailboxIsDeleted;
     }
 
-    
     /**
      * Silents swallows all responses.
      */
@@ -101,6 +89,5 @@ public abstract class AbstractImapRequestHandler {
             // Swallow
         }
     }
-    
 
 }

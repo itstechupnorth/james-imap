@@ -35,12 +35,9 @@ public class MailboxStatusResponseEncoder extends AbstractChainedImapEncoder {
         super(next);
     }
 
-    protected void doEncode(ImapMessage acceptableMessage,
-            ImapResponseComposer composer, ImapSession session) throws IOException {
+    protected void doEncode(ImapMessage acceptableMessage, ImapResponseComposer composer, ImapSession session) throws IOException {
         MailboxStatusResponse response = (MailboxStatusResponse) acceptableMessage;
-        composer.statusResponse(response.getMessages(), response.getRecent(),
-                response.getUidNext(), response.getUidValidity(), response
-                        .getUnseen(), response.getMailbox());
+        composer.statusResponse(response.getMessages(), response.getRecent(), response.getUidNext(), response.getUidValidity(), response.getUnseen(), response.getMailbox());
 
     }
 

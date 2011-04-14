@@ -45,55 +45,48 @@ public class DefaultImapEncoderFactory implements ImapEncoderFactory {
 
     /**
      * Builds the default encoder
-     * @param localizer not null
-     * @param neverAddBodyStructureExtensions true to activate a workaround for broken clients who
-     * cannot parse BODYSTRUCTURE extensions, false to fully support RFC3501
+     * 
+     * @param localizer
+     *            not null
+     * @param neverAddBodyStructureExtensions
+     *            true to activate a workaround for broken clients who cannot
+     *            parse BODYSTRUCTURE extensions, false to fully support RFC3501
      * @return not null
      */
     public static final ImapEncoder createDefaultEncoder(final Localizer localizer, final boolean neverAddBodyStructureExtensions) {
         final EndImapEncoder endImapEncoder = new EndImapEncoder();
         final NamespaceResponseEncoder namespaceEncoder = new NamespaceResponseEncoder(endImapEncoder);
-        final StatusResponseEncoder statusResponseEncoder = new StatusResponseEncoder(
-                namespaceEncoder, localizer);
-        final RecentResponseEncoder recentResponseEncoder = new RecentResponseEncoder(
-                statusResponseEncoder);
-        final FetchResponseEncoder fetchResponseEncoder = new FetchResponseEncoder(
-                recentResponseEncoder, neverAddBodyStructureExtensions);
-        final ExpungeResponseEncoder expungeResponseEncoder = new ExpungeResponseEncoder(
-                fetchResponseEncoder);
-        final ExistsResponseEncoder existsResponseEncoder = new ExistsResponseEncoder(
-                expungeResponseEncoder);
-        final MailboxStatusResponseEncoder statusCommandResponseEncoder = new MailboxStatusResponseEncoder(
-                existsResponseEncoder);
-        final SearchResponseEncoder searchResponseEncoder = new SearchResponseEncoder(
-                statusCommandResponseEncoder);
-        final LSubResponseEncoder lsubResponseEncoder = new LSubResponseEncoder(
-                searchResponseEncoder);
-        final ListResponseEncoder listResponseEncoder = new ListResponseEncoder(
-                lsubResponseEncoder);
-        final XListResponseEncoder xListResponseEncoder = new XListResponseEncoder(
-                listResponseEncoder);
-        final FlagsResponseEncoder flagsResponseEncoder = new FlagsResponseEncoder(
-                xListResponseEncoder);
-        final CapabilityResponseEncoder capabilityResponseEncoder = new CapabilityResponseEncoder(
-                flagsResponseEncoder);
-        final ContinuationResponseEncoder continuationResponseEncoder = new ContinuationResponseEncoder(
-                capabilityResponseEncoder, localizer);
+        final StatusResponseEncoder statusResponseEncoder = new StatusResponseEncoder(namespaceEncoder, localizer);
+        final RecentResponseEncoder recentResponseEncoder = new RecentResponseEncoder(statusResponseEncoder);
+        final FetchResponseEncoder fetchResponseEncoder = new FetchResponseEncoder(recentResponseEncoder, neverAddBodyStructureExtensions);
+        final ExpungeResponseEncoder expungeResponseEncoder = new ExpungeResponseEncoder(fetchResponseEncoder);
+        final ExistsResponseEncoder existsResponseEncoder = new ExistsResponseEncoder(expungeResponseEncoder);
+        final MailboxStatusResponseEncoder statusCommandResponseEncoder = new MailboxStatusResponseEncoder(existsResponseEncoder);
+        final SearchResponseEncoder searchResponseEncoder = new SearchResponseEncoder(statusCommandResponseEncoder);
+        final LSubResponseEncoder lsubResponseEncoder = new LSubResponseEncoder(searchResponseEncoder);
+        final ListResponseEncoder listResponseEncoder = new ListResponseEncoder(lsubResponseEncoder);
+        final XListResponseEncoder xListResponseEncoder = new XListResponseEncoder(listResponseEncoder);
+        final FlagsResponseEncoder flagsResponseEncoder = new FlagsResponseEncoder(xListResponseEncoder);
+        final CapabilityResponseEncoder capabilityResponseEncoder = new CapabilityResponseEncoder(flagsResponseEncoder);
+        final ContinuationResponseEncoder continuationResponseEncoder = new ContinuationResponseEncoder(capabilityResponseEncoder, localizer);
         return continuationResponseEncoder;
     }
 
     private final Localizer localizer;
     private final boolean neverAddBodyStructureExtensions;
-    
+
     public DefaultImapEncoderFactory() {
         this(new DefaultLocalizer(), false);
     }
-    
+
     /**
      * Constructs the default factory for encoders
-     * @param localizer not null
-     * @param neverAddBodyStructureExtensions true to activate a workaround for broken clients who
-     * cannot parse BODYSTRUCTURE extensions, false to fully support RFC3501
+     * 
+     * @param localizer
+     *            not null
+     * @param neverAddBodyStructureExtensions
+     *            true to activate a workaround for broken clients who cannot
+     *            parse BODYSTRUCTURE extensions, false to fully support RFC3501
      */
     public DefaultImapEncoderFactory(final Localizer localizer, boolean neverAddBodyStructureExtensions) {
         super();
@@ -103,6 +96,7 @@ public class DefaultImapEncoderFactory implements ImapEncoderFactory {
 
     /*
      * (non-Javadoc)
+     * 
      * @see org.apache.james.imap.encode.ImapEncoderFactory#buildImapEncoder()
      */
     public ImapEncoder buildImapEncoder() {

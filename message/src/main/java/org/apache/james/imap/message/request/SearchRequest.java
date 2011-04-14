@@ -27,8 +27,7 @@ public class SearchRequest extends AbstractImapRequest {
 
     private final boolean useUids;
 
-    public SearchRequest(final ImapCommand command, final SearchKey SearchKey,
-            final boolean useUids, final String tag) {
+    public SearchRequest(final ImapCommand command, final SearchKey SearchKey, final boolean useUids, final String tag) {
         super(tag, command);
         this.searchKey = SearchKey;
         this.useUids = useUids;

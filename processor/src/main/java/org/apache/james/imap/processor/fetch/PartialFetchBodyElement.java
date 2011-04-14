@@ -39,8 +39,7 @@ final class PartialFetchBodyElement implements BodyElement {
 
     private final String name;
 
-    public PartialFetchBodyElement(final BodyElement delegate,
-            final long firstOctet, final long numberOfOctets) {
+    public PartialFetchBodyElement(final BodyElement delegate, final long firstOctet, final long numberOfOctets) {
         super();
         this.delegate = delegate;
         this.firstOctet = firstOctet;
@@ -67,16 +66,15 @@ final class PartialFetchBodyElement implements BodyElement {
     }
 
     public void writeTo(WritableByteChannel channel) throws IOException {
-        PartialWritableByteChannel partialChannel = new PartialWritableByteChannel(
-                channel, firstOctet, size());
+        PartialWritableByteChannel partialChannel = new PartialWritableByteChannel(channel, firstOctet, size());
         delegate.writeTo(partialChannel);
     }
 
     public InputStream getInputStream() throws IOException {
         return new LimitingInputStream(delegate.getInputStream(), firstOctet, size());
     }
-    
-    private final class LimitingInputStream  extends FilterInputStream {
+
+    private final class LimitingInputStream extends FilterInputStream {
         private long pos = 0;
         private long length;
         private long offset;
@@ -84,20 +82,23 @@ final class PartialFetchBodyElement implements BodyElement {
         public LimitingInputStream(InputStream in, long offset, long length) {
             super(in);
             this.length = length;
-            this.offset = offset;            
+            this.offset = offset;
         }
-        
+
         /**
-         * Check if the offset was reached. If not move the wrapped {@link InputStream} to the needed offset
+         * Check if the offset was reached. If not move the wrapped
+         * {@link InputStream} to the needed offset
+         * 
          * @throws IOException
          */
         private void checkOffset() throws IOException {
             if (offset > -1) {
-                // first try to skip on the InputStream as it is mostly faster the calling read in a loop
+                // first try to skip on the InputStream as it is mostly faster
+                // the calling read in a loop
                 try {
                     offset -= in.skip(offset);
                 } catch (IOException e) {
-                    // maybe because skip is not supported 
+                    // maybe because skip is not supported
                 }
                 while (offset > 0) {
                     // consume the stream till we reach the offset
@@ -107,9 +108,10 @@ final class PartialFetchBodyElement implements BodyElement {
                 offset = -1;
             }
         }
-        
+
         /*
          * (non-Javadoc)
+         * 
          * @see java.io.FilterInputStream#read()
          */
         public int read() throws IOException {
@@ -123,6 +125,7 @@ final class PartialFetchBodyElement implements BodyElement {
 
         /*
          * (non-Javadoc)
+         * 
          * @see java.io.FilterInputStream#read(byte[])
          */
         public int read(byte b[]) throws IOException {
@@ -131,12 +134,13 @@ final class PartialFetchBodyElement implements BodyElement {
 
         /*
          * (non-Javadoc)
+         * 
          * @see java.io.FilterInputStream#read(byte[], int, int)
          */
         public int read(byte b[], int off, int len) throws IOException {
             checkOffset();
 
-            if (pos >= length) {   
+            if (pos >= length) {
                 return -1;
             }
 
@@ -147,11 +151,10 @@ final class PartialFetchBodyElement implements BodyElement {
                 return super.read(b, off, readLimit);
             }
 
-
-            int i =  super.read(b, off, len);
+            int i = super.read(b, off, len);
             pos += i;
             return i;
-           
+
         }
 
         /**
@@ -163,10 +166,11 @@ final class PartialFetchBodyElement implements BodyElement {
 
         /*
          * (non-Javadoc)
+         * 
          * @see java.io.FilterInputStream#available()
          */
         public int available() throws IOException {
-            // Correctly calculate in available bytes
+            // Correctly calculate in available bytes.
             // See IMAP-295
             checkOffset();
             int i = in.available();

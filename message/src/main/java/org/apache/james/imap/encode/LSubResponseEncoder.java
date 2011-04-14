@@ -36,11 +36,9 @@ public class LSubResponseEncoder extends AbstractChainedImapEncoder {
         super(next);
     }
 
-    protected void doEncode(final ImapMessage acceptableMessage,
-            final ImapResponseComposer composer, ImapSession session) throws IOException {
+    protected void doEncode(final ImapMessage acceptableMessage, final ImapResponseComposer composer, ImapSession session) throws IOException {
         final AbstractListingResponse response = (AbstractListingResponse) acceptableMessage;
-        ListingEncodingUtils.encodeListingResponse(
-                ImapConstants.LSUB_RESPONSE_NAME, composer, response);
+        ListingEncodingUtils.encodeListingResponse(ImapConstants.LSUB_RESPONSE_NAME, composer, response);
     }
 
     protected boolean isAcceptable(ImapMessage message) {

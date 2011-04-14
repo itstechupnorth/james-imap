@@ -28,28 +28,30 @@ import org.apache.james.imap.decode.base.AbstractImapCommandParser;
 import org.apache.james.imap.message.request.UnselectRequest;
 
 /**
- * 
- *  Parse UNSELECT commands
- *  
+ * Parse UNSELECT commands
  * 
  * See RFC3691
- *
  */
-public class UnselectCommandParser extends AbstractImapCommandParser  {
-    
+public class UnselectCommandParser extends AbstractImapCommandParser {
+
     public UnselectCommandParser() {
-        // from the RFC it seems like the command should be valid in any state. At least kind of, as
-        // we will return a "BAD" response if no mailbox is currently selected in the UnselectProcessor
+        // from the RFC it seems like the command should be valid in any state.
+        // At least kind of, as we will return a "BAD" response if no mailbox is
+        // currently selected in the UnselectProcessor
         super(ImapCommand.authenticatedStateCommand(ImapConstants.UNSELECT_COMMAND_NAME));
 
     }
 
     /*
      * (non-Javadoc)
-     * @see org.apache.james.imap.decode.base.AbstractImapCommandParser#decode(org.apache.james.imap.api.ImapCommand, org.apache.james.imap.decode.ImapRequestLineReader, java.lang.String, org.apache.james.imap.api.process.ImapSession)
+     * 
+     * @see
+     * org.apache.james.imap.decode.base.AbstractImapCommandParser#decode(org
+     * .apache.james.imap.api.ImapCommand,
+     * org.apache.james.imap.decode.ImapRequestLineReader, java.lang.String,
+     * org.apache.james.imap.api.process.ImapSession)
      */
-    protected ImapMessage decode(ImapCommand command,
-            ImapRequestLineReader request, String tag, ImapSession session) throws DecodingException {
+    protected ImapMessage decode(ImapCommand command, ImapRequestLineReader request, String tag, ImapSession session) throws DecodingException {
         request.eol();
         final ImapMessage result = new UnselectRequest(tag, command);
         return result;

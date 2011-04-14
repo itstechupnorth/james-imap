@@ -27,11 +27,10 @@ import org.apache.james.imap.encode.ImapEncoder;
 import org.apache.james.imap.encode.ImapResponseComposer;
 
 /**
- * Abstract base class for chained {@link ImapEncoder} implementations. Implementations of this
- * will check if the {@link ImapMessage} should get encoded by this Implementation or should get 
- * passed to the next {@link ImapEncoder} in the chain
- * 
- *
+ * Abstract base class for chained {@link ImapEncoder} implementations.
+ * Implementations of this will check if the {@link ImapMessage} should get
+ * encoded by this Implementation or should get passed to the next
+ * {@link ImapEncoder} in the chain
  */
 abstract public class AbstractChainedImapEncoder implements ImapEncoder {
 
@@ -43,11 +42,10 @@ abstract public class AbstractChainedImapEncoder implements ImapEncoder {
     }
 
     /**
-     * Encode the {@link ImapMessage} if {@link #isAcceptable(ImapMessage)} return true, if not pass it to the 
-     * next encoder in the chain
+     * Encode the {@link ImapMessage} if {@link #isAcceptable(ImapMessage)}
+     * return true, if not pass it to the next encoder in the chain
      */
-    public void encode(ImapMessage message, ImapResponseComposer composer, ImapSession session)
-            throws IOException {
+    public void encode(ImapMessage message, ImapResponseComposer composer, ImapSession session) throws IOException {
         final boolean isAcceptable = isAcceptable(message);
         if (isAcceptable) {
             doEncode(message, composer, session);
@@ -64,8 +62,7 @@ abstract public class AbstractChainedImapEncoder implements ImapEncoder {
      * @param session
      * @throws IOException
      */
-    protected void chainEncode(ImapMessage message,
-            ImapResponseComposer composer, ImapSession session) throws IOException {
+    protected void chainEncode(ImapMessage message, ImapResponseComposer composer, ImapSession session) throws IOException {
         next.encode(message, composer, session);
     }
 
@@ -86,8 +83,8 @@ abstract public class AbstractChainedImapEncoder implements ImapEncoder {
      *            <code>ImapMessage</code>, not null
      * @param composer
      *            <code>ImapResponseComposer</code>, not null
-     * @param session TODO
+     * @param session
+     *            TODO
      */
-    abstract protected void doEncode(ImapMessage acceptableMessage,
-            ImapResponseComposer composer, ImapSession session) throws IOException;
+    abstract protected void doEncode(ImapMessage acceptableMessage, ImapResponseComposer composer, ImapSession session) throws IOException;
 }

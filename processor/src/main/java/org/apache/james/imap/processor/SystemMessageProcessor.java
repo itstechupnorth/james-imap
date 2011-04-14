@@ -32,10 +32,10 @@ import org.slf4j.Logger;
 /**
  * Processes system messages unrelated to IMAP.
  */
-public class SystemMessageProcessor extends AbstractChainedProcessor<SystemMessage>{
+public class SystemMessageProcessor extends AbstractChainedProcessor<SystemMessage> {
 
     private final MailboxManager mailboxManager;
-    
+
     public SystemMessageProcessor(ImapProcessor next, final MailboxManager mailboxManager) {
         super(SystemMessage.class, next);
         this.mailboxManager = mailboxManager;
@@ -45,12 +45,12 @@ public class SystemMessageProcessor extends AbstractChainedProcessor<SystemMessa
     protected void doProcess(SystemMessage message, Responder responder, ImapSession session) {
         try {
             switch (message) {
-                case FORCE_LOGOUT:
-                    forceLogout(session);
-                    break;
-                default:
-                    break;
-            } 
+            case FORCE_LOGOUT:
+                forceLogout(session);
+                break;
+            default:
+                break;
+            }
         } catch (MailboxException e) {
             final Logger log = session.getLog();
             log.warn("Force logout failed " + e.getMessage());
@@ -60,8 +60,11 @@ public class SystemMessageProcessor extends AbstractChainedProcessor<SystemMessa
 
     /**
      * Forces a logout of any mailbox session.
-     * @param imapSession not null
-     * @throws MailboxException when forced logout fails
+     * 
+     * @param imapSession
+     *            not null
+     * @throws MailboxException
+     *             when forced logout fails
      */
     private void forceLogout(ImapSession imapSession) throws MailboxException {
         final MailboxSession session = ImapSessionUtils.getMailboxSession(imapSession);

@@ -28,14 +28,11 @@ import org.apache.james.mailbox.MailboxManager;
 
 public class NoopProcessor extends AbstractMailboxProcessor<NoopRequest> {
 
-    public NoopProcessor(final ImapProcessor next, final MailboxManager mailboxManager,
-            final StatusResponseFactory factory) {
+    public NoopProcessor(final ImapProcessor next, final MailboxManager mailboxManager, final StatusResponseFactory factory) {
         super(NoopRequest.class, next, mailboxManager, factory);
     }
 
-
-    protected void doProcess(NoopRequest message, ImapSession session,
-            String tag, ImapCommand command, Responder responder) {
+    protected void doProcess(NoopRequest message, ImapSession session, String tag, ImapCommand command, Responder responder) {
         // So, unsolicated responses are returned to check for new mail
         unsolicitedResponses(session, responder, false);
         okComplete(command, tag, responder);

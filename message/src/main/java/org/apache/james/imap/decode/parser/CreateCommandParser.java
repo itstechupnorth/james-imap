@@ -31,34 +31,38 @@ import org.apache.james.mailbox.MailboxSession;
 
 /**
  * Parse CREATE commands
- *
  */
-public class CreateCommandParser extends AbstractImapCommandParser  {
+public class CreateCommandParser extends AbstractImapCommandParser {
 
     public CreateCommandParser() {
         super(ImapCommand.authenticatedStateCommand(ImapConstants.CREATE_COMMAND_NAME));
     }
 
-
     /*
      * (non-Javadoc)
-     * @see org.apache.james.imap.decode.base.AbstractImapCommandParser#decode(org.apache.james.imap.api.ImapCommand, org.apache.james.imap.decode.ImapRequestLineReader, java.lang.String, org.apache.james.imap.api.process.ImapSession)
+     * 
+     * @see
+     * org.apache.james.imap.decode.base.AbstractImapCommandParser#decode(org
+     * .apache.james.imap.api.ImapCommand,
+     * org.apache.james.imap.decode.ImapRequestLineReader, java.lang.String,
+     * org.apache.james.imap.api.process.ImapSession)
      */
-    protected ImapMessage decode(ImapCommand command,
-            ImapRequestLineReader request, String tag, ImapSession session) throws DecodingException {
+    protected ImapMessage decode(ImapCommand command, ImapRequestLineReader request, String tag, ImapSession session) throws DecodingException {
         String mailboxName = request.mailbox();
 
-        
         MailboxSession mailboxSession = ImapSessionUtils.getMailboxSession(session);
 
-        // Check if we have an mailboxsession. This is a workaround for IMAP-240:
+        // Check if we have an mailboxsession. This is a workaround for
+        // IMAP-240:
         // https://issues.apache.org/jira/browse/IMAP-240
         if (mailboxSession != null) {
             // RFC3501@6.3.3p2
             // When mailbox name is suffixed with hierarchy separator
             // name created must remove tailing delimiter
-            if (mailboxName.endsWith(Character.toString(mailboxSession.getPathDelimiter()))) { // NOPMD keep comment
-                mailboxName = mailboxName.substring(0, mailboxName.length() -1);
+            if (mailboxName.endsWith(Character.toString(mailboxSession.getPathDelimiter()))) { // NOPMD
+                                                                                               // keep
+                                                                                               // comment
+                mailboxName = mailboxName.substring(0, mailboxName.length() - 1);
             }
         }
         request.eol();

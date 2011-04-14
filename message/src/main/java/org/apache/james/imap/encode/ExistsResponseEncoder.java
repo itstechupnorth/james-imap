@@ -36,8 +36,7 @@ public class ExistsResponseEncoder extends AbstractChainedImapEncoder {
         return message instanceof ExistsResponse;
     }
 
-    protected void doEncode(ImapMessage acceptableMessage,
-            ImapResponseComposer composer, ImapSession session) throws IOException {
+    protected void doEncode(ImapMessage acceptableMessage, ImapResponseComposer composer, ImapSession session) throws IOException {
         final ExistsResponse existsResponse = (ExistsResponse) acceptableMessage;
         final long numberOfMessages = existsResponse.getNumberOfMessages();
         composer.existsResponse(numberOfMessages);

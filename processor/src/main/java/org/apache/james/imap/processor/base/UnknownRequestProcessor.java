@@ -48,16 +48,14 @@ public class UnknownRequestProcessor implements ImapProcessor {
             ImapRequest request = (ImapRequest) message;
             final String tag = request.getTag();
             final ImapCommand command = request.getCommand();
-            result = factory.taggedBad(tag, command,
-                    HumanReadableText.UNKNOWN_COMMAND);
+            result = factory.taggedBad(tag, command, HumanReadableText.UNKNOWN_COMMAND);
         } else {
             result = factory.untaggedBad(HumanReadableText.UNKNOWN_COMMAND);
         }
         return result;
     }
 
-    public void process(ImapMessage message, Responder responder,
-            ImapSession session) {
+    public void process(ImapMessage message, Responder responder, ImapSession session) {
         final ImapResponseMessage response = process(message, session);
         responder.respond(response);
     }

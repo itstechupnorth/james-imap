@@ -45,19 +45,21 @@ import org.apache.james.mailbox.MessageRangeException;
 
 public class CopyProcessor extends AbstractMailboxProcessor<CopyRequest> {
 
-  
-    public CopyProcessor(final ImapProcessor next,
-            final MailboxManager mailboxManager,
-            final StatusResponseFactory factory) {
+    public CopyProcessor(final ImapProcessor next, final MailboxManager mailboxManager, final StatusResponseFactory factory) {
         super(CopyRequest.class, next, mailboxManager, factory);
     }
 
     /*
      * (non-Javadoc)
-     * @see org.apache.james.imap.processor.AbstractMailboxProcessor#doProcess(org.apache.james.imap.api.message.request.ImapRequest, org.apache.james.imap.api.process.ImapSession, java.lang.String, org.apache.james.imap.api.ImapCommand, org.apache.james.imap.api.process.ImapProcessor.Responder)
+     * 
+     * @see
+     * org.apache.james.imap.processor.AbstractMailboxProcessor#doProcess(org
+     * .apache.james.imap.api.message.request.ImapRequest,
+     * org.apache.james.imap.api.process.ImapSession, java.lang.String,
+     * org.apache.james.imap.api.ImapCommand,
+     * org.apache.james.imap.api.process.ImapProcessor.Responder)
      */
-    protected void doProcess(CopyRequest  request, final ImapSession session,
-            String tag, ImapCommand command, final Responder responder) {
+    protected void doProcess(CopyRequest request, final ImapSession session, String tag, ImapCommand command, final Responder responder) {
         final MailboxPath targetMailbox = buildFullPath(session, request.getMailboxName());
         final IdRange[] idSet = request.getIdSet();
         final boolean useUids = request.isUseUids();
@@ -66,32 +68,32 @@ public class CopyProcessor extends AbstractMailboxProcessor<CopyRequest> {
             final MailboxSession mailboxSession = ImapSessionUtils.getMailboxSession(session);
             final MailboxManager mailboxManager = getMailboxManager();
             final boolean mailboxExists = mailboxManager.mailboxExists(targetMailbox, mailboxSession);
-            
+
             if (!mailboxExists) {
-                no(command, tag, responder, HumanReadableText.FAILURE_NO_SUCH_MAILBOX,
-                        ResponseCode.tryCreate());
+                no(command, tag, responder, HumanReadableText.FAILURE_NO_SUCH_MAILBOX, ResponseCode.tryCreate());
             } else {
-               
+
                 final MessageManager mailbox = mailboxManager.getMailbox(targetMailbox, mailboxSession);
 
-                List<IdRange> resultRanges=new ArrayList<IdRange>(); 
+                List<IdRange> resultRanges = new ArrayList<IdRange>();
                 for (int i = 0; i < idSet.length; i++) {
                     MessageRange messageSet = messageRange(currentMailbox, idSet[i], useUids);
 
                     List<MessageRange> copiedUids = mailboxManager.copyMessages(messageSet, currentMailbox.getPath(), targetMailbox, mailboxSession);
                     for (MessageRange mr : copiedUids) {
-                       // Set recent flag on copied message as this SHOULD be done.
-                       // See RFC 3501 6.4.7.  COPY Command
-                       // See IMAP-287
-                       mailbox.setFlags(new Flags(Flags.Flag.RECENT), true,  false, mr, mailboxSession);
-                       resultRanges.add(new IdRange(mr.getUidFrom(), mr.getUidTo())); 
+                        // Set recent flag on copied message as this SHOULD be
+                        // done.
+                        // See RFC 3501 6.4.7. COPY Command
+                        // See IMAP-287
+                        mailbox.setFlags(new Flags(Flags.Flag.RECENT), true, false, mr, mailboxSession);
+                        resultRanges.add(new IdRange(mr.getUidFrom(), mr.getUidTo()));
                     }
                 }
                 IdRange[] resultUids = IdRange.mergeRanges(resultRanges).toArray(new IdRange[0]);
 
                 // get folder UIDVALIDITY
                 Long uidValidity = mailbox.getMetaData(false, mailboxSession, FetchGroup.NO_UNSEEN).getUidValidity();
-                
+
                 unsolicitedResponses(session, responder, useUids);
                 okComplete(command, tag, ResponseCode.copyUid(uidValidity, idSet, resultUids), responder);
             }

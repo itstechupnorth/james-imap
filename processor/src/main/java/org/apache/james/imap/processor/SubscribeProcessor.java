@@ -39,7 +39,12 @@ public class SubscribeProcessor extends AbstractSubscriptionProcessor<SubscribeR
 
     /*
      * (non-Javadoc)
-     * @see org.apache.james.imap.processor.AbstractSubscriptionProcessor#doProcessRequest(org.apache.james.imap.api.message.request.ImapRequest, org.apache.james.imap.api.process.ImapSession, java.lang.String, org.apache.james.imap.api.ImapCommand, org.apache.james.imap.api.process.ImapProcessor.Responder)
+     * 
+     * @see org.apache.james.imap.processor.AbstractSubscriptionProcessor#
+     * doProcessRequest(org.apache.james.imap.api.message.request.ImapRequest,
+     * org.apache.james.imap.api.process.ImapSession, java.lang.String,
+     * org.apache.james.imap.api.ImapCommand,
+     * org.apache.james.imap.api.process.ImapProcessor.Responder)
      */
     protected void doProcessRequest(SubscribeRequest request, ImapSession session, String tag, ImapCommand command, Responder responder) {
         final String mailboxName = request.getMailboxName();
@@ -53,8 +58,8 @@ public class SubscribeProcessor extends AbstractSubscriptionProcessor<SubscribeR
         } catch (SubscriptionException e) {
             session.getLog().debug("Subscription failed", e);
             unsolicitedResponses(session, responder, false);
-            no(command, tag, responder,  HumanReadableText.GENERIC_SUBSCRIPTION_FAILURE);
-        }        
+            no(command, tag, responder, HumanReadableText.GENERIC_SUBSCRIPTION_FAILURE);
+        }
     }
 
 }

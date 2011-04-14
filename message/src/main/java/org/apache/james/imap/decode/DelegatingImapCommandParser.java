@@ -22,7 +22,6 @@ public interface DelegatingImapCommandParser {
 
     public abstract ImapCommandParserFactory getParserFactory();
 
-    public abstract void setParserFactory(
-            ImapCommandParserFactory imapCommandFactory);
+    public abstract void setParserFactory(ImapCommandParserFactory imapCommandFactory);
 
 }

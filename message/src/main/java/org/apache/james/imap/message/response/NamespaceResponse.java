@@ -33,8 +33,7 @@ public class NamespaceResponse implements ImapResponseMessage {
 
     private final List<Namespace> shared;
 
-    public NamespaceResponse(final List<Namespace> personal,
-            final List<Namespace> users, final List<Namespace> shared) {
+    public NamespaceResponse(final List<Namespace> personal, final List<Namespace> users, final List<Namespace> shared) {
         super();
         this.personal = personal;
         this.users = users;
@@ -92,7 +91,8 @@ public class NamespaceResponse implements ImapResponseMessage {
         }
 
         /**
-         * Gets the leading prefix used by this namespace. 
+         * Gets the leading prefix used by this namespace.
+         * 
          * @return not null
          */
         public String getPrefix() {
@@ -126,7 +126,7 @@ public class NamespaceResponse implements ImapResponseMessage {
                 return false;
             return true;
         }
-        
+
         @Override
         public String toString() {
             return "Namespace [prefix=" + prefix + ", delim=" + delimiter + "]";
@@ -172,15 +172,10 @@ public class NamespaceResponse implements ImapResponseMessage {
 
     /**
      * Renders object suitably for logging.
-     * @return a <code>String</code> representation 
-     * of this object.
+     * 
+     * @return a <code>String</code> representation of this object.
      */
-    public String toString()
-    {
-        return "NamespaceResponse ["  
-            + "personal = " + this.personal + " "
-            + "users = " + this.users + " "
-            + "shared = " + this.shared + " "
-            + " ]";
+    public String toString() {
+        return "NamespaceResponse [" + "personal = " + this.personal + " " + "users = " + this.users + " " + "shared = " + this.shared + " " + " ]";
     }
 }

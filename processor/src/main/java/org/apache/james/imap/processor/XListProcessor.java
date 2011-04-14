@@ -38,55 +38,47 @@ import org.apache.james.mailbox.MailboxManager;
 
 /**
  * Processes XLIST command
- * 
  */
 public class XListProcessor extends ListProcessor implements CapabilityImplementingProcessor {
 
     private MailboxTyper mailboxTyper;
-    
-    //some interface
-    public XListProcessor(final ImapProcessor next,
-            final MailboxManager mailboxManager,
-            final StatusResponseFactory factory,
-            final MailboxTyper mailboxTyper) {
-        super(next, mailboxManager, factory);    
-        this.mailboxTyper=mailboxTyper;
+
+    // some interface
+    public XListProcessor(final ImapProcessor next, final MailboxManager mailboxManager, final StatusResponseFactory factory, final MailboxTyper mailboxTyper) {
+        super(next, mailboxManager, factory);
+        this.mailboxTyper = mailboxTyper;
     }
 
     /*
      * (non-Javadoc)
-     * @see org.apache.james.imap.processor.CapabilityImplementingProcessor#getImplementedCapabilities(org.apache.james.imap.api.process.ImapSession)
+     * 
+     * @see org.apache.james.imap.processor.CapabilityImplementingProcessor#
+     * getImplementedCapabilities(org.apache.james.imap.api.process.ImapSession)
      */
     public List<String> getImplementedCapabilities(ImapSession session) {
-        //if there's no mailboxTyper, do not annnoyce XLIST capability
-        if (mailboxTyper==null)
-        {
+        // if there's no mailboxTyper, do not annnoyce XLIST capability
+        if (mailboxTyper == null) {
             return Collections.emptyList();
         }
-        
+
         return Arrays.asList(SUPPORTS_XLIST);
     }
-    
+
     @Override
     protected boolean isAcceptable(ImapMessage message) {
-        return (message instanceof XListRequest) ;
+        return (message instanceof XListRequest);
     }
-    
+
     @Override
-    protected void doProcess(ListRequest message, ImapSession session,
-            String tag, ImapCommand command, Responder responder) {
+    protected void doProcess(ListRequest message, ImapSession session, String tag, ImapCommand command, Responder responder) {
         final XListRequest request = (XListRequest) message;
         final String baseReferenceName = request.getBaseReferenceName();
         final String mailboxPatternString = request.getMailboxPattern();
-        doProcess(baseReferenceName, mailboxPatternString, session, tag,
-                command, responder,mailboxTyper);
+        doProcess(baseReferenceName, mailboxPatternString, session, tag, command, responder, mailboxTyper);
     }
-    
+
     @Override
-    protected ImapResponseMessage createResponse(boolean noInferior,
-            boolean noSelect, boolean marked, boolean unmarked,
-            boolean hasChildren, boolean hasNoChildren, String mailboxName, char delimiter,MailboxType type) {
-        return new XListResponse(noInferior, noSelect, marked, unmarked,
-                hasChildren, hasNoChildren, mailboxName, delimiter,type);
+    protected ImapResponseMessage createResponse(boolean noInferior, boolean noSelect, boolean marked, boolean unmarked, boolean hasChildren, boolean hasNoChildren, String mailboxName, char delimiter, MailboxType type) {
+        return new XListResponse(noInferior, noSelect, marked, unmarked, hasChildren, hasNoChildren, mailboxName, delimiter, type);
     }
 }

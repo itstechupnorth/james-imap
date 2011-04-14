@@ -26,9 +26,9 @@ import org.apache.james.imap.encode.base.AbstractChainedImapEncoder;
 import org.apache.james.imap.message.response.CapabilityResponse;
 
 /**
- * Encodes <code>CAPABILITY</code> response.
- * See <code>7.2.1</code> of 
- * <a href='http://james.apache.org/server/rfclist/imap4/rfc2060.txt' rel='tag'>RFC2060</a>.
+ * Encodes <code>CAPABILITY</code> response. See <code>7.2.1</code> of <a
+ * href='http://james.apache.org/server/rfclist/imap4/rfc2060.txt'
+ * rel='tag'>RFC2060</a>.
  */
 public class CapabilityResponseEncoder extends AbstractChainedImapEncoder {
 
@@ -38,17 +38,24 @@ public class CapabilityResponseEncoder extends AbstractChainedImapEncoder {
 
     /*
      * (non-Javadoc)
-     * @see org.apache.james.imap.encode.base.AbstractChainedImapEncoder#doEncode(org.apache.james.imap.api.ImapMessage, org.apache.james.imap.encode.ImapResponseComposer, org.apache.james.imap.api.process.ImapSession)
+     * 
+     * @see
+     * org.apache.james.imap.encode.base.AbstractChainedImapEncoder#doEncode
+     * (org.apache.james.imap.api.ImapMessage,
+     * org.apache.james.imap.encode.ImapResponseComposer,
+     * org.apache.james.imap.api.process.ImapSession)
      */
-    protected void doEncode(ImapMessage acceptableMessage,
-            ImapResponseComposer composer, ImapSession session) throws IOException {
+    protected void doEncode(ImapMessage acceptableMessage, ImapResponseComposer composer, ImapSession session) throws IOException {
         final CapabilityResponse response = (CapabilityResponse) acceptableMessage;
         composer.capabilities(response.getCapabilities());
     }
 
     /*
      * (non-Javadoc)
-     * @see org.apache.james.imap.encode.base.AbstractChainedImapEncoder#isAcceptable(org.apache.james.imap.api.ImapMessage)
+     * 
+     * @see
+     * org.apache.james.imap.encode.base.AbstractChainedImapEncoder#isAcceptable
+     * (org.apache.james.imap.api.ImapMessage)
      */
     protected boolean isAcceptable(ImapMessage message) {
         return (message instanceof CapabilityResponse);

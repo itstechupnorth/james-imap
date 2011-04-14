@@ -29,19 +29,16 @@ import org.apache.james.imap.decode.base.FixedLengthInputStream;
 
 /**
  * {@link ImapRequestLineReader} which use normal IO Streaming
- *
  */
-public class ImapRequestStreamLineReader extends ImapRequestLineReader{
+public class ImapRequestStreamLineReader extends ImapRequestLineReader {
     private InputStream input;
 
     private OutputStream output;
-    
 
     public ImapRequestStreamLineReader(InputStream input, OutputStream output) {
         this.input = input;
         this.output = output;
     }
-
 
     /**
      * Reads the next character in the current line. This method will continue
@@ -61,12 +58,10 @@ public class ImapRequestStreamLineReader extends ImapRequestLineReader{
             try {
                 next = input.read();
             } catch (IOException e) {
-                throw new DecodingException(HumanReadableText.SOCKET_IO_FAILURE, 
-                        "Error reading from stream.", e);
+                throw new DecodingException(HumanReadableText.SOCKET_IO_FAILURE, "Error reading from stream.", e);
             }
             if (next == -1) {
-                throw new DecodingException(HumanReadableText.ILLEGAL_ARGUMENTS, 
-                        "Unexpected end of stream.");
+                throw new DecodingException(HumanReadableText.ILLEGAL_ARGUMENTS, "Unexpected end of stream.");
             }
 
             nextSeen = true;
@@ -74,7 +69,6 @@ public class ImapRequestStreamLineReader extends ImapRequestLineReader{
         }
         return nextChar;
     }
-
 
     /**
      * Reads and consumes a number of characters from the underlying reader,
@@ -94,12 +88,12 @@ public class ImapRequestStreamLineReader extends ImapRequestLineReader{
         nextChar = 0;
         FixedLengthInputStream in = new FixedLengthInputStream(input, size);
         if (extraCRLF) {
-           return new EolInputStream(this, in);
+            return new EolInputStream(this, in);
         } else {
             return in;
         }
     }
-    
+
     /**
      * Sends a server command continuation request '+' back to the client,
      * requesting more data to be sent.
@@ -111,10 +105,7 @@ public class ImapRequestStreamLineReader extends ImapRequestLineReader{
             output.write('\n');
             output.flush();
         } catch (IOException e) {
-            throw new DecodingException(
-                    HumanReadableText.SOCKET_IO_FAILURE, 
-                    "Unexpected exception in sending command continuation request.",
-                    e);
+            throw new DecodingException(HumanReadableText.SOCKET_IO_FAILURE, "Unexpected exception in sending command continuation request.", e);
         }
     }
 

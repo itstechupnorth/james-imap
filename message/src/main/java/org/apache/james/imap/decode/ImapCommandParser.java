@@ -36,8 +36,10 @@ public interface ImapCommandParser {
      * 
      * @param request
      *            <code>ImapRequestLineReader</code>, not null
-     * @param tag not null
-     * @param session the {@link ImapSession}
+     * @param tag
+     *            not null
+     * @param session
+     *            the {@link ImapSession}
      * @return <code>ImapCommandMessage</code>
      */
     ImapMessage parse(ImapRequestLineReader request, String tag, ImapSession session);

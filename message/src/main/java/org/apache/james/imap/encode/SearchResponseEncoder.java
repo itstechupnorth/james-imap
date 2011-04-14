@@ -34,8 +34,7 @@ public class SearchResponseEncoder extends AbstractChainedImapEncoder {
         super(next);
     }
 
-    protected void doEncode(ImapMessage acceptableMessage,
-            ImapResponseComposer composer, ImapSession session) throws IOException {
+    protected void doEncode(ImapMessage acceptableMessage, ImapResponseComposer composer, ImapSession session) throws IOException {
         SearchResponse response = (SearchResponse) acceptableMessage;
         final long[] ids = response.getIds();
         composer.searchResponse(ids);

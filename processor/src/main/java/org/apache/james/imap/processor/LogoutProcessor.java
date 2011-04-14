@@ -32,13 +32,11 @@ import org.apache.james.mailbox.MailboxSession;
 
 public class LogoutProcessor extends AbstractMailboxProcessor<LogoutRequest> {
 
-    public LogoutProcessor(final ImapProcessor next, final MailboxManager mailboxManager,
-            final StatusResponseFactory factory) {
+    public LogoutProcessor(final ImapProcessor next, final MailboxManager mailboxManager, final StatusResponseFactory factory) {
         super(LogoutRequest.class, next, mailboxManager, factory);
     }
-    
-    protected void doProcess(LogoutRequest request, ImapSession session,
-            String tag, ImapCommand command, Responder responder) {
+
+    protected void doProcess(LogoutRequest request, ImapSession session, String tag, ImapCommand command, Responder responder) {
         final MailboxSession mailboxSession = ImapSessionUtils.getMailboxSession(session);
         try {
             getMailboxManager().logout(mailboxSession, false);

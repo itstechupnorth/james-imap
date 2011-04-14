@@ -32,7 +32,7 @@ public interface ImapConstants {
     public static final String UNTAGGED = "*";
 
     public static final String CONTINUATION = "+";
-    
+
     public static final String SP = " ";
 
     public static final String NIL = "NIL";
@@ -61,15 +61,11 @@ public interface ImapConstants {
 
     public static final byte BYTE_OPEN_SQUARE_BRACKET = 0x5B;
 
-
     public static final byte BYTE_CLOSE_SQUARE_BRACKET = 0x5D;
-
 
     public static final byte BYTE_OPEN_BRACE = 0x7B;
 
-
     public static final byte BYTE_CLOSE_BRACE = 0x7D;
-
 
     public static final char OPENING_PARENTHESIS = '(';
 
@@ -86,15 +82,15 @@ public interface ImapConstants {
     public static final String VERSION = "IMAP4rev1";
 
     public static final String SUPPORTS_LITERAL_PLUS = "LITERAL+";
-    
+
     public static final String SUPPORTS_RFC3348 = "CHILDREN";
-    
+
     public static final String SUPPORTS_NAMESPACES = "NAMESPACE";
 
     public static final String SUPPORTS_STARTTLS = "STARTTLS";
 
     public static final String SUPPORTS_IDLE = "IDLE";
-    
+
     public static final String SUPPORTS_XLIST = "XLIST";
 
     public static final String INBOX_NAME = "INBOX";
@@ -170,7 +166,7 @@ public interface ImapConstants {
     public static final String NOOP_COMMAND_NAME = "NOOP";
 
     public static final String IDLE_COMMAND_NAME = "IDLE";
-    
+
     public static final String LSUB_COMMAND_NAME = "LSUB";
 
     public static final String LOGOUT_COMMAND_NAME = "LOGOUT";
@@ -178,7 +174,7 @@ public interface ImapConstants {
     public static final String LOGIN_COMMAND_NAME = "LOGIN";
 
     public static final String LIST_COMMAND_NAME = "LIST";
-    
+
     public static final String XLIST_COMMAND_NAME = "XLIST";
 
     public static final String FETCH_COMMAND_NAME = "FETCH";
@@ -204,7 +200,7 @@ public interface ImapConstants {
     public static final String APPEND_COMMAND_NAME = "APPEND";
 
     public static final String LIST_RESPONSE_NAME = "LIST";
-    
+
     public static final String XLIST_RESPONSE_NAME = "XLIST";
 
     public static final String LSUB_RESPONSE_NAME = "LSUB";
@@ -234,15 +230,15 @@ public interface ImapConstants {
     public static final String FETCH_BODY_STRUCTURE = "BODYSTRUCTURE";
 
     public static final String FETCH_BODY = "BODY";
-    
+
     public static final String STARTTLS = "STARTTLS";
-    
+
     public static final String LINE_END = "\r\n";
     public static final long MAX_NZ_NUMBER = 4294967295L;
     public static final long MIN_NZ_NUMBER = 1L;
 
     public static final String COMPRESS_COMMAND_NAME = "COMPRESS";
-    
+
     public static final int DEFAULT_BATCH_SIZE = 100;
 
 }

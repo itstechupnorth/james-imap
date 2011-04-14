@@ -23,19 +23,23 @@ import java.util.List;
 import java.util.Locale;
 
 /**
- * <p>Immutable bean describing localisation preferences.</p>
- * <p>Two separate sources of information about localisation are available:</p>
+ * <p>
+ * Immutable bean describing localisation preferences.
+ * </p>
+ * <p>
+ * Two separate sources of information about localisation are available:
+ * </p>
  * <ul>
  * <li>A client may ask for a locale (see {@link #getClientPreference()})</li>
- * <li>Localisation preferences may be available from user data(see @link {@link #getUserPreferences()})</li>
+ * <li>Localisation preferences may be available from user data(see @link
+ * {@link #getUserPreferences()})</li>
  * </ul>
  */
 public class Locales {
 
-    
     private final List<Locale> userPreferences;
     private final Locale clientPreference;
-    
+
     public Locales(final List<Locale> userPreferences, final Locale clientPreference) {
         super();
         this.userPreferences = userPreferences;
@@ -44,8 +48,9 @@ public class Locales {
 
     /**
      * Gets the locale preferred by the client.
-     * @return when set, the locale currently preferred by the client
-     * or null when no preference has been set by the client
+     * 
+     * @return when set, the locale currently preferred by the client or null
+     *         when no preference has been set by the client
      * @see #getUserPreferences()
      */
     public Locale getClientPreference() {
@@ -54,6 +59,7 @@ public class Locales {
 
     /**
      * Gets the list of locales preferred by the user.
+     * 
      * @return preferred first not null, possibly empty
      * @see #getUserPreferences()
      */

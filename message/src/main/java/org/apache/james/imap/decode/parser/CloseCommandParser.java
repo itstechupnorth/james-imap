@@ -28,22 +28,24 @@ import org.apache.james.imap.decode.base.AbstractImapCommandParser;
 import org.apache.james.imap.message.request.CloseRequest;
 
 /**
- * 
- *  Parse CLOSE commands
- *
+ * Parse CLOSE commands
  */
-class CloseCommandParser extends AbstractImapCommandParser  {
-    
+class CloseCommandParser extends AbstractImapCommandParser {
+
     public CloseCommandParser() {
-    	super(ImapCommand.selectedStateCommand(ImapConstants.CLOSE_COMMAND_NAME));
+        super(ImapCommand.selectedStateCommand(ImapConstants.CLOSE_COMMAND_NAME));
     }
 
     /*
      * (non-Javadoc)
-     * @see org.apache.james.imap.decode.base.AbstractImapCommandParser#decode(org.apache.james.imap.api.ImapCommand, org.apache.james.imap.decode.ImapRequestLineReader, java.lang.String, org.apache.james.imap.api.process.ImapSession)
+     * 
+     * @see
+     * org.apache.james.imap.decode.base.AbstractImapCommandParser#decode(org
+     * .apache.james.imap.api.ImapCommand,
+     * org.apache.james.imap.decode.ImapRequestLineReader, java.lang.String,
+     * org.apache.james.imap.api.process.ImapSession)
      */
-    protected ImapMessage decode(ImapCommand command,
-            ImapRequestLineReader request, String tag, ImapSession session) throws DecodingException {
+    protected ImapMessage decode(ImapCommand command, ImapRequestLineReader request, String tag, ImapSession session) throws DecodingException {
         request.eol();
         final ImapMessage result = new CloseRequest(command, tag);
         return result;

@@ -23,9 +23,12 @@ import org.apache.james.imap.api.process.ImapSession;
 import org.apache.james.mailbox.MailboxListener;
 
 /**
- * Abstract base class for {@link MailboxListener} which should be handled as closed if the {@link ImapSessionState} is {@link ImapSessionState#LOGOUT} is true
+ * Abstract base class for {@link MailboxListener} which should be handled as
+ * closed if the {@link ImapSessionState} is {@link ImapSessionState#LOGOUT} is
+ * true
  * 
- * This class should be used by all IMAP specifc {@link MailboxListener} implementation!
+ * This class should be used by all IMAP specifc {@link MailboxListener}
+ * implementation!
  */
 public abstract class ImapStateAwareMailboxListener implements MailboxListener {
 
@@ -34,9 +37,10 @@ public abstract class ImapStateAwareMailboxListener implements MailboxListener {
     public ImapStateAwareMailboxListener(ImapSession session) {
         this.session = session;
     }
-    
+
     /*
      * (non-Javadoc)
+     * 
      * @see org.apache.james.mailbox.MailboxListener#isClosed()
      */
     public boolean isClosed() {
@@ -48,7 +52,7 @@ public abstract class ImapStateAwareMailboxListener implements MailboxListener {
     }
 
     /**
-     * Return true if the listener should handled as closed and get unregistered 
+     * Return true if the listener should handled as closed and get unregistered
      * 
      * @return closed
      */

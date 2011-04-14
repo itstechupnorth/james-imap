@@ -25,27 +25,33 @@ package org.apache.james.imap.api.display;
 public interface Localizer {
 
     /**
-     * <p>Localizes the given text for display.</p>
      * <p>
-     * It is recommended that {@link HumanReadableText#getKey()} is 
-     * used as key. {@link HumanReadableText#getParameters()} may (optionally) 
-     * be used for substitution into a parameterised text.
+     * Localizes the given text for display.
      * </p>
      * <p>
-     * Implementators are free to use any appropriate algorithm 
-     * to determine which locale should be used. A client application
-     * may request a particular Locale based on it's local settings. 
-     * This preference SHOULD be made available (by the caller) 
-     * through {@link Locales#getClientPreference()}.
-     * In addition, user data may contain localization preferences. These
-     * SHOULD be made available (by the caller) through {@link Locales#getUserPreferences()}.
-     * </p><p>
-     * {@link HumanReadableText#getDefaultValue()} provides a simple, standard english phrase. 
-     * It is recommended that implementors use this value when a suitable localisation
-     * cannot be discovered.
+     * It is recommended that {@link HumanReadableText#getKey()} is used as key.
+     * {@link HumanReadableText#getParameters()} may (optionally) be used for
+     * substitution into a parameterised text.
      * </p>
-     * @param text describes the text requiring localisation, not null
-     * @param locales describes preferences, not null
+     * <p>
+     * Implementators are free to use any appropriate algorithm to determine
+     * which locale should be used. A client application may request a
+     * particular Locale based on it's local settings. This preference SHOULD be
+     * made available (by the caller) through
+     * {@link Locales#getClientPreference()}. In addition, user data may contain
+     * localization preferences. These SHOULD be made available (by the caller)
+     * through {@link Locales#getUserPreferences()}.
+     * </p>
+     * <p>
+     * {@link HumanReadableText#getDefaultValue()} provides a simple, standard
+     * english phrase. It is recommended that implementors use this value when a
+     * suitable localisation cannot be discovered.
+     * </p>
+     * 
+     * @param text
+     *            describes the text requiring localisation, not null
+     * @param locales
+     *            describes preferences, not null
      * @return localized message not null
      */
     public String localize(HumanReadableText text, Locales locales);

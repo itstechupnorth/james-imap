@@ -61,9 +61,7 @@ public final class DecoderUtils {
 
     private static final int DEC_BIT = 0x800;
 
-    private static final int ALL_MONTH_BITS = JAN_BIT | FEB_BIT | MAR_BIT
-            | APR_BIT | MAY_BIT | JUN_BIT | JUL_BIT | AUG_BIT | SEP_BIT
-            | OCT_BIT | NOV_BIT | DEC_BIT;
+    private static final int ALL_MONTH_BITS = JAN_BIT | FEB_BIT | MAR_BIT | APR_BIT | MAY_BIT | JUN_BIT | JUL_BIT | AUG_BIT | SEP_BIT | OCT_BIT | NOV_BIT | DEC_BIT;
 
     public static void setFlag(final String flagString, final Flags flags) {
         if (flagString.equalsIgnoreCase(MessageFlags.ANSWERED_ALL_CAPS)) {
@@ -77,7 +75,9 @@ public final class DecoderUtils {
         } else if (flagString.equalsIgnoreCase(MessageFlags.SEEN_ALL_CAPS)) {
             flags.add(Flags.Flag.SEEN);
         } else {
-            if (flagString.equalsIgnoreCase(MessageFlags.RECENT_ALL_CAPS)) { // NOPMD keep comment
+            if (flagString.equalsIgnoreCase(MessageFlags.RECENT_ALL_CAPS)) { // NOPMD
+                                                                             // keep
+                                                                             // comment
                 // RFC3501 specifically excludes /Recent
                 // The /Recent flag should be set automatically by the server
             } else {
@@ -96,8 +96,7 @@ public final class DecoderUtils {
      * @throws DecodingException
      *             when this conversion fails
      */
-    public static Date decodeDateTime(CharSequence chars)
-            throws DecodingException {
+    public static Date decodeDateTime(CharSequence chars) throws DecodingException {
         if (isDateTime(chars)) {
             final char dayHigh = chars.charAt(0);
             final char dayLow = chars.charAt(1);
@@ -106,40 +105,34 @@ public final class DecoderUtils {
             final char monthFirstChar = chars.charAt(3);
             final char monthSecondChar = chars.charAt(4);
             final char monthThirdChar = chars.charAt(5);
-            final int month = decodeMonth(monthFirstChar, monthSecondChar,
-                    monthThirdChar);
+            final int month = decodeMonth(monthFirstChar, monthSecondChar, monthThirdChar);
 
             final char milleniumChar = chars.charAt(7);
             final char centuryChar = chars.charAt(8);
             final char decadeChar = chars.charAt(9);
             final char yearChar = chars.charAt(10);
-            final int year = decodeYear(milleniumChar, centuryChar, decadeChar,
-                    yearChar);
+            final int year = decodeYear(milleniumChar, centuryChar, decadeChar, yearChar);
 
             final char zoneDeterminent = chars.charAt(21);
             final char zoneDigitOne = chars.charAt(22);
             final char zoneDigitTwo = chars.charAt(23);
             final char zoneDigitThree = chars.charAt(24);
             final char zoneDigitFour = chars.charAt(25);
-            final int offset = decodeZone(zoneDeterminent, zoneDigitOne,
-                    zoneDigitTwo, zoneDigitThree, zoneDigitFour);
+            final int offset = decodeZone(zoneDeterminent, zoneDigitOne, zoneDigitTwo, zoneDigitThree, zoneDigitFour);
 
             final char hourHigh = chars.charAt(12);
             final char hourLow = chars.charAt(13);
-            final int hour = applyHourOffset(offset, decodeNumber(hourHigh,
-                    hourLow));
+            final int hour = applyHourOffset(offset, decodeNumber(hourHigh, hourLow));
 
             final char minuteHigh = chars.charAt(15);
             final char minuteLow = chars.charAt(16);
-            final int minute = applyMinuteOffset(offset, decodeNumber(
-                    minuteHigh, minuteLow));
+            final int minute = applyMinuteOffset(offset, decodeNumber(minuteHigh, minuteLow));
 
             final char secondHigh = chars.charAt(18);
             final char secondLow = chars.charAt(19);
             final int second = decodeNumber(secondHigh, secondLow);
 
-            final GregorianCalendar calendar = new GregorianCalendar(TimeZone
-                    .getTimeZone("GMT"), Locale.US);
+            final GregorianCalendar calendar = new GregorianCalendar(TimeZone.getTimeZone("GMT"), Locale.US);
             calendar.clear();
             calendar.set(year, month, day, hour, minute, second);
             final Date result = calendar.getTime();
@@ -149,8 +142,7 @@ public final class DecoderUtils {
             if (chars == null) {
                 message = "Expected a date-time but was nothing.";
             } else {
-                message = new StringBuffer("Expected a date-time but was ")
-                        .append(chars.toString()).toString();
+                message = new StringBuffer("Expected a date-time but was ").append(chars.toString()).toString();
             }
 
             throw new DecodingException(HumanReadableText.ILLEGAL_ARGUMENTS, message);
@@ -172,9 +164,7 @@ public final class DecoderUtils {
     }
 
     private static int applyMinuteOffset(final int offset, final int minutes) {
-        final int result = minutes
-                - ((Math.abs(offset) % 100) * (offset == 0 ? 0 : offset > 0 ? 1
-                        : -1));
+        final int result = minutes - ((Math.abs(offset) % 100) * (offset == 0 ? 0 : offset > 0 ? 1 : -1));
         return result;
     }
 
@@ -183,18 +173,13 @@ public final class DecoderUtils {
         return result;
     }
 
-    public static int decodeNumber(final char high, final char low)
-            throws DecodingException {
+    public static int decodeNumber(final char high, final char low) throws DecodingException {
         return (10 * decodeDigit(high)) + decodeDigit(low);
     }
 
-    public static int decodeZone(char zoneDeterminent, char zoneDigitOne,
-            char zoneDigitTwo, char zoneDigitThree, char zoneDigitFour)
-            throws DecodingException {
-        if (isInvalidZone(zoneDeterminent, zoneDigitOne, zoneDigitTwo,
-                zoneDigitThree, zoneDigitFour)) {
-            throw createTimeZoneException(zoneDeterminent, zoneDigitOne,
-                    zoneDigitTwo, zoneDigitThree, zoneDigitFour);
+    public static int decodeZone(char zoneDeterminent, char zoneDigitOne, char zoneDigitTwo, char zoneDigitThree, char zoneDigitFour) throws DecodingException {
+        if (isInvalidZone(zoneDeterminent, zoneDigitOne, zoneDigitTwo, zoneDigitThree, zoneDigitFour)) {
+            throw createTimeZoneException(zoneDeterminent, zoneDigitOne, zoneDigitTwo, zoneDigitThree, zoneDigitFour);
         }
         final int sign;
         if (zoneDeterminent == '+') {
@@ -202,33 +187,20 @@ public final class DecoderUtils {
         } else if (zoneDeterminent == '-') {
             sign = -1;
         } else {
-            throw createTimeZoneException(zoneDeterminent, zoneDigitOne,
-                    zoneDigitTwo, zoneDigitThree, zoneDigitFour);
+            throw createTimeZoneException(zoneDeterminent, zoneDigitOne, zoneDigitTwo, zoneDigitThree, zoneDigitFour);
         }
-        final int result = sign
-                * ((1000 * decodeDigit(zoneDigitOne))
-                        + (100 * decodeDigit(zoneDigitTwo))
-                        + (10 * decodeDigit(zoneDigitThree)) + decodeDigit(zoneDigitFour));
+        final int result = sign * ((1000 * decodeDigit(zoneDigitOne)) + (100 * decodeDigit(zoneDigitTwo)) + (10 * decodeDigit(zoneDigitThree)) + decodeDigit(zoneDigitFour));
         return result;
     }
 
-    private static DecodingException createTimeZoneException(
-            char zoneDeterminent, char zoneDigitOne, char zoneDigitTwo,
-            char zoneDigitThree, char zoneDigitFour) {
-        return new DecodingException(HumanReadableText.ILLEGAL_ARGUMENTS, 
-                "Expected time-zone but was "
-                + zoneDeterminent + zoneDigitOne + zoneDigitTwo
-                + zoneDigitThree + zoneDigitFour);
+    private static DecodingException createTimeZoneException(char zoneDeterminent, char zoneDigitOne, char zoneDigitTwo, char zoneDigitThree, char zoneDigitFour) {
+        return new DecodingException(HumanReadableText.ILLEGAL_ARGUMENTS, "Expected time-zone but was " + zoneDeterminent + zoneDigitOne + zoneDigitTwo + zoneDigitThree + zoneDigitFour);
     }
 
-    private static boolean isInvalidZone(char zoneDeterminent,
-            char zoneDigitOne, char zoneDigitTwo, char zoneDigitThree,
-            char zoneDigitFour) {
+    private static boolean isInvalidZone(char zoneDeterminent, char zoneDigitOne, char zoneDigitTwo, char zoneDigitThree, char zoneDigitFour) {
         final boolean result;
         if (zoneDeterminent == '+' || zoneDeterminent == '-') {
-            result = !(isSimpleDigit(zoneDigitOne)
-                    && isSimpleDigit(zoneDigitTwo)
-                    && isSimpleDigit(zoneDigitThree) && isSimpleDigit(zoneDigitFour));
+            result = !(isSimpleDigit(zoneDigitOne) && isSimpleDigit(zoneDigitTwo) && isSimpleDigit(zoneDigitThree) && isSimpleDigit(zoneDigitFour));
         } else {
             result = true;
         }
@@ -261,16 +233,12 @@ public final class DecoderUtils {
      * @return {@link Calendar} year
      * @throws DecodingException
      */
-    public static int decodeYear(final char milleniumChar,
-            final char centuryChar, final char decadeChar, final char yearChar)
-            throws DecodingException {
-        return (decodeDigit(milleniumChar) * 1000)
-                + (decodeDigit(centuryChar) * 100)
-                + (decodeDigit(decadeChar) * 10) + decodeDigit(yearChar);
+    public static int decodeYear(final char milleniumChar, final char centuryChar, final char decadeChar, final char yearChar) throws DecodingException {
+        return (decodeDigit(milleniumChar) * 1000) + (decodeDigit(centuryChar) * 100) + (decodeDigit(decadeChar) * 10) + decodeDigit(yearChar);
     }
 
     /**
-     * Decodes asn IMAP <code>date-month</code> to a {@link Calendar} month.
+     * Decodes an IMAP <code>date-month</code> to a {@link Calendar} month.
      * 
      * @param monthFirstChar
      *            first character in a month triple
@@ -281,184 +249,179 @@ public final class DecoderUtils {
      * @return {@link Calendar} month (<code>JAN</code>=0)
      * @throws DecodingException
      */
-    public static int decodeMonth(final char monthFirstChar,
-            final char monthSecondChar, final char monthThirdChar)
-            throws DecodingException {
+    public static int decodeMonth(final char monthFirstChar, final char monthSecondChar, final char monthThirdChar) throws DecodingException {
         final int result;
         // Bitwise magic! Eliminate possibility by three switches
         int possibleMonths = ALL_MONTH_BITS;
         switch (monthFirstChar) {
-            case 'J':
-            case 'j':
-                possibleMonths &= (JAN_BIT | JUN_BIT | JUL_BIT);
-                break;
-            case 'F':
-            case 'f':
-                possibleMonths &= FEB_BIT;
-                break;
-            case 'M':
-            case 'm':
-                possibleMonths &= (MAR_BIT | MAY_BIT);
-                break;
-            case 'A':
-            case 'a':
-                possibleMonths &= (APR_BIT | AUG_BIT);
-                break;
-            case 'S':
-            case 's':
-                possibleMonths &= SEP_BIT;
-                break;
-            case 'O':
-            case 'o':
-                possibleMonths &= OCT_BIT;
-                break;
-            case 'N':
-            case 'n':
-                possibleMonths &= NOV_BIT;
-                break;
-            case 'D':
-            case 'd':
-                possibleMonths &= DEC_BIT;
-                break;
-            default:
-                possibleMonths = 0;
-                break;
+        case 'J':
+        case 'j':
+            possibleMonths &= (JAN_BIT | JUN_BIT | JUL_BIT);
+            break;
+        case 'F':
+        case 'f':
+            possibleMonths &= FEB_BIT;
+            break;
+        case 'M':
+        case 'm':
+            possibleMonths &= (MAR_BIT | MAY_BIT);
+            break;
+        case 'A':
+        case 'a':
+            possibleMonths &= (APR_BIT | AUG_BIT);
+            break;
+        case 'S':
+        case 's':
+            possibleMonths &= SEP_BIT;
+            break;
+        case 'O':
+        case 'o':
+            possibleMonths &= OCT_BIT;
+            break;
+        case 'N':
+        case 'n':
+            possibleMonths &= NOV_BIT;
+            break;
+        case 'D':
+        case 'd':
+            possibleMonths &= DEC_BIT;
+            break;
+        default:
+            possibleMonths = 0;
+            break;
         }
         switch (monthSecondChar) {
-            case 'A':
-            case 'a':
-                possibleMonths &= (JAN_BIT | MAR_BIT | MAY_BIT);
-                break;
-            case 'E':
-            case 'e':
-                possibleMonths &= (FEB_BIT | SEP_BIT | DEC_BIT);
-                break;
-            case 'P':
-            case 'p':
-                possibleMonths &= (APR_BIT);
-                break;
-            case 'U':
-            case 'u':
-                possibleMonths &= (JUN_BIT | JUL_BIT | AUG_BIT);
-                break;
-            case 'C':
-            case 'c':
-                possibleMonths &= OCT_BIT;
-                break;
-            case 'O':
-            case 'o':
-                possibleMonths &= NOV_BIT;
-                break;
-            default:
-                possibleMonths = 0;
-                break;
+        case 'A':
+        case 'a':
+            possibleMonths &= (JAN_BIT | MAR_BIT | MAY_BIT);
+            break;
+        case 'E':
+        case 'e':
+            possibleMonths &= (FEB_BIT | SEP_BIT | DEC_BIT);
+            break;
+        case 'P':
+        case 'p':
+            possibleMonths &= (APR_BIT);
+            break;
+        case 'U':
+        case 'u':
+            possibleMonths &= (JUN_BIT | JUL_BIT | AUG_BIT);
+            break;
+        case 'C':
+        case 'c':
+            possibleMonths &= OCT_BIT;
+            break;
+        case 'O':
+        case 'o':
+            possibleMonths &= NOV_BIT;
+            break;
+        default:
+            possibleMonths = 0;
+            break;
         }
         switch (monthThirdChar) {
-            case 'N':
-            case 'n':
-                possibleMonths &= (JAN_BIT | JUN_BIT);
-                break;
-            case 'B':
-            case 'b':
-                possibleMonths &= FEB_BIT;
-                break;
-            case 'R':
-            case 'r':
-                possibleMonths &= (MAR_BIT | APR_BIT);
-                break;
-            case 'Y':
-            case 'y':
-                possibleMonths &= MAY_BIT;
-                break;
-            case 'L':
-            case 'l':
-                possibleMonths &= JUL_BIT;
-                break;
-            case 'G':
-            case 'g':
-                possibleMonths &= AUG_BIT;
-                break;
-            case 'P':
-            case 'p':
-                possibleMonths &= SEP_BIT;
-                break;
-            case 'T':
-            case 't':
-                possibleMonths &= OCT_BIT;
-                break;
-            case 'V':
-            case 'v':
-                possibleMonths &= NOV_BIT;
-                break;
-            case 'C':
-            case 'c':
-                possibleMonths &= DEC_BIT;
-                break;
-            default:
-                possibleMonths = 0;
-                break;
+        case 'N':
+        case 'n':
+            possibleMonths &= (JAN_BIT | JUN_BIT);
+            break;
+        case 'B':
+        case 'b':
+            possibleMonths &= FEB_BIT;
+            break;
+        case 'R':
+        case 'r':
+            possibleMonths &= (MAR_BIT | APR_BIT);
+            break;
+        case 'Y':
+        case 'y':
+            possibleMonths &= MAY_BIT;
+            break;
+        case 'L':
+        case 'l':
+            possibleMonths &= JUL_BIT;
+            break;
+        case 'G':
+        case 'g':
+            possibleMonths &= AUG_BIT;
+            break;
+        case 'P':
+        case 'p':
+            possibleMonths &= SEP_BIT;
+            break;
+        case 'T':
+        case 't':
+            possibleMonths &= OCT_BIT;
+            break;
+        case 'V':
+        case 'v':
+            possibleMonths &= NOV_BIT;
+            break;
+        case 'C':
+        case 'c':
+            possibleMonths &= DEC_BIT;
+            break;
+        default:
+            possibleMonths = 0;
+            break;
         }
         switch (possibleMonths) {
-            case JAN_BIT:
-                result = Calendar.JANUARY;
-                break;
-            case FEB_BIT:
-                result = Calendar.FEBRUARY;
-                break;
-            case MAR_BIT:
-                result = Calendar.MARCH;
-                break;
-            case APR_BIT:
-                result = Calendar.APRIL;
-                break;
-            case MAY_BIT:
-                result = Calendar.MAY;
-                break;
-            case JUN_BIT:
-                result = Calendar.JUNE;
-                break;
-            case JUL_BIT:
-                result = Calendar.JULY;
-                break;
-            case AUG_BIT:
-                result = Calendar.AUGUST;
-                break;
-            case SEP_BIT:
-                result = Calendar.SEPTEMBER;
-                break;
-            case OCT_BIT:
-                result = Calendar.OCTOBER;
-                break;
-            case NOV_BIT:
-                result = Calendar.NOVEMBER;
-                break;
-            case DEC_BIT:
-                result = Calendar.DECEMBER;
-                break;
-            default:
-                throw new DecodingException(HumanReadableText.ILLEGAL_ARGUMENTS, 
-                        "Expected month name but was " + monthFirstChar + monthSecondChar + monthThirdChar);
+        case JAN_BIT:
+            result = Calendar.JANUARY;
+            break;
+        case FEB_BIT:
+            result = Calendar.FEBRUARY;
+            break;
+        case MAR_BIT:
+            result = Calendar.MARCH;
+            break;
+        case APR_BIT:
+            result = Calendar.APRIL;
+            break;
+        case MAY_BIT:
+            result = Calendar.MAY;
+            break;
+        case JUN_BIT:
+            result = Calendar.JUNE;
+            break;
+        case JUL_BIT:
+            result = Calendar.JULY;
+            break;
+        case AUG_BIT:
+            result = Calendar.AUGUST;
+            break;
+        case SEP_BIT:
+            result = Calendar.SEPTEMBER;
+            break;
+        case OCT_BIT:
+            result = Calendar.OCTOBER;
+            break;
+        case NOV_BIT:
+            result = Calendar.NOVEMBER;
+            break;
+        case DEC_BIT:
+            result = Calendar.DECEMBER;
+            break;
+        default:
+            throw new DecodingException(HumanReadableText.ILLEGAL_ARGUMENTS, "Expected month name but was " + monthFirstChar + monthSecondChar + monthThirdChar);
         }
         return result;
     }
 
-    public static int decodeFixedDay(final char dayHigh, final char dayLow)
-            throws DecodingException {
+    public static int decodeFixedDay(final char dayHigh, final char dayLow) throws DecodingException {
         int result = decodeDigit(dayLow);
         switch (dayHigh) {
-            case '0':
-                return result;
-            case '1':
-                return result += 10;
-            case '2':
-                return result += 20;
-            case '3':
-                return result += 30;
-            case ' ':
-                return result;
+        case '0':
+            return result;
+        case '1':
+            return result += 10;
+        case '2':
+            return result += 20;
+        case '3':
+            return result += 30;
+        case ' ':
+            return result;
         }
-        throw new DecodingException(HumanReadableText.ILLEGAL_ARGUMENTS, 
-                "Expected SP, 0, 1, 2, or 3 but was " + dayHigh);
+        throw new DecodingException(HumanReadableText.ILLEGAL_ARGUMENTS, "Expected SP, 0, 1, 2, or 3 but was " + dayHigh);
     }
 
     /**
@@ -469,12 +432,10 @@ public final class DecoderUtils {
      * @throws DecodingException
      *             if the char is not a digit
      */
-    public static int decodeDigit(char character)
-            throws DecodingException {
+    public static int decodeDigit(char character) throws DecodingException {
         final int result = character - ASCII_ZERO;
         if (result < 0 || result > 9) {
-            throw new DecodingException(HumanReadableText.ILLEGAL_ARGUMENTS, 
-                    "Expected a digit but was '" + character + "'");
+            throw new DecodingException(HumanReadableText.ILLEGAL_ARGUMENTS, "Expected a digit but was '" + character + "'");
         }
         return result;
     }

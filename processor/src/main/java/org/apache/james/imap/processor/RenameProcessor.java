@@ -36,18 +36,21 @@ import org.apache.james.mailbox.MailboxSession;
 
 public class RenameProcessor extends AbstractMailboxProcessor<RenameRequest> {
 
-    public RenameProcessor(final ImapProcessor next,
-            final MailboxManager mailboxManager,
-            final StatusResponseFactory factory) {
+    public RenameProcessor(final ImapProcessor next, final MailboxManager mailboxManager, final StatusResponseFactory factory) {
         super(RenameRequest.class, next, mailboxManager, factory);
     }
 
     /*
      * (non-Javadoc)
-     * @see org.apache.james.imap.processor.AbstractMailboxProcessor#doProcess(org.apache.james.imap.api.message.request.ImapRequest, org.apache.james.imap.api.process.ImapSession, java.lang.String, org.apache.james.imap.api.ImapCommand, org.apache.james.imap.api.process.ImapProcessor.Responder)
+     * 
+     * @see
+     * org.apache.james.imap.processor.AbstractMailboxProcessor#doProcess(org
+     * .apache.james.imap.api.message.request.ImapRequest,
+     * org.apache.james.imap.api.process.ImapSession, java.lang.String,
+     * org.apache.james.imap.api.ImapCommand,
+     * org.apache.james.imap.api.process.ImapProcessor.Responder)
      */
-    protected void doProcess(RenameRequest request, ImapSession session,
-            String tag, ImapCommand command, Responder responder) {
+    protected void doProcess(RenameRequest request, ImapSession session, String tag, ImapCommand command, Responder responder) {
         final MailboxPath existingPath = buildFullPath(session, request.getExistingName());
         final MailboxPath newPath = buildFullPath(session, request.getNewName());
         try {
@@ -55,12 +58,9 @@ public class RenameProcessor extends AbstractMailboxProcessor<RenameRequest> {
             MailboxSession mailboxsession = ImapSessionUtils.getMailboxSession(session);
             mailboxManager.renameMailbox(existingPath, newPath, mailboxsession);
 
-	    if (existingPath.getName().equalsIgnoreCase(
-		    ImapConstants.INBOX_NAME)
-		    && mailboxManager.mailboxExists(existingPath,
-			    mailboxsession) == false) {
-		mailboxManager.createMailbox(existingPath, mailboxsession);
-	    }
+            if (existingPath.getName().equalsIgnoreCase(ImapConstants.INBOX_NAME) && mailboxManager.mailboxExists(existingPath, mailboxsession) == false) {
+                mailboxManager.createMailbox(existingPath, mailboxsession);
+            }
             okComplete(command, tag, responder);
             unsolicitedResponses(session, responder, false);
         } catch (MailboxExistsException e) {

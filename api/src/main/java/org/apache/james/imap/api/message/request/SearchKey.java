@@ -113,47 +113,33 @@ public final class SearchKey {
     // AND
     public static final int TYPE_AND = 37;
 
-    private static final SearchKey UNSEEN = new SearchKey(TYPE_UNSEEN, null,
-            null, 0, null, null, null);
+    private static final SearchKey UNSEEN = new SearchKey(TYPE_UNSEEN, null, null, 0, null, null, null);
 
-    private static final SearchKey UNFLAGGED = new SearchKey(TYPE_UNFLAGGED,
-            null, null, 0, null, null, null);
+    private static final SearchKey UNFLAGGED = new SearchKey(TYPE_UNFLAGGED, null, null, 0, null, null, null);
 
-    private static final SearchKey UNDRAFT = new SearchKey(TYPE_UNDRAFT, null,
-            null, 0, null, null, null);
+    private static final SearchKey UNDRAFT = new SearchKey(TYPE_UNDRAFT, null, null, 0, null, null, null);
 
-    private static final SearchKey UNDELETED = new SearchKey(TYPE_UNDELETED,
-            null, null, 0, null, null, null);
+    private static final SearchKey UNDELETED = new SearchKey(TYPE_UNDELETED, null, null, 0, null, null, null);
 
-    private static final SearchKey UNANSWERED = new SearchKey(TYPE_UNANSWERED,
-            null, null, 0, null, null, null);
+    private static final SearchKey UNANSWERED = new SearchKey(TYPE_UNANSWERED, null, null, 0, null, null, null);
 
-    private static final SearchKey SEEN = new SearchKey(TYPE_SEEN, null, null,
-            0, null, null, null);
+    private static final SearchKey SEEN = new SearchKey(TYPE_SEEN, null, null, 0, null, null, null);
 
-    private static final SearchKey RECENT = new SearchKey(TYPE_RECENT, null,
-            null, 0, null, null, null);
+    private static final SearchKey RECENT = new SearchKey(TYPE_RECENT, null, null, 0, null, null, null);
 
-    private static final SearchKey OLD = new SearchKey(TYPE_OLD, null, null, 0,
-            null, null, null);
+    private static final SearchKey OLD = new SearchKey(TYPE_OLD, null, null, 0, null, null, null);
 
-    private static final SearchKey NEW = new SearchKey(TYPE_NEW, null, null, 0,
-            null, null, null);
+    private static final SearchKey NEW = new SearchKey(TYPE_NEW, null, null, 0, null, null, null);
 
-    private static final SearchKey FLAGGED = new SearchKey(TYPE_FLAGGED, null,
-            null, 0, null, null, null);
+    private static final SearchKey FLAGGED = new SearchKey(TYPE_FLAGGED, null, null, 0, null, null, null);
 
-    private static final SearchKey DRAFT = new SearchKey(TYPE_DRAFT, null,
-            null, 0, null, null, null);
+    private static final SearchKey DRAFT = new SearchKey(TYPE_DRAFT, null, null, 0, null, null, null);
 
-    private static final SearchKey DELETED = new SearchKey(TYPE_DELETED, null,
-            null, 0, null, null, null);
+    private static final SearchKey DELETED = new SearchKey(TYPE_DELETED, null, null, 0, null, null, null);
 
-    private static final SearchKey ANSWERED = new SearchKey(TYPE_ANSWERED,
-            null, null, 0, null, null, null);
+    private static final SearchKey ANSWERED = new SearchKey(TYPE_ANSWERED, null, null, 0, null, null, null);
 
-    private static final SearchKey ALL = new SearchKey(TYPE_ALL, null, null, 0,
-            null, null, null);
+    private static final SearchKey ALL = new SearchKey(TYPE_ALL, null, null, 0, null, null, null);
 
     // NUMBERS
     public static SearchKey buildSequenceSet(IdRange[] ids) {
@@ -337,9 +323,7 @@ public final class SearchKey {
 
     private IdRange[] sequence;
 
-    private SearchKey(final int type, final DayMonthYear date, final List<SearchKey> keys,
-            final long number, final String name, final String value,
-            IdRange[] sequence) {
+    private SearchKey(final int type, final DayMonthYear date, final List<SearchKey> keys, final long number, final String name, final String value, IdRange[] sequence) {
         super();
         this.type = type;
         this.date = date;

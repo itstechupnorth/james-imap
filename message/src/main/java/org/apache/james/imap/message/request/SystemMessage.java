@@ -26,6 +26,9 @@ import org.apache.james.imap.api.ImapMessage;
  */
 public enum SystemMessage implements ImapMessage {
 
-    /** Indicate that an premature termination has forced a logout without a LOGOUT command */
+    /**
+     * Indicate that an premature termination has forced a logout without a
+     * LOGOUT command
+     */
     FORCE_LOGOUT
 }

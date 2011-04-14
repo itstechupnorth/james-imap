@@ -39,8 +39,7 @@ public interface ImapResponseComposer {
      * @param responseCode
      *            response code or null when there is no response code
      */
-    public ImapResponseComposer untaggedNoResponse(String displayMessage,
-            String responseCode) throws IOException;
+    public ImapResponseComposer untaggedNoResponse(String displayMessage, String responseCode) throws IOException;
 
     /**
      * Writes flags to output using standard format.
@@ -93,8 +92,7 @@ public interface ImapResponseComposer {
      * @throws IOException
      * @see {@link #endEnvelope(String, String)} must be called
      */
-    public ImapResponseComposer startEnvelope(String date, String subject,
-            boolean prefixWithName) throws IOException;
+    public ImapResponseComposer startEnvelope(String date, String subject, boolean prefixWithName) throws IOException;
 
     /**
      * Starts a list of addresses.
@@ -116,8 +114,7 @@ public interface ImapResponseComposer {
      *            host name, or null for <code>NIL</code>
      * @throws IOException
      */
-    public ImapResponseComposer address(String name, String domainList,
-            String mailbox, String host) throws IOException;
+    public ImapResponseComposer address(String name, String domainList, String mailbox, String host) throws IOException;
 
     /**
      * Ends a list of addresses.
@@ -135,8 +132,7 @@ public interface ImapResponseComposer {
      *            envelope message-id, or null for <code>NIL</code>
      * @throws IOException
      */
-    public ImapResponseComposer endEnvelope(String inReplyTo, String messageId)
-            throws IOException;
+    public ImapResponseComposer endEnvelope(String inReplyTo, String messageId) throws IOException;
 
     /**
      * Composes a <code>NIL</code>.
@@ -145,8 +141,7 @@ public interface ImapResponseComposer {
      */
     public ImapResponseComposer nil() throws IOException;
 
-    public ImapResponseComposer commandResponse(ImapCommand command, String message)
-            throws IOException;
+    public ImapResponseComposer commandResponse(ImapCommand command, String message) throws IOException;
 
     /**
      * Writes a list response
@@ -160,8 +155,7 @@ public interface ImapResponseComposer {
      * @param name
      *            mailbox name
      */
-    public ImapResponseComposer listResponse(String typeName, List<String> attributes,
-            char hierarchyDelimiter, String name) throws IOException;
+    public ImapResponseComposer listResponse(String typeName, List<String> attributes, char hierarchyDelimiter, String name) throws IOException;
 
     /**
      * Writes the message provided to the client, prepended with the request
@@ -170,8 +164,7 @@ public interface ImapResponseComposer {
      * @param message
      *            The message to write to the client.
      */
-    public ImapResponseComposer taggedResponse(String message, String tag)
-            throws IOException;
+    public ImapResponseComposer taggedResponse(String message, String tag) throws IOException;
 
     /**
      * Writes the message provided to the client, prepended with the untagged
@@ -183,15 +176,14 @@ public interface ImapResponseComposer {
     public ImapResponseComposer untaggedResponse(String message) throws IOException;
 
     public ImapResponseComposer byeResponse(String message) throws IOException;
-    
+
     public ImapResponseComposer hello(String message) throws IOException;
 
     public ImapResponseComposer untagged() throws IOException;
 
     public ImapResponseComposer commandName(final String name) throws IOException;
 
-    public ImapResponseComposer message(final String message)
-            throws IOException;
+    public ImapResponseComposer message(final String message) throws IOException;
 
     public ImapResponseComposer message(final long number) throws IOException;
 
@@ -199,13 +191,9 @@ public interface ImapResponseComposer {
 
     public ImapResponseComposer tag(String tag) throws IOException;
 
-    public ImapResponseComposer statusResponse(String tag, ImapCommand command,
-            String type, String responseCode, Collection<String> parameters,
-            boolean useParens, long number, String text) throws IOException;
+    public ImapResponseComposer statusResponse(String tag, ImapCommand command, String type, String responseCode, Collection<String> parameters, boolean useParens, long number, String text) throws IOException;
 
-    public ImapResponseComposer statusResponse(Long messages, Long recent,
-            Long uidNext, Long uidValidity, Long unseen, String mailboxName)
-            throws IOException;
+    public ImapResponseComposer statusResponse(Long messages, Long recent, Long uidNext, Long uidValidity, Long unseen, String mailboxName) throws IOException;
 
     public void quote(String message) throws IOException;
 
@@ -225,8 +213,7 @@ public interface ImapResponseComposer {
      * @return self, not null
      * @throws IOException
      */
-    public ImapResponseComposer upperCaseAscii(final String message)
-            throws IOException;
+    public ImapResponseComposer upperCaseAscii(final String message) throws IOException;
 
     /**
      * Appends the given message after conversion to upper case. The message may
@@ -238,8 +225,7 @@ public interface ImapResponseComposer {
      * @return self, not null
      * @throws IOException
      */
-    public ImapResponseComposer quoteUpperCaseAscii(final String message)
-            throws IOException;
+    public ImapResponseComposer quoteUpperCaseAscii(final String message) throws IOException;
 
     /**
      * Appends the given message after appropriate quoting (when not null) or
@@ -250,8 +236,7 @@ public interface ImapResponseComposer {
      * @return self, not null
      * @throws IOException
      */
-    public ImapResponseComposer nillableQuote(String message)
-            throws IOException;
+    public ImapResponseComposer nillableQuote(String message) throws IOException;
 
     /**
      * Composes a sequence of nillables quotes. When messages are null, a single
@@ -263,15 +248,14 @@ public interface ImapResponseComposer {
      * @return self, not null
      * @throws IOException
      */
-    public ImapResponseComposer nillableQuotes(List<String> quotes)
-            throws IOException;
+    public ImapResponseComposer nillableQuotes(List<String> quotes) throws IOException;
 
     /**
      * Composes a nillable composition. When the master quote is null,
-     * <code>NIL</code> is appended. Otherwise, a parenthesized list is
-     * created starting with the master quote. When the quotes are null,
-     * <code>NIL</code> is appended only. Otherwise, each element is appended
-     * in sequence as per {@link #nillableQuote(String)}
+     * <code>NIL</code> is appended. Otherwise, a parenthesized list is created
+     * starting with the master quote. When the quotes are null,
+     * <code>NIL</code> is appended only. Otherwise, each element is appended in
+     * sequence as per {@link #nillableQuote(String)}
      * 
      * @param quote
      *            master, possibly null
@@ -280,20 +264,21 @@ public interface ImapResponseComposer {
      * @return self, not null
      * @throws IOException
      */
-    public ImapResponseComposer nillableComposition(String masterQuote,
-            List<String> quotes) throws IOException;
+    public ImapResponseComposer nillableComposition(String masterQuote, List<String> quotes) throws IOException;
 
     public void skipNextSpace() throws IOException;
 
     /**
-     * Composes a <code>CAPABILITY</code> response.
-     * See <code>7.2.1</code> of 
-     * <a href='http://james.apache.org/server/rfclist/imap4/rfc2060.txt' rel='tag'>RFC2060</a>.
-     * @param capabilities not null
-     * @throws IOException 
+     * Composes a <code>CAPABILITY</code> response. See <code>7.2.1</code> of <a
+     * href='http://james.apache.org/server/rfclist/imap4/rfc2060.txt'
+     * rel='tag'>RFC2060</a>.
+     * 
+     * @param capabilities
+     *            not null
+     * @throws IOException
      */
     public ImapResponseComposer capabilities(List<String> capabilities) throws IOException;
-    
+
     /**
      * Writes a continuation response.
      * 

@@ -25,13 +25,15 @@ import org.apache.james.mailbox.MailboxPath;
  */
 public interface MailboxTyper {
 
-     /**
+    /**
      * Returns MailboxType based on mailbox path
      * 
-     * @param session current ImapSession
-     * @param path path of mailbox, which type is being queried
-     * @return MailboxType value for passed mailbox, if there's no special 
-     * function for particular mailbox, return OTHER.
+     * @param session
+     *            current ImapSession
+     * @param path
+     *            path of mailbox, which type is being queried
+     * @return MailboxType value for passed mailbox, if there's no special
+     *         function for particular mailbox, return OTHER.
      */
-     MailboxType getMailboxType(ImapSession session, MailboxPath path);
+    MailboxType getMailboxType(ImapSession session, MailboxPath path);
 }

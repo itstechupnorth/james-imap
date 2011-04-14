@@ -21,9 +21,8 @@ package org.apache.james.imap.message.request;
 import org.apache.james.imap.api.ImapCommand;
 
 public class IdleRequest extends AbstractImapRequest {
-    
 
-    public IdleRequest(ImapCommand command,String tag) {
+    public IdleRequest(ImapCommand command, String tag) {
         super(tag, command);
     }
 

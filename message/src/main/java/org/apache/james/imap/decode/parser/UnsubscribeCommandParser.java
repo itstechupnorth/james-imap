@@ -29,7 +29,6 @@ import org.apache.james.imap.message.request.UnsubscribeRequest;
 
 /**
  * Parse UNSUBSCRIBE commands
- *
  */
 public class UnsubscribeCommandParser extends AbstractImapCommandParser {
 
@@ -37,13 +36,16 @@ public class UnsubscribeCommandParser extends AbstractImapCommandParser {
         super(ImapCommand.authenticatedStateCommand(ImapConstants.UNSUBSCRIBE_COMMAND_NAME));
     }
 
-
     /*
      * (non-Javadoc)
-     * @see org.apache.james.imap.decode.base.AbstractImapCommandParser#decode(org.apache.james.imap.api.ImapCommand, org.apache.james.imap.decode.ImapRequestLineReader, java.lang.String, org.apache.james.imap.api.process.ImapSession)
+     * 
+     * @see
+     * org.apache.james.imap.decode.base.AbstractImapCommandParser#decode(org
+     * .apache.james.imap.api.ImapCommand,
+     * org.apache.james.imap.decode.ImapRequestLineReader, java.lang.String,
+     * org.apache.james.imap.api.process.ImapSession)
      */
-    protected ImapMessage decode(ImapCommand command,
-            ImapRequestLineReader request, String tag, ImapSession session) throws DecodingException {
+    protected ImapMessage decode(ImapCommand command, ImapRequestLineReader request, String tag, ImapSession session) throws DecodingException {
         final String mailboxName = request.mailbox();
         request.eol();
         return new UnsubscribeRequest(command, mailboxName, tag);

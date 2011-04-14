@@ -45,7 +45,7 @@ public enum ImapSessionState {
      * <code>3.4 Logout State</code>
      */
     LOGOUT("Logged Out State");
-    
+
     /** To aid debugging */
     private final String name;
 

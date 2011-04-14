@@ -55,10 +55,7 @@ abstract class AbstractSelectionProcessor<M extends AbstractMailboxSelectionRequ
 
     private final boolean openReadOnly;
 
-    public AbstractSelectionProcessor(final Class<M> acceptableClass,final ImapProcessor next,
-            final MailboxManager mailboxManager,
-            final StatusResponseFactory statusResponseFactory,
-            final boolean openReadOnly) {
+    public AbstractSelectionProcessor(final Class<M> acceptableClass, final ImapProcessor next, final MailboxManager mailboxManager, final StatusResponseFactory statusResponseFactory, final boolean openReadOnly) {
         super(acceptableClass, next, mailboxManager, statusResponseFactory);
         this.statusResponseFactory = statusResponseFactory;
         this.openReadOnly = openReadOnly;
@@ -73,28 +70,31 @@ abstract class AbstractSelectionProcessor<M extends AbstractMailboxSelectionRequ
 
     /*
      * (non-Javadoc)
-     * @see org.apache.james.imap.processor.AbstractMailboxProcessor#doProcess(org.apache.james.imap.api.message.request.ImapRequest, org.apache.james.imap.api.process.ImapSession, java.lang.String, org.apache.james.imap.api.ImapCommand, org.apache.james.imap.api.process.ImapProcessor.Responder)
+     * 
+     * @see
+     * org.apache.james.imap.processor.AbstractMailboxProcessor#doProcess(org
+     * .apache.james.imap.api.message.request.ImapRequest,
+     * org.apache.james.imap.api.process.ImapSession, java.lang.String,
+     * org.apache.james.imap.api.ImapCommand,
+     * org.apache.james.imap.api.process.ImapProcessor.Responder)
      */
-    protected void doProcess(AbstractMailboxSelectionRequest request, ImapSession session,
-            String tag, ImapCommand command, Responder responder) {
+    protected void doProcess(AbstractMailboxSelectionRequest request, ImapSession session, String tag, ImapCommand command, Responder responder) {
         final String mailboxName = request.getMailboxName();
         try {
             final MailboxPath fullMailboxPath = buildFullPath(session, mailboxName);
             final MessageManager.MetaData metaData = selectMailbox(fullMailboxPath, session);
             respond(tag, command, session, metaData, responder);
         } catch (MailboxNotFoundException e) {
-            responder.respond(statusResponseFactory.taggedNo(tag, command,
-                    HumanReadableText.FAILURE_NO_SUCH_MAILBOX));
+            responder.respond(statusResponseFactory.taggedNo(tag, command, HumanReadableText.FAILURE_NO_SUCH_MAILBOX));
         } catch (MailboxException e) {
             no(command, tag, responder, HumanReadableText.SELECT);
         }
     }
 
-    private void respond(String tag, ImapCommand command, ImapSession session,
-            final MessageManager.MetaData metaData, Responder responder) throws MailboxException {
+    private void respond(String tag, ImapCommand command, ImapSession session, final MessageManager.MetaData metaData, Responder responder) throws MailboxException {
 
         final SelectedMailbox selected = session.getSelected();
-        
+
         flags(responder);
         exists(responder, metaData);
         recent(responder, selected);
@@ -105,16 +105,13 @@ abstract class AbstractSelectionProcessor<M extends AbstractMailboxSelectionRequ
         taggedOk(responder, tag, command, metaData);
     }
 
-    private void uidNext(final Responder responder, final MessageManager.MetaData metaData)
-    throws MailboxException {
+    private void uidNext(final Responder responder, final MessageManager.MetaData metaData) throws MailboxException {
         final long uid = metaData.getUidNext();
-        final StatusResponse untaggedOk = statusResponseFactory.untaggedOk(
-                HumanReadableText.UIDNEXT, ResponseCode.uidNext(uid));
+        final StatusResponse untaggedOk = statusResponseFactory.untaggedOk(HumanReadableText.UIDNEXT, ResponseCode.uidNext(uid));
         responder.respond(untaggedOk);
     }
-    
-    private void taggedOk(final Responder responder, final String tag,
-            final ImapCommand command, final MetaData metaData) {
+
+    private void taggedOk(final Responder responder, final String tag, final ImapCommand command, final MetaData metaData) {
         final boolean writeable = metaData.isWriteable() && !openReadOnly;
         final ResponseCode code;
         if (writeable) {
@@ -122,8 +119,7 @@ abstract class AbstractSelectionProcessor<M extends AbstractMailboxSelectionRequ
         } else {
             code = ResponseCode.readOnly();
         }
-        final StatusResponse taggedOk = statusResponseFactory.taggedOk(tag,
-                command, HumanReadableText.SELECT, code);
+        final StatusResponse taggedOk = statusResponseFactory.taggedOk(tag, command, HumanReadableText.SELECT, code);
         responder.respond(taggedOk);
     }
 
@@ -133,23 +129,20 @@ abstract class AbstractSelectionProcessor<M extends AbstractMailboxSelectionRequ
 
     private void permanentFlags(Responder responder, MessageManager.MetaData metaData) {
         final Flags permanentFlags = metaData.getPermanentFlags();
-        final StatusResponse untaggedOk = statusResponseFactory.untaggedOk(
-                HumanReadableText.permanentFlags(permanentFlags), ResponseCode
-                        .permanentFlags(permanentFlags));
+        final StatusResponse untaggedOk = statusResponseFactory.untaggedOk(HumanReadableText.permanentFlags(permanentFlags), ResponseCode.permanentFlags(permanentFlags));
         responder.respond(untaggedOk);
     }
 
-    private void unseen(Responder responder, MessageManager.MetaData metaData,
-            final SelectedMailbox selected) throws MailboxException {
+    private void unseen(Responder responder, MessageManager.MetaData metaData, final SelectedMailbox selected) throws MailboxException {
         final Long firstUnseen = metaData.getFirstUnseen();
         if (firstUnseen != null) {
             final long unseenUid = firstUnseen;
             int msn = selected.msn(unseenUid);
 
-            if (msn == SelectedMailbox.NO_SUCH_MESSAGE) throw new MailboxException("No message found with uid " + unseenUid);
+            if (msn == SelectedMailbox.NO_SUCH_MESSAGE)
+                throw new MailboxException("No message found with uid " + unseenUid);
 
-            final StatusResponse untaggedOk = statusResponseFactory.untaggedOk(
-                    HumanReadableText.unseen(msn), ResponseCode.unseen(msn));
+            final StatusResponse untaggedOk = statusResponseFactory.untaggedOk(HumanReadableText.unseen(msn), ResponseCode.unseen(msn));
             responder.respond(untaggedOk);
         }
 
@@ -157,9 +150,7 @@ abstract class AbstractSelectionProcessor<M extends AbstractMailboxSelectionRequ
 
     private void uidValidity(Responder responder, MessageManager.MetaData metaData) throws MailboxException {
         final long uidValidity = metaData.getUidValidity();
-        final StatusResponse untaggedOk = statusResponseFactory.untaggedOk(
-                HumanReadableText.UID_VALIDITY, ResponseCode
-                        .uidValidity(uidValidity));
+        final StatusResponse untaggedOk = statusResponseFactory.untaggedOk(HumanReadableText.UID_VALIDITY, ResponseCode.uidValidity(uidValidity));
         responder.respond(untaggedOk);
     }
 
@@ -175,16 +166,14 @@ abstract class AbstractSelectionProcessor<M extends AbstractMailboxSelectionRequ
         responder.respond(existsResponse);
     }
 
-    private MessageManager.MetaData  selectMailbox(MailboxPath mailboxPath, ImapSession session)
-            throws MailboxException {
+    private MessageManager.MetaData selectMailbox(MailboxPath mailboxPath, ImapSession session) throws MailboxException {
         final MailboxManager mailboxManager = getMailboxManager();
         final MailboxSession mailboxSession = ImapSessionUtils.getMailboxSession(session);
         final MessageManager mailbox = mailboxManager.getMailbox(mailboxPath, mailboxSession);
 
         final SelectedMailbox sessionMailbox;
         final SelectedMailbox currentMailbox = session.getSelected();
-        if (currentMailbox == null
-                || !currentMailbox.getPath().equals(mailboxPath)) {
+        if (currentMailbox == null || !currentMailbox.getPath().equals(mailboxPath)) {
             sessionMailbox = createNewSelectedMailbox(mailbox, mailboxSession, session, mailboxPath);
         } else {
             sessionMailbox = currentMailbox;
@@ -194,13 +183,12 @@ abstract class AbstractSelectionProcessor<M extends AbstractMailboxSelectionRequ
         return metaData;
     }
 
-    private SelectedMailbox createNewSelectedMailbox(final MessageManager mailbox,
-            final MailboxSession mailboxSession, ImapSession session, MailboxPath path)
-            throws MailboxException {
+    private SelectedMailbox createNewSelectedMailbox(final MessageManager mailbox, final MailboxSession mailboxSession, ImapSession session, MailboxPath path) throws MailboxException {
         SearchQuery query = new SearchQuery();
         query.andCriteria(SearchQuery.all());
-        
-        // use search here to allow implementation a better way to improve selects on mailboxes. 
+
+        // use search here to allow implementation a better way to improve
+        // selects on mailboxes.
         // See https://issues.apache.org/jira/browse/IMAP-192
         final Iterator<Long> it = mailbox.search(query, mailboxSession);
 
@@ -209,8 +197,7 @@ abstract class AbstractSelectionProcessor<M extends AbstractMailboxSelectionRequ
         return sessionMailbox;
     }
 
-    private void addRecent(final MessageManager.MetaData metaData,
-            SelectedMailbox sessionMailbox) throws MailboxException {
+    private void addRecent(final MessageManager.MetaData metaData, SelectedMailbox sessionMailbox) throws MailboxException {
         final List<Long> recentUids = metaData.getRecent();
         for (int i = 0; i < recentUids.size(); i++) {
             long uid = recentUids.get(i);

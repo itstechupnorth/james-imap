@@ -37,14 +37,11 @@ public class BodyFetchElement {
 
     public static final int CONTENT = 5;
 
-    private static final BodyFetchElement rfc822 = new BodyFetchElement(
-            ImapConstants.FETCH_RFC822, CONTENT, null, null, null, null);
+    private static final BodyFetchElement rfc822 = new BodyFetchElement(ImapConstants.FETCH_RFC822, CONTENT, null, null, null, null);
 
-    private static final BodyFetchElement rfc822Header = new BodyFetchElement(
-            ImapConstants.FETCH_RFC822_HEADER, HEADER, null, null, null, null);
+    private static final BodyFetchElement rfc822Header = new BodyFetchElement(ImapConstants.FETCH_RFC822_HEADER, HEADER, null, null, null, null);
 
-    private static final BodyFetchElement rfc822Text = new BodyFetchElement(
-            ImapConstants.FETCH_RFC822_TEXT, TEXT, null, null, null, null);
+    private static final BodyFetchElement rfc822Text = new BodyFetchElement(ImapConstants.FETCH_RFC822_TEXT, TEXT, null, null, null, null);
 
     public static final BodyFetchElement createRFC822() {
         return rfc822;
@@ -70,9 +67,7 @@ public class BodyFetchElement {
 
     private final Collection<String> fieldNames;
 
-    public BodyFetchElement(final String name, final int sectionType,
-            final int[] path, final Collection<String> fieldNames, Long firstOctet,
-            Long numberOfOctets) {
+    public BodyFetchElement(final String name, final int sectionType, final int[] path, final Collection<String> fieldNames, Long firstOctet, Long numberOfOctets) {
         this.name = name;
         this.sectionType = sectionType;
         this.fieldNames = fieldNames;
@@ -135,13 +130,10 @@ public class BodyFetchElement {
     public int hashCode() {
         final int PRIME = 31;
         int result = 1;
-        result = PRIME * result
-                + ((fieldNames == null) ? 0 : fieldNames.hashCode());
-        result = PRIME * result
-                + ((firstOctet == null) ? 0 : firstOctet.hashCode());
+        result = PRIME * result + ((fieldNames == null) ? 0 : fieldNames.hashCode());
+        result = PRIME * result + ((firstOctet == null) ? 0 : firstOctet.hashCode());
         result = PRIME * result + ((name == null) ? 0 : name.hashCode());
-        result = PRIME * result
-                + ((numberOfOctets == null) ? 0 : numberOfOctets.hashCode());
+        result = PRIME * result + ((numberOfOctets == null) ? 0 : numberOfOctets.hashCode());
         result = PRIME * result + ((path == null) ? 0 : path.length);
         result = PRIME * result + sectionType;
         return result;

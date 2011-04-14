@@ -22,8 +22,7 @@ import org.apache.james.imap.api.ImapCommand;
 import org.apache.james.imap.api.message.request.ImapRequest;
 
 /**
- * {@link ImapRequest} which requests the logout 
- *
+ * {@link ImapRequest} which requests the logout
  */
 public class LogoutRequest extends AbstractImapRequest {
 

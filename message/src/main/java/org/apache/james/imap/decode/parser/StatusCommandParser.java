@@ -32,15 +32,13 @@ import org.apache.james.imap.message.request.StatusRequest;
 
 /**
  * Parse STATUS commands
- *
  */
 public class StatusCommandParser extends AbstractImapCommandParser {
     public StatusCommandParser() {
         super(ImapCommand.authenticatedStateCommand(ImapConstants.STATUS_COMMAND_NAME));
     }
 
-    StatusDataItems statusDataItems(ImapRequestLineReader request)
-            throws DecodingException {
+    StatusDataItems statusDataItems(ImapRequestLineReader request) throws DecodingException {
         StatusDataItems items = new StatusDataItems();
 
         request.nextWordChar();
@@ -80,10 +78,14 @@ public class StatusCommandParser extends AbstractImapCommandParser {
 
     /*
      * (non-Javadoc)
-     * @see org.apache.james.imap.decode.base.AbstractImapCommandParser#decode(org.apache.james.imap.api.ImapCommand, org.apache.james.imap.decode.ImapRequestLineReader, java.lang.String, org.apache.james.imap.api.process.ImapSession)
+     * 
+     * @see
+     * org.apache.james.imap.decode.base.AbstractImapCommandParser#decode(org
+     * .apache.james.imap.api.ImapCommand,
+     * org.apache.james.imap.decode.ImapRequestLineReader, java.lang.String,
+     * org.apache.james.imap.api.process.ImapSession)
      */
-    protected ImapMessage decode(ImapCommand command,
-            ImapRequestLineReader request, String tag, ImapSession session) throws DecodingException {
+    protected ImapMessage decode(ImapCommand command, ImapRequestLineReader request, String tag, ImapSession session) throws DecodingException {
         final String mailboxName = request.mailbox();
         final StatusDataItems statusDataItems = statusDataItems(request);
         request.eol();

@@ -26,12 +26,9 @@ import org.apache.james.imap.api.process.ImapSession;
 
 /**
  * {@link ImapProcessor} which implements one ore more Capabilities
- * 
- *
  */
-public interface CapabilityImplementingProcessor extends ImapProcessor{
+public interface CapabilityImplementingProcessor extends ImapProcessor {
 
-    
     /**
      * Return a list of all Capabilities that are implemented by the Processor
      * 

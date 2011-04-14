@@ -56,9 +56,7 @@ final class MimeDescriptorStructure implements FetchResponse.Structure {
 
     private final Envelope envelope;
 
-    public MimeDescriptorStructure(final boolean allowExtensions,
-            MimeDescriptor descriptor, EnvelopeBuilder builder)
-            throws MailboxException, ParseException {
+    public MimeDescriptorStructure(final boolean allowExtensions, MimeDescriptor descriptor, EnvelopeBuilder builder) throws MailboxException, ParseException {
         super();
         this.descriptor = descriptor;
         parameters = createParameters(descriptor);
@@ -76,29 +74,24 @@ final class MimeDescriptorStructure implements FetchResponse.Structure {
             embeddedMessageStructure = null;
             envelope = null;
         } else {
-            embeddedMessageStructure = new MimeDescriptorStructure(
-                    allowExtensions, embeddedMessage, builder);
+            embeddedMessageStructure = new MimeDescriptorStructure(allowExtensions, embeddedMessage, builder);
             envelope = builder.buildEnvelope(embeddedMessage);
         }
     }
 
-    private static List<Structure> createParts(final boolean allowExtensions,
-            final MimeDescriptor descriptor, final EnvelopeBuilder builder)
-            throws MailboxException, ParseException {
+    private static List<Structure> createParts(final boolean allowExtensions, final MimeDescriptor descriptor, final EnvelopeBuilder builder) throws MailboxException, ParseException {
         final List<Structure> results = new ArrayList<Structure>();
         for (Iterator<MimeDescriptor> it = descriptor.parts(); it.hasNext();) {
             final MimeDescriptor partDescriptor = it.next();
-            results.add(new MimeDescriptorStructure(allowExtensions,
-                    partDescriptor, builder));
+            results.add(new MimeDescriptorStructure(allowExtensions, partDescriptor, builder));
         }
         return results;
     }
 
-    private static List<String> createParameters(MimeDescriptor descriptor)
-            throws MailboxException {
+    private static List<String> createParameters(MimeDescriptor descriptor) throws MailboxException {
         final List<String> results = new ArrayList<String>();
-        // TODO: consider revising this 
-        for (Map.Entry<String, String> entry:descriptor.contentTypeParameters().entrySet()) {
+        // TODO: consider revising this
+        for (Map.Entry<String, String> entry : descriptor.contentTypeParameters().entrySet()) {
             results.add(entry.getKey());
             results.add(entry.getValue());
         }

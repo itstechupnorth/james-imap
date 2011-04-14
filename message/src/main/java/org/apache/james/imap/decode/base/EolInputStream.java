@@ -26,16 +26,15 @@ import java.io.InputStream;
 import org.apache.james.imap.decode.ImapRequestLineReader;
 
 /**
- * {@link FileInputStream} which call the eol() method of the {@link ImapRequestLineReader} when the end 
- * of the wrapped {@link InputStream} is reached
- * 
- *
+ * {@link FileInputStream} which call the eol() method of the
+ * {@link ImapRequestLineReader} when the end of the wrapped {@link InputStream}
+ * is reached
  */
-public class EolInputStream extends FilterInputStream{
+public class EolInputStream extends FilterInputStream {
 
     private ImapRequestLineReader reader;
     private boolean eolCalled = false;
-    
+
     public EolInputStream(ImapRequestLineReader reader, InputStream in) {
         super(in);
         this.reader = reader;
@@ -62,7 +61,7 @@ public class EolInputStream extends FilterInputStream{
         return i;
     }
 
-    private void eol(int i ) throws IOException{
+    private void eol(int i) throws IOException {
         if (i == -1 && eolCalled == false) {
             reader.eol();
             eolCalled = true;
@@ -73,5 +72,5 @@ public class EolInputStream extends FilterInputStream{
     public int available() throws IOException {
         return in.available();
     }
-    
+
 }

@@ -29,14 +29,14 @@ import org.apache.james.mailbox.MailboxSession;
 import org.apache.james.mailbox.SubscriptionManager;
 
 /**
- * Abstract base class which should be used by implementations which need to access the {@link SubscriptionManager}
- *
+ * Abstract base class which should be used by implementations which need to
+ * access the {@link SubscriptionManager}
  */
-public abstract class AbstractSubscriptionProcessor<M extends ImapRequest> extends AbstractMailboxProcessor<M>{
+public abstract class AbstractSubscriptionProcessor<M extends ImapRequest> extends AbstractMailboxProcessor<M> {
 
     private final SubscriptionManager subscriptionManager;
 
-    public AbstractSubscriptionProcessor(Class<M> acceptableClass, ImapProcessor next, MailboxManager mailboxManager, final SubscriptionManager subscriptionManager,StatusResponseFactory factory) {
+    public AbstractSubscriptionProcessor(Class<M> acceptableClass, ImapProcessor next, MailboxManager mailboxManager, final SubscriptionManager subscriptionManager, StatusResponseFactory factory) {
         super(acceptableClass, next, mailboxManager, factory);
         this.subscriptionManager = subscriptionManager;
     }
@@ -52,14 +52,14 @@ public abstract class AbstractSubscriptionProcessor<M extends ImapRequest> exten
 
     @Override
     protected final void doProcess(M message, ImapSession session, String tag, ImapCommand command, Responder responder) {
-        
-        // take care of calling the start/end processing 
+
+        // take care of calling the start/end processing
         MailboxSession mSession = ImapSessionUtils.getMailboxSession(session);
         getSubscriptionManager().startProcessingRequest(mSession);
         doProcessRequest(message, session, tag, command, responder);
         getSubscriptionManager().endProcessingRequest(mSession);
     }
-    
+
     /**
      * Process the request
      * 
@@ -70,5 +70,5 @@ public abstract class AbstractSubscriptionProcessor<M extends ImapRequest> exten
      * @param responder
      */
     protected abstract void doProcessRequest(M message, ImapSession session, String tag, ImapCommand command, Responder responder);
-    
+
 }

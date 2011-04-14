@@ -38,9 +38,7 @@ public class MailboxStatusResponse implements ImapResponseMessage {
 
     private final String mailbox;
 
-    public MailboxStatusResponse(final Long messages, final Long recent,
-            final Long uidNext, final Long uidValidity, final Long unseen,
-            final String mailbox) {
+    public MailboxStatusResponse(final Long messages, final Long recent, final Long uidNext, final Long uidValidity, final Long unseen, final String mailbox) {
         super();
         this.messages = messages;
         this.recent = recent;
@@ -105,8 +103,6 @@ public class MailboxStatusResponse implements ImapResponseMessage {
     }
 
     public String toString() {
-        return "Status response[mailbox='" + mailbox + "' messages=" + messages
-                + " recent=" + recent + " uidnext=" + uidNext + " uidvalidity="
-                + uidValidity + " unseen=" + unseen + "]";
+        return "Status response[mailbox='" + mailbox + "' messages=" + messages + " recent=" + recent + " uidnext=" + uidNext + " uidvalidity=" + uidValidity + " unseen=" + unseen + "]";
     }
 }

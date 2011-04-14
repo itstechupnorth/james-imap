@@ -47,18 +47,21 @@ import org.slf4j.Logger;
 
 public class AppendProcessor extends AbstractMailboxProcessor<AppendRequest> {
 
-    public AppendProcessor(final ImapProcessor next,
-            final MailboxManager mailboxManager,
-            final StatusResponseFactory statusResponseFactory) {
-        super(AppendRequest.class,next, mailboxManager, statusResponseFactory);
+    public AppendProcessor(final ImapProcessor next, final MailboxManager mailboxManager, final StatusResponseFactory statusResponseFactory) {
+        super(AppendRequest.class, next, mailboxManager, statusResponseFactory);
     }
-    
+
     /*
      * (non-Javadoc)
-     * @see org.apache.james.imap.processor.AbstractMailboxProcessor#doProcess(org.apache.james.imap.api.message.request.ImapRequest, org.apache.james.imap.api.process.ImapSession, java.lang.String, org.apache.james.imap.api.ImapCommand, org.apache.james.imap.api.process.ImapProcessor.Responder)
+     * 
+     * @see
+     * org.apache.james.imap.processor.AbstractMailboxProcessor#doProcess(org
+     * .apache.james.imap.api.message.request.ImapRequest,
+     * org.apache.james.imap.api.process.ImapSession, java.lang.String,
+     * org.apache.james.imap.api.ImapCommand,
+     * org.apache.james.imap.api.process.ImapProcessor.Responder)
      */
-    protected void doProcess(AppendRequest request, ImapSession session,
-            String tag, ImapCommand command, Responder responder) {
+    protected void doProcess(AppendRequest request, ImapSession session, String tag, ImapCommand command, Responder responder) {
         final String mailboxName = request.getMailboxName();
         final InputStream messageIn = request.getMessage();
         final Date datetime = request.getDatetime();
@@ -68,91 +71,91 @@ public class AppendProcessor extends AbstractMailboxProcessor<AppendRequest> {
             final MailboxPath mailboxPath = buildFullPath(session, mailboxName);
             final MailboxManager mailboxManager = getMailboxManager();
             final MessageManager mailbox = mailboxManager.getMailbox(mailboxPath, ImapSessionUtils.getMailboxSession(session));
-            appendToMailbox(messageIn, datetime, flags, session, tag,
-                    command, mailbox, responder, mailboxPath);
+            appendToMailbox(messageIn, datetime, flags, session, tag, command, mailbox, responder, mailboxPath);
         } catch (MailboxNotFoundException e) {
             // consume message on exception
             consume(messageIn);
-            
-//          Indicates that the mailbox does not exist
-//          So TRY CREATE
+
+            // Indicates that the mailbox does not exist
+            // So TRY CREATE
             tryCreate(session, tag, command, responder, e);
-            
+
         } catch (MailboxException e) {
             // consume message on exception
             consume(messageIn);
-//          Some other issue
+            // Some other issue
             no(command, tag, responder, HumanReadableText.GENERIC_FAILURE_DURING_PROCESSING);
-            
+
         }
 
     }
-    
+
     private void consume(InputStream in) {
         try {
-            while(in.read() != -1); // NOPMD false positive
+            while (in.read() != -1)
+                ; // NOPMD false positive
         } catch (IOException e1) { // NOPMD false positive
             // just consume
-        } 
+        }
     }
 
     /**
      * Issues a TRY CREATE response.
-     * @param session not null
-     * @param tag not null
-     * @param command not null
-     * @param responder not null
-     * @param e not null
+     * 
+     * @param session
+     *            not null
+     * @param tag
+     *            not null
+     * @param command
+     *            not null
+     * @param responder
+     *            not null
+     * @param e
+     *            not null
      */
-    private void tryCreate(ImapSession session, String tag, ImapCommand command, 
-            Responder responder, MailboxNotFoundException e) {
-        
+    private void tryCreate(ImapSession session, String tag, ImapCommand command, Responder responder, MailboxNotFoundException e) {
+
         final Logger logger = session.getLog();
         if (logger.isDebugEnabled()) {
             logger.debug("Cannot open mailbox: ", e);
         }
-        
-        no(command, tag, responder,
-                HumanReadableText.FAILURE_NO_SUCH_MAILBOX,
-                StatusResponse.ResponseCode.tryCreate());
+
+        no(command, tag, responder, HumanReadableText.FAILURE_NO_SUCH_MAILBOX, StatusResponse.ResponseCode.tryCreate());
     }
 
-    private void appendToMailbox(final InputStream message, final Date datetime,
-            final Flags flagsToBeSet, final ImapSession session, final String tag,
-            final ImapCommand command, final MessageManager mailbox, Responder responder, final MailboxPath mailboxPath) {
+    private void appendToMailbox(final InputStream message, final Date datetime, final Flags flagsToBeSet, final ImapSession session, final String tag, final ImapCommand command, final MessageManager mailbox, Responder responder, final MailboxPath mailboxPath) {
         try {
             final MailboxSession mailboxSession = ImapSessionUtils.getMailboxSession(session);
             final SelectedMailbox selectedMailbox = session.getSelected();
             final MailboxManager mailboxManager = getMailboxManager();
-            final boolean isSelectedMailbox = selectedMailbox != null
-                    && selectedMailbox.getPath().equals(mailboxPath);
-            final long uid  = mailbox.appendMessage(message, datetime, mailboxSession, 
-                    !isSelectedMailbox, flagsToBeSet);
+            final boolean isSelectedMailbox = selectedMailbox != null && selectedMailbox.getPath().equals(mailboxPath);
+            final long uid = mailbox.appendMessage(message, datetime, mailboxSession, !isSelectedMailbox, flagsToBeSet);
             if (isSelectedMailbox) {
                 selectedMailbox.addRecent(uid);
             }
-            
+
             // get folder UIDVALIDITY
             Long uidValidity = mailboxManager.getMailbox(mailboxPath, mailboxSession).getMetaData(false, mailboxSession, FetchGroup.NO_UNSEEN).getUidValidity();
 
             unsolicitedResponses(session, responder, false);
 
-            // in case of MULTIAPPEND support we will push more then one UID here
+            // in case of MULTIAPPEND support we will push more then one UID
+            // here
             okComplete(command, tag, ResponseCode.appendUid(uidValidity, new IdRange[] { new IdRange(uid) }), responder);
         } catch (MailboxNotFoundException e) {
-//          Indicates that the mailbox does not exist
-//          So TRY CREATE
+            // Indicates that the mailbox does not exist
+            // So TRY CREATE
             tryCreate(session, tag, command, responder, e);
-        /*} catch (StorageException e) {
-            taggedBad(command, tag, responder, e.getKey());
-        */   
+            /*
+             * } catch (StorageException e) { taggedBad(command, tag, responder,
+             * e.getKey());
+             */
         } catch (MailboxException e) {
             session.getLog().debug("Unable to append message", e);
 
-//          Some other issue
+            // Some other issue
             no(command, tag, responder, HumanReadableText.SAVE_FAILED);
         }
     }
-    
-    
+
 }

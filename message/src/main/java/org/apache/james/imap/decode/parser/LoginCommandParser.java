@@ -29,7 +29,6 @@ import org.apache.james.imap.message.request.LoginRequest;
 
 /**
  * Parse LOGIN commands
- *
  */
 public class LoginCommandParser extends AbstractImapCommandParser {
 
@@ -37,17 +36,20 @@ public class LoginCommandParser extends AbstractImapCommandParser {
         super(ImapCommand.nonAuthenticatedStateCommand(ImapConstants.LOGIN_COMMAND_NAME));
     }
 
-
     /*
      * (non-Javadoc)
-     * @see org.apache.james.imap.decode.base.AbstractImapCommandParser#decode(org.apache.james.imap.api.ImapCommand, org.apache.james.imap.decode.ImapRequestLineReader, java.lang.String, org.apache.james.imap.api.process.ImapSession)
+     * 
+     * @see
+     * org.apache.james.imap.decode.base.AbstractImapCommandParser#decode(org
+     * .apache.james.imap.api.ImapCommand,
+     * org.apache.james.imap.decode.ImapRequestLineReader, java.lang.String,
+     * org.apache.james.imap.api.process.ImapSession)
      */
-    protected ImapMessage decode(ImapCommand command,
-            ImapRequestLineReader request, String tag, ImapSession session) throws DecodingException {
+    protected ImapMessage decode(ImapCommand command, ImapRequestLineReader request, String tag, ImapSession session) throws DecodingException {
         final String userid = request.astring();
         final String password = request.astring();
         request.eol();
-        
+
         final ImapMessage result = new LoginRequest(command, userid, password, tag);
         return result;
     }

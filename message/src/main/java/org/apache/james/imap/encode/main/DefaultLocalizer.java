@@ -24,8 +24,8 @@ import org.apache.james.imap.api.display.Locales;
 import org.apache.james.imap.api.display.Localizer;
 
 /**
- * Just uses {@link HumanReadableText#getDefaultValue()}.
- * This implementation is independent of user, client and system locale.
+ * Just uses {@link HumanReadableText#getDefaultValue()}. This implementation is
+ * independent of user, client and system locale.
  */
 public class DefaultLocalizer implements Localizer {
 

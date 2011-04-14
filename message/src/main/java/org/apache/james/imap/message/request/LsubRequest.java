@@ -25,8 +25,7 @@ public class LsubRequest extends AbstractImapRequest {
 
     private final String mailboxPattern;
 
-    public LsubRequest(final ImapCommand command, final String referenceName,
-            final String mailboxPattern, final String tag) {
+    public LsubRequest(final ImapCommand command, final String referenceName, final String mailboxPattern, final String tag) {
         super(tag, command);
         this.baseReferenceName = referenceName;
         this.mailboxPattern = mailboxPattern;

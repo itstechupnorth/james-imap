@@ -35,7 +35,6 @@ import org.apache.james.mailbox.MailboxSession;
 
 /**
  * Default implementation of {@link SelectedMailbox}
- *
  */
 public class SelectedMailboxImpl implements SelectedMailbox {
 
@@ -47,8 +46,7 @@ public class SelectedMailboxImpl implements SelectedMailbox {
 
     private boolean recentUidRemoved;
 
-    public SelectedMailboxImpl(final MailboxManager mailboxManager, final Iterator<Long> uids,
-            final ImapSession session, final MailboxPath path) throws MailboxException {
+    public SelectedMailboxImpl(final MailboxManager mailboxManager, final Iterator<Long> uids, final ImapSession session, final MailboxPath path) throws MailboxException {
         recentUids = new TreeSet<Long>();
         recentUidRemoved = false;
         MailboxSession mailboxSession = ImapSessionUtils.getMailboxSession(session);
@@ -71,6 +69,7 @@ public class SelectedMailboxImpl implements SelectedMailbox {
 
     /*
      * (non-Javadoc)
+     * 
      * @see org.apache.james.imap.api.process.SelectedMailbox#isSizeChanged()
      */
     public boolean isSizeChanged() {
@@ -79,6 +78,7 @@ public class SelectedMailboxImpl implements SelectedMailbox {
 
     /*
      * (non-Javadoc)
+     * 
      * @see org.apache.james.imap.api.process.SelectedMailbox#msn(long)
      */
     public int msn(long uid) {
@@ -97,6 +97,7 @@ public class SelectedMailboxImpl implements SelectedMailbox {
 
     /*
      * (non-Javadoc)
+     * 
      * @see org.apache.james.imap.api.process.SelectedMailbox#uid(int)
      */
     public long uid(int msn) {
@@ -105,6 +106,7 @@ public class SelectedMailboxImpl implements SelectedMailbox {
 
     /*
      * (non-Javadoc)
+     * 
      * @see org.apache.james.imap.api.process.SelectedMailbox#removeRecent(long)
      */
     public boolean removeRecent(long uid) {
@@ -117,6 +119,7 @@ public class SelectedMailboxImpl implements SelectedMailbox {
 
     /*
      * (non-Javadoc)
+     * 
      * @see org.apache.james.imap.api.process.SelectedMailbox#addRecent(long)
      */
     public boolean addRecent(long uid) {
@@ -125,6 +128,7 @@ public class SelectedMailboxImpl implements SelectedMailbox {
 
     /*
      * (non-Javadoc)
+     * 
      * @see org.apache.james.imap.api.process.SelectedMailbox#getRecent()
      */
     public Collection<Long> getRecent() {
@@ -134,18 +138,21 @@ public class SelectedMailboxImpl implements SelectedMailbox {
 
     /*
      * (non-Javadoc)
+     * 
      * @see org.apache.james.imap.api.process.SelectedMailbox#recentCount()
      */
     public int recentCount() {
         checkExpungedRecents();
         return recentUids.size();
     }
-    
+
     public long existsCount() {
         return converter.getCount();
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.apache.james.imap.api.process.SelectedMailbox#getPath()
      */
     public MailboxPath getPath() {
@@ -153,13 +160,14 @@ public class SelectedMailboxImpl implements SelectedMailbox {
     }
 
     private void checkExpungedRecents() {
-        for (final long uid: events.expungedUids()) {
+        for (final long uid : events.expungedUids()) {
             removeRecent(uid);
         }
     }
 
     /*
      * (non-Javadoc)
+     * 
      * @see org.apache.james.imap.api.process.SelectedMailbox#isRecent(long)
      */
     public boolean isRecent(long uid) {
@@ -168,7 +176,9 @@ public class SelectedMailboxImpl implements SelectedMailbox {
 
     /*
      * (non-Javadoc)
-     * @see org.apache.james.imap.api.process.SelectedMailbox#isRecentUidRemoved()
+     * 
+     * @see
+     * org.apache.james.imap.api.process.SelectedMailbox#isRecentUidRemoved()
      */
     public boolean isRecentUidRemoved() {
         return recentUidRemoved;
@@ -176,7 +186,9 @@ public class SelectedMailboxImpl implements SelectedMailbox {
 
     /*
      * (non-Javadoc)
-     * @see org.apache.james.imap.api.process.SelectedMailbox#resetRecentUidRemoved()
+     * 
+     * @see
+     * org.apache.james.imap.api.process.SelectedMailbox#resetRecentUidRemoved()
      */
     public void resetRecentUidRemoved() {
         recentUidRemoved = false;
@@ -184,6 +196,7 @@ public class SelectedMailboxImpl implements SelectedMailbox {
 
     /*
      * (non-Javadoc)
+     * 
      * @see org.apache.james.imap.api.process.SelectedMailbox#resetEvents()
      */
     public void resetEvents() {
@@ -192,6 +205,7 @@ public class SelectedMailboxImpl implements SelectedMailbox {
 
     /*
      * (non-Javadoc)
+     * 
      * @see org.apache.james.imap.api.process.SelectedMailbox#expungedUids()
      */
     public Collection<Long> expungedUids() {
@@ -200,7 +214,9 @@ public class SelectedMailboxImpl implements SelectedMailbox {
 
     /*
      * (non-Javadoc)
-     * @see org.apache.james.imap.api.process.SelectedMailbox#remove(java.lang.Long)
+     * 
+     * @see
+     * org.apache.james.imap.api.process.SelectedMailbox#remove(java.lang.Long)
      */
     public int remove(Long uid) {
         final int result = msn(uid);
@@ -210,6 +226,7 @@ public class SelectedMailboxImpl implements SelectedMailbox {
 
     /*
      * (non-Javadoc)
+     * 
      * @see org.apache.james.imap.api.process.SelectedMailbox#flagUpdateUids()
      */
     public Collection<Long> flagUpdateUids() {

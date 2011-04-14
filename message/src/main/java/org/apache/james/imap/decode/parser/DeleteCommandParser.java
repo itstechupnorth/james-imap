@@ -29,26 +29,27 @@ import org.apache.james.imap.message.request.DeleteRequest;
 
 /**
  * Parse DELETE commands
- *
  */
 public class DeleteCommandParser extends AbstractImapCommandParser {
-    
+
     public DeleteCommandParser() {
         super(ImapCommand.authenticatedStateCommand(ImapConstants.DELETE_COMMAND_NAME));
     }
 
-
     /*
      * (non-Javadoc)
-     * @see org.apache.james.imap.decode.base.AbstractImapCommandParser#decode(org.apache.james.imap.api.ImapCommand, org.apache.james.imap.decode.ImapRequestLineReader, java.lang.String, org.apache.james.imap.api.process.ImapSession)
+     * 
+     * @see
+     * org.apache.james.imap.decode.base.AbstractImapCommandParser#decode(org
+     * .apache.james.imap.api.ImapCommand,
+     * org.apache.james.imap.decode.ImapRequestLineReader, java.lang.String,
+     * org.apache.james.imap.api.process.ImapSession)
      */
-    protected ImapMessage decode(ImapCommand command,
-            ImapRequestLineReader request, String tag, ImapSession session) throws DecodingException {
+    protected ImapMessage decode(ImapCommand command, ImapRequestLineReader request, String tag, ImapSession session) throws DecodingException {
         String mailboxName = request.mailbox();
         request.eol();
 
-        final ImapMessage result = new DeleteRequest(command,
-                mailboxName, tag);
+        final ImapMessage result = new DeleteRequest(command, mailboxName, tag);
         return result;
     }
 

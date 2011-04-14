@@ -43,8 +43,7 @@ public interface ImapProcessor {
      *            <code>ImapSession</code>
      * @return response, not null
      */
-    public void process(ImapMessage message, Responder responder,
-            ImapSession session);
+    public void process(ImapMessage message, Responder responder, ImapSession session);
 
     /**
      * Response message sink.

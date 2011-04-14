@@ -24,9 +24,8 @@ import org.apache.james.imap.api.ImapMessage;
 
 /**
  * The actual Imap request
- *
  */
-public interface ImapRequest extends ImapMessage{
+public interface ImapRequest extends ImapMessage {
 
     /**
      * Gets the IMAP command whose execution is requested by the client.

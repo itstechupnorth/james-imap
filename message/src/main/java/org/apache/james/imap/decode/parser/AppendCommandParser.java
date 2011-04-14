@@ -33,12 +33,11 @@ import org.apache.james.imap.message.request.AppendRequest;
 
 /**
  * Parses APPEND command
- *
  */
 public class AppendCommandParser extends AbstractImapCommandParser {
 
     public AppendCommandParser() {
-    	super(ImapCommand.authenticatedStateCommand(ImapConstants.APPEND_COMMAND_NAME));
+        super(ImapCommand.authenticatedStateCommand(ImapConstants.APPEND_COMMAND_NAME));
     }
 
     /**
@@ -46,8 +45,7 @@ public class AppendCommandParser extends AbstractImapCommandParser {
      * "flag_list" argument from the request. If not, returns a MessageFlags
      * with no flags set.
      */
-    public Flags optionalAppendFlags(ImapRequestLineReader request)
-            throws DecodingException {
+    public Flags optionalAppendFlags(ImapRequestLineReader request) throws DecodingException {
         char next = request.nextWordChar();
         if (next == '(') {
             return request.flagList();
@@ -60,8 +58,7 @@ public class AppendCommandParser extends AbstractImapCommandParser {
      * If the next character in the request is a '"', tries to read a DateTime
      * argument. If not, returns null.
      */
-    public Date optionalDateTime(ImapRequestLineReader request)
-            throws DecodingException {
+    public Date optionalDateTime(ImapRequestLineReader request) throws DecodingException {
         char next = request.nextWordChar();
         if (next == '"') {
             return request.dateTime();
@@ -70,13 +67,16 @@ public class AppendCommandParser extends AbstractImapCommandParser {
         }
     }
 
-
     /*
      * (non-Javadoc)
-     * @see org.apache.james.imap.decode.base.AbstractImapCommandParser#decode(org.apache.james.imap.api.ImapCommand, org.apache.james.imap.decode.ImapRequestLineReader, java.lang.String, org.apache.james.imap.api.process.ImapSession)
+     * 
+     * @see
+     * org.apache.james.imap.decode.base.AbstractImapCommandParser#decode(org
+     * .apache.james.imap.api.ImapCommand,
+     * org.apache.james.imap.decode.ImapRequestLineReader, java.lang.String,
+     * org.apache.james.imap.api.process.ImapSession)
      */
-    protected ImapMessage decode(ImapCommand command,
-            ImapRequestLineReader request, String tag, ImapSession session) throws DecodingException {
+    protected ImapMessage decode(ImapCommand command, ImapRequestLineReader request, String tag, ImapSession session) throws DecodingException {
         String mailboxName = request.mailbox();
         Flags flags = optionalAppendFlags(request);
         if (flags == null) {
@@ -87,9 +87,8 @@ public class AppendCommandParser extends AbstractImapCommandParser {
             datetime = new Date();
         }
         request.nextWordChar();
-        
-        final ImapMessage result = new AppendRequest(command,
-                mailboxName, flags, datetime, request.consumeLiteral(true), tag);
+
+        final ImapMessage result = new AppendRequest(command, mailboxName, flags, datetime, request.consumeLiteral(true), tag);
         return result;
     }
 }

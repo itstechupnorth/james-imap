@@ -36,8 +36,7 @@ public class RecentResponseEncoder extends AbstractChainedImapEncoder {
         return (message instanceof RecentResponse);
     }
 
-    protected void doEncode(ImapMessage acceptableMessage,
-            ImapResponseComposer composer, ImapSession session) throws IOException { // TODO
+    protected void doEncode(ImapMessage acceptableMessage, ImapResponseComposer composer, ImapSession session) throws IOException { // TODO
         // Auto-generated
         // method stub
         final RecentResponse recentResponse = (RecentResponse) acceptableMessage;

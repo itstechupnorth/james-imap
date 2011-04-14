@@ -23,7 +23,6 @@ import org.apache.james.imap.api.message.request.ImapRequest;
 
 /**
  * Abstract base class for {@link ImapRequest} implementations
- *
  */
 abstract public class AbstractImapRequest implements ImapRequest {
 
@@ -53,5 +52,5 @@ abstract public class AbstractImapRequest implements ImapRequest {
     public final String getTag() {
         return tag;
     }
-    
+
 }

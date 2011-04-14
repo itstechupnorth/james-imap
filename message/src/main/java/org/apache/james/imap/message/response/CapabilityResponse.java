@@ -23,8 +23,9 @@ import java.util.List;
 import org.apache.james.imap.api.message.response.ImapResponseMessage;
 
 /**
- * A <code>CAPABILITY</code> response. See <code>7.2.1</code> of 
- * <a href='http://james.apache.org/server/rfclist/imap4/rfc2060.txt' rel='tag'>RFC2060</a>.
+ * A <code>CAPABILITY</code> response. See <code>7.2.1</code> of <a
+ * href='http://james.apache.org/server/rfclist/imap4/rfc2060.txt'
+ * rel='tag'>RFC2060</a>.
  */
 public class CapabilityResponse implements ImapResponseMessage {
 
@@ -32,7 +33,9 @@ public class CapabilityResponse implements ImapResponseMessage {
 
     /**
      * Constructs a response based on the given capabilities.
-     * @param capabilities not null
+     * 
+     * @param capabilities
+     *            not null
      */
     public CapabilityResponse(final List<String> capabilities) {
         super();
@@ -41,6 +44,7 @@ public class CapabilityResponse implements ImapResponseMessage {
 
     /**
      * Gets a list containing the capabilities of this server.
+     * 
      * @return not null
      */
     public List<String> getCapabilities() {
@@ -74,17 +78,13 @@ public class CapabilityResponse implements ImapResponseMessage {
 
     /**
      * Renders a description suitable for debugging.
-     *
+     * 
      * @return a description suitable for debugging
      */
-    public String toString()
-    {
-        final String retValue = "CapabilityResponse ( "
-            + "capabilities = " + this.capabilities 
-            + " )";
-    
+    public String toString() {
+        final String retValue = "CapabilityResponse ( " + "capabilities = " + this.capabilities + " )";
+
         return retValue;
     }
-    
-    
+
 }

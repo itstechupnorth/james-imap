@@ -23,8 +23,7 @@ import org.apache.james.imap.api.ImapCommand;
 public class SubscribeRequest extends AbstractImapRequest {
     private final String mailboxName;
 
-    public SubscribeRequest(final ImapCommand command,
-            final String mailboxName, final String tag) {
+    public SubscribeRequest(final ImapCommand command, final String mailboxName, final String tag) {
         super(tag, command);
         this.mailboxName = mailboxName;
     }

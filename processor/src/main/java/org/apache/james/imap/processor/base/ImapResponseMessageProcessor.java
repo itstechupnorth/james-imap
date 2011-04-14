@@ -26,12 +26,10 @@ import org.apache.james.imap.api.process.ImapSession;
 public class ImapResponseMessageProcessor extends AbstractChainedProcessor<ImapResponseMessage> {
 
     public ImapResponseMessageProcessor(final ImapProcessor next) {
-        super(ImapResponseMessage.class,next);
+        super(ImapResponseMessage.class, next);
     }
 
-
-    protected void doProcess(ImapResponseMessage acceptableMessage,
-            Responder responder, ImapSession session) {
+    protected void doProcess(ImapResponseMessage acceptableMessage, Responder responder, ImapSession session) {
         responder.respond(acceptableMessage);
     }
 }

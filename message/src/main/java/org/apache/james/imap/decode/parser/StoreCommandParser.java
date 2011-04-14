@@ -32,9 +32,8 @@ import org.apache.james.imap.message.request.StoreRequest;
 
 /**
  * Parse STORE commands
- *
  */
-public class StoreCommandParser extends AbstractUidCommandParser  {
+public class StoreCommandParser extends AbstractUidCommandParser {
 
     public StoreCommandParser() {
         super(ImapCommand.selectedStateCommand(ImapConstants.STORE_COMMAND_NAME));
@@ -42,11 +41,14 @@ public class StoreCommandParser extends AbstractUidCommandParser  {
 
     /*
      * (non-Javadoc)
-     * @see org.apache.james.imap.decode.parser.AbstractUidCommandParser#decode(org.apache.james.imap.api.ImapCommand, org.apache.james.imap.decode.ImapRequestLineReader, java.lang.String, boolean, org.apache.james.imap.api.process.ImapSession)
+     * 
+     * @see
+     * org.apache.james.imap.decode.parser.AbstractUidCommandParser#decode(org
+     * .apache.james.imap.api.ImapCommand,
+     * org.apache.james.imap.decode.ImapRequestLineReader, java.lang.String,
+     * boolean, org.apache.james.imap.api.process.ImapSession)
      */
-    protected ImapMessage decode(ImapCommand command,
-            ImapRequestLineReader request, String tag, boolean useUids, ImapSession session)
-            throws DecodingException {
+    protected ImapMessage decode(ImapCommand command, ImapRequestLineReader request, String tag, boolean useUids, ImapSession session) throws DecodingException {
         final IdRange[] idSet = request.parseIdRange();
         final Boolean sign;
         boolean silent = false;
@@ -68,12 +70,11 @@ public class StoreCommandParser extends AbstractUidCommandParser  {
         } else if ("FLAGS.SILENT".equalsIgnoreCase(directive)) {
             silent = true;
         } else {
-            throw new DecodingException(HumanReadableText.ILLEGAL_ARGUMENTS, 
-                    "Invalid Store Directive: '" + directive + "'");
+            throw new DecodingException(HumanReadableText.ILLEGAL_ARGUMENTS, "Invalid Store Directive: '" + directive + "'");
         }
-        
+
         // Handle all kind of "store-att-flags"
-        // See IMAP-281        
+        // See IMAP-281
         final Flags flags = new Flags();
         if (request.nextWordChar() == '(') {
             flags.add(request.flagList());
@@ -89,7 +90,7 @@ public class StoreCommandParser extends AbstractUidCommandParser  {
                 }
             }
         }
-        
+
         request.eol();
         final ImapMessage result = new StoreRequest(command, idSet, silent, flags, useUids, tag, sign);
         return result;

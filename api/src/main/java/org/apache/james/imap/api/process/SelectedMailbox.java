@@ -23,22 +23,21 @@ import java.util.Collection;
 
 import org.apache.james.mailbox.MailboxPath;
 
-
 /**
  * Interface which represent a selected Mailbox during the selected state
- *
  */
 public interface SelectedMailbox {
 
-	public final static int NO_SUCH_MESSAGE = -1;
-	
+    public final static int NO_SUCH_MESSAGE = -1;
+
     /**
      * Deselect the Mailbox
      */
     public abstract void deselect();
 
     /**
-     * Return the msg index of the given uid or {@link #NO_SUCH_MESSAGE} if no message with the given uid was found
+     * Return the msg index of the given uid or {@link #NO_SUCH_MESSAGE} if no
+     * message with the given uid was found
      * 
      * @param uid
      * @return index
@@ -46,7 +45,8 @@ public interface SelectedMailbox {
     public int msn(long uid);
 
     /**
-     * Return the uid of the message for the given index or {@link #NO_SUCH_MESSAGE} if no message with the given index was found
+     * Return the uid of the message for the given index or
+     * {@link #NO_SUCH_MESSAGE} if no message with the given index was found
      * 
      * @param index
      * @return uid
@@ -63,6 +63,7 @@ public interface SelectedMailbox {
 
     /**
      * Remove a recent uid
+     * 
      * @param uid
      * @return true if it was successfully
      */
@@ -81,7 +82,7 @@ public interface SelectedMailbox {
      * @return recentCount
      */
     public int recentCount();
-    
+
     /**
      * Return the count of all existing uids
      * 
@@ -145,29 +146,34 @@ public interface SelectedMailbox {
 
     /**
      * Removes the given UID.
-     * @param uid not null
-     * @return the message sequence number that the UID held before or {@link #NO_SUCH_MESSAGE} if no message with the given uid 
-     *         was found
-     * being expunged
+     * 
+     * @param uid
+     *            not null
+     * @return the message sequence number that the UID held before or
+     *         {@link #NO_SUCH_MESSAGE} if no message with the given uid was
+     *         found being expunged
      */
     public int remove(Long uid);
 
     /**
-     * Return a Collection which holds all uids reflecting the Messages which flags were updated
+     * Return a Collection which holds all uids reflecting the Messages which
+     * flags were updated
      * 
      * @return flagsUids
      */
     public Collection<Long> flagUpdateUids();
-    
+
     /**
-     * Return the uid of the first message in the mailbox or -1 if the mailbox is empty
+     * Return the uid of the first message in the mailbox or -1 if the mailbox
+     * is empty
      * 
      * @return firstUid
      */
     public long getFirstUid();
-    
+
     /**
-     * Return the uid of the last message in the mailbox or -1 if the mailbox is empty
+     * Return the uid of the last message in the mailbox or -1 if the mailbox is
+     * empty
      * 
      * @return lastUid
      */

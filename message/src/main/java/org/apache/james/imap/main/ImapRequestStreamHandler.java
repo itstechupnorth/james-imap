@@ -36,12 +36,11 @@ import org.apache.james.imap.message.request.SystemMessage;
 import org.slf4j.Logger;
 
 /**
- * @version $Revision: 109034 $
+ * 
  */
-public final class ImapRequestStreamHandler extends AbstractImapRequestHandler{
+public final class ImapRequestStreamHandler extends AbstractImapRequestHandler {
 
-    public ImapRequestStreamHandler(final ImapDecoder decoder,
-            final ImapProcessor processor, final ImapEncoder encoder) {
+    public ImapRequestStreamHandler(final ImapDecoder decoder, final ImapProcessor processor, final ImapEncoder encoder) {
         super(decoder, processor, encoder);
     }
 
@@ -56,35 +55,30 @@ public final class ImapRequestStreamHandler extends AbstractImapRequestHandler{
      * 
      * @return whether additional commands are expected.
      */
-    public boolean handleRequest(InputStream input, OutputStream output,
-            ImapSession session) {
+    public boolean handleRequest(InputStream input, OutputStream output, ImapSession session) {
         final boolean result;
         if (isSelectedMailboxDeleted(session)) {
             writeSignoff(output, session);
             result = false;
         } else {
-            ImapRequestLineReader request = new ImapRequestStreamLineReader(input,
-                    output);
+            ImapRequestLineReader request = new ImapRequestStreamLineReader(input, output);
 
             final Logger logger = session.getLog();
             try {
                 request.nextChar();
             } catch (DecodingException e) {
-                logger.debug("Unexpected end of line. Cannot handle request: ",
-                        e);
+                logger.debug("Unexpected end of line. Cannot handle request: ", e);
                 abandon(output, session);
                 return false;
             }
 
-            ImapResponseComposerImpl response = new ImapResponseComposerImpl(
-                    new OutputStreamImapResponseWriter(output));
+            ImapResponseComposerImpl response = new ImapResponseComposerImpl(new OutputStreamImapResponseWriter(output));
 
             if (doProcessRequest(request, response, session)) {
 
                 try {
                     // Consume the rest of the line, throwing away any extras.
-                    // This allows us
-                    // to clean up after a protocol error.
+                    // This allows us to clean up after a protocol error.
                     request.consumeLine();
                 } catch (DecodingException e) {
                     // Cannot clean up. No recovery is therefore possible.
@@ -117,7 +111,7 @@ public final class ImapRequestStreamHandler extends AbstractImapRequestHandler{
     }
 
     private void abandon(OutputStream out, ImapSession session) {
-        if (session != null){
+        if (session != null) {
             try {
                 session.logout();
             } catch (Throwable t) {
@@ -131,6 +125,5 @@ public final class ImapRequestStreamHandler extends AbstractImapRequestHandler{
         }
         processor.process(SystemMessage.FORCE_LOGOUT, new SilentResponder(), session);
     }
-
 
 }

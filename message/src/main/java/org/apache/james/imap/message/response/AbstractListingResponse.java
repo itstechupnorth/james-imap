@@ -27,9 +27,9 @@ import org.apache.james.imap.api.process.MailboxType;
 public abstract class AbstractListingResponse {
 
     private final boolean children;
-    
+
     private final boolean noChildren;
-    
+
     private final boolean noInferiors;
 
     private final boolean noSelect;
@@ -41,14 +41,10 @@ public abstract class AbstractListingResponse {
     private final char hierarchyDelimiter;
 
     private final String name;
-    
+
     private MailboxType type;
 
-    public AbstractListingResponse(final boolean noInferiors,
-            final boolean noSelect, final boolean marked,
-            final boolean unmarked, boolean hasChildren,
-            boolean hasNoChildren, final String name, 
-            final char hierarchyDelimiter,final MailboxType type) {
+    public AbstractListingResponse(final boolean noInferiors, final boolean noSelect, final boolean marked, final boolean unmarked, boolean hasChildren, boolean hasNoChildren, final String name, final char hierarchyDelimiter, final MailboxType type) {
         super();
         this.noInferiors = noInferiors;
         this.noSelect = noSelect;
@@ -58,7 +54,7 @@ public abstract class AbstractListingResponse {
         this.noChildren = hasNoChildren;
         this.name = name;
         this.hierarchyDelimiter = hierarchyDelimiter;
-        this.type=type;
+        this.type = type;
     }
 
     /**
@@ -115,17 +111,18 @@ public abstract class AbstractListingResponse {
         return unmarked;
     }
 
-    
     /**
      * Is the <code>HasNoChildren</code> name attribute set?
+     * 
      * @return true if <code>HasNoChildren</code>, false otherwise
      */
     public boolean hasNoChildren() {
         return noChildren;
     }
-    
+
     /**
      * Is the <code>HasChildren</code> name attribute set?
+     * 
      * @return true if <code>HasChildren</code>, false otherwise
      */
     public boolean hasChildren() {
@@ -134,18 +131,18 @@ public abstract class AbstractListingResponse {
 
     /**
      * returns type of the mailbox
+     * 
      * @return mailbox type
      */
     public MailboxType getType() {
         return type;
     }
-    
-    
+
     /**
      * Are any name attributes set?
      * 
      * @return true if {@link #isNoInferiors()}, {@link #isNoSelect()},
-     *         {@link #isMarked()} or {@link #isUnmarked(){
+     *         {@link #isMarked()} or {@link #isUnmarked()
      */
     public final boolean isNameAttributed() {
         return noInferiors || noSelect || marked || unmarked || children || noChildren || (!MailboxType.OTHER.equals(type));
@@ -208,13 +205,8 @@ public abstract class AbstractListingResponse {
     public String toString() {
         final String TAB = " ";
 
-        String retValue = getClass().getName() + " ( " + "noInferiors = "
-                + this.noInferiors + TAB + "noSelect = " + this.noSelect + TAB
-                + "marked = " + this.marked + TAB + "unmarked = "
-                + this.unmarked + TAB + "hierarchyDelimiter = "
-                + this.hierarchyDelimiter + TAB + "name = " + this.name + TAB
-                + "type = " + this.type + TAB
-                + " )";
+        String retValue = getClass().getName() + " ( " + "noInferiors = " + this.noInferiors + TAB + "noSelect = " + this.noSelect + TAB + "marked = " + this.marked + TAB + "unmarked = " + this.unmarked + TAB + "hierarchyDelimiter = " + this.hierarchyDelimiter + TAB + "name = " + this.name + TAB
+                + "type = " + this.type + TAB + " )";
 
         return retValue;
     }

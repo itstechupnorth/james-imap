@@ -25,7 +25,6 @@ import org.apache.james.imap.message.request.LsubRequest;
 
 /**
  * Parse LSUB commands
- *
  */
 public class LsubCommandParser extends ListCommandParser {
 
@@ -35,10 +34,13 @@ public class LsubCommandParser extends ListCommandParser {
 
     /*
      * (non-Javadoc)
-     * @see org.apache.james.imap.decode.parser.ListCommandParser#createMessage(org.apache.james.imap.api.ImapCommand, java.lang.String, java.lang.String, java.lang.String)
+     * 
+     * @see
+     * org.apache.james.imap.decode.parser.ListCommandParser#createMessage(org
+     * .apache.james.imap.api.ImapCommand, java.lang.String, java.lang.String,
+     * java.lang.String)
      */
-    protected ImapMessage createMessage(ImapCommand command,
-            String referenceName, String mailboxPattern, String tag) {
+    protected ImapMessage createMessage(ImapCommand command, String referenceName, String mailboxPattern, String tag) {
         final ImapMessage result = new LsubRequest(command, referenceName, mailboxPattern, tag);
         return result;
     }

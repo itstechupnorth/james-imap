@@ -45,7 +45,6 @@ import org.apache.james.imap.message.request.SearchRequest;
 
 /**
  * Parse SEARCH commands
- *
  */
 public class SearchCommandParser extends AbstractUidCommandParser {
 
@@ -66,9 +65,7 @@ public class SearchCommandParser extends AbstractUidCommandParser {
      * @param isFirstToken
      *            true when this is the first token read, false otherwise
      */
-    protected SearchKey searchKey(ImapRequestLineReader request, Charset charset,
-            boolean isFirstToken) throws DecodingException,
-            IllegalCharsetNameException, UnsupportedCharsetException {
+    protected SearchKey searchKey(ImapRequestLineReader request, Charset charset, boolean isFirstToken) throws DecodingException, IllegalCharsetNameException, UnsupportedCharsetException {
         final char next = request.nextChar();
         if (next >= '0' && next <= '9' || next == '*') {
             return sequenceSet(request);
@@ -77,64 +74,62 @@ public class SearchCommandParser extends AbstractUidCommandParser {
         } else {
             final int cap = consumeAndCap(request);
             switch (cap) {
-                case 'A':
-                    return a(request);
-                case 'B':
-                    return b(request, charset);
-                case 'C':
-                    return c(request, isFirstToken, charset);
-                case 'D':
-                    return d(request);
-                case 'E':
-                    throw new DecodingException(HumanReadableText.ILLEGAL_ARGUMENTS, "Unknown search key");
-                case 'F':
-                    return f(request, charset);
-                case 'G':
-                    throw new DecodingException(HumanReadableText.ILLEGAL_ARGUMENTS, "Unknown search key");
-                case 'H':
-                    return header(request, charset);
-                case 'I':
-                    throw new DecodingException(HumanReadableText.ILLEGAL_ARGUMENTS, "Unknown search key");
-                case 'J':
-                    throw new DecodingException(HumanReadableText.ILLEGAL_ARGUMENTS, "Unknown search key");
-                case 'K':
-                    return keyword(request);
-                case 'L':
-                    return larger(request);
-                case 'M':
-                    throw new DecodingException(HumanReadableText.ILLEGAL_ARGUMENTS, "Unknown search key");
-                case 'N':
-                    return n(request, charset);
-                case 'O':
-                    return o(request, charset);
-                case 'P':
-                    throw new DecodingException(HumanReadableText.ILLEGAL_ARGUMENTS, "Unknown search key");
-                case 'Q':
-                    throw new DecodingException(HumanReadableText.ILLEGAL_ARGUMENTS, "Unknown search key");
-                case 'R':
-                    return recent(request);
-                case 'S':
-                    return s(request, charset);
-                case 'T':
-                    return t(request, charset);
-                case 'U':
-                    return u(request);
-                default:
-                    throw new DecodingException(HumanReadableText.ILLEGAL_ARGUMENTS, "Unknown search key");
+            case 'A':
+                return a(request);
+            case 'B':
+                return b(request, charset);
+            case 'C':
+                return c(request, isFirstToken, charset);
+            case 'D':
+                return d(request);
+            case 'E':
+                throw new DecodingException(HumanReadableText.ILLEGAL_ARGUMENTS, "Unknown search key");
+            case 'F':
+                return f(request, charset);
+            case 'G':
+                throw new DecodingException(HumanReadableText.ILLEGAL_ARGUMENTS, "Unknown search key");
+            case 'H':
+                return header(request, charset);
+            case 'I':
+                throw new DecodingException(HumanReadableText.ILLEGAL_ARGUMENTS, "Unknown search key");
+            case 'J':
+                throw new DecodingException(HumanReadableText.ILLEGAL_ARGUMENTS, "Unknown search key");
+            case 'K':
+                return keyword(request);
+            case 'L':
+                return larger(request);
+            case 'M':
+                throw new DecodingException(HumanReadableText.ILLEGAL_ARGUMENTS, "Unknown search key");
+            case 'N':
+                return n(request, charset);
+            case 'O':
+                return o(request, charset);
+            case 'P':
+                throw new DecodingException(HumanReadableText.ILLEGAL_ARGUMENTS, "Unknown search key");
+            case 'Q':
+                throw new DecodingException(HumanReadableText.ILLEGAL_ARGUMENTS, "Unknown search key");
+            case 'R':
+                return recent(request);
+            case 'S':
+                return s(request, charset);
+            case 'T':
+                return t(request, charset);
+            case 'U':
+                return u(request);
+            default:
+                throw new DecodingException(HumanReadableText.ILLEGAL_ARGUMENTS, "Unknown search key");
             }
         }
     }
 
-    private SearchKey paren(ImapRequestLineReader request, Charset charset)
-            throws DecodingException {
+    private SearchKey paren(ImapRequestLineReader request, Charset charset) throws DecodingException {
         request.consume();
         List<SearchKey> keys = new ArrayList<SearchKey>();
         addUntilParen(request, keys, charset);
         return SearchKey.buildAnd(keys);
     }
 
-    private void addUntilParen(ImapRequestLineReader request, List<SearchKey> keys,
-            Charset charset) throws DecodingException {
+    private void addUntilParen(ImapRequestLineReader request, List<SearchKey> keys, Charset charset) throws DecodingException {
         final char next = request.nextWordChar();
         if (next == ')') {
             request.consume();
@@ -145,15 +140,13 @@ public class SearchCommandParser extends AbstractUidCommandParser {
         }
     }
 
-    private int consumeAndCap(ImapRequestLineReader request)
-            throws DecodingException {
+    private int consumeAndCap(ImapRequestLineReader request) throws DecodingException {
         final char next = request.consume();
         final int cap = next > 'Z' ? next ^ 32 : next;
         return cap;
     }
 
-    private SearchKey cc(ImapRequestLineReader request, final Charset charset)
-            throws DecodingException {
+    private SearchKey cc(ImapRequestLineReader request, final Charset charset) throws DecodingException {
         final SearchKey result;
         nextIsSpace(request);
         final String value = request.astring(charset);
@@ -161,24 +154,19 @@ public class SearchCommandParser extends AbstractUidCommandParser {
         return result;
     }
 
-    private SearchKey c(ImapRequestLineReader request,
-            final boolean isFirstToken, final Charset charset)
-            throws DecodingException, IllegalCharsetNameException,
-            UnsupportedCharsetException {
+    private SearchKey c(ImapRequestLineReader request, final boolean isFirstToken, final Charset charset) throws DecodingException, IllegalCharsetNameException, UnsupportedCharsetException {
         final int next = consumeAndCap(request);
         switch (next) {
-            case 'C':
-                return cc(request, charset);
-            case 'H':
-                return charset(request, isFirstToken);
-            default:
-                throw new DecodingException(HumanReadableText.ILLEGAL_ARGUMENTS, "Unknown search key");
+        case 'C':
+            return cc(request, charset);
+        case 'H':
+            return charset(request, isFirstToken);
+        default:
+            throw new DecodingException(HumanReadableText.ILLEGAL_ARGUMENTS, "Unknown search key");
         }
     }
 
-    private SearchKey charset(ImapRequestLineReader request,
-            final boolean isFirstToken) throws DecodingException,
-            IllegalCharsetNameException, UnsupportedCharsetException {
+    private SearchKey charset(ImapRequestLineReader request, final boolean isFirstToken) throws DecodingException, IllegalCharsetNameException, UnsupportedCharsetException {
         final SearchKey result;
         nextIsA(request);
         nextIsR(request);
@@ -199,171 +187,160 @@ public class SearchCommandParser extends AbstractUidCommandParser {
     private SearchKey u(ImapRequestLineReader request) throws DecodingException {
         final int next = consumeAndCap(request);
         switch (next) {
-            case 'I':
-                return uid(request);
-            case 'N':
-                return un(request);
-            default:
-                throw new DecodingException(HumanReadableText.ILLEGAL_ARGUMENTS, "Unknown search key");
+        case 'I':
+            return uid(request);
+        case 'N':
+            return un(request);
+        default:
+            throw new DecodingException(HumanReadableText.ILLEGAL_ARGUMENTS, "Unknown search key");
         }
     }
 
-    private SearchKey un(ImapRequestLineReader request)
-            throws DecodingException {
+    private SearchKey un(ImapRequestLineReader request) throws DecodingException {
         final int next = consumeAndCap(request);
         switch (next) {
-            case 'A':
-                return unanswered(request);
-            case 'D':
-                return und(request);
-            case 'F':
-                return unflagged(request);
-            case 'K':
-                return unkeyword(request);
-            case 'S':
-                return unseen(request);
-            default:
-                throw new DecodingException(HumanReadableText.ILLEGAL_ARGUMENTS, "Unknown search key");
+        case 'A':
+            return unanswered(request);
+        case 'D':
+            return und(request);
+        case 'F':
+            return unflagged(request);
+        case 'K':
+            return unkeyword(request);
+        case 'S':
+            return unseen(request);
+        default:
+            throw new DecodingException(HumanReadableText.ILLEGAL_ARGUMENTS, "Unknown search key");
         }
     }
 
-    private SearchKey und(ImapRequestLineReader request)
-            throws DecodingException {
+    private SearchKey und(ImapRequestLineReader request) throws DecodingException {
         final int next = consumeAndCap(request);
         switch (next) {
-            case 'E':
-                return undeleted(request);
-            case 'R':
-                return undraft(request);
-            default:
-                throw new DecodingException(HumanReadableText.ILLEGAL_ARGUMENTS, "Unknown search key");
+        case 'E':
+            return undeleted(request);
+        case 'R':
+            return undraft(request);
+        default:
+            throw new DecodingException(HumanReadableText.ILLEGAL_ARGUMENTS, "Unknown search key");
         }
     }
 
-    private SearchKey t(ImapRequestLineReader request, final Charset charset)
-            throws DecodingException {
+    private SearchKey t(ImapRequestLineReader request, final Charset charset) throws DecodingException {
         final int next = consumeAndCap(request);
         switch (next) {
-            case 'E':
-                return text(request, charset);
-            case 'O':
-                return to(request, charset);
-            default:
-                throw new DecodingException(HumanReadableText.ILLEGAL_ARGUMENTS, "Unknown search key");
+        case 'E':
+            return text(request, charset);
+        case 'O':
+            return to(request, charset);
+        default:
+            throw new DecodingException(HumanReadableText.ILLEGAL_ARGUMENTS, "Unknown search key");
         }
     }
 
-    private SearchKey s(ImapRequestLineReader request, final Charset charset)
-            throws DecodingException {
+    private SearchKey s(ImapRequestLineReader request, final Charset charset) throws DecodingException {
         final int next = consumeAndCap(request);
         switch (next) {
-            case 'E':
-                return se(request);
-            case 'I':
-                return since(request);
-            case 'M':
-                return smaller(request);
-            case 'U':
-                return subject(request, charset);
-            default:
-                throw new DecodingException(HumanReadableText.ILLEGAL_ARGUMENTS, "Unknown search key");
+        case 'E':
+            return se(request);
+        case 'I':
+            return since(request);
+        case 'M':
+            return smaller(request);
+        case 'U':
+            return subject(request, charset);
+        default:
+            throw new DecodingException(HumanReadableText.ILLEGAL_ARGUMENTS, "Unknown search key");
         }
     }
 
-    private SearchKey se(ImapRequestLineReader request)
-            throws DecodingException {
+    private SearchKey se(ImapRequestLineReader request) throws DecodingException {
         final int next = consumeAndCap(request);
         switch (next) {
-            case 'E':
-                return seen(request);
-            case 'N':
-                return sen(request);
-            default:
-                throw new DecodingException(HumanReadableText.ILLEGAL_ARGUMENTS, "Unknown search key");
+        case 'E':
+            return seen(request);
+        case 'N':
+            return sen(request);
+        default:
+            throw new DecodingException(HumanReadableText.ILLEGAL_ARGUMENTS, "Unknown search key");
         }
     }
 
-    private SearchKey sen(ImapRequestLineReader request)
-            throws DecodingException {
+    private SearchKey sen(ImapRequestLineReader request) throws DecodingException {
         final int next = consumeAndCap(request);
         switch (next) {
-            case 'T':
-                return sent(request);
-            default:
-                throw new DecodingException(HumanReadableText.ILLEGAL_ARGUMENTS, "Unknown search key");
+        case 'T':
+            return sent(request);
+        default:
+            throw new DecodingException(HumanReadableText.ILLEGAL_ARGUMENTS, "Unknown search key");
         }
     }
 
-    private SearchKey sent(ImapRequestLineReader request)
-            throws DecodingException {
+    private SearchKey sent(ImapRequestLineReader request) throws DecodingException {
         final int next = consumeAndCap(request);
         switch (next) {
-            case 'B':
-                return sentBefore(request);
-            case 'O':
-                return sentOn(request);
-            case 'S':
-                return sentSince(request);
-            default:
-                throw new DecodingException(HumanReadableText.ILLEGAL_ARGUMENTS, "Unknown search key");
+        case 'B':
+            return sentBefore(request);
+        case 'O':
+            return sentOn(request);
+        case 'S':
+            return sentSince(request);
+        default:
+            throw new DecodingException(HumanReadableText.ILLEGAL_ARGUMENTS, "Unknown search key");
         }
     }
 
-    private SearchKey o(ImapRequestLineReader request, Charset charset)
-            throws DecodingException {
+    private SearchKey o(ImapRequestLineReader request, Charset charset) throws DecodingException {
         final int next = consumeAndCap(request);
         switch (next) {
-            case 'L':
-                return old(request);
-            case 'N':
-                return on(request);
-            case 'R':
-                return or(request, charset);
-            default:
-                throw new DecodingException(HumanReadableText.ILLEGAL_ARGUMENTS, "Unknown search key");
+        case 'L':
+            return old(request);
+        case 'N':
+            return on(request);
+        case 'R':
+            return or(request, charset);
+        default:
+            throw new DecodingException(HumanReadableText.ILLEGAL_ARGUMENTS, "Unknown search key");
         }
     }
 
-    private SearchKey n(ImapRequestLineReader request, Charset charset)
-            throws DecodingException {
+    private SearchKey n(ImapRequestLineReader request, Charset charset) throws DecodingException {
         final int next = consumeAndCap(request);
         switch (next) {
-            case 'E':
-                return _new(request);
-            case 'O':
-                return not(request, charset);
-            default:
-                throw new DecodingException(HumanReadableText.ILLEGAL_ARGUMENTS, "Unknown search key");
+        case 'E':
+            return _new(request);
+        case 'O':
+            return not(request, charset);
+        default:
+            throw new DecodingException(HumanReadableText.ILLEGAL_ARGUMENTS, "Unknown search key");
         }
     }
 
-    private SearchKey f(ImapRequestLineReader request, final Charset charset)
-            throws DecodingException {
+    private SearchKey f(ImapRequestLineReader request, final Charset charset) throws DecodingException {
         final int next = consumeAndCap(request);
         switch (next) {
-            case 'L':
-                return flagged(request);
-            case 'R':
-                return from(request, charset);
-            default:
-                throw new DecodingException(HumanReadableText.ILLEGAL_ARGUMENTS, "Unknown search key");
+        case 'L':
+            return flagged(request);
+        case 'R':
+            return from(request, charset);
+        default:
+            throw new DecodingException(HumanReadableText.ILLEGAL_ARGUMENTS, "Unknown search key");
         }
     }
 
     private SearchKey d(ImapRequestLineReader request) throws DecodingException {
         final int next = consumeAndCap(request);
         switch (next) {
-            case 'E':
-                return deleted(request);
-            case 'R':
-                return draft(request);
-            default:
-                throw new DecodingException(HumanReadableText.ILLEGAL_ARGUMENTS, "Unknown search key");
+        case 'E':
+            return deleted(request);
+        case 'R':
+            return draft(request);
+        default:
+            throw new DecodingException(HumanReadableText.ILLEGAL_ARGUMENTS, "Unknown search key");
         }
     }
 
-    private SearchKey keyword(ImapRequestLineReader request)
-            throws DecodingException {
+    private SearchKey keyword(ImapRequestLineReader request) throws DecodingException {
         final SearchKey result;
         nextIsE(request);
         nextIsY(request);
@@ -377,8 +354,7 @@ public class SearchCommandParser extends AbstractUidCommandParser {
         return result;
     }
 
-    private SearchKey unkeyword(ImapRequestLineReader request)
-            throws DecodingException {
+    private SearchKey unkeyword(ImapRequestLineReader request) throws DecodingException {
         final SearchKey result;
         nextIsE(request);
         nextIsY(request);
@@ -392,8 +368,7 @@ public class SearchCommandParser extends AbstractUidCommandParser {
         return result;
     }
 
-    private SearchKey header(ImapRequestLineReader request,
-            final Charset charset) throws DecodingException {
+    private SearchKey header(ImapRequestLineReader request, final Charset charset) throws DecodingException {
         final SearchKey result;
         nextIsE(request);
         nextIsA(request);
@@ -408,8 +383,7 @@ public class SearchCommandParser extends AbstractUidCommandParser {
         return result;
     }
 
-    private SearchKey larger(ImapRequestLineReader request)
-            throws DecodingException {
+    private SearchKey larger(ImapRequestLineReader request) throws DecodingException {
         final SearchKey result;
         nextIsA(request);
         nextIsR(request);
@@ -422,8 +396,7 @@ public class SearchCommandParser extends AbstractUidCommandParser {
         return result;
     }
 
-    private SearchKey smaller(ImapRequestLineReader request)
-            throws DecodingException {
+    private SearchKey smaller(ImapRequestLineReader request) throws DecodingException {
         final SearchKey result;
         nextIsA(request);
         nextIsL(request);
@@ -436,8 +409,7 @@ public class SearchCommandParser extends AbstractUidCommandParser {
         return result;
     }
 
-    private SearchKey from(ImapRequestLineReader request, final Charset charset)
-            throws DecodingException {
+    private SearchKey from(ImapRequestLineReader request, final Charset charset) throws DecodingException {
         final SearchKey result;
         nextIsO(request);
         nextIsM(request);
@@ -447,8 +419,7 @@ public class SearchCommandParser extends AbstractUidCommandParser {
         return result;
     }
 
-    private SearchKey flagged(ImapRequestLineReader request)
-            throws DecodingException {
+    private SearchKey flagged(ImapRequestLineReader request) throws DecodingException {
         final SearchKey result;
         nextIsA(request);
         nextIsG(request);
@@ -459,8 +430,7 @@ public class SearchCommandParser extends AbstractUidCommandParser {
         return result;
     }
 
-    private SearchKey unseen(ImapRequestLineReader request)
-            throws DecodingException {
+    private SearchKey unseen(ImapRequestLineReader request) throws DecodingException {
         final SearchKey result;
         nextIsE(request);
         nextIsE(request);
@@ -469,8 +439,7 @@ public class SearchCommandParser extends AbstractUidCommandParser {
         return result;
     }
 
-    private SearchKey undraft(ImapRequestLineReader request)
-            throws DecodingException {
+    private SearchKey undraft(ImapRequestLineReader request) throws DecodingException {
         final SearchKey result;
         nextIsA(request);
         nextIsF(request);
@@ -479,8 +448,7 @@ public class SearchCommandParser extends AbstractUidCommandParser {
         return result;
     }
 
-    private SearchKey undeleted(ImapRequestLineReader request)
-            throws DecodingException {
+    private SearchKey undeleted(ImapRequestLineReader request) throws DecodingException {
         final SearchKey result;
         nextIsL(request);
         nextIsE(request);
@@ -491,8 +459,7 @@ public class SearchCommandParser extends AbstractUidCommandParser {
         return result;
     }
 
-    private SearchKey unflagged(ImapRequestLineReader request)
-            throws DecodingException {
+    private SearchKey unflagged(ImapRequestLineReader request) throws DecodingException {
         final SearchKey result;
         nextIsL(request);
         nextIsA(request);
@@ -504,8 +471,7 @@ public class SearchCommandParser extends AbstractUidCommandParser {
         return result;
     }
 
-    private SearchKey unanswered(ImapRequestLineReader request)
-            throws DecodingException {
+    private SearchKey unanswered(ImapRequestLineReader request) throws DecodingException {
         final SearchKey result;
         nextIsN(request);
         nextIsS(request);
@@ -518,16 +484,14 @@ public class SearchCommandParser extends AbstractUidCommandParser {
         return result;
     }
 
-    private SearchKey old(ImapRequestLineReader request)
-            throws DecodingException {
+    private SearchKey old(ImapRequestLineReader request) throws DecodingException {
         final SearchKey result;
         nextIsD(request);
         result = SearchKey.buildOld();
         return result;
     }
 
-    private SearchKey or(ImapRequestLineReader request, Charset charset)
-            throws DecodingException {
+    private SearchKey or(ImapRequestLineReader request, Charset charset) throws DecodingException {
         final SearchKey result;
         nextIsSpace(request);
         final SearchKey firstKey = searchKey(request, charset, false);
@@ -537,8 +501,7 @@ public class SearchCommandParser extends AbstractUidCommandParser {
         return result;
     }
 
-    private SearchKey not(ImapRequestLineReader request, Charset charset)
-            throws DecodingException {
+    private SearchKey not(ImapRequestLineReader request, Charset charset) throws DecodingException {
         final SearchKey result;
         nextIsT(request);
         nextIsSpace(request);
@@ -547,16 +510,14 @@ public class SearchCommandParser extends AbstractUidCommandParser {
         return result;
     }
 
-    private SearchKey _new(ImapRequestLineReader request)
-            throws DecodingException {
+    private SearchKey _new(ImapRequestLineReader request) throws DecodingException {
         final SearchKey result;
         nextIsW(request);
         result = SearchKey.buildNew();
         return result;
     }
 
-    private SearchKey recent(ImapRequestLineReader request)
-            throws DecodingException {
+    private SearchKey recent(ImapRequestLineReader request) throws DecodingException {
         final SearchKey result;
         nextIsE(request);
         nextIsC(request);
@@ -567,16 +528,14 @@ public class SearchCommandParser extends AbstractUidCommandParser {
         return result;
     }
 
-    private SearchKey seen(ImapRequestLineReader request)
-            throws DecodingException {
+    private SearchKey seen(ImapRequestLineReader request) throws DecodingException {
         final SearchKey result;
         nextIsN(request);
         result = SearchKey.buildSeen();
         return result;
     }
 
-    private SearchKey draft(ImapRequestLineReader request)
-            throws DecodingException {
+    private SearchKey draft(ImapRequestLineReader request) throws DecodingException {
         final SearchKey result;
         nextIsA(request);
         nextIsF(request);
@@ -585,8 +544,7 @@ public class SearchCommandParser extends AbstractUidCommandParser {
         return result;
     }
 
-    private SearchKey deleted(ImapRequestLineReader request)
-            throws DecodingException {
+    private SearchKey deleted(ImapRequestLineReader request) throws DecodingException {
         final SearchKey result;
         nextIsL(request);
         nextIsE(request);
@@ -597,23 +555,21 @@ public class SearchCommandParser extends AbstractUidCommandParser {
         return result;
     }
 
-    private SearchKey b(ImapRequestLineReader request, Charset charset)
-            throws DecodingException {
+    private SearchKey b(ImapRequestLineReader request, Charset charset) throws DecodingException {
         final int next = consumeAndCap(request);
         switch (next) {
-            case 'C':
-                return bcc(request, charset);
-            case 'E':
-                return before(request);
-            case 'O':
-                return body(request, charset);
-            default:
-                throw new DecodingException(HumanReadableText.ILLEGAL_ARGUMENTS, "Unknown search key");
+        case 'C':
+            return bcc(request, charset);
+        case 'E':
+            return before(request);
+        case 'O':
+            return body(request, charset);
+        default:
+            throw new DecodingException(HumanReadableText.ILLEGAL_ARGUMENTS, "Unknown search key");
         }
     }
 
-    private SearchKey body(ImapRequestLineReader request, final Charset charset)
-            throws DecodingException {
+    private SearchKey body(ImapRequestLineReader request, final Charset charset) throws DecodingException {
         final SearchKey result;
         nextIsD(request);
         nextIsY(request);
@@ -623,8 +579,7 @@ public class SearchCommandParser extends AbstractUidCommandParser {
         return result;
     }
 
-    private SearchKey on(ImapRequestLineReader request)
-            throws DecodingException {
+    private SearchKey on(ImapRequestLineReader request) throws DecodingException {
         final SearchKey result;
         nextIsSpace(request);
         final DayMonthYear value = request.date();
@@ -632,8 +587,7 @@ public class SearchCommandParser extends AbstractUidCommandParser {
         return result;
     }
 
-    private SearchKey sentBefore(ImapRequestLineReader request)
-            throws DecodingException {
+    private SearchKey sentBefore(ImapRequestLineReader request) throws DecodingException {
         final SearchKey result;
         nextIsE(request);
         nextIsF(request);
@@ -646,8 +600,7 @@ public class SearchCommandParser extends AbstractUidCommandParser {
         return result;
     }
 
-    private SearchKey sentSince(ImapRequestLineReader request)
-            throws DecodingException {
+    private SearchKey sentSince(ImapRequestLineReader request) throws DecodingException {
         final SearchKey result;
         nextIsI(request);
         nextIsN(request);
@@ -659,8 +612,7 @@ public class SearchCommandParser extends AbstractUidCommandParser {
         return result;
     }
 
-    private SearchKey since(ImapRequestLineReader request)
-            throws DecodingException {
+    private SearchKey since(ImapRequestLineReader request) throws DecodingException {
         final SearchKey result;
         nextIsN(request);
         nextIsC(request);
@@ -671,8 +623,7 @@ public class SearchCommandParser extends AbstractUidCommandParser {
         return result;
     }
 
-    private SearchKey sentOn(ImapRequestLineReader request)
-            throws DecodingException {
+    private SearchKey sentOn(ImapRequestLineReader request) throws DecodingException {
         final SearchKey result;
         nextIsN(request);
         nextIsSpace(request);
@@ -681,8 +632,7 @@ public class SearchCommandParser extends AbstractUidCommandParser {
         return result;
     }
 
-    private SearchKey before(ImapRequestLineReader request)
-            throws DecodingException {
+    private SearchKey before(ImapRequestLineReader request) throws DecodingException {
         final SearchKey result;
         nextIsF(request);
         nextIsO(request);
@@ -694,8 +644,7 @@ public class SearchCommandParser extends AbstractUidCommandParser {
         return result;
     }
 
-    private SearchKey bcc(ImapRequestLineReader request, Charset charset)
-            throws DecodingException {
+    private SearchKey bcc(ImapRequestLineReader request, Charset charset) throws DecodingException {
         final SearchKey result;
         nextIsC(request);
         nextIsSpace(request);
@@ -704,8 +653,7 @@ public class SearchCommandParser extends AbstractUidCommandParser {
         return result;
     }
 
-    private SearchKey text(ImapRequestLineReader request, final Charset charset)
-            throws DecodingException {
+    private SearchKey text(ImapRequestLineReader request, final Charset charset) throws DecodingException {
         final SearchKey result;
         nextIsX(request);
         nextIsT(request);
@@ -715,8 +663,7 @@ public class SearchCommandParser extends AbstractUidCommandParser {
         return result;
     }
 
-    private SearchKey uid(ImapRequestLineReader request)
-            throws DecodingException {
+    private SearchKey uid(ImapRequestLineReader request) throws DecodingException {
         final SearchKey result;
         nextIsD(request);
         nextIsSpace(request);
@@ -725,15 +672,13 @@ public class SearchCommandParser extends AbstractUidCommandParser {
         return result;
     }
 
-    private SearchKey sequenceSet(ImapRequestLineReader request)
-            throws DecodingException {
+    private SearchKey sequenceSet(ImapRequestLineReader request) throws DecodingException {
         final IdRange[] range = request.parseIdRange();
         final SearchKey result = SearchKey.buildSequenceSet(range);
         return result;
     }
 
-    private SearchKey to(ImapRequestLineReader request, final Charset charset)
-            throws DecodingException {
+    private SearchKey to(ImapRequestLineReader request, final Charset charset) throws DecodingException {
         final SearchKey result;
         nextIsSpace(request);
         final String value = request.astring(charset);
@@ -741,8 +686,7 @@ public class SearchCommandParser extends AbstractUidCommandParser {
         return result;
     }
 
-    private SearchKey subject(ImapRequestLineReader request,
-            final Charset charset) throws DecodingException {
+    private SearchKey subject(ImapRequestLineReader request, final Charset charset) throws DecodingException {
         final SearchKey result;
         nextIsB(request);
         nextIsJ(request);
@@ -758,17 +702,16 @@ public class SearchCommandParser extends AbstractUidCommandParser {
     private SearchKey a(ImapRequestLineReader request) throws DecodingException {
         final int next = consumeAndCap(request);
         switch (next) {
-            case 'L':
-                return all(request);
-            case 'N':
-                return answered(request);
-            default:
-                throw new DecodingException(HumanReadableText.ILLEGAL_ARGUMENTS, "Unknown search key");
+        case 'L':
+            return all(request);
+        case 'N':
+            return answered(request);
+        default:
+            throw new DecodingException(HumanReadableText.ILLEGAL_ARGUMENTS, "Unknown search key");
         }
     }
 
-    private SearchKey answered(ImapRequestLineReader request)
-            throws DecodingException {
+    private SearchKey answered(ImapRequestLineReader request) throws DecodingException {
         final SearchKey result;
         nextIsS(request);
         nextIsW(request);
@@ -780,128 +723,104 @@ public class SearchCommandParser extends AbstractUidCommandParser {
         return result;
     }
 
-    private SearchKey all(ImapRequestLineReader request)
-            throws DecodingException {
+    private SearchKey all(ImapRequestLineReader request) throws DecodingException {
         final SearchKey result;
         nextIsL(request);
         result = SearchKey.buildAll();
         return result;
     }
 
-    private void nextIsSpace(ImapRequestLineReader request)
-            throws DecodingException {
+    private void nextIsSpace(ImapRequestLineReader request) throws DecodingException {
         final char next = request.consume();
         if (next != ' ') {
             throw new DecodingException(HumanReadableText.ILLEGAL_ARGUMENTS, "Unknown search key");
         }
     }
 
-    private void nextIsG(ImapRequestLineReader request)
-            throws DecodingException {
+    private void nextIsG(ImapRequestLineReader request) throws DecodingException {
         nextIs(request, 'G', 'g');
     }
 
-    private void nextIsM(ImapRequestLineReader request)
-            throws DecodingException {
+    private void nextIsM(ImapRequestLineReader request) throws DecodingException {
         nextIs(request, 'M', 'm');
     }
 
-    private void nextIsI(ImapRequestLineReader request)
-            throws DecodingException {
+    private void nextIsI(ImapRequestLineReader request) throws DecodingException {
         nextIs(request, 'I', 'i');
     }
 
-    private void nextIsN(ImapRequestLineReader request)
-            throws DecodingException {
+    private void nextIsN(ImapRequestLineReader request) throws DecodingException {
         nextIs(request, 'N', 'n');
     }
 
-    private void nextIsA(ImapRequestLineReader request)
-            throws DecodingException {
+    private void nextIsA(ImapRequestLineReader request) throws DecodingException {
         nextIs(request, 'A', 'a');
     }
 
-    private void nextIsT(ImapRequestLineReader request)
-            throws DecodingException {
+    private void nextIsT(ImapRequestLineReader request) throws DecodingException {
         nextIs(request, 'T', 't');
     }
 
-    private void nextIsY(ImapRequestLineReader request)
-            throws DecodingException {
+    private void nextIsY(ImapRequestLineReader request) throws DecodingException {
         nextIs(request, 'Y', 'y');
     }
 
-    private void nextIsX(ImapRequestLineReader request)
-            throws DecodingException {
+    private void nextIsX(ImapRequestLineReader request) throws DecodingException {
         nextIs(request, 'X', 'x');
     }
 
-    private void nextIsO(ImapRequestLineReader request)
-            throws DecodingException {
+    private void nextIsO(ImapRequestLineReader request) throws DecodingException {
         nextIs(request, 'O', 'o');
     }
 
-    private void nextIsF(ImapRequestLineReader request)
-            throws DecodingException {
+    private void nextIsF(ImapRequestLineReader request) throws DecodingException {
         nextIs(request, 'F', 'f');
     }
 
-    private void nextIsJ(ImapRequestLineReader request)
-            throws DecodingException {
+    private void nextIsJ(ImapRequestLineReader request) throws DecodingException {
         nextIs(request, 'J', 'j');
     }
 
-    private void nextIsC(ImapRequestLineReader request)
-            throws DecodingException {
+    private void nextIsC(ImapRequestLineReader request) throws DecodingException {
         nextIs(request, 'C', 'c');
     }
 
-    private void nextIsD(ImapRequestLineReader request)
-            throws DecodingException {
+    private void nextIsD(ImapRequestLineReader request) throws DecodingException {
         nextIs(request, 'D', 'd');
     }
 
-    private void nextIsB(ImapRequestLineReader request)
-            throws DecodingException {
+    private void nextIsB(ImapRequestLineReader request) throws DecodingException {
         nextIs(request, 'B', 'b');
     }
 
-    private void nextIsR(ImapRequestLineReader request)
-            throws DecodingException {
+    private void nextIsR(ImapRequestLineReader request) throws DecodingException {
         nextIs(request, 'R', 'r');
     }
 
-    private void nextIsE(ImapRequestLineReader request)
-            throws DecodingException {
+    private void nextIsE(ImapRequestLineReader request) throws DecodingException {
         nextIs(request, 'E', 'e');
     }
 
-    private void nextIsW(ImapRequestLineReader request)
-            throws DecodingException {
+    private void nextIsW(ImapRequestLineReader request) throws DecodingException {
         nextIs(request, 'W', 'w');
     }
 
-    private void nextIsS(ImapRequestLineReader request)
-            throws DecodingException {
+    private void nextIsS(ImapRequestLineReader request) throws DecodingException {
         nextIs(request, 'S', 's');
     }
 
-    private void nextIsL(ImapRequestLineReader request)
-            throws DecodingException {
+    private void nextIsL(ImapRequestLineReader request) throws DecodingException {
         nextIs(request, 'L', 'l');
     }
 
-    private void nextIs(ImapRequestLineReader request, final char upper,
-            final char lower) throws DecodingException {
+    private void nextIs(ImapRequestLineReader request, final char upper, final char lower) throws DecodingException {
         final char next = request.consume();
         if (next != upper && next != lower) {
             throw new DecodingException(HumanReadableText.ILLEGAL_ARGUMENTS, "Unknown search key");
         }
     }
 
-    public SearchKey decode(ImapRequestLineReader request)
-            throws DecodingException, IllegalCharsetNameException,
-            UnsupportedCharsetException {
+    public SearchKey decode(ImapRequestLineReader request) throws DecodingException, IllegalCharsetNameException, UnsupportedCharsetException {
         request.nextWordChar();
         final SearchKey firstKey = searchKey(request, null, true);
         final SearchKey result;
@@ -921,22 +840,18 @@ public class SearchCommandParser extends AbstractUidCommandParser {
         return result;
     }
 
-    private ImapMessage unsupportedCharset(final String tag,
-            final ImapCommand command) {
+    private ImapMessage unsupportedCharset(final String tag, final ImapCommand command) {
         loadCharsetNames();
         final StatusResponseFactory factory = getStatusResponseFactory();
-        final ResponseCode badCharset = StatusResponse.ResponseCode
-                .badCharset(charsetNames);
-        final StatusResponse result = factory.taggedNo(tag, command,
-                HumanReadableText.BAD_CHARSET, badCharset);
+        final ResponseCode badCharset = StatusResponse.ResponseCode.badCharset(charsetNames);
+        final StatusResponse result = factory.taggedNo(tag, command, HumanReadableText.BAD_CHARSET, badCharset);
         return result;
     }
 
     private synchronized void loadCharsetNames() {
         if (charsetNames == null) {
             charsetNames = new HashSet<String>();
-            for (final Iterator<Charset> it = Charset.availableCharsets().values()
-                    .iterator(); it.hasNext();) {
+            for (final Iterator<Charset> it = Charset.availableCharsets().values().iterator(); it.hasNext();) {
                 final Charset charset = it.next();
                 final Set<String> aliases = charset.aliases();
                 charsetNames.addAll(aliases);
@@ -946,11 +861,14 @@ public class SearchCommandParser extends AbstractUidCommandParser {
 
     /*
      * (non-Javadoc)
-     * @see org.apache.james.imap.decode.parser.AbstractUidCommandParser#decode(org.apache.james.imap.api.ImapCommand, org.apache.james.imap.decode.ImapRequestLineReader, java.lang.String, boolean, org.apache.james.imap.api.process.ImapSession)
+     * 
+     * @see
+     * org.apache.james.imap.decode.parser.AbstractUidCommandParser#decode(org
+     * .apache.james.imap.api.ImapCommand,
+     * org.apache.james.imap.decode.ImapRequestLineReader, java.lang.String,
+     * boolean, org.apache.james.imap.api.process.ImapSession)
      */
-    protected ImapMessage decode(ImapCommand command,
-            ImapRequestLineReader request, String tag, boolean useUids, ImapSession session)
-            throws DecodingException {
+    protected ImapMessage decode(ImapCommand command, ImapRequestLineReader request, String tag, boolean useUids, ImapSession session) throws DecodingException {
         try {
             // Parse the search term from the request
             final SearchKey key = decode(request);

@@ -39,25 +39,21 @@ import org.apache.james.mailbox.MessageManager;
 import org.apache.james.mailbox.MessageRange;
 import org.apache.james.mailbox.MessageRangeException;
 
-public class ExpungeProcessor extends AbstractMailboxProcessor<ExpungeRequest> implements CapabilityImplementingProcessor{
+public class ExpungeProcessor extends AbstractMailboxProcessor<ExpungeRequest> implements CapabilityImplementingProcessor {
 
     private final static List<String> UIDPLUS = Arrays.asList("UIDPLUS");
-    
-    public ExpungeProcessor(final ImapProcessor next,
-            final MailboxManager mailboxManager,
-            final StatusResponseFactory factory) {
+
+    public ExpungeProcessor(final ImapProcessor next, final MailboxManager mailboxManager, final StatusResponseFactory factory) {
         super(ExpungeRequest.class, next, mailboxManager, factory);
     }
 
-    protected void doProcess(ExpungeRequest request, ImapSession session,
-            String tag, ImapCommand command, Responder responder) {
+    protected void doProcess(ExpungeRequest request, ImapSession session, String tag, ImapCommand command, Responder responder) {
         try {
             final MessageManager mailbox = getSelectedMailbox(session);
             final MailboxSession mailboxSession = ImapSessionUtils.getMailboxSession(session);
-            
+
             if (!mailbox.isWriteable(mailboxSession)) {
-                no(command, tag, responder,
-                        HumanReadableText.MAILBOX_IS_READ_ONLY);
+                no(command, tag, responder, HumanReadableText.MAILBOX_IS_READ_ONLY);
             } else {
                 IdRange[] ranges = request.getUidSet();
                 if (ranges == null) {
@@ -65,14 +61,14 @@ public class ExpungeProcessor extends AbstractMailboxProcessor<ExpungeRequest> i
                 } else {
                     // Handle UID EXPUNGE which is part of UIDPLUS
                     // See http://tools.ietf.org/html/rfc4315
-                    for (int i = 0; i <ranges.length; i++) {
+                    for (int i = 0; i < ranges.length; i++) {
                         MessageRange mRange = messageRange(session.getSelected(), ranges[i], true);
                         expunge(mailbox, mRange, session, mailboxSession);
 
                     }
 
                 }
-               
+
                 unsolicitedResponses(session, responder, false);
                 okComplete(command, tag, responder);
             }
@@ -83,7 +79,7 @@ public class ExpungeProcessor extends AbstractMailboxProcessor<ExpungeRequest> i
             no(command, tag, responder, HumanReadableText.GENERIC_FAILURE_DURING_PROCESSING);
         }
     }
-    
+
     private void expunge(MessageManager mailbox, MessageRange range, ImapSession session, MailboxSession mailboxSession) throws MailboxException {
         final Iterator<Long> it = mailbox.expunge(range, mailboxSession);
         final SelectedMailbox selected = session.getSelected();
@@ -95,10 +91,11 @@ public class ExpungeProcessor extends AbstractMailboxProcessor<ExpungeRequest> i
         }
     }
 
-    
     /*
      * (non-Javadoc)
-     * @see org.apache.james.imap.processor.CapabilityImplementingProcessor#getImplementedCapabilities(org.apache.james.imap.api.process.ImapSession)
+     * 
+     * @see org.apache.james.imap.processor.CapabilityImplementingProcessor#
+     * getImplementedCapabilities(org.apache.james.imap.api.process.ImapSession)
      */
     public List<String> getImplementedCapabilities(ImapSession session) {
         return UIDPLUS;

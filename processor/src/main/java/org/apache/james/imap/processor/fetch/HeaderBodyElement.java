@@ -52,24 +52,27 @@ final class HeaderBodyElement implements BodyElement {
 
     /*
      * (non-Javadoc)
-     * @see org.apache.james.imap.message.response.FetchResponse.BodyElement#getName()
+     * 
+     * @see
+     * org.apache.james.imap.message.response.FetchResponse.BodyElement#getName
+     * ()
      */
     public String getName() {
         return name;
     }
 
-    
     private long calculateSize(List<MessageResult.Header> headers) {
         final int result;
         if (headers.isEmpty()) {
-            // even if the headers are empty we need to include the headers body seperator
+            // even if the headers are empty we need to include the headers body
+            // seperator
             // See IMAP-294
             result = ImapConstants.LINE_END.length();
         } else {
             int count = 0;
             for (final Iterator<MessageResult.Header> it = headers.iterator(); it.hasNext();) {
                 MessageResult.Header header = it.next();
-                count += header.size() +  ImapConstants.LINE_END.length();
+                count += header.size() + ImapConstants.LINE_END.length();
             }
             result = count + ImapConstants.LINE_END.length();
         }
@@ -78,7 +81,9 @@ final class HeaderBodyElement implements BodyElement {
 
     /*
      * (non-Javadoc)
-     * @see org.apache.james.imap.message.response.FetchResponse.BodyElement#size()
+     * 
+     * @see
+     * org.apache.james.imap.message.response.FetchResponse.BodyElement#size()
      */
     public long size() {
         return size;
@@ -86,7 +91,10 @@ final class HeaderBodyElement implements BodyElement {
 
     /*
      * (non-Javadoc)
-     * @see org.apache.james.imap.message.response.FetchResponse.BodyElement#writeTo(java.nio.channels.WritableByteChannel)
+     * 
+     * @see
+     * org.apache.james.imap.message.response.FetchResponse.BodyElement#writeTo
+     * (java.nio.channels.WritableByteChannel)
      */
     public void writeTo(WritableByteChannel channel) throws IOException {
         ByteBuffer endLine = ByteBuffer.wrap(ImapConstants.LINE_END.getBytes());
@@ -104,7 +112,9 @@ final class HeaderBodyElement implements BodyElement {
 
     /*
      * (non-Javadoc)
-     * @see org.apache.james.imap.message.response.FetchResponse.BodyElement#getInputStream()
+     * 
+     * @see org.apache.james.imap.message.response.FetchResponse.BodyElement#
+     * getInputStream()
      */
     public InputStream getInputStream() throws IOException {
         ByteArrayOutputStream out = new ByteArrayOutputStream();

@@ -34,15 +34,14 @@ import org.apache.james.imap.message.response.ContinuationResponse;
 public class ContinuationResponseEncoder extends AbstractChainedImapEncoder {
 
     private final Localizer localizer;
-    
+
     public ContinuationResponseEncoder(ImapEncoder next, final Localizer localizer) {
         super(next);
         this.localizer = localizer;
     }
 
-    protected void doEncode(ImapMessage acceptableMessage,
-            ImapResponseComposer composer, ImapSession session) throws IOException {
-        
+    protected void doEncode(ImapMessage acceptableMessage, ImapResponseComposer composer, ImapSession session) throws IOException {
+
         ContinuationResponse response = (ContinuationResponse) acceptableMessage;
         final String message = response.getData() != null ? response.getData() : asString(response.getTextKey(), session);
         composer.continuationResponse(message);

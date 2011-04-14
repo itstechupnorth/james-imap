@@ -116,8 +116,7 @@ public class FetchData {
         final int PRIME = 31;
         int result = 1;
         result = PRIME * result + (body ? 1231 : 1237);
-        result = PRIME * result
-                + ((bodyElements == null) ? 0 : bodyElements.hashCode());
+        result = PRIME * result + ((bodyElements == null) ? 0 : bodyElements.hashCode());
         result = PRIME * result + (bodyStructure ? 1231 : 1237);
         result = PRIME * result + (envelope ? 1231 : 1237);
         result = PRIME * result + (flags ? 1231 : 1237);

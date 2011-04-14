@@ -30,22 +30,27 @@ import org.apache.james.imap.message.request.UnselectRequest;
 import org.apache.james.mailbox.MailboxManager;
 
 /**
- * Processor which implements the UNSELECT extension. 
+ * Processor which implements the UNSELECT extension.
  * 
  * See RFC3691
- *
  */
-public class UnselectProcessor extends AbstractMailboxProcessor<UnselectRequest> implements CapabilityImplementingProcessor{
+public class UnselectProcessor extends AbstractMailboxProcessor<UnselectRequest> implements CapabilityImplementingProcessor {
 
     private final static List<String> UNSELECT = Arrays.asList("UNSELECT");
-    
+
     public UnselectProcessor(ImapProcessor next, MailboxManager mailboxManager, StatusResponseFactory factory) {
         super(UnselectRequest.class, next, mailboxManager, factory);
     }
 
     /*
      * (non-Javadoc)
-     * @see org.apache.james.imap.processor.AbstractMailboxProcessor#doProcess(org.apache.james.imap.api.message.request.ImapRequest, org.apache.james.imap.api.process.ImapSession, java.lang.String, org.apache.james.imap.api.ImapCommand, org.apache.james.imap.api.process.ImapProcessor.Responder)
+     * 
+     * @see
+     * org.apache.james.imap.processor.AbstractMailboxProcessor#doProcess(org
+     * .apache.james.imap.api.message.request.ImapRequest,
+     * org.apache.james.imap.api.process.ImapSession, java.lang.String,
+     * org.apache.james.imap.api.ImapCommand,
+     * org.apache.james.imap.api.process.ImapProcessor.Responder)
      */
     protected void doProcess(UnselectRequest message, ImapSession session, String tag, ImapCommand command, Responder responder) {
         if (session.getSelected() != null) {
@@ -54,11 +59,14 @@ public class UnselectProcessor extends AbstractMailboxProcessor<UnselectRequest>
         } else {
             taggedBad(command, tag, responder, HumanReadableText.UNSELECT);
         }
-       
+
     }
+
     /*
      * (non-Javadoc)
-     * @see org.apache.james.imap.processor.CapabilityImplementingProcessor#getImplementedCapabilities(org.apache.james.imap.api.process.ImapSession)
+     * 
+     * @see org.apache.james.imap.processor.CapabilityImplementingProcessor#
+     * getImplementedCapabilities(org.apache.james.imap.api.process.ImapSession)
      */
     public List<String> getImplementedCapabilities(ImapSession session) {
         return UNSELECT;

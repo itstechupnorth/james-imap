@@ -32,10 +32,8 @@ import org.apache.james.imap.decode.base.AbstractImapCommandParser;
 
 /**
  * Parse UID commands
- *
  */
-public class UidCommandParser extends AbstractImapCommandParser implements
-        DelegatingImapCommandParser {
+public class UidCommandParser extends AbstractImapCommandParser implements DelegatingImapCommandParser {
 
     private ImapCommandParserFactory parserFactory;
 
@@ -56,14 +54,17 @@ public class UidCommandParser extends AbstractImapCommandParser implements
     public void setParserFactory(ImapCommandParserFactory imapCommandFactory) {
         this.parserFactory = imapCommandFactory;
     }
-    
 
     /*
      * (non-Javadoc)
-     * @see org.apache.james.imap.decode.base.AbstractImapCommandParser#decode(org.apache.james.imap.api.ImapCommand, org.apache.james.imap.decode.ImapRequestLineReader, java.lang.String, org.apache.james.imap.api.process.ImapSession)
+     * 
+     * @see
+     * org.apache.james.imap.decode.base.AbstractImapCommandParser#decode(org
+     * .apache.james.imap.api.ImapCommand,
+     * org.apache.james.imap.decode.ImapRequestLineReader, java.lang.String,
+     * org.apache.james.imap.api.process.ImapSession)
      */
-    protected ImapMessage decode(ImapCommand command,
-            ImapRequestLineReader request, String tag, ImapSession session) throws DecodingException {
+    protected ImapMessage decode(ImapCommand command, ImapRequestLineReader request, String tag, ImapSession session) throws DecodingException {
         // TODO: check the logic against the specification:
         // TODO: suspect that it is now bust
         // TODO: the command written may be wrong
@@ -72,10 +73,8 @@ public class UidCommandParser extends AbstractImapCommandParser implements
         String commandName = request.atom();
         ImapCommandParser helperCommand = parserFactory.getParser(commandName);
         // TODO: replace abstract class with interface
-        if (helperCommand == null
-                || !(helperCommand instanceof AbstractUidCommandParser)) {
-            throw new DecodingException(HumanReadableText.ILLEGAL_ARGUMENTS, 
-                    "Invalid UID command: '" + commandName + "'");
+        if (helperCommand == null || !(helperCommand instanceof AbstractUidCommandParser)) {
+            throw new DecodingException(HumanReadableText.ILLEGAL_ARGUMENTS, "Invalid UID command: '" + commandName + "'");
         }
         final AbstractUidCommandParser uidEnabled = (AbstractUidCommandParser) helperCommand;
         final ImapMessage result = uidEnabled.decode(request, tag, true, session);

@@ -24,7 +24,6 @@ import org.apache.james.imap.api.message.request.ImapRequest;
 
 /**
  * {@link ImapRequest} which requests expunge of deleted messages
- *
  */
 public class ExpungeRequest extends AbstractImapRequest {
     private final IdRange[] uidRange;
@@ -33,14 +32,15 @@ public class ExpungeRequest extends AbstractImapRequest {
         super(tag, command);
         this.uidRange = uidRange;
     }
-    
+
     /**
-     * Return an Array of {@link IdRange}  to expunge or null if all should get expunged
+     * Return an Array of {@link IdRange} to expunge or null if all should get
+     * expunged
      * 
      * @return range
      */
     public final IdRange[] getUidSet() {
         return uidRange;
     }
-    
+
 }

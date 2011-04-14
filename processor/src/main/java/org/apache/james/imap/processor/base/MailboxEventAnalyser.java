@@ -37,9 +37,9 @@ import org.apache.james.mailbox.MailboxPath;
 import org.apache.james.mailbox.UpdatedFlags;
 
 /**
- * {@link MailboxListener} implementation which will listen for {@link Event} notifications and 
- * analyze these. It will only act on {@link Event} notifications which are sent for the registered
- * MailboxPath
+ * {@link MailboxListener} implementation which will listen for {@link Event}
+ * notifications and analyze these. It will only act on {@link Event}
+ * notifications which are sent for the registered MailboxPath
  */
 public class MailboxEventAnalyser extends ImapStateAwareMailboxListener {
 
@@ -47,7 +47,7 @@ public class MailboxEventAnalyser extends ImapStateAwareMailboxListener {
     private Set<Long> flagUpdateUids;
     private Flags.Flag uninterestingFlag;
     private Set<Long> expungedUids;
-    
+
     private boolean isDeletedByOtherSession = false;
     private boolean sizeChanged = false;
     private boolean silentFlagChanges = false;
@@ -62,9 +62,9 @@ public class MailboxEventAnalyser extends ImapStateAwareMailboxListener {
         uninterestingFlag = Flags.Flag.RECENT;
         this.mailboxPath = mailboxPath;
     }
-    
+
     /**
-     * Return the name of the to observing Mailbox 
+     * Return the name of the to observing Mailbox
      * 
      * @return name
      */
@@ -82,9 +82,11 @@ public class MailboxEventAnalyser extends ImapStateAwareMailboxListener {
     }
 
     /**
-     * Handle the given {@link Event} if it was fired for the mailbox we are observing
+     * Handle the given {@link Event} if it was fired for the mailbox we are
+     * observing
      * 
      * (non-Javadoc)
+     * 
      * @see org.apache.james.mailbox.MailboxListener#event(org.apache.james.mailbox.MailboxListener.Event)
      */
     public void event(Event event) {
@@ -94,7 +96,7 @@ public class MailboxEventAnalyser extends ImapStateAwareMailboxListener {
             final long eventSessionId = event.getSession().getSessionId();
             if (event instanceof MessageEvent) {
                 final MessageEvent messageEvent = (MessageEvent) event;
-                //final List<Long> uids = messageEvent.getUids();
+                // final List<Long> uids = messageEvent.getUids();
                 if (messageEvent instanceof Added) {
                     sizeChanged = true;
                 } else if (messageEvent instanceof FlagsUpdated) {
@@ -110,7 +112,7 @@ public class MailboxEventAnalyser extends ImapStateAwareMailboxListener {
                             }
                         }
                     }
-      
+
                     SelectedMailbox sm = session.getSelected();
                     if (sm != null) {
                         // We need to add the UID of the message to the recent
@@ -122,14 +124,14 @@ public class MailboxEventAnalyser extends ImapStateAwareMailboxListener {
                             UpdatedFlags u = uflags.get(i);
                             Iterator<Flag> flags = u.iterator();
 
-                                while (flags.hasNext()) {
-                                    if (Flag.RECENT.equals(flags.next())) {
-                                        MailboxPath path = sm.getPath();
-                                        if (path != null && path.equals(event.getMailboxPath())) {
-                                            sm.addRecent(u.getUid());
-                                        }
+                            while (flags.hasNext()) {
+                                if (Flag.RECENT.equals(flags.next())) {
+                                    MailboxPath path = sm.getPath();
+                                    if (path != null && path.equals(event.getMailboxPath())) {
+                                        sm.addRecent(u.getUid());
                                     }
                                 }
+                            }
                         }
                     }
                 } else if (messageEvent instanceof Expunged) {
@@ -219,10 +221,11 @@ public class MailboxEventAnalyser extends ImapStateAwareMailboxListener {
      * 
      * @return uids
      */
-    
+
     public Collection<Long> flagUpdateUids() {
         synchronized (flagUpdateUids) {
-            // copy the TreeSet to fix possible java.util.ConcurrentModificationException
+            // copy the TreeSet to fix possible
+            // java.util.ConcurrentModificationException
             // See IMAP-278
             return Collections.unmodifiableSet(new TreeSet<Long>(flagUpdateUids));
         }
@@ -235,7 +238,8 @@ public class MailboxEventAnalyser extends ImapStateAwareMailboxListener {
      */
     public Collection<Long> expungedUids() {
         synchronized (expungedUids) {
-            // copy the TreeSet to fix possible java.util.ConcurrentModificationException
+            // copy the TreeSet to fix possible
+            // java.util.ConcurrentModificationException
             // See IMAP-278
             return Collections.unmodifiableSet(new TreeSet<Long>(expungedUids));
         }
@@ -253,22 +257,23 @@ public class MailboxEventAnalyser extends ImapStateAwareMailboxListener {
     }
 
     /**
-     * Mark the listener as closed and dispose all stored stuff 
+     * Mark the listener as closed and dispose all stored stuff
      */
     public synchronized void close() {
         closed = true;
         flagUpdateUids.clear();
         flagUpdateUids = null;
-        
+
         uninterestingFlag = null;
         expungedUids.clear();
         expungedUids = null;
     }
-    
 
     /*
      * (non-Javadoc)
-     * @see org.apache.james.imap.processor.base.ImapStateAwareMailboxListener#isListenerClosed()
+     * 
+     * @see org.apache.james.imap.processor.base.ImapStateAwareMailboxListener#
+     * isListenerClosed()
      */
     protected synchronized boolean isListenerClosed() {
         return closed;

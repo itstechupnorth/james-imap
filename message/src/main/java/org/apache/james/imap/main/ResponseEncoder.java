@@ -33,10 +33,8 @@ public class ResponseEncoder implements Responder {
     private final ImapResponseComposer composer;
 
     private IOException failure;
-    
 
-    public ResponseEncoder(final ImapEncoder encoder,
-            final ImapResponseComposer composer, final ImapSession session) {
+    public ResponseEncoder(final ImapEncoder encoder, final ImapResponseComposer composer, final ImapSession session) {
         super();
         this.encoder = encoder;
         this.composer = composer;

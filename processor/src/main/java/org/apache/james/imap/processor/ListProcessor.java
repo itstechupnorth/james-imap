@@ -44,45 +44,43 @@ import org.apache.james.mailbox.MailboxSession;
 import org.apache.james.mailbox.MailboxMetaData.Children;
 import org.apache.james.mailbox.util.SimpleMailboxMetaData;
 
-public class ListProcessor extends AbstractMailboxProcessor<ListRequest>{
+public class ListProcessor extends AbstractMailboxProcessor<ListRequest> {
 
-    public ListProcessor(final ImapProcessor next,
-            final MailboxManager mailboxManager,
-            final StatusResponseFactory factory) {
+    public ListProcessor(final ImapProcessor next, final MailboxManager mailboxManager, final StatusResponseFactory factory) {
         super(ListRequest.class, next, mailboxManager, factory);
     }
 
     /*
      * (non-Javadoc)
-     * @see org.apache.james.imap.processor.AbstractMailboxProcessor#doProcess(org.apache.james.imap.api.message.request.ImapRequest, org.apache.james.imap.api.process.ImapSession, java.lang.String, org.apache.james.imap.api.ImapCommand, org.apache.james.imap.api.process.ImapProcessor.Responder)
+     * 
+     * @see
+     * org.apache.james.imap.processor.AbstractMailboxProcessor#doProcess(org
+     * .apache.james.imap.api.message.request.ImapRequest,
+     * org.apache.james.imap.api.process.ImapSession, java.lang.String,
+     * org.apache.james.imap.api.ImapCommand,
+     * org.apache.james.imap.api.process.ImapProcessor.Responder)
      */
-    protected void doProcess(ListRequest request, ImapSession session,
-            String tag, ImapCommand command, Responder responder) {
+    protected void doProcess(ListRequest request, ImapSession session, String tag, ImapCommand command, Responder responder) {
         final String baseReferenceName = request.getBaseReferenceName();
         final String mailboxPatternString = request.getMailboxPattern();
-        doProcess(baseReferenceName, mailboxPatternString, session, tag,
-                command, responder,null);
+        doProcess(baseReferenceName, mailboxPatternString, session, tag, command, responder, null);
     }
 
-    protected ImapResponseMessage createResponse(boolean noInferior,
-            boolean noSelect, boolean marked, boolean unmarked,
-            boolean hasChildren, boolean hasNoChildren, String mailboxName, char delimiter,MailboxType type) {
-        return new ListResponse(noInferior, noSelect, marked, unmarked,
-                hasChildren, hasNoChildren, mailboxName, delimiter);
+    protected ImapResponseMessage createResponse(boolean noInferior, boolean noSelect, boolean marked, boolean unmarked, boolean hasChildren, boolean hasNoChildren, String mailboxName, char delimiter, MailboxType type) {
+        return new ListResponse(noInferior, noSelect, marked, unmarked, hasChildren, hasNoChildren, mailboxName, delimiter);
     }
 
     /**
-     * (from rfc3501)
-     * The LIST command returns a subset of names from the complete set
-     * of all names available to the client.  Zero or more untagged LIST
-     * replies are returned, containing the name attributes, hierarchy
-     * delimiter, and name; see the description of the LIST reply for
-     * more detail.
-     * ...
-     * An empty ("" string) mailbox name argument is a special request to
-     * return the hierarchy delimiter and the root name of the name given
-     * in the reference.  The value returned as the root MAY be the empty
-     * string if the reference is non-rooted or is an empty string.
+     * (from rfc3501)<br>
+     * The LIST command returns a subset of names from the complete set of all
+     * names available to the client. Zero or more untagged LIST replies are
+     * returned, containing the name attributes, hierarchy delimiter, and name;
+     * see the description of the LIST reply for more detail.<br>
+     * ...<br>
+     * An empty ("" string) mailbox name argument is a special request to return
+     * the hierarchy delimiter and the root name of the name given in the
+     * reference. The value returned as the root MAY be the empty string if the
+     * reference is non-rooted or is an empty string.
      * 
      * @param referenceName
      * @param mailboxName
@@ -91,9 +89,7 @@ public class ListProcessor extends AbstractMailboxProcessor<ListRequest>{
      * @param command
      * @param responder
      */
-    protected final void doProcess(final String referenceName,
-            final String mailboxName, final ImapSession session,
-            final String tag, ImapCommand command, final Responder responder,final MailboxTyper mailboxTyper) {
+    protected final void doProcess(final String referenceName, final String mailboxName, final ImapSession session, final String tag, ImapCommand command, final Responder responder, final MailboxTyper mailboxTyper) {
         try {
             // Should the namespace section be returned or not?
             final boolean isRelative;
@@ -114,13 +110,12 @@ public class ListProcessor extends AbstractMailboxProcessor<ListRequest>{
                     int firstDelimiter = referenceName.indexOf(mailboxSession.getPathDelimiter());
                     if (firstDelimiter == -1) {
                         referenceRoot = referenceName;
-                    }
-                    else {
+                    } else {
                         referenceRoot = referenceName.substring(0, firstDelimiter);
                     }
-                }
-                else {
-                    // A relative reference name, return "" to indicate it is non-rooted
+                } else {
+                    // A relative reference name, return "" to indicate it is
+                    // non-rooted
                     referenceRoot = "";
                     isRelative = true;
                 }
@@ -128,9 +123,9 @@ public class ListProcessor extends AbstractMailboxProcessor<ListRequest>{
                 MailboxPath rootPath = new MailboxPath(referenceRoot, "", "");
                 results = new ArrayList<MailboxMetaData>(1);
                 results.add(SimpleMailboxMetaData.createNoSelect(rootPath, mailboxSession.getPathDelimiter()));
-                }
-            else {
-                // If the mailboxPattern is fully qualified, ignore the reference name.
+            } else {
+                // If the mailboxPattern is fully qualified, ignore the
+                // reference name.
                 String finalReferencename = referenceName;
                 if (mailboxName.charAt(0) == MailboxConstants.NAMESPACE_PREFIX_CHAR) {
                     finalReferencename = "";
@@ -141,17 +136,15 @@ public class ListProcessor extends AbstractMailboxProcessor<ListRequest>{
                 MailboxPath basePath = null;
                 if (isRelative) {
                     basePath = new MailboxPath(MailboxConstants.USER_NAMESPACE, user, finalReferencename);
-                }
-                else {
+                } else {
                     basePath = buildFullPath(session, finalReferencename);
                 }
 
-                results = getMailboxManager().search(new MailboxQuery(basePath, mailboxName, mailboxSession.getPathDelimiter()),
-                                                     mailboxSession);
+                results = getMailboxManager().search(new MailboxQuery(basePath, mailboxName, mailboxSession.getPathDelimiter()), mailboxSession);
             }
 
-            for (final MailboxMetaData metaData: results) {
-                processResult(responder, isRelative, metaData,getMailboxType(session,mailboxTyper,metaData.getPath()));
+            for (final MailboxMetaData metaData : results) {
+                processResult(responder, isRelative, metaData, getMailboxType(session, mailboxTyper, metaData.getPath()));
             }
 
             okComplete(command, tag, responder);
@@ -160,7 +153,7 @@ public class ListProcessor extends AbstractMailboxProcessor<ListRequest>{
         }
     }
 
-    void processResult(final Responder responder, final boolean relative, final MailboxMetaData listResult,final MailboxType mailboxType) {
+    void processResult(final Responder responder, final boolean relative, final MailboxMetaData listResult, final MailboxType mailboxType) {
         final char delimiter = listResult.getHierarchyDelimiter();
         final String mailboxName = mailboxName(relative, listResult.getPath(), delimiter);
 
@@ -172,27 +165,31 @@ public class ListProcessor extends AbstractMailboxProcessor<ListRequest>{
         boolean marked = false;
         boolean unmarked = false;
         switch (listResult.getSelectability()) {
-            case MARKED:
-                marked = true;
-                break;
-            case UNMARKED:
-                unmarked = true;
-                break;
-            case NOSELECT:
-                noSelect = true;
-                break;
-            default:
-                break;
+        case MARKED:
+            marked = true;
+            break;
+        case UNMARKED:
+            unmarked = true;
+            break;
+        case NOSELECT:
+            noSelect = true;
+            break;
+        default:
+            break;
         }
-        responder.respond(createResponse(noInferior, noSelect, marked,
-                unmarked, hasChildren, hasNoChildren, mailboxName, delimiter,mailboxType));
+        responder.respond(createResponse(noInferior, noSelect, marked, unmarked, hasChildren, hasNoChildren, mailboxName, delimiter, mailboxType));
     }
 
     /**
-     * retrieve mailboxType for specified mailboxPath using provided MailboxTyper
-     * @param session current imap session
-     * @param mailboxTyper provided MailboxTyper used to retrieve mailbox type
-     * @param path mailbox's path
+     * retrieve mailboxType for specified mailboxPath using provided
+     * MailboxTyper
+     * 
+     * @param session
+     *            current imap session
+     * @param mailboxTyper
+     *            provided MailboxTyper used to retrieve mailbox type
+     * @param path
+     *            mailbox's path
      * @return MailboxType value
      */
     private MailboxType getMailboxType(ImapSession session, MailboxTyper mailboxTyper, MailboxPath path) {

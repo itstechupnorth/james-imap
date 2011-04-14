@@ -30,11 +30,11 @@ import org.apache.james.imap.api.process.SelectedMailbox;
 import org.apache.james.mailbox.MailboxListener;
 
 /**
- * {@link MailboxListener} which takes care of maintaining a mapping between message uids and msn (index)
+ * {@link MailboxListener} which takes care of maintaining a mapping between
+ * message uids and msn (index)
  * 
- *
- * TODO: This is a major memory hog
- * TODO: Each concurrent session requires one, and typical clients now open many
+ * TODO: This is a major memory hog TODO: Each concurrent session requires one,
+ * and typical clients now open many
  */
 public class UidToMsnConverter extends ImapStateAwareMailboxListener {
     private SortedMap<Integer, Long> msnToUid;
@@ -59,7 +59,7 @@ public class UidToMsnConverter extends ImapStateAwareMailboxListener {
                 highestMsn = msn;
                 msnToUid.put(msn, uid);
                 uidToMsn.put(uid, msn);
-                
+
                 msn++;
             }
 
@@ -68,7 +68,6 @@ public class UidToMsnConverter extends ImapStateAwareMailboxListener {
 
     /**
      * @see SelectedMailbox#uid(int)
-     * 
      */
     public synchronized long getUid(int msn) {
         if (msn == -1) {
@@ -111,9 +110,8 @@ public class UidToMsnConverter extends ImapStateAwareMailboxListener {
     public synchronized void expunge(final long uid) {
         final int msn = getMsn(uid);
         remove(msn, uid);
-        final List<Integer> renumberMsns = new ArrayList<Integer>(msnToUid
-                .tailMap(msn + 1).keySet());
-        for (final Integer msnInteger: renumberMsns) {
+        final List<Integer> renumberMsns = new ArrayList<Integer>(msnToUid.tailMap(msn + 1).keySet());
+        for (final Integer msnInteger : renumberMsns) {
             int aMsn = msnInteger.intValue();
             long aUid = getUid(aMsn);
             remove(aMsn, aUid);
@@ -144,14 +142,13 @@ public class UidToMsnConverter extends ImapStateAwareMailboxListener {
      */
     public synchronized void event(Event event) {
         if (event instanceof Added) {
-            final List<Long>  uids = ((Added) event).getUids();
+            final List<Long> uids = ((Added) event).getUids();
             for (int i = 0; i < uids.size(); i++) {
                 add(uids.get(i));
             }
         }
     }
 
-    
     /**
      * @see SelectedMailbox#getFirstUid()
      */
@@ -162,8 +159,7 @@ public class UidToMsnConverter extends ImapStateAwareMailboxListener {
             return uidToMsn.firstKey();
         }
     }
-    
-    
+
     /**
      * @see SelectedMailbox#getLastUid()
      */
@@ -174,15 +170,16 @@ public class UidToMsnConverter extends ImapStateAwareMailboxListener {
             return uidToMsn.lastKey();
         }
     }
+
     /**
-     * Close this {@link MailboxListener} and dispose all stored stuff 
+     * Close this {@link MailboxListener} and dispose all stored stuff
      */
     public synchronized void close() {
         uidToMsn.clear();
         msnToUid.clear();
         closed = true;
     }
-    
+
     /**
      * @see SelectedMailbox#existsCount()
      */
@@ -192,7 +189,9 @@ public class UidToMsnConverter extends ImapStateAwareMailboxListener {
 
     /*
      * (non-Javadoc)
-     * @see org.apache.james.imap.processor.ImapSessionAwareMailboxListener#isListenerClosed()
+     * 
+     * @see org.apache.james.imap.processor.ImapSessionAwareMailboxListener#
+     * isListenerClosed()
      */
     protected synchronized boolean isListenerClosed() {
         return closed;

@@ -31,11 +31,9 @@ import org.apache.james.imap.message.request.StartTLSRequest;
 import org.apache.james.imap.processor.base.AbstractChainedProcessor;
 
 /**
- *
  * Processing STARTLS commands
- *
  */
-public class StartTLSProcessor extends AbstractChainedProcessor<StartTLSRequest> implements CapabilityImplementingProcessor{
+public class StartTLSProcessor extends AbstractChainedProcessor<StartTLSRequest> implements CapabilityImplementingProcessor {
 
     private StatusResponseFactory factory;
 
@@ -46,10 +44,14 @@ public class StartTLSProcessor extends AbstractChainedProcessor<StartTLSRequest>
 
     /*
      * (non-Javadoc)
-     * @see org.apache.james.imap.processor.base.AbstractChainedProcessor#doProcess(org.apache.james.imap.api.ImapMessage, org.apache.james.imap.api.process.ImapProcessor.Responder, org.apache.james.imap.api.process.ImapSession)
+     * 
+     * @see
+     * org.apache.james.imap.processor.base.AbstractChainedProcessor#doProcess
+     * (org.apache.james.imap.api.ImapMessage,
+     * org.apache.james.imap.api.process.ImapProcessor.Responder,
+     * org.apache.james.imap.api.process.ImapSession)
      */
-    protected void doProcess(StartTLSRequest request,
-            Responder responder, ImapSession session) {
+    protected void doProcess(StartTLSRequest request, Responder responder, ImapSession session) {
         if (session.supportStartTLS()) {
             responder.respond(factory.taggedOk(request.getTag(), request.getCommand(), HumanReadableText.STARTTLS));
             session.startTLS();
@@ -62,7 +64,9 @@ public class StartTLSProcessor extends AbstractChainedProcessor<StartTLSRequest>
 
     /*
      * (non-Javadoc)
-     * @see org.apache.james.imap.processor.CapabilityImplementingProcessor#getImplementedCapabilities(org.apache.james.imap.api.process.ImapSession)
+     * 
+     * @see org.apache.james.imap.processor.CapabilityImplementingProcessor#
+     * getImplementedCapabilities(org.apache.james.imap.api.process.ImapSession)
      */
     public List<String> getImplementedCapabilities(ImapSession session) {
         if (session.supportStartTLS()) {

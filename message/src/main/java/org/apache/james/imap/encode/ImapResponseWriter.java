@@ -33,8 +33,7 @@ import org.apache.james.imap.message.response.Literal;
  * </p>
  */
 public interface ImapResponseWriter {
-    
-    
+
     /**
      * Writes literal content to the client
      * 
@@ -43,12 +42,12 @@ public interface ImapResponseWriter {
      * @throws IOException
      */
     void write(Literal literal) throws IOException;
-    
+
     /**
      * Write a ByteBuffer to the client
      * 
-     * @param buffer 
-     *          <code>ByteBuffer</code> to be written, not null
+     * @param buffer
+     *            <code>ByteBuffer</code> to be written, not null
      * @throws IOException
      */
     void write(ByteBuffer buffer) throws IOException;

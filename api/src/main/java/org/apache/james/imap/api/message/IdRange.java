@@ -39,7 +39,8 @@ public class IdRange {
     }
 
     public IdRange(long lowVal, long highVal) {
-        if (lowVal > highVal) throw new IllegalArgumentException("LowVal must be <= HighVal");
+        if (lowVal > highVal)
+            throw new IllegalArgumentException("LowVal must be <= HighVal");
         _lowVal = lowVal;
         _highVal = highVal;
     }
@@ -51,14 +52,16 @@ public class IdRange {
     public long getHighVal() {
         return _highVal;
     }
-    
+
     public void setLowVal(long lowVal) {
-        if (lowVal > _highVal) throw new IllegalArgumentException("LowVal must be <= HighVal");
+        if (lowVal > _highVal)
+            throw new IllegalArgumentException("LowVal must be <= HighVal");
         _lowVal = lowVal;
     }
-    
+
     public void setHighVal(long highVal) {
-        if (_lowVal > highVal) throw new IllegalArgumentException("HighVal must be >= LowVal");
+        if (_lowVal > highVal)
+            throw new IllegalArgumentException("HighVal must be >= LowVal");
         _highVal = highVal;
     }
 
@@ -107,22 +110,21 @@ public class IdRange {
      * @return a <code>String</code> representation of this object.
      */
     public String toString() {
-        final String retValue = "IdRange ( " + this._lowVal + "->"
-                + this._highVal + " )";
+        final String retValue = "IdRange ( " + this._lowVal + "->" + this._highVal + " )";
 
         return retValue;
     }
-    
+
     public String getFormattedString() {
-    	if(this._lowVal == this._highVal)
-    		return Long.toString(this._lowVal);
-    	else
-    		return this._lowVal+":"+this._highVal;
+        if (this._lowVal == this._highVal)
+            return Long.toString(this._lowVal);
+        else
+            return this._lowVal + ":" + this._highVal;
     }
-    
+
     /**
-     * Utility method which will copy the given {@link List} and try to merge the
-     * {@link IdRange} in the copy before return it.
+     * Utility method which will copy the given {@link List} and try to merge
+     * the {@link IdRange} in the copy before return it.
      * 
      * 
      * @param ranges
@@ -131,12 +133,12 @@ public class IdRange {
     public static List<IdRange> mergeRanges(final List<IdRange> ranges) {
         List<IdRange> copy = new ArrayList<IdRange>(ranges);
         Collections.sort(copy, IdRangeComperator.INSTANCE);
-        
+
         boolean lastUid = false;
-        
-        for (int i = 0; i < copy.size() -1; i++) {
+
+        for (int i = 0; i < copy.size() - 1; i++) {
             IdRange current = copy.get(i);
-            IdRange next = copy.get(i +1);
+            IdRange next = copy.get(i + 1);
             if (next.getLowVal() == Long.MAX_VALUE && next.getHighVal() == Long.MAX_VALUE) {
                 if (lastUid) {
                     copy.remove(next);
@@ -144,20 +146,19 @@ public class IdRange {
                 } else {
                     lastUid = true;
                 }
-            }  else {
-                // Make sure we handle the "*" and "*:*" correctly and don't remove ranges by error. See IMAP-289
-                if ((current.getLowVal() != Long.MAX_VALUE && current.getHighVal() != Long.MAX_VALUE) && (current.getHighVal() >= next.getLowVal() -1)) {
+            } else {
+                // Make sure we handle the "*" and "*:*" correctly and don't
+                // remove ranges by error. See IMAP-289
+                if ((current.getLowVal() != Long.MAX_VALUE && current.getHighVal() != Long.MAX_VALUE) && (current.getHighVal() >= next.getLowVal() - 1)) {
                     if (next.getHighVal() > current.getHighVal()) {
                         current.setHighVal(next.getHighVal());
                     }
                     // remove the merged id range and decrease the count
                     copy.remove(next);
                     i--;
-                } 
+                }
             }
-            
-            
-            
+
         }
         return copy;
 
@@ -168,7 +169,7 @@ public class IdRange {
         private static IdRangeComperator INSTANCE = new IdRangeComperator();
 
         public int compare(IdRange range1, IdRange range2) {
-            
+
             // Correctly sort and respect "*" and "*:*" ranges. See IMAP-289
             if (range1.getLowVal() == Long.MAX_VALUE && range1.getHighVal() == Long.MAX_VALUE && range2.getLowVal() == Long.MAX_VALUE && range2.getHighVal() == Long.MAX_VALUE) {
                 return 0;

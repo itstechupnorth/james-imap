@@ -35,7 +35,6 @@ import org.apache.james.imap.message.request.FetchRequest;
 
 /**
  * Parse FETCH commands
- *
  */
 public class FetchCommandParser extends AbstractUidCommandParser {
 
@@ -44,14 +43,14 @@ public class FetchCommandParser extends AbstractUidCommandParser {
     }
 
     /**
-     * Create a {@link FetchData} by reading from the {@link ImapRequestLineReader}
+     * Create a {@link FetchData} by reading from the
+     * {@link ImapRequestLineReader}
      * 
      * @param request
      * @return fetchData
      * @throws DecodingException
      */
-    protected FetchData fetchRequest(ImapRequestLineReader request)
-            throws DecodingException {
+    protected FetchData fetchRequest(ImapRequestLineReader request) throws DecodingException {
         FetchData fetch = new FetchData();
 
         char next = nextNonSpaceChar(request);
@@ -72,8 +71,7 @@ public class FetchCommandParser extends AbstractUidCommandParser {
         return fetch;
     }
 
-    private void addNextElement(ImapRequestLineReader reader, FetchData fetch)
-            throws DecodingException {
+    private void addNextElement(ImapRequestLineReader reader, FetchData fetch) throws DecodingException {
         // String name = element.toString();
         String name = readWord(reader, " [)\r\n");
         char next = reader.nextChar();
@@ -141,8 +139,7 @@ public class FetchCommandParser extends AbstractUidCommandParser {
                 numberOfOctets = null;
             }
 
-            final BodyFetchElement bodyFetchElement = createBodyElement(
-                    parameter, firstOctet, numberOfOctets);
+            final BodyFetchElement bodyFetchElement = createBodyElement(parameter, firstOctet, numberOfOctets);
             final boolean isPeek = isPeek(name);
             fetch.add(bodyFetchElement, isPeek);
         }
@@ -155,14 +152,12 @@ public class FetchCommandParser extends AbstractUidCommandParser {
         } else if ("BODY.PEEK".equalsIgnoreCase(name)) {
             isPeek = true;
         } else {
-            throw new DecodingException(HumanReadableText.ILLEGAL_ARGUMENTS, 
-                    "Invalid fetch attibute: " + name + "[]");
+            throw new DecodingException(HumanReadableText.ILLEGAL_ARGUMENTS, "Invalid fetch attibute: " + name + "[]");
         }
         return isPeek;
     }
 
-    private BodyFetchElement createBodyElement(String parameter,
-            Long firstOctet, Long numberOfOctets) throws DecodingException {
+    private BodyFetchElement createBodyElement(String parameter, Long firstOctet, Long numberOfOctets) throws DecodingException {
         final String responseName = "BODY[" + parameter + "]";
         FetchPartPathDecoder decoder = new FetchPartPathDecoder();
         decoder.decode(parameter);
@@ -170,43 +165,39 @@ public class FetchCommandParser extends AbstractUidCommandParser {
 
         final List<String> names = decoder.getNames();
         final int[] path = decoder.getPath();
-        final BodyFetchElement bodyFetchElement = new BodyFetchElement(
-                responseName, sectionType, path, names, firstOctet,
-                numberOfOctets);
+        final BodyFetchElement bodyFetchElement = new BodyFetchElement(responseName, sectionType, path, names, firstOctet, numberOfOctets);
         return bodyFetchElement;
     }
 
-    private int getSectionType(FetchPartPathDecoder decoder)
-            throws DecodingException {
+    private int getSectionType(FetchPartPathDecoder decoder) throws DecodingException {
         final int specifier = decoder.getSpecifier();
         final int sectionType;
         switch (specifier) {
-            case FetchPartPathDecoder.CONTENT:
-                sectionType = BodyFetchElement.CONTENT;
-                break;
-            case FetchPartPathDecoder.HEADER:
-                sectionType = BodyFetchElement.HEADER;
-                break;
-            case FetchPartPathDecoder.HEADER_FIELDS:
-                sectionType = BodyFetchElement.HEADER_FIELDS;
-                break;
-            case FetchPartPathDecoder.HEADER_NOT_FIELDS:
-                sectionType = BodyFetchElement.HEADER_NOT_FIELDS;
-                break;
-            case FetchPartPathDecoder.MIME:
-                sectionType = BodyFetchElement.MIME;
-                break;
-            case FetchPartPathDecoder.TEXT:
-                sectionType = BodyFetchElement.TEXT;
-                break;
-            default:
-                throw new DecodingException(HumanReadableText.ILLEGAL_ARGUMENTS, "Section type is unsupported.");
+        case FetchPartPathDecoder.CONTENT:
+            sectionType = BodyFetchElement.CONTENT;
+            break;
+        case FetchPartPathDecoder.HEADER:
+            sectionType = BodyFetchElement.HEADER;
+            break;
+        case FetchPartPathDecoder.HEADER_FIELDS:
+            sectionType = BodyFetchElement.HEADER_FIELDS;
+            break;
+        case FetchPartPathDecoder.HEADER_NOT_FIELDS:
+            sectionType = BodyFetchElement.HEADER_NOT_FIELDS;
+            break;
+        case FetchPartPathDecoder.MIME:
+            sectionType = BodyFetchElement.MIME;
+            break;
+        case FetchPartPathDecoder.TEXT:
+            sectionType = BodyFetchElement.TEXT;
+            break;
+        default:
+            throw new DecodingException(HumanReadableText.ILLEGAL_ARGUMENTS, "Section type is unsupported.");
         }
         return sectionType;
     }
 
-    private String readWord(ImapRequestLineReader request, String terminator)
-            throws DecodingException {
+    private String readWord(ImapRequestLineReader request, String terminator) throws DecodingException {
         StringBuffer buf = new StringBuffer();
         char next = request.nextChar();
         while (terminator.indexOf(next) == -1) {
@@ -217,8 +208,7 @@ public class FetchCommandParser extends AbstractUidCommandParser {
         return buf.toString();
     }
 
-    private char nextNonSpaceChar(ImapRequestLineReader request)
-            throws DecodingException {
+    private char nextNonSpaceChar(ImapRequestLineReader request) throws DecodingException {
         char next = request.nextChar();
         while (next == ' ') {
             request.consume();
@@ -229,17 +219,19 @@ public class FetchCommandParser extends AbstractUidCommandParser {
 
     /*
      * (non-Javadoc)
-     * @see org.apache.james.imap.decode.parser.AbstractUidCommandParser#decode(org.apache.james.imap.api.ImapCommand, org.apache.james.imap.decode.ImapRequestLineReader, java.lang.String, boolean, org.apache.james.imap.api.process.ImapSession)
+     * 
+     * @see
+     * org.apache.james.imap.decode.parser.AbstractUidCommandParser#decode(org
+     * .apache.james.imap.api.ImapCommand,
+     * org.apache.james.imap.decode.ImapRequestLineReader, java.lang.String,
+     * boolean, org.apache.james.imap.api.process.ImapSession)
      */
-    protected ImapMessage decode(ImapCommand command,
-            ImapRequestLineReader request, String tag, boolean useUids, ImapSession session)
-            throws DecodingException {
+    protected ImapMessage decode(ImapCommand command, ImapRequestLineReader request, String tag, boolean useUids, ImapSession session) throws DecodingException {
         IdRange[] idSet = request.parseIdRange();
         FetchData fetch = fetchRequest(request);
         request.eol();
-        
-        final ImapMessage result = new FetchRequest(command, useUids,
-                idSet, fetch, tag);
+
+        final ImapMessage result = new FetchRequest(command, useUids, idSet, fetch, tag);
         return result;
     }
 

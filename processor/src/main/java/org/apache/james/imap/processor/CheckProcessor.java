@@ -28,13 +28,11 @@ import org.apache.james.mailbox.MailboxManager;
 
 public class CheckProcessor extends AbstractMailboxProcessor<CheckRequest> {
 
-    public CheckProcessor(final ImapProcessor next, final MailboxManager mailboxManager,
-            final StatusResponseFactory factory) {
+    public CheckProcessor(final ImapProcessor next, final MailboxManager mailboxManager, final StatusResponseFactory factory) {
         super(CheckRequest.class, next, mailboxManager, factory);
     }
 
-    protected void doProcess(CheckRequest message, ImapSession session,
-            String tag, ImapCommand command, Responder responder) {
+    protected void doProcess(CheckRequest message, ImapSession session, String tag, ImapCommand command, Responder responder) {
         unsolicitedResponses(session, responder, false);
         okComplete(command, tag, responder);
     }

@@ -33,14 +33,18 @@ import org.apache.james.mailbox.SubscriptionManager;
 
 public class UnsubscribeProcessor extends AbstractSubscriptionProcessor<UnsubscribeRequest> {
 
-
     public UnsubscribeProcessor(ImapProcessor next, MailboxManager mailboxManager, SubscriptionManager subscriptionManager, StatusResponseFactory factory) {
         super(UnsubscribeRequest.class, next, mailboxManager, subscriptionManager, factory);
     }
 
     /*
      * (non-Javadoc)
-     * @see org.apache.james.imap.processor.AbstractSubscriptionProcessor#doProcessRequest(org.apache.james.imap.api.message.request.ImapRequest, org.apache.james.imap.api.process.ImapSession, java.lang.String, org.apache.james.imap.api.ImapCommand, org.apache.james.imap.api.process.ImapProcessor.Responder)
+     * 
+     * @see org.apache.james.imap.processor.AbstractSubscriptionProcessor#
+     * doProcessRequest(org.apache.james.imap.api.message.request.ImapRequest,
+     * org.apache.james.imap.api.process.ImapSession, java.lang.String,
+     * org.apache.james.imap.api.ImapCommand,
+     * org.apache.james.imap.api.process.ImapProcessor.Responder)
      */
     protected void doProcessRequest(UnsubscribeRequest request, ImapSession session, String tag, ImapCommand command, Responder responder) {
         final String mailboxName = request.getMailboxName();
@@ -55,8 +59,8 @@ public class UnsubscribeProcessor extends AbstractSubscriptionProcessor<Unsubscr
             session.getLog().debug("Subscription failed", e);
             unsolicitedResponses(session, responder, false);
 
-            no(command, tag, responder,  HumanReadableText.GENERIC_SUBSCRIPTION_FAILURE);
-        }        
+            no(command, tag, responder, HumanReadableText.GENERIC_SUBSCRIPTION_FAILURE);
+        }
     }
 
 }

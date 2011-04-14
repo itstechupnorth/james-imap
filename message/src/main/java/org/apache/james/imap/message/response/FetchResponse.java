@@ -18,8 +18,6 @@
  ****************************************************************/
 package org.apache.james.imap.message.response;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -49,10 +47,7 @@ public final class FetchResponse implements ImapResponseMessage {
 
     private final Structure bodystructure;
 
-    public FetchResponse(final int messageNumber, final Flags flags,
-            final Long uid, final Date internalDate, final Long size,
-            final Envelope envelope, final Structure body,
-            final Structure bodystructure, List<BodyElement> elements) {
+    public FetchResponse(final int messageNumber, final Flags flags, final Long uid, final Date internalDate, final Long size, final Envelope envelope, final Structure body, final Structure bodystructure, List<BodyElement> elements) {
         super();
         this.messageNumber = messageNumber;
         this.flags = flags;
@@ -68,8 +63,8 @@ public final class FetchResponse implements ImapResponseMessage {
     /**
      * Gets the structure of this message.
      * 
-     * @return <code>Structure</code>, or null if the <code>FETCH</code>
-     *         did not include <code>BODY</code>
+     * @return <code>Structure</code>, or null if the <code>FETCH</code> did not
+     *         include <code>BODY</code>
      */
     public Structure getBody() {
         return body;
@@ -78,8 +73,8 @@ public final class FetchResponse implements ImapResponseMessage {
     /**
      * Gets the structure of this message.
      * 
-     * @return <code>Structure</code>, or null if the <code>FETCH</code>
-     *         did not include <code>BODYSTRUCTURE</code>
+     * @return <code>Structure</code>, or null if the <code>FETCH</code> did not
+     *         include <code>BODYSTRUCTURE</code>
      */
     public Structure getBodyStructure() {
         return bodystructure;
@@ -97,8 +92,8 @@ public final class FetchResponse implements ImapResponseMessage {
     /**
      * Gets the fetched flags.
      * 
-     * @return {@link Flags} fetched, or null if the <code>FETCH</code> did
-     *         not include <code>FLAGS</code>
+     * @return {@link Flags} fetched, or null if the <code>FETCH</code> did not
+     *         include <code>FLAGS</code>
      */
     public Flags getFlags() {
         return flags;
@@ -147,8 +142,8 @@ public final class FetchResponse implements ImapResponseMessage {
     /**
      * TODO: replace
      * 
-     * @return <code>List</code> of <code>BodyElement</code>'s, or null if
-     *         the <code>FETCH</code> did not include body elements
+     * @return <code>List</code> of <code>BodyElement</code>'s, or null if the
+     *         <code>FETCH</code> did not include body elements
      */
     public List<BodyElement> getElements() {
         return elements;
@@ -218,25 +213,23 @@ public final class FetchResponse implements ImapResponseMessage {
         /**
          * Gets <code>Content-MD5</code>.
          * 
-         * @return Content-MD5 or null if <code>BODY</code> FETCH or not
-         *         present
+         * @return Content-MD5 or null if <code>BODY</code> FETCH or not present
          */
         public String getMD5();
 
         /**
          * Gets header field-value from <code>Content-Disposition</code>.
          * 
-         * @return map of field value <code>String</code> indexed by field
-         *         name <code>String</code> or null if <code>BODY</code>
-         *         FETCH or not present
+         * @return map of field value <code>String</code> indexed by field name
+         *         <code>String</code> or null if <code>BODY</code> FETCH or not
+         *         present
          */
         public Map<String, String> getDispositionParams();
 
         /**
          * Gets header field-value from <code>Content-Disposition</code>.
          * 
-         * @return disposition or null if <code>BODY</code> FETCH or not
-         *         present
+         * @return disposition or null if <code>BODY</code> FETCH or not present
          */
         public String getDisposition();
 
@@ -260,8 +253,8 @@ public final class FetchResponse implements ImapResponseMessage {
         /**
          * Iterates parts of a composite media type.
          * 
-         * @return <code>Structure</code> <code>Iterator</code> when
-         *         composite type, null otherwise
+         * @return <code>Structure</code> <code>Iterator</code> when composite
+         *         type, null otherwise
          */
         public Iterator<Structure> parts();
 
@@ -276,8 +269,8 @@ public final class FetchResponse implements ImapResponseMessage {
         /**
          * Gets the envelope of an embedded mail.
          * 
-         * @return <code>Structure</code> when when
-         *         <code>message/rfc822</code> otherwise null
+         * @return <code>Structure</code> when when <code>message/rfc822</code>
+         *         otherwise null
          */
         public Structure getBody();
     }
@@ -303,8 +296,8 @@ public final class FetchResponse implements ImapResponseMessage {
     public interface Envelope {
 
         /**
-         * Gets the envelope <code>date</code>. This is the value of the
-         * RFC822 <code>date</code> header.
+         * Gets the envelope <code>date</code>. This is the value of the RFC822
+         * <code>date</code> header.
          * 
          * @return envelope Date or null if this attribute is <code>NIL</code>
          */
@@ -369,6 +362,7 @@ public final class FetchResponse implements ImapResponseMessage {
 
         /**
          * Gets the envelope <code>message
+         * 
          * @return
          */
         public String getMessageId();

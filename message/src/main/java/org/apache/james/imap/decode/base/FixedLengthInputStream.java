@@ -49,14 +49,13 @@ public class FixedLengthInputStream extends FilterInputStream {
     }
 
     public int read(byte b[]) throws IOException {
-       
+
         return read(b, 0, b.length);
     }
 
     public int read(byte b[], int off, int len) throws IOException {
-        
 
-        if (pos >= length) {   
+        if (pos >= length) {
             return -1;
         }
 
@@ -67,11 +66,10 @@ public class FixedLengthInputStream extends FilterInputStream {
             return super.read(b, off, readLimit);
         }
 
-
-        int i =  super.read(b, off, len);
+        int i = super.read(b, off, len);
         pos += i;
         return i;
-       
+
     }
 
     public long skip(long n) throws IOException {

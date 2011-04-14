@@ -22,9 +22,8 @@ import org.apache.james.imap.api.ImapCommand;
 
 /**
  * Request for STARTTLS
- *
  */
-public class StartTLSRequest extends AbstractImapRequest{
+public class StartTLSRequest extends AbstractImapRequest {
 
     public StartTLSRequest(String tag, ImapCommand command) {
         super(tag, command);

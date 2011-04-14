@@ -24,14 +24,11 @@ import org.apache.james.imap.api.message.request.ImapRequest;
 
 /**
  * {@link ImapRequest} which selects a Mailbox
- *
  */
-public abstract class AbstractMailboxSelectionRequest extends
-        AbstractImapRequest {
+public abstract class AbstractMailboxSelectionRequest extends AbstractImapRequest {
     private final String mailboxName;
 
-    public AbstractMailboxSelectionRequest(final ImapCommand command,
-            final String mailboxName, final String tag) {
+    public AbstractMailboxSelectionRequest(final ImapCommand command, final String mailboxName, final String tag) {
         super(tag, command);
         this.mailboxName = mailboxName;
     }

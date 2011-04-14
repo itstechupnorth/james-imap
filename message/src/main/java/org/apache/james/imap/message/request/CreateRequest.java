@@ -23,14 +23,11 @@ import org.apache.james.imap.api.message.request.ImapRequest;
 
 /**
  * {@link ImapRequest} which request the creation of a mailbox
- * 
- *
  */
 public class CreateRequest extends AbstractImapRequest {
     private final String mailboxName;
 
-    public CreateRequest(final ImapCommand command, final String mailboxName,
-            final String tag) {
+    public CreateRequest(final ImapCommand command, final String mailboxName, final String tag) {
         super(tag, command);
         this.mailboxName = mailboxName;
     }

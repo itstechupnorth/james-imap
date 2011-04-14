@@ -32,11 +32,11 @@ import org.apache.james.imap.api.message.MessageFlags;
 
 /**
  * <p>
- * Represents an <code>RFC2060</code> status response. The five specified
- * status server responses (<code>OK<code>.
- * <code>NO</code>, <code>BAD</code>, <code>PREAUTH</code>
- * and <code>BYE</code>) are modeled by this single interface.
- * They are differentiated by {@link #getServerResponseType()}
+ * Represents an <code>RFC2060</code> status response. The five specified status
+ * server responses (<code>OK<code>.
+ * <code>NO</code>, <code>BAD</code>, <code>PREAUTH</code> and <code>BYE</code>)
+ * are modeled by this single interface. They are differentiated by
+ * {@link #getServerResponseType()}
  * </p>
  */
 public interface StatusResponse extends ImapResponseMessage {
@@ -72,8 +72,7 @@ public interface StatusResponse extends ImapResponseMessage {
     /**
      * Gets the response code. Optional.
      * 
-     * @return <code>ResponseCode</code>, or null if there is no response
-     *         code
+     * @return <code>ResponseCode</code>, or null if there is no response code
      */
     public ResponseCode getResponseCode();
 
@@ -82,21 +81,22 @@ public interface StatusResponse extends ImapResponseMessage {
      */
     public enum Type {
         /** RFC2060 <code>OK</code> server response */
-        OK ("OK"),
+        OK("OK"),
         /** RFC2060 <code>OK</code> server response */
-        NO ("NO"),
+        NO("NO"),
         /** RFC2060 <code>BAD</code> server response */
-        BAD ("BAD"),
+        BAD("BAD"),
         /** RFC2060 <code>PREAUTH</code> server response */
-        PREAUTH ("PREAUTH"),
+        PREAUTH("PREAUTH"),
         /** RFC2060 <code>BYE</code> server response */
-        BYE ("BYE");
+        BYE("BYE");
 
         private final String code;
 
         private Type(final String code) {
             this.code = code;
         }
+
         public final String getCode() {
             return code;
         }
@@ -118,16 +118,13 @@ public interface StatusResponse extends ImapResponseMessage {
         private static final ResponseCode PARSE = new ResponseCode("PARSE");
 
         /** RFC2060 <code>READ_ONLY</code> response code */
-        private static final ResponseCode READ_ONLY = new ResponseCode(
-                "READ-ONLY");
+        private static final ResponseCode READ_ONLY = new ResponseCode("READ-ONLY");
 
         /** RFC2060 <code>READ_WRITE</code> response code */
-        private static final ResponseCode READ_WRITE = new ResponseCode(
-                "READ-WRITE");
+        private static final ResponseCode READ_WRITE = new ResponseCode("READ-WRITE");
 
         /** RFC2060 <code>TRYCREATE</code> response code */
-        private static final ResponseCode TRYCREATE = new ResponseCode(
-                "TRYCREATE");
+        private static final ResponseCode TRYCREATE = new ResponseCode("TRYCREATE");
 
         /** RFC4315 <code>APPENDUID</code> response code */
         public static ResponseCode appendUid(long uidValidity, IdRange[] uids) {
@@ -161,7 +158,7 @@ public interface StatusResponse extends ImapResponseMessage {
          * 
          * @return <code>ResponseCode</code>, not null
          */
-        public static 	ResponseCode alert() {
+        public static ResponseCode alert() {
             return ALERT;
         }
 
@@ -169,8 +166,7 @@ public interface StatusResponse extends ImapResponseMessage {
          * Creates a RFC2060 <code>BADCHARSET</code> response code.
          * 
          * @param charsetNames
-         *            <code>Collection<String></code> containing charset
-         *            names
+         *            <code>Collection<String></code> containing charset names
          * @return <code>ResponseCode</code>, not null
          */
         public static ResponseCode badCharset(Collection<String> charsetNames) {
@@ -280,15 +276,15 @@ public interface StatusResponse extends ImapResponseMessage {
         private final Collection<String> parameters;
 
         private final long number;
-        
+
         private final boolean useParens;
 
-        @SuppressWarnings ("unchecked")
+        @SuppressWarnings("unchecked")
         private ResponseCode(final String code) {
             this(code, Collections.EMPTY_LIST, 0, true);
         }
 
-        @SuppressWarnings ("unchecked")
+        @SuppressWarnings("unchecked")
         private ResponseCode(final String code, final long number) {
             this(code, Collections.EMPTY_LIST, number, true);
         }
@@ -297,8 +293,7 @@ public interface StatusResponse extends ImapResponseMessage {
             this(code, parameters, 0, true);
         }
 
-        private ResponseCode(final String code, final Collection<String> parameters,
-                final long number, final boolean useParens) {
+        private ResponseCode(final String code, final Collection<String> parameters, final long number, final boolean useParens) {
             super();
             this.useParens = useParens;
             this.code = code;
@@ -322,12 +317,12 @@ public interface StatusResponse extends ImapResponseMessage {
         public boolean useParens() {
             return useParens;
         }
-        
+
         /**
          * Gets parameters for this code.
          * 
-         * @return the parameters <code>Collection</code> of
-         *         <code>String</code> parameters, not null
+         * @return the parameters <code>Collection</code> of <code>String</code>
+         *         parameters, not null
          */
         public Collection<String> getParameters() {
             return parameters;
@@ -338,8 +333,7 @@ public interface StatusResponse extends ImapResponseMessage {
             int result = 1;
             result = PRIME * result + ((code == null) ? 0 : code.hashCode());
             result = PRIME * result + (int) (number ^ (number >>> 32));
-            result = PRIME * result
-                    + ((parameters == null) ? 0 : parameters.hashCode());
+            result = PRIME * result + ((parameters == null) ? 0 : parameters.hashCode());
             return result;
         }
 

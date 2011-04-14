@@ -29,7 +29,6 @@ import org.apache.james.imap.message.request.ExpungeRequest;
 
 /**
  * Parse EXPUNGE commands
- *
  */
 public class ExpungeCommandParser extends AbstractUidCommandParser {
 
@@ -37,11 +36,14 @@ public class ExpungeCommandParser extends AbstractUidCommandParser {
         super(ImapCommand.selectedStateCommand(ImapConstants.EXPUNGE_COMMAND_NAME));
     }
 
-
-    
     /*
      * (non-Javadoc)
-     * @see org.apache.james.imap.decode.parser.AbstractUidCommandParser#decode(org.apache.james.imap.api.ImapCommand, org.apache.james.imap.decode.ImapRequestLineReader, java.lang.String, boolean, org.apache.james.imap.api.process.ImapSession)
+     * 
+     * @see
+     * org.apache.james.imap.decode.parser.AbstractUidCommandParser#decode(org
+     * .apache.james.imap.api.ImapCommand,
+     * org.apache.james.imap.decode.ImapRequestLineReader, java.lang.String,
+     * boolean, org.apache.james.imap.api.process.ImapSession)
      */
     protected ImapMessage decode(ImapCommand command, ImapRequestLineReader request, String tag, boolean useUids, ImapSession session) throws DecodingException {
         IdRange[] uidSet = null;

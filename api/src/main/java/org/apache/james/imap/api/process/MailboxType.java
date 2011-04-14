@@ -21,7 +21,6 @@ package org.apache.james.imap.api.process;
 /**
  * Represents well-known mailbox types along with their string representations
  * used by XLIST command
- * 
  */
 public enum MailboxType {
 
@@ -33,6 +32,7 @@ public enum MailboxType {
     STARRED("\\Starred"),
     ALLMAIL("\\AllMail"),
     OTHER(null);
+
     private String attributeName;
 
     MailboxType(String attributeName) {

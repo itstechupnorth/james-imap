@@ -85,8 +85,7 @@ public class SearchResponse implements ImapResponseMessage {
 
         StringBuffer retValue = new StringBuffer();
 
-        retValue.append("SearchResponse ( ").append("ids = ").append(Arrays.toString(this.ids))
-                .append(TAB).append(" )");
+        retValue.append("SearchResponse ( ").append("ids = ").append(Arrays.toString(this.ids)).append(TAB).append(" )");
 
         return retValue.toString();
     }

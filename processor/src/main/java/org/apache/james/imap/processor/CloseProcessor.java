@@ -34,14 +34,11 @@ import org.apache.james.mailbox.MessageRange;
 
 public class CloseProcessor extends AbstractMailboxProcessor<CloseRequest> {
 
-    public CloseProcessor(final ImapProcessor next, final MailboxManager mailboxManager,
-            final StatusResponseFactory factory) {
+    public CloseProcessor(final ImapProcessor next, final MailboxManager mailboxManager, final StatusResponseFactory factory) {
         super(CloseRequest.class, next, mailboxManager, factory);
     }
 
-
-    protected void doProcess(CloseRequest message, ImapSession session,
-            String tag, ImapCommand command, Responder responder) {
+    protected void doProcess(CloseRequest message, ImapSession session, String tag, ImapCommand command, Responder responder) {
         try {
             MessageManager mailbox = getSelectedMailbox(session);
             final MailboxSession mailboxSession = ImapSessionUtils.getMailboxSession(session);
@@ -52,12 +49,12 @@ public class CloseProcessor extends AbstractMailboxProcessor<CloseRequest> {
                 // TODO: the following comment was present in the code before
                 // refactoring
                 // TODO: doesn't seem to match the implementation
-                // TODO: check that implementation is correct
+                // TODO: check that implementation is correct.
                 // Don't send unsolicited responses on close.
                 unsolicitedResponses(session, responder, false);
                 okComplete(command, tag, responder);
             }
-        
+
         } catch (MailboxException e) {
             no(command, tag, responder, HumanReadableText.GENERIC_FAILURE_DURING_PROCESSING);
         }

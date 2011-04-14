@@ -23,14 +23,11 @@ import org.apache.james.imap.api.message.request.ImapRequest;
 
 /**
  * {@link ImapRequest} which request the deletion of a mailbox
- * 
- *
  */
 public class DeleteRequest extends AbstractImapRequest {
     private final String mailboxName;
 
-    public DeleteRequest(final ImapCommand command, final String mailboxName,
-            final String tag) {
+    public DeleteRequest(final ImapCommand command, final String mailboxName, final String tag) {
         super(tag, command);
         this.mailboxName = mailboxName;
     }

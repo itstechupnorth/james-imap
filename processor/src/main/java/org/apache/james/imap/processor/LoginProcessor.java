@@ -39,25 +39,27 @@ import org.apache.james.mailbox.MailboxSession;
 public class LoginProcessor extends AbstractMailboxProcessor<LoginRequest> {
 
     public static final String INBOX = "INBOX";
-    
+
     private static final String ATTRIBUTE_NUMBER_OF_FAILURES = "org.apache.james.imap.processor.imap4rev1.LoginProcessor.NUMBER_OF_FAILURES";
 
     // TODO: this should be configurable
     private static final int MAX_FAILURES = 3;
 
-    public LoginProcessor(final ImapProcessor next,
-            final MailboxManager mailboxManager,
-            final StatusResponseFactory factory) {
+    public LoginProcessor(final ImapProcessor next, final MailboxManager mailboxManager, final StatusResponseFactory factory) {
         super(LoginRequest.class, next, mailboxManager, factory);
     }
 
-
     /*
      * (non-Javadoc)
-     * @see org.apache.james.imap.processor.AbstractMailboxProcessor#doProcess(org.apache.james.imap.api.message.request.ImapRequest, org.apache.james.imap.api.process.ImapSession, java.lang.String, org.apache.james.imap.api.ImapCommand, org.apache.james.imap.api.process.ImapProcessor.Responder)
+     * 
+     * @see
+     * org.apache.james.imap.processor.AbstractMailboxProcessor#doProcess(org
+     * .apache.james.imap.api.message.request.ImapRequest,
+     * org.apache.james.imap.api.process.ImapSession, java.lang.String,
+     * org.apache.james.imap.api.ImapCommand,
+     * org.apache.james.imap.api.process.ImapProcessor.Responder)
      */
-    protected void doProcess(LoginRequest request, ImapSession session,
-            String tag, ImapCommand command, Responder responder) {
+    protected void doProcess(LoginRequest request, ImapSession session, String tag, ImapCommand command, Responder responder) {
         try {
             final String userid = request.getUserid();
             final String passwd = request.getPassword();
@@ -65,8 +67,7 @@ public class LoginProcessor extends AbstractMailboxProcessor<LoginRequest> {
             try {
                 final MailboxSession mailboxSession = mailboxManager.login(userid, passwd, session.getLog());
                 session.authenticated();
-                session.setAttribute(ImapSessionUtils.MAILBOX_SESSION_ATTRIBUTE_SESSION_KEY,
-                                        mailboxSession);
+                session.setAttribute(ImapSessionUtils.MAILBOX_SESSION_ATTRIBUTE_SESSION_KEY, mailboxSession);
                 final MailboxPath inboxPath = buildFullPath(session, INBOX);
                 if (mailboxManager.mailboxExists(inboxPath, mailboxSession)) {
                     session.getLog().debug("INBOX exists. No need to create it.");
@@ -80,8 +81,7 @@ public class LoginProcessor extends AbstractMailboxProcessor<LoginRequest> {
                 }
                 okComplete(command, tag, responder);
             } catch (BadCredentialsException e) {
-                final Integer currentNumberOfFailures = (Integer) session
-                        .getAttribute(ATTRIBUTE_NUMBER_OF_FAILURES);
+                final Integer currentNumberOfFailures = (Integer) session.getAttribute(ATTRIBUTE_NUMBER_OF_FAILURES);
                 final int failures;
                 if (currentNumberOfFailures == null) {
                     failures = 1;
@@ -89,10 +89,8 @@ public class LoginProcessor extends AbstractMailboxProcessor<LoginRequest> {
                     failures = currentNumberOfFailures.intValue() + 1;
                 }
                 if (failures < MAX_FAILURES) {
-                    session.setAttribute(ATTRIBUTE_NUMBER_OF_FAILURES,
-                            failures);
-                    no(command, tag, responder,
-                            HumanReadableText.INVALID_LOGIN);
+                    session.setAttribute(ATTRIBUTE_NUMBER_OF_FAILURES, failures);
+                    no(command, tag, responder, HumanReadableText.INVALID_LOGIN);
                 } else {
                     session.getLog().info("Too many authentication failures. Closing connection.");
                     bye(responder, HumanReadableText.TOO_MANY_FAILURES);

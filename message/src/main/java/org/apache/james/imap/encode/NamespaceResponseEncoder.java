@@ -38,26 +38,22 @@ public class NamespaceResponseEncoder extends AbstractChainedImapEncoder {
     }
 
     @Override
-    protected void doEncode(ImapMessage acceptableMessage,
-            ImapResponseComposer composer, ImapSession session)
-            throws IOException {
+    protected void doEncode(ImapMessage acceptableMessage, ImapResponseComposer composer, ImapSession session) throws IOException {
         final NamespaceResponse response = (NamespaceResponse) acceptableMessage;
         composer.untagged();
         composer.commandName(ImapConstants.NAMESPACE_COMMAND_NAME);
 
-        final List<NamespaceResponse.Namespace> personal = response
-                .getPersonal();
+        final List<NamespaceResponse.Namespace> personal = response.getPersonal();
         encode(personal, composer);
         final List<NamespaceResponse.Namespace> users = response.getUsers();
         encode(users, composer);
         final List<NamespaceResponse.Namespace> shared = response.getShared();
         encode(shared, composer);
-        
+
         composer.end();
     }
 
-    private void encode(List<Namespace> namespaces,
-            ImapResponseComposer composer) throws IOException {
+    private void encode(List<Namespace> namespaces, ImapResponseComposer composer) throws IOException {
         if (namespaces == null || namespaces.isEmpty()) {
             composer.nil();
         } else {
@@ -69,12 +65,11 @@ public class NamespaceResponseEncoder extends AbstractChainedImapEncoder {
         }
     }
 
-    private void encode(Namespace namespace, ImapResponseComposer composer)
-            throws IOException {
+    private void encode(Namespace namespace, ImapResponseComposer composer) throws IOException {
         composer.openParen();
         String prefix = namespace.getPrefix();
         String delimiter = Character.toString(namespace.getDelimiter());
-        
+
         if (prefix.length() > 0) {
             prefix = prefix + delimiter;
         }

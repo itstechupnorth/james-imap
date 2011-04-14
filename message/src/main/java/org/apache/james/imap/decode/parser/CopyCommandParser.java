@@ -29,7 +29,6 @@ import org.apache.james.imap.message.request.CopyRequest;
 
 /**
  * Parse COPY commands
- *
  */
 public class CopyCommandParser extends AbstractUidCommandParser {
 
@@ -39,16 +38,18 @@ public class CopyCommandParser extends AbstractUidCommandParser {
 
     /*
      * (non-Javadoc)
-     * @see org.apache.james.imap.decode.parser.AbstractUidCommandParser#decode(org.apache.james.imap.api.ImapCommand, org.apache.james.imap.decode.ImapRequestLineReader, java.lang.String, boolean, org.apache.james.imap.api.process.ImapSession)
+     * 
+     * @see
+     * org.apache.james.imap.decode.parser.AbstractUidCommandParser#decode(org
+     * .apache.james.imap.api.ImapCommand,
+     * org.apache.james.imap.decode.ImapRequestLineReader, java.lang.String,
+     * boolean, org.apache.james.imap.api.process.ImapSession)
      */
-    protected ImapMessage decode(ImapCommand command,
-            ImapRequestLineReader request, String tag, boolean useUids, ImapSession session)
-            throws DecodingException {
+    protected ImapMessage decode(ImapCommand command, ImapRequestLineReader request, String tag, boolean useUids, ImapSession session) throws DecodingException {
         IdRange[] idSet = request.parseIdRange();
         String mailboxName = request.mailbox();
         request.eol();
-        final ImapMessage result = new CopyRequest(
-                command, idSet, mailboxName, useUids, tag);
+        final ImapMessage result = new CopyRequest(command, idSet, mailboxName, useUids, tag);
         return result;
     }
 

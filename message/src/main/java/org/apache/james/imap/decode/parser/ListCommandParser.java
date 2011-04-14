@@ -29,7 +29,6 @@ import org.apache.james.imap.message.request.ListRequest;
 
 /**
  * Parse LIST commands
- *
  */
 public class ListCommandParser extends AbstractUidCommandParser {
 
@@ -41,7 +40,6 @@ public class ListCommandParser extends AbstractUidCommandParser {
         super(command);
     }
 
-
     /**
      * Reads an argument of type "list_mailbox" from the request, which is the
      * second argument for a LIST or LSUB command. Valid values are a "string"
@@ -49,16 +47,15 @@ public class ListCommandParser extends AbstractUidCommandParser {
      * 
      * @return An argument of type "list_mailbox"
      */
-    public String listMailbox(ImapRequestLineReader request)
-            throws DecodingException {
+    public String listMailbox(ImapRequestLineReader request) throws DecodingException {
         char next = request.nextWordChar();
         switch (next) {
-            case '"':
-                return request.consumeQuoted();
-            case '{':
-                return request.consumeLiteral(null);
-            default:
-                return request.consumeWord(new ListCharValidator());
+        case '"':
+            return request.consumeQuoted();
+        case '{':
+            return request.consumeLiteral(null);
+        default:
+            return request.consumeWord(new ListCharValidator());
         }
     }
 
@@ -71,27 +68,25 @@ public class ListCommandParser extends AbstractUidCommandParser {
         }
     }
 
-
     /*
      * (non-Javadoc)
-     * @see org.apache.james.imap.decode.parser.AbstractUidCommandParser#decode(org.apache.james.imap.api.ImapCommand, org.apache.james.imap.decode.ImapRequestLineReader, java.lang.String, boolean, org.apache.james.imap.api.process.ImapSession)
+     * 
+     * @see
+     * org.apache.james.imap.decode.parser.AbstractUidCommandParser#decode(org
+     * .apache.james.imap.api.ImapCommand,
+     * org.apache.james.imap.decode.ImapRequestLineReader, java.lang.String,
+     * boolean, org.apache.james.imap.api.process.ImapSession)
      */
-    protected ImapMessage decode(ImapCommand command,
-            ImapRequestLineReader request, String tag, boolean useUids, ImapSession session)
-            throws DecodingException {
+    protected ImapMessage decode(ImapCommand command, ImapRequestLineReader request, String tag, boolean useUids, ImapSession session) throws DecodingException {
         String referenceName = request.mailbox();
         String mailboxPattern = listMailbox(request);
         request.eol();
-        final ImapMessage result = createMessage(command, referenceName,
-                mailboxPattern, tag);
+        final ImapMessage result = createMessage(command, referenceName, mailboxPattern, tag);
         return result;
     }
 
-    protected ImapMessage createMessage(ImapCommand command,
-            final String referenceName, final String mailboxPattern,
-            final String tag) {
-        final ImapMessage result = new ListRequest(command,
-                referenceName, mailboxPattern, tag);
+    protected ImapMessage createMessage(ImapCommand command, final String referenceName, final String mailboxPattern, final String tag) {
+        final ImapMessage result = new ListRequest(command, referenceName, mailboxPattern, tag);
         return result;
     }
 }

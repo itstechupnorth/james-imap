@@ -40,9 +40,7 @@ public interface Literal {
      * @throws IOException
      */
     public void writeTo(WritableByteChannel channel) throws IOException;
-    
 
-    
     /**
      * Return the Literal as {@link InputStream}
      * 

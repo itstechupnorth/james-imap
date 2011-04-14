@@ -29,23 +29,19 @@ import org.apache.james.imap.decode.base.AbstractImapCommandParser;
 abstract class AbstractUidCommandParser extends AbstractImapCommandParser {
 
     public AbstractUidCommandParser(final ImapCommand command) {
-    	super(command);
+        super(command);
     }
 
-    protected ImapMessage decode(ImapCommand command,
-            ImapRequestLineReader request, String tag, ImapSession session) throws DecodingException {
+    protected ImapMessage decode(ImapCommand command, ImapRequestLineReader request, String tag, ImapSession session) throws DecodingException {
         final ImapMessage result = decode(command, request, tag, false, session);
         return result;
     }
 
-    public ImapMessage decode(ImapRequestLineReader request, String tag,
-            boolean useUids, ImapSession session) throws DecodingException {
+    public ImapMessage decode(ImapRequestLineReader request, String tag, boolean useUids, ImapSession session) throws DecodingException {
         final ImapCommand command = getCommand();
         final ImapMessage result = decode(command, request, tag, useUids, session);
         return result;
     }
 
-    protected abstract ImapMessage decode(ImapCommand command,
-            ImapRequestLineReader request, String tag, boolean useUids, ImapSession session)
-            throws DecodingException;
+    protected abstract ImapMessage decode(ImapCommand command, ImapRequestLineReader request, String tag, boolean useUids, ImapSession session) throws DecodingException;
 }

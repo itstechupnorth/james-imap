@@ -44,48 +44,41 @@ public class LSubProcessor extends AbstractSubscriptionProcessor<LsubRequest> {
     public LSubProcessor(ImapProcessor next, MailboxManager mailboxManager, SubscriptionManager subscriptionManager, StatusResponseFactory factory) {
         super(LsubRequest.class, next, mailboxManager, subscriptionManager, factory);
     }
-    private void listSubscriptions(ImapSession session, Responder responder,
-            final String referenceName, final String mailboxName)
-            throws SubscriptionException, MailboxException {
+
+    private void listSubscriptions(ImapSession session, Responder responder, final String referenceName, final String mailboxName) throws SubscriptionException, MailboxException {
         final MailboxSession mailboxSession = ImapSessionUtils.getMailboxSession(session);
         final Collection<String> mailboxes = getSubscriptionManager().subscriptions(mailboxSession);
         // If the mailboxName is fully qualified, ignore the reference name.
         String finalReferencename = referenceName;
-        
+
         if (mailboxName.charAt(0) == MailboxConstants.NAMESPACE_PREFIX_CHAR) {
             finalReferencename = "";
         }
-      
+
         // Is the interpreted (combined) pattern relative?
         boolean isRelative = ((finalReferencename + mailboxName).charAt(0) != MailboxConstants.NAMESPACE_PREFIX_CHAR);
         MailboxPath basePath = null;
         if (isRelative) {
-            basePath = new MailboxPath(MailboxConstants.USER_NAMESPACE,
-                    mailboxSession.getUser().getUserName(), finalReferencename);
-        }
-        else {
+            basePath = new MailboxPath(MailboxConstants.USER_NAMESPACE, mailboxSession.getUser().getUserName(), finalReferencename);
+        } else {
             basePath = buildFullPath(session, finalReferencename);
         }
-       
 
         final MailboxQuery expression = new MailboxQuery(basePath, mailboxName, mailboxSession.getPathDelimiter());
         final Collection<String> mailboxResponses = new ArrayList<String>();
-        for (final String mailbox: mailboxes) {
+        for (final String mailbox : mailboxes) {
             respond(responder, expression, mailbox, true, mailboxes, mailboxResponses, mailboxSession.getPathDelimiter());
         }
     }
 
-    private void respond(Responder responder, final MailboxQuery expression,
-            final String mailboxName, final boolean originalSubscription,
-            final Collection<String> mailboxes, final Collection<String> mailboxResponses, final char delimiter) {
+    private void respond(Responder responder, final MailboxQuery expression, final String mailboxName, final boolean originalSubscription, final Collection<String> mailboxes, final Collection<String> mailboxResponses, final char delimiter) {
         if (expression.isExpressionMatch(mailboxName)) {
             if (!mailboxResponses.contains(mailboxName)) {
                 final LSubResponse response = new LSubResponse(mailboxName, !originalSubscription, delimiter);
                 responder.respond(response);
                 mailboxResponses.add(mailboxName);
             }
-        }
-        else {
+        } else {
             final int lastDelimiter = mailboxName.lastIndexOf(delimiter);
             if (lastDelimiter > 0) {
                 final String parentMailbox = mailboxName.substring(0, lastDelimiter);
@@ -110,13 +103,18 @@ public class LSubProcessor extends AbstractSubscriptionProcessor<LsubRequest> {
 
     /*
      * (non-Javadoc)
-     * @see org.apache.james.imap.processor.AbstractSubscriptionProcessor#doProcessRequest(org.apache.james.imap.api.message.request.ImapRequest, org.apache.james.imap.api.process.ImapSession, java.lang.String, org.apache.james.imap.api.ImapCommand, org.apache.james.imap.api.process.ImapProcessor.Responder)
+     * 
+     * @see org.apache.james.imap.processor.AbstractSubscriptionProcessor#
+     * doProcessRequest(org.apache.james.imap.api.message.request.ImapRequest,
+     * org.apache.james.imap.api.process.ImapSession, java.lang.String,
+     * org.apache.james.imap.api.ImapCommand,
+     * org.apache.james.imap.api.process.ImapProcessor.Responder)
      */
     protected void doProcessRequest(LsubRequest request, ImapSession session, String tag, ImapCommand command, Responder responder) {
         final String referenceName = request.getBaseReferenceName();
         final String mailboxPattern = request.getMailboxPattern();
         final MailboxSession mailboxSession = ImapSessionUtils.getMailboxSession(session);
-        
+
         try {
             if (mailboxPattern.length() == 0) {
                 respondWithHierarchyDelimiter(responder, mailboxSession.getPathDelimiter());
@@ -133,6 +131,6 @@ public class LSubProcessor extends AbstractSubscriptionProcessor<LsubRequest> {
             session.getLog().debug("Subscription failed", e);
             final HumanReadableText displayTextKey = HumanReadableText.GENERIC_LSUB_FAILURE;
             no(command, tag, responder, displayTextKey);
-        }        
+        }
     }
 }
