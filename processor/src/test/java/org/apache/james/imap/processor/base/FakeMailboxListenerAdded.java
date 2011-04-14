@@ -19,21 +19,27 @@
 
 package org.apache.james.imap.processor.base;
 
+import java.util.List;
+
 import org.apache.james.mailbox.MailboxListener;
 import org.apache.james.mailbox.MailboxPath;
 import org.apache.james.mailbox.MailboxSession;
 
 public class FakeMailboxListenerAdded extends MailboxListener.Added {
 
-    public long subjectUid;
+    public List<Long> uids;
 
-    public FakeMailboxListenerAdded(MailboxSession session, long subjectUid, MailboxPath path) {
+    public FakeMailboxListenerAdded(MailboxSession session, List<Long> uids, MailboxPath path) {
         super(session, path);
-        this.subjectUid = subjectUid;
+        this.uids = uids;
     }
 
-    public long getSubjectUid() {
-        return subjectUid;
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.mailbox.MailboxListener.MessageEvent#getUids()
+     */
+    public List<Long> getUids() {
+        return uids;
     }
 
 

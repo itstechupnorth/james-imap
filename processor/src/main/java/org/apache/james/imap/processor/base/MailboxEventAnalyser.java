@@ -22,6 +22,7 @@ package org.apache.james.imap.processor.base;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -33,6 +34,7 @@ import org.apache.james.imap.api.process.ImapSession;
 import org.apache.james.imap.api.process.SelectedMailbox;
 import org.apache.james.mailbox.MailboxListener;
 import org.apache.james.mailbox.MailboxPath;
+import org.apache.james.mailbox.UpdatedFlags;
 
 /**
  * {@link MailboxListener} implementation which will listen for {@link Event} notifications and 
@@ -92,39 +94,47 @@ public class MailboxEventAnalyser extends ImapStateAwareMailboxListener {
             final long eventSessionId = event.getSession().getSessionId();
             if (event instanceof MessageEvent) {
                 final MessageEvent messageEvent = (MessageEvent) event;
-                final long uid = messageEvent.getSubjectUid();
+                //final List<Long> uids = messageEvent.getUids();
                 if (messageEvent instanceof Added) {
                     sizeChanged = true;
                 } else if (messageEvent instanceof FlagsUpdated) {
                     FlagsUpdated updated = (FlagsUpdated) messageEvent;
-                    if (interestingFlags(updated)
-                            && (sessionId != eventSessionId || !silentFlagChanges)) {
-                        final Long uidObject = uid;
-                        synchronized (flagUpdateUids) {
-                            flagUpdateUids.add(uidObject);
+                    List<UpdatedFlags> uFlags = updated.getUpdatedFlags();
+                    if (sessionId != eventSessionId || !silentFlagChanges) {
+                        for (int i = 0; i < uFlags.size(); i++) {
+                            UpdatedFlags u = uFlags.get(i);
+                            if (interestingFlags(u)) {
+                                synchronized (flagUpdateUids) {
+                                    flagUpdateUids.add(u.getUid());
+                                }
+                            }
                         }
                     }
+      
                     SelectedMailbox sm = session.getSelected();
                     if (sm != null) {
                         // We need to add the UID of the message to the recent
                         // list if we receive an flag update which contains a
                         // \RECENT flag
                         // See IMAP-287
-                        Iterator<Flag> flags = updated.flagsIterator();
+                        List<UpdatedFlags> uflags = updated.getUpdatedFlags();
+                        for (int i = 0; i < uflags.size(); i++) {
+                            UpdatedFlags u = uflags.get(i);
+                            Iterator<Flag> flags = u.iterator();
 
-                        while (flags.hasNext()) {
-                            if (Flag.RECENT.equals(flags.next())) {
-                                MailboxPath path = sm.getPath();
-                                if (path != null && path.equals(event.getMailboxPath())) {
-                                    sm.addRecent(updated.getSubjectUid());
+                                while (flags.hasNext()) {
+                                    if (Flag.RECENT.equals(flags.next())) {
+                                        MailboxPath path = sm.getPath();
+                                        if (path != null && path.equals(event.getMailboxPath())) {
+                                            sm.addRecent(u.getUid());
+                                        }
+                                    }
                                 }
-                            }
                         }
                     }
                 } else if (messageEvent instanceof Expunged) {
-                    final Long uidObject = uid;
                     synchronized (expungedUids) {
-                        expungedUids.add(uidObject);
+                        expungedUids.addAll(messageEvent.getUids());
                     }
                 }
             } else if (event instanceof MailboxDeletion) {
@@ -138,9 +148,9 @@ public class MailboxEventAnalyser extends ImapStateAwareMailboxListener {
         }
     }
 
-    private boolean interestingFlags(FlagsUpdated updated) {
+    private boolean interestingFlags(UpdatedFlags updated) {
         final boolean result;
-        final Iterator<Flags.Flag> it = updated.flagsIterator();
+        final Iterator<Flags.Flag> it = updated.iterator();
         if (it.hasNext()) {
             final Flags.Flag flag = it.next();
             if (flag.equals(uninterestingFlag)) {

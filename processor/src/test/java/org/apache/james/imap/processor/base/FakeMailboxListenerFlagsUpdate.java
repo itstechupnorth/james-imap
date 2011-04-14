@@ -19,40 +19,39 @@
 
 package org.apache.james.imap.processor.base;
 
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
-
-import javax.mail.Flags;
-import javax.mail.Flags.Flag;
 
 import org.apache.james.mailbox.MailboxPath;
 import org.apache.james.mailbox.MailboxSession;
+import org.apache.james.mailbox.UpdatedFlags;
 import org.apache.james.mailbox.MailboxListener.FlagsUpdated;
 
 public class FakeMailboxListenerFlagsUpdate extends FlagsUpdated {
 
-    public List<Flags.Flag> flags = new ArrayList<Flags.Flag>();
+    public List<Long> uids;
 
-    public long subjectUid;
+    public List<UpdatedFlags> flags;
 
-    public Flags newFlags;
-
-    public FakeMailboxListenerFlagsUpdate(MailboxSession session, long subjectUid, Flags newFlags, MailboxPath path) {
+    public FakeMailboxListenerFlagsUpdate(MailboxSession session, List<Long> uids, List<UpdatedFlags> flags, MailboxPath path) {
         super(session, path);
-        this.subjectUid = subjectUid;
-        this.newFlags = newFlags;
+        this.uids = uids;
+        this.flags = flags;
     }
 
-    public long getSubjectUid() {
-        return subjectUid;
+
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.mailbox.MailboxListener.FlagsUpdated#getUpdatedFlags()
+     */
+    public List<UpdatedFlags> getUpdatedFlags() {
+        return flags;
     }
 
-    public Iterator<Flag> flagsIterator() {
-        return flags.iterator();
-    }
-
-    public Flags getNewFlags() {
-        return newFlags;
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.mailbox.MailboxListener.MessageEvent#getUids()
+     */
+    public List<Long> getUids() {
+        return uids;
     }
 }

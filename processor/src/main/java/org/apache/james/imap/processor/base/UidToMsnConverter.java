@@ -143,11 +143,10 @@ public class UidToMsnConverter extends ImapStateAwareMailboxListener {
      * @see org.apache.james.mailbox.MailboxListener#event(org.apache.james.mailbox.MailboxListener.Event)
      */
     public synchronized void event(Event event) {
-        if (event instanceof MessageEvent) {
-            final MessageEvent messageEvent = (MessageEvent) event;
-            final long uid = messageEvent.getSubjectUid();
-            if (event instanceof Added) {
-                add(uid);
+        if (event instanceof Added) {
+            final List<Long>  uids = ((Added) event).getUids();
+            for (int i = 0; i < uids.size(); i++) {
+                add(uids.get(i));
             }
         }
     }
