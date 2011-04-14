@@ -294,7 +294,7 @@ public class MailboxEventAnalyserTest {
         
         
         final FakeMailboxListenerFlagsUpdate update = new FakeMailboxListenerFlagsUpdate(
-                mSession, Arrays.asList(345L), Arrays.asList(new UpdatedFlags(345, new Flags(), new Flags(Flags.Flag.ANSWERED))), mailboxPath);
+                mSession, Arrays.asList(345L), Arrays.asList(new UpdatedFlags(345, new Flags(), new Flags())), mailboxPath);
         analyser.event(update);
         analyser.setSilentFlagChanges(true);
         analyser.event(update);
@@ -311,7 +311,7 @@ public class MailboxEventAnalyserTest {
         
         
         final FakeMailboxListenerFlagsUpdate update = new FakeMailboxListenerFlagsUpdate(
-                mSession, Arrays.asList(886L), Arrays.asList(new UpdatedFlags(886, new Flags(), new Flags(Flags.Flag.ANSWERED))), mailboxPath);
+                mSession, Arrays.asList(886L), Arrays.asList(new UpdatedFlags(886, new Flags(), new Flags(Flags.Flag.RECENT))), mailboxPath);
         analyser.event(update);
         final Iterator<Long> iterator = analyser.flagUpdateUids().iterator();
         assertNotNull(iterator);
