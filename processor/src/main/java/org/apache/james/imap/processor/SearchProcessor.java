@@ -229,8 +229,9 @@ public class SearchProcessor extends AbstractMailboxProcessor<SearchRequest> {
             // correctly calculate the ranges. See IMAP-292
             final SelectedMailbox selected = session.getSelected();
             MessageRange mRange = messageRange(selected, range, !msn);
-            mRange = normalizeMessageRange(selected, mRange);
+
             ranges[i] = new SearchQuery.NumericRange(mRange.getUidFrom(), mRange.getUidTo());
+
 
         }
         Criterion crit = SearchQuery.uid(ranges);
