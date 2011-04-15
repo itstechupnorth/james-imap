@@ -16,47 +16,31 @@
  * specific language governing permissions and limitations      *
  * under the License.                                           *
  ****************************************************************/
-
-/**
- * 
- */
 package org.apache.james.imap.processor.fetch;
 
-import java.util.List;
+import java.io.IOException;
+import java.nio.channels.WritableByteChannel;
 
-import org.apache.james.imap.api.ImapConstants;
-import org.apache.james.imap.message.response.FetchResponse.BodyElement;
-import org.apache.james.mailbox.MessageResult;
+import org.apache.james.mailbox.Content;
 
 /**
- * {@link BodyElement} which represent a HEADER element specified by for example (BODY[1.HEADER])
+ * Just an Empty {@link Content}
+ *
  */
-public class HeaderBodyElement extends MimeBodyElement {
+public class EmptyContent implements Content{
 
-    public HeaderBodyElement(final String name, final List<MessageResult.Header> headers) {
-        super(name, headers);
-    }
-
-    
     /**
-     * Indicate that there is no text body in the message. In this case we don't need to write a single CRLF in anycase if
-     * this Element does not contain a header.
+     * Write nothing as this {@link Content} is empty
      */
-    public void noBody() {
-        if (headers.isEmpty()) {
-            size = 0;
-        }
+    public void writeTo(WritableByteChannel channel) throws IOException {
+        // do nothing..
     }
 
-    @Override
-    protected long calculateSize(List<MessageResult.Header> headers) {
-        if (headers.isEmpty()) {
-            // even if the headers are empty we need to include the headers body
-            // seperator
-            // See IMAP-294
-            return ImapConstants.LINE_END.length();
-        }
-        return super.calculateSize(headers);
+    /**
+     * Return 0 as this {@link Content} is empty
+     */
+    public long size() {
+        return 0;
     }
 
 }
