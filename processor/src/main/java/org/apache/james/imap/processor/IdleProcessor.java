@@ -26,7 +26,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -50,8 +49,6 @@ import org.apache.james.mailbox.MailboxSession;
 public class IdleProcessor extends AbstractMailboxProcessor<IdleRequest> implements CapabilityImplementingProcessor {
 
     private final ScheduledExecutorService heartbeatExecutor;
-
-    private final static String HEARTBEAT_FUTURE = "IDLE_HEARTBEAT_FUTURE";
 
     // 2 minutes
     public final static long DEFAULT_HEARTBEAT_INTERVAL_IN_SECONDS = 2 * 60;
@@ -113,40 +110,18 @@ public class IdleProcessor extends AbstractMailboxProcessor<IdleRequest> impleme
                     } else {
                         okComplete(command, tag, responder);
 
-                        // See if we need to cancel the idle heartbeat handling
-                        Object oFuture = session.getAttribute(HEARTBEAT_FUTURE);
-                        if (oFuture != null) {
-                            ScheduledFuture<?> future = (ScheduledFuture<?>) oFuture;
-                            if (future.cancel(true) == false) {
-                                // unable to cancel the future so better logout
-                                // now!
-                                session.getLog().error("Unable to disable idle heartbeat for unknown reason! Force logout");
-                                session.logout();
-                            }
-                            session.setAttribute(HEARTBEAT_FUTURE, null);
-                        }
                     }
                 }
             });
 
             // Check if we should send heartbeats
             if (heartbeatInterval > 0) {
-                final ScheduledFuture<?> heartbeatFuture = heartbeatExecutor.scheduleWithFixedDelay(new Runnable() {
+                heartbeatExecutor.schedule(new Runnable() {
 
                     public void run() {
                         // check if we need to cancel the Runnable
                         // See IMAP-275
-                        if (session.getState() == ImapSessionState.LOGOUT) {
-
-                            Object future = session.getAttribute(HEARTBEAT_FUTURE);
-                            if (future != null) {
-                                // cancel the future if needed to be sure it not
-                                // run infinity
-                                ((ScheduledFuture<?>) future).cancel(true);
-                                session.setAttribute(HEARTBEAT_FUTURE, null);
-                            }
-
-                        } else {
+                        if (session.getState() != ImapSessionState.LOGOUT && closed.get() == false) {
                             // Send a heartbeat to the client to make sure we
                             // reset the idle timeout. This is kind of the same
                             // workaround as dovecot use.
@@ -157,12 +132,12 @@ public class IdleProcessor extends AbstractMailboxProcessor<IdleRequest> impleme
                             // See IMAP-272
                             StatusResponse response = getStatusResponseFactory().untaggedOk(HumanReadableText.HEARTBEAT);
                             responder.respond(response);
+                            
+                            // schedule the heartbeat again for the next interval
+                            heartbeatExecutor.schedule(this, heartbeatInterval, heartbeatIntervalUnit);
                         }
                     }
-                }, heartbeatInterval, heartbeatInterval, heartbeatIntervalUnit);
-
-                // store future for later usage
-                session.setAttribute(HEARTBEAT_FUTURE, heartbeatFuture);
+                }, heartbeatInterval, heartbeatIntervalUnit);
             }
 
         } catch (MailboxException e) {
