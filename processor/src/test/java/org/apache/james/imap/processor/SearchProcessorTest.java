@@ -414,8 +414,8 @@ public class SearchProcessorTest {
     public void testUID() throws Exception {
     	mockery.checking(new Expectations() {{
 
-    		atLeast(1).of(selectedMailbox).getFirstUid();will(returnValue(1L));
-    		atLeast(1).of(selectedMailbox).getLastUid();will(returnValue(1048L));
+    		allowing(selectedMailbox).getFirstUid();will(returnValue(1L));
+    		allowing(selectedMailbox).getLastUid();will(returnValue(1048L));
             }});
     	
         expectsGetSelectedMailbox();            
