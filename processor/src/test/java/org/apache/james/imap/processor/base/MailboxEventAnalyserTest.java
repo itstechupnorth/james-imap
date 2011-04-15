@@ -99,6 +99,10 @@ public class MailboxEventAnalyserTest {
         public boolean isOpen() {
             return false;
         }
+
+        public SessionType getType() {
+            return SessionType.System;
+        }
         
         
     }
