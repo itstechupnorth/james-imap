@@ -44,6 +44,7 @@ public class LogoutProcessor extends AbstractMailboxProcessor<LogoutRequest> {
             bye(responder);
             okComplete(command, tag, responder);
         } catch (MailboxException e) {
+            session.getLog().debug("Logout failed", e);
             no(command, tag, responder, HumanReadableText.GENERIC_FAILURE_DURING_PROCESSING);
         }
     }

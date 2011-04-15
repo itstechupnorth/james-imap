@@ -98,8 +98,10 @@ public class CopyProcessor extends AbstractMailboxProcessor<CopyRequest> {
                 okComplete(command, tag, ResponseCode.copyUid(uidValidity, idSet, resultUids), responder);
             }
         } catch (MessageRangeException e) {
+            session.getLog().debug("Copy failed", e);
             taggedBad(command, tag, responder, HumanReadableText.INVALID_MESSAGESET);
         } catch (MailboxException e) {
+            session.getLog().debug("Copy failed", e);
             no(command, tag, responder, HumanReadableText.GENERIC_FAILURE_DURING_PROCESSING);
         }
     }

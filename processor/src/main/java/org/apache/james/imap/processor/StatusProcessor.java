@@ -84,6 +84,7 @@ public class StatusProcessor extends AbstractMailboxProcessor<StatusRequest> {
             okComplete(command, tag, responder);
 
         } catch (MailboxException e) {
+            session.getLog().debug("Status failed", e);
             no(command, tag, responder, HumanReadableText.SEARCH_FAILED);
         }
     }

@@ -56,7 +56,7 @@ public class SubscribeProcessor extends AbstractSubscriptionProcessor<SubscribeR
             okComplete(command, tag, responder);
 
         } catch (SubscriptionException e) {
-            session.getLog().debug("Subscription failed", e);
+            session.getLog().debug("Subscribe failed", e);
             unsolicitedResponses(session, responder, false);
             no(command, tag, responder, HumanReadableText.GENERIC_SUBSCRIPTION_FAILURE);
         }

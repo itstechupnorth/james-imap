@@ -101,8 +101,10 @@ public class StoreProcessor extends AbstractMailboxProcessor<StoreRequest> {
             unsolicitedResponses(session, responder, omitExpunged, useUids);
             okComplete(command, tag, responder);
         } catch (MessageRangeException e) {
+            session.getLog().debug("Store failed", e); 
             taggedBad(command, tag, responder, HumanReadableText.INVALID_MESSAGESET);
         } catch (MailboxException e) {
+            session.getLog().debug("Store failed", e);
             no(command, tag, responder, HumanReadableText.SAVE_FAILED);
         }
     }

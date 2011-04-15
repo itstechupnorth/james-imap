@@ -64,10 +64,13 @@ public class RenameProcessor extends AbstractMailboxProcessor<RenameRequest> {
             okComplete(command, tag, responder);
             unsolicitedResponses(session, responder, false);
         } catch (MailboxExistsException e) {
+            session.getLog().debug("Rename failed", e);
             no(command, tag, responder, HumanReadableText.FAILURE_MAILBOX_EXISTS);
         } catch (MailboxNotFoundException e) {
+            session.getLog().debug("Rename failed", e);
             no(command, tag, responder, HumanReadableText.MAILBOX_NOT_FOUND);
         } catch (MailboxException e) {
+            session.getLog().debug("Rename failed", e);
             no(command, tag, responder, HumanReadableText.GENERIC_FAILURE_DURING_PROCESSING);
         }
     }

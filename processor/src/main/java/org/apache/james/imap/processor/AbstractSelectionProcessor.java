@@ -85,8 +85,10 @@ abstract class AbstractSelectionProcessor<M extends AbstractMailboxSelectionRequ
             final MessageManager.MetaData metaData = selectMailbox(fullMailboxPath, session);
             respond(tag, command, session, metaData, responder);
         } catch (MailboxNotFoundException e) {
+            session.getLog().debug("Select failed", e);
             responder.respond(statusResponseFactory.taggedNo(tag, command, HumanReadableText.FAILURE_NO_SUCH_MAILBOX));
         } catch (MailboxException e) {
+            session.getLog().debug("Select failed", e);
             no(command, tag, responder, HumanReadableText.SELECT);
         }
     }

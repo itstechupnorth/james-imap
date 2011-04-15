@@ -55,8 +55,10 @@ public class CreateProcessor extends AbstractMailboxProcessor<CreateRequest> {
             unsolicitedResponses(session, responder, false);
             okComplete(command, tag, responder);
         } catch (MailboxExistsException e) {
+            session.getLog().debug("Create failed", e);
             no(command, tag, responder, HumanReadableText.MAILBOX_EXISTS);
         } catch (MailboxException e) {
+            session.getLog().debug("Create failed", e);
             no(command, tag, responder, HumanReadableText.GENERIC_FAILURE_DURING_PROCESSING);
         }
     }

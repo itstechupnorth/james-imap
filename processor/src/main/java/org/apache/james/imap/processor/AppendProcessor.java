@@ -76,6 +76,8 @@ public class AppendProcessor extends AbstractMailboxProcessor<AppendRequest> {
             // consume message on exception
             consume(messageIn);
 
+            session.getLog().debug("Append failed", e);
+            
             // Indicates that the mailbox does not exist
             // So TRY CREATE
             tryCreate(session, tag, command, responder, e);
@@ -83,6 +85,9 @@ public class AppendProcessor extends AbstractMailboxProcessor<AppendRequest> {
         } catch (MailboxException e) {
             // consume message on exception
             consume(messageIn);
+            
+            session.getLog().debug("Append failed", e);
+            
             // Some other issue
             no(command, tag, responder, HumanReadableText.GENERIC_FAILURE_DURING_PROCESSING);
 

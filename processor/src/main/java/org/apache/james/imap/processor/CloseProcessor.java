@@ -56,6 +56,7 @@ public class CloseProcessor extends AbstractMailboxProcessor<CloseRequest> {
             }
 
         } catch (MailboxException e) {
+            session.getLog().debug("Close failed", e);
             no(command, tag, responder, HumanReadableText.GENERIC_FAILURE_DURING_PROCESSING);
         }
     }

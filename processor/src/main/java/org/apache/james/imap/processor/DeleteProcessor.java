@@ -60,9 +60,10 @@ public class DeleteProcessor extends AbstractMailboxProcessor<DeleteRequest> {
             unsolicitedResponses(session, responder, false);
             okComplete(command, tag, responder);
         } catch (MailboxNotFoundException e) {
+            session.getLog().debug("Delete failed", e);
             no(command, tag, responder, HumanReadableText.FAILURE_NO_SUCH_MAILBOX);
-
         } catch (MailboxException e) {
+            session.getLog().debug("Delete failed", e);
             no(command, tag, responder, HumanReadableText.GENERIC_FAILURE_DURING_PROCESSING);
         }
     }
