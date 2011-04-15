@@ -20,8 +20,12 @@
 package org.apache.james.imap.processor;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
+import java.util.TimeZone;
 
 import javax.mail.Flags.Flag;
 
@@ -45,6 +49,7 @@ import org.apache.james.mailbox.MailboxSession;
 import org.apache.james.mailbox.MessageManager;
 import org.apache.james.mailbox.SearchQuery;
 import org.apache.james.mailbox.SearchQuery.Criterion;
+import org.apache.james.mailbox.SearchQuery.DateResolution;
 import org.jmock.Expectations;
 import org.jmock.Mockery;
 import org.jmock.integration.junit4.JMock;
@@ -201,6 +206,17 @@ public class SearchProcessorTest {
         }});
     }
 
+
+    private Calendar getGMT() {
+        return Calendar.getInstance(TimeZone.getTimeZone("GMT"), Locale.UK);
+    }
+    
+    private Date getDate(int day, int month, int year) {
+        Calendar cal = getGMT();
+        cal.set(year, month -1, day);
+        return cal.getTime();
+    }
+    
     @Test
     public void testANSWERED() throws Exception {
         expectsGetSelectedMailbox();
@@ -218,7 +234,7 @@ public class SearchProcessorTest {
     public void testBEFORE() throws Exception {
         expectsGetSelectedMailbox();
         check(SearchKey.buildBefore(DAY_MONTH_YEAR), SearchQuery
-                .internalDateBefore(DAY, MONTH, YEAR));
+                .internalDateBefore(getDate(DAY, MONTH, YEAR), DateResolution.Day));
     }
 
     @Test
@@ -290,7 +306,7 @@ public class SearchProcessorTest {
     public void testNOT() throws Exception {
         expectsGetSelectedMailbox();
         check(SearchKey.buildNot(SearchKey.buildOn(DAY_MONTH_YEAR)),
-                SearchQuery.not(SearchQuery.internalDateOn(DAY, MONTH, YEAR)));
+                SearchQuery.not(SearchQuery.internalDateOn(getDate(DAY, MONTH, YEAR), DateResolution.Day)));
     }
 
 
@@ -303,8 +319,8 @@ public class SearchProcessorTest {
     @Test
     public void testON() throws Exception {
         expectsGetSelectedMailbox();
-        check(SearchKey.buildOn(DAY_MONTH_YEAR), SearchQuery.internalDateOn(
-                DAY, MONTH, YEAR));
+        check(SearchKey.buildOn(DAY_MONTH_YEAR), SearchQuery.internalDateOn(getDate(
+                DAY, MONTH, YEAR), DateResolution.Day));
     }
 
     @Test
@@ -315,7 +331,7 @@ public class SearchProcessorTest {
         keys.add(SearchKey.buildOld());
         keys.add(SearchKey.buildLarger(SIZE));
         List<Criterion> criteria = new ArrayList<Criterion>();
-        criteria.add(SearchQuery.internalDateOn(DAY, MONTH, YEAR));
+        criteria.add(SearchQuery.internalDateOn(getDate(DAY, MONTH, YEAR), DateResolution.Day));
         criteria.add(SearchQuery.flagIsUnSet(Flag.RECENT));
         criteria.add(SearchQuery.sizeGreaterThan(SIZE));
         check(SearchKey.buildAnd(keys), SearchQuery.and(criteria));
@@ -325,8 +341,8 @@ public class SearchProcessorTest {
     public void testOR() throws Exception {
         expectsGetSelectedMailbox();
         check(SearchKey.buildOr(SearchKey.buildOn(DAY_MONTH_YEAR), SearchKey
-                .buildOld()), SearchQuery.or(SearchQuery.internalDateOn(DAY,
-                MONTH, YEAR), SearchQuery.flagIsUnSet(Flag.RECENT)));
+                .buildOld()), SearchQuery.or(SearchQuery.internalDateOn(getDate(DAY,
+                MONTH, YEAR), DateResolution.Day), SearchQuery.flagIsUnSet(Flag.RECENT)));
     }
 
     @Test
@@ -344,28 +360,28 @@ public class SearchProcessorTest {
     @Test
     public void testSENTBEFORE() throws Exception {
         expectsGetSelectedMailbox();
-        check(SearchKey.buildSentBefore(DAY_MONTH_YEAR), SearchQuery.headerDateBefore(ImapConstants.RFC822_DATE, DAY, MONTH, YEAR));
+        check(SearchKey.buildSentBefore(DAY_MONTH_YEAR), SearchQuery.headerDateBefore(ImapConstants.RFC822_DATE, getDate(DAY, MONTH, YEAR), DateResolution.Day));
     }
 
     @Test
     public void testSENTON() throws Exception {
         expectsGetSelectedMailbox();
         check(SearchKey.buildSentOn(DAY_MONTH_YEAR), SearchQuery.headerDateOn(
-                ImapConstants.RFC822_DATE, DAY, MONTH, YEAR));
+                ImapConstants.RFC822_DATE, getDate(DAY, MONTH, YEAR), DateResolution.Day));
     }
     @Test
     public void testSENTSINCE() throws Exception {
         expectsGetSelectedMailbox();
-        check(SearchKey.buildSentSince(DAY_MONTH_YEAR), SearchQuery.or(SearchQuery.headerDateOn(ImapConstants.RFC822_DATE, DAY, MONTH, YEAR), SearchQuery
-                .headerDateAfter(ImapConstants.RFC822_DATE, DAY, MONTH, YEAR)));
+        check(SearchKey.buildSentSince(DAY_MONTH_YEAR), SearchQuery.or(SearchQuery.headerDateOn(ImapConstants.RFC822_DATE, getDate(DAY, MONTH, YEAR), DateResolution.Day), SearchQuery
+                .headerDateAfter(ImapConstants.RFC822_DATE, getDate(DAY, MONTH, YEAR), DateResolution.Day)));
     }
 
     @Test
     public void testSINCE() throws Exception {
         expectsGetSelectedMailbox();
         check(SearchKey.buildSince(DAY_MONTH_YEAR), SearchQuery.or(SearchQuery
-                .internalDateOn(DAY, MONTH, YEAR), SearchQuery
-                .internalDateAfter(DAY, MONTH, YEAR)));
+                .internalDateOn(getDate(DAY, MONTH, YEAR), DateResolution.Day), SearchQuery
+                .internalDateAfter(getDate(DAY, MONTH, YEAR), DateResolution.Day)));
     }
 
     @Test

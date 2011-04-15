@@ -19,6 +19,11 @@
 
 package org.apache.james.imap.api.message.request;
 
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
+import java.util.TimeZone;
+
 /**
  * An IMAP <code>date</code> production.
  */
@@ -55,6 +60,21 @@ public class DayMonthYear {
         return month;
     }
 
+    /**
+     * Return the {@link Date} representation
+     * 
+     * @return date
+     */
+    public final Date toDate() {
+        Calendar cal = getGMT();
+        cal.set(getYear(), getMonth() -1,  getDay());
+        return cal.getTime();
+    }
+    
+    private Calendar getGMT() {
+        return Calendar.getInstance(TimeZone.getTimeZone("GMT"), Locale.UK);
+    }
+    
     /**
      * Gets the year component of this date.
      * 
