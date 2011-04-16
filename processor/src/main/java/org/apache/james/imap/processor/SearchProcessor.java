@@ -222,19 +222,18 @@ public class SearchProcessor extends AbstractMailboxProcessor<SearchRequest> {
 
     private Criterion sequence(IdRange[] sequenceNumbers, final ImapSession session, boolean msn) throws MessageRangeException {
         final int length = sequenceNumbers.length;
-        final SearchQuery.NumericRange[] ranges = new SearchQuery.NumericRange[length];
+        final List<SearchQuery.NumericRange> ranges = new ArrayList<SearchQuery.NumericRange>();
         for (int i = 0; i < length; i++) {
             final IdRange range = sequenceNumbers[i];
 
             // correctly calculate the ranges. See IMAP-292
             final SelectedMailbox selected = session.getSelected();
             MessageRange mRange = messageRange(selected, range, !msn);
-                 
-            ranges[i] = new SearchQuery.NumericRange(mRange.getUidFrom(), mRange.getUidTo());
-
-
+            if (mRange != null) {
+                ranges.add(new SearchQuery.NumericRange(mRange.getUidFrom(), mRange.getUidTo()));
+            }
         }
-        Criterion crit = SearchQuery.uid(ranges);
+        Criterion crit = SearchQuery.uid(ranges.toArray(new SearchQuery.NumericRange[0]));
         return crit;
     }
 

@@ -351,7 +351,7 @@ abstract public class AbstractMailboxProcessor<M extends ImapRequest> extends Ab
      * @param selected
      * @param range
      * @param useUids
-     * @return
+     * @return range or null
      * @throws MailboxException
      */
     protected MessageRange messageRange(SelectedMailbox selected, IdRange range, boolean useUids) throws MessageRangeException {
@@ -391,6 +391,9 @@ abstract public class AbstractMailboxProcessor<M extends ImapRequest> extends Ab
             }
             
         } else {
+            if (selected.existsCount() <= 0) {
+                return null;
+            }
             // Take care of "*" and "*:*" values by return the last message in
             // the mailbox. See IMAP-289
             if (lowVal == Long.MAX_VALUE && highVal == Long.MAX_VALUE) {

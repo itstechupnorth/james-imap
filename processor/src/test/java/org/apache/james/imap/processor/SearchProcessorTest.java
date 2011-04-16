@@ -416,6 +416,8 @@ public class SearchProcessorTest {
 
     		allowing(selectedMailbox).getFirstUid();will(returnValue(1L));
     		allowing(selectedMailbox).getLastUid();will(returnValue(1048L));
+            allowing(selectedMailbox).existsCount();will(returnValue(1L));
+
             }});
     	
         expectsGetSelectedMailbox();            

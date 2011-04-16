@@ -71,31 +71,33 @@ public class StoreProcessor extends AbstractMailboxProcessor<StoreRequest> {
             for (int i = 0; i < idSet.length; i++) {
                 final SelectedMailbox selected = session.getSelected();
                 MessageRange messageSet = messageRange(selected, idSet[i], useUids);
+                if (messageSet != null) {
+                    final MailboxSession mailboxSession = ImapSessionUtils.getMailboxSession(session);
+                    final Map<Long, Flags> flagsByUid = mailbox.setFlags(flags, value, replace, messageSet, mailboxSession);
+                    if (!silent) {
+                        for (Map.Entry<Long, Flags> entry : flagsByUid.entrySet()) {
+                            final long uid = entry.getKey();
+                            final int msn = selected.msn(uid);
 
-                final MailboxSession mailboxSession = ImapSessionUtils.getMailboxSession(session);
-                final Map<Long, Flags> flagsByUid = mailbox.setFlags(flags, value, replace, messageSet, mailboxSession);
-                if (!silent) {
-                    for (Map.Entry<Long, Flags> entry : flagsByUid.entrySet()) {
-                        final long uid = entry.getKey();
-                        final int msn = selected.msn(uid);
+                            if (msn == SelectedMailbox.NO_SUCH_MESSAGE)
+                                throw new MailboxException("No message found with uid " + uid);
 
-                        if (msn == SelectedMailbox.NO_SUCH_MESSAGE)
-                            throw new MailboxException("No message found with uid " + uid);
-
-                        final Flags resultFlags = entry.getValue();
-                        final Long resultUid;
-                        if (useUids) {
-                            resultUid = uid;
-                        } else {
-                            resultUid = null;
+                            final Flags resultFlags = entry.getValue();
+                            final Long resultUid;
+                            if (useUids) {
+                                resultUid = uid;
+                            } else {
+                                resultUid = null;
+                            }
+                            if (selected.isRecent(uid)) {
+                                resultFlags.add(Flags.Flag.RECENT);
+                            }
+                            final FetchResponse response = new FetchResponse(msn, resultFlags, resultUid, null, null, null, null, null, null);
+                            responder.respond(response);
                         }
-                        if (selected.isRecent(uid)) {
-                            resultFlags.add(Flags.Flag.RECENT);
-                        }
-                        final FetchResponse response = new FetchResponse(msn, resultFlags, resultUid, null, null, null, null, null, null);
-                        responder.respond(response);
                     }
                 }
+                
             }
             final boolean omitExpunged = (!useUids);
             unsolicitedResponses(session, responder, omitExpunged, useUids);

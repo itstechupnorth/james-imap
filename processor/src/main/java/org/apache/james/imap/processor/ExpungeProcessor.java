@@ -63,7 +63,9 @@ public class ExpungeProcessor extends AbstractMailboxProcessor<ExpungeRequest> i
                     // See http://tools.ietf.org/html/rfc4315
                     for (int i = 0; i < ranges.length; i++) {
                         MessageRange mRange = messageRange(session.getSelected(), ranges[i], true);
-                        expunge(mailbox, mRange, session, mailboxSession);
+                        if (mRange != null) {
+                            expunge(mailbox, mRange, session, mailboxSession);
+                        }
 
                     }
 

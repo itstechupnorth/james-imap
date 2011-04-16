@@ -85,9 +85,11 @@ public class FetchProcessor extends AbstractMailboxProcessor<FetchRequest> {
 
             for (int i = 0; i < idSet.length; i++) {
                 MessageRange messageSet = messageRange(session.getSelected(), idSet[i], useUids);
-                MessageRange normalizedMessageSet = normalizeMessageRange(session.getSelected(), messageSet);
-                MessageRange batchedMessageSet = MessageRange.range(normalizedMessageSet.getUidFrom(), normalizedMessageSet.getUidTo(), batchSize);
-                ranges.add(batchedMessageSet);
+                if (messageSet != null) {
+                    MessageRange normalizedMessageSet = normalizeMessageRange(session.getSelected(), messageSet);
+                    MessageRange batchedMessageSet = MessageRange.range(normalizedMessageSet.getUidFrom(), normalizedMessageSet.getUidTo(), batchSize);
+                    ranges.add(batchedMessageSet);
+                }
             }
 
             processMessageRanges(session, mailbox, ranges, fetch, useUids, mailboxSession, responder);

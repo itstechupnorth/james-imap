@@ -78,15 +78,16 @@ public class CopyProcessor extends AbstractMailboxProcessor<CopyRequest> {
                 List<IdRange> resultRanges = new ArrayList<IdRange>();
                 for (int i = 0; i < idSet.length; i++) {
                     MessageRange messageSet = messageRange(currentMailbox, idSet[i], useUids);
-
-                    List<MessageRange> copiedUids = mailboxManager.copyMessages(messageSet, currentMailbox.getPath(), targetMailbox, mailboxSession);
-                    for (MessageRange mr : copiedUids) {
-                        // Set recent flag on copied message as this SHOULD be
-                        // done.
-                        // See RFC 3501 6.4.7. COPY Command
-                        // See IMAP-287
-                        mailbox.setFlags(new Flags(Flags.Flag.RECENT), true, false, mr, mailboxSession);
-                        resultRanges.add(new IdRange(mr.getUidFrom(), mr.getUidTo()));
+                    if (messageSet != null) {
+                        List<MessageRange> copiedUids = mailboxManager.copyMessages(messageSet, currentMailbox.getPath(), targetMailbox, mailboxSession);
+                        for (MessageRange mr : copiedUids) {
+                            // Set recent flag on copied message as this SHOULD be
+                            // done.
+                            // See RFC 3501 6.4.7. COPY Command
+                            // See IMAP-287
+                            mailbox.setFlags(new Flags(Flags.Flag.RECENT), true, false, mr, mailboxSession);
+                            resultRanges.add(new IdRange(mr.getUidFrom(), mr.getUidTo()));
+                        }
                     }
                 }
                 IdRange[] resultUids = IdRange.mergeRanges(resultRanges).toArray(new IdRange[0]);
