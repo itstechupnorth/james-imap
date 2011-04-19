@@ -123,6 +123,10 @@ abstract public class AbstractMailboxProcessor<M extends ImapRequest> extends Ab
         // Expunged messages
         if (!omitExpunged) {
             addExpungedResponses(selected, responder);
+            
+            // Only reset the events if we send the EXPUNGE responses. See IMAP-286
+            selected.expungedUids();
+
         }
         if (sizeChanged || (selected.isRecentUidRemoved() && !omitExpunged)) {
             addRecentResponses(selected, responder);
@@ -131,11 +135,8 @@ abstract public class AbstractMailboxProcessor<M extends ImapRequest> extends Ab
 
         // Message updates
         addFlagsResponses(session, selected, responder, useUid);
-
-        // Only reset the events if we send the EXPUNGE responses. See IMAP-286
-        if (!omitExpunged) {
-            selected.resetEvents();
-        }
+        
+        selected.resetEvents();
     }
 
     private void addExpungedResponses(final SelectedMailbox selected, final ImapProcessor.Responder responder) {

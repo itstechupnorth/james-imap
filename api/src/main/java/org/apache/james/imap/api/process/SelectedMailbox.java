@@ -132,6 +132,7 @@ public interface SelectedMailbox {
      */
     public void resetRecentUidRemoved();
 
+
     /**
      * Reset all events
      */
@@ -144,6 +145,9 @@ public interface SelectedMailbox {
      */
     public Collection<Long> expungedUids();
 
+    
+    public void resetExpungedUids();
+    
     /**
      * Removes the given UID.
      * 

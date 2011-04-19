@@ -250,4 +250,12 @@ public class SelectedMailboxImpl implements SelectedMailbox {
     public long getLastUid() {
         return converter.getLastUid();
     }
+
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.api.process.SelectedMailbox#resetExpungedUids()
+     */
+    public void resetExpungedUids() {
+        events.resetExpungedUids();
+    }
 }

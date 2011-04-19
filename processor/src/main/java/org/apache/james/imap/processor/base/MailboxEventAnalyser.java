@@ -172,8 +172,11 @@ public class MailboxEventAnalyser extends ImapStateAwareMailboxListener {
     public synchronized void reset() {
         sizeChanged = false;
         flagUpdateUids.clear();
-        expungedUids.clear();
         isDeletedByOtherSession = false;
+    }
+    
+    public synchronized void resetExpungedUids() {
+        expungedUids.clear();
     }
 
     /**
@@ -278,4 +281,5 @@ public class MailboxEventAnalyser extends ImapStateAwareMailboxListener {
     protected synchronized boolean isListenerClosed() {
         return closed;
     }
+
 }
