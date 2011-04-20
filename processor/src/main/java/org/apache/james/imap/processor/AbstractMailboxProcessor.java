@@ -125,7 +125,7 @@ abstract public class AbstractMailboxProcessor<M extends ImapRequest> extends Ab
             addExpungedResponses(selected, responder);
             
             // Only reset the events if we send the EXPUNGE responses. See IMAP-286
-            selected.expungedUids();
+            selected.resetExpungedUids();
 
         }
         if (sizeChanged || (selected.isRecentUidRemoved() && !omitExpunged)) {
