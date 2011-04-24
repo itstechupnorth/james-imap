@@ -600,6 +600,6 @@
     <version.activation>1.1.1</version.activation>
     <version.torque>3.3</version.torque>
     <version.jmock>2.5.1</version.jmock>
-    <target.jdk>1.5</target.jdk>
+    <target.jdk>1.6</target.jdk>
   </properties>
 </project>
