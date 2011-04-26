@@ -42,7 +42,7 @@ public interface ImapResponseComposer {
     public ImapResponseComposer untaggedNoResponse(String displayMessage, String responseCode) throws IOException;
 
     /**
-     * Writes flags to output using standard format.
+     * Compose flags to output using standard format.
      * 
      * @param flags
      *            <code>Flags</code>, not null
@@ -50,19 +50,47 @@ public interface ImapResponseComposer {
     public ImapResponseComposer flags(Flags flags) throws IOException;
 
     /**
-     * Writes a complete FLAGS response.
+     * Compose a complete FLAGS response.
      * 
      * @param flags
      *            <code>Flags</code>, not null
      */
     public ImapResponseComposer flagsResponse(Flags flags) throws IOException;
 
+    /**
+     * Compose a complete EXISTS response
+     * 
+     * @param count the message count that exists
+     * @return self
+     * @throws IOException
+     */
     public ImapResponseComposer existsResponse(long count) throws IOException;
 
+    /**
+     * Compose a RECENT response
+     * 
+     * @param count the message count which is marked as recent
+     * @return self
+     * @throws IOException
+     */
     public ImapResponseComposer recentResponse(long count) throws IOException;
 
+    /**
+     * Compose a EXPUNGE response
+     * 
+     * @param msn the MSN which where expunged
+     * @return self
+     * @throws IOException
+     */
     public ImapResponseComposer expungeResponse(long msn) throws IOException;
 
+    /**
+     * Compose a SEARCH response
+     * 
+     * @param ids the MSN or UID which were found
+     * @return  self
+     * @throws IOException
+     */
     public ImapResponseComposer searchResponse(long[] ids) throws IOException;
 
     /**
@@ -141,6 +169,14 @@ public interface ImapResponseComposer {
      */
     public ImapResponseComposer nil() throws IOException;
 
+    /**
+     * Compose a response which contains the {@link ImapCommand} to which the response belongs
+     * 
+     * @param command
+     * @param message
+     * @return self
+     * @throws IOException
+     */
     public ImapResponseComposer commandResponse(ImapCommand command, String message) throws IOException;
 
     /**
@@ -175,8 +211,22 @@ public interface ImapResponseComposer {
      */
     public ImapResponseComposer untaggedResponse(String message) throws IOException;
 
+    /**
+     * Compose a BYE response
+     * 
+     * @param message
+     * @return self
+     * @throws IOException
+     */
     public ImapResponseComposer byeResponse(String message) throws IOException;
 
+    /**
+     * Compose a HELLO response
+     * 
+     * @param message
+     * @return self
+     * @throws IOException
+     */
     public ImapResponseComposer hello(String message) throws IOException;
 
     public ImapResponseComposer untagged() throws IOException;
@@ -187,6 +237,12 @@ public interface ImapResponseComposer {
 
     public ImapResponseComposer message(final long number) throws IOException;
 
+    /**
+     * Write a CRLF and flush the composer which will write the content of it to the socket
+     * 
+     * @return composer
+     * @throws IOException
+     */
     public ImapResponseComposer end() throws IOException;
 
     public ImapResponseComposer tag(String tag) throws IOException;
@@ -195,9 +251,17 @@ public interface ImapResponseComposer {
 
     public ImapResponseComposer statusResponse(Long messages, Long recent, Long uidNext, Long uidValidity, Long unseen, String mailboxName) throws IOException;
 
-    public void quote(String message) throws IOException;
+    public ImapResponseComposer quote(String message) throws IOException;
 
-    public void literal(Literal literal) throws IOException;
+    /**
+     * Compose a {@link Literal} and write it to the socket. Everything which was buffered before will
+     * get written too
+     * 
+     * @param literal
+     * @return self
+     * @throws IOException
+     */
+    public ImapResponseComposer literal(Literal literal) throws IOException;
 
     public ImapResponseComposer openParen() throws IOException;
 
@@ -266,7 +330,13 @@ public interface ImapResponseComposer {
      */
     public ImapResponseComposer nillableComposition(String masterQuote, List<String> quotes) throws IOException;
 
-    public void skipNextSpace() throws IOException;
+    /**
+     * Tell the {@link ImapResponseComposer} to skip the next written space
+     * 
+     * @return composer
+     * @throws IOException
+     */
+    public ImapResponseComposer skipNextSpace() throws IOException;
 
     /**
      * Composes a <code>CAPABILITY</code> response. See <code>7.2.1</code> of <a

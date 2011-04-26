@@ -28,6 +28,7 @@ import java.util.List;
 
 import javax.mail.Flags;
 
+import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.apache.james.imap.api.ImapCommand;
 import org.apache.james.imap.api.ImapConstants;
 import org.apache.james.imap.encode.ImapResponseComposer;
@@ -56,23 +57,16 @@ public class ImapResponseComposerImpl implements ImapConstants, ImapResponseComp
 
     private final ImapResponseWriter writer;
 
-    public ImapResponseComposerImpl(final ImapResponseWriter writer) {
-        this(writer, DEFAULT_BUFFER_SIZE);
-    }
+    private final ByteArrayOutputStream buffer = new ByteArrayOutputStream();
 
     private static final int LOWER_CASE_OFFSET = 'a' - 'A';
 
-    private static final int DEFAULT_BUFFER_SIZE = 128;
-
     private final Charset usAscii;
-
-    private final ByteBuffer buffer;
 
     private boolean skipNextSpace;
 
-    public ImapResponseComposerImpl(final ImapResponseWriter writer, final int bufferSize) {
+    public ImapResponseComposerImpl(final ImapResponseWriter writer) {
         skipNextSpace = false;
-        buffer = ByteBuffer.allocate(bufferSize);
         usAscii = Charset.forName("US-ASCII");
         this.writer = writer;
     }
@@ -261,7 +255,7 @@ public class ImapResponseComposerImpl implements ImapConstants, ImapResponseComp
         if (responseCode != null && !"".equals(responseCode)) {
             writeASCII(" [");
             writeASCII(responseCode);
-            write(BYTE_CLOSE_SQUARE_BRACKET);
+            buffer.write(BYTE_CLOSE_SQUARE_BRACKET);
         }
     }
 
@@ -271,7 +265,9 @@ public class ImapResponseComposerImpl implements ImapConstants, ImapResponseComp
      * @see org.apache.james.imap.encode.ImapResponseComposer#end()
      */
     public ImapResponseComposer end() throws IOException {
-        write(LINE_END.getBytes());
+        buffer.write(LINE_END.getBytes());
+        writer.write(ByteBuffer.wrap(buffer.toByteArray()));
+        buffer.reset();
         return this;
     }
 
@@ -693,18 +689,7 @@ public class ImapResponseComposerImpl implements ImapConstants, ImapResponseComp
     }
 
     private void writeASCII(final String string) throws IOException {
-        final ByteBuffer buffer = usAscii.encode(string);
-        writer.write(buffer);
-    }
-
-    private void write(byte[] bytes) throws IOException {
-        final ByteBuffer wrap = ByteBuffer.wrap(bytes);
-        writer.write(wrap);
-    }
-
-    private void write(byte b) throws IOException {
-        final ByteBuffer wrap = ByteBuffer.wrap(new byte[] { b });
-        writer.write(wrap);
+        buffer.write(string.getBytes(usAscii));
     }
 
     /*
@@ -737,47 +722,36 @@ public class ImapResponseComposerImpl implements ImapConstants, ImapResponseComp
      * @see
      * org.apache.james.imap.encode.ImapResponseComposer#quote(java.lang.String)
      */
-    public void quote(String message) throws IOException {
+    public ImapResponseComposer quote(String message) throws IOException {
         space();
         final int length = message.length();
-        buffer.clear();
-        buffer.put(BYTE_DQUOTE);
+       
+        buffer.write(BYTE_DQUOTE);
         for (int i = 0; i < length; i++) {
-            writeIfFull();
             char character = message.charAt(i);
             if (character == ImapConstants.BACK_SLASH || character == DQUOTE) {
-                buffer.put(BYTE_BACK_SLASH);
+                buffer.write(BYTE_BACK_SLASH);
             }
-            writeIfFull();
             // 7-bit ASCII only
             if (character > 128) {
-                buffer.put(BYTE_QUESTION);
+                buffer.write(BYTE_QUESTION);
             } else {
-                buffer.put((byte) character);
+                buffer.write((byte) character);
             }
         }
-        writeIfFull();
-        buffer.put(BYTE_DQUOTE);
-        buffer.flip();
-        writer.write(buffer);
+        buffer.write(BYTE_DQUOTE);
+        return this;
     }
 
-    private void writeIfFull() throws IOException {
-        if (!buffer.hasRemaining()) {
-            buffer.flip();
-            writer.write(buffer);
-            buffer.clear();
-        }
-    }
 
     private void closeBracket(final byte bracket) throws IOException {
-        write(bracket);
+        buffer.write(bracket);
         clearSkipNextSpace();
     }
 
     private void openBracket(final byte bracket) throws IOException {
         space();
-        write(bracket);
+        buffer.write(bracket);
         skipNextSpace();
     }
 
@@ -790,15 +764,16 @@ public class ImapResponseComposerImpl implements ImapConstants, ImapResponseComp
      * 
      * @see org.apache.james.imap.encode.ImapResponseComposer#skipNextSpace()
      */
-    public void skipNextSpace() {
+    public ImapResponseComposer skipNextSpace() {
         skipNextSpace = true;
+        return this;
     }
 
     private void space() throws IOException {
         if (skipNextSpace) {
             skipNextSpace = false;
         } else {
-            write(SP.getBytes());
+            buffer.write(SP.getBytes());
         }
     }
 
@@ -809,16 +784,17 @@ public class ImapResponseComposerImpl implements ImapConstants, ImapResponseComp
      * org.apache.james.imap.encode.ImapResponseComposer#literal(org.apache.
      * james.imap.message.response.Literal)
      */
-    public void literal(Literal literal) throws IOException {
+    public ImapResponseComposer literal(Literal literal) throws IOException {
         space();
-        write(BYTE_OPEN_BRACE);
+        buffer.write(BYTE_OPEN_BRACE);
         final long size = literal.size();
         writeASCII(Long.toString(size));
-        write(BYTE_CLOSE_BRACE);
-        write(LINE_END.getBytes());
+        buffer.write(BYTE_CLOSE_BRACE);
+        end();
         if (size > 0) {
             writer.write(literal);
         }
+        return this;
     }
 
     private void closeSquareBracket() throws IOException {
@@ -832,25 +808,20 @@ public class ImapResponseComposerImpl implements ImapConstants, ImapResponseComp
     private void upperCaseAscii(String message, boolean quote) throws IOException {
         space();
         final int length = message.length();
-        buffer.clear();
         if (quote) {
-            buffer.put(BYTE_DQUOTE);
+            buffer.write(BYTE_DQUOTE);
         }
         for (int i = 0; i < length; i++) {
-            writeIfFull();
             final char next = message.charAt(i);
             if (next >= 'a' && next <= 'z') {
-                buffer.put((byte) (next - LOWER_CASE_OFFSET));
+                buffer.write((byte) (next - LOWER_CASE_OFFSET));
             } else {
-                buffer.put((byte) (next));
+                buffer.write((byte) (next));
             }
         }
-        writeIfFull();
         if (quote) {
-            buffer.put(BYTE_DQUOTE);
+            buffer.write(BYTE_DQUOTE);
         }
-        buffer.flip();
-        writer.write(buffer);
     }
 
 }

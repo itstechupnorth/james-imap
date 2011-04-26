@@ -45,7 +45,8 @@ public class ImapResponseComposerImplTest extends
     protected byte[] encodeListResponse(String typeName, List<String> attributes,
             char hierarchyDelimiter, String name) throws Exception {
         composer.listResponse(typeName, attributes, hierarchyDelimiter, name);
-        return writer.getBytes();
+        composer.end();
+        return removeCRLF(writer.getBytes());
     }
 
     protected void clear() throws Exception {
@@ -54,12 +55,14 @@ public class ImapResponseComposerImplTest extends
 
     protected byte[] encodeSearchResponse(long[] ids) throws Exception {
         composer.searchResponse(ids);
-        return writer.getBytes();
+        composer.end();
+        return removeCRLF(writer.getBytes());
     }
 
     protected byte[] encodeFlagsResponse(Flags flags) throws Exception {
         composer.flags(flags);
-        return writer.getBytes();
+        composer.end();
+        return removeCRLF(writer.getBytes());
     }
 
     protected byte[] encodeStatusResponse(Long messages, Long recent,
@@ -67,7 +70,8 @@ public class ImapResponseComposerImplTest extends
             throws Exception {
         composer.statusResponse(messages, recent, uidNext, uidValidity, unseen,
                 mailbox);
-        return writer.getBytes();
+        composer.end();
+        return removeCRLF(writer.getBytes());
     }
 
     protected byte[] encodeStatusResponse(String tag, ImapCommand command,
@@ -75,7 +79,19 @@ public class ImapResponseComposerImplTest extends
             boolean useParens, int number, String text) throws Exception {
         composer.statusResponse(tag, command, type, responseCode, parameters,
                 useParens, number, text);
-        return writer.getBytes();
+        composer.end();
+        return removeCRLF(writer.getBytes());
+    }
+    
+    private byte[] removeCRLF(byte[] b) {
+        if (b.length > 2) {
+            byte[] newB = new byte[b.length -2];
+            System.arraycopy(b, 0, newB, 0, newB.length);
+            return newB;
+        } else {
+            return b;
+        }
+        
     }
 
 }
