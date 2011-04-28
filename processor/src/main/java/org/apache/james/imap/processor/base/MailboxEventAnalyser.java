@@ -122,7 +122,7 @@ public class MailboxEventAnalyser extends ImapStateAwareMailboxListener {
                         List<UpdatedFlags> uflags = updated.getUpdatedFlags();
                         for (int i = 0; i < uflags.size(); i++) {
                             UpdatedFlags u = uflags.get(i);
-                            Iterator<Flag> flags = u.iterator();
+                            Iterator<Flag> flags = u.systemFlagIterator();
 
                             while (flags.hasNext()) {
                                 if (Flag.RECENT.equals(flags.next())) {
@@ -152,7 +152,7 @@ public class MailboxEventAnalyser extends ImapStateAwareMailboxListener {
 
     private boolean interestingFlags(UpdatedFlags updated) {
         final boolean result;
-        final Iterator<Flags.Flag> it = updated.iterator();
+        final Iterator<Flags.Flag> it = updated.systemFlagIterator();
         if (it.hasNext()) {
             final Flags.Flag flag = it.next();
             if (flag.equals(uninterestingFlag)) {
