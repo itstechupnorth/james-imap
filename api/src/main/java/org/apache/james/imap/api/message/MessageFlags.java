@@ -45,6 +45,9 @@ public class MessageFlags {
 
     public static final String ANSWERED_OUTPUT_CAPITALISED = "\\Answered";
 
+    public static final String USER_OUTPUT_CAPITALISED = "\\*";
+
+    
     public static final Flags ALL_FLAGS = new Flags();
     static {
         ALL_FLAGS.add(Flags.Flag.ANSWERED);
@@ -66,6 +69,7 @@ public class MessageFlags {
     public static final String SEEN_ALL_CAPS = "\\SEEN";
 
     public static final String RECENT_ALL_CAPS = "\\RECENT";
+    
 
     /**
      * Returns IMAP formatted String naming flags.
@@ -92,6 +96,15 @@ public class MessageFlags {
         }
         if (flags.contains(Flags.Flag.SEEN)) {
             results.add(SEEN_OUTPUT_CAPITALISED);
+        }
+        
+        // Add user flags
+        String[] userFlags = flags.getUserFlags();
+        for (int i = 0; i < userFlags.length; i++) {
+            results.add(userFlags[i]);
+        }
+        if (flags.contains(Flags.Flag.USER)) {
+            results.add(USER_OUTPUT_CAPITALISED);
         }
         return results;
     }
