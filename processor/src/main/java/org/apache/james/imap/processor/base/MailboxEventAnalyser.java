@@ -151,7 +151,7 @@ public class MailboxEventAnalyser extends ImapStateAwareMailboxListener {
     }
 
     private boolean interestingFlags(UpdatedFlags updated) {
-        final boolean result;
+        boolean result;
         final Iterator<Flags.Flag> it = updated.systemFlagIterator();
         if (it.hasNext()) {
             final Flags.Flag flag = it.next();
@@ -162,6 +162,11 @@ public class MailboxEventAnalyser extends ImapStateAwareMailboxListener {
             }
         } else {
             result = false;
+        }
+        // See if we need to check the user flags
+        if (result == false) {
+            final Iterator<String> userIt = updated.userFlagIterator();
+            result = userIt.hasNext();
         }
         return result;
     }

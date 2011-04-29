@@ -475,6 +475,11 @@ public class ImapResponseComposerImpl implements ImapConstants, ImapResponseComp
         if (flags.contains(Flags.Flag.SEEN)) {
             message("\\Seen");
         }
+        
+        String[] userFlags = flags.getUserFlags();
+        for (int i = 0; i < userFlags.length; i++) {
+            message(userFlags[i]);
+        }
         closeParen();
         return this;
     }
