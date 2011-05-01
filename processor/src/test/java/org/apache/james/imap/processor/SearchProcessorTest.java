@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
 
+import javax.mail.Flags;
 import javax.mail.Flags.Flag;
 
 import org.apache.james.imap.api.ImapCommand;
@@ -141,6 +142,8 @@ public class SearchProcessorTest {
                     with(equal(ImapSessionUtils.MAILBOX_USER_ATTRIBUTE_SESSION_KEY)));will(returnValue("user"));
             atMost(1).of(session).getAttribute(
                     with(equal(ImapSessionUtils.MAILBOX_SESSION_ATTRIBUTE_SESSION_KEY)));will(returnValue(mailboxSession));
+
+
         }});
     }
 
@@ -486,6 +489,8 @@ public class SearchProcessorTest {
                     with(equal(mailboxSession)));will(
                             returnValue(new ArrayList<Long>().iterator()));
             oneOf(responder).respond(with(equal(new SearchResponse(EMPTY))));
+            allowing(selectedMailbox).getApplicableFlags(); will(returnValue(new Flags()));
+            allowing(selectedMailbox).hasNewApplicableFlags(); will(returnValue(false));
           
         }});
         SearchRequest message = new SearchRequest(command, key, false, TAG);
