@@ -53,14 +53,17 @@ public class MailboxEventAnalyser extends ImapStateAwareMailboxListener {
     private boolean silentFlagChanges = false;
     private MailboxPath mailboxPath;
     private boolean closed = false;
+    private Flags applicableFlags;
+    private boolean applicableFlagsChanged;
 
-    public MailboxEventAnalyser(final ImapSession session, final MailboxPath mailboxPath) {
+    public MailboxEventAnalyser(final ImapSession session, final MailboxPath mailboxPath, Flags applicableFlags) {
         super(session);
         this.sessionId = ImapSessionUtils.getMailboxSession(session).getSessionId();
         flagUpdateUids = new TreeSet<Long>();
         expungedUids = new TreeSet<Long>();
         uninterestingFlag = Flags.Flag.RECENT;
         this.mailboxPath = mailboxPath;
+        this.applicableFlags = applicableFlags;
     }
 
     /**
@@ -109,6 +112,7 @@ public class MailboxEventAnalyser extends ImapStateAwareMailboxListener {
                                 synchronized (flagUpdateUids) {
                                     flagUpdateUids.add(u.getUid());
                                 }
+                                
                             }
                         }
                     }
@@ -132,8 +136,25 @@ public class MailboxEventAnalyser extends ImapStateAwareMailboxListener {
                                     }
                                 }
                             }
+                          
+
                         }
                     }
+                    
+
+                    synchronized (applicableFlags) {
+                        int size = applicableFlags.getUserFlags().length;
+                        FlagsUpdated updatedF = (FlagsUpdated) messageEvent;
+                        List<UpdatedFlags> flags = updatedF.getUpdatedFlags();
+                        
+                       for (int i = 0; i < flags.size(); i++) {
+                          applicableFlags.add(flags.get(i).getNewFlags());
+                       }
+                       if (size < applicableFlags.getSystemFlags().length) {
+                          applicableFlagsChanged = true;
+                       }
+                    }
+                    
                 } else if (messageEvent instanceof Expunged) {
                     synchronized (expungedUids) {
                         expungedUids.addAll(messageEvent.getUids());
@@ -178,6 +199,7 @@ public class MailboxEventAnalyser extends ImapStateAwareMailboxListener {
         sizeChanged = false;
         flagUpdateUids.clear();
         isDeletedByOtherSession = false;
+        applicableFlagsChanged = false;
     }
     
     public synchronized void resetExpungedUids() {
@@ -285,6 +307,20 @@ public class MailboxEventAnalyser extends ImapStateAwareMailboxListener {
      */
     protected synchronized boolean isListenerClosed() {
         return closed;
+    }
+    
+
+
+    public synchronized Flags getApplicableFlags() {
+        return applicableFlags;
+    }
+
+    public synchronized boolean hasNewApplicableFlags() {
+        return applicableFlagsChanged;
+    }
+
+    public synchronized void resetNewApplicableFlags() {
+        applicableFlagsChanged = false;
     }
 
 }

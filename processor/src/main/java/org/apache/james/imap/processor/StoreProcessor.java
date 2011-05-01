@@ -37,6 +37,8 @@ import org.apache.james.mailbox.MailboxException;
 import org.apache.james.mailbox.MailboxManager;
 import org.apache.james.mailbox.MailboxSession;
 import org.apache.james.mailbox.MessageManager;
+import org.apache.james.mailbox.MessageManager.MetaData;
+import org.apache.james.mailbox.MessageManager.MetaData.FetchGroup;
 import org.apache.james.mailbox.MessageRange;
 import org.apache.james.mailbox.MessageRangeException;
 
@@ -74,7 +76,16 @@ public class StoreProcessor extends AbstractMailboxProcessor<StoreRequest> {
                 if (messageSet != null) {
                     final MailboxSession mailboxSession = ImapSessionUtils.getMailboxSession(session);
                     final Map<Long, Flags> flagsByUid = mailbox.setFlags(flags, value, replace, messageSet, mailboxSession);
+
                     if (!silent) {
+                        // As the STORE command is allowed to create a new "flag/keyword", we need to send a FLAGS and PERMANENTFLAGS response before the FETCH response
+                        // if some new flag/keyword was used
+                        // See IMAP-303
+                        if (selected.hasNewApplicableFlags()) {
+                            flags(responder, selected);
+                            permanentFlags(responder, mailbox.getMetaData(false, mailboxSession, FetchGroup.NO_COUNT), selected);
+                            selected.resetNewApplicableFlags();
+                        }
                         for (Map.Entry<Long, Flags> entry : flagsByUid.entrySet()) {
                             final long uid = entry.getKey();
                             final int msn = selected.msn(uid);
@@ -89,9 +100,12 @@ public class StoreProcessor extends AbstractMailboxProcessor<StoreRequest> {
                             } else {
                                 resultUid = null;
                             }
+                            
+                            
                             if (selected.isRecent(uid)) {
                                 resultFlags.add(Flags.Flag.RECENT);
                             }
+                           
                             final FetchResponse response = new FetchResponse(msn, resultFlags, resultUid, null, null, null, null, null, null);
                             responder.respond(response);
                         }

@@ -21,6 +21,8 @@ package org.apache.james.imap.api.process;
 
 import java.util.Collection;
 
+import javax.mail.Flags;
+
 import org.apache.james.mailbox.MailboxPath;
 
 /**
@@ -182,5 +184,18 @@ public interface SelectedMailbox {
      * @return lastUid
      */
     public long getLastUid();
+    
+    /**
+     * Return all applicable Flags for the selected mailbox
+     * 
+     * @return flags
+     */
+    public Flags getApplicableFlags();
+    
+    
+    public boolean hasNewApplicableFlags();
+    
+    public void resetNewApplicableFlags();
+
 
 }

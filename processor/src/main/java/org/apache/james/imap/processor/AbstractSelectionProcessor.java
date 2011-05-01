@@ -19,6 +19,7 @@
 
 package org.apache.james.imap.processor;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -44,12 +45,15 @@ import org.apache.james.mailbox.MailboxNotFoundException;
 import org.apache.james.mailbox.MailboxPath;
 import org.apache.james.mailbox.MailboxSession;
 import org.apache.james.mailbox.MessageManager;
+import org.apache.james.mailbox.MessageRange;
+import org.apache.james.mailbox.MessageResult;
 import org.apache.james.mailbox.SearchQuery;
 import org.apache.james.mailbox.MessageManager.MetaData;
+import org.apache.james.mailbox.util.FetchGroupImpl;
 
 abstract class AbstractSelectionProcessor<M extends AbstractMailboxSelectionRequest> extends AbstractMailboxProcessor<M> {
 
-    private final FlagsResponse standardFlags;
+    private final Flags flags = new Flags();
 
     final StatusResponseFactory statusResponseFactory;
 
@@ -59,13 +63,11 @@ abstract class AbstractSelectionProcessor<M extends AbstractMailboxSelectionRequ
         super(acceptableClass, next, mailboxManager, statusResponseFactory);
         this.statusResponseFactory = statusResponseFactory;
         this.openReadOnly = openReadOnly;
-        final Flags flags = new Flags();
         flags.add(Flags.Flag.ANSWERED);
         flags.add(Flags.Flag.DELETED);
         flags.add(Flags.Flag.DRAFT);
         flags.add(Flags.Flag.FLAGGED);
         flags.add(Flags.Flag.SEEN);
-        standardFlags = new FlagsResponse(flags);
     }
 
     /*
@@ -97,12 +99,12 @@ abstract class AbstractSelectionProcessor<M extends AbstractMailboxSelectionRequ
 
         final SelectedMailbox selected = session.getSelected();
 
-        flags(responder);
+        flags(responder, selected);
         exists(responder, metaData);
         recent(responder, selected);
         uidValidity(responder, metaData);
         unseen(responder, metaData, selected);
-        permanentFlags(responder, metaData);
+        permanentFlags(responder, metaData, selected);
         uidNext(responder, metaData);
         taggedOk(responder, tag, command, metaData);
     }
@@ -125,15 +127,6 @@ abstract class AbstractSelectionProcessor<M extends AbstractMailboxSelectionRequ
         responder.respond(taggedOk);
     }
 
-    private void flags(Responder responder) {
-        responder.respond(standardFlags);
-    }
-
-    private void permanentFlags(Responder responder, MessageManager.MetaData metaData) {
-        final Flags permanentFlags = metaData.getPermanentFlags();
-        final StatusResponse untaggedOk = statusResponseFactory.untaggedOk(HumanReadableText.permanentFlags(permanentFlags), ResponseCode.permanentFlags(permanentFlags));
-        responder.respond(untaggedOk);
-    }
 
     private void unseen(Responder responder, MessageManager.MetaData metaData, final SelectedMailbox selected) throws MailboxException {
         final Long firstUnseen = metaData.getFirstUnseen();
@@ -186,15 +179,16 @@ abstract class AbstractSelectionProcessor<M extends AbstractMailboxSelectionRequ
     }
 
     private SelectedMailbox createNewSelectedMailbox(final MessageManager mailbox, final MailboxSession mailboxSession, ImapSession session, MailboxPath path) throws MailboxException {
-        SearchQuery query = new SearchQuery();
-        query.andCriteria(SearchQuery.all());
-
-        // use search here to allow implementation a better way to improve
-        // selects on mailboxes.
-        // See https://issues.apache.org/jira/browse/IMAP-192
-        final Iterator<Long> it = mailbox.search(query, mailboxSession);
-
-        final SelectedMailbox sessionMailbox = new SelectedMailboxImpl(getMailboxManager(), it, session, path);
+        
+        Iterator<MessageResult> messages = mailbox.getMessages(MessageRange.all(), FetchGroupImpl.MINIMAL, mailboxSession);
+        Flags applicableFlags = new Flags(flags);
+        List<Long> uids = new ArrayList<Long>();
+        while(messages.hasNext()) {
+            MessageResult mr = messages.next();
+            applicableFlags.add(mr.getFlags());
+            uids.add(mr.getUid());
+        }
+        final SelectedMailbox sessionMailbox = new SelectedMailboxImpl(getMailboxManager(), uids.iterator(),applicableFlags,  session, path);
         session.selected(sessionMailbox);
         return sessionMailbox;
     }

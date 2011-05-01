@@ -184,7 +184,7 @@ public class MailboxEventAnalyserTest {
         
         MyImapSession imapsession = new MyImapSession(mSession);
         
-        MailboxEventAnalyser analyser = new MailboxEventAnalyser(imapsession, mailboxPath);
+        MailboxEventAnalyser analyser = new MailboxEventAnalyser(imapsession, mailboxPath, new Flags());
 
         final MailboxListener.Event event = new MailboxListener.Event(mSession, mailboxPath) {};
       
@@ -198,7 +198,7 @@ public class MailboxEventAnalyserTest {
         
         MyImapSession imapsession = new MyImapSession(mSession);
         
-        MailboxEventAnalyser analyser = new MailboxEventAnalyser(imapsession, mailboxPath);
+        MailboxEventAnalyser analyser = new MailboxEventAnalyser(imapsession, mailboxPath, new Flags());
         
         analyser.event(new FakeMailboxListenerAdded(mSession, Arrays.asList(11L), mailboxPath));
         assertTrue(analyser.isSizeChanged());
@@ -210,7 +210,7 @@ public class MailboxEventAnalyserTest {
         
         MyImapSession imapsession = new MyImapSession(mSession);
         
-        MailboxEventAnalyser analyser = new MailboxEventAnalyser(imapsession, mailboxPath);
+        MailboxEventAnalyser analyser = new MailboxEventAnalyser(imapsession, mailboxPath, new Flags());
         
         analyser.event(new FakeMailboxListenerAdded(mSession,  Arrays.asList(11L), mailboxPath));
         analyser.reset();
@@ -223,7 +223,7 @@ public class MailboxEventAnalyserTest {
         
         MyImapSession imapsession = new MyImapSession(mSession);
         
-        MailboxEventAnalyser analyser = new MailboxEventAnalyser(imapsession, mailboxPath);
+        MailboxEventAnalyser analyser = new MailboxEventAnalyser(imapsession, mailboxPath, new Flags());
         
         final FakeMailboxListenerFlagsUpdate update = new FakeMailboxListenerFlagsUpdate(
                 mSession,  Arrays.asList(90L),  Arrays.asList(new UpdatedFlags(90, new Flags(), new Flags())), mailboxPath);
@@ -239,7 +239,7 @@ public class MailboxEventAnalyserTest {
         
         MyImapSession imapsession = new MyImapSession(mSession);
         
-        MailboxEventAnalyser analyser = new MailboxEventAnalyser(imapsession, mailboxPath);
+        MailboxEventAnalyser analyser = new MailboxEventAnalyser(imapsession, mailboxPath, new Flags());
         
         
         final FakeMailboxListenerFlagsUpdate update = new FakeMailboxListenerFlagsUpdate(
@@ -257,7 +257,7 @@ public class MailboxEventAnalyserTest {
         final long uid = 900L;
         MyMailboxSession mSession = new MyMailboxSession(11);
         MyImapSession imapsession = new MyImapSession(mSession);
-        MailboxEventAnalyser analyser = new MailboxEventAnalyser(imapsession, mailboxPath);
+        MailboxEventAnalyser analyser = new MailboxEventAnalyser(imapsession, mailboxPath, new Flags());
         
         final FakeMailboxListenerFlagsUpdate update = new FakeMailboxListenerFlagsUpdate(
                 mSession, Arrays.asList(uid), Arrays.asList(new UpdatedFlags(uid, new Flags(), new Flags(Flags.Flag.ANSWERED))), mailboxPath);
@@ -275,7 +275,7 @@ public class MailboxEventAnalyserTest {
         
         MyMailboxSession mSession = new MyMailboxSession(11);
         MyImapSession imapsession = new MyImapSession(mSession);
-        MailboxEventAnalyser analyser = new MailboxEventAnalyser(imapsession, mailboxPath);
+        MailboxEventAnalyser analyser = new MailboxEventAnalyser(imapsession, mailboxPath,new Flags());
         
         final FakeMailboxListenerFlagsUpdate update = new FakeMailboxListenerFlagsUpdate(
                 new MyMailboxSession(BASE_SESSION_ID), Arrays.asList(uid), Arrays.asList(new UpdatedFlags(uid, new Flags(), new Flags(Flags.Flag.ANSWERED))), mailboxPath);
@@ -294,7 +294,7 @@ public class MailboxEventAnalyserTest {
             throws Exception {
         MyMailboxSession mSession = new MyMailboxSession(BASE_SESSION_ID);
         MyImapSession imapsession = new MyImapSession(mSession);
-        MailboxEventAnalyser analyser = new MailboxEventAnalyser(imapsession, mailboxPath);
+        MailboxEventAnalyser analyser = new MailboxEventAnalyser(imapsession, mailboxPath, new Flags());
         
         
         final FakeMailboxListenerFlagsUpdate update = new FakeMailboxListenerFlagsUpdate(
@@ -311,7 +311,7 @@ public class MailboxEventAnalyserTest {
     public void testShouldNotSetUidWhenOnlyRecentFlagUpdated() throws Exception {
         MyMailboxSession mSession = new MyMailboxSession(BASE_SESSION_ID);
         MyImapSession imapsession = new MyImapSession(mSession);
-        MailboxEventAnalyser analyser = new MailboxEventAnalyser(imapsession, mailboxPath);
+        MailboxEventAnalyser analyser = new MailboxEventAnalyser(imapsession, mailboxPath, new Flags());
         
         
         final FakeMailboxListenerFlagsUpdate update = new FakeMailboxListenerFlagsUpdate(

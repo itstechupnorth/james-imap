@@ -19,7 +19,11 @@
 
 package org.apache.james.imap.processor.base;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import javax.mail.Flags;
 
 import org.apache.james.mailbox.MailboxListener;
 import org.apache.james.mailbox.MailboxPath;
@@ -40,6 +44,11 @@ public class FakeMailboxListenerAdded extends MailboxListener.Added {
      */
     public List<Long> getUids() {
         return uids;
+    }
+
+    @Override
+    public Map<Long, Flags> getFlags() {
+        return new HashMap<Long, Flags>();
     }
 
 

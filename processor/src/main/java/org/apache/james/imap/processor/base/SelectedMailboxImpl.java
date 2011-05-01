@@ -25,6 +25,8 @@ import java.util.Iterator;
 import java.util.Set;
 import java.util.TreeSet;
 
+import javax.mail.Flags;
+
 import org.apache.james.imap.api.ImapSessionUtils;
 import org.apache.james.imap.api.process.ImapSession;
 import org.apache.james.imap.api.process.SelectedMailbox;
@@ -46,11 +48,11 @@ public class SelectedMailboxImpl implements SelectedMailbox {
 
     private boolean recentUidRemoved;
 
-    public SelectedMailboxImpl(final MailboxManager mailboxManager, final Iterator<Long> uids, final ImapSession session, final MailboxPath path) throws MailboxException {
+    public SelectedMailboxImpl(final MailboxManager mailboxManager, final Iterator<Long> uids, final Flags applicableFlags, final ImapSession session, final MailboxPath path) throws MailboxException {
         recentUids = new TreeSet<Long>();
         recentUidRemoved = false;
         MailboxSession mailboxSession = ImapSessionUtils.getMailboxSession(session);
-        events = new MailboxEventAnalyser(session, path);
+        events = new MailboxEventAnalyser(session, path, applicableFlags);
         // Ignore events from our session
         events.setSilentFlagChanges(true);
         mailboxManager.addListener(path, events, mailboxSession);
@@ -257,5 +259,29 @@ public class SelectedMailboxImpl implements SelectedMailbox {
      */
     public void resetExpungedUids() {
         events.resetExpungedUids();
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.api.process.SelectedMailbox#getApplicableFlags()
+     */
+    public Flags getApplicableFlags() {
+        return events.getApplicableFlags();
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.api.process.SelectedMailbox#hasNewApplicableFlags()
+     */
+    public boolean hasNewApplicableFlags() {
+        return events.hasNewApplicableFlags();
+    }
+    
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.api.process.SelectedMailbox#resetNewApplicableFlags()
+     */
+    public void resetNewApplicableFlags() {
+        events.resetNewApplicableFlags();
     }
 }
