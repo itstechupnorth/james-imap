@@ -82,6 +82,7 @@ public class StoreProcessor extends AbstractMailboxProcessor<StoreRequest> {
                     if (selected.hasNewApplicableFlags()) {
                         flags(responder, selected);
                         permanentFlags(responder, mailbox.getMetaData(false, mailboxSession, FetchGroup.NO_COUNT), selected);
+                        selected.resetNewApplicableFlags();
                     }
                     
                     if (!silent) {
