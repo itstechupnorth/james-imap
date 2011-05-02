@@ -188,6 +188,11 @@ abstract class AbstractSelectionProcessor<M extends AbstractMailboxSelectionRequ
             applicableFlags.add(mr.getFlags());
             uids.add(mr.getUid());
         }
+        
+        
+        // \RECENT is not a applicable flag in imap so remove it from the list
+        applicableFlags.remove(Flags.Flag.RECENT);
+        
         final SelectedMailbox sessionMailbox = new SelectedMailboxImpl(getMailboxManager(), uids.iterator(),applicableFlags,  session, path);
         session.selected(sessionMailbox);
         return sessionMailbox;

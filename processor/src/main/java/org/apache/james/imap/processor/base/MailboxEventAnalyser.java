@@ -149,10 +149,12 @@ public class MailboxEventAnalyser extends ImapStateAwareMailboxListener {
                         
                        for (int i = 0; i < flags.size(); i++) {
                           applicableFlags.add(flags.get(i).getNewFlags());
-                          
-                          // \RECENT is not a applicable flag in imap so remove it from the list
-                          applicableFlags.remove(Flags.Flag.RECENT);
+
                        }
+                       
+                       // \RECENT is not a applicable flag in imap so remove it from the list
+                       applicableFlags.remove(Flags.Flag.RECENT);
+                       
                        if (size < applicableFlags.getSystemFlags().length) {
                           applicableFlagsChanged = true;
                        }

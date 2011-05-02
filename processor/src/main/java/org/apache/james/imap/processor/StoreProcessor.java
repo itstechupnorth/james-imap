@@ -76,16 +76,16 @@ public class StoreProcessor extends AbstractMailboxProcessor<StoreRequest> {
                 if (messageSet != null) {
                     final MailboxSession mailboxSession = ImapSessionUtils.getMailboxSession(session);
                     final Map<Long, Flags> flagsByUid = mailbox.setFlags(flags, value, replace, messageSet, mailboxSession);
-
+                    // As the STORE command is allowed to create a new "flag/keyword", we need to send a FLAGS and PERMANENTFLAGS response before the FETCH response
+                    // if some new flag/keyword was used
+                    // See IMAP-303
+                    if (selected.hasNewApplicableFlags()) {
+                        flags(responder, selected);
+                        permanentFlags(responder, mailbox.getMetaData(false, mailboxSession, FetchGroup.NO_COUNT), selected);
+                    }
+                    
                     if (!silent) {
-                        // As the STORE command is allowed to create a new "flag/keyword", we need to send a FLAGS and PERMANENTFLAGS response before the FETCH response
-                        // if some new flag/keyword was used
-                        // See IMAP-303
-                        if (selected.hasNewApplicableFlags()) {
-                            flags(responder, selected);
-                            permanentFlags(responder, mailbox.getMetaData(false, mailboxSession, FetchGroup.NO_COUNT), selected);
-                            selected.resetNewApplicableFlags();
-                        }
+     
                         for (Map.Entry<Long, Flags> entry : flagsByUid.entrySet()) {
                             final long uid = entry.getKey();
                             final int msn = selected.msn(uid);
@@ -111,6 +111,7 @@ public class StoreProcessor extends AbstractMailboxProcessor<StoreRequest> {
                         }
                     }
                 }
+
                 
             }
             final boolean omitExpunged = (!useUids);
