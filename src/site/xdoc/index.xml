@@ -45,6 +45,10 @@
      <ul>
        <li>IMAP4 Implementation Recommandations (RFC 2683 http://www.ietf.org/rfc/rfc2683.txt)</li>
      </ul>
+     <p>Interesting features:</p>
+     <ul>
+       <li>Users Flags</li>
+     </ul>
      <p>Other RFCs of interest we are looking at:</p>
      <ul>
        <li>IMAP4 UIDPLUS extension (RFC 4315 http://www.ietf.org/rfc/rfc4315.txt)</li>
