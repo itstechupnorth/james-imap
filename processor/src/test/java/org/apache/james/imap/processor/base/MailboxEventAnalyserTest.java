@@ -175,6 +175,15 @@ public class MailboxEventAnalyserTest {
         public void authenticated() {
             
         }
+
+        public boolean isPlainAuthDisallowed() {
+            return false;
+        }
+
+        public boolean isTLSActive() {
+            // TODO Auto-generated method stub
+            return false;
+        }
     };
     
 

@@ -38,6 +38,9 @@ public class DefaultProcessorChain {
         final CapabilityProcessor capabilityProcessor = new CapabilityProcessor(logoutProcessor, mailboxManager, statusResponseFactory);
         final CheckProcessor checkProcessor = new CheckProcessor(capabilityProcessor, mailboxManager, statusResponseFactory);
         final LoginProcessor loginProcessor = new LoginProcessor(checkProcessor, mailboxManager, statusResponseFactory);
+        // so it can announce the LOGINDISABLED if needed
+        capabilityProcessor.addProcessor(loginProcessor);
+        
         final RenameProcessor renameProcessor = new RenameProcessor(loginProcessor, mailboxManager, statusResponseFactory);
         final DeleteProcessor deleteProcessor = new DeleteProcessor(renameProcessor, mailboxManager, statusResponseFactory);
         final CreateProcessor createProcessor = new CreateProcessor(deleteProcessor, mailboxManager, statusResponseFactory);

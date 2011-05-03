@@ -115,6 +115,9 @@ public class HumanReadableText {
 
     public static final HumanReadableText INVALID_LOGIN = new HumanReadableText("org.apache.james.imap.INVALID_LOGIN", "failed. Invalid login/password.");
 
+    public static final HumanReadableText DISABLED_LOGIN = new HumanReadableText("org.apache.james.imap.DISABLED_LOGIN", "failed. Plain login / authentication are disabled.");
+
+    
     public static final HumanReadableText UNSUPPORTED_SEARCH_CRITERIA = new HumanReadableText("org.apache.james.imap.UNSUPPORTED_CRITERIA", "failed. One or more search criteria is unsupported.");
 
     public static final HumanReadableText UNSUPPORTED_AUTHENTICATION_MECHANISM = new HumanReadableText("org.apache.james.imap.UNSUPPORTED_AUTHENTICATION_MECHANISM", "failed. Authentication mechanism is unsupported.");

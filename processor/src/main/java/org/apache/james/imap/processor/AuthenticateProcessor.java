@@ -20,7 +20,7 @@
 package org.apache.james.imap.processor;
 
 import java.nio.charset.Charset;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
 
@@ -55,54 +55,59 @@ public class AuthenticateProcessor extends AbstractAuthProcessor<AuthenticateReq
     protected void doProcess(AuthenticateRequest request, ImapSession session, final String tag, final ImapCommand command, final Responder responder) {
         final String authType = request.getAuthType();
         if (authType.equalsIgnoreCase(PLAIN)) {
-            responder.respond(new AuthenticateResponse());
-            session.pushLineHandler(new ImapLineHandler() {
+            // See if AUTH=PLAIN is allowed. See IMAP-304
+            if (session.isPlainAuthDisallowed() && session.isTLSActive() == false) {
+                no(command, tag, responder, HumanReadableText.DISABLED_LOGIN);
+            } else {
+                responder.respond(new AuthenticateResponse());
+                session.pushLineHandler(new ImapLineHandler() {
                 
-                public void onLine(ImapSession session, byte[] data) {
-                    String user = null, pass = null;
-                    try {
-                        // strip of the newline
-                        String userpass = new String(data, 0, data.length - 2, Charset.forName("US-ASCII"));
-
-                        userpass = new String(Base64.decodeBase64(userpass));
-                        StringTokenizer authTokenizer = new StringTokenizer(userpass, "\0");
-                        String authorize_id = authTokenizer.nextToken();  // Authorization Identity
-                        user = authTokenizer.nextToken();                 // Authentication Identity
+                    public void onLine(ImapSession session, byte[] data) {
+                        String user = null, pass = null;
                         try {
-                            pass = authTokenizer.nextToken();             // Password
-                        } catch (java.util.NoSuchElementException _) {
-                            // If we got here, this is what happened.  RFC 2595
-                            // says that "the client may leave the authorization
-                            // identity empty to indicate that it is the same as
-                            // the authentication identity."  As noted above,
-                            // that would be represented as a decoded string of
-                            // the form: "\0authenticate-id\0password".  The
-                            // first call to nextToken will skip the empty
-                            // authorize-id, and give us the authenticate-id,
-                            // which we would store as the authorize-id.  The
-                            // second call will give us the password, which we
-                            // think is the authenticate-id (user).  Then when
-                            // we ask for the password, there are no more
-                            // elements, leading to the exception we just
-                            // caught.  So we need to move the user to the
-                            // password, and the authorize_id to the user.
-                            pass = user;
-                            user = authorize_id;
-                        }
+                            // strip of the newline
+                            String userpass = new String(data, 0, data.length - 2, Charset.forName("US-ASCII"));
 
-                        authTokenizer = null;
-                    } catch (Exception e) {
-                        // Ignored - this exception in parsing will be dealt
-                        // with in the if clause below
-                    }
-                    // Authenticate user
-                    doAuth(user, pass, session, tag, command, responder, HumanReadableText.AUTHENTICATION_FAILED);
+                            userpass = new String(Base64.decodeBase64(userpass));
+                            StringTokenizer authTokenizer = new StringTokenizer(userpass, "\0");
+                            String authorize_id = authTokenizer.nextToken();  // Authorization Identity
+                            user = authTokenizer.nextToken();                 // Authentication Identity
+                            try {
+                                pass = authTokenizer.nextToken();             // Password
+                            } catch (java.util.NoSuchElementException _) {
+                                // If we got here, this is what happened.  RFC 2595
+                                // says that "the client may leave the authorization
+                                // identity empty to indicate that it is the same as
+                                // the authentication identity."  As noted above,
+                                // that would be represented as a decoded string of
+                                // the form: "\0authenticate-id\0password".  The
+                                // first call to nextToken will skip the empty
+                                // authorize-id, and give us the authenticate-id,
+                                // which we would store as the authorize-id.  The
+                                // second call will give us the password, which we
+                                // think is the authenticate-id (user).  Then when
+                                // we ask for the password, there are no more
+                                // elements, leading to the exception we just
+                                // caught.  So we need to move the user to the
+                                // password, and the authorize_id to the user.
+                                pass = user;
+                                user = authorize_id;
+                            }
 
-                    // remove the handler now
-                    session.popLineHandler();
+                            authTokenizer = null;
+                        } catch (Exception e) {
+                            // Ignored - this exception in parsing will be dealt
+                            // with in the if clause below
+                            }
+                        // Authenticate user
+                        doAuth(user, pass, session, tag, command, responder, HumanReadableText.AUTHENTICATION_FAILED);
+
+                        // remove the handler now
+                        session.popLineHandler();
                     
-                }
-            });
+                    }
+                });
+            }
         } else {
             session.getLog().info("Unsupported authentication mechanism '" + authType + "'");
             no(command, tag, responder, HumanReadableText.UNSUPPORTED_AUTHENTICATION_MECHANISM);
@@ -114,7 +119,13 @@ public class AuthenticateProcessor extends AbstractAuthProcessor<AuthenticateReq
      * @see org.apache.james.imap.processor.CapabilityImplementingProcessor#getImplementedCapabilities(org.apache.james.imap.api.process.ImapSession)
      */
     public List<String> getImplementedCapabilities(ImapSession session) {
-        return Arrays.asList("AUTH=PLAIN");
+        List<String> caps = new ArrayList<String>();
+        // Only ounce AUTH=PLAIN if the session does allow plain auth or TLS is active.
+        // See IMAP-304
+        if (session.isPlainAuthDisallowed()  == false || session.isTLSActive()) {
+            caps.add("AUTH=PLAIN");
+        }
+        return caps;
     }
 
 }

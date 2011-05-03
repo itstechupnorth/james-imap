@@ -116,6 +116,13 @@ public interface ImapSession {
     public boolean startTLS();
 
     /**
+     * Return true if the session is bound to a TLS encrypted socket.
+     * 
+     * @return tlsActive
+     */
+    public boolean isTLSActive();
+ 
+    /**
      * Support startTLS ?
      * 
      * @return true if startTLS is supported
@@ -129,5 +136,13 @@ public interface ImapSession {
     public void pushLineHandler(ImapLineHandler lineHandler);
 
     public void popLineHandler();
+    
+    /**
+     * Return true if the login / authentication via plain username / password is
+     * disallowed
+     * 
+     * @return plainDisallowed
+     */
+    public boolean isPlainAuthDisallowed();
 
 }

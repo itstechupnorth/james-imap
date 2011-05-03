@@ -19,6 +19,9 @@
 
 package org.apache.james.imap.processor;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.james.imap.api.ImapCommand;
 import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.api.message.response.StatusResponseFactory;
@@ -30,7 +33,7 @@ import org.apache.james.mailbox.MailboxManager;
 /**
  * Processes a <code>LOGIN</code> command.
  */
-public class LoginProcessor extends AbstractAuthProcessor<LoginRequest> {
+public class LoginProcessor extends AbstractAuthProcessor<LoginRequest> implements CapabilityImplementingProcessor{
 
     public LoginProcessor(final ImapProcessor next, final MailboxManager mailboxManager, final StatusResponseFactory factory) {
         super(LoginRequest.class, next, mailboxManager, factory);
@@ -43,7 +46,25 @@ public class LoginProcessor extends AbstractAuthProcessor<LoginRequest> {
     protected void doProcess(LoginRequest request, ImapSession session, String tag, ImapCommand command, Responder responder) {
             final String userid = request.getUserid();
             final String passwd = request.getPassword();
-            
-            doAuth(userid, passwd, session, tag, command, responder, HumanReadableText.INVALID_LOGIN);
+            // check if the login is allowed with LOGIN command. See IMAP-304
+            if (session.isPlainAuthDisallowed() && session.isTLSActive() == false) {
+                no(command, tag, responder, HumanReadableText.DISABLED_LOGIN);
+            } else {
+                doAuth(userid, passwd, session, tag, command, responder, HumanReadableText.INVALID_LOGIN);
+            }
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.processor.CapabilityImplementingProcessor#getImplementedCapabilities(org.apache.james.imap.api.process.ImapSession)
+     */
+    public List<String> getImplementedCapabilities(ImapSession session) {
+        List<String> caps = new ArrayList<String>();
+        // Announce LOGINDISABLED if plain auth / login is deactivated and the session is not using
+        // TLS. See IMAP-304
+        if (session.isPlainAuthDisallowed() && session.isTLSActive() == false) {
+            caps.add("LOGINDISABLED");
+        }
+        return caps;
     }
 }

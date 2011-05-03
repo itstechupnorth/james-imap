@@ -121,4 +121,12 @@ public class FakeImapSession implements ImapSession {
         
     }
 
+    public boolean isPlainAuthDisallowed() {
+        return false;
+    }
+
+    public boolean isTLSActive() {
+        return false;
+    }
+
 }
