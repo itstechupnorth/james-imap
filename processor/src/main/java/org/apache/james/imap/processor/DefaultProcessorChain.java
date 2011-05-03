@@ -79,6 +79,9 @@ public class DefaultProcessorChain {
 
         // announce the COMPRESS extension. Sew RFC4978
         capabilityProcessor.addProcessor(compressProcessor);
+        
+        // add to announnce AUTH=PLAIN
+        capabilityProcessor.addProcessor(authenticateProcessor);
 
         return compressProcessor;
 

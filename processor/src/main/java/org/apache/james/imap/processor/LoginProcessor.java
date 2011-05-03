@@ -20,30 +20,17 @@
 package org.apache.james.imap.processor;
 
 import org.apache.james.imap.api.ImapCommand;
-import org.apache.james.imap.api.ImapSessionUtils;
 import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.api.message.response.StatusResponseFactory;
 import org.apache.james.imap.api.process.ImapProcessor;
 import org.apache.james.imap.api.process.ImapSession;
 import org.apache.james.imap.message.request.LoginRequest;
-import org.apache.james.mailbox.BadCredentialsException;
-import org.apache.james.mailbox.MailboxException;
-import org.apache.james.mailbox.MailboxExistsException;
 import org.apache.james.mailbox.MailboxManager;
-import org.apache.james.mailbox.MailboxPath;
-import org.apache.james.mailbox.MailboxSession;
 
 /**
  * Processes a <code>LOGIN</code> command.
  */
-public class LoginProcessor extends AbstractMailboxProcessor<LoginRequest> {
-
-    public static final String INBOX = "INBOX";
-
-    private static final String ATTRIBUTE_NUMBER_OF_FAILURES = "org.apache.james.imap.processor.imap4rev1.LoginProcessor.NUMBER_OF_FAILURES";
-
-    // TODO: this should be configurable
-    private static final int MAX_FAILURES = 3;
+public class LoginProcessor extends AbstractAuthProcessor<LoginRequest> {
 
     public LoginProcessor(final ImapProcessor next, final MailboxManager mailboxManager, final StatusResponseFactory factory) {
         super(LoginRequest.class, next, mailboxManager, factory);
@@ -51,55 +38,12 @@ public class LoginProcessor extends AbstractMailboxProcessor<LoginRequest> {
 
     /*
      * (non-Javadoc)
-     * 
-     * @see
-     * org.apache.james.imap.processor.AbstractMailboxProcessor#doProcess(org
-     * .apache.james.imap.api.message.request.ImapRequest,
-     * org.apache.james.imap.api.process.ImapSession, java.lang.String,
-     * org.apache.james.imap.api.ImapCommand,
-     * org.apache.james.imap.api.process.ImapProcessor.Responder)
+     * @see org.apache.james.imap.processor.AbstractMailboxProcessor#doProcess(org.apache.james.imap.api.message.request.ImapRequest, org.apache.james.imap.api.process.ImapSession, java.lang.String, org.apache.james.imap.api.ImapCommand, org.apache.james.imap.api.process.ImapProcessor.Responder)
      */
     protected void doProcess(LoginRequest request, ImapSession session, String tag, ImapCommand command, Responder responder) {
-        try {
             final String userid = request.getUserid();
             final String passwd = request.getPassword();
-            final MailboxManager mailboxManager = getMailboxManager();
-            try {
-                final MailboxSession mailboxSession = mailboxManager.login(userid, passwd, session.getLog());
-                session.authenticated();
-                session.setAttribute(ImapSessionUtils.MAILBOX_SESSION_ATTRIBUTE_SESSION_KEY, mailboxSession);
-                final MailboxPath inboxPath = buildFullPath(session, INBOX);
-                if (mailboxManager.mailboxExists(inboxPath, mailboxSession)) {
-                    session.getLog().debug("INBOX exists. No need to create it.");
-                } else {
-                    try {
-                        session.getLog().debug("INBOX does not exist. Creating it.");
-                        mailboxManager.createMailbox(inboxPath, mailboxSession);
-                    } catch (MailboxExistsException e) {
-                        session.getLog().debug("Mailbox created by concurrent call. Safe to ignore this exception.");
-                    }
-                }
-                okComplete(command, tag, responder);
-            } catch (BadCredentialsException e) {
-                final Integer currentNumberOfFailures = (Integer) session.getAttribute(ATTRIBUTE_NUMBER_OF_FAILURES);
-                final int failures;
-                if (currentNumberOfFailures == null) {
-                    failures = 1;
-                } else {
-                    failures = currentNumberOfFailures.intValue() + 1;
-                }
-                if (failures < MAX_FAILURES) {
-                    session.setAttribute(ATTRIBUTE_NUMBER_OF_FAILURES, failures);
-                    no(command, tag, responder, HumanReadableText.INVALID_LOGIN);
-                } else {
-                    session.getLog().info("Too many authentication failures. Closing connection.");
-                    bye(responder, HumanReadableText.TOO_MANY_FAILURES);
-                    session.logout();
-                }
-            }
-        } catch (MailboxException e) {
-            session.getLog().debug("Login failed", e);
-            no(command, tag, responder, HumanReadableText.GENERIC_FAILURE_DURING_PROCESSING);
-        }
+            
+            doAuth(userid, passwd, session, tag, command, responder, HumanReadableText.INVALID_LOGIN);
     }
 }
