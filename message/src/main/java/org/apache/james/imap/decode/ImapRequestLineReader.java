@@ -311,12 +311,18 @@ public abstract class ImapRequestLineReader {
      * and an exception is thrown if invalid characters are encountered.
      */
     public String consumeWord(CharacterValidator validator) throws DecodingException {
+        return consumeWord(validator, false);
+    }
+
+    private String consumeWord(CharacterValidator validator, boolean stripParen) throws DecodingException {
         StringBuffer atom = new StringBuffer();
 
         char next = nextWordChar();
-        while (!isWhitespace(next)) {
+        while (!isWhitespace(next) && (stripParen == false || next != ')')) {
             if (validator.isValid(next)) {
-                atom.append(next);
+                if (stripParen == false || next != '(') {
+                    atom.append(next);
+                }
                 consume();
             } else {
                 throw new DecodingException(HumanReadableText.ILLEGAL_ARGUMENTS, "Invalid character: '" + next + "'");
@@ -325,7 +331,6 @@ public abstract class ImapRequestLineReader {
         }
         return atom.toString();
     }
-
     private static boolean isWhitespace(char next) {
         return (next == ' ' || next == '\n' || next == '\r' || next == '\t');
     }
@@ -574,7 +579,9 @@ public abstract class ImapRequestLineReader {
      */
     public IdRange[] parseIdRange() throws DecodingException {
         CharacterValidator validator = new MessageSetCharValidator();
-        String nextWord = consumeWord(validator);
+        // Don't fail to parse id ranges which are enclosed by "(..)"
+        // See IMAP-283
+        String nextWord = consumeWord(validator, true);
 
         int commaPos = nextWord.indexOf(',');
         if (commaPos == -1) {
