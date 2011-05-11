@@ -60,6 +60,9 @@ public class DefaultProcessorChain {
         final XListProcessor xlistProcessor = new XListProcessor(lsubProcessor, mailboxManager, statusResponseFactory, mailboxTyper);
         final ListProcessor listProcessor = new ListProcessor(xlistProcessor, mailboxManager, statusResponseFactory);
         final SearchProcessor searchProcessor = new SearchProcessor(listProcessor, mailboxManager, statusResponseFactory);
+        // WITHIN extension
+        capabilityProcessor.addProcessor(searchProcessor);
+
         final SelectProcessor selectProcessor = new SelectProcessor(searchProcessor, mailboxManager, statusResponseFactory);
         final NamespaceProcessor namespaceProcessor = new NamespaceProcessor(selectProcessor, mailboxManager, statusResponseFactory);
 

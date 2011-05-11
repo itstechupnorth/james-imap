@@ -116,6 +116,8 @@ public class SearchCommandParser extends AbstractUidCommandParser {
                 return t(request, charset);
             case 'U':
                 return u(request);
+            case 'Y':
+                return younger(request);
             default:
                 throw new DecodingException(HumanReadableText.ILLEGAL_ARGUMENTS, "Unknown search key");
             }
@@ -303,7 +305,18 @@ public class SearchCommandParser extends AbstractUidCommandParser {
             throw new DecodingException(HumanReadableText.ILLEGAL_ARGUMENTS, "Unknown search key");
         }
     }
-
+    
+    private SearchKey old(ImapRequestLineReader request) throws DecodingException {
+        nextIsD(request);
+        try {
+            // Check if its OLDER keyword
+            nextIsE(request);
+            return older(request);
+        } catch (DecodingException e) {
+            return SearchKey.buildOld();
+        }
+    }
+    
     private SearchKey n(ImapRequestLineReader request, Charset charset) throws DecodingException {
         final int next = consumeAndCap(request);
         switch (next) {
@@ -483,11 +496,24 @@ public class SearchCommandParser extends AbstractUidCommandParser {
         result = SearchKey.buildUnanswered();
         return result;
     }
-
-    private SearchKey old(ImapRequestLineReader request) throws DecodingException {
+    private SearchKey younger(ImapRequestLineReader request) throws DecodingException {
         final SearchKey result;
-        nextIsD(request);
-        result = SearchKey.buildOld();
+        nextIsO(request);
+        nextIsU(request);
+        nextIsN(request);
+        nextIsG(request);
+        nextIsE(request);
+        nextIsR(request);
+        nextIsSpace(request);
+        result = SearchKey.buildYounger(request.nzNumber());
+        return result;
+    }
+    private SearchKey older(ImapRequestLineReader request) throws DecodingException {
+        final SearchKey result;
+        nextIsR(request);
+        
+        nextIsSpace(request);
+        result = SearchKey.buildOlder(request.nzNumber());
         return result;
     }
 
@@ -768,7 +794,9 @@ public class SearchCommandParser extends AbstractUidCommandParser {
     private void nextIsX(ImapRequestLineReader request) throws DecodingException {
         nextIs(request, 'X', 'x');
     }
-
+    private void nextIsU(ImapRequestLineReader request) throws DecodingException {
+        nextIs(request, 'U', 'u');
+    }
     private void nextIsO(ImapRequestLineReader request) throws DecodingException {
         nextIs(request, 'O', 'o');
     }

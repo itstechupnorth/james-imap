@@ -20,7 +20,9 @@
 package org.apache.james.imap.processor;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.TreeSet;
@@ -49,7 +51,7 @@ import org.apache.james.mailbox.SearchQuery;
 import org.apache.james.mailbox.SearchQuery.Criterion;
 import org.apache.james.mailbox.SearchQuery.DateResolution;
 
-public class SearchProcessor extends AbstractMailboxProcessor<SearchRequest> {
+public class SearchProcessor extends AbstractMailboxProcessor<SearchRequest> implements CapabilityImplementingProcessor {
 
     public SearchProcessor(final ImapProcessor next, final MailboxManager mailboxManager, final StatusResponseFactory factory) {
         super(SearchRequest.class, next, mailboxManager, factory);
@@ -214,10 +216,21 @@ public class SearchProcessor extends AbstractMailboxProcessor<SearchRequest> {
             return SearchQuery.flagIsUnSet(key.getValue());
         case SearchKey.TYPE_UNSEEN:
             return SearchQuery.flagIsUnSet(Flag.SEEN);
+        case SearchKey.TYPE_OLDER:
+            Date withinDate = createWithinDate(key);
+            return SearchQuery.or(SearchQuery.internalDateOn(withinDate, DateResolution.Second), SearchQuery.internalDateBefore(withinDate, DateResolution.Second));
+        case SearchKey.TYPE_YOUNGER:
+            Date withinDate2 = createWithinDate(key);
+            return SearchQuery.or(SearchQuery.internalDateOn(withinDate2, DateResolution.Second), SearchQuery.internalDateAfter(withinDate2, DateResolution.Second));
         default:
             session.getLog().warn("Ignoring unknown search key.");
             return SearchQuery.all();
         }
+    }
+    private Date createWithinDate(SearchKey key) {
+        long seconds = key.getSeconds();
+        long res = System.currentTimeMillis() - seconds * 1000;
+        return new Date(res);
     }
 
     private Criterion sequence(IdRange[] sequenceNumbers, final ImapSession session, boolean msn) throws MessageRangeException {
@@ -262,5 +275,13 @@ public class SearchProcessor extends AbstractMailboxProcessor<SearchRequest> {
         }
         final Criterion result = SearchQuery.and(criteria);
         return result;
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.processor.CapabilityImplementingProcessor#getImplementedCapabilities(org.apache.james.imap.api.process.ImapSession)
+     */
+    public List<String> getImplementedCapabilities(ImapSession session) {
+        return Arrays.asList("WITHIN");
     }
 }
