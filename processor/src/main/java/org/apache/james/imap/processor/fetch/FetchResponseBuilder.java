@@ -278,10 +278,20 @@ public final class FetchResponseBuilder {
     private HeaderBodyElement headerBodyElement(final MessageResult messageResult, String name, List<MessageResult.Header> lines, final int[] path, final boolean isBase) throws MailboxException {
         final HeaderBodyElement result = new HeaderBodyElement(name, lines);
         // if the size is 2 we had found not header and just want to write the empty line with CLRF terminated
-        // so check no if there is a content for it. If not we MUST NOT write the empty line in any case
+        // so check if there is a content for it. If not we MUST NOT write the empty line in any case
         // as stated in rfc3501
         if (result.size() == 2) {
-            if (content(messageResult, name, path, isBase).size() <= 0) {
+            // Check if its base as this can give use a more  correctly working check
+            // to see if we need to write the newline out to the client. 
+            // This is related to IMAP-298
+            if (isBase) {
+                if (messageResult.getSize() - result.size() <= 0) {
+                    // Seems like this mail has no body 
+                    result.noBody();
+                }
+              
+            } else if (content(messageResult, name, path, isBase).size() <= 0) {
+                // Seems like this mail has no body 
                 result.noBody();
             }
         }
