@@ -111,13 +111,10 @@ public class FakeImapSession implements ImapSession {
         return false;
     }
 
-    public void pushLineHandler(ImapLineHandler lineHandler) {
-        // TODO Auto-generated method stub
-        
+    public void pushLineHandler(ImapLineHandler lineHandler) {        
     }
 
     public void popLineHandler() {
-        // TODO Auto-generated method stub
         
     }
 
@@ -126,6 +123,10 @@ public class FakeImapSession implements ImapSession {
     }
 
     public boolean isTLSActive() {
+        return false;
+    }
+
+    public boolean supportMultipleNamespaces() {
         return false;
     }
 

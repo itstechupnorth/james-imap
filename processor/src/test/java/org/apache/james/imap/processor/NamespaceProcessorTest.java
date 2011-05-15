@@ -84,6 +84,7 @@ public class NamespaceProcessorTest {
     @Test
     public void testNamespaceResponseShouldContainPersonalAndUserSpaces() throws Exception {
         mockery.checking (new Expectations() {{
+            allowing(imapSessionStub).supportMultipleNamespaces(); will(returnValue(true));
             allowing(imapSessionStub).getAttribute(ImapSessionUtils.MAILBOX_SESSION_ATTRIBUTE_SESSION_KEY); will(returnValue(mailboxSessionStub));
             allowing(mailboxSessionStub).getPersonalSpace(); will(returnValue(PERSONAL_PREFIX));
             allowing(mailboxSessionStub).getOtherUsersSpace(); will(returnValue(USERS_PREFIX));
@@ -109,6 +110,7 @@ public class NamespaceProcessorTest {
     @Test
     public void testNamespaceResponseShouldContainSharedSpaces() throws Exception {
         mockery.checking (new Expectations() {{
+            allowing(imapSessionStub).supportMultipleNamespaces(); will(returnValue(true));
             allowing(imapSessionStub).getAttribute(ImapSessionUtils.MAILBOX_SESSION_ATTRIBUTE_SESSION_KEY); will(returnValue(mailboxSessionStub));
             allowing(mailboxSessionStub).getPersonalSpace(); will(returnValue(PERSONAL_PREFIX));
             allowing(mailboxSessionStub).getOtherUsersSpace(); will(returnValue(USERS_PREFIX));

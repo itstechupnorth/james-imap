@@ -19,9 +19,8 @@
 
 package org.apache.james.imap.processor.base;
 
-import java.util.HashMap;
+import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 import javax.mail.Flags;
 
@@ -46,9 +45,34 @@ public class FakeMailboxListenerAdded extends MailboxListener.Added {
         return uids;
     }
 
-    @Override
-    public Map<Long, Flags> getFlags() {
-        return new HashMap<Long, Flags>();
+
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.mailbox.MailboxListener.Added#getMetaData(long)
+     */
+    public MessageMetaData getMetaData(long uid) {
+        return new MessageMetaData() {
+            
+            public long getUid() {
+                // TODO Auto-generated method stub
+                return 0;
+            }
+            
+            public long getSize() {
+                // TODO Auto-generated method stub
+                return 0;
+            }
+            
+            public Date getInternalDate() {
+                // TODO Auto-generated method stub
+                return null;
+            }
+            
+            public Flags getFlags() {
+                // TODO Auto-generated method stub
+                return null;
+            }
+        };
     }
 
 

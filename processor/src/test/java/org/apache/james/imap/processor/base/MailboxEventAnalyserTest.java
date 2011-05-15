@@ -184,6 +184,10 @@ public class MailboxEventAnalyserTest {
             // TODO Auto-generated method stub
             return false;
         }
+
+        public boolean supportMultipleNamespaces() {
+            return false;
+        }
     };
     
 
