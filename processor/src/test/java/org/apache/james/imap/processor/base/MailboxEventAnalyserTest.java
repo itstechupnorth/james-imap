@@ -181,11 +181,14 @@ public class MailboxEventAnalyserTest {
         }
 
         public boolean isTLSActive() {
-            // TODO Auto-generated method stub
             return false;
         }
 
         public boolean supportMultipleNamespaces() {
+            return false;
+        }
+
+        public boolean isCompressionActive() {
             return false;
         }
     };

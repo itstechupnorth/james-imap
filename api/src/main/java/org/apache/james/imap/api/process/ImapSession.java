@@ -129,12 +129,39 @@ public interface ImapSession {
      */
     public boolean supportStartTLS();
 
+    /**
+     * Return true if compression is active
+     * 
+     * @return compActive
+     */
+    public boolean isCompressionActive();
+
+    /**
+     * Return true if compression is supported. This is related to COMPRESS extension.
+     * See http://www.ietf.org/rfc/rfc4978.txt
+     * 
+     * @return compressSupport
+     */
     public boolean isCompressionSupported();
 
+    /**
+     * Start the compression
+     * 
+     * @return success
+     */
     public boolean startCompression();
 
+    /**
+     * Push in a new {@link ImapLineHandler} which is called for the next line received
+     * 
+     * @param lineHandler
+     */
     public void pushLineHandler(ImapLineHandler lineHandler);
 
+    /**
+     * Pop the current {@link ImapLineHandler}
+     * 
+     */
     public void popLineHandler();
     
     /**
