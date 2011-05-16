@@ -49,6 +49,7 @@ import org.apache.james.mailbox.MailboxPath;
 import org.apache.james.mailbox.MailboxSession;
 import org.apache.james.mailbox.MessageManager;
 import org.apache.james.mailbox.SearchQuery;
+import org.apache.james.mailbox.SearchQuery.AddressType;
 import org.apache.james.mailbox.SearchQuery.Criterion;
 import org.apache.james.mailbox.SearchQuery.DateResolution;
 import org.jmock.Expectations;
@@ -233,8 +234,8 @@ public class SearchProcessorTest {
     @Test
     public void testBCC() throws Exception {
         expectsGetSelectedMailbox();
-        check(SearchKey.buildBcc(ADDRESS), SearchQuery.headerContains(
-                ImapConstants.RFC822_BCC, ADDRESS));
+        check(SearchKey.buildBcc(ADDRESS), SearchQuery.address(
+                AddressType.Bcc, ADDRESS));
     }
 
     @Test
@@ -253,8 +254,8 @@ public class SearchProcessorTest {
     @Test
     public void testCC() throws Exception {
         expectsGetSelectedMailbox();
-        check(SearchKey.buildCc(ADDRESS), SearchQuery.headerContains(
-                ImapConstants.RFC822_CC, ADDRESS));
+        check(SearchKey.buildCc(ADDRESS), SearchQuery.address(
+                AddressType.Cc, ADDRESS));
     }
 
     @Test
@@ -278,8 +279,8 @@ public class SearchProcessorTest {
     @Test
     public void testFROM() throws Exception {
         expectsGetSelectedMailbox();
-        check(SearchKey.buildFrom(ADDRESS), SearchQuery.headerContains(
-                ImapConstants.RFC822_FROM, ADDRESS));
+        check(SearchKey.buildFrom(ADDRESS), SearchQuery.address(
+                AddressType.From, ADDRESS));
     }
 
     @Test
@@ -413,8 +414,8 @@ public class SearchProcessorTest {
     @Test
     public void testTO() throws Exception {
         expectsGetSelectedMailbox();
-        check(SearchKey.buildTo(ADDRESS), SearchQuery.headerContains(
-                ImapConstants.RFC822_TO, ADDRESS));
+        check(SearchKey.buildTo(ADDRESS), SearchQuery.address(
+                AddressType.To, ADDRESS));
     }
 
     @Test
