@@ -48,6 +48,7 @@ import org.apache.james.mailbox.MessageManager;
 import org.apache.james.mailbox.MessageRange;
 import org.apache.james.mailbox.MessageRangeException;
 import org.apache.james.mailbox.SearchQuery;
+import org.apache.james.mailbox.SearchQuery.AddressType;
 import org.apache.james.mailbox.SearchQuery.Criterion;
 import org.apache.james.mailbox.SearchQuery.DateResolution;
 
@@ -145,13 +146,13 @@ public class SearchProcessor extends AbstractMailboxProcessor<SearchRequest> imp
         case SearchKey.TYPE_ANSWERED:
             return SearchQuery.flagIsSet(Flag.ANSWERED);
         case SearchKey.TYPE_BCC:
-            return SearchQuery.headerContains(ImapConstants.RFC822_BCC, key.getValue());
+            return SearchQuery.address(AddressType.Bcc, key.getValue());
         case SearchKey.TYPE_BEFORE:
             return SearchQuery.internalDateBefore(date.toDate(), DateResolution.Day);
         case SearchKey.TYPE_BODY:
             return SearchQuery.bodyContains(key.getValue());
         case SearchKey.TYPE_CC:
-            return SearchQuery.headerContains(ImapConstants.RFC822_CC, key.getValue());
+            return SearchQuery.address(AddressType.Cc, key.getValue());
         case SearchKey.TYPE_DELETED:
             return SearchQuery.flagIsSet(Flag.DELETED);
         case SearchKey.TYPE_DRAFT:
@@ -159,7 +160,7 @@ public class SearchProcessor extends AbstractMailboxProcessor<SearchRequest> imp
         case SearchKey.TYPE_FLAGGED:
             return SearchQuery.flagIsSet(Flag.FLAGGED);
         case SearchKey.TYPE_FROM:
-            return SearchQuery.headerContains(ImapConstants.RFC822_FROM, key.getValue());
+            return SearchQuery.address(AddressType.From, key.getValue());
         case SearchKey.TYPE_HEADER:
             return SearchQuery.headerContains(key.getName(), key.getValue());
         case SearchKey.TYPE_KEYWORD:
@@ -201,7 +202,7 @@ public class SearchProcessor extends AbstractMailboxProcessor<SearchRequest> imp
         case SearchKey.TYPE_TEXT:
             return SearchQuery.mailContains(key.getValue());
         case SearchKey.TYPE_TO:
-            return SearchQuery.headerContains(ImapConstants.RFC822_TO, key.getValue());
+            return SearchQuery.address(AddressType.To, key.getValue());
         case SearchKey.TYPE_UID:
             return sequence(key.getSequenceNumbers(), session, false);
         case SearchKey.TYPE_UNANSWERED:
