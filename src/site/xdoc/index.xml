@@ -48,6 +48,7 @@
      <p>Interesting features:</p>
      <ul>
        <li>Users Flags</li>
+       <li>IMAP4 WITHIN Extensions (RFC 5032  http://www.ietf.org/rfc/rfc5032.txt)</li>
      </ul>
      <p>Other RFCs of interest we are looking at:</p>
      <ul>
