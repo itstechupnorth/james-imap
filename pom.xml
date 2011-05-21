@@ -28,7 +28,7 @@
   <groupId>org.apache.james</groupId>
   <artifactId>apache-james-imap</artifactId>
   <name>Apache James IMAP</name>
-  <version>0.2-M2-SNAPSHOT</version>
+  <version>0.2</version>
   <description>The Apache James IMAP</description>
   <url>http://james.apache.org/imap/</url>
   <inceptionYear>2002</inceptionYear>
@@ -48,9 +48,9 @@
   </distributionManagement>
 
   <scm>
-    <connection>scm:svn:http://svn.apache.org/repos/asf/james/imap/trunk</connection>
-    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/james/imap/trunk</developerConnection>
-    <url>http://svn.apache.org/viewcvs.cgi/james/imap/trunk?root=Apache-SVN</url>
+    <connection>scm:svn:http://svn.apache.org/repos/asf/james/imap/tags/apache-james-imap-0.2</connection>
+    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/james/imap/tags/apache-james-imap-0.2</developerConnection>
+    <url>http://svn.apache.org/viewcvs.cgi/james/imap/trunk/tags/apache-james-imap-0.2?root=Apache-SVN</url>
   </scm>
 
   <repositories>
