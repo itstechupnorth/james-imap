@@ -383,12 +383,12 @@
       <dependency>
         <groupId>org.apache.james</groupId>
         <artifactId>apache-james-mailbox-api</artifactId>
-        <version>${project.version}</version>
+        <version>0.2</version>
       </dependency>
       <dependency>
         <groupId>org.apache.james</groupId>
         <artifactId>apache-james-mailbox-api</artifactId>
-        <version>${project.version}</version>
+        <version>0.2</version>
         <type>test-jar</type>
         <scope>test</scope>
       </dependency>
@@ -593,7 +593,6 @@
     <javax.mail.groupId>javax.mail</javax.mail.groupId>
     <javax.mail.artifactId>mail</javax.mail.artifactId>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <version.james-server>3.0-SNAPSHOT</version.james-server>
     <version.openjpa>2.0.1</version.openjpa>
     <version.javax.persistence>1.0.2</version.javax.persistence>
     <version.commons-lang>2.4</version.commons-lang>
