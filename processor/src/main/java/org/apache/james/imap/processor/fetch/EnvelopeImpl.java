@@ -60,42 +60,82 @@ final class EnvelopeImpl implements FetchResponse.Envelope {
         this.to = to;
     }
 
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.message.response.FetchResponse.Envelope#getBcc()
+     */
     public Address[] getBcc() {
         return bcc;
     }
 
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.message.response.FetchResponse.Envelope#getCc()
+     */
     public Address[] getCc() {
         return cc;
     }
 
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.message.response.FetchResponse.Envelope#getDate()
+     */
     public String getDate() {
         return date;
     }
 
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.message.response.FetchResponse.Envelope#getFrom()
+     */
     public Address[] getFrom() {
         return from;
     }
 
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.message.response.FetchResponse.Envelope#getInReplyTo()
+     */
     public String getInReplyTo() {
         return inReplyTo;
     }
 
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.message.response.FetchResponse.Envelope#getMessageId()
+     */
     public String getMessageId() {
         return messageId;
     }
 
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.message.response.FetchResponse.Envelope#getReplyTo()
+     */
     public Address[] getReplyTo() {
         return replyTo;
     }
 
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.message.response.FetchResponse.Envelope#getSender()
+     */
     public Address[] getSender() {
         return sender;
     }
 
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.message.response.FetchResponse.Envelope#getSubject()
+     */
     public String getSubject() {
         return subject;
     }
 
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.message.response.FetchResponse.Envelope#getTo()
+     */
     public Address[] getTo() {
         return to;
     }

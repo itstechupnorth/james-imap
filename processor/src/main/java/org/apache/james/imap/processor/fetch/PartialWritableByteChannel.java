@@ -44,6 +44,10 @@ class PartialWritableByteChannel implements WritableByteChannel {
         bytesWritten = 0;
     }
 
+    /*
+     * (non-Javadoc)
+     * @see java.nio.channels.WritableByteChannel#write(java.nio.ByteBuffer)
+     */
     public int write(ByteBuffer src) throws IOException {
         final int result;
         final long bytesToIgnore = firstOctet - bytesWritten;
@@ -87,10 +91,18 @@ class PartialWritableByteChannel implements WritableByteChannel {
         return result;
     }
 
+    /*
+     * (non-Javadoc)
+     * @see java.nio.channels.Channel#close()
+     */
     public void close() throws IOException {
         delegate.close();
     }
 
+    /*
+     * (non-Javadoc)
+     * @see java.nio.channels.Channel#isOpen()
+     */
     public boolean isOpen() {
         return delegate.isOpen();
     }

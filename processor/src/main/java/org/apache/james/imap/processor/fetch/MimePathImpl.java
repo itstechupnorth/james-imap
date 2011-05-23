@@ -34,6 +34,10 @@ final class MimePathImpl implements MessageResult.MimePath {
         this.positions = positions;
     }
 
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.mailbox.MessageResult.MimePath#getPositions()
+     */
     public int[] getPositions() {
         return positions;
     }

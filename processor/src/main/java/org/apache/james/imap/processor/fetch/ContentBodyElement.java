@@ -65,6 +65,10 @@ final class ContentBodyElement implements BodyElement {
         content.writeTo(channel);
     }
 
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.message.response.Literal#getInputStream()
+     */
     public InputStream getInputStream() throws IOException {
         if (content instanceof InputStreamContent) {
             return ((InputStreamContent) content).getInputStream();

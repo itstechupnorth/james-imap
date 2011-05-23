@@ -107,7 +107,7 @@ public class MimeBodyElement implements BodyElement {
             }
             endLine.rewind();
         }
-       // no empty line with CRLF for MIME headers. See IMAP-297
+        // no empty line with CRLF for MIME headers. See IMAP-297
         if (size > 0) {
             while (channel.write(endLine) > 0) { // NOPMD false positive
             }

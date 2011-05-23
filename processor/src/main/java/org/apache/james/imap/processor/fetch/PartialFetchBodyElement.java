@@ -47,10 +47,18 @@ final class PartialFetchBodyElement implements BodyElement {
         name = delegate.getName() + "<" + firstOctet + ">";
     }
 
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.message.response.FetchResponse.BodyElement#getName()
+     */
     public String getName() {
         return name;
     }
 
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.message.response.Literal#size()
+     */
     public long size() {
         final long size = delegate.size();
         final long lastOctet = this.numberOfOctets + firstOctet;
@@ -65,11 +73,19 @@ final class PartialFetchBodyElement implements BodyElement {
         return result;
     }
 
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.message.response.Literal#writeTo(java.nio.channels.WritableByteChannel)
+     */
     public void writeTo(WritableByteChannel channel) throws IOException {
         PartialWritableByteChannel partialChannel = new PartialWritableByteChannel(channel, firstOctet, size());
         delegate.writeTo(partialChannel);
     }
 
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.message.response.Literal#getInputStream()
+     */
     public InputStream getInputStream() throws IOException {
         return new LimitingInputStream(delegate.getInputStream(), firstOctet, size());
     }

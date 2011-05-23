@@ -98,66 +98,130 @@ final class MimeDescriptorStructure implements FetchResponse.Structure {
         return results;
     }
 
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.message.response.FetchResponse.Structure#getDescription()
+     */
     public String getDescription() {
         return descriptor.getContentDescription();
     }
 
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.message.response.FetchResponse.Structure#getEncoding()
+     */
     public String getEncoding() {
         return descriptor.getTransferContentEncoding();
     }
 
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.message.response.FetchResponse.Structure#getId()
+     */
     public String getId() {
         return descriptor.getContentID();
     }
 
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.message.response.FetchResponse.Structure#getLines()
+     */
     public long getLines() {
         return descriptor.getLines();
     }
 
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.message.response.FetchResponse.Structure#getMediaType()
+     */
     public String getMediaType() {
         return descriptor.getMimeType();
     }
 
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.message.response.FetchResponse.Structure#getOctets()
+     */
     public long getOctets() {
         return descriptor.getBodyOctets();
     }
 
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.message.response.FetchResponse.Structure#getParameters()
+     */
     public List<String> getParameters() {
         return parameters;
     }
 
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.message.response.FetchResponse.Structure#getSubType()
+     */
     public String getSubType() {
         return descriptor.getMimeSubType();
     }
 
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.message.response.FetchResponse.Structure#parts()
+     */
     public Iterator<Structure> parts() {
         return parts.iterator();
     }
 
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.message.response.FetchResponse.Structure#getDisposition()
+     */
     public String getDisposition() {
         return disposition;
     }
 
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.message.response.FetchResponse.Structure#getLocation()
+     */
     public String getLocation() {
         return location;
     }
 
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.message.response.FetchResponse.Structure#getMD5()
+     */
     public String getMD5() {
         return md5;
     }
 
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.message.response.FetchResponse.Structure#getLanguages()
+     */
     public List<String> getLanguages() {
         return languages;
     }
 
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.message.response.FetchResponse.Structure#getBody()
+     */
     public Structure getBody() {
         return embeddedMessageStructure;
     }
 
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.message.response.FetchResponse.Structure#getDispositionParams()
+     */
     public Map<String, String> getDispositionParams() {
         return dispositionParams;
     }
 
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.message.response.FetchResponse.Structure#getEnvelope()
+     */
     public Envelope getEnvelope() {
         return envelope;
     }
