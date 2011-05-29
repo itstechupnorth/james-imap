@@ -16,28 +16,30 @@
  * specific language governing permissions and limitations      *
  * under the License.                                           *
  ****************************************************************/
-package org.apache.james.imap.message.request;
+package org.apache.james.imap.api.message.request;
 
-import org.apache.james.imap.api.ImapCommand;
-import org.apache.james.imap.api.message.request.SearchOperation;
-
-public class SearchRequest extends AbstractImapRequest {
-
-    private final SearchOperation operation;
-
-    private final boolean useUids;
-
-    public SearchRequest(final ImapCommand command, final SearchOperation operation, final boolean useUids, final String tag) {
-        super(tag, command);
-        this.operation = operation;
-        this.useUids = useUids;
-    }
-
-    public final SearchOperation getSearchOperation() {
-        return operation;
-    }
-
-    public final boolean isUseUids() {
-        return useUids;
-    }
+/**
+ * Represent ESEARCH result options. See RFC4731
+ *
+ */
+public enum SearchResultOption {
+    /**
+     * Return all matched message uids formatted as sequence-set
+     */
+    ALL,
+    
+    /**
+     * Return the minimum uid matched 
+     */
+    MIN,
+    
+    /**
+     * Return the maximum uid matched
+     */
+    MAX,
+    
+    /**
+     * Return the count of matched messages
+     */
+    COUNT
 }

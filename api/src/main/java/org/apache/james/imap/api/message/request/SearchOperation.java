@@ -1,3 +1,4 @@
+
 /****************************************************************
  * Licensed to the Apache Software Foundation (ASF) under one   *
  * or more contributor license agreements.  See the NOTICE file *
@@ -16,28 +17,27 @@
  * specific language governing permissions and limitations      *
  * under the License.                                           *
  ****************************************************************/
-package org.apache.james.imap.message.request;
+package org.apache.james.imap.api.message.request;
 
-import org.apache.james.imap.api.ImapCommand;
-import org.apache.james.imap.api.message.request.SearchOperation;
+import java.util.List;
 
-public class SearchRequest extends AbstractImapRequest {
+public final class SearchOperation {
 
-    private final SearchOperation operation;
+    private final SearchKey key;
+    private final List<SearchResultOption> options;
 
-    private final boolean useUids;
-
-    public SearchRequest(final ImapCommand command, final SearchOperation operation, final boolean useUids, final String tag) {
-        super(tag, command);
-        this.operation = operation;
-        this.useUids = useUids;
+    public SearchOperation(SearchKey key, List<SearchResultOption> options) {
+        this.key = key;
+        this.options = options;
     }
-
-    public final SearchOperation getSearchOperation() {
-        return operation;
+    
+    public SearchKey getSearchKey() {
+        return key;
     }
-
-    public final boolean isUseUids() {
-        return useUids;
+    public List<SearchResultOption> getResultOptions() {
+        return options;
     }
+    
+ 
+    
 }

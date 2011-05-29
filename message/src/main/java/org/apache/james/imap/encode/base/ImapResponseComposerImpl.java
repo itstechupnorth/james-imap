@@ -31,6 +31,7 @@ import javax.mail.Flags;
 import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.apache.james.imap.api.ImapCommand;
 import org.apache.james.imap.api.ImapConstants;
+import org.apache.james.imap.api.message.IdRange;
 import org.apache.james.imap.encode.ImapResponseComposer;
 import org.apache.james.imap.encode.ImapResponseWriter;
 import org.apache.james.imap.message.response.Literal;
@@ -827,6 +828,22 @@ public class ImapResponseComposerImpl implements ImapConstants, ImapResponseComp
         if (quote) {
             buffer.write(BYTE_DQUOTE);
         }
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.encode.ImapResponseComposer#sequenceSet(org.apache.james.imap.api.message.IdRange[])
+     */
+    public ImapResponseComposer sequenceSet(IdRange[] ranges) throws IOException {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0 ; i< ranges.length; i++) {
+            IdRange range = ranges[i];
+            sb.append(range.getFormattedString());
+            if (i + 1 < ranges.length) {
+                sb.append(",");
+            }
+        }
+        return message(sb.toString());
     }
 
 }

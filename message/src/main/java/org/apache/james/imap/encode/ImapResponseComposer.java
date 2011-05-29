@@ -26,6 +26,7 @@ import java.util.List;
 import javax.mail.Flags;
 
 import org.apache.james.imap.api.ImapCommand;
+import org.apache.james.imap.api.message.IdRange;
 import org.apache.james.imap.message.response.Literal;
 
 public interface ImapResponseComposer {
@@ -236,6 +237,8 @@ public interface ImapResponseComposer {
     public ImapResponseComposer message(final String message) throws IOException;
 
     public ImapResponseComposer message(final long number) throws IOException;
+
+    public ImapResponseComposer sequenceSet(final IdRange[] ranges) throws IOException;
 
     /**
      * Write a CRLF and flush the composer which will write the content of it to the socket

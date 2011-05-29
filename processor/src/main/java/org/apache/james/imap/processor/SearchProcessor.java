@@ -36,11 +36,15 @@ import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.api.message.IdRange;
 import org.apache.james.imap.api.message.request.DayMonthYear;
 import org.apache.james.imap.api.message.request.SearchKey;
+import org.apache.james.imap.api.message.request.SearchOperation;
+import org.apache.james.imap.api.message.request.SearchResultOption;
+import org.apache.james.imap.api.message.response.ImapResponseMessage;
 import org.apache.james.imap.api.message.response.StatusResponseFactory;
 import org.apache.james.imap.api.process.ImapProcessor;
 import org.apache.james.imap.api.process.ImapSession;
 import org.apache.james.imap.api.process.SelectedMailbox;
 import org.apache.james.imap.message.request.SearchRequest;
+import org.apache.james.imap.message.response.ESearchResponse;
 import org.apache.james.imap.message.response.SearchResponse;
 import org.apache.james.mailbox.MailboxException;
 import org.apache.james.mailbox.MailboxManager;
@@ -70,7 +74,8 @@ public class SearchProcessor extends AbstractMailboxProcessor<SearchRequest> imp
      */
     protected void doProcess(SearchRequest request, ImapSession session, String tag, ImapCommand command, Responder responder) {
         try {
-            final SearchKey searchKey = request.getSearchKey();
+            final SearchOperation operation = request.getSearchOperation();
+            final SearchKey searchKey = operation.getSearchKey();
             final boolean useUids = request.isUseUids();
             final MessageManager mailbox = getSelectedMailbox(session);
 
@@ -79,8 +84,36 @@ public class SearchProcessor extends AbstractMailboxProcessor<SearchRequest> imp
             final Collection<Long> results = findIds(useUids, session, mailbox, query);
             final long[] ids = toArray(results);
 
-            final SearchResponse response = new SearchResponse(ids);
+            List<SearchResultOption> resultOptions = operation.getResultOptions();
+            final ImapResponseMessage response;
+            if (resultOptions == null || resultOptions.isEmpty()) {
+                response = new SearchResponse(ids);
+            } else {
+                long min = -1;
+                long max = -1;
+                long count = ids.length;
+                IdRange[] idRanges;
+
+                if (ids.length > 0) {
+                    min = ids[0];
+                    max = ids[ids.length -1];
+                } 
+                List<Long> idList = new ArrayList<Long>(ids.length);
+                for ( int i = 0; i < ids.length; i++) {
+                    idList.add(ids[i]);
+                }
+                List<MessageRange> ranges = MessageRange.toRanges(idList);
+                idRanges = new IdRange[ranges.size()];
+                for (int i = 0 ; i <ranges.size(); i++) {
+                    MessageRange range = ranges.get(i);
+                    idRanges[i] = new IdRange(range.getUidFrom(), range.getUidTo());
+                }
+
+                response = new ESearchResponse(min, max, count, idRanges, tag, useUids, resultOptions);
+
+            }
             responder.respond(response);
+
             boolean omitExpunged = (!useUids);
             unsolicitedResponses(session, responder, omitExpunged, useUids);
             okComplete(command, tag, responder);
@@ -283,6 +316,6 @@ public class SearchProcessor extends AbstractMailboxProcessor<SearchRequest> imp
      * @see org.apache.james.imap.processor.CapabilityImplementingProcessor#getImplementedCapabilities(org.apache.james.imap.api.process.ImapSession)
      */
     public List<String> getImplementedCapabilities(ImapSession session) {
-        return Arrays.asList("WITHIN");
+        return Arrays.asList("WITHIN", "SEARCHRES");
     }
 }

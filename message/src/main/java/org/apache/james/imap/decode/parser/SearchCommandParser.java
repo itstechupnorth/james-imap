@@ -22,6 +22,7 @@ import java.nio.charset.Charset;
 import java.nio.charset.IllegalCharsetNameException;
 import java.nio.charset.UnsupportedCharsetException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -35,6 +36,8 @@ import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.api.message.IdRange;
 import org.apache.james.imap.api.message.request.DayMonthYear;
 import org.apache.james.imap.api.message.request.SearchKey;
+import org.apache.james.imap.api.message.request.SearchOperation;
+import org.apache.james.imap.api.message.request.SearchResultOption;
 import org.apache.james.imap.api.message.response.StatusResponse;
 import org.apache.james.imap.api.message.response.StatusResponseFactory;
 import org.apache.james.imap.api.message.response.StatusResponse.ResponseCode;
@@ -109,6 +112,8 @@ public class SearchCommandParser extends AbstractUidCommandParser {
             case 'Q':
                 throw new DecodingException(HumanReadableText.ILLEGAL_ARGUMENTS, "Unknown search key");
             case 'R':
+                nextIsE(request);
+                nextIsC(request);
                 return recent(request);
             case 'S':
                 return s(request, charset);
@@ -144,10 +149,14 @@ public class SearchCommandParser extends AbstractUidCommandParser {
 
     private int consumeAndCap(ImapRequestLineReader request) throws DecodingException {
         final char next = request.consume();
+        return cap(next);
+    }
+
+    private int cap(char next) {
         final int cap = next > 'Z' ? next ^ 32 : next;
         return cap;
     }
-
+    
     private SearchKey cc(ImapRequestLineReader request, final Charset charset) throws DecodingException {
         final SearchKey result;
         nextIsSpace(request);
@@ -545,8 +554,8 @@ public class SearchCommandParser extends AbstractUidCommandParser {
 
     private SearchKey recent(ImapRequestLineReader request) throws DecodingException {
         final SearchKey result;
-        nextIsE(request);
-        nextIsC(request);
+        //nextIsE(request);
+        //nextIsC(request);
         nextIsE(request);
         nextIsN(request);
         nextIsT(request);
@@ -887,6 +896,54 @@ public class SearchCommandParser extends AbstractUidCommandParser {
         }
     }
 
+    private List<SearchResultOption> parseOptions(ImapRequestLineReader reader) throws DecodingException {
+        List<SearchResultOption> options = new ArrayList<SearchResultOption>();
+        nextIs(reader, '(', '(');
+        reader.nextWordChar();
+        
+        int cap = consumeAndCap(reader);
+
+        while (cap != ')') {
+            switch (cap) {
+            case 'A':
+                nextIsL(reader);
+                nextIsL(reader);
+                options.add(SearchResultOption.ALL);
+
+            case 'C':
+                nextIsO(reader);
+                nextIsU(reader);
+                nextIsN(reader);
+                nextIsT(reader);
+                options.add(SearchResultOption.COUNT);
+                break;
+            case 'M':
+                final int c = consumeAndCap(reader);
+                switch (c) {
+                case 'A':
+                    nextIsX(reader);
+                    options.add(SearchResultOption.MAX);
+                    break;
+                case 'I':
+                    nextIsM(reader);
+                    options.add(SearchResultOption.MIN);
+                    break;
+                default:
+                    throw new DecodingException(HumanReadableText.ILLEGAL_ARGUMENTS, "Unknown search key");
+                }
+            default:
+                throw new DecodingException(HumanReadableText.ILLEGAL_ARGUMENTS, "Unknown search key");
+            }
+            reader.nextWordChar();
+            cap = consumeAndCap(reader);
+        }
+        // if the options are empty then we parsed RETURN () which is a shortcut for ALL.
+        // See http://www.faqs.org/rfcs/rfc4731.html 3.1
+        if (options.isEmpty()) {
+            options.add(SearchResultOption.ALL);
+        }
+        return options;
+    }
     /*
      * (non-Javadoc)
      * 
@@ -898,10 +955,45 @@ public class SearchCommandParser extends AbstractUidCommandParser {
      */
     protected ImapMessage decode(ImapCommand command, ImapRequestLineReader request, String tag, boolean useUids, ImapSession session) throws DecodingException {
         try {
+            SearchKey recent = null;
+            List<SearchResultOption> options = null;
+            int c = cap(request.nextWordChar());
+            if (c == 'R') {
+                // if we found a R its either RECENT or RETURN so consume it
+                request.consume();
+                
+                nextIsE(request);
+                c = consumeAndCap(request);
+
+                switch (c) {
+                case 'C':
+                    recent = recent(request);
+                    break;
+                case 'T': 
+                    nextIsU(request);
+                    nextIsR(request);
+                    nextIsN(request);
+                    options = parseOptions(request);
+                default:
+                    throw new DecodingException(HumanReadableText.ILLEGAL_ARGUMENTS, "Unknown search key");
+                }
+            }
+            
             // Parse the search term from the request
             final SearchKey key = decode(request);
-
-            final ImapMessage result = new SearchRequest(command, key, useUids, tag);
+            
+            final SearchKey finalKey;
+            if (recent != null) {
+                finalKey = SearchKey.buildAnd(Arrays.asList(recent, key));
+            } else {
+                finalKey = key;
+            }
+            
+            if (options == null) {
+                options = new ArrayList<SearchResultOption>();
+            }
+            
+            final ImapMessage result = new SearchRequest(command, new SearchOperation(finalKey, options), useUids, tag);
             return result;
         } catch (IllegalCharsetNameException e) {
             session.getLog().debug("Unable to decode request", e);
@@ -911,4 +1003,5 @@ public class SearchCommandParser extends AbstractUidCommandParser {
             return unsupportedCharset(tag, command);
         }
     }
+
 }

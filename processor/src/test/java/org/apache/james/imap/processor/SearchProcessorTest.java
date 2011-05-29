@@ -37,6 +37,8 @@ import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.api.message.IdRange;
 import org.apache.james.imap.api.message.request.DayMonthYear;
 import org.apache.james.imap.api.message.request.SearchKey;
+import org.apache.james.imap.api.message.request.SearchOperation;
+import org.apache.james.imap.api.message.request.SearchResultOption;
 import org.apache.james.imap.api.message.response.StatusResponse;
 import org.apache.james.imap.api.message.response.StatusResponseFactory;
 import org.apache.james.imap.api.process.ImapProcessor;
@@ -494,7 +496,7 @@ public class SearchProcessorTest {
             allowing(selectedMailbox).hasNewApplicableFlags(); will(returnValue(false));
           
         }});
-        SearchRequest message = new SearchRequest(command, key, false, TAG);
+        SearchRequest message = new SearchRequest(command, new SearchOperation(key, new ArrayList<SearchResultOption>()), false, TAG);
         processor.doProcess(message, session, TAG, command, responder);
     }
 
