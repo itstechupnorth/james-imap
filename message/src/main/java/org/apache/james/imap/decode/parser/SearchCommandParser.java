@@ -896,9 +896,12 @@ public class SearchCommandParser extends AbstractUidCommandParser {
         }
     }
 
+    /**
+     * Parse the {@link SearchResultOption}'s which are used for ESEARCH
+     */
     private List<SearchResultOption> parseOptions(ImapRequestLineReader reader) throws DecodingException {
         List<SearchResultOption> options = new ArrayList<SearchResultOption>();
-        nextIs(reader, '(', '(');
+        reader.consumeChar('(');
         reader.nextWordChar();
         
         int cap = consumeAndCap(reader);
@@ -909,7 +912,7 @@ public class SearchCommandParser extends AbstractUidCommandParser {
                 nextIsL(reader);
                 nextIsL(reader);
                 options.add(SearchResultOption.ALL);
-
+                break;
             case 'C':
                 nextIsO(reader);
                 nextIsU(reader);
@@ -925,12 +928,13 @@ public class SearchCommandParser extends AbstractUidCommandParser {
                     options.add(SearchResultOption.MAX);
                     break;
                 case 'I':
-                    nextIsM(reader);
+                    nextIsN(reader);
                     options.add(SearchResultOption.MIN);
                     break;
                 default:
                     throw new DecodingException(HumanReadableText.ILLEGAL_ARGUMENTS, "Unknown search key");
                 }
+                break;
             default:
                 throw new DecodingException(HumanReadableText.ILLEGAL_ARGUMENTS, "Unknown search key");
             }
@@ -973,7 +977,10 @@ public class SearchCommandParser extends AbstractUidCommandParser {
                     nextIsU(request);
                     nextIsR(request);
                     nextIsN(request);
+                    request.nextWordChar();
                     options = parseOptions(request);
+                    break;
+
                 default:
                     throw new DecodingException(HumanReadableText.ILLEGAL_ARGUMENTS, "Unknown search key");
                 }
