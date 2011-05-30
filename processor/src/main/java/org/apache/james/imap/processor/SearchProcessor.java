@@ -316,6 +316,6 @@ public class SearchProcessor extends AbstractMailboxProcessor<SearchRequest> imp
      * @see org.apache.james.imap.processor.CapabilityImplementingProcessor#getImplementedCapabilities(org.apache.james.imap.api.process.ImapSession)
      */
     public List<String> getImplementedCapabilities(ImapSession session) {
-        return Arrays.asList("WITHIN", "SEARCHRES");
+        return Arrays.asList("WITHIN", "ESEARCH");
     }
 }
