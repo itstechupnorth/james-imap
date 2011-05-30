@@ -386,7 +386,7 @@ public class SearchCommandParserSearchKeyTest {
                 new ByteArrayInputStream(input.getBytes("US-ASCII")),
                 new ByteArrayOutputStream());
 
-        assertEquals(key, parser.searchKey(reader, null, false));
+        assertEquals(key, parser.searchKey(null, reader, null, false));
     }
 
     @Test
@@ -740,7 +740,7 @@ public class SearchCommandParserSearchKeyTest {
                 new ByteArrayOutputStream());
 
         try {
-            parser.searchKey(reader, null, false);
+            parser.searchKey(null, reader, null, false);
             fail("Expected protocol exception to be throw since input is invalid");
         } catch (DecodingException e) {
             // expected

@@ -227,7 +227,7 @@ public class FetchCommandParser extends AbstractUidCommandParser {
      * boolean, org.apache.james.imap.api.process.ImapSession)
      */
     protected ImapMessage decode(ImapCommand command, ImapRequestLineReader request, String tag, boolean useUids, ImapSession session) throws DecodingException {
-        IdRange[] idSet = request.parseIdRange();
+        IdRange[] idSet = request.parseIdRange(session);
         FetchData fetch = fetchRequest(request);
         request.eol();
 

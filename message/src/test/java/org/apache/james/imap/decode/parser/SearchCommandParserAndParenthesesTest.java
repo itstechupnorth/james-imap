@@ -196,7 +196,7 @@ public class SearchCommandParserAndParenthesesTest {
                 new ByteArrayInputStream(input.getBytes("US-ASCII")),
                 new ByteArrayOutputStream());
 
-        final SearchKey result = parser.decode(reader);
+        final SearchKey result = parser.decode(null, reader);
         assertEquals(in.key, result);
     }
 

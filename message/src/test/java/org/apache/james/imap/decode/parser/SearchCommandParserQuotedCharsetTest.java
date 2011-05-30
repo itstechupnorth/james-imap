@@ -164,7 +164,7 @@ public class SearchCommandParserQuotedCharsetTest {
                         .getBytes("US-ASCII")),
                         BYTES_QUOTED_UTF8_LENGTHY_NON_ASCII_SEARCH_TERM)),
                 new ByteArrayOutputStream());
-        final SearchKey searchKey = parser.searchKey(reader, null, true);
+        final SearchKey searchKey = parser.searchKey(null, reader, null, true);
         assertEquals(key, searchKey);
     }
 
@@ -176,7 +176,7 @@ public class SearchCommandParserQuotedCharsetTest {
                         .getBytes("US-ASCII")),
                         BYTES_QUOTED_UTF8_NON_ASCII_SEARCH_TERM)),
                 new ByteArrayOutputStream());
-        final SearchKey searchKey = parser.searchKey(reader, null, true);
+        final SearchKey searchKey = parser.searchKey(null, reader, null, true);
         assertEquals(key, searchKey);
     }
 
@@ -287,7 +287,7 @@ public class SearchCommandParserQuotedCharsetTest {
                 new ByteArrayInputStream(add(add(CHARSET, term),
                         BYTES_UTF8_NON_ASCII_SEARCH_TERM)),
                 new ByteArrayOutputStream());
-        final SearchKey searchKey = parser.searchKey(reader, null, true);
+        final SearchKey searchKey = parser.searchKey(null, reader, null, true);
         assertEquals(key, searchKey);
     }
 
@@ -297,7 +297,7 @@ public class SearchCommandParserQuotedCharsetTest {
                 new ByteArrayInputStream(input.getBytes(charset)),
                 new ByteArrayOutputStream());
 
-        final SearchKey searchKey = parser.searchKey(reader, null, isFirst);
+        final SearchKey searchKey = parser.searchKey(null, reader, null, isFirst);
         assertEquals(key, searchKey);
     }
 

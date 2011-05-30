@@ -42,6 +42,8 @@ import org.apache.james.imap.api.ImapConstants;
 import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.api.message.IdRange;
 import org.apache.james.imap.api.message.request.DayMonthYear;
+import org.apache.james.imap.api.process.ImapSession;
+import org.apache.james.imap.api.process.SearchResUtil;
 
 /**
  * Wraps the client input reader with a bunch of convenience methods, allowing
@@ -574,10 +576,25 @@ public abstract class ImapRequestLineReader {
     }
 
     /**
-     * Reads a "message set" argument, and parses into an IdSet. Currently only
-     * supports a single range of values.
+     * Reads a "message set" argument, and parses into an IdSet.
      */
     public IdRange[] parseIdRange() throws DecodingException {
+        return parseIdRange(null);
+    }
+
+    /**
+     * Reads a "message set" argument, and parses into an IdSet. This also support the use of $ as sequence-set as stated in SEARCHRES RFC5182 
+     */
+    public IdRange[] parseIdRange(ImapSession session) throws DecodingException {
+        if (session != null) {
+            char c = nextWordChar();
+            // Special handling for SEARCHRES extension. See RFC5182
+            if (c == '$') {
+                consume();
+                return SearchResUtil.getSavedSequenceSet(session);
+            }
+        }
+        
         CharacterValidator validator = new MessageSetCharValidator();
         // Don't fail to parse id ranges which are enclosed by "(..)"
         // See IMAP-283
@@ -607,6 +624,7 @@ public abstract class ImapRequestLineReader {
         return (IdRange[]) merged.toArray(new IdRange[merged.size()]);
     }
 
+    
     /**
      * Parse a range which use a ":" as delimiter
      * 

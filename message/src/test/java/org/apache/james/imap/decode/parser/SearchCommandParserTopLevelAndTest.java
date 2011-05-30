@@ -198,6 +198,6 @@ public class SearchCommandParserTopLevelAndTest {
                 new ByteArrayInputStream(input.getBytes("US-ASCII")),
                 new ByteArrayOutputStream());
 
-        assertEquals(input, key, parser.decode(reader));
+        assertEquals(input, key, parser.decode(null, reader));
     }
 }

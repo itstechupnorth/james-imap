@@ -19,7 +19,7 @@
 package org.apache.james.imap.api.message.request;
 
 /**
- * Represent ESEARCH result options. See RFC4731
+ * Represent ESEARCH result options. See RFC4731 and RFC5182
  *
  */
 public enum SearchResultOption {
@@ -41,5 +41,12 @@ public enum SearchResultOption {
     /**
      * Return the count of matched messages
      */
-    COUNT
+    COUNT,
+    
+    /**
+     * Save the last ESEARCH returned sequence-set's. 
+     * 
+     * See RFC5182 2.4. Interaction with ESEARCH Extension
+     */
+    SAVE
 }

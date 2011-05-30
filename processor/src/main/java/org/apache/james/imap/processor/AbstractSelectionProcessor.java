@@ -33,6 +33,7 @@ import org.apache.james.imap.api.message.response.StatusResponse.ResponseCode;
 import org.apache.james.imap.api.message.response.StatusResponseFactory;
 import org.apache.james.imap.api.process.ImapProcessor;
 import org.apache.james.imap.api.process.ImapSession;
+import org.apache.james.imap.api.process.SearchResUtil;
 import org.apache.james.imap.api.process.SelectedMailbox;
 import org.apache.james.imap.message.request.AbstractMailboxSelectionRequest;
 import org.apache.james.imap.message.response.ExistsResponse;
@@ -84,6 +85,11 @@ abstract class AbstractSelectionProcessor<M extends AbstractMailboxSelectionRequ
             final MailboxPath fullMailboxPath = buildFullPath(session, mailboxName);
             final MessageManager.MetaData metaData = selectMailbox(fullMailboxPath, session);
             respond(tag, command, session, metaData, responder);
+            
+            // Reset the saved sequence-set after successful SELECT / EXAMINE
+            // See RFC 5812 2.1. Normative Description of the SEARCHRES Extension
+            SearchResUtil.resetSavedSequenceSet(session);
+            
         } catch (MailboxNotFoundException e) {
             session.getLog().debug("Select failed", e);
             responder.respond(statusResponseFactory.taggedNo(tag, command, HumanReadableText.FAILURE_NO_SUCH_MAILBOX));

@@ -49,7 +49,7 @@ public class StoreCommandParser extends AbstractUidCommandParser {
      * boolean, org.apache.james.imap.api.process.ImapSession)
      */
     protected ImapMessage decode(ImapCommand command, ImapRequestLineReader request, String tag, boolean useUids, ImapSession session) throws DecodingException {
-        final IdRange[] idSet = request.parseIdRange();
+        final IdRange[] idSet = request.parseIdRange(session);
         final Boolean sign;
         boolean silent = false;
 

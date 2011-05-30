@@ -42,6 +42,7 @@ import org.apache.james.imap.api.message.response.ImapResponseMessage;
 import org.apache.james.imap.api.message.response.StatusResponseFactory;
 import org.apache.james.imap.api.process.ImapProcessor;
 import org.apache.james.imap.api.process.ImapSession;
+import org.apache.james.imap.api.process.SearchResUtil;
 import org.apache.james.imap.api.process.SelectedMailbox;
 import org.apache.james.imap.message.request.SearchRequest;
 import org.apache.james.imap.message.response.ESearchResponse;
@@ -73,10 +74,13 @@ public class SearchProcessor extends AbstractMailboxProcessor<SearchRequest> imp
      * org.apache.james.imap.api.process.ImapProcessor.Responder)
      */
     protected void doProcess(SearchRequest request, ImapSession session, String tag, ImapCommand command, Responder responder) {
+        final SearchOperation operation = request.getSearchOperation();
+        final SearchKey searchKey = operation.getSearchKey();
+        final boolean useUids = request.isUseUids();
+        List<SearchResultOption> resultOptions = operation.getResultOptions();
+
         try {
-            final SearchOperation operation = request.getSearchOperation();
-            final SearchKey searchKey = operation.getSearchKey();
-            final boolean useUids = request.isUseUids();
+
             final MessageManager mailbox = getSelectedMailbox(session);
 
             final SearchQuery query = toQuery(searchKey, session);
@@ -84,20 +88,11 @@ public class SearchProcessor extends AbstractMailboxProcessor<SearchRequest> imp
             final Collection<Long> results = findIds(useUids, session, mailbox, query);
             final long[] ids = toArray(results);
 
-            List<SearchResultOption> resultOptions = operation.getResultOptions();
             final ImapResponseMessage response;
             if (resultOptions == null || resultOptions.isEmpty()) {
                 response = new SearchResponse(ids);
             } else {
-                long min = -1;
-                long max = -1;
-                long count = ids.length;
                 IdRange[] idRanges;
-
-                if (ids.length > 0) {
-                    min = ids[0];
-                    max = ids[ids.length -1];
-                } 
                 List<Long> idList = new ArrayList<Long>(ids.length);
                 for ( int i = 0; i < ids.length; i++) {
                     idList.add(ids[i]);
@@ -108,10 +103,53 @@ public class SearchProcessor extends AbstractMailboxProcessor<SearchRequest> imp
                     MessageRange range = ranges.get(i);
                     idRanges[i] = new IdRange(range.getUidFrom(), range.getUidTo());
                 }
+                
+                boolean esearch = false;
+                for (int i = 0; i < resultOptions.size(); i++) {
+                    if (SearchResultOption.SAVE != resultOptions.get(i)) {
+                        esearch = true;
+                        break;
+                    }
+                }
+                
+                if (esearch) {
+                    long min = -1;
+                    long max = -1;
+                    long count = ids.length;
 
-                response = new ESearchResponse(min, max, count, idRanges, tag, useUids, resultOptions);
+                    if (ids.length > 0) {
+                        min = ids[0];
+                        max = ids[ids.length -1];
+                    } 
+                   
+                    
+                    // Save the sequence-set for later usage. This is part of SEARCHRES 
+                    if (resultOptions.contains(SearchResultOption.SAVE)) {
+                        if (resultOptions.contains(SearchResultOption.ALL) || resultOptions.contains(SearchResultOption.COUNT)) {
+                            // if the options contain ALL or COUNT we need to save the complete sequence-set
+                            SearchResUtil.saveSequenceSet(session, idRanges);
+                        } else {
+                            List<IdRange> savedRanges = new ArrayList<IdRange>();
+                            if (resultOptions.contains(SearchResultOption.MIN)) {
+                                // Store the MIN
+                                savedRanges.add(new IdRange(min));  
+                            } 
+                            if (resultOptions.contains(SearchResultOption.MAX)) {
+                                // Store the MAX
+                                savedRanges.add(new IdRange(max));
+                            }
+                            SearchResUtil.saveSequenceSet(session, savedRanges.toArray(new IdRange[0]));
+                        }
+                    }
+                    response = new ESearchResponse(min, max, count, idRanges, tag, useUids, resultOptions);
+                } else {
+                    // Just save the returned sequence-set as this is not SEARCHRES + ESEARCH
+                    SearchResUtil.saveSequenceSet(session, idRanges);
+                    response = new SearchResponse(ids);
 
+                }
             }
+
             responder.respond(response);
 
             boolean omitExpunged = (!useUids);
@@ -123,6 +161,13 @@ public class SearchProcessor extends AbstractMailboxProcessor<SearchRequest> imp
         } catch (MailboxException e) {
             session.getLog().debug("Search failed", e);
             no(command, tag, responder, HumanReadableText.SEARCH_FAILED);
+            
+            if (resultOptions.contains(SearchResultOption.SAVE)) {
+                // Reset the saved sequence-set on a BAD response if the SAVE option was used.
+                //
+                // See RFC5182 2.1.Normative Description of the SEARCHRES Extension
+                SearchResUtil.resetSavedSequenceSet(session);
+            }
         }
     }
 
@@ -316,6 +361,6 @@ public class SearchProcessor extends AbstractMailboxProcessor<SearchRequest> imp
      * @see org.apache.james.imap.processor.CapabilityImplementingProcessor#getImplementedCapabilities(org.apache.james.imap.api.process.ImapSession)
      */
     public List<String> getImplementedCapabilities(ImapSession session) {
-        return Arrays.asList("WITHIN", "ESEARCH");
+        return Arrays.asList("WITHIN", "ESEARCH", "SEARCHRES");
     }
 }

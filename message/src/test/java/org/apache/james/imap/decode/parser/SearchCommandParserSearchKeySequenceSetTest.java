@@ -107,7 +107,7 @@ public class SearchCommandParserSearchKeySequenceSetTest {
                 new ByteArrayInputStream(input.getBytes("US-ASCII")),
                 new ByteArrayOutputStream());
 
-        final SearchKey searchKey = parser.searchKey(reader, null, false);
+        final SearchKey searchKey = parser.searchKey(null, reader, null, false);
         assertEquals(key, searchKey);
     }
 }

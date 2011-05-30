@@ -180,7 +180,7 @@ public class SearchCommandParserOrTest {
                 new ByteArrayInputStream(input.getBytes("US-ASCII")),
                 new ByteArrayOutputStream());
 
-        assertEquals(key, parser.searchKey(reader, null, false));
+        assertEquals(key, parser.searchKey(null, reader, null, false));
     }
 
     public class Input {

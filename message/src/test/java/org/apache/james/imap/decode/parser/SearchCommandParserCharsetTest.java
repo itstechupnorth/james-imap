@@ -186,7 +186,7 @@ public class SearchCommandParserCharsetTest {
                 new ByteArrayInputStream(NioUtils.add(NioUtils.add(CHARSET,
                         term), BYTES_UTF8_NON_ASCII_SEARCH_TERM)),
                 new ByteArrayOutputStream());
-        final SearchKey searchKey = parser.searchKey(reader, null, true);
+        final SearchKey searchKey = parser.searchKey(null, reader, null, true);
         assertEquals(key, searchKey);
     }
 
@@ -196,7 +196,7 @@ public class SearchCommandParserCharsetTest {
                 new ByteArrayInputStream(input.getBytes(charset)),
                 new ByteArrayOutputStream());
 
-        final SearchKey searchKey = parser.searchKey(reader, null, isFirst);
+        final SearchKey searchKey = parser.searchKey(null, reader, null, isFirst);
         assertEquals(key, searchKey);
     }
 
