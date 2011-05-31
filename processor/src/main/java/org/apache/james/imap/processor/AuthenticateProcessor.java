@@ -32,9 +32,15 @@ import org.apache.james.imap.api.process.ImapLineHandler;
 import org.apache.james.imap.api.process.ImapProcessor;
 import org.apache.james.imap.api.process.ImapSession;
 import org.apache.james.imap.message.request.AuthenticateRequest;
+import org.apache.james.imap.message.request.IRAuthenticateRequest;
 import org.apache.james.imap.message.response.AuthenticateResponse;
 import org.apache.james.mailbox.MailboxManager;
 
+/**
+ * Processor which handles the AUTHENTICATE command. Only authtype of PLAIN is supported ATM.
+ * 
+ *
+ */
 public class AuthenticateProcessor extends AbstractAuthProcessor<AuthenticateRequest> implements CapabilityImplementingProcessor{
     private final static String PLAIN = "PLAIN";
     
@@ -59,54 +65,25 @@ public class AuthenticateProcessor extends AbstractAuthProcessor<AuthenticateReq
             if (session.isPlainAuthDisallowed() && session.isTLSActive() == false) {
                 no(command, tag, responder, HumanReadableText.DISABLED_LOGIN);
             } else {
-                responder.respond(new AuthenticateResponse());
-                session.pushLineHandler(new ImapLineHandler() {
+                if (request instanceof IRAuthenticateRequest) {
+                    IRAuthenticateRequest irRequest = (IRAuthenticateRequest) request;
+                    doPlainAuth(irRequest.getInitialClientResponse(), session, tag, command, responder);
+                } else {
+                    responder.respond(new AuthenticateResponse());
+                    session.pushLineHandler(new ImapLineHandler() {
                 
-                    public void onLine(ImapSession session, byte[] data) {
-                        String user = null, pass = null;
-                        try {
-                            // strip of the newline
-                            String userpass = new String(data, 0, data.length - 2, Charset.forName("US-ASCII"));
+                        public void onLine(ImapSession session, byte[] data) {
+                            // cut of the CRLF
+                            String initialClientResponse = new String(data, 0, data.length - 2, Charset.forName("US-ASCII"));
 
-                            userpass = new String(Base64.decodeBase64(userpass));
-                            StringTokenizer authTokenizer = new StringTokenizer(userpass, "\0");
-                            String authorize_id = authTokenizer.nextToken();  // Authorization Identity
-                            user = authTokenizer.nextToken();                 // Authentication Identity
-                            try {
-                                pass = authTokenizer.nextToken();             // Password
-                            } catch (java.util.NoSuchElementException _) {
-                                // If we got here, this is what happened.  RFC 2595
-                                // says that "the client may leave the authorization
-                                // identity empty to indicate that it is the same as
-                                // the authentication identity."  As noted above,
-                                // that would be represented as a decoded string of
-                                // the form: "\0authenticate-id\0password".  The
-                                // first call to nextToken will skip the empty
-                                // authorize-id, and give us the authenticate-id,
-                                // which we would store as the authorize-id.  The
-                                // second call will give us the password, which we
-                                // think is the authenticate-id (user).  Then when
-                                // we ask for the password, there are no more
-                                // elements, leading to the exception we just
-                                // caught.  So we need to move the user to the
-                                // password, and the authorize_id to the user.
-                                pass = user;
-                                user = authorize_id;
-                            }
-
-                            authTokenizer = null;
-                        } catch (Exception e) {
-                            // Ignored - this exception in parsing will be dealt
-                            // with in the if clause below
-                            }
-                        // Authenticate user
-                        doAuth(user, pass, session, tag, command, responder, HumanReadableText.AUTHENTICATION_FAILED);
-
-                        // remove the handler now
-                        session.popLineHandler();
+                            doPlainAuth(initialClientResponse, session, tag, command, responder);
+                            
+                            // remove the handler now
+                            session.popLineHandler();
                     
-                    }
-                });
+                        }
+                    });
+                }
             }
         } else {
             session.getLog().info("Unsupported authentication mechanism '" + authType + "'");
@@ -114,6 +91,55 @@ public class AuthenticateProcessor extends AbstractAuthProcessor<AuthenticateReq
         }
     }
 
+    /**
+     * Parse the initialClientResponse and do a PLAIN AUTH with it
+     * 
+     * @param initialClientResponse
+     * @param session
+     * @param tag
+     * @param command
+     * @param responder
+     */
+    protected void doPlainAuth(String initialClientResponse, ImapSession session, String tag, ImapCommand command, Responder responder) {
+        String pass = null;
+        String user = null;
+        try {
+
+            String userpass = new String(Base64.decodeBase64(initialClientResponse));
+            StringTokenizer authTokenizer = new StringTokenizer(userpass, "\0");
+            String authorize_id = authTokenizer.nextToken();  // Authorization Identity
+            user = authTokenizer.nextToken();                 // Authentication Identity
+            try {
+                pass = authTokenizer.nextToken();             // Password
+            } catch (java.util.NoSuchElementException _) {
+                // If we got here, this is what happened.  RFC 2595
+                // says that "the client may leave the authorization
+                // identity empty to indicate that it is the same as
+                // the authentication identity."  As noted above,
+                // that would be represented as a decoded string of
+                // the form: "\0authenticate-id\0password".  The
+                // first call to nextToken will skip the empty
+                // authorize-id, and give us the authenticate-id,
+                // which we would store as the authorize-id.  The
+                // second call will give us the password, which we
+                // think is the authenticate-id (user).  Then when
+                // we ask for the password, there are no more
+                // elements, leading to the exception we just
+                // caught.  So we need to move the user to the
+                // password, and the authorize_id to the user.
+                pass = user;
+                user = authorize_id;
+            }   
+
+            authTokenizer = null;
+        } catch (Exception e) {
+            // Ignored - this exception in parsing will be dealt
+            // with in the if clause below
+        }
+        // Authenticate user
+        doAuth(user, pass, session, tag, command, responder, HumanReadableText.AUTHENTICATION_FAILED);
+    }
+    
     /*
      * (non-Javadoc)
      * @see org.apache.james.imap.processor.CapabilityImplementingProcessor#getImplementedCapabilities(org.apache.james.imap.api.process.ImapSession)
@@ -125,6 +151,8 @@ public class AuthenticateProcessor extends AbstractAuthProcessor<AuthenticateReq
         if (session.isPlainAuthDisallowed()  == false || session.isTLSActive()) {
             caps.add("AUTH=PLAIN");
         }
+        // Support for SASL-IR. See RFC4959
+        caps.add("SASL-IR");
         return caps;
     }
 

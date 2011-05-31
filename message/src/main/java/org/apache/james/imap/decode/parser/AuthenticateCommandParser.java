@@ -26,9 +26,10 @@ import org.apache.james.imap.decode.ImapRequestLineReader;
 import org.apache.james.imap.decode.DecodingException;
 import org.apache.james.imap.decode.base.AbstractImapCommandParser;
 import org.apache.james.imap.message.request.AuthenticateRequest;
+import org.apache.james.imap.message.request.IRAuthenticateRequest;
 
 /**
- * Parses AUTHENTICATE commands
+ * Parses AUTHENTICATE commands and also support SASL-IR (RFC4959)
  */
 public class AuthenticateCommandParser extends AbstractImapCommandParser {
 
@@ -46,9 +47,19 @@ public class AuthenticateCommandParser extends AbstractImapCommandParser {
      * org.apache.james.imap.api.process.ImapSession)
      */
     protected ImapMessage decode(ImapCommand command, ImapRequestLineReader request, String tag, ImapSession session) throws DecodingException {
+        ImapMessage result;
         String authType = request.astring();
-        request.eol();
-        final ImapMessage result = new AuthenticateRequest(command, authType, tag);
+        try {
+            result = new AuthenticateRequest(command, authType, tag);
+
+            request.eol();
+        } catch (DecodingException e) {
+            // Ok this means we have some SASL-IR request to parse
+            String initialClientResponse = request.astring();
+            result = new IRAuthenticateRequest(command, authType, tag, initialClientResponse);
+
+            request.eol();
+        }
         return result;
     }
 
