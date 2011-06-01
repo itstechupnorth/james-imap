@@ -240,7 +240,13 @@ public class SearchProcessor extends AbstractMailboxProcessor<SearchRequest> imp
         case SearchKey.TYPE_FROM:
             return SearchQuery.address(AddressType.From, key.getValue());
         case SearchKey.TYPE_HEADER:
-            return SearchQuery.headerContains(key.getName(), key.getValue());
+            String value = key.getValue();
+            // Check if header exists if the value is empty. See IMAP-311
+            if (value == null || value.length() == 0) {
+                return SearchQuery.headerExists(key.getName());
+            } else {
+                return SearchQuery.headerContains(key.getName(), value);
+            }
         case SearchKey.TYPE_KEYWORD:
             return SearchQuery.flagIsSet(key.getValue());
         case SearchKey.TYPE_LARGER:
