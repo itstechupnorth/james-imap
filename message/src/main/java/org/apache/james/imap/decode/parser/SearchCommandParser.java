@@ -999,16 +999,23 @@ public class SearchCommandParser extends AbstractUidCommandParser {
                     throw new DecodingException(HumanReadableText.ILLEGAL_ARGUMENTS, "Unknown search key");
                 }
             }
-            
-            // Parse the search term from the request
-            final SearchKey key = decode(session, request);
-            
             final SearchKey finalKey;
+
             if (recent != null) {
-                finalKey = SearchKey.buildAnd(Arrays.asList(recent, key));
+                if (request.nextChar() != ' ') {
+                    request.eol();
+                    finalKey = recent;
+                } else {
+                    // Parse the search term from the request
+                    final SearchKey key = decode(session, request);
+                    finalKey = SearchKey.buildAnd(Arrays.asList(recent, key));
+                }
             } else {
-                finalKey = key;
+                // Parse the search term from the request
+                finalKey = decode(session, request);
             }
+           
+            
             
             if (options == null) {
                 options = new ArrayList<SearchResultOption>();
