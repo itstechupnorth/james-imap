@@ -85,6 +85,10 @@ public interface ImapConstants {
 
     public static final String SUPPORTS_RFC3348 = "CHILDREN";
 
+    public static final String UTF8 = "UTF-8";
+    
+    public static final String SUPPORTS_I18NLEVEL_1 = "I18NLEVEL=1";
+
     public static final String SUPPORTS_NAMESPACES = "NAMESPACE";
 
     public static final String SUPPORTS_STARTTLS = "STARTTLS";

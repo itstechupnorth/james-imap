@@ -22,11 +22,14 @@ package org.apache.james.imap.processor;
 import static org.apache.james.imap.api.ImapConstants.SUPPORTS_LITERAL_PLUS;
 import static org.apache.james.imap.api.ImapConstants.SUPPORTS_RFC3348;
 import static org.apache.james.imap.api.ImapConstants.VERSION;
+import static org.apache.james.imap.api.ImapConstants.UTF8;
+import static org.apache.james.imap.api.ImapConstants.SUPPORTS_I18NLEVEL_1;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.james.imap.api.ImapCommand;
+import org.apache.james.imap.api.display.CharsetUtil;
 import org.apache.james.imap.api.message.response.ImapResponseMessage;
 import org.apache.james.imap.api.message.response.StatusResponseFactory;
 import org.apache.james.imap.api.process.ImapProcessor;
@@ -98,6 +101,11 @@ public class CapabilityProcessor extends AbstractMailboxProcessor<CapabilityRequ
         capabilities.add(VERSION);
         capabilities.add(SUPPORTS_LITERAL_PLUS);
         capabilities.add(SUPPORTS_RFC3348);
+        
+        // UTF-8 is needed for I18NLEVEL_1
+        if (CharsetUtil.getAvailableCharsets().contains(UTF8)) {
+            capabilities.add(SUPPORTS_I18NLEVEL_1);
+        }
         return capabilities;
     }
 

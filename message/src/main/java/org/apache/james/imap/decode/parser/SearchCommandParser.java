@@ -23,15 +23,12 @@ import java.nio.charset.IllegalCharsetNameException;
 import java.nio.charset.UnsupportedCharsetException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 
 import org.apache.james.imap.api.ImapCommand;
 import org.apache.james.imap.api.ImapConstants;
 import org.apache.james.imap.api.ImapMessage;
+import org.apache.james.imap.api.display.CharsetUtil;
 import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.api.message.IdRange;
 import org.apache.james.imap.api.message.request.DayMonthYear;
@@ -50,9 +47,6 @@ import org.apache.james.imap.message.request.SearchRequest;
  * Parse SEARCH commands
  */
 public class SearchCommandParser extends AbstractUidCommandParser {
-
-    /** Lazy loaded */
-    private Collection<String> charsetNames;
 
     public SearchCommandParser() {
         super(ImapCommand.selectedStateCommand(ImapConstants.SEARCH_COMMAND_NAME));
@@ -885,22 +879,10 @@ public class SearchCommandParser extends AbstractUidCommandParser {
     }
 
     private ImapMessage unsupportedCharset(final String tag, final ImapCommand command) {
-        loadCharsetNames();
         final StatusResponseFactory factory = getStatusResponseFactory();
-        final ResponseCode badCharset = StatusResponse.ResponseCode.badCharset(charsetNames);
+        final ResponseCode badCharset = StatusResponse.ResponseCode.badCharset(CharsetUtil.getAvailableCharsetNames());
         final StatusResponse result = factory.taggedNo(tag, command, HumanReadableText.BAD_CHARSET, badCharset);
         return result;
-    }
-
-    private synchronized void loadCharsetNames() {
-        if (charsetNames == null) {
-            charsetNames = new HashSet<String>();
-            for (final Iterator<Charset> it = Charset.availableCharsets().values().iterator(); it.hasNext();) {
-                final Charset charset = it.next();
-                final Set<String> aliases = charset.aliases();
-                charsetNames.addAll(aliases);
-            }
-        }
     }
 
     /**
