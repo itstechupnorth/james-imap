@@ -74,6 +74,9 @@ public class DefaultProcessorChain {
         final UnselectProcessor unselectProcessor = new UnselectProcessor(startTLSProcessor, mailboxManager, statusResponseFactory);
 
         final CompressProcessor compressProcessor = new CompressProcessor(unselectProcessor, statusResponseFactory);
+        final EnableProcessor enableProcessor = new EnableProcessor(compressProcessor, mailboxManager, statusResponseFactory);
+        
+        
         capabilityProcessor.addProcessor(startTLSProcessor);
         capabilityProcessor.addProcessor(idleProcessor);
         capabilityProcessor.addProcessor(namespaceProcessor);
@@ -89,7 +92,10 @@ public class DefaultProcessorChain {
         // add to announnce AUTH=PLAIN
         capabilityProcessor.addProcessor(authenticateProcessor);
 
-        return compressProcessor;
+        // add to announnce ENABLE
+        capabilityProcessor.addProcessor(enableProcessor);
+        
+        return enableProcessor;
 
     }
 

@@ -97,6 +97,9 @@ public class ImapParserFactory implements ImapCommandParserFactory {
 
         // RFC4978
         _imapCommands.put(ImapConstants.COMPRESS_COMMAND_NAME, CompressCommandParser.class);
+        
+        _imapCommands.put(ImapConstants.ENABLE_COMMAND_NAME, EnableCommandParser.class);
+
 
     }
 

@@ -30,9 +30,9 @@ import org.apache.james.imap.decode.ImapRequestLineReader;
 import org.apache.james.imap.decode.base.AbstractImapCommandParser;
 import org.apache.james.imap.message.request.EnableRequest;
 
-public class EnableParser extends AbstractImapCommandParser {
+public class EnableCommandParser extends AbstractImapCommandParser {
     
-    public EnableParser() {
+    public EnableCommandParser() {
         super(ImapCommand.authenticatedStateCommand(ImapConstants.ENABLE_COMMAND_NAME));
     }
 
