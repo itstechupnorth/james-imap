@@ -22,8 +22,19 @@ import java.util.List;
 
 import org.apache.james.imap.api.process.ImapSession;
 
+/**
+ * {@link CapabilityImplementingProcessor} which allows to ENABLE one ore more Capabilities
+ */
 public interface PermitEnableCapabilityProcessor extends CapabilityImplementingProcessor{
 
+    /**
+     * Return the capabilities which supports to get ENABLED.
+     * 
+     * Be sure that these are also returned by {@link #getImplementedCapabilities(ImapSession)}
+     * 
+     * @param session
+     * @return permitCaps
+     */
     public List<String> getPermitEnableCapabilities(ImapSession session);
 
 }
