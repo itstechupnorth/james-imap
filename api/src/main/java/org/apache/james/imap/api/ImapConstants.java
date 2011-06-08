@@ -97,6 +97,8 @@ public interface ImapConstants {
 
     public static final String SUPPORTS_XLIST = "XLIST";
 
+    public static final String SUPPORTS_ENABLE = "ENABLE";
+    
     public static final String INBOX_NAME = "INBOX";
 
     public static final String MIME_TYPE_TEXT = "TEXT";
@@ -202,6 +204,8 @@ public interface ImapConstants {
     public static final String AUTHENTICATE_COMMAND_NAME = "AUTHENTICATE";
 
     public static final String APPEND_COMMAND_NAME = "APPEND";
+    
+    public static final String ENABLE_COMMAND_NAME = "ENABLE";
 
     public static final String LIST_RESPONSE_NAME = "LIST";
 
