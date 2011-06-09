@@ -103,7 +103,7 @@ public class CapabilityProcessor extends AbstractMailboxProcessor<CapabilityRequ
         capabilities.add(SUPPORTS_RFC3348);
         
         // UTF-8 is needed for I18NLEVEL_1
-        if (CharsetUtil.getAvailableCharsets().contains(UTF8)) {
+        if (CharsetUtil.getAvailableCharsetNames().contains(UTF8)) {
             capabilities.add(SUPPORTS_I18NLEVEL_1);
         }
         return capabilities;
