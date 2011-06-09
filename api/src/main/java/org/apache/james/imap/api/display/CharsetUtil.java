@@ -43,6 +43,7 @@ public class CharsetUtil {
         for (final Iterator<Charset> it = Charset.availableCharsets().values().iterator(); it.hasNext();) {
             final Charset charset = it.next();
             final Set<String> aliases = charset.aliases();
+            cNames.add(charset.name());
             cNames.addAll(aliases);
             sets.add(charset);
 
