@@ -22,8 +22,6 @@ package org.apache.james.imap.processor;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.mail.Flags;
-
 import org.apache.james.imap.api.ImapCommand;
 import org.apache.james.imap.api.ImapSessionUtils;
 import org.apache.james.imap.api.display.HumanReadableText;
@@ -85,7 +83,10 @@ public class CopyProcessor extends AbstractMailboxProcessor<CopyRequest> {
                             // done.
                             // See RFC 3501 6.4.7. COPY Command
                             // See IMAP-287
-                            mailbox.setFlags(new Flags(Flags.Flag.RECENT), true, false, mr, mailboxSession);
+                            //
+                            // Disable this as this is now done directly in the scope of the copy operation.
+                            // See MAILBOX-85
+                            //mailbox.setFlags(new Flags(Flags.Flag.RECENT), true, false, mr, mailboxSession);
                             resultRanges.add(new IdRange(mr.getUidFrom(), mr.getUidTo()));
                         }
                     }
