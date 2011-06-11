@@ -242,7 +242,7 @@ public class MailboxEventAnalyserTest {
         MailboxEventAnalyser analyser = new MailboxEventAnalyser(imapsession, mailboxPath, new Flags());
         
         final FakeMailboxListenerFlagsUpdate update = new FakeMailboxListenerFlagsUpdate(
-                mSession,  Arrays.asList(90L),  Arrays.asList(new UpdatedFlags(90, new Flags(), new Flags())), mailboxPath);
+                mSession,  Arrays.asList(90L),  Arrays.asList(new UpdatedFlags(90, -1, new Flags(), new Flags())), mailboxPath);
         analyser.event(update);
         assertNotNull(analyser.flagUpdateUids());
         assertFalse(analyser.flagUpdateUids().iterator().hasNext());
@@ -259,7 +259,7 @@ public class MailboxEventAnalyserTest {
         
         
         final FakeMailboxListenerFlagsUpdate update = new FakeMailboxListenerFlagsUpdate(
-                mSession, Arrays.asList(uid), Arrays.asList(new UpdatedFlags(uid, new Flags(), new Flags(Flags.Flag.ANSWERED))), mailboxPath);
+                mSession, Arrays.asList(uid), Arrays.asList(new UpdatedFlags(uid, -1, new Flags(), new Flags(Flags.Flag.ANSWERED))), mailboxPath);
         analyser.event(update);
         final Iterator<Long> iterator = analyser.flagUpdateUids().iterator();
         assertNotNull(iterator);
@@ -276,7 +276,7 @@ public class MailboxEventAnalyserTest {
         MailboxEventAnalyser analyser = new MailboxEventAnalyser(imapsession, mailboxPath, new Flags());
         
         final FakeMailboxListenerFlagsUpdate update = new FakeMailboxListenerFlagsUpdate(
-                mSession, Arrays.asList(uid), Arrays.asList(new UpdatedFlags(uid, new Flags(), new Flags(Flags.Flag.ANSWERED))), mailboxPath);
+                mSession, Arrays.asList(uid), Arrays.asList(new UpdatedFlags(uid, -1, new Flags(), new Flags(Flags.Flag.ANSWERED))), mailboxPath);
         analyser.event(update);
         analyser.event(update);
         analyser.reset();
@@ -294,7 +294,7 @@ public class MailboxEventAnalyserTest {
         MailboxEventAnalyser analyser = new MailboxEventAnalyser(imapsession, mailboxPath,new Flags());
         
         final FakeMailboxListenerFlagsUpdate update = new FakeMailboxListenerFlagsUpdate(
-                new MyMailboxSession(BASE_SESSION_ID), Arrays.asList(uid), Arrays.asList(new UpdatedFlags(uid, new Flags(), new Flags(Flags.Flag.ANSWERED))), mailboxPath);
+                new MyMailboxSession(BASE_SESSION_ID), Arrays.asList(uid), Arrays.asList(new UpdatedFlags(uid, -1, new Flags(), new Flags(Flags.Flag.ANSWERED))), mailboxPath);
         analyser.event(update);
         analyser.setSilentFlagChanges(true);
         analyser.event(update);
@@ -314,7 +314,7 @@ public class MailboxEventAnalyserTest {
         
         
         final FakeMailboxListenerFlagsUpdate update = new FakeMailboxListenerFlagsUpdate(
-                mSession, Arrays.asList(345L), Arrays.asList(new UpdatedFlags(345, new Flags(), new Flags())), mailboxPath);
+                mSession, Arrays.asList(345L), Arrays.asList(new UpdatedFlags(345, -1, new Flags(), new Flags())), mailboxPath);
         analyser.event(update);
         analyser.setSilentFlagChanges(true);
         analyser.event(update);
@@ -331,7 +331,7 @@ public class MailboxEventAnalyserTest {
         
         
         final FakeMailboxListenerFlagsUpdate update = new FakeMailboxListenerFlagsUpdate(
-                mSession, Arrays.asList(886L), Arrays.asList(new UpdatedFlags(886, new Flags(), new Flags(Flags.Flag.RECENT))), mailboxPath);
+                mSession, Arrays.asList(886L), Arrays.asList(new UpdatedFlags(886, -1, new Flags(), new Flags(Flags.Flag.RECENT))), mailboxPath);
         analyser.event(update);
         final Iterator<Long> iterator = analyser.flagUpdateUids().iterator();
         assertNotNull(iterator);

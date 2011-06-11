@@ -27,6 +27,7 @@ import javax.mail.Flags;
 import org.apache.james.mailbox.MailboxListener;
 import org.apache.james.mailbox.MailboxPath;
 import org.apache.james.mailbox.MailboxSession;
+import org.apache.james.mailbox.MessageMetaData;
 
 public class FakeMailboxListenerAdded extends MailboxListener.Added {
 
@@ -71,6 +72,11 @@ public class FakeMailboxListenerAdded extends MailboxListener.Added {
             public Flags getFlags() {
                 // TODO Auto-generated method stub
                 return null;
+            }
+
+            public long getModSeq() {
+                // TODO Auto-generated method stub
+                return 0;
             }
         };
     }
