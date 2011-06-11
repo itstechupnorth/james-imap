@@ -61,6 +61,8 @@ public class HumanReadableText {
     public static final HumanReadableText INVALID_MESSAGESET = new HumanReadableText("org.apache.james.imap.INVALID_MESSAGESET", "failed. Invalid messageset.");
 
     public static final HumanReadableText INVALID_COMMAND = new HumanReadableText("org.apache.james.imap.INVALID_COMMAND", "failed. Command not valid in this state.");
+   
+    public static final HumanReadableText INVALID_SYSTEM_FLAG = new HumanReadableText("org.apache.james.imap.INVALID_SYSTEM_FLAG", "Invalid system flag \\RECENT.");
 
     public static final HumanReadableText ILLEGAL_TAG = new HumanReadableText("org.apache.james.imap.ILLEGAL_TAG", "Illegal tag.");
 

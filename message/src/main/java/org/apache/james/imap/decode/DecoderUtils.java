@@ -63,7 +63,7 @@ public final class DecoderUtils {
 
     private static final int ALL_MONTH_BITS = JAN_BIT | FEB_BIT | MAR_BIT | APR_BIT | MAY_BIT | JUN_BIT | JUL_BIT | AUG_BIT | SEP_BIT | OCT_BIT | NOV_BIT | DEC_BIT;
 
-    public static void setFlag(final String flagString, final Flags flags) {
+    public static void setFlag(final String flagString, final Flags flags) throws DecodingException{
         if (flagString.equalsIgnoreCase(MessageFlags.ANSWERED_ALL_CAPS)) {
             flags.add(Flags.Flag.ANSWERED);
         } else if (flagString.equalsIgnoreCase(MessageFlags.DELETED_ALL_CAPS)) {
@@ -78,8 +78,11 @@ public final class DecoderUtils {
             if (flagString.equalsIgnoreCase(MessageFlags.RECENT_ALL_CAPS)) { // NOPMD
                                                                              // keep
                                                                              // comment
-                // RFC3501 specifically excludes /Recent
-                // The /Recent flag should be set automatically by the server
+                // RFC3501 specifically excludes \Recent
+                // The \Recent flag should be set automatically by the server so throw Exception
+                //
+                // See IMAP-316
+                throw new DecodingException(HumanReadableText.INVALID_SYSTEM_FLAG, "\\Recent flag is now allowed to set.");
             } else {
                 // RFC3501 allows novel flags
                 flags.add(flagString);
