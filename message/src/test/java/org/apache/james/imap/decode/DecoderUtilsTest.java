@@ -37,16 +37,17 @@ public class DecoderUtilsTest {
 
     private static final String A_CUSTOM_FLAG = "Another";
 
-    private static final String FLAG_MESSAGE = "RFC3501 specifies that \\Recent flag cannot be set by the client but accept liberally for better compatibility.";
-
 
     
     @Test
-    public void testSetRecentFlag() throws Exception {
+    public void testSetRecentFlag() {
         Flags flags = new Flags();
-        DecoderUtils.setFlag("\\Recent", flags);
-        assertFalse(FLAG_MESSAGE, flags.contains("\\Recent"));
-        assertFalse(FLAG_MESSAGE, flags.contains(Flags.Flag.RECENT));
+        try {
+            DecoderUtils.setFlag("\\Recent", flags);
+            fail();
+        } catch (DecodingException e) {
+            // expected
+        }
     }
 
     @Test
