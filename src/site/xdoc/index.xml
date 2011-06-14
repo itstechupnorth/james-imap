@@ -32,14 +32,26 @@
        and a sample data access layer.</p>
      <p>In combination with a socket layer, and a mailbox persistence, 
          this library can be used to create an IMAP server.</p>
-    <p><a href='http://james.apache.org/server/rfclist/imap4/rfc2060.txt'>RFC2060 IMAP4</a> 
+    <p><a href='http://james.apache.org/server/rfclist/imap4/rfc2060.txt'>RFC2060 IMAP4rev1</a> 
        is functionally complete, tested and usable. The data access layer is still 
        under optimization on performance perspectives. API is susceptible to change.</p>
-     <p>Implemented RFCs:</p>
+     <p>There are many extensions defined for IMAP (see a list <a href="http://www.iana.org/assignments/imap4-capabilities">here</a>)</p>
+     <p>Apache James IMAP implements the following:</p>
      <ul>
        <li>IMAP4rev1 (RFC 3501 http://www.ietf.org/rfc/rfc3501.txt)</li>
-       <li>IMAP4 Namespace (RFC 2342 http://www.ietf.org/rfc/rfc2342.txt)</li>
-       <li>IMAP4 IDLE command (RFC 2177 http://www.ietf.org/rfc/rfc2177.txt)</li>
+       <li>NAMESPACE (in release 0.2) (RFC 2342 http://www.ietf.org/rfc/rfc2342.txt)</li>
+       <li>IDLE (in release 0.2)  (RFC 2177 http://www.ietf.org/rfc/rfc2177.txt)</li>
+       <li>LITERAL+ (in release 0.2)</li>
+       <li>CHILDREN (in release 0.2)</li>
+       <li>WITHIN (in release 0.2)</li>
+       <li>UIDPLUS (in release 0.2)</li>
+       <li>UNSELECT (in release 0.2)</li>
+       <li>I18NLEVEL=1 (in release 0.2.1)</li>
+       <li>ESEARCH (in release 0.2.1)</li>
+       <li>SEARCHRES (in release 0.2.1)</li>
+       <li>AUTH=PLAIN (in release 0.2.1)</li>
+       <li>SASL-IR (in release 0.2.1)</li>
+       <li>ENABLE (in release 0.2.1)</li>
      </ul>
      <p>We follow RFC2683 recommandations for our implementations:</p>
      <ul>
@@ -47,14 +59,14 @@
      </ul>
      <p>Interesting features:</p>
      <ul>
-       <li>Users Flags</li>
-       <li>IMAP4 WITHIN Extensions (RFC 5032  http://www.ietf.org/rfc/rfc5032.txt)</li>
+       <li>Users FLAGS</li>
      </ul>
      <p>Other RFCs of interest we are looking at:</p>
      <ul>
-       <li>IMAP4 UIDPLUS extension (RFC 4315 http://www.ietf.org/rfc/rfc4315.txt)</li>
        <li>IMAP4 SORT and THREAD Extensions (RFC 5256 http://www.ietf.org/rfc/rfc5256.txt)</li>
      </ul>
+     <p>We have <a href="http://svn.apache.org/repos/asf/james/mailbox-integration-tester/trunk/">integration tests</a> for IMAP.</p>
+     <p>Our implementation is also tested agains external tools such as <a href="http://www.imapwiki.org/ImapTest">http://www.imapwiki.org/ImapTest</a>.</p>
   </section>
 
   <section name='Apache James IMAP in Server and as component'>
