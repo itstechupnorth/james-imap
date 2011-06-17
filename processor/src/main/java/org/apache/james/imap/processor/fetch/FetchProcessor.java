@@ -36,6 +36,7 @@ import org.apache.james.imap.api.process.ImapSession;
 import org.apache.james.imap.message.request.FetchRequest;
 import org.apache.james.imap.message.response.FetchResponse;
 import org.apache.james.imap.processor.AbstractMailboxProcessor;
+import org.apache.james.imap.processor.base.FetchGroupImpl;
 import org.apache.james.mailbox.MailboxException;
 import org.apache.james.mailbox.MailboxManager;
 import org.apache.james.mailbox.MailboxSession;
@@ -47,7 +48,6 @@ import org.apache.james.mailbox.MessageResult;
 import org.apache.james.mailbox.MessageResult.FetchGroup;
 import org.apache.james.mailbox.MessageResult.MimePath;
 import org.apache.james.mailbox.UnsupportedCriteriaException;
-import org.apache.james.mailbox.util.FetchGroupImpl;
 import org.apache.james.mime4j.field.address.parser.ParseException;
 
 public class FetchProcessor extends AbstractMailboxProcessor<FetchRequest> {
