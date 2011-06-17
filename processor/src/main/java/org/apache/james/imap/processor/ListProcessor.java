@@ -42,7 +42,6 @@ import org.apache.james.mailbox.MailboxPath;
 import org.apache.james.mailbox.MailboxQuery;
 import org.apache.james.mailbox.MailboxSession;
 import org.apache.james.mailbox.MailboxMetaData.Children;
-import org.apache.james.mailbox.util.SimpleMailboxMetaData;
 
 public class ListProcessor extends AbstractMailboxProcessor<ListRequest> {
 
@@ -120,9 +119,31 @@ public class ListProcessor extends AbstractMailboxProcessor<ListRequest> {
                     isRelative = true;
                 }
                 // Get the mailbox for the reference name.
-                MailboxPath rootPath = new MailboxPath(referenceRoot, "", "");
+                final MailboxPath rootPath = new MailboxPath(referenceRoot, "", "");
                 results = new ArrayList<MailboxMetaData>(1);
-                results.add(SimpleMailboxMetaData.createNoSelect(rootPath, mailboxSession.getPathDelimiter()));
+                results.add(new MailboxMetaData() {
+
+                    @Override
+                    public Children inferiors() {
+                        return Children.CHILDREN_ALLOWED_BUT_UNKNOWN;
+                    }
+
+                    @Override
+                    public Selectability getSelectability() {
+                        return Selectability.NOSELECT;
+                    }
+
+                    @Override
+                    public char getHierarchyDelimiter() {
+                        return mailboxSession.getPathDelimiter();
+                    }
+
+                    @Override
+                    public MailboxPath getPath() {
+                        return rootPath;
+                    }
+                    
+                });
             } else {
                 // If the mailboxPattern is fully qualified, ignore the
                 // reference name.
