@@ -41,6 +41,7 @@ import org.apache.james.imap.message.response.FetchResponse;
 import org.apache.james.imap.message.response.FlagsResponse;
 import org.apache.james.imap.message.response.RecentResponse;
 import org.apache.james.imap.processor.base.AbstractChainedProcessor;
+import org.apache.james.imap.processor.base.FetchGroupImpl;
 import org.apache.james.mailbox.MailboxConstants;
 import org.apache.james.mailbox.MailboxException;
 import org.apache.james.mailbox.MailboxManager;
@@ -51,7 +52,6 @@ import org.apache.james.mailbox.MessageRange;
 import org.apache.james.mailbox.MessageRangeException;
 import org.apache.james.mailbox.MessageResult;
 import org.apache.james.mailbox.MessageRange.Type;
-import org.apache.james.mailbox.util.FetchGroupImpl;
 
 abstract public class AbstractMailboxProcessor<M extends ImapRequest> extends AbstractChainedProcessor<M> {
 

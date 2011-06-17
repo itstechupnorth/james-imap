@@ -38,6 +38,7 @@ import org.apache.james.imap.api.process.SelectedMailbox;
 import org.apache.james.imap.message.request.AbstractMailboxSelectionRequest;
 import org.apache.james.imap.message.response.ExistsResponse;
 import org.apache.james.imap.message.response.RecentResponse;
+import org.apache.james.imap.processor.base.FetchGroupImpl;
 import org.apache.james.imap.processor.base.SelectedMailboxImpl;
 import org.apache.james.mailbox.MailboxException;
 import org.apache.james.mailbox.MailboxManager;
@@ -48,7 +49,6 @@ import org.apache.james.mailbox.MessageManager;
 import org.apache.james.mailbox.MessageManager.MetaData;
 import org.apache.james.mailbox.MessageRange;
 import org.apache.james.mailbox.MessageResult;
-import org.apache.james.mailbox.util.FetchGroupImpl;
 
 abstract class AbstractSelectionProcessor<M extends AbstractMailboxSelectionRequest> extends AbstractMailboxProcessor<M> {
 
