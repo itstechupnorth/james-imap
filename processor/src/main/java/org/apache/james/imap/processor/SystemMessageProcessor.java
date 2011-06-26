@@ -53,7 +53,6 @@ public class SystemMessageProcessor extends AbstractChainedProcessor<SystemMessa
             }
         } catch (MailboxException e) {
             final Logger log = session.getLog();
-            log.warn("Force logout failed " + e.getMessage());
             log.debug("Cannot force logout", e);
         }
     }

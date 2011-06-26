@@ -47,7 +47,6 @@ import org.apache.james.mailbox.MessageRangeException;
 import org.apache.james.mailbox.MessageResult;
 import org.apache.james.mailbox.MessageResult.FetchGroup;
 import org.apache.james.mailbox.MessageResult.MimePath;
-import org.apache.james.mailbox.UnsupportedCriteriaException;
 import org.apache.james.mime4j.field.address.parser.ParseException;
 
 public class FetchProcessor extends AbstractMailboxProcessor<FetchRequest> {
@@ -99,11 +98,12 @@ public class FetchProcessor extends AbstractMailboxProcessor<FetchRequest> {
             final boolean omitExpunged = (!useUids);
             unsolicitedResponses(session, responder, omitExpunged, useUids);
             okComplete(command, tag, responder);
-        } catch (UnsupportedCriteriaException e) {
-            no(command, tag, responder, HumanReadableText.UNSUPPORTED_SEARCH_CRITERIA);
         } catch (MessageRangeException e) {
+            session.getLog().debug("Fetch failed", e);
+
             taggedBad(command, tag, responder, HumanReadableText.INVALID_MESSAGESET);
         } catch (MailboxException e) {
+            session.getLog().debug("Fetch failed", e);
             no(command, tag, responder, HumanReadableText.SEARCH_FAILED);
         }
     }
