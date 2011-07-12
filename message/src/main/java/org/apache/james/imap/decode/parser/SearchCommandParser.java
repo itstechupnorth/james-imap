@@ -145,12 +145,7 @@ public class SearchCommandParser extends AbstractUidCommandParser {
 
     private int consumeAndCap(ImapRequestLineReader request) throws DecodingException {
         final char next = request.consume();
-        return cap(next);
-    }
-
-    private int cap(char next) {
-        final int cap = next > 'Z' ? next ^ 32 : next;
-        return cap;
+        return ImapRequestLineReader.cap(next);
     }
     
     private SearchKey cc(ImapRequestLineReader request, final Charset charset) throws DecodingException {
@@ -957,7 +952,7 @@ public class SearchCommandParser extends AbstractUidCommandParser {
         try {
             SearchKey recent = null;
             List<SearchResultOption> options = null;
-            int c = cap(request.nextWordChar());
+            int c = ImapRequestLineReader.cap(request.nextWordChar());
             if (c == 'R') {
                 // if we found a R its either RECENT or RETURN so consume it
                 request.consume();

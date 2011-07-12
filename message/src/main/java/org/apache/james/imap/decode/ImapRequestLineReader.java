@@ -59,6 +59,13 @@ public abstract class ImapRequestLineReader {
 
     protected char nextChar; // unknown
 
+
+
+    public static int cap(char next) {
+        final int cap = next > 'Z' ? next ^ 32 : next;
+        return cap;
+    }
+    
     /**
      * Reads the next regular, non-space character in the current line. Spaces
      * are skipped over, but end-of-line characters will cause a

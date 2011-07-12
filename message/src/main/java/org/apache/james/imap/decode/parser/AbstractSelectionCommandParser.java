@@ -28,6 +28,7 @@ import org.apache.james.imap.decode.base.AbstractImapCommandParser;
 import org.apache.james.imap.message.request.AbstractMailboxSelectionRequest;
 
 public abstract class AbstractSelectionCommandParser extends AbstractImapCommandParser{
+    private final static byte[] CONDSTORE = "(CONDSTORE)".getBytes();
 
     public AbstractSelectionCommandParser(ImapCommand command) {
         super(command);
@@ -35,12 +36,6 @@ public abstract class AbstractSelectionCommandParser extends AbstractImapCommand
     
 
 
-    private final static byte[] CONDSTORE = "(CONDSTORE)".getBytes();
-
-    private int cap(char next) {
-        final int cap = next > 'Z' ? next ^ 32 : next;
-        return cap;
-    }
     
     /*
      * (non-Javadoc)
@@ -66,7 +61,7 @@ public abstract class AbstractSelectionCommandParser extends AbstractImapCommand
                 int pos = 0;
                 @Override
                 public boolean isValid(char chr) {
-                    return cap(chr) == CONDSTORE[pos++];
+                    return ImapRequestLineReader.cap(chr) == CONDSTORE[pos++];
                 }
             });
             condstore = true;

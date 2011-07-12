@@ -42,12 +42,6 @@ public class StoreCommandParser extends AbstractUidCommandParser {
         super(ImapCommand.selectedStateCommand(ImapConstants.STORE_COMMAND_NAME));
     }
 
-    private int cap(char next) {
-        final int cap = next > 'Z' ? next ^ 32 : next;
-        return cap;
-    }
-    
-
     /*
      * (non-Javadoc)
      * 
@@ -70,7 +64,7 @@ public class StoreCommandParser extends AbstractUidCommandParser {
             request.consumeWord(new CharacterValidator() {
                 private int pos = 0;
                 public boolean isValid(char chr) {
-                    return cap(chr) == UNCHANGEDSINCE[pos++];
+                    return ImapRequestLineReader.cap(chr) == UNCHANGEDSINCE[pos++];
                 }
             });
             request.consumeChar(' ');
