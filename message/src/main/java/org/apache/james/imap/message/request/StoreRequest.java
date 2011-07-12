@@ -37,7 +37,9 @@ public class StoreRequest extends AbstractImapRequest {
 
     private final boolean signedPlus;
 
-    public StoreRequest(final ImapCommand command, final IdRange[] idSet, final boolean silent, final Flags flags, final boolean useUids, final String tag, final Boolean sign) {
+    private long unchangedSince;
+
+    public StoreRequest(final ImapCommand command, final IdRange[] idSet, final boolean silent, final Flags flags, final boolean useUids, final String tag, final Boolean sign, final long unchangedSince) {
         super(tag, command);
         this.idSet = idSet;
         this.silent = silent;
@@ -53,6 +55,7 @@ public class StoreRequest extends AbstractImapRequest {
             signedMinus = true;
             signedPlus = false;
         }
+        this.unchangedSince = unchangedSince;
     }
 
     /**
@@ -94,6 +97,10 @@ public class StoreRequest extends AbstractImapRequest {
 
     public final boolean isUseUids() {
         return useUids;
+    }
+    
+    public final long getUnchangedSince() {
+        return unchangedSince;
     }
 
     public String toString() {

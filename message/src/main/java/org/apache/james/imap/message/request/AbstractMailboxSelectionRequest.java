@@ -27,10 +27,12 @@ import org.apache.james.imap.api.message.request.ImapRequest;
  */
 public abstract class AbstractMailboxSelectionRequest extends AbstractImapRequest {
     private final String mailboxName;
+    private final boolean condstore;
 
-    public AbstractMailboxSelectionRequest(final ImapCommand command, final String mailboxName, final String tag) {
+    public AbstractMailboxSelectionRequest(final ImapCommand command, final String mailboxName, boolean condstore, final String tag) {
         super(tag, command);
         this.mailboxName = mailboxName;
+        this.condstore = condstore;
     }
 
     /**
@@ -40,6 +42,10 @@ public abstract class AbstractMailboxSelectionRequest extends AbstractImapReques
      */
     public final String getMailboxName() {
         return mailboxName;
+    }
+    
+    public final boolean getCondstore() {
+        return condstore;
     }
 
 }

@@ -253,6 +253,28 @@ public interface StatusResponse extends ImapResponseMessage {
             return new ResponseCode("UIDNEXT", uid);
         }
 
+        
+        /**
+         * Create a RFC4551 <code>HIGESTMODSEQ</code> response code
+         * 
+         * @param modSeq positive non-zero long
+         * @return <code>ResponseCode</code>
+         */
+        public static ResponseCode highestModSeq(long modSeq) {
+            return new ResponseCode("HIGESTMODSEQ", modSeq);
+        }
+        
+        /**
+         * Create a RFC4551 <code>NOMODSEQ</code> response code
+         * 
+         * @return <code>ResponseCode</code>
+         */
+        public static ResponseCode noModSeq() {
+            return new ResponseCode("NOMODSEQ");
+        }
+
+
+        
         /**
          * Creates an extension response code. Names that do not begin with 'X'
          * will have 'X' prepended

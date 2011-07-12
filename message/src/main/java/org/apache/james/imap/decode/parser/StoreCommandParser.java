@@ -28,6 +28,7 @@ import org.apache.james.imap.api.message.IdRange;
 import org.apache.james.imap.api.process.ImapSession;
 import org.apache.james.imap.decode.ImapRequestLineReader;
 import org.apache.james.imap.decode.DecodingException;
+import org.apache.james.imap.decode.ImapRequestLineReader.CharacterValidator;
 import org.apache.james.imap.message.request.StoreRequest;
 
 /**
@@ -35,9 +36,17 @@ import org.apache.james.imap.message.request.StoreRequest;
  */
 public class StoreCommandParser extends AbstractUidCommandParser {
 
+    private final static byte[] UNCHANGEDSINCE = "UNCHANGEDSINCE".getBytes();
+    
     public StoreCommandParser() {
         super(ImapCommand.selectedStateCommand(ImapConstants.STORE_COMMAND_NAME));
     }
+
+    private int cap(char next) {
+        final int cap = next > 'Z' ? next ^ 32 : next;
+        return cap;
+    }
+    
 
     /*
      * (non-Javadoc)
@@ -52,8 +61,24 @@ public class StoreCommandParser extends AbstractUidCommandParser {
         final IdRange[] idSet = request.parseIdRange(session);
         final Boolean sign;
         boolean silent = false;
-
+        long unchangedSince = -1;
         char next = request.nextWordChar();
+        if (next == '(') {
+            // Seems like we have a CONDSTORE parameter
+            request.consume();
+            
+            request.consumeWord(new CharacterValidator() {
+                private int pos = 0;
+                public boolean isValid(char chr) {
+                    return cap(chr) == UNCHANGEDSINCE[pos++];
+                }
+            });
+            request.consumeChar(' ');
+            unchangedSince = request.number();
+            request.consumeChar(')');
+            next = request.nextWordChar();
+        }
+        
         if (next == '+') {
             sign = Boolean.TRUE;
             request.consume();
@@ -92,7 +117,7 @@ public class StoreCommandParser extends AbstractUidCommandParser {
         }
 
         request.eol();
-        final ImapMessage result = new StoreRequest(command, idSet, silent, flags, useUids, tag, sign);
+        final ImapMessage result = new StoreRequest(command, idSet, silent, flags, useUids, tag, sign, unchangedSince);
         return result;
     }
 }

@@ -22,7 +22,7 @@ import org.apache.james.imap.api.ImapCommand;
 
 public class SelectRequest extends AbstractMailboxSelectionRequest {
 
-    public SelectRequest(final ImapCommand command, final String mailboxName, final String tag) {
-        super(command, mailboxName, tag);
+    public SelectRequest(final ImapCommand command, final String mailboxName, boolean condstore, final String tag) {
+        super(command, mailboxName, condstore, tag);
     }
 }

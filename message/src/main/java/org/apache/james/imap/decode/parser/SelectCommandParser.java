@@ -20,36 +20,22 @@ package org.apache.james.imap.decode.parser;
 
 import org.apache.james.imap.api.ImapCommand;
 import org.apache.james.imap.api.ImapConstants;
-import org.apache.james.imap.api.ImapMessage;
-import org.apache.james.imap.api.process.ImapSession;
-import org.apache.james.imap.decode.ImapRequestLineReader;
-import org.apache.james.imap.decode.DecodingException;
-import org.apache.james.imap.decode.base.AbstractImapCommandParser;
+import org.apache.james.imap.message.request.AbstractMailboxSelectionRequest;
 import org.apache.james.imap.message.request.SelectRequest;
 
 /**
  * Parse SELECT commands
  */
-public class SelectCommandParser extends AbstractImapCommandParser {
+public class SelectCommandParser extends AbstractSelectionCommandParser {
 
     public SelectCommandParser() {
         super(ImapCommand.authenticatedStateCommand(ImapConstants.SELECT_COMMAND_NAME));
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * org.apache.james.imap.decode.base.AbstractImapCommandParser#decode(org
-     * .apache.james.imap.api.ImapCommand,
-     * org.apache.james.imap.decode.ImapRequestLineReader, java.lang.String,
-     * org.apache.james.imap.api.process.ImapSession)
-     */
-    protected ImapMessage decode(ImapCommand command, ImapRequestLineReader request, String tag, ImapSession session) throws DecodingException {
-        final String mailboxName = request.mailbox();
-        request.eol();
-        final ImapMessage result = new SelectRequest(command, mailboxName, tag);
-        return result;
+    @Override
+    protected AbstractMailboxSelectionRequest createRequest(ImapCommand command, String mailboxName, boolean condstore, String tag) {
+        return new SelectRequest(command, mailboxName, condstore, tag);
     }
+
 
 }

@@ -109,8 +109,20 @@ abstract class AbstractSelectionProcessor<M extends AbstractMailboxSelectionRequ
         uidValidity(responder, metaData);
         unseen(responder, metaData, selected);
         permanentFlags(responder, metaData, selected);
+        higestModSeq(responder, metaData, selected);
         uidNext(responder, metaData);
         taggedOk(responder, tag, command, metaData);
+    }
+
+    private void higestModSeq(Responder responder, MetaData metaData, SelectedMailbox selected) {
+        final StatusResponse untaggedOk;
+        if (metaData.isModSeqPermanent()) {
+            final long highestModSeq = metaData.getHighestModSeq();
+            untaggedOk = statusResponseFactory.untaggedOk(HumanReadableText.HIGHEST_MOD_SEQ, ResponseCode.highestModSeq(highestModSeq));
+        } else {
+            untaggedOk = statusResponseFactory.untaggedOk(HumanReadableText.NO_MOD_SEQ, ResponseCode.noModSeq());
+        }
+        responder.respond(untaggedOk);        
     }
 
     private void uidNext(final Responder responder, final MessageManager.MetaData metaData) throws MailboxException {

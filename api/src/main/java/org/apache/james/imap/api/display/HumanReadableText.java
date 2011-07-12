@@ -39,6 +39,9 @@ public class HumanReadableText {
     }
 
     public static final HumanReadableText UIDNEXT = new HumanReadableText("org.apache.james.imap.UIDNEXT", "Predicted next UID");
+    
+    public static final HumanReadableText HIGHEST_MOD_SEQ = new HumanReadableText("org.apache.james.imap.HIGHEST_MOD_SEQ", "");
+    public static final HumanReadableText NO_MOD_SEQ = new HumanReadableText("org.apache.james.imap.NO_MOD_SEQ", "Sorry, this mailbox format doesn't support modsequences");
 
     public static final HumanReadableText UID_VALIDITY = new HumanReadableText("org.apache.james.imap.UID_VALIDITY", "UIDs valid");
 
