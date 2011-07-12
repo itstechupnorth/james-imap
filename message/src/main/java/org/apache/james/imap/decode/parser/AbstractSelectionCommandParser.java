@@ -35,7 +35,7 @@ public abstract class AbstractSelectionCommandParser extends AbstractImapCommand
     
 
 
-    private final static byte[] UNCHANGEDSINCE = "(UNCHANGEDSINCE)".getBytes();
+    private final static byte[] CONDSTORE = "(CONDSTORE)".getBytes();
 
     private int cap(char next) {
         final int cap = next > 'Z' ? next ^ 32 : next;
@@ -66,7 +66,7 @@ public abstract class AbstractSelectionCommandParser extends AbstractImapCommand
                 int pos = 0;
                 @Override
                 public boolean isValid(char chr) {
-                    return cap(chr) == UNCHANGEDSINCE[pos++];
+                    return cap(chr) == CONDSTORE[pos++];
                 }
             });
             condstore = true;
