@@ -92,7 +92,7 @@ public class MailboxEventAnalyser extends ImapStateAwareMailboxListener {
      * 
      * @see org.apache.james.mailbox.MailboxListener#event(org.apache.james.mailbox.MailboxListener.Event)
      */
-    public void event(Event event) {
+    public synchronized void event(Event event) {
 
         // Check if the event was for the mailbox we are observing
         if (event.getMailboxPath().equals(getMailboxPath())) {
