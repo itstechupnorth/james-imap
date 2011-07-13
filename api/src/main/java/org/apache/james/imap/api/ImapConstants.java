@@ -99,6 +99,8 @@ public interface ImapConstants {
 
     public static final String SUPPORTS_ENABLE = "ENABLE";
     
+    public static final String SUPPORTS_CONDSTORE = "CONDSTORE";
+
     public static final String INBOX_NAME = "INBOX";
 
     public static final String MIME_TYPE_TEXT = "TEXT";
@@ -150,6 +152,8 @@ public interface ImapConstants {
     public static final String STATUS_RECENT = "RECENT";
 
     public static final String STATUS_MESSAGES = "MESSAGES";
+    
+    public static final String STATUS_HIGHESTMODSEQ = "HIGHESTMODSEQ";
 
     public static final String UNSUBSCRIBE_COMMAND_NAME = "UNSUBSCRIBE";
 
@@ -238,7 +242,10 @@ public interface ImapConstants {
     public static final String FETCH_BODY_STRUCTURE = "BODYSTRUCTURE";
 
     public static final String FETCH_BODY = "BODY";
+    
+    public static final String FETCH_MODSEQ = "MODSEQ";
 
+    
     public static final String STARTTLS = "STARTTLS";
 
     public static final String LINE_END = "\r\n";
@@ -248,5 +255,6 @@ public interface ImapConstants {
     public static final String COMPRESS_COMMAND_NAME = "COMPRESS";
 
     public static final int DEFAULT_BATCH_SIZE = 100;
+
 
 }

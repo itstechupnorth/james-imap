@@ -64,11 +64,15 @@ public class StoreCommandParser extends AbstractUidCommandParser {
             request.consumeWord(new CharacterValidator() {
                 private int pos = 0;
                 public boolean isValid(char chr) {
-                    return ImapRequestLineReader.cap(chr) == UNCHANGEDSINCE[pos++];
+                    if (pos > UNCHANGEDSINCE.length) {
+                        return false;
+                    } else {
+                        return ImapRequestLineReader.cap(chr) == UNCHANGEDSINCE[pos++];
+                    }
                 }
             });
             request.consumeChar(' ');
-            unchangedSince = request.number();
+            unchangedSince = request.number(true);
             request.consumeChar(')');
             next = request.nextWordChar();
         }

@@ -49,6 +49,7 @@ public class ESearchResponseEncoder extends AbstractChainedImapEncoder {
         long count = response.getCount();
         IdRange[] all = response.getAll();
         boolean useUid = response.getUseUid();
+        Long highestModSeq = response.getHighestModSeq();
         List<SearchResultOption> options = response.getSearchResultOptions();
         
         composer.untagged().message("ESEARCH").openParen().message("TAG").quote(tag).closeParen();
@@ -67,6 +68,14 @@ public class ESearchResponseEncoder extends AbstractChainedImapEncoder {
         if (all != null && all.length > 0 && options.contains(SearchResultOption.ALL)) {
             composer.message(SearchResultOption.ALL.name());
             composer.sequenceSet(all);
+        }
+        
+        // Add the MODSEQ to the response if needed. 
+        //
+        // see RFC4731 3.2.  Interaction with CONDSTORE extension
+        if (highestModSeq != null) {
+            composer.message("MODSEQ");
+            composer.message(highestModSeq);
         }
         composer.end();
     }

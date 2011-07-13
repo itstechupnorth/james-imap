@@ -485,13 +485,15 @@ public class SearchProcessorTest {
     private void check(final SearchKey key, final SearchQuery query) throws Exception {        
         mockery.checking(new Expectations() {{
             allowing(session).getAttribute(
+                    with(equal(SearchProcessor.SEARCH_MODSEQ))); will(returnValue(null));
+            allowing(session).getAttribute(
                     with(equal(ImapSessionUtils.MAILBOX_SESSION_ATTRIBUTE_SESSION_KEY))); will(returnValue((MailboxSession) mailboxSession));
                     allowing(session).getLog(); will(returnValue(logger));
             oneOf(mailbox).search(
                     with(equal(query)),
                     with(equal(mailboxSession)));will(
                             returnValue(new ArrayList<Long>().iterator()));
-            oneOf(responder).respond(with(equal(new SearchResponse(EMPTY))));
+            oneOf(responder).respond(with(equal(new SearchResponse(EMPTY, null))));
             allowing(selectedMailbox).getApplicableFlags(); will(returnValue(new Flags()));
             allowing(selectedMailbox).hasNewApplicableFlags(); will(returnValue(false));
           

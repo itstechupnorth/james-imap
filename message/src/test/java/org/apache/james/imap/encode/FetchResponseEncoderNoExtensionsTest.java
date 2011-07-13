@@ -78,13 +78,13 @@ public class FetchResponseEncoderNoExtensionsTest  {
 
     @Test
     public void testShouldAcceptFetchResponse() throws Exception {
-        assertTrue(encoder.isAcceptable(new FetchResponse(11, null, null, null,
+        assertTrue(encoder.isAcceptable(new FetchResponse(11, null, null, null, null,
                 null, null, null, null, null)));
     }
 
     @Test
     public void testShouldEncodeFlagsResponse() throws Exception {
-        FetchResponse message = new FetchResponse(100, flags, null, null, null,
+        FetchResponse message = new FetchResponse(100, flags, null, null, null, null,
                 null, null, null, null);
         context.checking(new Expectations() {{
             final Sequence sequence = context.sequence("composition");
@@ -97,7 +97,7 @@ public class FetchResponseEncoderNoExtensionsTest  {
 
     @Test
     public void testShouldEncodeUidResponse() throws Exception {
-        FetchResponse message = new FetchResponse(100, null, new Long(72),
+        FetchResponse message = new FetchResponse(100, null, new Long(72), null,
                 null, null, null, null, null, null);
         context.checking(new Expectations() {{
             final Sequence sequence = context.sequence("composition");
@@ -111,7 +111,7 @@ public class FetchResponseEncoderNoExtensionsTest  {
 
     @Test
     public void testShouldEncodeAllResponse() throws Exception {
-        FetchResponse message = new FetchResponse(100, flags, new Long(72),
+        FetchResponse message = new FetchResponse(100, flags, new Long(72), null,
                 null, null, null, null, null, null);
         context.checking(new Expectations() {{
             final Sequence sequence = context.sequence("composition");
@@ -126,7 +126,7 @@ public class FetchResponseEncoderNoExtensionsTest  {
     
     @Test
     public void testShouldNotAddExtensionsWithEncodingBodyStructure() throws Exception {
-        FetchResponse message = new FetchResponse(100, flags, new Long(72),
+        FetchResponse message = new FetchResponse(100, flags, new Long(72), null,
                 null, null, null, null, stubStructure, null);
         final Map<String, String> parameters = new HashMap<String, String>();
         parameters.put("CHARSET", "US-ASCII");

@@ -28,16 +28,18 @@ import org.apache.james.imap.api.message.response.ImapResponseMessage;
  */
 public class SearchResponse implements ImapResponseMessage {
     private final long ids[];
+    private final Long highestModSeq;
 
     /**
      * Constructs a <code>SEARCH</code> response.
      * 
-     * @param ids
-     *            ids, not null
+     * @param ids ids, not null
+     * @param highestModSeq
      */
-    public SearchResponse(final long[] ids) {
+    public SearchResponse(final long[] ids, Long highestModSeq) {
         super();
         this.ids = ids;
+        this.highestModSeq = highestModSeq;
     }
 
     /**
@@ -48,6 +50,17 @@ public class SearchResponse implements ImapResponseMessage {
     public final long[] getIds() {
         return ids;
     }
+    
+    /**
+     * Return the highest mod-sequence for which matched the search. This is only set if the search included the MODSEQ 
+     * parameter
+     *  
+     * @return highestMod
+     */
+    public final Long getHighestModSeq() {
+        return highestModSeq;
+    }
+    
 
     /**
      * @see java.lang.Object#hashCode()
@@ -70,6 +83,8 @@ public class SearchResponse implements ImapResponseMessage {
             return false;
         final SearchResponse other = (SearchResponse) obj;
         if (!Arrays.equals(ids, other.ids))
+            return false;
+        if (highestModSeq != other.highestModSeq) 
             return false;
         return true;
     }

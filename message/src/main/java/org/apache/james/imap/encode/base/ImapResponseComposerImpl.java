@@ -335,44 +335,7 @@ public class ImapResponseComposerImpl implements ImapConstants, ImapResponseComp
      * java.lang.Long, java.lang.String)
      */
     public ImapResponseComposer statusResponse(Long messages, Long recent, Long uidNext, Long uidValidity, Long unseen, String mailboxName) throws IOException {
-        untagged();
-        message(STATUS_COMMAND_NAME);
-        quote(mailboxName);
-        openParen();
-
-        if (messages != null) {
-            message(STATUS_MESSAGES);
-            final long messagesValue = messages.longValue();
-            message(messagesValue);
-        }
-
-        if (recent != null) {
-            message(STATUS_RECENT);
-            final long recentValue = recent.longValue();
-            message(recentValue);
-        }
-
-        if (uidNext != null) {
-            message(STATUS_UIDNEXT);
-            final long uidNextValue = uidNext.longValue();
-            message(uidNextValue);
-        }
-
-        if (uidValidity != null) {
-            message(STATUS_UIDVALIDITY);
-            final long uidValidityValue = uidValidity.longValue();
-            message(uidValidityValue);
-        }
-
-        if (unseen != null) {
-            message(STATUS_UNSEEN);
-            final long unseenValue = unseen.longValue();
-            message(unseenValue);
-        }
-
-        closeParen();
-        end();
-        return this;
+        return statusResponse(messages, recent, uidNext, null, uidValidity, unseen, mailboxName);
     }
 
     /*
@@ -427,14 +390,20 @@ public class ImapResponseComposerImpl implements ImapConstants, ImapResponseComp
 
     /*
      * (non-Javadoc)
-     * 
-     * @see
-     * org.apache.james.imap.encode.ImapResponseComposer#searchResponse(long[])
+     * @see org.apache.james.imap.encode.ImapResponseComposer#searchResponse(long[], java.lang.Long)
      */
-    public ImapResponseComposer searchResponse(long[] ids) throws IOException {
+    public ImapResponseComposer searchResponse(long[] ids, Long highestModSeq) throws IOException {
         untagged();
         message(ImapConstants.SEARCH_RESPONSE_NAME);
         message(ids);
+        
+        // add MODSEQ
+        if (highestModSeq != null) {
+            openParen();
+            message("MODSEQ");
+            message(highestModSeq);
+            closeParen();
+        }
         end();
         return this;
     }
@@ -844,6 +813,61 @@ public class ImapResponseComposerImpl implements ImapConstants, ImapResponseComp
             }
         }
         return message(sb.toString());
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.encode.ImapResponseComposer#searchResponse(long[])
+     */
+    public ImapResponseComposer searchResponse(long[] ids) throws IOException {
+        return searchResponse(ids, null);
+    }
+
+    @Override
+    public ImapResponseComposer statusResponse(Long messages, Long recent, Long uidNext, Long highestModSeq, Long uidValidity, Long unseen, String mailboxName) throws IOException {
+        untagged();
+        message(STATUS_COMMAND_NAME);
+        quote(mailboxName);
+        openParen();
+
+        if (messages != null) {
+            message(STATUS_MESSAGES);
+            final long messagesValue = messages.longValue();
+            message(messagesValue);
+        }
+
+        if (recent != null) {
+            message(STATUS_RECENT);
+            final long recentValue = recent.longValue();
+            message(recentValue);
+        }
+
+        if (uidNext != null) {
+            message(STATUS_UIDNEXT);
+            final long uidNextValue = uidNext.longValue();
+            message(uidNextValue);
+        }
+        
+        if (highestModSeq != null) {
+            message(STATUS_HIGHESTMODSEQ);
+            message(highestModSeq);
+        }
+
+        if (uidValidity != null) {
+            message(STATUS_UIDVALIDITY);
+            final long uidValidityValue = uidValidity.longValue();
+            message(uidValidityValue);
+        }
+
+        if (unseen != null) {
+            message(STATUS_UNSEEN);
+            final long unseenValue = unseen.longValue();
+            message(unseenValue);
+        }
+
+        closeParen();
+        end();
+        return this;
     }
 
 }

@@ -91,9 +91,22 @@ public interface ImapResponseComposer {
      * @param ids the MSN or UID which were found
      * @return  self
      * @throws IOException
+     * @{@link Deprecated} use {@link #searchResponse(long[], Long)}
      */
+    @Deprecated
     public ImapResponseComposer searchResponse(long[] ids) throws IOException;
 
+
+    /**
+     * Compose a SEARCH response
+     * 
+     * @param ids the MSN or UID which were found
+     * @param highestModSeq the highest mod-sequence which matched or null 
+     * @return self
+     * @throws IOException
+     */
+    public ImapResponseComposer searchResponse(long[] ids, Long highestModSeq) throws IOException;
+    
     /**
      * Starts a FETCH response by writing the opening star-FETCH-number-paren
      * sequence.
@@ -252,7 +265,9 @@ public interface ImapResponseComposer {
 
     public ImapResponseComposer statusResponse(String tag, ImapCommand command, String type, String responseCode, Collection<String> parameters, boolean useParens, long number, String text) throws IOException;
 
+    @Deprecated
     public ImapResponseComposer statusResponse(Long messages, Long recent, Long uidNext, Long uidValidity, Long unseen, String mailboxName) throws IOException;
+    public ImapResponseComposer statusResponse(Long messages, Long recent, Long uidNext, Long highestModSeq, Long uidValidity, Long unseen, String mailboxName) throws IOException;
 
     public ImapResponseComposer quote(String message) throws IOException;
 

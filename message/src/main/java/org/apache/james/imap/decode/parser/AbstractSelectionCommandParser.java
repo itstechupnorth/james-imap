@@ -61,7 +61,11 @@ public abstract class AbstractSelectionCommandParser extends AbstractImapCommand
                 int pos = 0;
                 @Override
                 public boolean isValid(char chr) {
-                    return ImapRequestLineReader.cap(chr) == CONDSTORE[pos++];
+                    if (pos > CONDSTORE.length) {
+                        return false;
+                    } else {
+                        return ImapRequestLineReader.cap(chr) == CONDSTORE[pos++];
+                    }
                 }
             });
             condstore = true;

@@ -77,8 +77,8 @@ public class StatusProcessor extends AbstractMailboxProcessor<StatusRequest> {
             final Long uidNext = uidNext(statusDataItems, metaData);
             final Long uidValidity = uidValidity(statusDataItems, metaData);
             final Long unseen = unseen(statusDataItems, metaData);
-
-            final MailboxStatusResponse response = new MailboxStatusResponse(messages, recent, uidNext, uidValidity, unseen, request.getMailboxName());
+            final Long highestModSeq = highestModSeq(statusDataItems, metaData);
+            final MailboxStatusResponse response = new MailboxStatusResponse(messages, recent, uidNext, highestModSeq, uidValidity, unseen, request.getMailboxName());
             responder.respond(response);
             unsolicitedResponses(session, responder, false);
             okComplete(command, tag, responder);
@@ -110,6 +110,18 @@ public class StatusProcessor extends AbstractMailboxProcessor<StatusRequest> {
         return uidValidity;
     }
 
+
+    private Long highestModSeq(final StatusDataItems statusDataItems, final MessageManager.MetaData metaData) throws MailboxException {
+        final Long highestModSeq;
+        if (statusDataItems.isHighestModSeq()) {
+            highestModSeq = metaData.getHighestModSeq();
+        } else {
+            highestModSeq = null;
+        }
+        return highestModSeq;
+    }
+
+    
     private Long uidNext(final StatusDataItems statusDataItems, final MessageManager.MetaData metaData) throws MailboxException {
         final Long uidNext;
         if (statusDataItems.isUidNext()) {

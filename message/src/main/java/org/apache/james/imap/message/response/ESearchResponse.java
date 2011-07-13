@@ -34,8 +34,9 @@ public class ESearchResponse implements ImapResponseMessage{
     private final String tag;
     private boolean useUid;
     private List<SearchResultOption> options;
+    private Long highestModSeq;
 
-    public ESearchResponse(final long minUid, final long maxUid, final long count, final IdRange[] all, String tag, final boolean useUid, final List<SearchResultOption> options) {
+    public ESearchResponse(final long minUid, final long maxUid, final long count, final IdRange[] all, final Long highestModSeq, String tag, final boolean useUid, final List<SearchResultOption> options) {
         super();
         this.options = options;
         this.minUid = minUid;
@@ -44,6 +45,7 @@ public class ESearchResponse implements ImapResponseMessage{
         this.all = all;
         this.tag = tag;
         this.useUid = useUid;
+        this.highestModSeq = highestModSeq;
     }
     
     public final long getCount() {
@@ -72,6 +74,10 @@ public class ESearchResponse implements ImapResponseMessage{
     
     public List<SearchResultOption> getSearchResultOptions() {
         return options;
+    }
+    
+    public final Long getHighestModSeq() {
+        return highestModSeq;
     }
     
 }

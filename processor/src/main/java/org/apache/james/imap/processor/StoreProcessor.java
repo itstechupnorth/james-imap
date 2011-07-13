@@ -20,6 +20,8 @@
 package org.apache.james.imap.processor;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -32,6 +34,7 @@ import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.api.message.IdRange;
 import org.apache.james.imap.api.message.response.StatusResponse;
 import org.apache.james.imap.api.message.response.StatusResponseFactory;
+import org.apache.james.imap.api.message.response.StatusResponse.ResponseCode;
 import org.apache.james.imap.api.process.ImapProcessor;
 import org.apache.james.imap.api.process.ImapSession;
 import org.apache.james.imap.api.process.SelectedMailbox;
@@ -44,56 +47,115 @@ import org.apache.james.mailbox.MailboxSession;
 import org.apache.james.mailbox.MessageManager;
 import org.apache.james.mailbox.MessageManager.MetaData.FetchGroup;
 import org.apache.james.mailbox.MessageRange;
+import org.apache.james.mailbox.MessageRange.Type;
 import org.apache.james.mailbox.MessageRangeException;
 import org.apache.james.mailbox.MessageResult;
 
 public class StoreProcessor extends AbstractMailboxProcessor<StoreRequest> {
 
+    /**
+     * The {@link ImapCommand} which should be used for the response if some CONDSTORE option is used
+     */
+    private final static ImapCommand CONDSTORE_COMMAND = ImapCommand.selectedStateCommand("Conditional STORE");
+    
     public StoreProcessor(final ImapProcessor next, final MailboxManager mailboxManager, final StatusResponseFactory factory) {
         super(StoreRequest.class, next, mailboxManager, factory);
     }
 
+    /*
+     * (non-Javadoc)
+     * @see org.apache.james.imap.processor.AbstractMailboxProcessor#doProcess(org.apache.james.imap.api.message.request.ImapRequest, org.apache.james.imap.api.process.ImapSession, java.lang.String, org.apache.james.imap.api.ImapCommand, org.apache.james.imap.api.process.ImapProcessor.Responder)
+     */
     protected void doProcess(StoreRequest request, ImapSession session, String tag, ImapCommand command, Responder responder) {
         final IdRange[] idSet = request.getIdSet();
         final boolean useUids = request.isUseUids();
         final long unchangedSince = request.getUnchangedSince();
-
+        ImapCommand imapCommand = command;
+        
         try {
             final MessageManager mailbox = getSelectedMailbox(session);
             final MailboxSession mailboxSession = ImapSessionUtils.getMailboxSession(session);
-
-            if (unchangedSince != -1 && mailbox.isModSeqPermanent(mailboxSession) == false ) {
-                // Check if the mailbox did not support modsequences. If so return a tagged bad response.
-                // See RFC4551 3.1.2. NOMODSEQ Response Code 
-                taggedBad(command, tag, responder, HumanReadableText.NO_MOD_SEQ);
-                return;
-            }
-            List<Long> failedUids = new ArrayList<Long>();
-
+            final Flags flags = request.getFlags();
+            
+            if (unchangedSince != -1) {
+                if (mailbox.isModSeqPermanent(mailboxSession) == false) {
+                    // Check if the mailbox did not support modsequences. If so return a tagged bad response.
+                    // See RFC4551 3.1.2. NOMODSEQ Response Code 
+                    taggedBad(command, tag, responder, HumanReadableText.NO_MOD_SEQ);
+                    return;
+                } else if (unchangedSince == 0){
+                    Flags.Flag[] systemFlags = flags.getSystemFlags();
+                    if (systemFlags != null && systemFlags.length != 0) {
+                        // we need to return all sequences as failed when using a UNCHANGEDSINCE 0 and the request specify a SYSTEM flags
+                        //
+                        // See RFC4551 3.2. STORE and UID STORE Command;
+                        //
+                        //       Use of UNCHANGEDSINCE with a modification sequence of 0 always
+                        //       fails if the metadata item exists.  A system flag MUST always be
+                        //       considered existent, whether it was set or not.
+                        final StatusResponse response = getStatusResponseFactory().taggedOk(tag, command, HumanReadableText.FAILED, ResponseCode.condStore(idSet));
+                        responder.respond(response);
+                        return;
+                    }
+                }
+              
+            } 
+            final List<Long> failed = new ArrayList<Long>();
+            final List<String> userFlags = Arrays.asList(flags.getUserFlags());
             for (int i = 0; i < idSet.length; i++) {
                 final SelectedMailbox selected = session.getSelected();
                 MessageRange messageSet = messageRange(selected, idSet[i], useUids);
                 if (messageSet != null) {
                     
                     if (unchangedSince != -1) {
+                        // Ok we have a CONDSTORE option so use the CONDSTORE_COMMAND
+                        imapCommand = CONDSTORE_COMMAND;
+                        
                         List<Long> uids = new ArrayList<Long>();
 
                         Iterator<MessageResult> results = mailbox.getMessages(messageSet, FetchGroupImpl.MINIMAL, mailboxSession);
                         while(results.hasNext()) {
                             MessageResult r = results.next();
                             long uid = r.getUid();
-                            if (r.getModSeq() <= unchangedSince) {
+                            
+                            boolean fail = false;
+                            
+                            // Check if UNCHANGEDSINCE 0 was used and the Message contains the request flag.
+                            // In such cases we need to fail for this message.
+                            //
+                            // From RFC4551:
+                            //       Use of UNCHANGEDSINCE with a modification sequence of 0 always
+                            //       fails if the metadata item exists.  A system flag MUST always be
+                            //       considered existent, whether it was set or not.
+                            if (unchangedSince == 0) {
+                                String[] uFlags = r.getFlags().getUserFlags();
+                                for (int a = 0; a < uFlags.length; a++) {
+                                    if (userFlags.contains(uFlags[a])) {
+                                        fail = true;
+                                        break;
+                                    }
+                                }
+                            }
+                            
+                            // Check if the mod-sequence of the message is <= the unchangedsince.
+                            // 
+                            // See RFC4551 3.2. STORE and UID STORE Commands
+                            if (!fail && r.getModSeq() <= unchangedSince) {
                                 uids.add(uid);
                             } else {
-                                failedUids.add(uid);
+                                if (useUids) {
+                                    failed.add(uid);
+                                } else {
+                                    failed.add((long) selected.msn(uid));
+                                }
                             }
                         }
                         List<MessageRange> mRanges = MessageRange.toRanges(uids);
                         for (int a = 0 ; a < mRanges.size(); a++) {
-                            setFlags(request, mailboxSession, mailbox, mRanges.get(a), selected, tag, command, responder);
+                            setFlags(request, mailboxSession, mailbox, mRanges.get(a), selected, tag, imapCommand, responder);
                         }
                     } else {
-                        setFlags(request, mailboxSession, mailbox, messageSet, selected, tag, command, responder);
+                        setFlags(request, mailboxSession, mailbox, messageSet, selected, tag, imapCommand, responder);
                     }
                     
                 }
@@ -102,22 +164,52 @@ public class StoreProcessor extends AbstractMailboxProcessor<StoreRequest> {
             }
             final boolean omitExpunged = (!useUids);
             unsolicitedResponses(session, responder, omitExpunged, useUids);
-            if (failedUids.isEmpty()) {
-                okComplete(command, tag, responder);
+            
+            // check if we had some failed uids which didn't pass the UNCHANGEDSINCE filter
+            if (failed.isEmpty()) {
+                okComplete(imapCommand, tag, responder);
             } else {
-                // TODO: Fix me!
-                final StatusResponse response = getStatusResponseFactory().taggedOk(tag, command, HumanReadableText.COMPLETED);
+                // Convert the MessageRanges to an array of IdRange. 
+                // TODO: Maybe this should get moved in an util class
+                List<MessageRange> ranges = MessageRange.toRanges(failed);
+                IdRange[] idRanges = new IdRange[ranges.size()];
+                for (int i = 0 ; i < ranges.size(); i++) {
+                    MessageRange r = ranges.get(i);
+                    if (r.getType() == Type.ONE) {
+                        idRanges[i] = new IdRange(r.getUidFrom());
+                    } else {
+                        idRanges[i] = new IdRange(r.getUidFrom(), r.getUidTo());
+                    }
+                }
+                // we need to return the failed sequences
+                //
+                // See RFC4551 3.2. STORE and UID STORE Commands
+                final StatusResponse response = getStatusResponseFactory().taggedOk(tag, command, HumanReadableText.FAILED, ResponseCode.condStore(idRanges));
                 responder.respond(response);
+               
             }
         } catch (MessageRangeException e) {
             session.getLog().debug("Store failed", e); 
-            taggedBad(command, tag, responder, HumanReadableText.INVALID_MESSAGESET);
+            taggedBad(imapCommand, tag, responder, HumanReadableText.INVALID_MESSAGESET);
         } catch (MailboxException e) {
             session.getLog().debug("Store failed", e);
-            no(command, tag, responder, HumanReadableText.SAVE_FAILED);
+            no(imapCommand, tag, responder, HumanReadableText.SAVE_FAILED);
         }
     }
     
+    /**
+     * Set the flags for given messages
+     * 
+     * @param request
+     * @param mailboxSession
+     * @param mailbox
+     * @param messageSet
+     * @param selected
+     * @param tag
+     * @param command
+     * @param responder
+     * @throws MailboxException
+     */
     private void setFlags(StoreRequest request, MailboxSession mailboxSession, MessageManager mailbox, MessageRange messageSet, SelectedMailbox selected, String tag, ImapCommand command, Responder responder) throws MailboxException {
         
         final Flags flags = request.getFlags();
@@ -125,7 +217,7 @@ public class StoreProcessor extends AbstractMailboxProcessor<StoreRequest> {
         final boolean silent = request.isSilent();
         final boolean isSignedPlus = request.isSignedPlus();
         final boolean isSignedMinus = request.isSignedMinus();
-
+        final long unchangedSince = request.getUnchangedSince();
         final boolean replace;
         final boolean value;
         if (isSignedMinus) {
@@ -149,8 +241,19 @@ public class StoreProcessor extends AbstractMailboxProcessor<StoreRequest> {
             selected.resetNewApplicableFlags();
         }
         
-        if (!silent) {
-
+        if (!silent || unchangedSince != -1) {
+            final Map<Long, Long> modSeqs = new HashMap<Long, Long>();
+           
+            // Check if we need to also send the the mod-sequences back to the client
+            if (unchangedSince != -1) {
+                Iterator<MessageResult> results = mailbox.getMessages(messageSet, FetchGroupImpl.MINIMAL, mailboxSession);
+                while(results.hasNext()) {
+                    MessageResult r = results.next();
+                    // Store the modseq for the uid for later usage in the response
+                    modSeqs.put(r.getUid(),r.getModSeq());
+                }
+            }
+            
             for (Map.Entry<Long, Flags> entry : flagsByUid.entrySet()) {
                 final long uid = entry.getKey();
                 final int msn = selected.msn(uid);
@@ -165,14 +268,29 @@ public class StoreProcessor extends AbstractMailboxProcessor<StoreRequest> {
                 } else {
                     resultUid = null;
                 }
-                
-                
+
                 if (selected.isRecent(uid)) {
                     resultFlags.add(Flags.Flag.RECENT);
                 }
                
-                final FetchResponse response = new FetchResponse(msn, resultFlags, resultUid, null, null, null, null, null, null);
+                 
+                final FetchResponse response;
+                // For more informations related to the FETCH response see
+                //
+                // RFC4551 3.2. STORE and UID STORE Commands
+                if (silent && unchangedSince != -1) {
+                    // We need to return an FETCH response which contains the mod-sequence of the message even if FLAGS.SILENT was used
+                    response = new FetchResponse(msn, null, resultUid, modSeqs.get(resultUid), null, null, null, null, null, null);
+                } else if (!silent && unchangedSince != -1){
+                    //
+                    // Use a FETCH response which contains the mod-sequence and the flags
+                    response = new FetchResponse(msn, resultFlags, resultUid, modSeqs.get(resultUid), null, null, null, null, null, null);
+                } else {
+                    // Use a FETCH response which only contains the flags as no CONDSTORE was used
+                    response = new FetchResponse(msn, resultFlags, resultUid, null, null, null, null, null, null, null);
+                }
                 responder.respond(response);
+
             }
         }
     }

@@ -24,6 +24,7 @@ import static org.apache.james.imap.api.ImapConstants.SUPPORTS_RFC3348;
 import static org.apache.james.imap.api.ImapConstants.VERSION;
 import static org.apache.james.imap.api.ImapConstants.UTF8;
 import static org.apache.james.imap.api.ImapConstants.SUPPORTS_I18NLEVEL_1;
+import static org.apache.james.imap.api.ImapConstants.SUPPORTS_CONDSTORE;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -106,6 +107,7 @@ public class CapabilityProcessor extends AbstractMailboxProcessor<CapabilityRequ
         if (CharsetUtil.getAvailableCharsetNames().contains(UTF8)) {
             capabilities.add(SUPPORTS_I18NLEVEL_1);
         }
+        capabilities.add(SUPPORTS_CONDSTORE);
         return capabilities;
     }
 

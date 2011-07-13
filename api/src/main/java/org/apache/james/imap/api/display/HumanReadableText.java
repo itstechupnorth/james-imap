@@ -40,7 +40,7 @@ public class HumanReadableText {
 
     public static final HumanReadableText UIDNEXT = new HumanReadableText("org.apache.james.imap.UIDNEXT", "Predicted next UID");
     
-    public static final HumanReadableText HIGHEST_MOD_SEQ = new HumanReadableText("org.apache.james.imap.HIGHEST_MOD_SEQ", "");
+    public static final HumanReadableText HIGHEST_MOD_SEQ = new HumanReadableText("org.apache.james.imap.HIGHEST_MOD_SEQ", "Highest");
     public static final HumanReadableText NO_MOD_SEQ = new HumanReadableText("org.apache.james.imap.NO_MOD_SEQ", "Sorry, this mailbox format doesn't support modsequences");
 
     public static final HumanReadableText UID_VALIDITY = new HumanReadableText("org.apache.james.imap.UID_VALIDITY", "UIDs valid");
@@ -90,6 +90,8 @@ public class HumanReadableText {
     public static final HumanReadableText COUNT_FAILED = new HumanReadableText("org.apache.james.imap.COUNT_FAILED", "failed. Count failed.");
 
     public static final HumanReadableText SAVE_FAILED = new HumanReadableText("org.apache.james.imap.SAVE_FAILED", "failed. Save failed.");
+
+    public static final HumanReadableText FAILED = new HumanReadableText("org.apache.james.imap.SAVE_FAILED", "failed.");
 
     public static final HumanReadableText UNSUPPORTED_SEARCH = new HumanReadableText("org.apache.james.imap.UNSUPPORTED_SEARCH", "failed. Unsupported search.");
 

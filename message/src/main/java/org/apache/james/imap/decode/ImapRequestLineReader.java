@@ -508,13 +508,27 @@ public abstract class ImapRequestLineReader {
     }
 
     /**
-     * Reads an argument of type "number" from the request.
+     * Calls {@link #number()} with argument of false
+     * 
+     * @return number
+     * @throws DecodingException
      */
     public long number() throws DecodingException {
-        return readDigits(0, 0, true);
+        return number(false);
     }
 
-    private long readDigits(int add, final long total, final boolean first) throws DecodingException {
+    /**
+     * Reads an argument of type "number" from the request
+     * 
+     * @param stopOnParen true if it should stop to parse on the first closing paren
+     * @return number
+     */
+    public long number(boolean stopOnParen) throws DecodingException {
+        return readDigits(0, 0, true, stopOnParen);
+    }
+    
+    private long readDigits(int add, final long total, final boolean first, boolean stopOnParen
+            ) throws DecodingException {
         final char next;
         if (first) {
             next = nextWordChar();
@@ -525,25 +539,25 @@ public abstract class ImapRequestLineReader {
         final long currentTotal = (10 * total) + add;
         switch (next) {
         case '0':
-            return readDigits(0, currentTotal, false);
+            return readDigits(0, currentTotal, false, stopOnParen);
         case '1':
-            return readDigits(1, currentTotal, false);
+            return readDigits(1, currentTotal, false, stopOnParen);
         case '2':
-            return readDigits(2, currentTotal, false);
+            return readDigits(2, currentTotal, false, stopOnParen);
         case '3':
-            return readDigits(3, currentTotal, false);
+            return readDigits(3, currentTotal, false, stopOnParen);
         case '4':
-            return readDigits(4, currentTotal, false);
+            return readDigits(4, currentTotal, false, stopOnParen);
         case '5':
-            return readDigits(5, currentTotal, false);
+            return readDigits(5, currentTotal, false, stopOnParen);
         case '6':
-            return readDigits(6, currentTotal, false);
+            return readDigits(6, currentTotal, false, stopOnParen);
         case '7':
-            return readDigits(7, currentTotal, false);
+            return readDigits(7, currentTotal, false, stopOnParen);
         case '8':
-            return readDigits(8, currentTotal, false);
+            return readDigits(8, currentTotal, false, stopOnParen);
         case '9':
-            return readDigits(9, currentTotal, false);
+            return readDigits(9, currentTotal, false, stopOnParen);
         case '.':
         case ' ':
         case '>':
@@ -551,6 +565,10 @@ public abstract class ImapRequestLineReader {
         case '\n':
         case '\t':
             return currentTotal;
+        case ')':
+            if (stopOnParen) {
+                return currentTotal;
+            }
         default:
             throw new DecodingException(HumanReadableText.ILLEGAL_ARGUMENTS, "Expected a digit but was " + next);
         }

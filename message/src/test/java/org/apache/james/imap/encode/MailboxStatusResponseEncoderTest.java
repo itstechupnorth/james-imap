@@ -56,7 +56,7 @@ public class MailboxStatusResponseEncoderTest  {
     @Test
     public void testIsAcceptable() throws Exception {
         assertTrue(encoder.isAcceptable(new MailboxStatusResponse(null, null, null,
-                null, null, "mailbox")));
+                null, null, null, "mailbox")));
         assertFalse(encoder.isAcceptable(context.mock(ImapMessage.class)));
         assertFalse(encoder.isAcceptable(null));
     }
@@ -74,6 +74,7 @@ public class MailboxStatusResponseEncoderTest  {
                     with(same(messages)), 
                     with(same(recent)), 
                     with(same(uidNext)),
+                    (Long) with(same(null)),
                     with(same(uidValidity)), 
                     with(same(unseen)), 
                     with(same(mailbox))
@@ -81,6 +82,6 @@ public class MailboxStatusResponseEncoderTest  {
         }});
 
         encoder.encode(new MailboxStatusResponse(messages, recent, uidNext,
-                uidValidity, unseen, mailbox), composer, new FakeImapSession());
+                null, uidValidity, unseen, mailbox), composer, new FakeImapSession());
     }
 }

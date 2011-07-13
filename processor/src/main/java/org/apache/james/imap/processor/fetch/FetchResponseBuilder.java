@@ -59,6 +59,8 @@ public final class FetchResponseBuilder {
     private Date internalDate;
 
     private Long size;
+    
+    private Long modSeq;
 
     private List<FetchResponse.BodyElement> elements;
 
@@ -82,18 +84,24 @@ public final class FetchResponseBuilder {
         body = null;
         bodystructure = null;
         elements = null;
+        modSeq = null;
     }
 
     public void setUid(long uid) {
         this.uid = uid;
     }
 
+    private void setModSeq(long modSeq) {
+        this.modSeq = modSeq;
+    }
+
+    
     public void setFlags(Flags flags) {
         this.flags = flags;
     }
 
     public FetchResponse build() {
-        final FetchResponse result = new FetchResponse(msn, flags, uid, internalDate, size, envelope, body, bodystructure, elements);
+        final FetchResponse result = new FetchResponse(msn, flags, uid, modSeq, internalDate, size, envelope, body, bodystructure, elements);
         return result;
     }
 
@@ -169,6 +177,18 @@ public final class FetchResponseBuilder {
             final FetchResponse.BodyElement element = bodyFetch(result, fetchElement);
             if (element != null) {
                 this.elements.add(element);
+            }
+        }
+        
+        if (fetch.isModSeq()) {
+            long changedSince = fetch.getChangedSince();
+            if (changedSince != -1) {
+                // check if the modsequence if higher then the one specified by the CHANGEDSINCE option
+                if (changedSince < result.getModSeq()) {
+                    setModSeq(result.getModSeq());
+                }
+            } else {
+                setModSeq(result.getModSeq());
             }
         }
         return build();

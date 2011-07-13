@@ -71,6 +71,9 @@ public class StatusCommandParser extends AbstractImapCommandParser {
             items.setUidValidity(true);
         } else if (nextWord.equalsIgnoreCase(ImapConstants.STATUS_UNSEEN)) {
             items.setUnseen(true);
+        } else if (nextWord.equalsIgnoreCase(ImapConstants.STATUS_HIGHESTMODSEQ)) {
+            // HIGHESTMODSEQ status item as defined in RFC4551 3.6 HIGHESTMODSEQ Status Data Items
+            items.setHighestModSeq(true);
         } else {
             throw new DecodingException(HumanReadableText.ILLEGAL_ARGUMENTS, "Unknown status item: '" + nextWord + "'");
         }

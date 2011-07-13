@@ -38,7 +38,9 @@ public class MailboxStatusResponse implements ImapResponseMessage {
 
     private final String mailbox;
 
-    public MailboxStatusResponse(final Long messages, final Long recent, final Long uidNext, final Long uidValidity, final Long unseen, final String mailbox) {
+    private final Long highestModSeq;
+
+    public MailboxStatusResponse(final Long messages, final Long recent, final Long uidNext, final Long highestModSeq, final Long uidValidity, final Long unseen, final String mailbox) {
         super();
         this.messages = messages;
         this.recent = recent;
@@ -46,7 +48,9 @@ public class MailboxStatusResponse implements ImapResponseMessage {
         this.uidValidity = uidValidity;
         this.unseen = unseen;
         this.mailbox = mailbox;
+        this.highestModSeq = highestModSeq;
     }
+    
 
     /**
      * Gets the <code>MESSAGES</code> count for the mailbox.
@@ -100,6 +104,15 @@ public class MailboxStatusResponse implements ImapResponseMessage {
      */
     public final String getMailbox() {
         return mailbox;
+    }
+    
+    /**
+     * Gets the mailbox <code>HIGHESTMODSEQ</code>.
+     * 
+     * @return the mailbox highestModSeq (if requested) or null (if not)
+     */
+    public final Long getHighestModSeq() {
+        return highestModSeq;
     }
 
     public String toString() {

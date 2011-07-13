@@ -197,5 +197,11 @@ public interface SelectedMailbox {
     
     public void resetNewApplicableFlags();
 
+    /**
+     * Return true if the selected mailbox was selected with the condstore option
+     * 
+     * @return condstore
+     */
+    public boolean getCondstore();
 
 }

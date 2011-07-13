@@ -66,6 +66,7 @@ public class FetchResponseEncoder extends AbstractChainedImapEncoder {
             final FetchResponse fetchResponse = (FetchResponse) acceptableMessage;
             final long messageNumber = fetchResponse.getMessageNumber();
             composer.openFetchResponse(messageNumber);
+            encodeModSeq(composer, fetchResponse);
             encodeFlags(composer, fetchResponse);
             encodeInternalDate(composer, fetchResponse);
             encodeSize(composer, fetchResponse);
@@ -78,6 +79,19 @@ public class FetchResponseEncoder extends AbstractChainedImapEncoder {
         }
     }
 
+    // Handle the MODSEQ 
+    private void encodeModSeq(ImapResponseComposer composer, FetchResponse response) throws IOException {
+        Long modSeq = response.getModSeq();
+        if (modSeq != null) {
+            composer.message(ImapConstants.FETCH_MODSEQ);
+            composer.openParen();
+            composer.skipNextSpace();
+            composer.message(modSeq);
+            composer.closeParen();
+        }
+    }
+
+    
     private void encodeBody(ImapResponseComposer composer, Structure body, ImapSession session) throws IOException {
         if (body != null) {
             composer.message(ImapConstants.FETCH_BODY);

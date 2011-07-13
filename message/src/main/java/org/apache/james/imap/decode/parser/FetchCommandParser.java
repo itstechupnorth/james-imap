@@ -31,13 +31,15 @@ import org.apache.james.imap.api.process.ImapSession;
 import org.apache.james.imap.decode.FetchPartPathDecoder;
 import org.apache.james.imap.decode.ImapRequestLineReader;
 import org.apache.james.imap.decode.DecodingException;
+import org.apache.james.imap.decode.ImapRequestLineReader.CharacterValidator;
 import org.apache.james.imap.message.request.FetchRequest;
 
 /**
  * Parse FETCH commands
  */
 public class FetchCommandParser extends AbstractUidCommandParser {
-
+    private final static byte[] CHANGEDSINCE = "CHANGEDSINCE".getBytes();
+    
     public FetchCommandParser() {
         super(ImapCommand.selectedStateCommand(ImapConstants.FETCH_COMMAND_NAME));
     }
@@ -63,6 +65,28 @@ public class FetchCommandParser extends AbstractUidCommandParser {
                 next = nextNonSpaceChar(request);
             }
             request.consumeChar(')');
+            
+            
+            // Now check for the CHANGEDSINCE option which is part of CONDSTORE
+            next = nextNonSpaceChar(request);
+            if (next == '(') {
+                request.consumeChar('(');
+
+                request.consumeWord(new CharacterValidator() {
+                    int pos = 0;
+                    @Override
+                    public boolean isValid(char chr) {
+                        if (pos > CHANGEDSINCE.length) {
+                            return false;
+                        } else {
+                            return CHANGEDSINCE[pos++] == ImapRequestLineReader.cap(chr);
+                        }
+                    }
+                });
+                fetch.setChangedSince(request.number(true));
+                request.consumeChar(')');
+
+            }
         } else {
             addNextElement(request, fetch);
 
@@ -112,6 +136,8 @@ public class FetchCommandParser extends AbstractUidCommandParser {
                 fetch.add(BodyFetchElement.createRFC822Header(), true);
             } else if ("RFC822.TEXT".equalsIgnoreCase(name)) {
                 fetch.add(BodyFetchElement.createRFC822Text(), false);
+            } else if ("MODSEQ".equalsIgnoreCase(name)) {
+                fetch.setModSeq(true);
             } else {
                 throw new DecodingException(HumanReadableText.ILLEGAL_ARGUMENTS, "Invalid fetch attribute: " + name);
             }

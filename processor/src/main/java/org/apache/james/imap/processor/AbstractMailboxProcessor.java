@@ -219,7 +219,14 @@ abstract public class AbstractMailboxProcessor<M extends ImapRequest> extends Ab
             } else {
                 flags.remove(Flags.Flag.RECENT);
             }
-            final FetchResponse response = new FetchResponse(msn, flags, uidOut, null, null, null, null, null, null);
+            final FetchResponse response;
+            
+            // Check if we also need to return the modseq in the response. This is true if the mailbox was selected with the CONSTORE option
+            if (selected.getCondstore()) {
+                response = new FetchResponse(msn, flags, uidOut, mr.getModSeq(), null, null, null, null, null, null);
+            } else {
+                response = new FetchResponse(msn, flags, uidOut, null, null, null, null, null, null, null);
+            }
             responder.respond(response);
         }
     }

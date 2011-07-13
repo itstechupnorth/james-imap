@@ -41,6 +41,10 @@ public class FetchData {
 
     private Set<BodyFetchElement> bodyElements = new HashSet<BodyFetchElement>();
 
+    private boolean modSeq;
+
+    private long changedSince = -1;
+
     public Collection<BodyFetchElement> getBodyElements() {
         return bodyElements;
     }
@@ -105,6 +109,24 @@ public class FetchData {
         return setSeen;
     }
 
+
+    public boolean isModSeq() {
+        return modSeq;
+    }
+
+    public void setModSeq(boolean modSeq) {
+        this.modSeq = modSeq;
+    }
+    
+    public void setChangedSince(long changedSince) {
+        this.changedSince = changedSince;
+        this.modSeq = true;
+    }
+    
+    public long getChangedSince() {
+        return changedSince -1;
+    }
+    
     public void add(BodyFetchElement element, boolean peek) {
         if (!peek) {
             setSeen = true;
@@ -124,6 +146,8 @@ public class FetchData {
         result = PRIME * result + (setSeen ? 1231 : 1237);
         result = PRIME * result + (size ? 1231 : 1237);
         result = PRIME * result + (uid ? 1231 : 1237);
+        result = PRIME * result + (modSeq ? 1231 : 1237);
+        result = (int) (PRIME * result + changedSince);
         return result;
     }
 
@@ -156,6 +180,11 @@ public class FetchData {
             return false;
         if (uid != other.uid)
             return false;
+        if (modSeq != other.modSeq) 
+            return false;
+        if (changedSince != other.changedSince) {
+            return false;
+        }
         return true;
     }
 }

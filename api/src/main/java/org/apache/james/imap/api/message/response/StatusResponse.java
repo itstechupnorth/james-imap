@@ -140,6 +140,13 @@ public interface StatusResponse extends ImapResponseMessage {
             return new ResponseCode("COPYUID", Arrays.asList(new String[] { source, target }), uidValidity, false);
         }
 
+        /** RFC4551 <code>Conditional STORE</code> response code */
+        public static ResponseCode condStore(IdRange[] failedRanges) {
+            String failed = formatRanges(failedRanges);
+
+            return new ResponseCode("MODIFIED", Arrays.asList(new String[] { failed}), 0, false);
+        }
+        
         private static String formatRanges(IdRange[] ranges) {
             if (ranges == null || ranges.length == 0)
                 return "*";
@@ -261,7 +268,7 @@ public interface StatusResponse extends ImapResponseMessage {
          * @return <code>ResponseCode</code>
          */
         public static ResponseCode highestModSeq(long modSeq) {
-            return new ResponseCode("HIGESTMODSEQ", modSeq);
+            return new ResponseCode("HIGHESTMODSEQ", modSeq);
         }
         
         /**

@@ -53,7 +53,7 @@ public class ListResponseEncoderTest {
     public void setUp() throws Exception {
         mockNextEncoder = context.mock(ImapEncoder.class);
         composer = context.mock(ImapResponseComposer.class);
-        response = new SearchResponse(IDS);
+        response = new SearchResponse(IDS, null);
         encoder = new SearchResponseEncoder(mockNextEncoder);
     }
 

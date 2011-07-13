@@ -71,6 +71,17 @@ public class StoreCommandParserTest {
                 flags, false, "A01");
     }
 
+
+    @Test
+    public void testShouldParseUnchangedSince() throws Exception {
+        IdRange[] ranges = { new IdRange(1) };
+        Flags flags = new Flags();
+        flags.add(Flags.Flag.DRAFT);
+        flags.add(Flags.Flag.FLAGGED);
+        check("1 (UNCHANGEDSINCE 100) FLAGS.SILENT (\\Draft \\Flagged)\r\n", ranges, true, null,
+                flags, false, "A01");
+    }
+    
     private void check(String input, final IdRange[] idSet,final boolean silent,
             final Boolean sign, final Flags flags, final boolean useUids, final String tag)
             throws Exception {

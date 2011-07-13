@@ -41,6 +41,7 @@ import org.apache.james.imap.api.message.response.StatusResponse.ResponseCode;
 import org.apache.james.imap.api.process.ImapSession;
 import org.apache.james.imap.decode.ImapRequestLineReader;
 import org.apache.james.imap.decode.DecodingException;
+import org.apache.james.imap.decode.ImapRequestLineReader.CharacterValidator;
 import org.apache.james.imap.message.request.SearchRequest;
 
 /**
@@ -98,7 +99,7 @@ public class SearchCommandParser extends AbstractUidCommandParser {
             case 'L':
                 return larger(request);
             case 'M':
-                throw new DecodingException(HumanReadableText.ILLEGAL_ARGUMENTS, "Unknown search key");
+                return modseq(request);
             case 'N':
                 return n(session, request, charset);
             case 'O':
@@ -122,6 +123,30 @@ public class SearchCommandParser extends AbstractUidCommandParser {
             default:
                 throw new DecodingException(HumanReadableText.ILLEGAL_ARGUMENTS, "Unknown search key");
             }
+        }
+    }
+
+    private SearchKey modseq(ImapRequestLineReader request) throws DecodingException {        
+        nextIsO(request);
+        nextIsD(request);
+        nextIsS(request);
+        nextIsE(request);
+        nextIsQ(request);
+        
+        try {
+            return SearchKey.buildModSeq(request.number());
+        } catch (DecodingException e) {
+            // Just consume the [<entry-name> <entry-type-req>] and ignore it
+            // See RFC4551 3.4. MODSEQ Search Criterion in SEARCH
+            request.consumeQuoted();
+            request.consumeWord(new CharacterValidator() {
+                
+                @Override
+                public boolean isValid(char chr) {
+                    return true;
+                }
+            });
+            return SearchKey.buildModSeq(request.number());
         }
     }
 
@@ -799,6 +824,10 @@ public class SearchCommandParser extends AbstractUidCommandParser {
     }
     private void nextIsO(ImapRequestLineReader request) throws DecodingException {
         nextIs(request, 'O', 'o');
+    }
+
+    private void nextIsQ(ImapRequestLineReader request) throws DecodingException {
+        nextIs(request, 'Q', 'q');
     }
 
     private void nextIsF(ImapRequestLineReader request) throws DecodingException {

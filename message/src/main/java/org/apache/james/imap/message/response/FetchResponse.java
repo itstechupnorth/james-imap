@@ -47,7 +47,9 @@ public final class FetchResponse implements ImapResponseMessage {
 
     private final Structure bodystructure;
 
-    public FetchResponse(final int messageNumber, final Flags flags, final Long uid, final Date internalDate, final Long size, final Envelope envelope, final Structure body, final Structure bodystructure, List<BodyElement> elements) {
+    private final Long modSeq;
+
+    public FetchResponse(final int messageNumber, final Flags flags, final Long uid, final Long modSeq, final Date internalDate, final Long size, final Envelope envelope, final Structure body, final Structure bodystructure, List<BodyElement> elements) {
         super();
         this.messageNumber = messageNumber;
         this.flags = flags;
@@ -58,6 +60,7 @@ public final class FetchResponse implements ImapResponseMessage {
         this.elements = elements;
         this.body = body;
         this.bodystructure = bodystructure;
+        this.modSeq = modSeq;
     }
 
     /**
@@ -147,6 +150,16 @@ public final class FetchResponse implements ImapResponseMessage {
      */
     public List<BodyElement> getElements() {
         return elements;
+    }
+    
+    /**
+     * Return the mod-sequence for the message or null if the <code>FETCH</code> did not 
+     * include it
+     * 
+     * @return modSeq
+     */
+    public Long getModSeq() {
+        return modSeq;
     }
 
     /**

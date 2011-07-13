@@ -48,7 +48,9 @@ public class SelectedMailboxImpl implements SelectedMailbox {
 
     private boolean recentUidRemoved;
 
-    public SelectedMailboxImpl(final MailboxManager mailboxManager, final Iterator<Long> uids, final Flags applicableFlags, final ImapSession session, final MailboxPath path) throws MailboxException {
+    private final boolean condstore;
+
+    public SelectedMailboxImpl(final MailboxManager mailboxManager, final Iterator<Long> uids, final Flags applicableFlags, final ImapSession session, final MailboxPath path, final boolean condstore) throws MailboxException {
         recentUids = new TreeSet<Long>();
         recentUidRemoved = false;
         MailboxSession mailboxSession = ImapSessionUtils.getMailboxSession(session);
@@ -58,6 +60,7 @@ public class SelectedMailboxImpl implements SelectedMailbox {
         mailboxManager.addListener(path, events, mailboxSession);
         converter = new UidToMsnConverter(session, uids);
         mailboxManager.addListener(path, converter, mailboxSession);
+        this.condstore = condstore;
     }
 
     /**
@@ -283,5 +286,10 @@ public class SelectedMailboxImpl implements SelectedMailbox {
      */
     public void resetNewApplicableFlags() {
         events.resetNewApplicableFlags();
+    }
+
+    @Override
+    public boolean getCondstore() {
+        return condstore;
     }
 }

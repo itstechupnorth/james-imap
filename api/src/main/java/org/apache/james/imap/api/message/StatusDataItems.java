@@ -29,6 +29,8 @@ public class StatusDataItems {
 
     private boolean unseen;
 
+    private boolean highestModSeq;
+
     public boolean isMessages() {
         return messages;
     }
@@ -69,4 +71,12 @@ public class StatusDataItems {
         this.unseen = unseen;
     }
 
+    public void setHighestModSeq(boolean highestModSeq) {
+        this.highestModSeq = highestModSeq;
+    }
+    
+    public boolean isHighestModSeq() {
+        return highestModSeq;
+    }
+    
 }
