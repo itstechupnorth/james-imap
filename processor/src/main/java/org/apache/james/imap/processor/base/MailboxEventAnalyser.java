@@ -109,9 +109,7 @@ public class MailboxEventAnalyser extends ImapStateAwareMailboxListener {
                         for (int i = 0; i < uFlags.size(); i++) {
                             UpdatedFlags u = uFlags.get(i);
                             if (interestingFlags(u)) {
-                                synchronized (flagUpdateUids) {
-                                    flagUpdateUids.add(u.getUid());
-                                }
+                                flagUpdateUids.add(u.getUid());
                                 
                             }
                         }
@@ -141,29 +139,27 @@ public class MailboxEventAnalyser extends ImapStateAwareMailboxListener {
                         }
                     }
                     
+                    int size = applicableFlags.getUserFlags().length;
+                    FlagsUpdated updatedF = (FlagsUpdated) messageEvent;
+                    List<UpdatedFlags> flags = updatedF.getUpdatedFlags();
 
-                    synchronized (applicableFlags) {
-                        int size = applicableFlags.getUserFlags().length;
-                        FlagsUpdated updatedF = (FlagsUpdated) messageEvent;
-                        List<UpdatedFlags> flags = updatedF.getUpdatedFlags();
-                        
-                       for (int i = 0; i < flags.size(); i++) {
-                          applicableFlags.add(flags.get(i).getNewFlags());
+                    for (int i = 0; i < flags.size(); i++) {
+                        applicableFlags.add(flags.get(i).getNewFlags());
 
-                       }
-                       
-                       // \RECENT is not a applicable flag in imap so remove it from the list
-                       applicableFlags.remove(Flags.Flag.RECENT);
-                       
-                       if (size < applicableFlags.getUserFlags().length) {
-                          applicableFlagsChanged = true;
-                       }
+                    }
+
+                    // \RECENT is not a applicable flag in imap so remove it
+                    // from the list
+                    applicableFlags.remove(Flags.Flag.RECENT);
+
+                    if (size < applicableFlags.getUserFlags().length) {
+                        applicableFlagsChanged = true;
                     }
                     
+                    
                 } else if (messageEvent instanceof Expunged) {
-                    synchronized (expungedUids) {
-                        expungedUids.addAll(messageEvent.getUids());
-                    }
+                    expungedUids.addAll(messageEvent.getUids());
+                    
                 }
             } else if (event instanceof MailboxDeletion) {
                 if (eventSessionId != sessionId) {
@@ -217,7 +213,7 @@ public class MailboxEventAnalyser extends ImapStateAwareMailboxListener {
      * @return true if any flag changes from current session will be ignored,
      *         false otherwise
      */
-    public final boolean isSilentFlagChanges() {
+    public synchronized final boolean isSilentFlagChanges() {
         return silentFlagChanges;
     }
 
@@ -228,7 +224,7 @@ public class MailboxEventAnalyser extends ImapStateAwareMailboxListener {
      *            true if any flag changes from current session should be
      *            ignored, false otherwise
      */
-    public final void setSilentFlagChanges(boolean silentFlagChanges) {
+    public synchronized final void setSilentFlagChanges(boolean silentFlagChanges) {
         this.silentFlagChanges = silentFlagChanges;
     }
 
@@ -237,7 +233,7 @@ public class MailboxEventAnalyser extends ImapStateAwareMailboxListener {
      * 
      * @return true if new messages have been added, false otherwise
      */
-    public final boolean isSizeChanged() {
+    public synchronized final boolean isSizeChanged() {
         return sizeChanged;
     }
 
@@ -247,7 +243,7 @@ public class MailboxEventAnalyser extends ImapStateAwareMailboxListener {
      * @return true when the mailbox has been deleted by another session, false
      *         otherwise
      */
-    public final boolean isDeletedByOtherSession() {
+    public synchronized final boolean isDeletedByOtherSession() {
         return isDeletedByOtherSession;
     }
 
@@ -257,13 +253,12 @@ public class MailboxEventAnalyser extends ImapStateAwareMailboxListener {
      * @return uids
      */
 
-    public Collection<Long> flagUpdateUids() {
-        synchronized (flagUpdateUids) {
-            // copy the TreeSet to fix possible
-            // java.util.ConcurrentModificationException
-            // See IMAP-278
-            return Collections.unmodifiableSet(new TreeSet<Long>(flagUpdateUids));
-        }
+    public synchronized Collection<Long> flagUpdateUids() {
+        // copy the TreeSet to fix possible
+        // java.util.ConcurrentModificationException
+        // See IMAP-278
+        return Collections.unmodifiableSet(new TreeSet<Long>(flagUpdateUids));
+        
     }
 
     /**
@@ -271,13 +266,12 @@ public class MailboxEventAnalyser extends ImapStateAwareMailboxListener {
      * 
      * @return uids
      */
-    public Collection<Long> expungedUids() {
-        synchronized (expungedUids) {
-            // copy the TreeSet to fix possible
-            // java.util.ConcurrentModificationException
-            // See IMAP-278
-            return Collections.unmodifiableSet(new TreeSet<Long>(expungedUids));
-        }
+    public synchronized Collection<Long> expungedUids() {
+        // copy the TreeSet to fix possible
+        // java.util.ConcurrentModificationException
+        // See IMAP-278
+        return Collections.unmodifiableSet(new TreeSet<Long>(expungedUids));
+        
     }
 
     /**
@@ -285,10 +279,9 @@ public class MailboxEventAnalyser extends ImapStateAwareMailboxListener {
      * 
      * @return hasUids
      */
-    public boolean hasExpungedUids() {
-        synchronized (expungedUids) {
-            return !expungedUids.isEmpty();
-        }
+    public synchronized boolean hasExpungedUids() {
+        return !expungedUids.isEmpty();
+        
     }
 
     /**
@@ -297,11 +290,9 @@ public class MailboxEventAnalyser extends ImapStateAwareMailboxListener {
     public synchronized void close() {
         closed = true;
         flagUpdateUids.clear();
-        flagUpdateUids = null;
 
         uninterestingFlag = null;
         expungedUids.clear();
-        expungedUids = null;
     }
 
     /*
