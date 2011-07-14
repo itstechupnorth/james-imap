@@ -46,12 +46,7 @@ public class CloseProcessor extends AbstractMailboxProcessor<CloseRequest> {
 
                 mailbox.expunge(MessageRange.all(), mailboxSession);
                 session.deselect();
-                // TODO: the following comment was present in the code before
-                // refactoring
-                // TODO: doesn't seem to match the implementation
-                // TODO: check that implementation is correct.
-                // Don't send unsolicited responses on close.
-                unsolicitedResponses(session, responder, false);
+
                 okComplete(command, tag, responder);
             }
 
