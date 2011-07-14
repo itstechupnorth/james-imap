@@ -20,10 +20,12 @@ package org.apache.james.imap.processor;
 
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 
 import javax.mail.Flags;
 
 import org.apache.james.imap.api.ImapCommand;
+import org.apache.james.imap.api.ImapConstants;
 import org.apache.james.imap.api.ImapSessionUtils;
 import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.api.message.IdRange;
@@ -40,6 +42,7 @@ import org.apache.james.imap.message.response.ExpungeResponse;
 import org.apache.james.imap.message.response.FetchResponse;
 import org.apache.james.imap.message.response.FlagsResponse;
 import org.apache.james.imap.message.response.RecentResponse;
+import org.apache.james.imap.message.response.VanishedResponse;
 import org.apache.james.imap.processor.base.AbstractChainedProcessor;
 import org.apache.james.imap.processor.base.FetchGroupImpl;
 import org.apache.james.mailbox.MailboxConstants;
@@ -137,9 +140,14 @@ abstract public class AbstractMailboxProcessor<M extends ImapRequest> extends Ab
         }
         // Expunged messages
         if (!omitExpunged) {
-            addExpungedResponses(selected, responder);
+            // Check if QRESYNC was enabled. If so we MUST use VANISHED responses
+            if (EnableProcessor.getEnabledCapabilities(session).contains(ImapConstants.SUPPORTS_QRESYNC)) {
+                addVanishedResponse(selected, responder);
+            } else {
+                addExpungedResponses(selected, responder);
+            }
             
-            // Only reset the events if we send the EXPUNGE responses. See IMAP-286
+            // Only reset the events if we send the EXPUNGE or VANISHED responses. See IMAP-286
             selected.resetExpungedUids();
 
         }
@@ -163,11 +171,26 @@ abstract public class AbstractMailboxProcessor<M extends ImapRequest> extends Ab
             // are updated correctly.
             // See 7.4.1. EXPUNGE Response
             final int msn = selected.remove(uidValue);
-            // TODO: use factory
             ExpungeResponse response = new ExpungeResponse(msn);
             responder.respond(response);
         }
     }
+    
+    private void addVanishedResponse(final SelectedMailbox selected, final ImapProcessor.Responder responder) {
+        final Collection<Long> expungedUids = selected.expungedUids();
+        List<MessageRange> ranges = MessageRange.toRanges(expungedUids);
+        IdRange[] uidRange = new IdRange[ranges.size()];
+        for (int i = 0 ; i < ranges.size(); i++) {
+            MessageRange r = ranges.get(i);
+            if (r.getType() == Type.ONE) {
+                uidRange[i] = new IdRange(r.getUidFrom());
+            } else {
+                uidRange[i] = new IdRange(r.getUidFrom(), r.getUidTo());
+            }
+        }
+        responder.respond(new VanishedResponse(uidRange, false));
+    }
+    
 
     private void addFlagsResponses(final ImapSession session, final SelectedMailbox selected, final ImapProcessor.Responder responder, boolean useUid) {
        
@@ -197,7 +220,7 @@ abstract public class AbstractMailboxProcessor<M extends ImapRequest> extends Ab
         }
     }
 
-    private void addFlagsResponses(final ImapSession session, final SelectedMailbox selected, final ImapProcessor.Responder responder, boolean useUid, MessageRange messageSet, MessageManager mailbox, MailboxSession mailboxSession) throws MailboxException {
+    protected void addFlagsResponses(final ImapSession session, final SelectedMailbox selected, final ImapProcessor.Responder responder, boolean useUid, MessageRange messageSet, MessageManager mailbox, MailboxSession mailboxSession) throws MailboxException {
 
         final Iterator<MessageResult> it = mailbox.getMessages(messageSet, FetchGroupImpl.MINIMAL, mailboxSession);
         while (it.hasNext()) {
@@ -221,8 +244,9 @@ abstract public class AbstractMailboxProcessor<M extends ImapRequest> extends Ab
             }
             final FetchResponse response;
             
-            // Check if we also need to return the modseq in the response. This is true if the mailbox was selected with the CONSTORE option
-            if (selected.getCondstore()) {
+            // Check if we also need to return the MODSEQ in the response. This is true if the mailbox was selected with the CONSTORE option or
+            // if QRESYNC was enabled
+            if (selected.getCondstore() || EnableProcessor.getEnabledCapabilities(session).contains(ImapConstants.SUPPORTS_QRESYNC)) {
                 response = new FetchResponse(msn, flags, uidOut, mr.getModSeq(), null, null, null, null, null, null);
             } else {
                 response = new FetchResponse(msn, flags, uidOut, null, null, null, null, null, null, null);
@@ -239,14 +263,12 @@ abstract public class AbstractMailboxProcessor<M extends ImapRequest> extends Ab
 
     private void addRecentResponses(final SelectedMailbox selected, final ImapProcessor.Responder responder) {
         final int recentCount = selected.recentCount();
-        // TODO: use factory
         RecentResponse response = new RecentResponse(recentCount);
         responder.respond(response);
     }
 
     private void addExistsResponses(final ImapSession session, final SelectedMailbox selected, final ImapProcessor.Responder responder) {
         final long existsCount = selected.existsCount();
-        // TODO: use factory
         final ExistsResponse response = new ExistsResponse(existsCount);
         responder.respond(response);
     }
@@ -352,7 +374,7 @@ abstract public class AbstractMailboxProcessor<M extends ImapRequest> extends Ab
         return sb.toString();
     }
 
-    public String mailboxName(final boolean relative, final MailboxPath path, final char delimiter) {
+    protected String mailboxName(final boolean relative, final MailboxPath path, final char delimiter) {
         if (relative) {
             return path.getName();
         } else {
@@ -368,7 +390,7 @@ abstract public class AbstractMailboxProcessor<M extends ImapRequest> extends Ab
         return factory;
     }
 
-    public MessageManager getSelectedMailbox(final ImapSession session) throws MailboxException {
+    protected MessageManager getSelectedMailbox(final ImapSession session) throws MailboxException {
         MessageManager result;
         final SelectedMailbox selectedMailbox = session.getSelected();
         if (selectedMailbox == null) {

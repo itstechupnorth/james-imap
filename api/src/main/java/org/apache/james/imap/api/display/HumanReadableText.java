@@ -150,6 +150,13 @@ public class HumanReadableText {
     public static final HumanReadableText COMPRESS_ALREADY_ACTIVE = new HumanReadableText("org.apache.james.imap.DEFLATE", "already active");
 
     public static final HumanReadableText UNSELECT = new HumanReadableText("org.apache.james.imap.UNSELECT", "No Mailbox selected.");
+    
+    public static final HumanReadableText QRESYNC_NOT_ENABLED = new HumanReadableText("org.apache.james.imap.QRESYNC_NOT_ENABLED", "QRESYNC not enabled.");
+    public static final HumanReadableText QRESYNC_UIDVALIDITY_MISMATCH = new HumanReadableText("org.apache.james.imap.QRESYNC_UIDVALIDITY_MISMATCH", "Sorry, UIDVALIDITY mismatch.");
+    public static final HumanReadableText QRESYNC_CLOSED = new HumanReadableText("org.apache.james.imap.QRESYNC_CLOSED", "");
+    public static final HumanReadableText QRESYNC_VANISHED_WITHOUT_CHANGEDSINCE = new HumanReadableText("org.apache.james.imap.QRESYNC_VANISHED_WITHOUT_CHANGEDSINCE", "VANISHED used without CHANGEDSINCE");
+
+    
     private final String defaultValue;
 
     private final String key;

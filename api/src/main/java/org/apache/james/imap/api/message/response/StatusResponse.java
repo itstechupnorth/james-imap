@@ -126,6 +126,10 @@ public interface StatusResponse extends ImapResponseMessage {
         /** RFC2060 <code>TRYCREATE</code> response code */
         private static final ResponseCode TRYCREATE = new ResponseCode("TRYCREATE");
 
+        /** RFC5162 <code>CLOSED</code> response code */
+        private static final ResponseCode CLOSED = new ResponseCode("CLOSED");
+
+        
         /** RFC4315 <code>APPENDUID</code> response code */
         public static ResponseCode appendUid(long uidValidity, IdRange[] uids) {
             String uidParam = formatRanges(uids);
@@ -160,6 +164,15 @@ public interface StatusResponse extends ImapResponseMessage {
             return rangeBuilder.toString();
         }
 
+        /**
+         * Create a RFC5162 (QRESYNC) <code>CLOSED</code> response code
+         * 
+         * @return code
+         */
+        public static ResponseCode closed() {
+            return CLOSED;
+        }
+        
         /**
          * Creates a RFC2060 <code>ALERT</code> response code.
          * 

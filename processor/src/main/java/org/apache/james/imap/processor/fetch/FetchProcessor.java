@@ -25,6 +25,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.apache.james.imap.api.ImapCommand;
+import org.apache.james.imap.api.ImapConstants;
 import org.apache.james.imap.api.ImapSessionUtils;
 import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.api.message.BodyFetchElement;
@@ -36,6 +37,7 @@ import org.apache.james.imap.api.process.ImapSession;
 import org.apache.james.imap.message.request.FetchRequest;
 import org.apache.james.imap.message.response.FetchResponse;
 import org.apache.james.imap.processor.AbstractMailboxProcessor;
+import org.apache.james.imap.processor.EnableProcessor;
 import org.apache.james.imap.processor.base.FetchGroupImpl;
 import org.apache.james.mailbox.MailboxException;
 import org.apache.james.mailbox.MailboxManager;
@@ -72,6 +74,7 @@ public class FetchProcessor extends AbstractMailboxProcessor<FetchRequest> {
         final boolean useUids = request.isUseUids();
         final IdRange[] idSet = request.getIdSet();
         final FetchData fetch = request.getFetch();
+        
         try {
             final MessageManager mailbox = getSelectedMailbox(session);
 
@@ -79,6 +82,16 @@ public class FetchProcessor extends AbstractMailboxProcessor<FetchRequest> {
                 throw new MailboxException("Session not in SELECTED state");
             }
 
+            final boolean vanished = fetch.getVanished();
+            if (vanished && !EnableProcessor.getEnabledCapabilities(session).contains(ImapConstants.SUPPORTS_QRESYNC)) {
+                taggedBad(command, tag, responder, HumanReadableText.QRESYNC_NOT_ENABLED);
+                return;
+            }
+           
+            if (vanished && fetch.getChangedSince() == -1) {
+                taggedBad(command, tag, responder, HumanReadableText.QRESYNC_VANISHED_WITHOUT_CHANGEDSINCE);
+                return;
+            }
             final MailboxSession mailboxSession = ImapSessionUtils.getMailboxSession(session);
             List<MessageRange> ranges = new ArrayList<MessageRange>();
 
@@ -91,8 +104,10 @@ public class FetchProcessor extends AbstractMailboxProcessor<FetchRequest> {
                 }
             }
 
+            // TODO: Handle QRESYNC VANISHED responses 
             processMessageRanges(session, mailbox, ranges, fetch, useUids, mailboxSession, responder);
 
+            
             // Don't send expunge responses if FETCH is used to trigger this
             // processor. See IMAP-284
             final boolean omitExpunged = (!useUids);

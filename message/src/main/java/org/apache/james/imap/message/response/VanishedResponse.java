@@ -16,27 +16,40 @@
  * specific language governing permissions and limitations      *
  * under the License.                                           *
  ****************************************************************/
-package org.apache.james.imap.decode.parser;
 
-import org.apache.james.imap.api.ImapCommand;
-import org.apache.james.imap.api.ImapConstants;
+package org.apache.james.imap.message.response;
+
 import org.apache.james.imap.api.message.IdRange;
-import org.apache.james.imap.message.request.AbstractMailboxSelectionRequest;
-import org.apache.james.imap.message.request.ExamineRequest;
+import org.apache.james.imap.api.message.response.ImapResponseMessage;
 
-/**
- * Parse EXAMINE commands
- */
-public class ExamineCommandParser extends AbstractSelectionCommandParser {
 
-    public ExamineCommandParser() {
-        super(ImapCommand.authenticatedStateCommand(ImapConstants.EXAMINE_COMMAND_NAME));
+public class VanishedResponse implements ImapResponseMessage{
+
+    private IdRange[] uids;
+    private boolean earlier;
+
+    public VanishedResponse(IdRange[] uids, boolean earlier) {
+        this.earlier = earlier;
+        this.uids = uids;
     }
-
-    @Override
-    protected AbstractMailboxSelectionRequest createRequest(ImapCommand command, String mailboxName, boolean condstore, Long lastKnownUidValidity, Long knownModSeq, IdRange[] uidSet, IdRange[] knownUidSet, IdRange[] knownSequenceSet, String tag) {
-        return new ExamineRequest(command, mailboxName, condstore, lastKnownUidValidity, knownModSeq, uidSet, knownUidSet, knownSequenceSet, tag);
+    
+    /**
+     * Return the uids which where expunged
+     * 
+     * @return uids
+     */
+    public final IdRange[] getUids() {
+        return uids;
     }
-
-
+    
+    /**
+     * Return true if the <code>VANISHED</code> response was caused
+     * because of an earlier SELECT/EXAMINE (QRESYNC) or UID FETCH (VANISHED)
+     * 
+     * @return earlier
+     */
+    public final boolean isEarlier() {
+        return earlier;
+    }
+    
 }

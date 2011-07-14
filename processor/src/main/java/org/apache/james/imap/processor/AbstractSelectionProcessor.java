@@ -26,8 +26,10 @@ import java.util.List;
 import javax.mail.Flags;
 
 import org.apache.james.imap.api.ImapCommand;
+import org.apache.james.imap.api.ImapConstants;
 import org.apache.james.imap.api.ImapSessionUtils;
 import org.apache.james.imap.api.display.HumanReadableText;
+import org.apache.james.imap.api.message.IdRange;
 import org.apache.james.imap.api.message.response.StatusResponse;
 import org.apache.james.imap.api.message.response.StatusResponse.ResponseCode;
 import org.apache.james.imap.api.message.response.StatusResponseFactory;
@@ -46,7 +48,9 @@ import org.apache.james.mailbox.MailboxNotFoundException;
 import org.apache.james.mailbox.MailboxPath;
 import org.apache.james.mailbox.MailboxSession;
 import org.apache.james.mailbox.MessageManager;
+import org.apache.james.mailbox.SearchQuery;
 import org.apache.james.mailbox.MessageManager.MetaData;
+import org.apache.james.mailbox.SearchQuery.NumericRange;
 import org.apache.james.mailbox.MessageRange;
 import org.apache.james.mailbox.MessageResult;
 
@@ -83,12 +87,9 @@ abstract class AbstractSelectionProcessor<M extends AbstractMailboxSelectionRequ
         final String mailboxName = request.getMailboxName();
         try {
             final MailboxPath fullMailboxPath = buildFullPath(session, mailboxName);
-            final MessageManager.MetaData metaData = selectMailbox(fullMailboxPath, session, request.getCondstore());
-            respond(tag, command, session, metaData, responder);
-            
-            // Reset the saved sequence-set after successful SELECT / EXAMINE
-            // See RFC 5812 2.1. Normative Description of the SEARCHRES Extension
-            SearchResUtil.resetSavedSequenceSet(session);
+
+            respond(tag, command, session, fullMailboxPath, request, responder);
+           
             
         } catch (MailboxNotFoundException e) {
             session.getLog().debug("Select failed", e);
@@ -99,19 +100,104 @@ abstract class AbstractSelectionProcessor<M extends AbstractMailboxSelectionRequ
         }
     }
 
-    private void respond(String tag, ImapCommand command, ImapSession session, final MessageManager.MetaData metaData, Responder responder) throws MailboxException {
-
+    private void respond(String tag, ImapCommand command, ImapSession session, MailboxPath fullMailboxPath, AbstractMailboxSelectionRequest request, Responder responder) throws MailboxException {
+        
+        Long lastKnownUidValidity = request.getLastKnownUidValidity();
+        // Check if a QRESYNC parameter was used and if so if QRESYNC was enabled before.
+        // If it was not enabled before its needed to return a BAD response
+        //
+        // From RFC5162 3.1. QRESYNC Parameter to SELECT/EXAMINE
+        //
+        //    A server MUST respond with a tagged BAD response if the Quick
+        //    Resynchronization parameter to SELECT/EXAMINE command is specified
+        //    and the client hasn't issued "ENABLE QRESYNC" in the current
+        //    connection.
+        if (lastKnownUidValidity != null && !EnableProcessor.getEnabledCapabilities(session).contains(ImapConstants.SUPPORTS_QRESYNC)) {
+            taggedBad(command, tag, responder, HumanReadableText.QRESYNC_NOT_ENABLED);
+            return;
+        }
+        
+        final MessageManager.MetaData metaData = selectMailbox(fullMailboxPath, session, request.getCondstore());
         final SelectedMailbox selected = session.getSelected();
 
         flags(responder, selected);
         exists(responder, metaData);
         recent(responder, selected);
         uidValidity(responder, metaData);
-        unseen(responder, metaData, selected);
+        unseen(responder, metaData, selected, ImapSessionUtils.getMailboxSession(session));
         permanentFlags(responder, metaData, selected);
         highestModSeq(responder, metaData, selected);
         uidNext(responder, metaData);
-        taggedOk(responder, tag, command, metaData);
+        
+        // Now do the QRESYNC processing if necessary
+        // 
+        // If the mailbox does nto store the mod-sequence in a permanent way its needed to not process the QRESYNC paramters
+        // The same is true if none are given ;)
+        if (metaData.isModSeqPermanent() && lastKnownUidValidity != null) {
+            if (lastKnownUidValidity == metaData.getUidValidity()) {
+                
+                final MailboxManager mailboxManager = getMailboxManager();
+                final MailboxSession mailboxSession = ImapSessionUtils.getMailboxSession(session);
+                final MessageManager mailbox = mailboxManager.getMailbox(fullMailboxPath, mailboxSession);
+               
+                
+                //  If the provided UIDVALIDITY matches that of the selected mailbox, the
+                //  server then checks the last known modification sequence.
+                //
+                //  The server sends the client any pending flag changes (using FETCH
+                //  responses that MUST contain UIDs) and expunges those that have
+                //  occurred in this mailbox since the provided modification sequence.
+                SearchQuery sq = new SearchQuery();
+                sq.andCriteria(SearchQuery.modSeqGreaterThan(request.getKnownModSeq()));
+                
+                IdRange[] uidSet = request.getUidSet();
+                
+                // Check if the know uid set was provided. If so we only need to get the uids of these messages that matched here
+                if (uidSet != null) {
+                    NumericRange[] nranges = new NumericRange[uidSet.length];
+
+                    for (int i = 0 ; i < uidSet.length; i++) {
+                        IdRange r = uidSet[i];
+                        long low = r.getLowVal();
+                        long high = r.getHighVal();
+                        if (low == high) {
+                            nranges[i] = new NumericRange(low);
+                        } else {
+                            nranges[i] = new NumericRange(low, high);
+                        }
+                    
+                    }
+                    sq.andCriteria(SearchQuery.uid(nranges));
+                }
+
+                Iterator<Long> uidsIt = mailbox.search(sq, mailboxSession);
+                List<Long> uids = new ArrayList<Long>();
+                while(uidsIt.hasNext()) {
+                    uids.add(uidsIt.next());
+                }
+                if (uids.isEmpty() == false) {
+                    
+                    //TODO: Send also VANISHED responses as stated in QRESYNC RFC
+                    List<MessageRange> ranges = MessageRange.toRanges(uids);
+                    for (int i = 0; i < ranges.size(); i++) {
+                        addFlagsResponses(session, selected, responder, true, ranges.get(i), mailbox, mailboxSession);
+                    }
+                }
+                taggedOk(responder, tag, command, metaData, HumanReadableText.SELECT);
+            } else {
+                
+                taggedOk(responder, tag, command, metaData, HumanReadableText.QRESYNC_UIDVALIDITY_MISMATCH);
+            }
+        } else {
+            taggedOk(responder, tag, command, metaData, HumanReadableText.SELECT);
+        }
+        
+        
+        
+        
+        // Reset the saved sequence-set after successful SELECT / EXAMINE
+        // See RFC 5812 2.1. Normative Description of the SEARCHRES Extension
+        SearchResUtil.resetSavedSequenceSet(session);
     }
 
     private void highestModSeq(Responder responder, MetaData metaData, SelectedMailbox selected) {
@@ -131,7 +217,7 @@ abstract class AbstractSelectionProcessor<M extends AbstractMailboxSelectionRequ
         responder.respond(untaggedOk);
     }
 
-    private void taggedOk(final Responder responder, final String tag, final ImapCommand command, final MetaData metaData) {
+    private void taggedOk(final Responder responder, final String tag, final ImapCommand command, final MetaData metaData, HumanReadableText text) {
         final boolean writeable = metaData.isWriteable() && !openReadOnly;
         final ResponseCode code;
         if (writeable) {
@@ -139,19 +225,18 @@ abstract class AbstractSelectionProcessor<M extends AbstractMailboxSelectionRequ
         } else {
             code = ResponseCode.readOnly();
         }
-        final StatusResponse taggedOk = statusResponseFactory.taggedOk(tag, command, HumanReadableText.SELECT, code);
+        final StatusResponse taggedOk = statusResponseFactory.taggedOk(tag, command, text, code);
         responder.respond(taggedOk);
     }
 
-
-    private void unseen(Responder responder, MessageManager.MetaData metaData, final SelectedMailbox selected) throws MailboxException {
+    private void unseen(Responder responder, MessageManager.MetaData metaData, final SelectedMailbox selected, MailboxSession session) throws MailboxException {
         final Long firstUnseen = metaData.getFirstUnseen();
         if (firstUnseen != null) {
             final long unseenUid = firstUnseen;
             int msn = selected.msn(unseenUid);
 
             if (msn == SelectedMailbox.NO_SUCH_MESSAGE)
-                throw new MailboxException("No message found with uid " + unseenUid);
+                throw new MailboxException("No message found with uid " + unseenUid + " in mailbox " + selected.getPath().getFullName(session.getPathDelimiter()));
 
             final StatusResponse untaggedOk = statusResponseFactory.untaggedOk(HumanReadableText.unseen(msn), ResponseCode.unseen(msn));
             responder.respond(untaggedOk);
@@ -185,9 +270,19 @@ abstract class AbstractSelectionProcessor<M extends AbstractMailboxSelectionRequ
         final SelectedMailbox sessionMailbox;
         final SelectedMailbox currentMailbox = session.getSelected();
         if (currentMailbox == null || !currentMailbox.getPath().equals(mailboxPath)) {
+            
+            // QRESYNC EXTENSION
+            //
+            // Response with the CLOSE return-code when the currently selected mailbox is closed implicitly using the SELECT/EXAMINE command on another mailbox
+            //
+            // See rfc5162 3.7. CLOSED Response Code
+            if (currentMailbox != null) {
+                getStatusResponseFactory().untaggedOk(HumanReadableText.QRESYNC_CLOSED, ResponseCode.closed());
+            }
             sessionMailbox = createNewSelectedMailbox(mailbox, mailboxSession, session, mailboxPath, condstore);
+            
         } else {
-            // TODO: Check if we need to handle condstore there too 
+            // TODO: Check if we need to handle CONDSTORE there too 
             sessionMailbox = currentMailbox;
         }
         final MessageManager.MetaData metaData = mailbox.getMetaData(!openReadOnly, mailboxSession, MessageManager.MetaData.FetchGroup.FIRST_UNSEEN);

@@ -16,27 +16,39 @@
  * specific language governing permissions and limitations      *
  * under the License.                                           *
  ****************************************************************/
-package org.apache.james.imap.decode.parser;
+package org.apache.james.imap.encode;
 
-import org.apache.james.imap.api.ImapCommand;
-import org.apache.james.imap.api.ImapConstants;
-import org.apache.james.imap.api.message.IdRange;
-import org.apache.james.imap.message.request.AbstractMailboxSelectionRequest;
-import org.apache.james.imap.message.request.ExamineRequest;
+import java.io.IOException;
 
-/**
- * Parse EXAMINE commands
- */
-public class ExamineCommandParser extends AbstractSelectionCommandParser {
+import org.apache.james.imap.api.ImapMessage;
+import org.apache.james.imap.api.process.ImapSession;
+import org.apache.james.imap.encode.base.AbstractChainedImapEncoder;
+import org.apache.james.imap.message.response.VanishedResponse;
 
-    public ExamineCommandParser() {
-        super(ImapCommand.authenticatedStateCommand(ImapConstants.EXAMINE_COMMAND_NAME));
+public class VanishedResponseEncoder extends AbstractChainedImapEncoder {
+
+    public VanishedResponseEncoder(ImapEncoder next) {
+        super(next);
     }
 
     @Override
-    protected AbstractMailboxSelectionRequest createRequest(ImapCommand command, String mailboxName, boolean condstore, Long lastKnownUidValidity, Long knownModSeq, IdRange[] uidSet, IdRange[] knownUidSet, IdRange[] knownSequenceSet, String tag) {
-        return new ExamineRequest(command, mailboxName, condstore, lastKnownUidValidity, knownModSeq, uidSet, knownUidSet, knownSequenceSet, tag);
+    protected boolean isAcceptable(ImapMessage message) {
+        return message instanceof VanishedResponse;
     }
 
+    @Override
+    protected void doEncode(ImapMessage acceptableMessage, ImapResponseComposer composer, ImapSession session) throws IOException {
+        VanishedResponse vr = (VanishedResponse) acceptableMessage;
+        composer.untagged();
+        composer.message("VANISHED");
+        if (vr.isEarlier()) {
+            composer.openParen();
+            composer.message("EARLIER");
+            composer.closeParen();
+        }
+        composer.sequenceSet(vr.getUids());
+        composer.end();
+        
+    }
 
 }

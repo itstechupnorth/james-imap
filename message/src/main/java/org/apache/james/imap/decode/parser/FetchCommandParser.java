@@ -39,7 +39,8 @@ import org.apache.james.imap.message.request.FetchRequest;
  */
 public class FetchCommandParser extends AbstractUidCommandParser {
     private final static byte[] CHANGEDSINCE = "CHANGEDSINCE".getBytes();
-    
+    private final static byte[] VANISHED = "VANISHED".getBytes();
+
     public FetchCommandParser() {
         super(ImapCommand.selectedStateCommand(ImapConstants.FETCH_COMMAND_NAME));
     }
@@ -67,23 +68,48 @@ public class FetchCommandParser extends AbstractUidCommandParser {
             request.consumeChar(')');
             
             
-            // Now check for the CHANGEDSINCE option which is part of CONDSTORE
             next = nextNonSpaceChar(request);
             if (next == '(') {
                 request.consumeChar('(');
 
-                request.consumeWord(new CharacterValidator() {
-                    int pos = 0;
-                    @Override
-                    public boolean isValid(char chr) {
-                        if (pos > CHANGEDSINCE.length) {
-                            return false;
-                        } else {
-                            return CHANGEDSINCE[pos++] == ImapRequestLineReader.cap(chr);
+                next = request.nextChar();
+                switch (next) {
+                case 'C':
+                    // Now check for the CHANGEDSINCE option which is part of CONDSTORE
+                    request.consumeWord(new CharacterValidator() {
+                        int pos = 0;
+                        @Override
+                        public boolean isValid(char chr) {
+                            if (pos > CHANGEDSINCE.length) {
+                                return false;
+                            } else {
+                                return CHANGEDSINCE[pos++] == ImapRequestLineReader.cap(chr);
+                            }
                         }
-                    }
-                });
-                fetch.setChangedSince(request.number(true));
+                    });
+                    fetch.setChangedSince(request.number(true));
+                    
+                    break;
+                
+                case 'V':
+                    // Check for the VANISHED option which is part of QRESYNC
+                    request.consumeWord(new CharacterValidator() {
+                        int pos = 0;
+                        @Override
+                        public boolean isValid(char chr) {
+                            if (pos > VANISHED.length) {
+                                return false;
+                            } else {
+                                return VANISHED[pos++] == ImapRequestLineReader.cap(chr);
+                            }
+                        }
+                    });
+                    fetch.setVanished(true);
+                default:
+                    break;
+                }
+               
+                
                 request.consumeChar(')');
 
             }
@@ -255,6 +281,14 @@ public class FetchCommandParser extends AbstractUidCommandParser {
     protected ImapMessage decode(ImapCommand command, ImapRequestLineReader request, String tag, boolean useUids, ImapSession session) throws DecodingException {
         IdRange[] idSet = request.parseIdRange(session);
         FetchData fetch = fetchRequest(request);
+
+        // Check if we have VANISHED and and UID FETCH as its only allowed there
+        //
+        // See RFC5162 3.2. VANISHED UID FETCH Modifier
+        if (fetch.getVanished() && !useUids) {
+            throw new DecodingException(HumanReadableText.ILLEGAL_ARGUMENTS, "VANISHED only allowed in UID FETCH");
+        }
+        
         request.eol();
 
         final ImapMessage result = new FetchRequest(command, useUids, idSet, fetch, tag);

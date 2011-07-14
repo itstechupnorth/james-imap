@@ -20,6 +20,8 @@ package org.apache.james.imap.decode.parser;
 
 import org.apache.james.imap.api.ImapCommand;
 import org.apache.james.imap.api.ImapMessage;
+import org.apache.james.imap.api.display.HumanReadableText;
+import org.apache.james.imap.api.message.IdRange;
 import org.apache.james.imap.api.process.ImapSession;
 import org.apache.james.imap.decode.DecodingException;
 import org.apache.james.imap.decode.ImapRequestLineReader;
@@ -28,7 +30,8 @@ import org.apache.james.imap.decode.base.AbstractImapCommandParser;
 import org.apache.james.imap.message.request.AbstractMailboxSelectionRequest;
 
 public abstract class AbstractSelectionCommandParser extends AbstractImapCommandParser{
-    private final static byte[] CONDSTORE = "(CONDSTORE)".getBytes();
+    private final static byte[] CONDSTORE = "CONDSTORE".getBytes();
+    private final static byte[] QRESYNC = "QRESYNC".getBytes();
 
     public AbstractSelectionCommandParser(ImapCommand command) {
         super(command);
@@ -49,33 +52,124 @@ public abstract class AbstractSelectionCommandParser extends AbstractImapCommand
     protected ImapMessage decode(ImapCommand command, ImapRequestLineReader request, String tag, ImapSession session) throws DecodingException {
         final String mailboxName = request.mailbox();
         boolean condstore = false;
-
+        Long lastKnownUidValidity = null;
+        Long knownModSeq = null;
+        IdRange[] uidSet = null;
+        IdRange[] knownUidSet = null;
+        IdRange[] knownSequenceSet = null;
+        
         char c = Character.UNASSIGNED;
         try {
             c = request.nextWordChar();
         } catch (DecodingException e) {
-
+            // This is expected if the request has no options like CONDSTORE and QRESYNC
         }
+        
+        // Ok an option was found
         if (c == '(') {
-            request.consumeWord(new CharacterValidator() {
-                int pos = 0;
-                @Override
-                public boolean isValid(char chr) {
-                    if (pos > CONDSTORE.length) {
-                        return false;
-                    } else {
-                        return ImapRequestLineReader.cap(chr) == CONDSTORE[pos++];
+            request.consume();
+            
+            int n = ImapRequestLineReader.cap(request.nextChar());
+            switch (n) {
+            case 'C':
+                // It starts with C so it should be CONDSTORE
+                request.consumeWord(new CharacterValidator() {
+                    int pos = 0;
+
+                    @Override
+                    public boolean isValid(char chr) {
+                        if (pos > CONDSTORE.length) {
+                            return false;
+                        } else {
+                            return ImapRequestLineReader.cap(chr) == CONDSTORE[pos++];
+                        }
+                    }
+                });
+                condstore = true;
+                break;
+            case 'Q':
+                // It starts with Q so it should be QRESYNC
+                request.consumeWord(new CharacterValidator() {
+                    int pos = 0;
+
+                    @Override
+                    public boolean isValid(char chr) {
+                        if (pos > QRESYNC.length) {
+                            return false;
+                        } else {
+                            return ImapRequestLineReader.cap(chr) == QRESYNC[pos++];
+                        }
+                    }
+                });
+                
+                // Consume the SP
+                request.consumeChar(' ');
+                lastKnownUidValidity = request.number();
+                
+                // Consume the SP
+                request.consumeChar(' ');
+                knownModSeq = request.number();
+                
+                char nc = request.nextChar();
+                if (nc == ' ') {
+                    // All this stuff is now optional
+                       
+                    // Consume the SP
+                    request.consumeChar(' ');
+                    uidSet = request.parseIdRange();
+                    
+                    // Check for * and check if its in ascending order
+                    checkIdRanges(uidSet);
+                    
+                    nc = request.nextChar();
+                    if (nc == ' ')  {
+                        request.consumeChar(' ');
+                        
+                        // This is enclosed in () so remove (
+                        request.consumeChar('(');
+                        knownSequenceSet = request.parseIdRange();
+                        request.consumeChar(' ');
+                        knownUidSet = request.parseIdRange();
+                       
+                        // Check for * and check if its in ascending order
+                        checkIdRanges(knownSequenceSet);
+                        checkIdRanges(knownUidSet);
+                        
+                        // This is enclosed in () so remove )
+                        request.consumeChar(')');
                     }
                 }
-            });
-            condstore = true;
-            
+                break;
+            default:
+                throw new DecodingException(HumanReadableText.ILLEGAL_ARGUMENTS, "Unknown option");
+            }
+
+            request.consumeChar(')');
+
         }
-       
+
         request.eol();
-        final ImapMessage result = createRequest(command, mailboxName, condstore, tag);
+        final ImapMessage result = createRequest(command, mailboxName, condstore, lastKnownUidValidity, knownModSeq, uidSet, knownUidSet, knownSequenceSet, tag);
         return result;
     }
     
-    protected abstract AbstractMailboxSelectionRequest createRequest(ImapCommand command, String mailboxName, boolean condstore, String tag);
+    private void checkIdRanges(IdRange[] ranges) throws DecodingException {
+        long last = 0;
+        for (int i = 0; i < ranges.length; i++ ) {
+            
+            IdRange r = ranges[i];
+            long low = r.getLowVal();
+            long high = r.getHighVal();
+            if (low == Long.MAX_VALUE || high == Long.MAX_VALUE) {
+                throw new DecodingException(HumanReadableText.INVALID_MESSAGESET, "* is not allowed in the sequence-set");
+            }
+            if (low < last) {
+                throw new DecodingException(HumanReadableText.INVALID_MESSAGESET, "Sequence-set must be in ascending order");
+            } else {
+                last = high;
+            }
+        }
+    }
+    
+    protected abstract AbstractMailboxSelectionRequest createRequest(ImapCommand command, String mailboxName, boolean condstore, Long lastKnownUidValidity, Long knownModSeq, IdRange[] uidSet, IdRange[] knownUidSet, IdRange[] knownSequenceSet, String tag);
 }

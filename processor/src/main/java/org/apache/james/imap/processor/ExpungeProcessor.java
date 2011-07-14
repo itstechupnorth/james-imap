@@ -24,10 +24,12 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.apache.james.imap.api.ImapCommand;
+import org.apache.james.imap.api.ImapConstants;
 import org.apache.james.imap.api.ImapSessionUtils;
 import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.api.message.IdRange;
 import org.apache.james.imap.api.message.response.StatusResponseFactory;
+import org.apache.james.imap.api.message.response.StatusResponse.ResponseCode;
 import org.apache.james.imap.api.process.ImapProcessor;
 import org.apache.james.imap.api.process.ImapSession;
 import org.apache.james.imap.api.process.SelectedMailbox;
@@ -36,6 +38,8 @@ import org.apache.james.mailbox.MailboxException;
 import org.apache.james.mailbox.MailboxManager;
 import org.apache.james.mailbox.MailboxSession;
 import org.apache.james.mailbox.MessageManager;
+import org.apache.james.mailbox.MessageManager.MetaData;
+import org.apache.james.mailbox.MessageManager.MetaData.FetchGroup;
 import org.apache.james.mailbox.MessageRange;
 import org.apache.james.mailbox.MessageRangeException;
 
@@ -70,9 +74,18 @@ public class ExpungeProcessor extends AbstractMailboxProcessor<ExpungeRequest> i
                     }
 
                 }
-
                 unsolicitedResponses(session, responder, false);
-                okComplete(command, tag, responder);
+                
+                
+                // Check if UID EXPUNGE was used and QRESYNC was enabled. If so we need to respond with an OK response that contain the HIGHESTMODSEQ
+                //
+                // See RFC5162 3.5. UID EXPUNGE Command
+                if (ranges != null && EnableProcessor.getEnabledCapabilities(session).contains(ImapConstants.SUPPORTS_QRESYNC)) {
+                    MetaData mdata = mailbox.getMetaData(false, mailboxSession, FetchGroup.NO_COUNT);
+                    okComplete(command, tag, ResponseCode.highestModSeq(mdata.getHighestModSeq()), responder);
+                } else {
+                    okComplete(command, tag, responder);
+                }
             }
         } catch (MessageRangeException e) {
             session.getLog().debug("Expunge failed", e);

@@ -45,6 +45,8 @@ public class FetchData {
 
     private long changedSince = -1;
 
+    private boolean vanished;
+
     public Collection<BodyFetchElement> getBodyElements() {
         return bodyElements;
     }
@@ -125,6 +127,24 @@ public class FetchData {
     
     public long getChangedSince() {
         return changedSince;
+    }
+    
+    /**
+     * Set to true if the VANISHED FETCH modifier was used as stated in <code>QRESYNC</code> extension
+     * 
+     * @param vanished
+     */
+    public void setVanished(boolean vanished) {
+        this.vanished = vanished;
+    }
+    
+    /**
+     * Return true if the VANISHED FETCH modifier was used as stated in <code>QRESYNC<code> extension
+     * 
+     * @return vanished
+     */
+    public boolean getVanished() {
+        return vanished;
     }
     
     public void add(BodyFetchElement element, boolean peek) {

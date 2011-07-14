@@ -100,6 +100,8 @@ public interface ImapConstants {
     public static final String SUPPORTS_ENABLE = "ENABLE";
     
     public static final String SUPPORTS_CONDSTORE = "CONDSTORE";
+    
+    public static final String SUPPORTS_QRESYNC = "QRESYNC";
 
     public static final String INBOX_NAME = "INBOX";
 
