@@ -40,6 +40,7 @@ import org.apache.james.imap.api.process.SelectedMailbox;
 import org.apache.james.imap.message.request.AbstractMailboxSelectionRequest;
 import org.apache.james.imap.message.response.ExistsResponse;
 import org.apache.james.imap.message.response.RecentResponse;
+import org.apache.james.imap.message.response.VanishedResponse;
 import org.apache.james.imap.processor.base.FetchGroupImpl;
 import org.apache.james.imap.processor.base.SelectedMailboxImpl;
 import org.apache.james.mailbox.MailboxException;
@@ -48,6 +49,7 @@ import org.apache.james.mailbox.MailboxNotFoundException;
 import org.apache.james.mailbox.MailboxPath;
 import org.apache.james.mailbox.MailboxSession;
 import org.apache.james.mailbox.MessageManager;
+import org.apache.james.mailbox.MessageRange.Type;
 import org.apache.james.mailbox.SearchQuery;
 import org.apache.james.mailbox.MessageManager.MetaData;
 import org.apache.james.mailbox.SearchQuery.NumericRange;
@@ -151,7 +153,13 @@ abstract class AbstractSelectionProcessor<M extends AbstractMailboxSelectionRequ
                 sq.andCriteria(SearchQuery.modSeqGreaterThan(request.getKnownModSeq()));
                 
                 IdRange[] uidSet = request.getUidSet();
-                
+
+                if (uidSet == null) {
+                    // See mailbox had some messages stored before, if not we don't need to query at all
+                    if (metaData.getUidNext() != 1) {
+                        uidSet = new IdRange[] {new IdRange(1, selected.getLastUid())};
+                    }
+                }
                 // Check if the know uid set was provided. If so we only need to get the uids of these messages that matched here
                 if (uidSet != null) {
                     NumericRange[] nranges = new NumericRange[uidSet.length];
@@ -176,8 +184,38 @@ abstract class AbstractSelectionProcessor<M extends AbstractMailboxSelectionRequ
                     uids.add(uidsIt.next());
                 }
                 if (uids.isEmpty() == false) {
-                    
-                    //TODO: Send also VANISHED responses as stated in QRESYNC RFC
+                    if (uidSet != null) {
+                        List<Long> vanished = new ArrayList<Long>();
+                        for (int i = 0; i < uids.size(); i++) {
+                            long uid = uids.get(i);
+                            boolean match = false;
+                            for (int a = 0; a < uidSet.length; a++) {
+                                if (uidSet[a].includes(uid)) {
+                                    match = true;
+                                    break;
+                                }
+                            }
+                            if (!match) {
+                                vanished.add(uid);
+                            }
+                        }
+                        if (!vanished.isEmpty()) {
+                            List<MessageRange> ranges = MessageRange.toRanges(vanished);
+                            IdRange[] idRanges  = new IdRange[ranges.size()];
+                            for (int i = 0; i < ranges.size(); i++) {
+                                MessageRange r = ranges.get(i);
+                                if (r.getType() == Type.ONE) {
+                                    idRanges[i] = new IdRange(r.getUidFrom());
+                                } else {
+                                    idRanges[i] = new IdRange(r.getUidFrom(), r.getUidTo());
+                                }
+                                
+                            }
+                            //TODO: Send also VANISHED responses as stated in QRESYNC RFC
+                            responder.respond(new VanishedResponse(idRanges, true));
+                        }
+                      
+                    }
                     List<MessageRange> ranges = MessageRange.toRanges(uids);
                     for (int i = 0; i < ranges.size(); i++) {
                         addFlagsResponses(session, selected, responder, true, ranges.get(i), mailbox, mailboxSession);

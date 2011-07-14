@@ -36,6 +36,7 @@ import org.apache.james.imap.api.process.ImapProcessor;
 import org.apache.james.imap.api.process.ImapSession;
 import org.apache.james.imap.message.request.FetchRequest;
 import org.apache.james.imap.message.response.FetchResponse;
+import org.apache.james.imap.message.response.VanishedResponse;
 import org.apache.james.imap.processor.AbstractMailboxProcessor;
 import org.apache.james.imap.processor.EnableProcessor;
 import org.apache.james.imap.processor.base.FetchGroupImpl;
@@ -104,7 +105,10 @@ public class FetchProcessor extends AbstractMailboxProcessor<FetchRequest> {
                 }
             }
 
-            // TODO: Handle QRESYNC VANISHED responses 
+            if (vanished) {
+                IdRange[] vanishedRanges = getNotIncluded(ranges, idSet);
+                responder.respond(new VanishedResponse(vanishedRanges, true));
+            }
             processMessageRanges(session, mailbox, ranges, fetch, useUids, mailboxSession, responder);
 
             
@@ -123,6 +127,16 @@ public class FetchProcessor extends AbstractMailboxProcessor<FetchRequest> {
         }
     }
 
+    /**
+     * TODO: implement me
+     * 
+     * @param ranges
+     * @param ids
+     * @return vanished
+     */
+    private IdRange[] getNotIncluded(List<MessageRange> ranges, IdRange[] ids) {
+        return new IdRange[0];
+    }
     /**
      * Process the given message ranges by fetch them and pass them to the
      * {@link Responder}
