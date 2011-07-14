@@ -486,6 +486,7 @@ public class SearchProcessorTest {
         mockery.checking(new Expectations() {{
             allowing(session).getAttribute(
                     with(equal(SearchProcessor.SEARCH_MODSEQ))); will(returnValue(null));
+            allowing(session).setAttribute(SearchProcessor.SEARCH_MODSEQ, null);
             allowing(session).getAttribute(
                     with(equal(ImapSessionUtils.MAILBOX_SESSION_ATTRIBUTE_SESSION_KEY))); will(returnValue((MailboxSession) mailboxSession));
                     allowing(session).getLog(); will(returnValue(logger));
