@@ -124,7 +124,7 @@ public class FetchData {
     }
     
     public long getChangedSince() {
-        return changedSince -1;
+        return changedSince;
     }
     
     public void add(BodyFetchElement element, boolean peek) {
