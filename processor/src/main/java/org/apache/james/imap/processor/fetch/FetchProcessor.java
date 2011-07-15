@@ -111,6 +111,10 @@ public class FetchProcessor extends AbstractMailboxProcessor<FetchRequest> {
                 //       If we do so we could prolly save one mailbox access which should give use some more speed up
                 respondVanished(mailboxSession, mailbox, ranges, changedSince, mailbox.getMetaData(false, mailboxSession, org.apache.james.mailbox.MessageManager.MetaData.FetchGroup.NO_COUNT), responder);
             }
+            // if QRESYNC is enable its necessary to also return the UID in all cases
+            if (EnableProcessor.getEnabledCapabilities(session).contains(ImapConstants.SUPPORTS_QRESYNC)) {
+                fetch.setUid(true);
+            }
             processMessageRanges(session, mailbox, ranges, fetch, useUids, mailboxSession, responder);
 
             
