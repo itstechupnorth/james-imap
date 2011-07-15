@@ -19,9 +19,8 @@
 package org.apache.james.imap.encode;
 
 import java.io.IOException;
-import java.util.List;
+import java.util.Set;
 
-import org.apache.james.imap.api.ImapConstants;
 import org.apache.james.imap.api.ImapMessage;
 import org.apache.james.imap.api.process.ImapSession;
 import org.apache.james.imap.encode.base.AbstractChainedImapEncoder;
@@ -47,9 +46,10 @@ public class EnableResponseEncoder extends AbstractChainedImapEncoder {
      */
     protected void doEncode(ImapMessage acceptableMessage, ImapResponseComposer composer, ImapSession session) throws IOException {
         final EnableResponse response = (EnableResponse) acceptableMessage;
-        List<String> capabilities = response.getCapabilities();
+        Set<String> capabilities = response.getCapabilities();
         composer.untagged();
-        composer.message(ImapConstants.ENABLE_COMMAND_NAME);
+        // Return ENABLED capabilities. See IMAP-323
+        composer.message("ENABLED");
         for (String capability : capabilities) {
             composer.message(capability);
         }
