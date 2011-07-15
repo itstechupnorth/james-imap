@@ -27,11 +27,12 @@ import static org.apache.james.imap.api.ImapConstants.SUPPORTS_I18NLEVEL_1;
 import static org.apache.james.imap.api.ImapConstants.SUPPORTS_CONDSTORE;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.james.imap.api.ImapCommand;
 import org.apache.james.imap.api.display.CharsetUtil;
-import org.apache.james.imap.api.message.response.ImapResponseMessage;
 import org.apache.james.imap.api.message.response.StatusResponseFactory;
 import org.apache.james.imap.api.process.ImapProcessor;
 import org.apache.james.imap.api.process.ImapSession;
@@ -41,18 +42,17 @@ import org.apache.james.mailbox.MailboxManager;
 
 public class CapabilityProcessor extends AbstractMailboxProcessor<CapabilityRequest> implements CapabilityImplementingProcessor {
 
-    private final List<CapabilityImplementingProcessor> capabilities = new ArrayList<CapabilityImplementingProcessor>();
+    private static final List<CapabilityImplementingProcessor> capabilities = new ArrayList<CapabilityImplementingProcessor>();
 
     public CapabilityProcessor(final ImapProcessor next, final MailboxManager mailboxManager, final StatusResponseFactory factory, final List<CapabilityImplementingProcessor> capabilities) {
         this(next, mailboxManager, factory);
-        this.capabilities.addAll(capabilities);
+        CapabilityProcessor.capabilities.addAll(capabilities);
 
     }
 
     public CapabilityProcessor(final ImapProcessor next, final MailboxManager mailboxManager, final StatusResponseFactory factory) {
         super(CapabilityRequest.class, next, mailboxManager, factory);
-        this.capabilities.add(this);
-
+        capabilities.add(this);
     }
 
     /*
@@ -66,19 +66,10 @@ public class CapabilityProcessor extends AbstractMailboxProcessor<CapabilityRequ
      * org.apache.james.imap.api.process.ImapProcessor.Responder)
      */
     protected void doProcess(CapabilityRequest request, ImapSession session, String tag, ImapCommand command, Responder responder) {
-        final ImapResponseMessage result = doProcess(request, session, tag, command);
+        final CapabilityResponse result = new CapabilityResponse(getSupportedCapabilities(session));        
         responder.respond(result);
         unsolicitedResponses(session, responder, false);
         okComplete(command, tag, responder);
-    }
-
-    private ImapResponseMessage doProcess(CapabilityRequest request, ImapSession session, String tag, ImapCommand command) {
-        List<String> caps = new ArrayList<String>();
-        for (int i = 0; i < capabilities.size(); i++) {
-            caps.addAll(capabilities.get(i).getImplementedCapabilities(session));
-        }
-        final CapabilityResponse result = new CapabilityResponse(caps);
-        return result;
     }
 
     /**
@@ -110,5 +101,20 @@ public class CapabilityProcessor extends AbstractMailboxProcessor<CapabilityRequ
         capabilities.add(SUPPORTS_CONDSTORE);
         return capabilities;
     }
+    
+    /**
+     * Return all supported <code>CAPABILITIES</code> for this {@link ImapSession}
+     * 
+     * @param session
+     * @return supported
+     */
+    public static Set<String> getSupportedCapabilities(ImapSession session) {
+        Set<String> caps = new HashSet<String>();
+        for (int i = 0; i < capabilities.size(); i++) {
+            caps.addAll(capabilities.get(i).getImplementedCapabilities(session));
+        }
+        return caps;
+    }
+    
 
 }

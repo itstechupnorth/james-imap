@@ -19,6 +19,7 @@
 package org.apache.james.imap.decode.parser;
 
 import org.apache.james.imap.api.ImapCommand;
+import org.apache.james.imap.api.ImapConstants;
 import org.apache.james.imap.api.ImapMessage;
 import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.api.message.IdRange;
@@ -30,8 +31,8 @@ import org.apache.james.imap.decode.base.AbstractImapCommandParser;
 import org.apache.james.imap.message.request.AbstractMailboxSelectionRequest;
 
 public abstract class AbstractSelectionCommandParser extends AbstractImapCommandParser{
-    private final static byte[] CONDSTORE = "CONDSTORE".getBytes();
-    private final static byte[] QRESYNC = "QRESYNC".getBytes();
+    private final static byte[] CONDSTORE = ImapConstants.SUPPORTS_CONDSTORE.getBytes();
+    private final static byte[] QRESYNC = ImapConstants.SUPPORTS_QRESYNC.getBytes();
 
     public AbstractSelectionCommandParser(ImapCommand command) {
         super(command);
@@ -78,7 +79,7 @@ public abstract class AbstractSelectionCommandParser extends AbstractImapCommand
 
                     @Override
                     public boolean isValid(char chr) {
-                        if (pos > CONDSTORE.length) {
+                        if (pos >= CONDSTORE.length) {
                             return false;
                         } else {
                             return ImapRequestLineReader.cap(chr) == CONDSTORE[pos++];
@@ -94,7 +95,7 @@ public abstract class AbstractSelectionCommandParser extends AbstractImapCommand
 
                     @Override
                     public boolean isValid(char chr) {
-                        if (pos > QRESYNC.length) {
+                        if (pos >= QRESYNC.length) {
                             return false;
                         } else {
                             return ImapRequestLineReader.cap(chr) == QRESYNC[pos++];
@@ -104,6 +105,9 @@ public abstract class AbstractSelectionCommandParser extends AbstractImapCommand
                 
                 // Consume the SP
                 request.consumeChar(' ');
+                
+                // Consume enclosing paren
+                request.consumeChar('(');
                 lastKnownUidValidity = request.number();
                 
                 // Consume the SP
@@ -118,8 +122,8 @@ public abstract class AbstractSelectionCommandParser extends AbstractImapCommand
                     request.consumeChar(' ');
                     uidSet = request.parseIdRange();
                     
-                    // Check for * and check if its in ascending order
-                    checkIdRanges(uidSet);
+                    // Check for *
+                    checkIdRanges(uidSet, false);
                     
                     nc = request.nextChar();
                     if (nc == ' ')  {
@@ -132,13 +136,15 @@ public abstract class AbstractSelectionCommandParser extends AbstractImapCommand
                         knownUidSet = request.parseIdRange();
                        
                         // Check for * and check if its in ascending order
-                        checkIdRanges(knownSequenceSet);
-                        checkIdRanges(knownUidSet);
+                        checkIdRanges(knownSequenceSet, true);
+                        checkIdRanges(knownUidSet, true);
                         
                         // This is enclosed in () so remove )
                         request.consumeChar(')');
                     }
                 }
+                request.consumeChar(')');
+
                 break;
             default:
                 throw new DecodingException(HumanReadableText.ILLEGAL_ARGUMENTS, "Unknown option");
@@ -153,7 +159,30 @@ public abstract class AbstractSelectionCommandParser extends AbstractImapCommand
         return result;
     }
     
-    private void checkIdRanges(IdRange[] ranges) throws DecodingException {
+    /**
+     * Check if the {@link IdRange}'s are formatted like stated in the QRESYNC RFC.
+     * 
+     * From RFC5162:
+     * 
+     *  known-uids             =  sequence-set
+     *                          ;; sequence of UIDs, "*" is not allowed
+     *
+     *  known-sequence-set     =  sequence-set
+     *                          ;; set of message numbers corresponding to
+     *                          ;; the UIDs in known-uid-set, in ascending order.
+     *                          ;; * is not allowed.
+     *                          
+     *  known-uid-set       =  sequence-set
+     *                          ;; set of UIDs corresponding to the messages in
+     *                          ;; known-sequence-set, in ascending order.
+     *                          ;; * is not allowed.
+     * 
+     * 
+     * @param ranges
+     * @param checkOrder
+     * @throws DecodingException
+     */
+    private void checkIdRanges(IdRange[] ranges, boolean checkOrder) throws DecodingException {
         long last = 0;
         for (int i = 0; i < ranges.length; i++ ) {
             
@@ -163,13 +192,29 @@ public abstract class AbstractSelectionCommandParser extends AbstractImapCommand
             if (low == Long.MAX_VALUE || high == Long.MAX_VALUE) {
                 throw new DecodingException(HumanReadableText.INVALID_MESSAGESET, "* is not allowed in the sequence-set");
             }
-            if (low < last) {
-                throw new DecodingException(HumanReadableText.INVALID_MESSAGESET, "Sequence-set must be in ascending order");
-            } else {
-                last = high;
+            if (checkOrder) {
+                if (low < last) {
+                    throw new DecodingException(HumanReadableText.INVALID_MESSAGESET, "Sequence-set must be in ascending order");
+                } else {
+                    last = high;
+                }
             }
         }
     }
     
+    /**
+     * Create a new {@link AbstractMailboxSelectionRequest} for the given arguments
+     * 
+     * @param command
+     * @param mailboxName
+     * @param condstore
+     * @param lastKnownUidValidity
+     * @param knownModSeq
+     * @param uidSet
+     * @param knownUidSet
+     * @param knownSequenceSet
+     * @param tag
+     * @return request
+     */
     protected abstract AbstractMailboxSelectionRequest createRequest(ImapCommand command, String mailboxName, boolean condstore, Long lastKnownUidValidity, Long knownModSeq, IdRange[] uidSet, IdRange[] knownUidSet, IdRange[] knownSequenceSet, String tag);
 }

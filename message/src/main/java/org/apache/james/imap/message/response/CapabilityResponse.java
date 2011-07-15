@@ -18,7 +18,7 @@
  ****************************************************************/
 package org.apache.james.imap.message.response;
 
-import java.util.List;
+import java.util.Set;
 
 import org.apache.james.imap.api.message.response.ImapResponseMessage;
 
@@ -29,7 +29,7 @@ import org.apache.james.imap.api.message.response.ImapResponseMessage;
  */
 public class CapabilityResponse implements ImapResponseMessage {
 
-    private final List<String> capabilities;
+    private final Set<String> capabilities;
 
     /**
      * Constructs a response based on the given capabilities.
@@ -37,17 +37,17 @@ public class CapabilityResponse implements ImapResponseMessage {
      * @param capabilities
      *            not null
      */
-    public CapabilityResponse(final List<String> capabilities) {
+    public CapabilityResponse(final Set<String> capabilities) {
         super();
         this.capabilities = capabilities;
     }
 
     /**
-     * Gets a list containing the capabilities of this server.
+     * Gets a {@link Set} containing the capabilities of this server.
      * 
      * @return not null
      */
-    public List<String> getCapabilities() {
+    public Set<String> getCapabilities() {
         return capabilities;
     }
 

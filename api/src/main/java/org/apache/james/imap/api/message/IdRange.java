@@ -21,13 +21,14 @@ package org.apache.james.imap.api.message;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
+import java.util.Iterator;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 /**
  * Represents a range of UID or MSN values.
  */
-public class IdRange {
+public final class IdRange implements Iterable<Long>, Comparable<IdRange>{
 
     private long _lowVal;
 
@@ -132,7 +133,7 @@ public class IdRange {
      */
     public static List<IdRange> mergeRanges(final List<IdRange> ranges) {
         List<IdRange> copy = new ArrayList<IdRange>(ranges);
-        Collections.sort(copy, IdRangeComperator.INSTANCE);
+        Collections.sort(copy);
 
         boolean lastUid = false;
 
@@ -164,25 +165,70 @@ public class IdRange {
 
     }
 
-    private static class IdRangeComperator implements Comparator<IdRange> {
 
-        private static IdRangeComperator INSTANCE = new IdRangeComperator();
+    /**
+     * Return a read-only {@link Iterator} which contains all msn/uid which fail in the specified range.
+     * 
+     * @return rangeIt
+     */
+    @Override
+    public Iterator<Long> iterator() {
+        long from = getLowVal();
+        if (from == Long.MAX_VALUE) {
+            from = 1;
+        }
+        long to = getHighVal();
+        return new RangeIterator(from, to);
+    }
+    
+    /**
+     * {@link Iterator} of a range of msn/uid
+     *
+     */
+    private final class RangeIterator implements Iterator<Long> {
 
-        public int compare(IdRange range1, IdRange range2) {
+        private long to;
+        private long current;
+        
+        public RangeIterator(long from, long to) {
+            this.to = to;
+            this.current = from;
+        }
+        
+        @Override
+        public boolean hasNext() {
+            return current <= to;
+        }
 
-            // Correctly sort and respect "*" and "*:*" ranges. See IMAP-289
-            if (range1.getLowVal() == Long.MAX_VALUE && range1.getHighVal() == Long.MAX_VALUE && range2.getLowVal() == Long.MAX_VALUE && range2.getHighVal() == Long.MAX_VALUE) {
-                return 0;
-            }
-            if (range1.getLowVal() == Long.MAX_VALUE && range1.getHighVal() == Long.MAX_VALUE) {
-                return 1;
-            } else if (range2.getLowVal() == Long.MAX_VALUE && range2.getHighVal() == Long.MAX_VALUE) {
-                return -1;
+        @Override
+        public Long next() {
+            if (hasNext()) {
+                return current++;
             } else {
-                return (int) (range1.getLowVal() - range2.getLowVal());
+                throw new NoSuchElementException("Highest id of " + to + " was reached before");
             }
         }
 
+        @Override
+        public void remove() {
+            throw new UnsupportedOperationException("Read-Only");
+        }
+        
+    }
+
+    @Override
+    public int compareTo(IdRange range2) {
+        // Correctly sort and respect "*" and "*:*" ranges. See IMAP-289
+        if (getLowVal() == Long.MAX_VALUE && getHighVal() == Long.MAX_VALUE && range2.getLowVal() == Long.MAX_VALUE && range2.getHighVal() == Long.MAX_VALUE) {
+            return 0;
+        }
+        if (getLowVal() == Long.MAX_VALUE && getHighVal() == Long.MAX_VALUE) {
+            return 1;
+        } else if (range2.getLowVal() == Long.MAX_VALUE && range2.getHighVal() == Long.MAX_VALUE) {
+            return -1;
+        } else {
+            return (int) (getLowVal() - range2.getLowVal());
+        }
     }
 
 }

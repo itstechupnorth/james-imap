@@ -86,6 +86,9 @@ public class NamespaceProcessorTest {
         mockery.checking (new Expectations() {{
             allowing(imapSessionStub).supportMultipleNamespaces(); will(returnValue(true));
             allowing(imapSessionStub).getAttribute(ImapSessionUtils.MAILBOX_SESSION_ATTRIBUTE_SESSION_KEY); will(returnValue(mailboxSessionStub));
+            allowing(imapSessionStub).getAttribute(EnableProcessor.ENABLED_CAPABILITIES); will(returnValue(null));
+            allowing(any(ImapSession.class)).method("setAttribute");
+
             allowing(mailboxSessionStub).getPersonalSpace(); will(returnValue(PERSONAL_PREFIX));
             allowing(mailboxSessionStub).getOtherUsersSpace(); will(returnValue(USERS_PREFIX));
             allowing(mailboxSessionStub).getSharedSpaces();will(returnValue(new ArrayList<String>()));
@@ -112,6 +115,8 @@ public class NamespaceProcessorTest {
         mockery.checking (new Expectations() {{
             allowing(imapSessionStub).supportMultipleNamespaces(); will(returnValue(true));
             allowing(imapSessionStub).getAttribute(ImapSessionUtils.MAILBOX_SESSION_ATTRIBUTE_SESSION_KEY); will(returnValue(mailboxSessionStub));
+            allowing(imapSessionStub).getAttribute(EnableProcessor.ENABLED_CAPABILITIES); will(returnValue(null));
+            allowing(any(ImapSession.class)).method("setAttribute");
             allowing(mailboxSessionStub).getPersonalSpace(); will(returnValue(PERSONAL_PREFIX));
             allowing(mailboxSessionStub).getOtherUsersSpace(); will(returnValue(USERS_PREFIX));
             allowing(mailboxSessionStub).getSharedSpaces();will(returnValue(Arrays.asList(SHARED_PREFIX)));

@@ -56,19 +56,20 @@ public class ExpungeProcessor extends AbstractMailboxProcessor<ExpungeRequest> i
             final MessageManager mailbox = getSelectedMailbox(session);
             final MailboxSession mailboxSession = ImapSessionUtils.getMailboxSession(session);
 
+            int expunged = 0;
             if (!mailbox.isWriteable(mailboxSession)) {
                 no(command, tag, responder, HumanReadableText.MAILBOX_IS_READ_ONLY);
             } else {
                 IdRange[] ranges = request.getUidSet();
                 if (ranges == null) {
-                    expunge(mailbox, MessageRange.all(), session, mailboxSession);
+                   expunged = expunge(mailbox, MessageRange.all(), session, mailboxSession);
                 } else {
                     // Handle UID EXPUNGE which is part of UIDPLUS
                     // See http://tools.ietf.org/html/rfc4315
                     for (int i = 0; i < ranges.length; i++) {
                         MessageRange mRange = messageRange(session.getSelected(), ranges[i], true);
                         if (mRange != null) {
-                            expunge(mailbox, mRange, session, mailboxSession);
+                            expunged += expunge(mailbox, mRange, session, mailboxSession);
                         }
 
                     }
@@ -77,10 +78,10 @@ public class ExpungeProcessor extends AbstractMailboxProcessor<ExpungeRequest> i
                 unsolicitedResponses(session, responder, false);
                 
                 
-                // Check if UID EXPUNGE was used and QRESYNC was enabled. If so we need to respond with an OK response that contain the HIGHESTMODSEQ
+                // Check if QRESYNC was enabled and at least one message was expunged. If so we need to respond with an OK response that contain the HIGHESTMODSEQ
                 //
-                // See RFC5162 3.5. UID EXPUNGE Command
-                if (ranges != null && EnableProcessor.getEnabledCapabilities(session).contains(ImapConstants.SUPPORTS_QRESYNC)) {
+                // See RFC5162 3.3 EXPUNGE Command 3.5. UID EXPUNGE Command
+                if (EnableProcessor.getEnabledCapabilities(session).contains(ImapConstants.SUPPORTS_QRESYNC)  && expunged > 0) {
                     MetaData mdata = mailbox.getMetaData(false, mailboxSession, FetchGroup.NO_COUNT);
                     okComplete(command, tag, ResponseCode.highestModSeq(mdata.getHighestModSeq()), responder);
                 } else {
@@ -96,15 +97,18 @@ public class ExpungeProcessor extends AbstractMailboxProcessor<ExpungeRequest> i
         }
     }
 
-    private void expunge(MessageManager mailbox, MessageRange range, ImapSession session, MailboxSession mailboxSession) throws MailboxException {
+    private int expunge(MessageManager mailbox, MessageRange range, ImapSession session, MailboxSession mailboxSession) throws MailboxException {
         final Iterator<Long> it = mailbox.expunge(range, mailboxSession);
         final SelectedMailbox selected = session.getSelected();
+        int expunged = 0;
         if (mailboxSession != null) {
             while (it.hasNext()) {
                 final long uid = it.next();
                 selected.removeRecent(uid);
+                expunged++;
             }
         }
+        return expunged;
     }
 
     /*

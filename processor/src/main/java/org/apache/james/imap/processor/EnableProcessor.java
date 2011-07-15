@@ -27,17 +27,19 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.james.imap.api.ImapCommand;
+import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.api.message.response.StatusResponseFactory;
 import org.apache.james.imap.api.process.ImapProcessor;
 import org.apache.james.imap.api.process.ImapSession;
 import org.apache.james.imap.message.request.EnableRequest;
 import org.apache.james.imap.message.response.EnableResponse;
+import org.apache.james.imap.processor.PermitEnableCapabilityProcessor.EnableException;
 import org.apache.james.mailbox.MailboxManager;
 
 public class EnableProcessor extends AbstractMailboxProcessor<EnableRequest> implements CapabilityImplementingProcessor {
 
     private final List<PermitEnableCapabilityProcessor> capabilities = new ArrayList<PermitEnableCapabilityProcessor>();
-    private final static String ENABLED_CAPABILITIES = "ENABLED_CAPABILITIES";
+    public final static String ENABLED_CAPABILITIES = "ENABLED_CAPABILITIES";
     
     public EnableProcessor(final ImapProcessor next, final MailboxManager mailboxManager, final StatusResponseFactory factory, final List<PermitEnableCapabilityProcessor> capabilities) {
         this(next, mailboxManager, factory);
@@ -55,24 +57,33 @@ public class EnableProcessor extends AbstractMailboxProcessor<EnableRequest> imp
      * @see org.apache.james.imap.processor.AbstractMailboxProcessor#doProcess(org.apache.james.imap.api.message.request.ImapRequest, org.apache.james.imap.api.process.ImapSession, java.lang.String, org.apache.james.imap.api.ImapCommand, org.apache.james.imap.api.process.ImapProcessor.Responder)
      */
     protected void doProcess(EnableRequest request, ImapSession session, String tag, ImapCommand command, Responder responder) {
-        List<String> caps = request.getCapabilities();
-        Set<String> enabledCaps = new HashSet<String>();
-        for (int i = 0; i < caps.size(); i++) {
-            String cap = caps.get(i);
-            for (int a = 0; a < capabilities.size(); a++) {
-                if (capabilities.get(a).getPermitEnableCapabilities(session).contains(cap)) {
-                    enabledCaps.add(cap);
+        try {
+
+            List<String> caps = request.getCapabilities();
+            Set<String> enabledCaps = new HashSet<String>();
+            for (int i = 0; i < caps.size(); i++) {
+                String cap = caps.get(i);
+                // Check if the CAPABILITY is supported at all
+                if (CapabilityProcessor.getSupportedCapabilities(session).contains(cap)) {
+                    for (int a = 0; a < capabilities.size(); a++) {
+                        PermitEnableCapabilityProcessor enableProcessor = capabilities.get(a);
+                        if (enableProcessor.getPermitEnableCapabilities(session).contains(cap)) {
+                            enableProcessor.enable(request, responder, session, cap);
+                            enabledCaps.add(cap);
+                        }
+                    }
                 }
             }
-        }
-        getEnabledCapabilities(session).addAll(enabledCaps);
-        
-        responder.respond(new EnableResponse(new ArrayList<String>(enabledCaps)));
-        
-        unsolicitedResponses(session, responder, false);
-        okComplete(command, tag, responder);
-    }
+            getEnabledCapabilities(session).addAll(enabledCaps);
 
+            responder.respond(new EnableResponse(enabledCaps));
+
+            unsolicitedResponses(session, responder, false);
+            okComplete(command, tag, responder);
+        } catch (EnableException e) {
+            taggedBad(command, tag, responder, HumanReadableText.FAILED);
+        }
+    }
    
     /**
      * Add a {@link PermitEnableCapabilityProcessor} which can be enabled
@@ -83,6 +94,12 @@ public class EnableProcessor extends AbstractMailboxProcessor<EnableRequest> imp
         capabilities.add(implementor);
     }
 
+    /**
+     * Return all enabled <code>CAPABILITIES</code> for this {@link ImapSession}
+     * 
+     * @param session
+     * @return enabled
+     */
     @SuppressWarnings("unchecked")
     public static Set<String> getEnabledCapabilities(ImapSession session) {
         Set<String> caps = (Set<String>) session.getAttribute(ENABLED_CAPABILITIES);

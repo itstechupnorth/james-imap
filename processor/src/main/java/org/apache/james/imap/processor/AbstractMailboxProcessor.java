@@ -19,8 +19,10 @@
 package org.apache.james.imap.processor;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import javax.mail.Flags;
 
@@ -54,7 +56,10 @@ import org.apache.james.mailbox.MessageManager;
 import org.apache.james.mailbox.MessageRange;
 import org.apache.james.mailbox.MessageRangeException;
 import org.apache.james.mailbox.MessageResult;
+import org.apache.james.mailbox.SearchQuery;
+import org.apache.james.mailbox.MessageManager.MetaData;
 import org.apache.james.mailbox.MessageRange.Type;
+import org.apache.james.mailbox.SearchQuery.NumericRange;
 
 abstract public class AbstractMailboxProcessor<M extends ImapRequest> extends AbstractChainedProcessor<M> {
 
@@ -140,15 +145,17 @@ abstract public class AbstractMailboxProcessor<M extends ImapRequest> extends Ab
         }
         // Expunged messages
         if (!omitExpunged) {
-            // Check if QRESYNC was enabled. If so we MUST use VANISHED responses
-            if (EnableProcessor.getEnabledCapabilities(session).contains(ImapConstants.SUPPORTS_QRESYNC)) {
-                addVanishedResponse(selected, responder);
-            } else {
-                addExpungedResponses(selected, responder);
+            final Collection<Long> expungedUids = selected.expungedUids();
+            if (!expungedUids.isEmpty()) {
+                // Check if QRESYNC was enabled. If so we MUST use VANISHED responses
+                if (EnableProcessor.getEnabledCapabilities(session).contains(ImapConstants.SUPPORTS_QRESYNC)) {
+                    addVanishedResponse(selected, expungedUids, responder);
+                } else {
+                    addExpungedResponses(selected, expungedUids, responder);
+                }
+                // Only reset the events if we send the EXPUNGE or VANISHED responses. See IMAP-286
+                selected.resetExpungedUids();
             }
-            
-            // Only reset the events if we send the EXPUNGE or VANISHED responses. See IMAP-286
-            selected.resetExpungedUids();
 
         }
         if (sizeChanged || (selected.isRecentUidRemoved() && !omitExpunged)) {
@@ -162,8 +169,7 @@ abstract public class AbstractMailboxProcessor<M extends ImapRequest> extends Ab
         selected.resetEvents();
     }
 
-    private void addExpungedResponses(final SelectedMailbox selected, final ImapProcessor.Responder responder) {
-        final Collection<Long> expungedUids = selected.expungedUids();
+    private void addExpungedResponses(SelectedMailbox selected, Collection<Long> expungedUids, final ImapProcessor.Responder responder) {
         for (final Long uid : expungedUids) {
             final long uidValue = uid.longValue();
 
@@ -176,18 +182,12 @@ abstract public class AbstractMailboxProcessor<M extends ImapRequest> extends Ab
         }
     }
     
-    private void addVanishedResponse(final SelectedMailbox selected, final ImapProcessor.Responder responder) {
-        final Collection<Long> expungedUids = selected.expungedUids();
-        List<MessageRange> ranges = MessageRange.toRanges(expungedUids);
-        IdRange[] uidRange = new IdRange[ranges.size()];
-        for (int i = 0 ; i < ranges.size(); i++) {
-            MessageRange r = ranges.get(i);
-            if (r.getType() == Type.ONE) {
-                uidRange[i] = new IdRange(r.getUidFrom());
-            } else {
-                uidRange[i] = new IdRange(r.getUidFrom(), r.getUidTo());
-            }
+    private void addVanishedResponse(SelectedMailbox selected, Collection<Long> expungedUids, final ImapProcessor.Responder responder) {
+        for (final Long uid : expungedUids) {
+            final long uidValue = uid.longValue();
+            selected.remove(uidValue);
         }
+        IdRange[] uidRange = idRanges(MessageRange.toRanges(expungedUids));
         responder.respond(new VanishedResponse(uidRange, false));
     }
     
@@ -230,9 +230,10 @@ abstract public class AbstractMailboxProcessor<M extends ImapRequest> extends Ab
             if (msn == SelectedMailbox.NO_SUCH_MESSAGE)
                 throw new MailboxException("No message found with uid " + uid);
 
+            boolean qresyncEnabled = EnableProcessor.getEnabledCapabilities(session).contains(ImapConstants.SUPPORTS_QRESYNC);
             final Flags flags = mr.getFlags();
             final Long uidOut;
-            if (useUid) {
+            if (useUid || qresyncEnabled) {
                 uidOut = uid;
             } else {
                 uidOut = null;
@@ -246,7 +247,7 @@ abstract public class AbstractMailboxProcessor<M extends ImapRequest> extends Ab
             
             // Check if we also need to return the MODSEQ in the response. This is true if the mailbox was selected with the CONSTORE option or
             // if QRESYNC was enabled
-            if (selected.getCondstore() || EnableProcessor.getEnabledCapabilities(session).contains(ImapConstants.SUPPORTS_QRESYNC)) {
+            if (selected.getCondstore() || qresyncEnabled) {
                 response = new FetchResponse(msn, flags, uidOut, mr.getModSeq(), null, null, null, null, null, null);
             } else {
                 response = new FetchResponse(msn, flags, uidOut, null, null, null, null, null, null, null);
@@ -511,6 +512,81 @@ abstract public class AbstractMailboxProcessor<M extends ImapRequest> extends Ab
         default:
             throw new MessageRangeException("Unknown message range type: " + rangeType);
         }
+    }
+    
+    
+    /**
+     * Send VANISHED responses if needed. 
+     * 
+     * @param session
+     * @param mailbox
+     * @param ranges
+     * @param changedSince
+     * @param metaData
+     * @param responder
+     * @throws MailboxException
+     */
+    protected void respondVanished(MailboxSession session, MessageManager mailbox, List<MessageRange> ranges, long changedSince, MetaData metaData, Responder responder) throws MailboxException {
+        // RFC5162 4.2. Server Implementations Storing Minimal State
+        //  
+        //      A server that stores the HIGHESTMODSEQ value at the time of the last
+        //      EXPUNGE can omit the VANISHED response when a client provides a
+        //      MODSEQ value that is equal to, or higher than, the current value of
+        //      this datum, that is, when there have been no EXPUNGEs.
+        //
+        //      A client providing message sequence match data can reduce the scope
+        //      as above.  In the case where there have been no expunges, the server
+        //      can ignore this data.
+        if (metaData.getHighestModSeq() > changedSince) {
+            SearchQuery searchQuery = new SearchQuery();
+            NumericRange[] nRanges = new NumericRange[ranges.size()];
+            Set<Long> vanishedUids = new HashSet<Long>();
+            for (int i = 0; i < ranges.size(); i++) {
+                MessageRange r = ranges.get(i);
+                NumericRange nr;
+                if (r.getType() == Type.ONE) {
+                    nr = new NumericRange(r.getUidFrom());
+                } else {
+                    nr = new NumericRange(r.getUidFrom(), r.getUidTo());
+                }
+                long from = nr.getLowValue();
+                long to = nr.getHighValue();
+                while(from <= to) {
+                    vanishedUids.add(from++);
+                }
+                nRanges[i] = nr;
+                
+            }
+            searchQuery.andCriteria(SearchQuery.uid(nRanges));
+            searchQuery.andCriteria(SearchQuery.modSeqGreaterThan(changedSince));
+            Iterator<Long> uids = mailbox.search(searchQuery, session);
+            while(uids.hasNext()) {
+                vanishedUids.remove(uids.next());
+            }
+            IdRange[] vanishedIdRanges = idRanges(MessageRange.toRanges(vanishedUids));
+            responder.respond(new VanishedResponse(vanishedIdRanges, true));
+        }
+        
+        
+    }
+    
+    
+    // TODO: Do we need to handle wildcards here ?
+    protected IdRange[] idRanges(Collection<MessageRange> mRanges) {
+        IdRange[] idRanges = new IdRange[mRanges.size()];
+        Iterator<MessageRange> mIt = mRanges.iterator();
+        int i = 0;
+        while(mIt.hasNext()) {
+            MessageRange mr = mIt.next();
+            IdRange ir;
+            if (mr.getType() == Type.ONE) {
+                ir = new IdRange(mr.getUidFrom());
+            } else {
+                ir = new IdRange(mr.getUidFrom(), mr.getUidTo());
+            }
+            idRanges[i++] = ir;
+        }
+        return idRanges;
     }
 
 }

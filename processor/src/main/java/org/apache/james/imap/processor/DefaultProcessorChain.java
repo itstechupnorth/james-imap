@@ -75,7 +75,8 @@ public class DefaultProcessorChain {
 
         final CompressProcessor compressProcessor = new CompressProcessor(unselectProcessor, statusResponseFactory);
         final EnableProcessor enableProcessor = new EnableProcessor(compressProcessor, mailboxManager, statusResponseFactory);
-        
+        // add for QRESYNC
+        enableProcessor.addProcessor(selectProcessor);
         
         capabilityProcessor.addProcessor(startTLSProcessor);
         capabilityProcessor.addProcessor(idleProcessor);
@@ -95,6 +96,9 @@ public class DefaultProcessorChain {
         // add to announnce ENABLE
         capabilityProcessor.addProcessor(enableProcessor);
         
+        // Add to announce QRESYNC
+        capabilityProcessor.addProcessor(selectProcessor);
+
         return enableProcessor;
 
     }

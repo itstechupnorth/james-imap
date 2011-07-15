@@ -25,10 +25,12 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.mail.Flags;
 
 import org.apache.james.imap.api.ImapCommand;
+import org.apache.james.imap.api.ImapConstants;
 import org.apache.james.imap.api.ImapSessionUtils;
 import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.api.message.IdRange;
@@ -152,10 +154,10 @@ public class StoreProcessor extends AbstractMailboxProcessor<StoreRequest> {
                         }
                         List<MessageRange> mRanges = MessageRange.toRanges(uids);
                         for (int a = 0 ; a < mRanges.size(); a++) {
-                            setFlags(request, mailboxSession, mailbox, mRanges.get(a), selected, tag, imapCommand, responder);
+                            setFlags(request, mailboxSession, mailbox, mRanges.get(a), session, tag, imapCommand, responder);
                         }
                     } else {
-                        setFlags(request, mailboxSession, mailbox, messageSet, selected, tag, imapCommand, responder);
+                        setFlags(request, mailboxSession, mailbox, messageSet, session, tag, imapCommand, responder);
                     }
                     
                 }
@@ -210,7 +212,7 @@ public class StoreProcessor extends AbstractMailboxProcessor<StoreRequest> {
      * @param responder
      * @throws MailboxException
      */
-    private void setFlags(StoreRequest request, MailboxSession mailboxSession, MessageManager mailbox, MessageRange messageSet, SelectedMailbox selected, String tag, ImapCommand command, Responder responder) throws MailboxException {
+    private void setFlags(StoreRequest request, MailboxSession mailboxSession, MessageManager mailbox, MessageRange messageSet, ImapSession session, String tag, ImapCommand command, Responder responder) throws MailboxException {
         
         final Flags flags = request.getFlags();
         final boolean useUids = request.isUseUids();
@@ -231,6 +233,7 @@ public class StoreProcessor extends AbstractMailboxProcessor<StoreRequest> {
             value = true;
         }
         
+        SelectedMailbox selected = session.getSelected();
         final Map<Long, Flags> flagsByUid = mailbox.setFlags(flags, value, replace, messageSet, mailboxSession);
         // As the STORE command is allowed to create a new "flag/keyword", we need to send a FLAGS and PERMANENTFLAGS response before the FETCH response
         // if some new flag/keyword was used
@@ -241,11 +244,21 @@ public class StoreProcessor extends AbstractMailboxProcessor<StoreRequest> {
             selected.resetNewApplicableFlags();
         }
         
-        if (!silent || unchangedSince != -1) {
+        Set<String> enabled = EnableProcessor.getEnabledCapabilities(session);
+        boolean qresyncEnabled = enabled.contains(ImapConstants.SUPPORTS_QRESYNC);
+        boolean condstoreEnabled = enabled.contains(ImapConstants.SUPPORTS_CONDSTORE);
+        
+        if (!silent || unchangedSince != -1 || qresyncEnabled || condstoreEnabled) {
             final Map<Long, Long> modSeqs = new HashMap<Long, Long>();
            
             // Check if we need to also send the the mod-sequences back to the client
-            if (unchangedSince != -1) {
+            //
+            // This is the case if one of these is true:
+            //      - UNCHANGEDSINCE was used
+            //      - CONDSTORE was enabled via ENABLE CONDSTORE
+            //      - QRESYNC was enabled via ENABLE QRESYNC
+            //
+            if (unchangedSince != -1 || qresyncEnabled || condstoreEnabled) {
                 Iterator<MessageResult> results = mailbox.getMessages(messageSet, FetchGroupImpl.MINIMAL, mailboxSession);
                 while(results.hasNext()) {
                     MessageResult r = results.next();
@@ -263,7 +276,13 @@ public class StoreProcessor extends AbstractMailboxProcessor<StoreRequest> {
 
                 final Flags resultFlags = entry.getValue();
                 final Long resultUid;
-                if (useUids) {
+                
+                // Check if we need to include the uid. T
+                //
+                // This is the case if one of these is true:
+                //      - FETCH (UID...)  was used
+                //      - QRESYNC was enabled via ENABLE QRESYNC
+                if (useUids || qresyncEnabled) {
                     resultUid = uid;
                 } else {
                     resultUid = null;
@@ -278,10 +297,10 @@ public class StoreProcessor extends AbstractMailboxProcessor<StoreRequest> {
                 // For more informations related to the FETCH response see
                 //
                 // RFC4551 3.2. STORE and UID STORE Commands
-                if (silent && unchangedSince != -1) {
+                if (silent && (unchangedSince != -1 || qresyncEnabled || condstoreEnabled)) {
                     // We need to return an FETCH response which contains the mod-sequence of the message even if FLAGS.SILENT was used
                     response = new FetchResponse(msn, null, resultUid, modSeqs.get(resultUid), null, null, null, null, null, null);
-                } else if (!silent && unchangedSince != -1){
+                } else if (!silent && (unchangedSince != -1 || qresyncEnabled || condstoreEnabled)){
                     //
                     // Use a FETCH response which contains the mod-sequence and the flags
                     response = new FetchResponse(msn, resultFlags, resultUid, modSeqs.get(resultUid), null, null, null, null, null, null);

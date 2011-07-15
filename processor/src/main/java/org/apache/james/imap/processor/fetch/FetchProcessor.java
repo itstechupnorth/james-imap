@@ -36,7 +36,6 @@ import org.apache.james.imap.api.process.ImapProcessor;
 import org.apache.james.imap.api.process.ImapSession;
 import org.apache.james.imap.message.request.FetchRequest;
 import org.apache.james.imap.message.response.FetchResponse;
-import org.apache.james.imap.message.response.VanishedResponse;
 import org.apache.james.imap.processor.AbstractMailboxProcessor;
 import org.apache.james.imap.processor.EnableProcessor;
 import org.apache.james.imap.processor.base.FetchGroupImpl;
@@ -77,6 +76,8 @@ public class FetchProcessor extends AbstractMailboxProcessor<FetchRequest> {
         final FetchData fetch = request.getFetch();
         
         try {
+            final Long changedSince = fetch.getChangedSince();
+
             final MessageManager mailbox = getSelectedMailbox(session);
 
             if (mailbox == null) {
@@ -89,7 +90,7 @@ public class FetchProcessor extends AbstractMailboxProcessor<FetchRequest> {
                 return;
             }
            
-            if (vanished && fetch.getChangedSince() == -1) {
+            if (vanished && changedSince == -1) {
                 taggedBad(command, tag, responder, HumanReadableText.QRESYNC_VANISHED_WITHOUT_CHANGEDSINCE);
                 return;
             }
@@ -105,9 +106,10 @@ public class FetchProcessor extends AbstractMailboxProcessor<FetchRequest> {
                 }
             }
 
-            if (vanished) {
-                IdRange[] vanishedRanges = getNotIncluded(ranges, idSet);
-                responder.respond(new VanishedResponse(vanishedRanges, true));
+            if (vanished ) {
+                // TODO: From the QRESYNC RFC it seems ok to send the VANISHED responses after the FETCH Responses. 
+                //       If we do so we could prolly save one mailbox access which should give use some more speed up
+                respondVanished(mailboxSession, mailbox, ranges, changedSince, mailbox.getMetaData(false, mailboxSession, org.apache.james.mailbox.MessageManager.MetaData.FetchGroup.NO_COUNT), responder);
             }
             processMessageRanges(session, mailbox, ranges, fetch, useUids, mailboxSession, responder);
 
@@ -127,16 +129,8 @@ public class FetchProcessor extends AbstractMailboxProcessor<FetchRequest> {
         }
     }
 
-    /**
-     * TODO: implement me
-     * 
-     * @param ranges
-     * @param ids
-     * @return vanished
-     */
-    private IdRange[] getNotIncluded(List<MessageRange> ranges, IdRange[] ids) {
-        return new IdRange[0];
-    }
+
+    
     /**
      * Process the given message ranges by fetch them and pass them to the
      * {@link Responder}

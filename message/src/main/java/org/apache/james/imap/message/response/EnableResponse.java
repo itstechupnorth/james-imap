@@ -18,11 +18,11 @@
  ****************************************************************/
 package org.apache.james.imap.message.response;
 
-import java.util.List;
+import java.util.Set;
 
 public class EnableResponse extends CapabilityResponse{
 
-    public EnableResponse(List<String> capabilities) {
+    public EnableResponse(Set<String> capabilities) {
         super(capabilities);
     }
 

@@ -20,6 +20,7 @@ package org.apache.james.imap.decode.parser;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import org.apache.james.imap.api.ImapCommand;
 import org.apache.james.imap.api.ImapConstants;
@@ -40,11 +41,11 @@ public class EnableCommandParser extends AbstractImapCommandParser {
     protected ImapMessage decode(ImapCommand command, ImapRequestLineReader request, String tag, ImapSession session) throws DecodingException {
         List<String> caps = new ArrayList<String>();
         String cap = request.astring();
-        caps.add(cap);
+        caps.add(cap.toUpperCase(Locale.UK));
         while (request.nextChar() == ' ') {
             request.consume();
             cap = request.astring();
-            caps.add(cap);
+            caps.add(cap.toUpperCase(Locale.UK));
         }
         request.eol();
         return new EnableRequest(tag, command, caps);

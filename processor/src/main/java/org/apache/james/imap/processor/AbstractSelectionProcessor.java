@@ -20,6 +20,8 @@
 package org.apache.james.imap.processor;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -27,6 +29,7 @@ import javax.mail.Flags;
 
 import org.apache.james.imap.api.ImapCommand;
 import org.apache.james.imap.api.ImapConstants;
+import org.apache.james.imap.api.ImapMessage;
 import org.apache.james.imap.api.ImapSessionUtils;
 import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.api.message.IdRange;
@@ -40,7 +43,6 @@ import org.apache.james.imap.api.process.SelectedMailbox;
 import org.apache.james.imap.message.request.AbstractMailboxSelectionRequest;
 import org.apache.james.imap.message.response.ExistsResponse;
 import org.apache.james.imap.message.response.RecentResponse;
-import org.apache.james.imap.message.response.VanishedResponse;
 import org.apache.james.imap.processor.base.FetchGroupImpl;
 import org.apache.james.imap.processor.base.SelectedMailboxImpl;
 import org.apache.james.mailbox.MailboxException;
@@ -49,21 +51,23 @@ import org.apache.james.mailbox.MailboxNotFoundException;
 import org.apache.james.mailbox.MailboxPath;
 import org.apache.james.mailbox.MailboxSession;
 import org.apache.james.mailbox.MessageManager;
-import org.apache.james.mailbox.MessageRange.Type;
+import org.apache.james.mailbox.MessageManager.MetaData.FetchGroup;
+import org.apache.james.mailbox.MessageRangeException;
 import org.apache.james.mailbox.SearchQuery;
 import org.apache.james.mailbox.MessageManager.MetaData;
-import org.apache.james.mailbox.SearchQuery.NumericRange;
 import org.apache.james.mailbox.MessageRange;
 import org.apache.james.mailbox.MessageResult;
 
-abstract class AbstractSelectionProcessor<M extends AbstractMailboxSelectionRequest> extends AbstractMailboxProcessor<M> {
+abstract class AbstractSelectionProcessor<M extends AbstractMailboxSelectionRequest> extends AbstractMailboxProcessor<M> implements PermitEnableCapabilityProcessor {
 
     private final Flags flags = new Flags();
 
     final StatusResponseFactory statusResponseFactory;
 
     private final boolean openReadOnly;
+    private final List<String> CAPS = Collections.unmodifiableList(Arrays.asList(ImapConstants.SUPPORTS_QRESYNC, ImapConstants.SUPPORTS_CONDSTORE));
 
+    
     public AbstractSelectionProcessor(final Class<M> acceptableClass, final ImapProcessor next, final MailboxManager mailboxManager, final StatusResponseFactory statusResponseFactory, final boolean openReadOnly) {
         super(acceptableClass, next, mailboxManager, statusResponseFactory);
         this.statusResponseFactory = statusResponseFactory;
@@ -99,12 +103,20 @@ abstract class AbstractSelectionProcessor<M extends AbstractMailboxSelectionRequ
         } catch (MailboxException e) {
             session.getLog().debug("Select failed", e);
             no(command, tag, responder, HumanReadableText.SELECT);
+        } catch (MessageRangeException e) {
+            session.getLog().debug("Select failed", e);
+            no(command, tag, responder, HumanReadableText.SELECT);
+            
         }
     }
 
-    private void respond(String tag, ImapCommand command, ImapSession session, MailboxPath fullMailboxPath, AbstractMailboxSelectionRequest request, Responder responder) throws MailboxException {
+    private void respond(String tag, ImapCommand command, ImapSession session, MailboxPath fullMailboxPath, AbstractMailboxSelectionRequest request, Responder responder) throws MailboxException, MessageRangeException {
         
         Long lastKnownUidValidity = request.getLastKnownUidValidity();
+        Long modSeq = request.getKnownModSeq();
+        IdRange[] knownSequences = request.getKnownSequenceSet();
+        IdRange[] knownUids = request.getKnownUidSet();
+
         // Check if a QRESYNC parameter was used and if so if QRESYNC was enabled before.
         // If it was not enabled before its needed to return a BAD response
         //
@@ -156,70 +168,142 @@ abstract class AbstractSelectionProcessor<M extends AbstractMailboxSelectionRequ
 
                 if (uidSet == null) {
                     // See mailbox had some messages stored before, if not we don't need to query at all
-                    if (metaData.getUidNext() != 1) {
-                        uidSet = new IdRange[] {new IdRange(1, selected.getLastUid())};
+                    long uidNext = metaData.getUidNext();
+                    if ( uidNext != 1) {
+                        // Use UIDNEXT -1 as max uid as stated in the QRESYNC RFC
+                        uidSet = new IdRange[] {new IdRange(1, uidNext -1)};
                     }
                 }
-                // Check if the know uid set was provided. If so we only need to get the uids of these messages that matched here
+                
                 if (uidSet != null) {
-                    NumericRange[] nranges = new NumericRange[uidSet.length];
-
-                    for (int i = 0 ; i < uidSet.length; i++) {
-                        IdRange r = uidSet[i];
-                        long low = r.getLowVal();
-                        long high = r.getHighVal();
-                        if (low == high) {
-                            nranges[i] = new NumericRange(low);
-                        } else {
-                            nranges[i] = new NumericRange(low, high);
+                    // RFC5162 3.1. QRESYNC Parameter to SELECT/EXAMINE
+                    //
+                    // Message sequence match data:
+                    //
+                    //      A client MAY provide a parenthesized list of a message sequence set
+                    //      and the corresponding UID sets.  Both MUST be provided in ascending
+                    //      order.  The server uses this data to restrict the range for which it
+                    //      provides expunged message information.
+                    //
+                    //
+                    //      Conceptually, the client provides a small sample of sequence numbers
+                    //      for which it knows the corresponding UIDs.  The server then compares
+                    //      each sequence number and UID pair the client provides with the
+                    //      current state of the mailbox.  If a pair matches, then the client
+                    //      knows of any expunges up to, and including, the message, and thus
+                    //      will not include that range in the VANISHED response, even if the
+                    //      "mod-sequence-value" provided by the client is too old for the server
+                    //      to have data of when those messages were expunged.
+                    //
+                    //      Thus, if the Nth message number in the first set in the list is 4,
+                    //      and the Nth UID in the second set in the list is 8, and the mailbox's
+                    //      fourth message has UID 8, then no UIDs equal to or less than 8 are
+                    //      present in the VANISHED response.  If the (N+1)th message number is
+                    //      12, and the (N+1)th UID is 24, and the (N+1)th message in the mailbox
+                    //      has UID 25, then the lowest UID included in the VANISHED response
+                    //      would be 9.
+                    if (knownSequences != null && knownUids != null) {
+                        
+                        // Add all uids which are contained in the knownuidsset to a List so we can later access them via the index
+                        List<Long> knownUidsList = new ArrayList<Long>();
+                        for (int a = 0; a < knownUids.length; a++) {
+                            Iterator<Long> it =  knownUids[a].iterator();
+                            
+                            while(it.hasNext()) {
+                                knownUidsList.add(it.next());
+                            }
                         }
-                    
-                    }
-                    sq.andCriteria(SearchQuery.uid(nranges));
-                }
-
-                Iterator<Long> uidsIt = mailbox.search(sq, mailboxSession);
-                List<Long> uids = new ArrayList<Long>();
-                while(uidsIt.hasNext()) {
-                    uids.add(uidsIt.next());
-                }
-                if (uids.isEmpty() == false) {
-                    if (uidSet != null) {
-                        List<Long> vanished = new ArrayList<Long>();
-                        for (int i = 0; i < uids.size(); i++) {
-                            long uid = uids.get(i);
-                            boolean match = false;
-                            for (int a = 0; a < uidSet.length; a++) {
-                                if (uidSet[a].includes(uid)) {
-                                    match = true;
+                       
+                        
+                        
+                        // loop over the known sequences and check the UID for MSN X again the known UID X 
+                        long firstUid = 1;
+                        int index = 0;
+                        for (int a = 0; a < knownSequences.length; a++) {
+                            boolean done = false;
+                            Iterator<Long> it =  knownSequences[a].iterator();
+                            while(it.hasNext()) {
+                                
+                                // Check if we have uids left to check against
+                                if (knownUidsList.size() > index++) {
+                                    int msn = it.next().intValue();
+                                    long knownUid = knownUidsList.get(index);
+                                    
+                                    // Check if the uid mathc if not we are done here
+                                    if (selected.uid(msn) != knownUid) {
+                                        done = true;
+                                        break;
+                                    } else {
+                                        firstUid = knownUid;
+                                    }
+                                    
+                                } else {
+                                    done = true;
                                     break;
                                 }
+
                             }
-                            if (!match) {
-                                vanished.add(uid);
-                            }
-                        }
-                        if (!vanished.isEmpty()) {
-                            List<MessageRange> ranges = MessageRange.toRanges(vanished);
-                            IdRange[] idRanges  = new IdRange[ranges.size()];
-                            for (int i = 0; i < ranges.size(); i++) {
-                                MessageRange r = ranges.get(i);
-                                if (r.getType() == Type.ONE) {
-                                    idRanges[i] = new IdRange(r.getUidFrom());
-                                } else {
-                                    idRanges[i] = new IdRange(r.getUidFrom(), r.getUidTo());
-                                }
+                            
+                            // We found the first uid to start with 
+                            if (done) {
+                                firstUid++;
                                 
+                                // Ok now its time to filter out the IdRanges which we are not interested in
+                                List<IdRange> filteredUidSet = new ArrayList<IdRange>();
+                                for ( int i = 0; i < uidSet.length; i++) {
+                                    IdRange r = uidSet[i];
+                                    if (r.getLowVal() < firstUid) {
+                                        if (r.getHighVal() > firstUid) {
+                                            r.setLowVal(firstUid);
+                                            filteredUidSet.add(r);
+                                        }
+                                    } else {
+                                        filteredUidSet.add(r);
+                                    }
+                                }
+                                uidSet = filteredUidSet.toArray(new IdRange[0]);
+                                
+                                break;
                             }
-                            //TODO: Send also VANISHED responses as stated in QRESYNC RFC
-                            responder.respond(new VanishedResponse(idRanges, true));
                         }
-                      
+                        
+                        
                     }
-                    List<MessageRange> ranges = MessageRange.toRanges(uids);
-                    for (int i = 0; i < ranges.size(); i++) {
-                        addFlagsResponses(session, selected, responder, true, ranges.get(i), mailbox, mailboxSession);
+                    
+                    List<MessageRange> ranges = new ArrayList<MessageRange>();
+                    for (int i = 0; i < uidSet.length; i++) {
+                        MessageRange messageSet = messageRange(session.getSelected(), uidSet[i], true);
+                        if (messageSet != null) {
+                            MessageRange normalizedMessageSet = normalizeMessageRange(session.getSelected(), messageSet);
+                            ranges.add(normalizedMessageSet);
+                        }
                     }
+                    
+                    
+                    
+                    // TODO: Reconsider if we can do something to make the handling better. Maybe at least cache the triplets for the expunged
+                    //       while have the server running. This could maybe allow us to not return every expunged message all the time
+                    //  
+                    //      As we don't store the <<MSN, UID>, <MODSEQ>> in a permanent way its the best to just ignore it here.
+                    //
+                    //      From RFC5162 4.1. Server Implementations That Don't Store Extra State
+                    //
+                    //
+                    //          Strictly speaking, a server implementation that doesn't remember mod-
+                    //          sequences associated with expunged messages can be considered
+                    //          compliant with this specification.  Such implementations return all
+                    //          expunged messages specified in the UID set of the UID FETCH
+                    //          (VANISHED) command every time, without paying attention to the
+                    //          specified CHANGEDSINCE mod-sequence.  Such implementations are
+                    //          discouraged, as they can end up returning VANISHED responses that are
+                    //          bigger than the result of a UID SEARCH command for the same UID set.
+                    //
+                    //          Clients that use the message sequence match data can reduce the scope
+                    //          of this VANISHED response substantially in the typical case where
+                    //          expunges have not happened, or happen only toward the end of the
+                    //          mailbox.
+                    //
+                    respondVanished(mailboxSession, mailbox, ranges, modSeq, metaData , responder);
                 }
                 taggedOk(responder, tag, command, metaData, HumanReadableText.SELECT);
             } else {
@@ -229,14 +313,12 @@ abstract class AbstractSelectionProcessor<M extends AbstractMailboxSelectionRequ
         } else {
             taggedOk(responder, tag, command, metaData, HumanReadableText.SELECT);
         }
-        
-        
-        
-        
+
         // Reset the saved sequence-set after successful SELECT / EXAMINE
         // See RFC 5812 2.1. Normative Description of the SEARCHRES Extension
         SearchResUtil.resetSavedSequenceSet(session);
     }
+
 
     private void highestModSeq(Responder responder, MetaData metaData, SelectedMailbox selected) {
         final StatusResponse untaggedOk;
@@ -317,6 +399,9 @@ abstract class AbstractSelectionProcessor<M extends AbstractMailboxSelectionRequ
             if (currentMailbox != null) {
                 getStatusResponseFactory().untaggedOk(HumanReadableText.QRESYNC_CLOSED, ResponseCode.closed());
             }
+            if (condstore == false) {
+                condstore = EnableProcessor.getEnabledCapabilities(session).contains(ImapConstants.SUPPORTS_CONDSTORE);
+            }
             sessionMailbox = createNewSelectedMailbox(mailbox, mailboxSession, session, mailboxPath, condstore);
             
         } else {
@@ -355,4 +440,39 @@ abstract class AbstractSelectionProcessor<M extends AbstractMailboxSelectionRequ
             sessionMailbox.addRecent(uid);
         }
     }
+
+    @Override
+    public List<String> getImplementedCapabilities(ImapSession session) {        
+        return CAPS;
+    }
+
+    @Override
+    public List<String> getPermitEnableCapabilities(ImapSession session) {
+        return CAPS;
+    }
+
+    @Override
+    public void enable(ImapMessage message, Responder responder, ImapSession session, String capability) throws EnableException {
+
+        if (EnableProcessor.getEnabledCapabilities(session).contains(capability) == false) {
+            SelectedMailbox sm = session.getSelected();
+            // Send a HIGHESTMODSEQ response if the there was a select mailbox before and the client just enabled
+            // QRESYNC or CONDSTORE
+            //
+            // See http://www.dovecot.org/list/dovecot/2008-March/029561.html
+            if (sm != null) {
+                if (capability.equalsIgnoreCase(ImapConstants.SUPPORTS_CONDSTORE)|| capability.equalsIgnoreCase(ImapConstants.SUPPORTS_QRESYNC)) {
+                    try {
+                        MessageManager mailbox = getSelectedMailbox(session);
+                        MetaData metaData = mailbox.getMetaData(false, ImapSessionUtils.getMailboxSession(session), FetchGroup.NO_COUNT);
+                        highestModSeq(responder, metaData, sm);
+                    } catch (MailboxException e) {
+                        throw new EnableException("Unable to enable " + capability, e);
+                    }
+                }
+            }
+        }
+    }
+    
+    
 }

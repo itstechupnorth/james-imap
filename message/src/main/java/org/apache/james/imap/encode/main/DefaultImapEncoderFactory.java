@@ -38,6 +38,7 @@ import org.apache.james.imap.encode.RecentResponseEncoder;
 import org.apache.james.imap.encode.MailboxStatusResponseEncoder;
 import org.apache.james.imap.encode.SearchResponseEncoder;
 import org.apache.james.imap.encode.StatusResponseEncoder;
+import org.apache.james.imap.encode.VanishedResponseEncoder;
 import org.apache.james.imap.encode.XListResponseEncoder;
 import org.apache.james.imap.encode.base.EndImapEncoder;
 
@@ -75,7 +76,8 @@ public class DefaultImapEncoderFactory implements ImapEncoderFactory {
         final ContinuationResponseEncoder continuationResponseEncoder = new ContinuationResponseEncoder(enableResponseEncoder, localizer);
         final AuthenticateResponseEncoder authResponseEncoder = new AuthenticateResponseEncoder(continuationResponseEncoder);
         final ESearchResponseEncoder esearchResponseEncoder = new ESearchResponseEncoder(authResponseEncoder);
-        return esearchResponseEncoder;
+        final VanishedResponseEncoder vanishedResponseEncoder = new VanishedResponseEncoder(esearchResponseEncoder);
+        return vanishedResponseEncoder;
     }
 
     private final Localizer localizer;

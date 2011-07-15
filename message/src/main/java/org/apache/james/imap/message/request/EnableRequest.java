@@ -31,6 +31,11 @@ public class EnableRequest extends AbstractImapRequest{
         this.capabilities = capabilities;
     }
     
+    /**
+     * Return a List of <code>CAPABILITIES</code>. All these must be uppercase
+     * 
+     * @return caps
+     */
     public List<String> getCapabilities() {
         return capabilities;
     }
