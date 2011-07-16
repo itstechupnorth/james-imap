@@ -20,7 +20,6 @@
 package org.apache.james.imap.processor;
 
 import org.apache.james.imap.api.ImapCommand;
-import org.apache.james.imap.api.ImapConstants;
 import org.apache.james.imap.api.ImapSessionUtils;
 import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.api.message.StatusDataItems;
@@ -82,7 +81,7 @@ public class StatusProcessor extends AbstractMailboxProcessor<StatusRequest> {
             
             // Enable CONDSTORE as this is a CONDSTORE enabling command
             if (highestModSeq != null) {
-                EnableProcessor.getEnabledCapabilities(session).add(ImapConstants.SUPPORTS_CONDSTORE);
+                condstoreEnablingCommand(session, responder, metaData, false); 
             }
             final MailboxStatusResponse response = new MailboxStatusResponse(messages, recent, uidNext, highestModSeq, uidValidity, unseen, request.getMailboxName());
             responder.respond(response);
