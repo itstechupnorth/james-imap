@@ -44,6 +44,7 @@ import org.apache.james.mailbox.MailboxManager;
 import org.apache.james.mailbox.MailboxSession;
 import org.apache.james.mailbox.MessageManager;
 import org.apache.james.mailbox.MessageManager.MessageCallback;
+import org.apache.james.mailbox.MessageManager.MetaData;
 import org.apache.james.mailbox.MessageRange;
 import org.apache.james.mailbox.MessageRangeException;
 import org.apache.james.mailbox.MessageResult;
@@ -95,6 +96,13 @@ public class FetchProcessor extends AbstractMailboxProcessor<FetchRequest> {
                 return;
             }
             final MailboxSession mailboxSession = ImapSessionUtils.getMailboxSession(session);
+
+            MetaData metaData = mailbox.getMetaData(false, mailboxSession, org.apache.james.mailbox.MessageManager.MetaData.FetchGroup.NO_COUNT);
+            if (fetch.getChangedSince() != -1 || fetch.isModSeq()) {
+                // Enable CONDSTORE as this is a CONDSTORE enabling command
+                condstoreEnablingCommand(session, responder,  metaData, true);
+            }
+            
             List<MessageRange> ranges = new ArrayList<MessageRange>();
 
             for (int i = 0; i < idSet.length; i++) {
@@ -109,7 +117,7 @@ public class FetchProcessor extends AbstractMailboxProcessor<FetchRequest> {
             if (vanished ) {
                 // TODO: From the QRESYNC RFC it seems ok to send the VANISHED responses after the FETCH Responses. 
                 //       If we do so we could prolly save one mailbox access which should give use some more speed up
-                respondVanished(mailboxSession, mailbox, ranges, changedSince, mailbox.getMetaData(false, mailboxSession, org.apache.james.mailbox.MessageManager.MetaData.FetchGroup.NO_COUNT), responder);
+                respondVanished(mailboxSession, mailbox, ranges, changedSince, metaData, responder);
             }
             // if QRESYNC is enable its necessary to also return the UID in all cases
             if (EnableProcessor.getEnabledCapabilities(session).contains(ImapConstants.SUPPORTS_QRESYNC)) {

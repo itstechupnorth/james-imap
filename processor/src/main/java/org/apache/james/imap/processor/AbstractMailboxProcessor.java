@@ -58,6 +58,7 @@ import org.apache.james.mailbox.MessageRangeException;
 import org.apache.james.mailbox.MessageResult;
 import org.apache.james.mailbox.SearchQuery;
 import org.apache.james.mailbox.MessageManager.MetaData;
+import org.apache.james.mailbox.MessageManager.MetaData.FetchGroup;
 import org.apache.james.mailbox.MessageRange.Type;
 import org.apache.james.mailbox.SearchQuery.NumericRange;
 
@@ -231,6 +232,8 @@ abstract public class AbstractMailboxProcessor<M extends ImapRequest> extends Ab
                 throw new MailboxException("No message found with uid " + uid);
 
             boolean qresyncEnabled = EnableProcessor.getEnabledCapabilities(session).contains(ImapConstants.SUPPORTS_QRESYNC);
+            boolean condstoreEnabled = EnableProcessor.getEnabledCapabilities(session).contains(ImapConstants.SUPPORTS_CONDSTORE);
+
             final Flags flags = mr.getFlags();
             final Long uidOut;
             if (useUid || qresyncEnabled) {
@@ -245,9 +248,9 @@ abstract public class AbstractMailboxProcessor<M extends ImapRequest> extends Ab
             }
             final FetchResponse response;
             
-            // Check if we also need to return the MODSEQ in the response. This is true if the mailbox was selected with the CONSTORE option or
-            // if QRESYNC was enabled
-            if (selected.getCondstore() || qresyncEnabled) {
+            // Check if we also need to return the MODSEQ in the response. This is true if CONDSTORE or
+            // if QRESYNC was enabled, and the mailbox supports the permant storage of mod-sequences
+            if ((condstoreEnabled || qresyncEnabled) && mailbox.getMetaData(false, mailboxSession, FetchGroup.NO_COUNT).isModSeqPermanent()) {
                 response = new FetchResponse(msn, flags, uidOut, mr.getModSeq(), null, null, null, null, null, null);
             } else {
                 response = new FetchResponse(msn, flags, uidOut, null, null, null, null, null, null, null);
@@ -256,6 +259,24 @@ abstract public class AbstractMailboxProcessor<M extends ImapRequest> extends Ab
         }
     }
 
+    protected void condstoreEnablingCommand(ImapSession session, Responder responder, MetaData metaData, boolean sendHighestModSeq) {
+        Set<String> enabled = EnableProcessor.getEnabledCapabilities(session);
+        if (!enabled.contains(ImapConstants.SUPPORTS_CONDSTORE)) {
+            if (sendHighestModSeq) {
+                if (metaData.isModSeqPermanent()) {
+
+                    final long highestModSeq = metaData.getHighestModSeq();
+
+                    StatusResponse untaggedOk = getStatusResponseFactory().untaggedOk(HumanReadableText.HIGHEST_MOD_SEQ, ResponseCode.highestModSeq(highestModSeq));
+                    responder.respond(untaggedOk);        
+                }
+            }
+            enabled.add(ImapConstants.SUPPORTS_CONDSTORE);
+
+
+        }
+    }
+    
     private MessageManager getMailbox(final ImapSession session, final SelectedMailbox selected) throws MailboxException {
         final MailboxManager mailboxManager = getMailboxManager();
         final MessageManager mailbox = mailboxManager.getMailbox(selected.getPath(), ImapSessionUtils.getMailboxSession(session));

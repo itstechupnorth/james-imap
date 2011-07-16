@@ -131,7 +131,9 @@ abstract class AbstractSelectionProcessor<M extends AbstractMailboxSelectionRequ
             return;
         }
         
-        final MessageManager.MetaData metaData = selectMailbox(fullMailboxPath, session, request.getCondstore());
+        
+        
+        final MessageManager.MetaData metaData = selectMailbox(fullMailboxPath, session);
         final SelectedMailbox selected = session.getSelected();
 
         flags(responder, selected);
@@ -143,9 +145,13 @@ abstract class AbstractSelectionProcessor<M extends AbstractMailboxSelectionRequ
         highestModSeq(responder, metaData, selected);
         uidNext(responder, metaData);
         
+        if (request.getCondstore()) {
+           condstoreEnablingCommand(session, responder, metaData, false);
+        }
+        
         // Now do the QRESYNC processing if necessary
         // 
-        // If the mailbox does nto store the mod-sequence in a permanent way its needed to not process the QRESYNC paramters
+        // If the mailbox does not store the mod-sequence in a permanent way its needed to not process the QRESYNC paramters
         // The same is true if none are given ;)
         if (metaData.isModSeqPermanent() && lastKnownUidValidity != null) {
             if (lastKnownUidValidity == metaData.getUidValidity()) {
@@ -320,6 +326,7 @@ abstract class AbstractSelectionProcessor<M extends AbstractMailboxSelectionRequ
     }
 
 
+
     private void highestModSeq(Responder responder, MetaData metaData, SelectedMailbox selected) {
         final StatusResponse untaggedOk;
         if (metaData.isModSeqPermanent()) {
@@ -382,7 +389,7 @@ abstract class AbstractSelectionProcessor<M extends AbstractMailboxSelectionRequ
         responder.respond(existsResponse);
     }
 
-    private MessageManager.MetaData selectMailbox(MailboxPath mailboxPath, ImapSession session, boolean condstore) throws MailboxException {
+    private MessageManager.MetaData selectMailbox(MailboxPath mailboxPath, ImapSession session) throws MailboxException {
         final MailboxManager mailboxManager = getMailboxManager();
         final MailboxSession mailboxSession = ImapSessionUtils.getMailboxSession(session);
         final MessageManager mailbox = mailboxManager.getMailbox(mailboxPath, mailboxSession);
@@ -399,10 +406,7 @@ abstract class AbstractSelectionProcessor<M extends AbstractMailboxSelectionRequ
             if (currentMailbox != null) {
                 getStatusResponseFactory().untaggedOk(HumanReadableText.QRESYNC_CLOSED, ResponseCode.closed());
             }
-            if (condstore == false) {
-                condstore = EnableProcessor.getEnabledCapabilities(session).contains(ImapConstants.SUPPORTS_CONDSTORE);
-            }
-            sessionMailbox = createNewSelectedMailbox(mailbox, mailboxSession, session, mailboxPath, condstore);
+            sessionMailbox = createNewSelectedMailbox(mailbox, mailboxSession, session, mailboxPath);
             
         } else {
             // TODO: Check if we need to handle CONDSTORE there too 
@@ -413,7 +417,7 @@ abstract class AbstractSelectionProcessor<M extends AbstractMailboxSelectionRequ
         return metaData;
     }
 
-    private SelectedMailbox createNewSelectedMailbox(final MessageManager mailbox, final MailboxSession mailboxSession, ImapSession session, MailboxPath path, boolean condstore) throws MailboxException {
+    private SelectedMailbox createNewSelectedMailbox(final MessageManager mailbox, final MailboxSession mailboxSession, ImapSession session, MailboxPath path) throws MailboxException {
         
         Iterator<MessageResult> messages = mailbox.getMessages(MessageRange.all(), FetchGroupImpl.MINIMAL, mailboxSession);
         Flags applicableFlags = new Flags(flags);
@@ -428,7 +432,7 @@ abstract class AbstractSelectionProcessor<M extends AbstractMailboxSelectionRequ
         // \RECENT is not a applicable flag in imap so remove it from the list
         applicableFlags.remove(Flags.Flag.RECENT);
         
-        final SelectedMailbox sessionMailbox = new SelectedMailboxImpl(getMailboxManager(), uids.iterator(),applicableFlags,  session, path, condstore);
+        final SelectedMailbox sessionMailbox = new SelectedMailboxImpl(getMailboxManager(), uids.iterator(),applicableFlags,  session, path);
         session.selected(sessionMailbox);
         return sessionMailbox;
     }

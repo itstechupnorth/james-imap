@@ -292,25 +292,32 @@ public class StoreProcessor extends AbstractMailboxProcessor<StoreRequest> {
                     resultFlags.add(Flags.Flag.RECENT);
                 }
                
-                 
+                session.getLog().debug("CONDSTORE=" +enabled.contains(ImapConstants.SUPPORTS_CONDSTORE));
+
                 final FetchResponse response;
                 // For more informations related to the FETCH response see
                 //
                 // RFC4551 3.2. STORE and UID STORE Commands
                 if (silent && (unchangedSince != -1 || qresyncEnabled || condstoreEnabled)) {
                     // We need to return an FETCH response which contains the mod-sequence of the message even if FLAGS.SILENT was used
-                    response = new FetchResponse(msn, null, resultUid, modSeqs.get(resultUid), null, null, null, null, null, null);
+                    response = new FetchResponse(msn, null, resultUid, modSeqs.get(uid), null, null, null, null, null, null);
                 } else if (!silent && (unchangedSince != -1 || qresyncEnabled || condstoreEnabled)){
                     //
                     // Use a FETCH response which contains the mod-sequence and the flags
-                    response = new FetchResponse(msn, resultFlags, resultUid, modSeqs.get(resultUid), null, null, null, null, null, null);
+                    response = new FetchResponse(msn, resultFlags, resultUid, modSeqs.get(uid), null, null, null, null, null, null);
                 } else {
                     // Use a FETCH response which only contains the flags as no CONDSTORE was used
                     response = new FetchResponse(msn, resultFlags, resultUid, null, null, null, null, null, null, null);
                 }
                 responder.respond(response);
+            }
 
+            if (unchangedSince != -1) {
+                // Enable CONDSTORE as this is a CONDSTORE enabling command
+                condstoreEnablingCommand(session, responder,  mailbox.getMetaData(false, mailboxSession, FetchGroup.NO_COUNT), true);
+                                  
             }
         }
+        
     }
 }

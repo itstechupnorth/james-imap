@@ -53,6 +53,7 @@ import org.apache.james.mailbox.MailboxManager;
 import org.apache.james.mailbox.MailboxSession;
 import org.apache.james.mailbox.MessageManager;
 import org.apache.james.mailbox.MessageManager.MetaData;
+import org.apache.james.mailbox.MessageManager.MetaData.FetchGroup;
 import org.apache.james.mailbox.MessageRange;
 import org.apache.james.mailbox.MessageRangeException;
 import org.apache.james.mailbox.MessageResult;
@@ -118,6 +119,10 @@ public class SearchProcessor extends AbstractMailboxProcessor<SearchRequest> imp
             if (session.getAttribute(SEARCH_MODSEQ) != null) {
                 MetaData metaData = mailbox.getMetaData(false, msession , MessageManager.MetaData.FetchGroup.NO_COUNT);
                 highestModSeq = findHighestModSeq(msession, mailbox, MessageRange.toRanges(uids), metaData.getHighestModSeq());
+                
+                // Enable CONDSTORE as this is a CONDSTORE enabling command
+                condstoreEnablingCommand(session, responder,  metaData, true);                
+                
             } else {
                 highestModSeq = null;
             }

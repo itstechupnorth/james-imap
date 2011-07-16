@@ -23,11 +23,13 @@ import static org.apache.james.imap.api.ImapConstants.SUPPORTS_ENABLE;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
 import org.apache.james.imap.api.ImapCommand;
 import org.apache.james.imap.api.display.HumanReadableText;
+import org.apache.james.imap.api.message.request.ImapRequest;
 import org.apache.james.imap.api.message.response.StatusResponseFactory;
 import org.apache.james.imap.api.process.ImapProcessor;
 import org.apache.james.imap.api.process.ImapSession;
@@ -38,12 +40,12 @@ import org.apache.james.mailbox.MailboxManager;
 
 public class EnableProcessor extends AbstractMailboxProcessor<EnableRequest> implements CapabilityImplementingProcessor {
 
-    private final List<PermitEnableCapabilityProcessor> capabilities = new ArrayList<PermitEnableCapabilityProcessor>();
+    private final static List<PermitEnableCapabilityProcessor> capabilities = new ArrayList<PermitEnableCapabilityProcessor>();
     public final static String ENABLED_CAPABILITIES = "ENABLED_CAPABILITIES";
     
     public EnableProcessor(final ImapProcessor next, final MailboxManager mailboxManager, final StatusResponseFactory factory, final List<PermitEnableCapabilityProcessor> capabilities) {
         this(next, mailboxManager, factory);
-        this.capabilities.addAll(capabilities);
+        EnableProcessor.capabilities.addAll(capabilities);
 
     }
 
@@ -60,22 +62,7 @@ public class EnableProcessor extends AbstractMailboxProcessor<EnableRequest> imp
         try {
 
             List<String> caps = request.getCapabilities();
-            Set<String> enabledCaps = new HashSet<String>();
-            for (int i = 0; i < caps.size(); i++) {
-                String cap = caps.get(i);
-                // Check if the CAPABILITY is supported at all
-                if (CapabilityProcessor.getSupportedCapabilities(session).contains(cap)) {
-                    for (int a = 0; a < capabilities.size(); a++) {
-                        PermitEnableCapabilityProcessor enableProcessor = capabilities.get(a);
-                        if (enableProcessor.getPermitEnableCapabilities(session).contains(cap)) {
-                            enableProcessor.enable(request, responder, session, cap);
-                            enabledCaps.add(cap);
-                        }
-                    }
-                }
-            }
-            getEnabledCapabilities(session).addAll(enabledCaps);
-
+            Set<String> enabledCaps = enable(request, responder, session, caps.iterator());
             responder.respond(new EnableResponse(enabledCaps));
 
             unsolicitedResponses(session, responder, false);
@@ -85,6 +72,25 @@ public class EnableProcessor extends AbstractMailboxProcessor<EnableRequest> imp
         }
     }
    
+    public static Set<String> enable(ImapRequest request, Responder responder, ImapSession session, Iterator<String> caps) throws EnableException {
+        Set<String> enabledCaps = new HashSet<String>();
+        while(caps.hasNext()) {
+            String cap = caps.next();
+            // Check if the CAPABILITY is supported at all
+            if (CapabilityProcessor.getSupportedCapabilities(session).contains(cap)) {
+                for (int a = 0; a < capabilities.size(); a++) {
+                    PermitEnableCapabilityProcessor enableProcessor = capabilities.get(a);
+                    if (enableProcessor.getPermitEnableCapabilities(session).contains(cap)) {
+                        enableProcessor.enable(request, responder, session, cap);
+                        enabledCaps.add(cap);
+                    }
+                }
+            }
+        }
+        getEnabledCapabilities(session).addAll(enabledCaps);
+        return enabledCaps;
+    }
+
     /**
      * Add a {@link PermitEnableCapabilityProcessor} which can be enabled
      * 
