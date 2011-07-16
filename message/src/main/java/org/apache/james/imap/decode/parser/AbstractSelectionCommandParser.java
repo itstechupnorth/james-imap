@@ -74,18 +74,12 @@ public abstract class AbstractSelectionCommandParser extends AbstractImapCommand
             switch (n) {
             case 'C':
                 // It starts with C so it should be CONDSTORE
-                request.consumeWord(new CharacterValidator() {
-                    int pos = 0;
-
-                    @Override
-                    public boolean isValid(char chr) {
-                        if (pos >= CONDSTORE.length) {
-                            return false;
-                        } else {
-                            return ImapRequestLineReader.cap(chr) == CONDSTORE[pos++];
-                        }
+                int pos = 0;
+                while (pos < CONDSTORE.length) {
+                    if (CONDSTORE[pos++] != ImapRequestLineReader.cap(request.consume())) {
+                        throw new DecodingException(HumanReadableText.ILLEGAL_ARGUMENTS, "Unknown option");
                     }
-                });
+                }
                 condstore = true;
                 break;
             case 'Q':
