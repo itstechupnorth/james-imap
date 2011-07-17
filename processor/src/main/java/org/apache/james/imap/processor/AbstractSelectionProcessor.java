@@ -464,17 +464,16 @@ abstract class AbstractSelectionProcessor<M extends AbstractMailboxSelectionRequ
             // QRESYNC or CONDSTORE
             //
             // See http://www.dovecot.org/list/dovecot/2008-March/029561.html
-            if (sm != null) {
-                if (capability.equalsIgnoreCase(ImapConstants.SUPPORTS_CONDSTORE)|| capability.equalsIgnoreCase(ImapConstants.SUPPORTS_QRESYNC)) {
-                    try {
-                        MessageManager mailbox = getSelectedMailbox(session);
-                        MetaData metaData = mailbox.getMetaData(false, ImapSessionUtils.getMailboxSession(session), FetchGroup.NO_COUNT);
-                        highestModSeq(responder, metaData, sm);
-                    } catch (MailboxException e) {
-                        throw new EnableException("Unable to enable " + capability, e);
-                    }
+            if (capability.equalsIgnoreCase(ImapConstants.SUPPORTS_CONDSTORE)|| capability.equalsIgnoreCase(ImapConstants.SUPPORTS_QRESYNC)) {
+                try {
+                    MessageManager mailbox = getSelectedMailbox(session);
+                    MetaData metaData = mailbox.getMetaData(false, ImapSessionUtils.getMailboxSession(session), FetchGroup.NO_COUNT);
+                    condstoreEnablingCommand(session, responder, metaData, sm != null);
+                } catch (MailboxException e) {
+                    throw new EnableException("Unable to enable " + capability, e);
                 }
             }
+            
         }
     }
     
