@@ -469,9 +469,9 @@ abstract class AbstractSelectionProcessor<M extends AbstractMailboxSelectionRequ
                     MetaData metaData  = null;
                     boolean send = false;
                     if (sm != null) {
-                    MessageManager mailbox = getSelectedMailbox(session);
-                    metaData = mailbox.getMetaData(false, ImapSessionUtils.getMailboxSession(session), FetchGroup.NO_COUNT);
-                    send= true;
+                        MessageManager mailbox = getSelectedMailbox(session);
+                        metaData = mailbox.getMetaData(false, ImapSessionUtils.getMailboxSession(session), FetchGroup.NO_COUNT);
+                        send= true;
                     }
                     condstoreEnablingCommand(session, responder, metaData, send);
                 } catch (MailboxException e) {
