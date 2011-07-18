@@ -690,7 +690,7 @@ public abstract class ImapRequestLineReader {
                 }
             }
         } catch (NumberFormatException e) {
-            throw new DecodingException(HumanReadableText.ILLEGAL_ARGUMENTS, "Invalid message set.", e);
+            throw new DecodingException(HumanReadableText.INVALID_MESSAGESET, "Invalid message set.", e);
         }
     }
 
@@ -700,7 +700,7 @@ public abstract class ImapRequestLineReader {
         } else {
             long number = Long.parseLong(value);
             if (number < ImapConstants.MIN_NZ_NUMBER || number > ImapConstants.MAX_NZ_NUMBER)
-                throw new DecodingException(HumanReadableText.ILLEGAL_ARGUMENTS, "Invalid message set. Numbers must be unsigned 32-bit Integers");
+                throw new DecodingException(HumanReadableText.INVALID_MESSAGESET, "Invalid message set. Numbers must be unsigned 32-bit Integers");
             return number;
 
         }
