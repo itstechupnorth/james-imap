@@ -106,7 +106,7 @@ public abstract class AbstractSelectionCommandParser extends AbstractImapCommand
                 
                 // Consume the SP
                 request.consumeChar(' ');
-                knownModSeq = request.number();
+                knownModSeq = request.number(true);
                 
                 char nc = request.nextChar();
                 if (nc == ' ') {
