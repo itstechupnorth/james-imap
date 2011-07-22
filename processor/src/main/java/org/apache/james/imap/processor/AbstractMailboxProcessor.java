@@ -211,10 +211,11 @@ abstract public class AbstractMailboxProcessor<M extends ImapRequest> extends Ab
             
             final Collection<Long> flagUpdateUids = selected.flagUpdateUids();
             if (!flagUpdateUids.isEmpty()) {
-                for (final Long uid : flagUpdateUids) {
-                    MessageRange messageSet = MessageRange.one(uid.longValue());
-                    addFlagsResponses(session, selected, responder, useUid, messageSet, mailbox, mailboxSession);
-                }
+            	Iterator<MessageRange> ranges = MessageRange.toRanges(flagUpdateUids).iterator();
+            	while(ranges.hasNext()) {
+            		addFlagsResponses(session, selected, responder, useUid, ranges.next(), mailbox, mailboxSession);
+            	}
+
             }
         } catch (MailboxException e) {
             handleResponseException(responder, e, HumanReadableText.FAILURE_TO_LOAD_FLAGS, session);
