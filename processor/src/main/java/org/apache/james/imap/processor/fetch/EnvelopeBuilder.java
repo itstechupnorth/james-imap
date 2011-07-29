@@ -25,6 +25,8 @@ package org.apache.james.imap.processor.fetch;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.mail.internet.MimeUtility;
+
 import org.apache.james.imap.api.ImapConstants;
 import org.apache.james.imap.message.response.FetchResponse;
 import org.apache.james.mailbox.Headers;
@@ -76,7 +78,13 @@ public final class EnvelopeBuilder {
 
                 // ENVELOPE header values must be unfolded
                 // See IMAP-269
-                result = MimeUtil.unfold(value);
+            	//
+            	//
+            	// IMAP-Servers are advised to also replace tabs with single spaces while doing the unfolding. This is what javamails
+            	// unfold does. mime4j's unfold does strictly follow the rfc and so preserve them
+            	// 
+            	// See IMAP-327 and https://mailman2.u.washington.edu/mailman/htdig/imap-protocol/2010-July/001271.html
+                result = MimeUtility.unfold(value);
 
             }
         }
@@ -112,7 +120,12 @@ public final class EnvelopeBuilder {
 
             // We need to unfold the header line.
             // See https://issues.apache.org/jira/browse/IMAP-154
-            String value = MimeUtil.unfold(header.getValue());
+        	//
+        	// IMAP-Servers are advised to also replace tabs with single spaces while doing the unfolding. This is what javamails
+        	// unfold does. mime4j's unfold does strictly follow the rfc and so preserve them
+        	// 
+        	// See IMAP-327 and https://mailman2.u.washington.edu/mailman/htdig/imap-protocol/2010-July/001271.html
+            String value = MimeUtility.unfold(header.getValue());
 
             if ("".equals(value.trim())) {
                 results = null;
