@@ -53,6 +53,7 @@ import org.apache.james.mailbox.MailboxSession;
 import org.apache.james.mailbox.MessageManager;
 import org.apache.james.mailbox.MessageManager.MetaData.FetchGroup;
 import org.apache.james.mailbox.MessageRangeException;
+import org.apache.james.mailbox.MessageResultIterator;
 import org.apache.james.mailbox.SearchQuery;
 import org.apache.james.mailbox.MessageManager.MetaData;
 import org.apache.james.mailbox.MessageRange;
@@ -103,11 +104,7 @@ abstract class AbstractSelectionProcessor<M extends AbstractMailboxSelectionRequ
         } catch (MailboxException e) {
             session.getLog().debug("Select failed", e);
             no(command, tag, responder, HumanReadableText.SELECT);
-        } catch (MessageRangeException e) {
-            session.getLog().debug("Select failed", e);
-            no(command, tag, responder, HumanReadableText.SELECT);
-            
-        }
+        } 
     }
 
     private void respond(String tag, ImapCommand command, ImapSession session, MailboxPath fullMailboxPath, AbstractMailboxSelectionRequest request, Responder responder) throws MailboxException, MessageRangeException {
@@ -419,7 +416,7 @@ abstract class AbstractSelectionProcessor<M extends AbstractMailboxSelectionRequ
 
     private SelectedMailbox createNewSelectedMailbox(final MessageManager mailbox, final MailboxSession mailboxSession, ImapSession session, MailboxPath path) throws MailboxException {
         
-        Iterator<MessageResult> messages = mailbox.getMessages(MessageRange.all(), FetchGroupImpl.MINIMAL, mailboxSession);
+        MessageResultIterator messages = mailbox.getMessages(MessageRange.all(), FetchGroupImpl.MINIMAL, -1, mailboxSession);
         Flags applicableFlags = new Flags(flags);
         List<Long> uids = new ArrayList<Long>();
         while(messages.hasNext()) {

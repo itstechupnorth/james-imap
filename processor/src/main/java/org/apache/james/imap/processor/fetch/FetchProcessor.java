@@ -43,7 +43,7 @@ import org.apache.james.mailbox.MailboxException;
 import org.apache.james.mailbox.MailboxManager;
 import org.apache.james.mailbox.MailboxSession;
 import org.apache.james.mailbox.MessageManager;
-import org.apache.james.mailbox.MessageManager.MessageCallback;
+import org.apache.james.mailbox.MessageResultIterator;
 import org.apache.james.mailbox.MessageManager.MetaData;
 import org.apache.james.mailbox.MessageRange;
 import org.apache.james.mailbox.MessageRangeException;
@@ -109,7 +109,7 @@ public class FetchProcessor extends AbstractMailboxProcessor<FetchRequest> {
                 MessageRange messageSet = messageRange(session.getSelected(), idSet[i], useUids);
                 if (messageSet != null) {
                     MessageRange normalizedMessageSet = normalizeMessageRange(session.getSelected(), messageSet);
-                    MessageRange batchedMessageSet = MessageRange.range(normalizedMessageSet.getUidFrom(), normalizedMessageSet.getUidTo(), batchSize);
+                    MessageRange batchedMessageSet = MessageRange.range(normalizedMessageSet.getUidFrom(), normalizedMessageSet.getUidTo());
                     ranges.add(batchedMessageSet);
                 }
             }
@@ -161,26 +161,27 @@ public class FetchProcessor extends AbstractMailboxProcessor<FetchRequest> {
         FetchGroup resultToFetch = getFetchGroup(fetch);
 
         for (int i = 0; i < ranges.size(); i++) {
-            mailbox.getMessages(ranges.get(i), resultToFetch, mailboxSession, new MessageCallback() {
-
-                public void onMessages(Iterator<MessageResult> it) throws MailboxException {
-                    while (it.hasNext()) {
-                        final MessageResult result = it.next();
-                        try {
-                            final FetchResponse response = builder.build(fetch, result, mailbox, session, useUids);
-                            responder.respond(response);
-                        } catch (ParseException e) {
-                            // we can't for whatever reason parse the message so
-                            // just skip it and log it to debug
-                            session.getLog().debug("Unable to parse message with uid " + result.getUid(), e);
-                        } catch (MessageRangeException e) {
-                            // we can't for whatever reason find the message so
-                            // just skip it and log it to debug
-                            session.getLog().debug("Unable to find message with uid " + result.getUid(), e);
-                        }
-                    }
+            MessageResultIterator messages = mailbox.getMessages(ranges.get(i), resultToFetch, batchSize, mailboxSession);
+            while (messages.hasNext()) {
+                final MessageResult result = messages.next();
+                try {
+                    final FetchResponse response = builder.build(fetch, result, mailbox, session, useUids);
+                    responder.respond(response);
+                } catch (ParseException e) {
+                    // we can't for whatever reason parse the message so
+                    // just skip it and log it to debug
+                    session.getLog().debug("Unable to parse message with uid " + result.getUid(), e);
+                } catch (MessageRangeException e) {
+                    // we can't for whatever reason find the message so
+                    // just skip it and log it to debug
+                    session.getLog().debug("Unable to find message with uid " + result.getUid(), e);
                 }
-            });
+            }
+            
+            // Throw the exception if we received one
+            if (messages.getException() != null) {
+            	throw messages.getException();
+            }
         }
 
     }

@@ -55,7 +55,7 @@ import org.apache.james.mailbox.MessageManager;
 import org.apache.james.mailbox.MessageManager.MetaData;
 import org.apache.james.mailbox.MessageRange;
 import org.apache.james.mailbox.MessageRangeException;
-import org.apache.james.mailbox.MessageResult;
+import org.apache.james.mailbox.MessageResultIterator;
 import org.apache.james.mailbox.SearchQuery;
 import org.apache.james.mailbox.SearchQuery.AddressType;
 import org.apache.james.mailbox.SearchQuery.Criterion;
@@ -238,7 +238,7 @@ public class SearchProcessor extends AbstractMailboxProcessor<SearchRequest> imp
         // Reverse loop over the ranges as its more likely that we find a match at the end
         int size = ranges.size();
         for (int i = size -1 ; i > 0; i--) {
-            Iterator<MessageResult> results = mailbox.getMessages(ranges.get(i), FetchGroupImpl.MINIMAL, session);
+            MessageResultIterator results = mailbox.getMessages(ranges.get(i), FetchGroupImpl.MINIMAL, -1, session);
             while(results.hasNext()) {
                 long modSeq = results.next().getModSeq();
                 if (highestModSeq == null || modSeq > highestModSeq) {

@@ -22,7 +22,6 @@ package org.apache.james.imap.processor;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -47,11 +46,13 @@ import org.apache.james.mailbox.MailboxException;
 import org.apache.james.mailbox.MailboxManager;
 import org.apache.james.mailbox.MailboxSession;
 import org.apache.james.mailbox.MessageManager;
+import org.apache.james.mailbox.MessageManager.MetaData;
 import org.apache.james.mailbox.MessageManager.MetaData.FetchGroup;
 import org.apache.james.mailbox.MessageRange;
 import org.apache.james.mailbox.MessageRange.Type;
 import org.apache.james.mailbox.MessageRangeException;
 import org.apache.james.mailbox.MessageResult;
+import org.apache.james.mailbox.MessageResultIterator;
 
 public class StoreProcessor extends AbstractMailboxProcessor<StoreRequest> {
 
@@ -80,7 +81,8 @@ public class StoreProcessor extends AbstractMailboxProcessor<StoreRequest> {
             final Flags flags = request.getFlags();
             
             if (unchangedSince != -1) {
-                if (mailbox.isModSeqPermanent(mailboxSession) == false) {
+            	MetaData metaData = mailbox.getMetaData(false, mailboxSession, FetchGroup.NO_COUNT);
+                if (metaData.isModSeqPermanent() == false) {
                     // Check if the mailbox did not support modsequences. If so return a tagged bad response.
                     // See RFC4551 3.1.2. NOMODSEQ Response Code 
                     taggedBad(command, tag, responder, HumanReadableText.NO_MOD_SEQ);
@@ -115,7 +117,7 @@ public class StoreProcessor extends AbstractMailboxProcessor<StoreRequest> {
                         
                         List<Long> uids = new ArrayList<Long>();
 
-                        Iterator<MessageResult> results = mailbox.getMessages(messageSet, FetchGroupImpl.MINIMAL, mailboxSession);
+                        MessageResultIterator results = mailbox.getMessages(messageSet, FetchGroupImpl.MINIMAL, -1, mailboxSession);
                         while(results.hasNext()) {
                             MessageResult r = results.next();
                             long uid = r.getUid();
@@ -259,7 +261,7 @@ public class StoreProcessor extends AbstractMailboxProcessor<StoreRequest> {
             //      - QRESYNC was enabled via ENABLE QRESYNC
             //
             if (unchangedSince != -1 || qresyncEnabled || condstoreEnabled) {
-                Iterator<MessageResult> results = mailbox.getMessages(messageSet, FetchGroupImpl.MINIMAL, mailboxSession);
+                MessageResultIterator results = mailbox.getMessages(messageSet, FetchGroupImpl.MINIMAL, -1, mailboxSession);
                 while(results.hasNext()) {
                     MessageResult r = results.next();
                     // Store the modseq for the uid for later usage in the response
@@ -292,8 +294,6 @@ public class StoreProcessor extends AbstractMailboxProcessor<StoreRequest> {
                     resultFlags.add(Flags.Flag.RECENT);
                 }
                
-                session.getLog().debug("CONDSTORE=" +enabled.contains(ImapConstants.SUPPORTS_CONDSTORE));
-
                 final FetchResponse response;
                 // For more informations related to the FETCH response see
                 //

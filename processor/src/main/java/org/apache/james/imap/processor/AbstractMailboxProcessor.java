@@ -56,6 +56,7 @@ import org.apache.james.mailbox.MessageManager;
 import org.apache.james.mailbox.MessageRange;
 import org.apache.james.mailbox.MessageRangeException;
 import org.apache.james.mailbox.MessageResult;
+import org.apache.james.mailbox.MessageResultIterator;
 import org.apache.james.mailbox.SearchQuery;
 import org.apache.james.mailbox.MessageManager.MetaData;
 import org.apache.james.mailbox.MessageManager.MetaData.FetchGroup;
@@ -224,7 +225,7 @@ abstract public class AbstractMailboxProcessor<M extends ImapRequest> extends Ab
 
     protected void addFlagsResponses(final ImapSession session, final SelectedMailbox selected, final ImapProcessor.Responder responder, boolean useUid, MessageRange messageSet, MessageManager mailbox, MailboxSession mailboxSession) throws MailboxException {
 
-        final Iterator<MessageResult> it = mailbox.getMessages(messageSet, FetchGroupImpl.MINIMAL, mailboxSession);
+        final MessageResultIterator it = mailbox.getMessages(messageSet, FetchGroupImpl.MINIMAL, -1,  mailboxSession);
         while (it.hasNext()) {
             MessageResult mr = it.next();
             final long uid = mr.getUid();
