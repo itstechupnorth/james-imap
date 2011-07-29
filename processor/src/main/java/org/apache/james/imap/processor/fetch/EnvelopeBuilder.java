@@ -33,13 +33,12 @@ import org.apache.james.mailbox.Headers;
 import org.apache.james.mailbox.MailboxException;
 import org.apache.james.mailbox.MessageResult;
 import org.apache.james.mime4j.codec.EncoderUtil;
-import org.apache.james.mime4j.field.address.Address;
-import org.apache.james.mime4j.field.address.AddressList;
-import org.apache.james.mime4j.field.address.DomainList;
-import org.apache.james.mime4j.field.address.Group;
-import org.apache.james.mime4j.field.address.MailboxList;
-import org.apache.james.mime4j.field.address.parser.ParseException;
-import org.apache.james.mime4j.util.MimeUtil;
+import org.apache.james.mime4j.dom.address.Address;
+import org.apache.james.mime4j.dom.address.AddressList;
+import org.apache.james.mime4j.dom.address.DomainList;
+import org.apache.james.mime4j.dom.address.Group;
+import org.apache.james.mime4j.dom.address.MailboxList;
+import org.apache.james.mime4j.field.address.LenientAddressBuilder;
 import org.slf4j.Logger;
 
 public final class EnvelopeBuilder {
@@ -131,38 +130,34 @@ public final class EnvelopeBuilder {
                 results = null;
             } else {
 
-                try {
-                    AddressList addressList = AddressList.parse(value);
-                    final int size = addressList.size();
-                    final List<FetchResponse.Envelope.Address> addresses = new ArrayList<FetchResponse.Envelope.Address>(size);
-                    for (int i = 0; i < size; i++) {
-                        final Address address = addressList.get(i);
-                        if (address instanceof Group) {
-                            final Group group = (Group) address;
-                            addAddresses(group, addresses);
+                AddressList addressList = LenientAddressBuilder.DEFAULT.parseAddressList(value);
+                final int size = addressList.size();
+                final List<FetchResponse.Envelope.Address> addresses = new ArrayList<FetchResponse.Envelope.Address>(size);
+                for (int i = 0; i < size; i++) {
+                    final Address address = addressList.get(i);
+                    if (address instanceof Group) {
+                        final Group group = (Group) address;
+                        addAddresses(group, addresses);
 
-                        } else if (address instanceof org.apache.james.mime4j.field.address.Mailbox) {
-                            final org.apache.james.mime4j.field.address.Mailbox mailbox = (org.apache.james.mime4j.field.address.Mailbox) address;
-                            final FetchResponse.Envelope.Address mailboxAddress = buildMailboxAddress(mailbox);
-                            addresses.add(mailboxAddress);
+                    } else if (address instanceof org.apache.james.mime4j.dom.address.Mailbox) {
+                        final org.apache.james.mime4j.dom.address.Mailbox mailbox = (org.apache.james.mime4j.dom.address.Mailbox) address;
+                        final FetchResponse.Envelope.Address mailboxAddress = buildMailboxAddress(mailbox);
+                        addresses.add(mailboxAddress);
 
-                        } else {
-                            logger.warn("Unknown address type");
-                        }
+                    } else {
+                        logger.warn("Unknown address type");
                     }
-
-                    results = (FetchResponse.Envelope.Address[]) addresses.toArray(FetchResponse.Envelope.Address.EMPTY);
-                } catch (ParseException e) {
-                    logger.debug("Unable to parse out address", e);
-                    results = null;
                 }
+
+                results = (FetchResponse.Envelope.Address[]) addresses.toArray(FetchResponse.Envelope.Address.EMPTY);
+                
 
             }
         }
         return results;
     }
 
-    private FetchResponse.Envelope.Address buildMailboxAddress(final org.apache.james.mime4j.field.address.Mailbox mailbox) {
+    private FetchResponse.Envelope.Address buildMailboxAddress(final org.apache.james.mime4j.dom.address.Mailbox mailbox) {
         // Encode the mailbox name
         // See IMAP-266
         String name = mailbox.getName();
@@ -189,7 +184,7 @@ public final class EnvelopeBuilder {
         addresses.add(start);
         final MailboxList mailboxList = group.getMailboxes();
         for (int i = 0; i < mailboxList.size(); i++) {
-            final org.apache.james.mime4j.field.address.Mailbox mailbox = mailboxList.get(i);
+            final org.apache.james.mime4j.dom.address.Mailbox mailbox = mailboxList.get(i);
             final FetchResponse.Envelope.Address address = buildMailboxAddress(mailbox);
             addresses.add(address);
         }

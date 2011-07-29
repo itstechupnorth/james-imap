@@ -50,7 +50,6 @@ import org.apache.james.mailbox.MessageRangeException;
 import org.apache.james.mailbox.MessageResult;
 import org.apache.james.mailbox.MessageResult.FetchGroup;
 import org.apache.james.mailbox.MessageResult.MimePath;
-import org.apache.james.mime4j.field.address.parser.ParseException;
 
 public class FetchProcessor extends AbstractMailboxProcessor<FetchRequest> {
 
@@ -167,10 +166,6 @@ public class FetchProcessor extends AbstractMailboxProcessor<FetchRequest> {
                 try {
                     final FetchResponse response = builder.build(fetch, result, mailbox, session, useUids);
                     responder.respond(response);
-                } catch (ParseException e) {
-                    // we can't for whatever reason parse the message so
-                    // just skip it and log it to debug
-                    session.getLog().debug("Unable to parse message with uid " + result.getUid(), e);
                 } catch (MessageRangeException e) {
                     // we can't for whatever reason find the message so
                     // just skip it and log it to debug

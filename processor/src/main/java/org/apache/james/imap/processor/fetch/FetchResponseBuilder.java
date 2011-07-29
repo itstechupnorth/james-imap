@@ -44,7 +44,6 @@ import org.apache.james.mailbox.MessageRange;
 import org.apache.james.mailbox.MessageRangeException;
 import org.apache.james.mailbox.MessageResult;
 import org.apache.james.mailbox.MimeDescriptor;
-import org.apache.james.mime4j.field.address.parser.ParseException;
 
 public final class FetchResponseBuilder {
 
@@ -105,7 +104,7 @@ public final class FetchResponseBuilder {
         return result;
     }
 
-    public FetchResponse build(FetchData fetch, MessageResult result, MessageManager mailbox, ImapSession session, boolean useUids) throws MessageRangeException, ParseException, MailboxException {
+    public FetchResponse build(FetchData fetch, MessageResult result, MessageManager mailbox, ImapSession session, boolean useUids) throws MessageRangeException, MailboxException {
         final SelectedMailbox selected = session.getSelected();
         final long resultUid = result.getUid();
         final int resultMsn = selected.msn(resultUid);
@@ -194,7 +193,7 @@ public final class FetchResponseBuilder {
         return build();
     }
 
-    private FetchResponse.Envelope buildEnvelope(final MessageResult result) throws MailboxException, ParseException {
+    private FetchResponse.Envelope buildEnvelope(final MessageResult result) throws MailboxException {
         return envelopeBuilder.buildEnvelope(result);
     }
 
