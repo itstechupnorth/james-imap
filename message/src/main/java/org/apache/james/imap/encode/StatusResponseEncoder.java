@@ -59,7 +59,7 @@ public class StatusResponseEncoder extends AbstractChainedImapEncoder {
         final boolean useParens;
         if (responseCode == null) {
             parameters = null;
-            number = 0;
+            number = -1;
             useParens = false;
         } else {
             parameters = responseCode.getParameters();

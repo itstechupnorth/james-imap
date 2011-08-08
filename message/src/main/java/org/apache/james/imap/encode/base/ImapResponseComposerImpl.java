@@ -301,7 +301,7 @@ public class ImapResponseComposerImpl implements ImapConstants, ImapResponseComp
         if (responseCode != null) {
             openSquareBracket();
             message(responseCode);
-            if (number > 0) {
+            if (number > -1) {
                 message(number);
             }
             if (parameters != null && !parameters.isEmpty()) {
