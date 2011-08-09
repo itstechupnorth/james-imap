@@ -155,11 +155,11 @@ public abstract class AbstractTestImapResponseComposer {
     @Test
     public void testShouldEncodeUnparameterisedStatus() throws Exception {
         checkStatusResponseEncode("A1 NO [ALERT] APPEND failed\r\n", "A1",
-                command("APPEND"), "NO", "ALERT", new ArrayList<String>(), true, 0,
+                command("APPEND"), "NO", "ALERT", new ArrayList<String>(), true, -1,
                 "failed");
         checkStatusResponseEncode("A1 BAD [TRYCREATE] SELECT whatever\r\n",
                 "A1", command("SELECT"), "BAD", "TRYCREATE",
-                new ArrayList<String>(), true, 0, "whatever");
+                new ArrayList<String>(), true, -1, "whatever");
     }
 
     @Test
@@ -170,7 +170,7 @@ public abstract class AbstractTestImapResponseComposer {
         parameters.add("THREE");
         checkStatusResponseEncode(
                 "A1 NO [BADCHARSET (ONE TWO THREE)] APPEND failed\r\n", "A1",
-                command("APPEND"), "NO", "BADCHARSET", parameters, true, 0, "failed");
+                command("APPEND"), "NO", "BADCHARSET", parameters, true, -1, "failed");
     }
 
     @Test
