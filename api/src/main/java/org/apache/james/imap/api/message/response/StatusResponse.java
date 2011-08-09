@@ -313,6 +313,8 @@ public interface StatusResponse extends ImapResponseMessage {
             return result;
         }
 
+        public final static int NO_NUMBER = -1;
+        
         private final String code;
 
         private final Collection<String> parameters;
@@ -323,7 +325,7 @@ public interface StatusResponse extends ImapResponseMessage {
 
         @SuppressWarnings("unchecked")
         private ResponseCode(final String code) {
-            this(code, Collections.EMPTY_LIST, 0, true);
+            this(code, Collections.EMPTY_LIST, NO_NUMBER, true);
         }
 
         @SuppressWarnings("unchecked")
@@ -332,7 +334,7 @@ public interface StatusResponse extends ImapResponseMessage {
         }
 
         private ResponseCode(final String code, final Collection<String> parameters) {
-            this(code, parameters, 0, true);
+            this(code, parameters, NO_NUMBER, true);
         }
 
         private ResponseCode(final String code, final Collection<String> parameters, final long number, final boolean useParens) {
@@ -347,6 +349,7 @@ public interface StatusResponse extends ImapResponseMessage {
             return code;
         }
 
+       
         /**
          * Gets number for this response.
          * 
