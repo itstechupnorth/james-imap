@@ -27,6 +27,8 @@ import org.apache.james.imap.encode.base.AbstractChainedImapEncoder;
 import org.apache.james.imap.message.response.ExistsResponse;
 
 public class ExistsResponseEncoder extends AbstractChainedImapEncoder {
+   
+	public static final String EXISTS = "EXISTS";
 
     public ExistsResponseEncoder(ImapEncoder next) {
         super(next);
@@ -39,7 +41,8 @@ public class ExistsResponseEncoder extends AbstractChainedImapEncoder {
     protected void doEncode(ImapMessage acceptableMessage, ImapResponseComposer composer, ImapSession session) throws IOException {
         final ExistsResponse existsResponse = (ExistsResponse) acceptableMessage;
         final long numberOfMessages = existsResponse.getNumberOfMessages();
-        composer.existsResponse(numberOfMessages);
+        
+        composer.untagged().message(numberOfMessages).message(EXISTS).end();
 
     }
 }

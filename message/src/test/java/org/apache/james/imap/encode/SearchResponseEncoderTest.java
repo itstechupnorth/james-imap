@@ -21,17 +21,14 @@ package org.apache.james.imap.encode;
 
 import static org.junit.Assert.*;
 
-import java.util.Arrays;
-import java.util.List;
-
-import org.apache.james.imap.api.ImapConstants;
 import org.apache.james.imap.api.ImapMessage;
 import org.apache.james.imap.encode.ImapEncoder;
 import org.apache.james.imap.encode.ImapResponseComposer;
 import org.apache.james.imap.encode.ListResponseEncoder;
+import org.apache.james.imap.encode.base.ByteImapResponseWriter;
+import org.apache.james.imap.encode.base.ImapResponseComposerImpl;
 import org.apache.james.imap.message.response.LSubResponse;
 import org.apache.james.imap.message.response.ListResponse;
-import org.jmock.Expectations;
 import org.jmock.Mockery;
 import org.jmock.integration.junit4.JMock;
 import org.jmock.integration.junit4.JUnit4Mockery;
@@ -42,18 +39,18 @@ import org.junit.runner.RunWith;
 @RunWith(JMock.class)
 public class SearchResponseEncoderTest {
 
-    ListResponseEncoder encoder;
+    private ListResponseEncoder encoder;
 
-    ImapEncoder mockNextEncoder;
+    private ImapEncoder mockNextEncoder;
 
-    ImapResponseComposer composer;
+    private ByteImapResponseWriter writer = new ByteImapResponseWriter();
+    private ImapResponseComposer composer = new ImapResponseComposerImpl(writer);
 
     private Mockery context = new JUnit4Mockery();
     
     @Before
     public void setUp() throws Exception {
         mockNextEncoder = context.mock(ImapEncoder.class);
-        composer = context.mock(ImapResponseComposer.class);
         encoder = new ListResponseEncoder(mockNextEncoder);
     }
 
@@ -67,97 +64,49 @@ public class SearchResponseEncoderTest {
     }
 
     @Test
-    @SuppressWarnings("unchecked")
-	public void testName() throws Exception {
-        context.checking(new Expectations() {{
-            oneOf(composer).listResponse(
-                            with(equal("LIST")), 
-                            with(aNull(List.class)), 
-                            with(equal('.')), 
-                            with(equal("INBOX.name")));
-        }});
+	public void testName() throws Exception {     
         encoder.encode(new ListResponse(false, false, false, false, false, false, "INBOX.name", '.'), composer, new FakeImapSession());
+        assertEquals("* LIST () \".\" \"INBOX.name\"\r\n", writer.getString());
     }
 
     @Test
-    @SuppressWarnings("unchecked")
 	public void testDelimiter() throws Exception {
-        context.checking(new Expectations() {{
-            oneOf(composer).listResponse(
-                            with(equal("LIST")), 
-                            with(aNull(List.class)), 
-                            with(equal('.')), 
-                            with(equal("INBOX.name")));
-        }});
         encoder.encode(new ListResponse(false, false, false, false, false, false, "INBOX.name", '.'), composer, new FakeImapSession());
+        assertEquals("* LIST () \".\" \"INBOX.name\"\r\n", writer.getString());
     }
 
 
     @Test
     public void testAllAttributes() throws Exception {
-        final String[] all = { ImapConstants.NAME_ATTRIBUTE_NOINFERIORS,
-                ImapConstants.NAME_ATTRIBUTE_NOSELECT,
-                ImapConstants.NAME_ATTRIBUTE_MARKED,
-                ImapConstants.NAME_ATTRIBUTE_UNMARKED };
-        context.checking(new Expectations() {{
-            oneOf(composer).listResponse(
-                            with(equal("LIST")), 
-                            with(equal(Arrays.asList(all))), 
-                            with(equal('.')), 
-                            with(equal("INBOX.name")));
-        }});
         encoder.encode(new ListResponse(true, true, true, true, false, false, "INBOX.name", '.'), composer, new FakeImapSession());
+        assertEquals("* LIST (\\Noinferiors \\Noselect \\Marked \\Unmarked) \".\" \"INBOX.name\"\r\n", writer.getString());
+
     }
 
     @Test
-    public void testNoInferiors() throws Exception {
-        final String[] values = { ImapConstants.NAME_ATTRIBUTE_NOINFERIORS };
-        context.checking(new Expectations() {{
-            oneOf(composer).listResponse(
-                            with(equal("LIST")), 
-                            with(equal(Arrays.asList(values))), 
-                            with(equal('.')), 
-                            with(equal("INBOX.name")));
-        }});
+    public void testNoInferiors() throws Exception {      
         encoder.encode(new ListResponse(true, false, false, false, false, false, "INBOX.name", '.'), composer, new FakeImapSession());
+        assertEquals("* LIST (\\Noinferiors) \".\" \"INBOX.name\"\r\n", writer.getString());
     }
 
     @Test
     public void testNoSelect() throws Exception {
-        final String[] values = { ImapConstants.NAME_ATTRIBUTE_NOSELECT };
-        context.checking(new Expectations() {{
-            oneOf(composer).listResponse(
-                            with(equal("LIST")), 
-                            with(equal(Arrays.asList(values))), 
-                            with(equal('.')), 
-                            with(equal("INBOX.name")));
-        }});
         encoder.encode(new ListResponse(false, true, false, false, false, false, "INBOX.name", '.'), composer, new FakeImapSession());
+        assertEquals("* LIST (\\Noselect) \".\" \"INBOX.name\"\r\n", writer.getString());
+
     }
 
     @Test
     public void testMarked() throws Exception {
-        final String[] values = { ImapConstants.NAME_ATTRIBUTE_MARKED };
-        context.checking(new Expectations() {{
-            oneOf(composer).listResponse(
-                            with(equal("LIST")), 
-                            with(equal(Arrays.asList(values))), 
-                            with(equal('.')), 
-                            with(equal("INBOX.name")));
-        }});
         encoder.encode(new ListResponse(false, false, true, false, false, false, "INBOX.name", '.'), composer, new FakeImapSession());
+        assertEquals("* LIST (\\Marked) \".\" \"INBOX.name\"\r\n", writer.getString());
+
     }
 
     @Test
     public void testUnmarked() throws Exception {
-        final String[] values = { ImapConstants.NAME_ATTRIBUTE_UNMARKED };
-        context.checking(new Expectations() {{
-            oneOf(composer).listResponse(
-                            with(equal("LIST")), 
-                            with(equal(Arrays.asList(values))), 
-                            with(equal('.')), 
-                            with(equal("INBOX.name")));
-        }});
         encoder.encode(new ListResponse(false, false, false, true, false, false, "INBOX.name", '.'), composer, new FakeImapSession());
+        assertEquals("* LIST (\\Unmarked) \".\" \"INBOX.name\"\r\n", writer.getString());
+
     }
 }

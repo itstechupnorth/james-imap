@@ -21,6 +21,7 @@ package org.apache.james.imap.encode;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import org.apache.james.imap.api.ImapConstants;
@@ -36,8 +37,27 @@ public class ListingEncodingUtils {
         final List<String> attributes = getNameAttributes(response);
 
         final String name = response.getName();
+        final char hierarchyDelimiter = response.getHierarchyDelimiter();
+                
+        composer.untagged();
+        composer.message(responseTypeName);
+        composer.openParen();
+        if (attributes != null) {
+            for (Iterator<String> it = attributes.iterator(); it.hasNext();) {
+                final String attribute = it.next();
+                composer.message(attribute);
+            }
+        }
+        composer.closeParen();
 
-        composer.listResponse(responseTypeName, attributes, response.getHierarchyDelimiter(), name);
+        if (hierarchyDelimiter == Character.UNASSIGNED) {
+        	composer.nil();
+        } else {
+        	composer.quote(Character.toString(hierarchyDelimiter));
+        }
+        composer.quote(name);
+
+        composer.end();
     }
 
     private static List<String> getNameAttributes(final AbstractListingResponse response) {

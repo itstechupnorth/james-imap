@@ -21,6 +21,7 @@ package org.apache.james.imap.encode;
 
 import java.io.IOException;
 
+import org.apache.james.imap.api.ImapConstants;
 import org.apache.james.imap.api.ImapMessage;
 import org.apache.james.imap.api.process.ImapSession;
 import org.apache.james.imap.encode.base.AbstractChainedImapEncoder;
@@ -29,7 +30,7 @@ import org.apache.james.imap.message.response.MailboxStatusResponse;
 /**
  * Encodes <code>STATUS</code> responses.
  */
-public class MailboxStatusResponseEncoder extends AbstractChainedImapEncoder {
+public class MailboxStatusResponseEncoder extends AbstractChainedImapEncoder implements ImapConstants {
 
     public MailboxStatusResponseEncoder(ImapEncoder next) {
         super(next);
@@ -37,8 +38,56 @@ public class MailboxStatusResponseEncoder extends AbstractChainedImapEncoder {
 
     protected void doEncode(ImapMessage acceptableMessage, ImapResponseComposer composer, ImapSession session) throws IOException {
         MailboxStatusResponse response = (MailboxStatusResponse) acceptableMessage;
-        composer.statusResponse(response.getMessages(), response.getRecent(), response.getUidNext(), response.getHighestModSeq(), response.getUidValidity(), response.getUnseen(), response.getMailbox());
+        Long messages = response.getMessages();
+        Long recent = response.getRecent();
+        Long uidNext = response.getUidNext();
+        Long highestModSeq = response.getHighestModSeq();
+        Long uidValidity = response.getUidValidity();
+        Long unseen = response.getUnseen();
+        String mailboxName = response.getMailbox();
 
+        composer.untagged();
+        composer.message(STATUS_COMMAND_NAME);
+        composer.quote(mailboxName);
+        composer.openParen();
+
+        if (messages != null) {
+        	composer.message(STATUS_MESSAGES);
+            final long messagesValue = messages.longValue();
+            composer.message(messagesValue);
+        }
+
+        if (recent != null) {
+        	composer.message(STATUS_RECENT);
+            final long recentValue = recent.longValue();
+            composer.message(recentValue);
+        }
+
+        if (uidNext != null) {
+        	composer.message(STATUS_UIDNEXT);
+            final long uidNextValue = uidNext.longValue();
+            composer.message(uidNextValue);
+        }
+        
+        if (highestModSeq != null) {
+        	composer.message(STATUS_HIGHESTMODSEQ);
+        	composer.message(highestModSeq);
+        }
+
+        if (uidValidity != null) {
+        	composer.message(STATUS_UIDVALIDITY);
+            final long uidValidityValue = uidValidity.longValue();
+            composer.message(uidValidityValue);
+        }
+
+        if (unseen != null) {
+        	composer.message(STATUS_UNSEEN);
+            final long unseenValue = unseen.longValue();
+            composer.message(unseenValue);
+        }
+
+        composer.closeParen();
+        composer.end();
     }
 
     protected boolean isAcceptable(ImapMessage message) {

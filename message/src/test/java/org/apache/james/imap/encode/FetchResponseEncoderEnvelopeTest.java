@@ -19,17 +19,14 @@
 
 package org.apache.james.imap.encode;
 
-import javax.mail.Flags;
+import junit.framework.Assert;
 
-import org.apache.james.imap.api.ImapCommand;
-import org.apache.james.imap.encode.FetchResponseEncoder;
-import org.apache.james.imap.encode.ImapEncoder;
-import org.apache.james.imap.encode.ImapResponseComposer;
+import org.apache.james.imap.encode.base.ByteImapResponseWriter;
+import org.apache.james.imap.encode.base.ImapResponseComposerImpl;
 import org.apache.james.imap.message.response.FetchResponse;
 import org.apache.james.imap.message.response.FetchResponse.Envelope.Address;
 import org.jmock.Expectations;
 import org.jmock.Mockery;
-import org.jmock.Sequence;
 import org.jmock.integration.junit4.JMock;
 import org.jmock.integration.junit4.JUnit4Mockery;
 import org.junit.Before;
@@ -59,40 +56,39 @@ public class FetchResponseEncoderEnvelopeTest {
 
     private Mockery context = new JUnit4Mockery();
     
-    Flags flags;
 
-    ImapResponseComposer composer;
+    private ImapEncoder mockNextEncoder;
 
-    ImapEncoder mockNextEncoder;
+    private FetchResponseEncoder encoder;
 
-    FetchResponseEncoder encoder;
+    private FetchResponse message;
 
-    ImapCommand stubCommand;
+    private FetchResponse.Envelope envelope;
 
-    FetchResponse message;
+    private Address[] bcc;
 
-    FetchResponse.Envelope envelope;
+    private Address[] cc;
 
-    Address[] bcc;
+    private String date;
 
-    Address[] cc;
+    private Address[] from;
 
-    String date;
+    private String inReplyTo;
 
-    Address[] from;
+    private String messageId;
 
-    String inReplyTo;
+    private Address[] replyTo;
 
-    String messageId;
+    private Address[] sender;
 
-    Address[] replyTo;
+    private String subject;
 
-    Address[] sender;
-
-    String subject;
-
-    Address[] to;
-
+    private Address[] to;
+    
+    private ByteImapResponseWriter writer = new ByteImapResponseWriter();
+    private ImapResponseComposer composer = new ImapResponseComposerImpl(writer); 
+    
+    
     @Before
     public void setUp() throws Exception {
         envelope = context.mock(FetchResponse.Envelope.class);
@@ -109,11 +105,8 @@ public class FetchResponseEncoderEnvelopeTest {
         to = null;
 
         message = new FetchResponse(MSN, null, null, null, null, null, envelope, null, null, null);
-        composer = context.mock(ImapResponseComposer.class);
         mockNextEncoder = context.mock(ImapEncoder.class);
         encoder = new FetchResponseEncoder(mockNextEncoder, false);
-        stubCommand = ImapCommand.anyStateCommand("COMMAND");
-        flags = new Flags(Flags.Flag.DELETED);
     }
 
     private Address[] mockOneAddress() {
@@ -161,175 +154,88 @@ public class FetchResponseEncoderEnvelopeTest {
     @Test
     public void testShouldNilAllNullProperties() throws Exception {
         envelopExpects();
-        context.checking(new Expectations() {{
-            final Sequence composition = context.sequence("composition");
-            oneOf(composer).openFetchResponse(with(equal((long) MSN))); inSequence(composition);
-            oneOf(composer).startEnvelope(with(aNull(String.class)), with(aNull(String.class)), with(equal(true))); inSequence(composition);
-            exactly(6).of(composer).nil(); inSequence(composition);
-            oneOf(composer).endEnvelope(null, null); inSequence(composition);
-            oneOf(composer).closeFetchResponse();inSequence(composition);
-        }});
         encoder.doEncode(message, composer, new FakeImapSession());
+        
+        Assert.assertEquals("* 100 FETCH (ENVELOPE (NIL NIL NIL NIL NIL NIL NIL NIL NIL NIL))\r\n", writer.getString());
     }
 
     @Test
     public void testShouldComposeDate() throws Exception {
         date = "a date";
         envelopExpects();
-        context.checking(new Expectations() {{
-            final Sequence composition = context.sequence("composition");
-            oneOf(composer).openFetchResponse(with(equal((long) MSN))); inSequence(composition);
-            oneOf(composer).startEnvelope(with(date), with(aNull(String.class)), with(equal(true))); inSequence(composition);
-            exactly(6).of(composer).nil(); inSequence(composition);
-            oneOf(composer).endEnvelope(null, null); inSequence(composition);
-            oneOf(composer).closeFetchResponse();inSequence(composition);
-        }});
+        
+        
         encoder.doEncode(message, composer, new FakeImapSession());
+        Assert.assertEquals("* 100 FETCH (ENVELOPE (\"a date\" NIL NIL NIL NIL NIL NIL NIL NIL NIL))\r\n",writer.getString());
+
     }
     
     @Test
     public void testShouldComposeSubject() throws Exception {
         subject = "some subject";
         envelopExpects();
-        context.checking(new Expectations() {{
-            final Sequence composition = context.sequence("composition");
-            oneOf(composer).openFetchResponse(with(equal((long) MSN))); inSequence(composition);
-            oneOf(composer).startEnvelope(with(aNull(String.class)), with(equal(subject)), with(equal(true))); inSequence(composition);
-            exactly(6).of(composer).nil(); inSequence(composition);
-            oneOf(composer).endEnvelope(null, null); inSequence(composition);
-            oneOf(composer).closeFetchResponse();inSequence(composition);
-        }});
+        
         encoder.doEncode(message, composer, new FakeImapSession());
+        Assert.assertEquals("* 100 FETCH (ENVELOPE (NIL \"some subject\" NIL NIL NIL NIL NIL NIL NIL NIL))\r\n", writer.getString());
+
     }
 
     @Test
     public void testShouldComposeInReplyTo() throws Exception {
         inReplyTo = "some reply to";
         envelopExpects();
-        context.checking(new Expectations() {{
-            final Sequence composition = context.sequence("composition");
-            oneOf(composer).openFetchResponse(with(equal((long) MSN))); inSequence(composition);
-            oneOf(composer).startEnvelope(with(aNull(String.class)), with(aNull(String.class)), with(equal(true))); inSequence(composition);
-            exactly(6).of(composer).nil(); inSequence(composition);
-            oneOf(composer).endEnvelope(with(equal(inReplyTo)), with(aNull(String.class))); inSequence(composition);
-            oneOf(composer).closeFetchResponse();inSequence(composition);
-        }});
+       
         encoder.doEncode(message, composer, new FakeImapSession());
+        Assert.assertEquals("* 100 FETCH (ENVELOPE (NIL NIL NIL NIL NIL NIL NIL NIL \"some reply to\" NIL))\r\n", writer.getString());
     }
 
     @Test
     public void testShouldComposeMessageId() throws Exception {
         messageId = "some message id";
         envelopExpects();
-        context.checking(new Expectations() {{
-            final Sequence composition = context.sequence("composition");
-            oneOf(composer).openFetchResponse(with(equal((long) MSN))); inSequence(composition);
-            oneOf(composer).startEnvelope(with(aNull(String.class)), with(aNull(String.class)), with(equal(true))); inSequence(composition);
-            exactly(6).of(composer).nil(); inSequence(composition);
-            oneOf(composer).endEnvelope(with(aNull(String.class)), with(equal(messageId))); inSequence(composition);
-            oneOf(composer).closeFetchResponse();inSequence(composition);
-        }});
+        
         encoder.doEncode(message, composer, new FakeImapSession());
+        Assert.assertEquals("* 100 FETCH (ENVELOPE (NIL NIL NIL NIL NIL NIL NIL NIL NIL \"some message id\"))\r\n", writer.getString());
+
     }
 
     @Test
     public void testShouldComposeOneFromAddress() throws Exception {
         from = mockOneAddress();
         envelopExpects();
-        context.checking(new Expectations() {{
-            final Sequence composition = context.sequence("composition");
-            oneOf(composer).openFetchResponse(with(equal((long) MSN))); inSequence(composition);
-            oneOf(composer).startEnvelope(with(aNull(String.class)), with(aNull(String.class)), with(equal(true))); inSequence(composition);
-            oneOf(composer).startAddresses(); inSequence(composition);
-            oneOf(composer).address(
-                    with(equal(ADDRESS_ONE_NAME)), 
-                    with(equal(ADDRESS_ONE_DOMAIN_LIST)),
-                    with(equal(ADDRESS_ONE_MAILBOX)), 
-                    with(equal(ADDRESS_ONE_HOST))); inSequence(composition);
-            oneOf(composer).endAddresses(); inSequence(composition);        
-            exactly(5).of(composer).nil(); inSequence(composition);
-            oneOf(composer).endEnvelope(with(aNull(String.class)), with(equal(messageId))); inSequence(composition);
-            oneOf(composer).closeFetchResponse();inSequence(composition);
-        }});
         encoder.doEncode(message, composer, new FakeImapSession());
+        Assert.assertEquals("* 100 FETCH (ENVELOPE (NIL NIL ((\"NAME\" \"DOMAIN LIST\" \"MAILBOX\" \"HOST\")) NIL NIL NIL NIL NIL NIL NIL))\r\n", writer.getString());
+
     }
 
     @Test
     public void testShouldComposeManyFromAddress() throws Exception {
         from = mockManyAddresses();
         envelopExpects();
-        context.checking(new Expectations() {{
-            final Sequence composition = context.sequence("composition");
-            oneOf(composer).openFetchResponse(with(equal((long) MSN))); inSequence(composition);
-            oneOf(composer).startEnvelope(with(aNull(String.class)), with(aNull(String.class)), with(equal(true))); inSequence(composition);
-            oneOf(composer).startAddresses(); inSequence(composition);
-            oneOf(composer).address(
-                    with(equal(ADDRESS_ONE_NAME)), 
-                    with(equal(ADDRESS_ONE_DOMAIN_LIST)),
-                    with(equal(ADDRESS_ONE_MAILBOX)), 
-                    with(equal(ADDRESS_ONE_HOST))); inSequence(composition);
-            oneOf(composer).address(
-                    with(equal(ADDRESS_TWO_NAME)), 
-                    with(equal(ADDRESS_TWO_DOMAIN_LIST)),
-                    with(equal(ADDRESS_TWO_MAILBOX)), 
-                    with(equal(ADDRESS_TWO_HOST))); inSequence(composition);
-            oneOf(composer).endAddresses(); inSequence(composition);        
-            exactly(5).of(composer).nil(); inSequence(composition);
-            oneOf(composer).endEnvelope(with(aNull(String.class)), with(equal(messageId))); inSequence(composition);
-            oneOf(composer).closeFetchResponse();inSequence(composition);
-        }});
+        
         encoder.doEncode(message, composer, new FakeImapSession());
+        Assert.assertEquals("* 100 FETCH (ENVELOPE (NIL NIL ((\"NAME\" \"DOMAIN LIST\" \"MAILBOX\" \"HOST\")(\"2NAME\" \"2DOMAIN LIST\" \"2MAILBOX\" \"2HOST\")) NIL NIL NIL NIL NIL NIL NIL))\r\n", writer.getString());
+
     }
 
     @Test
     public void testShouldComposeOneSenderAddress() throws Exception {
         sender = mockOneAddress();
         envelopExpects();
-        context.checking(new Expectations() {{
-            final Sequence composition = context.sequence("composition");
-            oneOf(composer).openFetchResponse(with(equal((long) MSN))); inSequence(composition);
-            oneOf(composer).startEnvelope(with(aNull(String.class)), with(aNull(String.class)), with(equal(true))); inSequence(composition);
-            exactly(1).of(composer).nil(); inSequence(composition);
-            oneOf(composer).startAddresses(); inSequence(composition);
-            oneOf(composer).address(
-                    with(equal(ADDRESS_ONE_NAME)), 
-                    with(equal(ADDRESS_ONE_DOMAIN_LIST)),
-                    with(equal(ADDRESS_ONE_MAILBOX)), 
-                    with(equal(ADDRESS_ONE_HOST))); inSequence(composition);
-            oneOf(composer).endAddresses(); inSequence(composition);        
-            exactly(4).of(composer).nil(); inSequence(composition);
-            oneOf(composer).endEnvelope(with(aNull(String.class)), with(equal(messageId))); inSequence(composition);
-            oneOf(composer).closeFetchResponse();inSequence(composition);
-        }});
+     
         encoder.doEncode(message, composer, new FakeImapSession());
+        Assert.assertEquals("* 100 FETCH (ENVELOPE (NIL NIL NIL ((\"NAME\" \"DOMAIN LIST\" \"MAILBOX\" \"HOST\")) NIL NIL NIL NIL NIL NIL))\r\n", writer.getString());
+
     }
 
     @Test
     public void testShouldComposeManySenderAddress() throws Exception {
         sender = mockManyAddresses();
         envelopExpects();
-        context.checking(new Expectations() {{
-            final Sequence composition = context.sequence("composition");
-            oneOf(composer).openFetchResponse(with(equal((long) MSN))); inSequence(composition);
-            oneOf(composer).startEnvelope(with(aNull(String.class)), with(aNull(String.class)), with(equal(true))); inSequence(composition);
-            exactly(1).of(composer).nil(); inSequence(composition);
-            oneOf(composer).startAddresses(); inSequence(composition);
-            oneOf(composer).address(
-                    with(equal(ADDRESS_ONE_NAME)), 
-                    with(equal(ADDRESS_ONE_DOMAIN_LIST)),
-                    with(equal(ADDRESS_ONE_MAILBOX)), 
-                    with(equal(ADDRESS_ONE_HOST))); inSequence(composition);
-            oneOf(composer).address(
-                    with(equal(ADDRESS_TWO_NAME)), 
-                    with(equal(ADDRESS_TWO_DOMAIN_LIST)),
-                    with(equal(ADDRESS_TWO_MAILBOX)), 
-                    with(equal(ADDRESS_TWO_HOST))); inSequence(composition);
-            oneOf(composer).endAddresses(); inSequence(composition);        
-            exactly(4).of(composer).nil(); inSequence(composition);
-            oneOf(composer).endEnvelope(with(aNull(String.class)), with(equal(messageId))); inSequence(composition);
-            oneOf(composer).closeFetchResponse();inSequence(composition);
-        }});
+     
         encoder.doEncode(message, composer, new FakeImapSession());
+        Assert.assertEquals("* 100 FETCH (ENVELOPE (NIL NIL NIL ((\"NAME\" \"DOMAIN LIST\" \"MAILBOX\" \"HOST\")(\"2NAME\" \"2DOMAIN LIST\" \"2MAILBOX\" \"2HOST\")) NIL NIL NIL NIL NIL NIL))\r\n", writer.getString());
+
     }
     
 
@@ -337,201 +243,79 @@ public class FetchResponseEncoderEnvelopeTest {
     public void testShouldComposeOneReplyToAddress() throws Exception {
         replyTo = mockOneAddress();
         envelopExpects();
-        context.checking(new Expectations() {{
-            final Sequence composition = context.sequence("composition");
-            oneOf(composer).openFetchResponse(with(equal((long) MSN))); inSequence(composition);
-            oneOf(composer).startEnvelope(with(aNull(String.class)), with(aNull(String.class)), with(equal(true))); inSequence(composition);
-            exactly(2).of(composer).nil(); inSequence(composition);
-            oneOf(composer).startAddresses(); inSequence(composition);
-            oneOf(composer).address(
-                    with(equal(ADDRESS_ONE_NAME)), 
-                    with(equal(ADDRESS_ONE_DOMAIN_LIST)),
-                    with(equal(ADDRESS_ONE_MAILBOX)), 
-                    with(equal(ADDRESS_ONE_HOST))); inSequence(composition);
-            oneOf(composer).endAddresses(); inSequence(composition);        
-            exactly(3).of(composer).nil(); inSequence(composition);
-            oneOf(composer).endEnvelope(with(aNull(String.class)), with(equal(messageId))); inSequence(composition);
-            oneOf(composer).closeFetchResponse();inSequence(composition);
-        }});
+       
         encoder.doEncode(message, composer, new FakeImapSession());
+        Assert.assertEquals("* 100 FETCH (ENVELOPE (NIL NIL NIL NIL ((\"NAME\" \"DOMAIN LIST\" \"MAILBOX\" \"HOST\")) NIL NIL NIL NIL NIL))\r\n", writer.getString());
+
     }
 
     @Test
     public void testShouldComposeManyReplyToAddress() throws Exception {
         replyTo = mockManyAddresses();
         envelopExpects();
-        context.checking(new Expectations() {{
-            final Sequence composition = context.sequence("composition");
-            oneOf(composer).openFetchResponse(with(equal((long) MSN))); inSequence(composition);
-            oneOf(composer).startEnvelope(with(aNull(String.class)), with(aNull(String.class)), with(equal(true))); inSequence(composition);
-            exactly(2).of(composer).nil(); inSequence(composition);
-            oneOf(composer).startAddresses(); inSequence(composition);
-            oneOf(composer).address(
-                    with(equal(ADDRESS_ONE_NAME)), 
-                    with(equal(ADDRESS_ONE_DOMAIN_LIST)),
-                    with(equal(ADDRESS_ONE_MAILBOX)), 
-                    with(equal(ADDRESS_ONE_HOST))); inSequence(composition);
-            oneOf(composer).address(
-                    with(equal(ADDRESS_TWO_NAME)), 
-                    with(equal(ADDRESS_TWO_DOMAIN_LIST)),
-                    with(equal(ADDRESS_TWO_MAILBOX)), 
-                    with(equal(ADDRESS_TWO_HOST))); inSequence(composition);
-            oneOf(composer).endAddresses(); inSequence(composition);        
-            exactly(3).of(composer).nil(); inSequence(composition);
-            oneOf(composer).endEnvelope(with(aNull(String.class)), with(equal(messageId))); inSequence(composition);
-            oneOf(composer).closeFetchResponse();inSequence(composition);
-        }});
+       
         encoder.doEncode(message, composer, new FakeImapSession());
+        Assert.assertEquals("* 100 FETCH (ENVELOPE (NIL NIL NIL NIL ((\"NAME\" \"DOMAIN LIST\" \"MAILBOX\" \"HOST\")(\"2NAME\" \"2DOMAIN LIST\" \"2MAILBOX\" \"2HOST\")) NIL NIL NIL NIL NIL))\r\n", writer.getString());
+
     }
 
     @Test
     public void testShouldComposeOneToAddress() throws Exception {
         to = mockOneAddress();
         envelopExpects();
-        context.checking(new Expectations() {{
-            final Sequence composition = context.sequence("composition");
-            oneOf(composer).openFetchResponse(with(equal((long) MSN))); inSequence(composition);
-            oneOf(composer).startEnvelope(with(aNull(String.class)), with(aNull(String.class)), with(equal(true))); inSequence(composition);
-            exactly(3).of(composer).nil(); inSequence(composition);
-            oneOf(composer).startAddresses(); inSequence(composition);
-            oneOf(composer).address(
-                    with(equal(ADDRESS_ONE_NAME)), 
-                    with(equal(ADDRESS_ONE_DOMAIN_LIST)),
-                    with(equal(ADDRESS_ONE_MAILBOX)), 
-                    with(equal(ADDRESS_ONE_HOST))); inSequence(composition);
-            oneOf(composer).endAddresses(); inSequence(composition);        
-            exactly(2).of(composer).nil(); inSequence(composition);
-            oneOf(composer).endEnvelope(with(aNull(String.class)), with(equal(messageId))); inSequence(composition);
-            oneOf(composer).closeFetchResponse();inSequence(composition);
-        }});
+       
         encoder.doEncode(message, composer, new FakeImapSession());
+        Assert.assertEquals("* 100 FETCH (ENVELOPE (NIL NIL NIL NIL NIL ((\"NAME\" \"DOMAIN LIST\" \"MAILBOX\" \"HOST\")) NIL NIL NIL NIL))\r\n",writer.getString());
+
     }
 
     @Test
     public void testShouldComposeManyToAddress() throws Exception {
         to = mockManyAddresses();
         envelopExpects();
-        context.checking(new Expectations() {{
-            final Sequence composition = context.sequence("composition");
-            oneOf(composer).openFetchResponse(with(equal((long) MSN))); inSequence(composition);
-            oneOf(composer).startEnvelope(with(aNull(String.class)), with(aNull(String.class)), with(equal(true))); inSequence(composition);
-            exactly(3).of(composer).nil(); inSequence(composition);
-            oneOf(composer).startAddresses(); inSequence(composition);
-            oneOf(composer).address(
-                    with(equal(ADDRESS_ONE_NAME)), 
-                    with(equal(ADDRESS_ONE_DOMAIN_LIST)),
-                    with(equal(ADDRESS_ONE_MAILBOX)), 
-                    with(equal(ADDRESS_ONE_HOST))); inSequence(composition);
-            oneOf(composer).address(
-                    with(equal(ADDRESS_TWO_NAME)), 
-                    with(equal(ADDRESS_TWO_DOMAIN_LIST)),
-                    with(equal(ADDRESS_TWO_MAILBOX)), 
-                    with(equal(ADDRESS_TWO_HOST))); inSequence(composition);
-            oneOf(composer).endAddresses(); inSequence(composition);        
-            exactly(2).of(composer).nil(); inSequence(composition);
-            oneOf(composer).endEnvelope(with(aNull(String.class)), with(equal(messageId))); inSequence(composition);
-            oneOf(composer).closeFetchResponse();inSequence(composition);
-        }});
+       
         encoder.doEncode(message, composer, new FakeImapSession());
+        Assert.assertEquals("* 100 FETCH (ENVELOPE (NIL NIL NIL NIL NIL ((\"NAME\" \"DOMAIN LIST\" \"MAILBOX\" \"HOST\")(\"2NAME\" \"2DOMAIN LIST\" \"2MAILBOX\" \"2HOST\")) NIL NIL NIL NIL))\r\n",writer.getString());
+
     }
 
     @Test
     public void testShouldComposeOneCcAddress() throws Exception {
         cc = mockOneAddress();
         envelopExpects();
-        context.checking(new Expectations() {{
-            final Sequence composition = context.sequence("composition");
-            oneOf(composer).openFetchResponse(with(equal((long) MSN))); inSequence(composition);
-            oneOf(composer).startEnvelope(with(aNull(String.class)), with(aNull(String.class)), with(equal(true))); inSequence(composition);
-            exactly(4).of(composer).nil(); inSequence(composition);
-            oneOf(composer).startAddresses(); inSequence(composition);
-            oneOf(composer).address(
-                    with(equal(ADDRESS_ONE_NAME)), 
-                    with(equal(ADDRESS_ONE_DOMAIN_LIST)),
-                    with(equal(ADDRESS_ONE_MAILBOX)), 
-                    with(equal(ADDRESS_ONE_HOST))); inSequence(composition);
-            oneOf(composer).endAddresses(); inSequence(composition);        
-            exactly(1).of(composer).nil(); inSequence(composition);
-            oneOf(composer).endEnvelope(with(aNull(String.class)), with(equal(messageId))); inSequence(composition);
-            oneOf(composer).closeFetchResponse();inSequence(composition);
-        }});
+
         encoder.doEncode(message, composer, new FakeImapSession());
+        Assert.assertEquals("* 100 FETCH (ENVELOPE (NIL NIL NIL NIL NIL NIL ((\"NAME\" \"DOMAIN LIST\" \"MAILBOX\" \"HOST\")) NIL NIL NIL))\r\n",writer.getString());
+
     }
 
     @Test
     public void testShouldComposeManyCcAddress() throws Exception {
         cc = mockManyAddresses();
         envelopExpects();
-        context.checking(new Expectations() {{
-            final Sequence composition = context.sequence("composition");
-            oneOf(composer).openFetchResponse(with(equal((long) MSN))); inSequence(composition);
-            oneOf(composer).startEnvelope(with(aNull(String.class)), with(aNull(String.class)), with(equal(true))); inSequence(composition);
-            exactly(4).of(composer).nil(); inSequence(composition);
-            oneOf(composer).startAddresses(); inSequence(composition);
-            oneOf(composer).address(
-                    with(equal(ADDRESS_ONE_NAME)), 
-                    with(equal(ADDRESS_ONE_DOMAIN_LIST)),
-                    with(equal(ADDRESS_ONE_MAILBOX)), 
-                    with(equal(ADDRESS_ONE_HOST))); inSequence(composition);
-            oneOf(composer).address(
-                    with(equal(ADDRESS_TWO_NAME)), 
-                    with(equal(ADDRESS_TWO_DOMAIN_LIST)),
-                    with(equal(ADDRESS_TWO_MAILBOX)), 
-                    with(equal(ADDRESS_TWO_HOST))); inSequence(composition);
-            oneOf(composer).endAddresses(); inSequence(composition);        
-            exactly(1).of(composer).nil(); inSequence(composition);
-            oneOf(composer).endEnvelope(with(aNull(String.class)), with(equal(messageId))); inSequence(composition);
-            oneOf(composer).closeFetchResponse();inSequence(composition);
-        }});
+       
         encoder.doEncode(message, composer, new FakeImapSession());
+        Assert.assertEquals("* 100 FETCH (ENVELOPE (NIL NIL NIL NIL NIL NIL ((\"NAME\" \"DOMAIN LIST\" \"MAILBOX\" \"HOST\")(\"2NAME\" \"2DOMAIN LIST\" \"2MAILBOX\" \"2HOST\")) NIL NIL NIL))\r\n",writer.getString());
+
     }
     
     @Test
     public void testShouldComposeOneBccAddress() throws Exception {
         bcc = mockOneAddress();
         envelopExpects();
-        context.checking(new Expectations() {{
-            final Sequence composition = context.sequence("composition");
-            oneOf(composer).openFetchResponse(with(equal((long) MSN))); inSequence(composition);
-            oneOf(composer).startEnvelope(with(aNull(String.class)), with(aNull(String.class)), with(equal(true))); inSequence(composition);
-            exactly(5).of(composer).nil(); inSequence(composition);
-            oneOf(composer).startAddresses(); inSequence(composition);
-            oneOf(composer).address(
-                    with(equal(ADDRESS_ONE_NAME)), 
-                    with(equal(ADDRESS_ONE_DOMAIN_LIST)),
-                    with(equal(ADDRESS_ONE_MAILBOX)), 
-                    with(equal(ADDRESS_ONE_HOST))); inSequence(composition);
-            oneOf(composer).endAddresses(); inSequence(composition);        
-            oneOf(composer).endEnvelope(with(aNull(String.class)), with(equal(messageId))); inSequence(composition);
-            oneOf(composer).closeFetchResponse();inSequence(composition);
-        }});
+       
         encoder.doEncode(message, composer, new FakeImapSession());
+        Assert.assertEquals("* 100 FETCH (ENVELOPE (NIL NIL NIL NIL NIL NIL NIL ((\"NAME\" \"DOMAIN LIST\" \"MAILBOX\" \"HOST\")) NIL NIL))\r\n",writer.getString());
+
     }
 
     @Test
     public void testShouldComposeManyBccAddress() throws Exception {
         bcc = mockManyAddresses();
         envelopExpects();
-        context.checking(new Expectations() {{
-            final Sequence composition = context.sequence("composition");
-            oneOf(composer).openFetchResponse(with(equal((long) MSN))); inSequence(composition);
-            oneOf(composer).startEnvelope(with(aNull(String.class)), with(aNull(String.class)), with(equal(true))); inSequence(composition);
-            exactly(5).of(composer).nil(); inSequence(composition);
-            oneOf(composer).startAddresses(); inSequence(composition);
-            oneOf(composer).address(
-                    with(equal(ADDRESS_ONE_NAME)), 
-                    with(equal(ADDRESS_ONE_DOMAIN_LIST)),
-                    with(equal(ADDRESS_ONE_MAILBOX)), 
-                    with(equal(ADDRESS_ONE_HOST))); inSequence(composition);
-            oneOf(composer).address(
-                    with(equal(ADDRESS_TWO_NAME)), 
-                    with(equal(ADDRESS_TWO_DOMAIN_LIST)),
-                    with(equal(ADDRESS_TWO_MAILBOX)), 
-                    with(equal(ADDRESS_TWO_HOST))); inSequence(composition);
-            oneOf(composer).endAddresses(); inSequence(composition);        
-            oneOf(composer).endEnvelope(with(aNull(String.class)), with(equal(messageId))); inSequence(composition);
-            oneOf(composer).closeFetchResponse();inSequence(composition);
-        }});
+       
         encoder.doEncode(message, composer, new FakeImapSession());
+        Assert.assertEquals("* 100 FETCH (ENVELOPE (NIL NIL NIL NIL NIL NIL NIL ((\"NAME\" \"DOMAIN LIST\" \"MAILBOX\" \"HOST\")(\"2NAME\" \"2DOMAIN LIST\" \"2MAILBOX\" \"2HOST\")) NIL NIL))\r\n",writer.getString());
+
     }
 }

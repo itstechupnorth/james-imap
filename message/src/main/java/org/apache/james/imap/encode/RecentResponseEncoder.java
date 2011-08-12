@@ -27,6 +27,7 @@ import org.apache.james.imap.encode.base.AbstractChainedImapEncoder;
 import org.apache.james.imap.message.response.RecentResponse;
 
 public class RecentResponseEncoder extends AbstractChainedImapEncoder {
+    public static final String RECENT = "RECENT";
 
     public RecentResponseEncoder(ImapEncoder next) {
         super(next);
@@ -36,12 +37,10 @@ public class RecentResponseEncoder extends AbstractChainedImapEncoder {
         return (message instanceof RecentResponse);
     }
 
-    protected void doEncode(ImapMessage acceptableMessage, ImapResponseComposer composer, ImapSession session) throws IOException { // TODO
-        // Auto-generated
-        // method stub
+    protected void doEncode(ImapMessage acceptableMessage, ImapResponseComposer composer, ImapSession session) throws IOException {
         final RecentResponse recentResponse = (RecentResponse) acceptableMessage;
         final int numberFlaggedRecent = recentResponse.getNumberFlaggedRecent();
-        composer.recentResponse(numberFlaggedRecent);
+        composer.untagged().message(numberFlaggedRecent).message(RECENT).end();
     }
 
 }

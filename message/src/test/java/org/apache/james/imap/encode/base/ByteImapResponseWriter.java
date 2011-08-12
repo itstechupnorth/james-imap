@@ -49,6 +49,10 @@ public class ByteImapResponseWriter implements ImapConstants, ImapResponseWriter
         return out.toByteArray();
     }
     
+    public String getString() throws Exception {
+    	return new String(getBytes());
+    }
+    
     public void clear() {
         this.out = new ByteArrayOutputStream();
         channel = Channels.newChannel(out);

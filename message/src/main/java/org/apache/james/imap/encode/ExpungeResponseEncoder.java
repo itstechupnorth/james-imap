@@ -27,6 +27,7 @@ import org.apache.james.imap.encode.base.AbstractChainedImapEncoder;
 import org.apache.james.imap.message.response.ExpungeResponse;
 
 public class ExpungeResponseEncoder extends AbstractChainedImapEncoder {
+    public static final String EXPUNGE = "EXPUNGE";
 
     public ExpungeResponseEncoder(final ImapEncoder next) {
         super(next);
@@ -39,6 +40,6 @@ public class ExpungeResponseEncoder extends AbstractChainedImapEncoder {
     protected void doEncode(ImapMessage acceptableMessage, ImapResponseComposer composer, ImapSession session) throws IOException {
         final ExpungeResponse expungeResponse = (ExpungeResponse) acceptableMessage;
         final int messageSequenceNumber = expungeResponse.getMessageSequenceNumber();
-        composer.expungeResponse(messageSequenceNumber);
+        composer.untagged().message(messageSequenceNumber).message(EXPUNGE).end();
     }
 }

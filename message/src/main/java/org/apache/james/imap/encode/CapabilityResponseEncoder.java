@@ -19,8 +19,9 @@
 package org.apache.james.imap.encode;
 
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.Iterator;
 
+import org.apache.james.imap.api.ImapConstants;
 import org.apache.james.imap.api.ImapMessage;
 import org.apache.james.imap.api.process.ImapSession;
 import org.apache.james.imap.encode.base.AbstractChainedImapEncoder;
@@ -48,7 +49,13 @@ public class CapabilityResponseEncoder extends AbstractChainedImapEncoder {
      */
     protected void doEncode(ImapMessage acceptableMessage, ImapResponseComposer composer, ImapSession session) throws IOException {
         final CapabilityResponse response = (CapabilityResponse) acceptableMessage;
-        composer.capabilities(new ArrayList<String>(response.getCapabilities()));
+        Iterator<String> capabilities = response.getCapabilities().iterator();
+        composer.untagged();
+        composer.message(ImapConstants.CAPABILITY_COMMAND_NAME);
+        while(capabilities.hasNext()) {
+        	composer.message(capabilities.next());
+        }
+        composer.end();        
     }
 
     /*

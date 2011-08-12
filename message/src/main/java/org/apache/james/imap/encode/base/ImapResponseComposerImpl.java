@@ -22,9 +22,6 @@ package org.apache.james.imap.encode.base;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
 
 import javax.mail.Flags;
 
@@ -41,16 +38,6 @@ import org.apache.james.imap.message.response.Literal;
  * client.
  */
 public class ImapResponseComposerImpl implements ImapConstants, ImapResponseComposer {
-
-    public static final String ENVELOPE = "ENVELOPE";
-
-    public static final String FETCH = "FETCH";
-
-    public static final String EXPUNGE = "EXPUNGE";
-
-    public static final String RECENT = "RECENT";
-
-    public static final String EXISTS = "EXISTS";
 
     public static final String FLAGS = "FLAGS";
 
@@ -101,61 +88,7 @@ public class ImapResponseComposerImpl implements ImapConstants, ImapResponseComp
         return this;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * org.apache.james.imap.encode.ImapResponseComposer#flagsResponse(javax
-     * .mail.Flags)
-     */
-    public ImapResponseComposer flagsResponse(Flags flags) throws IOException {
-        untagged();
-        flags(flags);
-        end();
-        return this;
-    }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * org.apache.james.imap.encode.ImapResponseComposer#existsResponse(long)
-     */
-    public ImapResponseComposer existsResponse(long count) throws IOException {
-        untagged();
-        message(count);
-        message(EXISTS);
-        end();
-        return this;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * org.apache.james.imap.encode.ImapResponseComposer#recentResponse(long)
-     */
-    public ImapResponseComposer recentResponse(long count) throws IOException {
-        untagged();
-        message(count);
-        message(RECENT);
-        end();
-        return this;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * org.apache.james.imap.encode.ImapResponseComposer#expungeResponse(long)
-     */
-    public ImapResponseComposer expungeResponse(long msn) throws IOException {
-        untagged();
-        message(msn);
-        message(EXPUNGE);
-        end();
-        return this;
-    }
 
     /*
      * (non-Javadoc)
@@ -200,29 +133,7 @@ public class ImapResponseComposerImpl implements ImapConstants, ImapResponseComp
         return this;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * org.apache.james.imap.encode.ImapResponseComposer#byeResponse(java.lang
-     * .String)
-     */
-    public ImapResponseComposer byeResponse(String message) throws IOException {
-        untaggedResponse(BYE + SP + message);
-        return this;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * org.apache.james.imap.encode.ImapResponseComposer#hello(java.lang.String)
-     */
-    public ImapResponseComposer hello(String message) throws IOException {
-        untaggedResponse(OK + SP + message);
-        return this;
-    }
-
+   
     /*
      * (non-Javadoc)
      * 
@@ -286,91 +197,6 @@ public class ImapResponseComposerImpl implements ImapConstants, ImapResponseComp
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * org.apache.james.imap.encode.ImapResponseComposer#statusResponse(java
-     * .lang.String, org.apache.james.imap.api.ImapCommand, java.lang.String,
-     * java.lang.String, java.util.Collection, boolean, long, java.lang.String)
-     */
-    public ImapResponseComposer statusResponse(String tag, ImapCommand command, String type, String responseCode, Collection<String> parameters, boolean useParens, long number, String text) throws IOException {
-        if (tag == null) {
-            untagged();
-        } else {
-            tag(tag);
-        }
-        message(type);
-        if (responseCode != null) {
-            openSquareBracket();
-            message(responseCode);
-            if (number > -1) {
-                message(number);
-            }
-            if (parameters != null && !parameters.isEmpty()) {
-                if (useParens)
-                    openParen();
-                for (Iterator<String> it = parameters.iterator(); it.hasNext();) {
-                    final String parameter = it.next();
-                    message(parameter);
-                }
-                if (useParens)
-                    closeParen();
-            }
-            closeSquareBracket();
-        }
-        if (command != null) {
-            commandName(command.getName());
-        }
-        if (text != null && !"".equals(text)) {
-            message(text);
-        }
-        end();
-        return this;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * org.apache.james.imap.encode.ImapResponseComposer#statusResponse(java
-     * .lang.Long, java.lang.Long, java.lang.Long, java.lang.Long,
-     * java.lang.Long, java.lang.String)
-     */
-    public ImapResponseComposer statusResponse(Long messages, Long recent, Long uidNext, Long uidValidity, Long unseen, String mailboxName) throws IOException {
-        return statusResponse(messages, recent, uidNext, null, uidValidity, unseen, mailboxName);
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * org.apache.james.imap.encode.ImapResponseComposer#listResponse(java.lang
-     * .String, java.util.List, java.lang.String, java.lang.String)
-     */
-    public ImapResponseComposer listResponse(String typeName, List<String> attributes, char hierarchyDelimiter, String name) throws IOException {
-        untagged();
-        message(typeName);
-        openParen();
-        if (attributes != null) {
-            for (Iterator<String> it = attributes.iterator(); it.hasNext();) {
-                final String attribute = it.next();
-                message(attribute);
-            }
-        }
-        closeParen();
-
-        if (hierarchyDelimiter == Character.UNASSIGNED) {
-            message(NIL);
-        } else {
-            quote(Character.toString(hierarchyDelimiter));
-        }
-        quote(name);
-
-        end();
-        return this;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
      * @see org.apache.james.imap.encode.ImapResponseComposer#closeParen()
      */
     public ImapResponseComposer closeParen() throws IOException {
@@ -388,35 +214,7 @@ public class ImapResponseComposerImpl implements ImapConstants, ImapResponseComp
         return this;
     }
 
-    /*
-     * (non-Javadoc)
-     * @see org.apache.james.imap.encode.ImapResponseComposer#searchResponse(long[], java.lang.Long)
-     */
-    public ImapResponseComposer searchResponse(long[] ids, Long highestModSeq) throws IOException {
-        untagged();
-        message(ImapConstants.SEARCH_RESPONSE_NAME);
-        message(ids);
-        
-        // add MODSEQ
-        if (highestModSeq != null) {
-            openParen();
-            message("MODSEQ");
-            message(highestModSeq);
-            closeParen();
-        }
-        end();
-        return this;
-    }
 
-    private void message(long[] ids) throws IOException {
-        if (ids != null) {
-            final int length = ids.length;
-            for (int i = 0; i < length; i++) {
-                final long id = ids[i];
-                message(id);
-            }
-        }
-    }
 
     /*
      * (non-Javadoc)
@@ -454,73 +252,8 @@ public class ImapResponseComposerImpl implements ImapConstants, ImapResponseComp
         return this;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * org.apache.james.imap.encode.ImapResponseComposer#closeFetchResponse()
-     */
-    public ImapResponseComposer closeFetchResponse() throws IOException {
-        closeParen();
-        end();
-        return this;
-    }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * org.apache.james.imap.encode.ImapResponseComposer#openFetchResponse(long)
-     */
-    public ImapResponseComposer openFetchResponse(long msn) throws IOException {
-        untagged();
-        message(msn);
-        message(FETCH);
-        openParen();
-        return this;
-    }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * org.apache.james.imap.encode.ImapResponseComposer#address(java.lang.String
-     * , java.lang.String, java.lang.String, java.lang.String)
-     */
-    public ImapResponseComposer address(String name, String domainList, String mailbox, String host) throws IOException {
-        skipNextSpace();
-        openParen();
-        nillableQuote(name);
-        nillableQuote(domainList);
-        nillableQuote(mailbox);
-        nillableQuote(host);
-        closeParen();
-        return this;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.apache.james.imap.encode.ImapResponseComposer#endAddresses()
-     */
-    public ImapResponseComposer endAddresses() throws IOException {
-        closeParen();
-        return this;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * org.apache.james.imap.encode.ImapResponseComposer#endEnvelope(java.lang
-     * .String, java.lang.String)
-     */
-    public ImapResponseComposer endEnvelope(String inReplyTo, String messageId) throws IOException {
-        nillableQuote(inReplyTo);
-        nillableQuote(messageId);
-        closeParen();
-        return this;
-    }
 
     /*
      * (non-Javadoc)
@@ -532,87 +265,7 @@ public class ImapResponseComposerImpl implements ImapConstants, ImapResponseComp
         return this;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.apache.james.imap.encode.ImapResponseComposer#startAddresses()
-     */
-    public ImapResponseComposer startAddresses() throws IOException {
-        openParen();
-        return this;
-    }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * org.apache.james.imap.encode.ImapResponseComposer#startEnvelope(java.
-     * lang.String, java.lang.String, boolean)
-     */
-    public ImapResponseComposer startEnvelope(String date, String subject, boolean prefixWithName) throws IOException {
-        if (prefixWithName) {
-            message(ENVELOPE);
-        }
-        openParen();
-        nillableQuote(date);
-        nillableQuote(subject);
-        return this;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * org.apache.james.imap.encode.ImapResponseComposer#nillableQuote(java.
-     * lang.String)
-     */
-    public ImapResponseComposer nillableQuote(String message) throws IOException {
-        if (message == null) {
-            nil();
-        } else {
-            quote(message);
-        }
-        return this;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * org.apache.james.imap.encode.ImapResponseComposer#nillableComposition
-     * (java.lang.String, java.util.List)
-     */
-    public ImapResponseComposer nillableComposition(String masterQuote, List<String> quotes) throws IOException {
-        if (masterQuote == null) {
-            nil();
-        } else {
-            openParen();
-            quote(masterQuote);
-            nillableQuotes(quotes);
-            closeParen();
-        }
-        return this;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * org.apache.james.imap.encode.ImapResponseComposer#nillableQuotes(java
-     * .util.List)
-     */
-    public ImapResponseComposer nillableQuotes(List<String> quotes) throws IOException {
-        if (quotes == null || quotes.size() == 0) {
-            nil();
-        } else {
-            openParen();
-            for (final String string : quotes) {
-                nillableQuote(string);
-            }
-            closeParen();
-        }
-        return this;
-    }
 
     /*
      * (non-Javadoc)
@@ -646,22 +299,6 @@ public class ImapResponseComposerImpl implements ImapConstants, ImapResponseComp
         return this;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * org.apache.james.imap.encode.ImapResponseComposer#capabilities(java.util
-     * .List)
-     */
-    public ImapResponseComposer capabilities(List<String> capabilities) throws IOException {
-        untagged();
-        message(CAPABILITY_COMMAND_NAME);
-        for (String capability : capabilities) {
-            message(capability);
-        }
-        end();
-        return this;
-    }
 
     private void writeASCII(final String string) throws IOException {
         buffer.write(string.getBytes(usAscii));
@@ -772,12 +409,14 @@ public class ImapResponseComposerImpl implements ImapConstants, ImapResponseComp
         return this;
     }
 
-    private void closeSquareBracket() throws IOException {
+    public ImapResponseComposer closeSquareBracket() throws IOException {
         closeBracket(BYTE_CLOSE_SQUARE_BRACKET);
+        return this;
     }
 
-    private void openSquareBracket() throws IOException {
+    public ImapResponseComposer openSquareBracket() throws IOException {
         openBracket(BYTE_OPEN_SQUARE_BRACKET);
+        return this;
     }
 
     private void upperCaseAscii(String message, boolean quote) throws IOException {
@@ -815,59 +454,5 @@ public class ImapResponseComposerImpl implements ImapConstants, ImapResponseComp
         return message(sb.toString());
     }
 
-    /*
-     * (non-Javadoc)
-     * @see org.apache.james.imap.encode.ImapResponseComposer#searchResponse(long[])
-     */
-    public ImapResponseComposer searchResponse(long[] ids) throws IOException {
-        return searchResponse(ids, null);
-    }
-
-    @Override
-    public ImapResponseComposer statusResponse(Long messages, Long recent, Long uidNext, Long highestModSeq, Long uidValidity, Long unseen, String mailboxName) throws IOException {
-        untagged();
-        message(STATUS_COMMAND_NAME);
-        quote(mailboxName);
-        openParen();
-
-        if (messages != null) {
-            message(STATUS_MESSAGES);
-            final long messagesValue = messages.longValue();
-            message(messagesValue);
-        }
-
-        if (recent != null) {
-            message(STATUS_RECENT);
-            final long recentValue = recent.longValue();
-            message(recentValue);
-        }
-
-        if (uidNext != null) {
-            message(STATUS_UIDNEXT);
-            final long uidNextValue = uidNext.longValue();
-            message(uidNextValue);
-        }
-        
-        if (highestModSeq != null) {
-            message(STATUS_HIGHESTMODSEQ);
-            message(highestModSeq);
-        }
-
-        if (uidValidity != null) {
-            message(STATUS_UIDVALIDITY);
-            final long uidValidityValue = uidValidity.longValue();
-            message(uidValidityValue);
-        }
-
-        if (unseen != null) {
-            message(STATUS_UNSEEN);
-            final long unseenValue = unseen.longValue();
-            message(unseenValue);
-        }
-
-        closeParen();
-        end();
-        return this;
-    }
 
 }

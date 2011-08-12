@@ -20,8 +20,6 @@
 package org.apache.james.imap.encode;
 
 import java.io.IOException;
-import java.util.Collection;
-import java.util.List;
 
 import javax.mail.Flags;
 
@@ -50,131 +48,6 @@ public interface ImapResponseComposer {
      */
     public ImapResponseComposer flags(Flags flags) throws IOException;
 
-    /**
-     * Compose a complete FLAGS response.
-     * 
-     * @param flags
-     *            <code>Flags</code>, not null
-     */
-    public ImapResponseComposer flagsResponse(Flags flags) throws IOException;
-
-    /**
-     * Compose a complete EXISTS response
-     * 
-     * @param count the message count that exists
-     * @return self
-     * @throws IOException
-     */
-    public ImapResponseComposer existsResponse(long count) throws IOException;
-
-    /**
-     * Compose a RECENT response
-     * 
-     * @param count the message count which is marked as recent
-     * @return self
-     * @throws IOException
-     */
-    public ImapResponseComposer recentResponse(long count) throws IOException;
-
-    /**
-     * Compose a EXPUNGE response
-     * 
-     * @param msn the MSN which where expunged
-     * @return self
-     * @throws IOException
-     */
-    public ImapResponseComposer expungeResponse(long msn) throws IOException;
-
-    /**
-     * Compose a SEARCH response
-     * 
-     * @param ids the MSN or UID which were found
-     * @return  self
-     * @throws IOException
-     * @{@link Deprecated} use {@link #searchResponse(long[], Long)}
-     */
-    @Deprecated
-    public ImapResponseComposer searchResponse(long[] ids) throws IOException;
-
-
-    /**
-     * Compose a SEARCH response
-     * 
-     * @param ids the MSN or UID which were found
-     * @param highestModSeq the highest mod-sequence which matched or null 
-     * @return self
-     * @throws IOException
-     */
-    public ImapResponseComposer searchResponse(long[] ids, Long highestModSeq) throws IOException;
-    
-    /**
-     * Starts a FETCH response by writing the opening star-FETCH-number-paren
-     * sequence.
-     * 
-     * @param msn
-     *            message number
-     * @see #closeFetchResponse()
-     */
-    public ImapResponseComposer openFetchResponse(long msn) throws IOException;
-
-    /**
-     * Ends a FETCH response by writing the closing paren-crlf sequence.
-     */
-    public ImapResponseComposer closeFetchResponse() throws IOException;
-
-    /**
-     * Starts a <code>FETCH ENVELOPE</code> production.
-     * 
-     * @param date
-     *            envelope date, or null for <code>NIL</code>
-     * @param subject
-     *            envelope subject, or null for <code>NIL</code>
-     * @param prefixWithName
-     *            whether <code>ENVELOPE</code> should be prefixed
-     * @throws IOException
-     * @see {@link #endEnvelope(String, String)} must be called
-     */
-    public ImapResponseComposer startEnvelope(String date, String subject, boolean prefixWithName) throws IOException;
-
-    /**
-     * Starts a list of addresses.
-     * 
-     * @throws IOException
-     */
-    public ImapResponseComposer startAddresses() throws IOException;
-
-    /**
-     * Composes an address.
-     * 
-     * @param name
-     *            personal name, or null for <code>NIL</code>
-     * @param domainList
-     *            route address list, or null for <code>NIL</code>
-     * @param mailbox
-     *            mailbox name, or null for <code>NIL</code>
-     * @param host
-     *            host name, or null for <code>NIL</code>
-     * @throws IOException
-     */
-    public ImapResponseComposer address(String name, String domainList, String mailbox, String host) throws IOException;
-
-    /**
-     * Ends a list of addresses.
-     * 
-     * @throws IOException
-     */
-    public ImapResponseComposer endAddresses() throws IOException;
-
-    /**
-     * Ends a <code>FETCH ENVELOPE</code> production.
-     * 
-     * @param inReplyTo
-     *            envelope in-reply-to, or null for <code>NIL</code>
-     * @param messageId
-     *            envelope message-id, or null for <code>NIL</code>
-     * @throws IOException
-     */
-    public ImapResponseComposer endEnvelope(String inReplyTo, String messageId) throws IOException;
 
     /**
      * Composes a <code>NIL</code>.
@@ -193,20 +66,7 @@ public interface ImapResponseComposer {
      */
     public ImapResponseComposer commandResponse(ImapCommand command, String message) throws IOException;
 
-    /**
-     * Writes a list response
-     * 
-     * @param typeName
-     *            <code>LIST</code> or <code>LSUB</code>.
-     * @param attributes
-     *            name attributes, or null if there are no attributes
-     * @param hierarchyDelimiter
-     *            hierarchy delimiter, or null if delimiter is <code>NIL</code>
-     * @param name
-     *            mailbox name
-     */
-    public ImapResponseComposer listResponse(String typeName, List<String> attributes, char hierarchyDelimiter, String name) throws IOException;
-
+  
     /**
      * Writes the message provided to the client, prepended with the request
      * tag.
@@ -225,32 +85,48 @@ public interface ImapResponseComposer {
      */
     public ImapResponseComposer untaggedResponse(String message) throws IOException;
 
-    /**
-     * Compose a BYE response
-     * 
-     * @param message
-     * @return self
-     * @throws IOException
-     */
-    public ImapResponseComposer byeResponse(String message) throws IOException;
 
     /**
-     * Compose a HELLO response
+     * Write a '*' 
      * 
-     * @param message
-     * @return self
+     * @return composer
      * @throws IOException
      */
-    public ImapResponseComposer hello(String message) throws IOException;
-
     public ImapResponseComposer untagged() throws IOException;
 
+    /**
+     * 
+     * @param name
+     * @return
+     * @throws IOException
+     */
     public ImapResponseComposer commandName(final String name) throws IOException;
 
+    /**
+     * Write the message of type <code>String</code>
+     * 
+     * @param message
+     * @return composer
+     * @throws IOException
+     */
     public ImapResponseComposer message(final String message) throws IOException;
 
+    /**
+     * Write the message of type <code>Long</code>
+     * 
+     * @param number
+     * @return composer
+     * @throws IOException
+     */
     public ImapResponseComposer message(final long number) throws IOException;
 
+    /**
+     * Write the given sequence-set
+     * 
+     * @param ranges
+     * @return composer
+     * @throws IOException
+     */
     public ImapResponseComposer sequenceSet(final IdRange[] ranges) throws IOException;
 
     /**
@@ -261,14 +137,22 @@ public interface ImapResponseComposer {
      */
     public ImapResponseComposer end() throws IOException;
 
+    /**
+     * Write a tag
+     * 
+     * @param tag
+     * @return composer
+     * @throws IOException
+     */
     public ImapResponseComposer tag(String tag) throws IOException;
 
-    public ImapResponseComposer statusResponse(String tag, ImapCommand command, String type, String responseCode, Collection<String> parameters, boolean useParens, long number, String text) throws IOException;
-
-    @Deprecated
-    public ImapResponseComposer statusResponse(Long messages, Long recent, Long uidNext, Long uidValidity, Long unseen, String mailboxName) throws IOException;
-    public ImapResponseComposer statusResponse(Long messages, Long recent, Long uidNext, Long highestModSeq, Long uidValidity, Long unseen, String mailboxName) throws IOException;
-
+    /**
+     * Write a quoted message
+     * 
+     * @param message
+     * @return composer
+     * @throws IOException
+     */
     public ImapResponseComposer quote(String message) throws IOException;
 
     /**
@@ -281,8 +165,21 @@ public interface ImapResponseComposer {
      */
     public ImapResponseComposer literal(Literal literal) throws IOException;
 
+    
+    /**
+     * Write a '('
+     * 
+     * @return composer
+     * @throws IOException
+     */
     public ImapResponseComposer openParen() throws IOException;
 
+    /**
+     * Write a ')'
+     * 
+     * @return composer
+     * @throws IOException
+     */
     public ImapResponseComposer closeParen() throws IOException;
 
     /**
@@ -309,44 +206,6 @@ public interface ImapResponseComposer {
      */
     public ImapResponseComposer quoteUpperCaseAscii(final String message) throws IOException;
 
-    /**
-     * Appends the given message after appropriate quoting (when not null) or
-     * <code>NIL</code> (when null).
-     * 
-     * @param message
-     *            possibly null
-     * @return self, not null
-     * @throws IOException
-     */
-    public ImapResponseComposer nillableQuote(String message) throws IOException;
-
-    /**
-     * Composes a sequence of nillables quotes. When messages are null, a single
-     * <code>NIL</code> is appended. Otherwise, each element is appended in
-     * sequence as per {@link #nillableQuote(String)}.
-     * 
-     * @param quotes
-     *            messages, possibly null
-     * @return self, not null
-     * @throws IOException
-     */
-    public ImapResponseComposer nillableQuotes(List<String> quotes) throws IOException;
-
-    /**
-     * Composes a nillable composition. When the master quote is null,
-     * <code>NIL</code> is appended. Otherwise, a parenthesized list is created
-     * starting with the master quote. When the quotes are null,
-     * <code>NIL</code> is appended only. Otherwise, each element is appended in
-     * sequence as per {@link #nillableQuote(String)}
-     * 
-     * @param quote
-     *            master, possibly null
-     * @param quotes
-     *            quotes, possibly null
-     * @return self, not null
-     * @throws IOException
-     */
-    public ImapResponseComposer nillableComposition(String masterQuote, List<String> quotes) throws IOException;
 
     /**
      * Tell the {@link ImapResponseComposer} to skip the next written space
@@ -356,16 +215,6 @@ public interface ImapResponseComposer {
      */
     public ImapResponseComposer skipNextSpace() throws IOException;
 
-    /**
-     * Composes a <code>CAPABILITY</code> response. See <code>7.2.1</code> of <a
-     * href='http://james.apache.org/server/rfclist/imap4/rfc2060.txt'
-     * rel='tag'>RFC2060</a>.
-     * 
-     * @param capabilities
-     *            not null
-     * @throws IOException
-     */
-    public ImapResponseComposer capabilities(List<String> capabilities) throws IOException;
 
     /**
      * Writes a continuation response.
@@ -374,5 +223,22 @@ public interface ImapResponseComposer {
      *            message for display, not null
      */
     public ImapResponseComposer continuationResponse(String message) throws IOException;
+    
+
+    /**
+     * Write a '}'
+     * 
+     * @return composer
+     * @throws IOException
+     */
+    public ImapResponseComposer closeSquareBracket() throws IOException;
+
+    /**
+     * Write a '{'
+     * 
+     * @return composer
+     * @throws IOException
+     */
+    public ImapResponseComposer openSquareBracket() throws IOException;
 
 }

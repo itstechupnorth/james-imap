@@ -25,8 +25,9 @@ import org.apache.james.imap.api.ImapMessage;
 import org.apache.james.imap.encode.ImapEncoder;
 import org.apache.james.imap.encode.ImapResponseComposer;
 import org.apache.james.imap.encode.SearchResponseEncoder;
+import org.apache.james.imap.encode.base.ByteImapResponseWriter;
+import org.apache.james.imap.encode.base.ImapResponseComposerImpl;
 import org.apache.james.imap.message.response.SearchResponse;
-import org.jmock.Expectations;
 import org.jmock.Mockery;
 import org.jmock.integration.junit4.JMock;
 import org.jmock.integration.junit4.JUnit4Mockery;
@@ -39,20 +40,20 @@ public class ListResponseEncoderTest {
 
     private static final long[] IDS = { 1, 4, 9, 16 };
 
-    SearchResponse response;
+    private SearchResponse response;
 
-    SearchResponseEncoder encoder;
+    private SearchResponseEncoder encoder;
 
-    ImapEncoder mockNextEncoder;
+    private ImapEncoder mockNextEncoder;
 
-    ImapResponseComposer composer;
+    private ByteImapResponseWriter writer = new ByteImapResponseWriter();
+    private ImapResponseComposer composer = new ImapResponseComposerImpl(writer);
 
     private Mockery context = new JUnit4Mockery();
     
     @Before
     public void setUp() throws Exception {
         mockNextEncoder = context.mock(ImapEncoder.class);
-        composer = context.mock(ImapResponseComposer.class);
         response = new SearchResponse(IDS, null);
         encoder = new SearchResponseEncoder(mockNextEncoder);
     }
@@ -66,9 +67,7 @@ public class ListResponseEncoderTest {
 
     @Test
     public void testEncode() throws Exception {
-        context.checking(new Expectations() {{
-            oneOf(composer).searchResponse(with(same(IDS)));
-        }});
         encoder.encode(response, composer, new FakeImapSession());
+        assertEquals("* SEARCH 1 4 9 16\r\n", writer.getString());
     }
 }

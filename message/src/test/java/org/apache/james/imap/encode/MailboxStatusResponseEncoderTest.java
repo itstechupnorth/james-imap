@@ -25,8 +25,9 @@ import org.apache.james.imap.api.ImapMessage;
 import org.apache.james.imap.encode.ImapEncoder;
 import org.apache.james.imap.encode.ImapResponseComposer;
 import org.apache.james.imap.encode.MailboxStatusResponseEncoder;
+import org.apache.james.imap.encode.base.ByteImapResponseWriter;
+import org.apache.james.imap.encode.base.ImapResponseComposerImpl;
 import org.apache.james.imap.message.response.MailboxStatusResponse;
-import org.jmock.Expectations;
 import org.jmock.Mockery;
 import org.jmock.integration.junit4.JMock;
 import org.jmock.integration.junit4.JUnit4Mockery;
@@ -41,14 +42,14 @@ public class MailboxStatusResponseEncoderTest  {
 
     ImapEncoder mockNextEncoder;
 
-    ImapResponseComposer composer;
-
+    ByteImapResponseWriter writer = new ByteImapResponseWriter();
+    ImapResponseComposer composer = new ImapResponseComposerImpl(writer);
+    
     private Mockery context = new JUnit4Mockery();
     
     @Before
     public void setUp() throws Exception {
         mockNextEncoder = context.mock(ImapEncoder.class);
-        composer = context.mock(ImapResponseComposer.class);
         encoder = new MailboxStatusResponseEncoder(mockNextEncoder);
     }
     
@@ -69,19 +70,9 @@ public class MailboxStatusResponseEncoderTest  {
         final Long uidValidity = new Long(7);
         final Long unseen = new Long(11);
         final String mailbox = "A mailbox named desire";
-        context.checking(new Expectations() {{
-            oneOf(composer).statusResponse(
-                    with(same(messages)), 
-                    with(same(recent)), 
-                    with(same(uidNext)),
-                    (Long) with(same(null)),
-                    with(same(uidValidity)), 
-                    with(same(unseen)), 
-                    with(same(mailbox))
-                    );
-        }});
 
         encoder.encode(new MailboxStatusResponse(messages, recent, uidNext,
                 null, uidValidity, unseen, mailbox), composer, new FakeImapSession());
+        assertEquals("* STATUS \"A mailbox named desire\" (MESSAGES 2 RECENT 3 UIDNEXT 5 UIDVALIDITY 7 UNSEEN 11)\r\n", writer.getString());
     }
 }

@@ -39,6 +39,7 @@ import org.apache.james.imap.message.response.FetchResponse.Structure;
 import org.slf4j.Logger;
 
 public class FetchResponseEncoder extends AbstractChainedImapEncoder {
+    public static final String ENVELOPE = "ENVELOPE";
 
     /** Disables all optional BODYSTRUCTURE extensions */
     private final boolean neverAddBodyStructureExtensions;
@@ -65,7 +66,10 @@ public class FetchResponseEncoder extends AbstractChainedImapEncoder {
         if (acceptableMessage instanceof FetchResponse) {
             final FetchResponse fetchResponse = (FetchResponse) acceptableMessage;
             final long messageNumber = fetchResponse.getMessageNumber();
-            composer.openFetchResponse(messageNumber);
+            
+        	composer.untagged().message(messageNumber).message(ImapConstants.FETCH_COMMAND_NAME).openParen();
+
+            
             encodeModSeq(composer, fetchResponse);
             encodeFlags(composer, fetchResponse);
             encodeInternalDate(composer, fetchResponse);
@@ -75,7 +79,8 @@ public class FetchResponseEncoder extends AbstractChainedImapEncoder {
             encodeBodyStructure(composer, fetchResponse.getBodyStructure(), session);
             encodeUid(composer, fetchResponse);
             encodeBodyElements(composer, fetchResponse.getElements());
-            composer.closeFetchResponse();
+            
+            composer.closeParen().end();
         }
     }
 
@@ -164,8 +169,10 @@ public class FetchResponseEncoder extends AbstractChainedImapEncoder {
         final String md5 = structure.getMD5();
         final List<String> languages = structure.getLanguages();
         final String location = structure.getLocation();
-        composer.nillableQuote(md5);
-        bodyFldDsp(structure, composer, session).nillableQuotes(languages).nillableQuote(location);
+        nillableQuote(composer, md5);
+        bodyFldDsp(structure, composer, session);
+        nillableQuotes(composer, languages);
+        nillableQuote(composer, location);
     }
 
     private ImapResponseComposer bodyFldDsp(final Structure structure, final ImapResponseComposer composer, ImapSession session) throws IOException {
@@ -213,7 +220,11 @@ public class FetchResponseEncoder extends AbstractChainedImapEncoder {
         final String description = structure.getDescription();
         final String encoding = structure.getEncoding();
         final long octets = structure.getOctets();
-        composer.openParen().quoteUpperCaseAscii(mediaType).quoteUpperCaseAscii(subType).nillableQuotes(bodyParams).nillableQuote(id).nillableQuote(description).quoteUpperCaseAscii(encoding).message(octets);
+        composer.openParen().quoteUpperCaseAscii(mediaType).quoteUpperCaseAscii(subType);
+        nillableQuotes(composer, bodyParams);
+        nillableQuote(composer, id);
+        nillableQuote(composer, description);
+        composer.quoteUpperCaseAscii(encoding).message(octets);
     }
 
     private void encodeMultipart(ImapResponseComposer composer, Structure structure, final String subType, final boolean includeExtensions, ImapSession session) throws IOException {
@@ -227,8 +238,10 @@ public class FetchResponseEncoder extends AbstractChainedImapEncoder {
         composer.quoteUpperCaseAscii(subType);
         if (includeExtensions) {
             final List<String> languages = structure.getLanguages();
-            composer.nillableQuotes(structure.getParameters());
-            bodyFldDsp(structure, composer, session).nillableQuotes(languages).nillableQuote(structure.getLocation());
+            nillableQuotes(composer, structure.getParameters());
+            bodyFldDsp(structure, composer, session);
+            nillableQuotes(composer, languages);
+            nillableQuote(composer, structure.getLocation());
         }
         composer.closeParen();
     }
@@ -311,14 +324,22 @@ public class FetchResponseEncoder extends AbstractChainedImapEncoder {
             final String inReplyTo = envelope.getInReplyTo();
             final String messageId = envelope.getMessageId();
 
-            composer.startEnvelope(date, subject, prefixWithName);
+            if (prefixWithName) {
+            	composer.message(ENVELOPE);
+            }
+            composer.openParen();
+            nillableQuote(composer, date);
+            nillableQuote(composer, subject);
             encodeAddresses(composer, from);
             encodeAddresses(composer, sender);
             encodeAddresses(composer, replyTo);
             encodeAddresses(composer, to);
             encodeAddresses(composer, cc);
             encodeAddresses(composer, bcc);
-            composer.endEnvelope(inReplyTo, messageId);
+            
+            nillableQuote(composer, inReplyTo);
+            nillableQuote(composer, messageId);
+            composer.closeParen();
         }
     }
 
@@ -326,13 +347,13 @@ public class FetchResponseEncoder extends AbstractChainedImapEncoder {
         if (addresses == null || addresses.length == 0) {
             composer.nil();
         } else {
-            composer.startAddresses();
+            composer.openParen();
             final int length = addresses.length;
             for (int i = 0; i < length; i++) {
                 final FetchResponse.Envelope.Address address = addresses[i];
                 encodeAddress(composer, address);
             }
-            composer.endAddresses();
+            composer.closeParen();
         }
     }
 
@@ -341,6 +362,36 @@ public class FetchResponseEncoder extends AbstractChainedImapEncoder {
         final String domainList = address.getAtDomainList();
         final String mailbox = address.getMailboxName();
         final String host = address.getHostName();
-        composer.address(name, domainList, mailbox, host);
+        composer.skipNextSpace().openParen();
+        nillableQuote(composer, name);
+        nillableQuote(composer, domainList);
+        nillableQuote(composer, mailbox);
+        nillableQuote(composer,host).closeParen();
     }
+    
+
+
+    private ImapResponseComposer nillableQuote(ImapResponseComposer composer, String message) throws IOException {
+        if (message == null) {
+        	composer.nil();
+        } else {
+        	composer.quote(message);
+        }
+        return composer;
+    }
+
+
+    private ImapResponseComposer nillableQuotes(ImapResponseComposer composer, List<String> quotes) throws IOException {
+        if (quotes == null || quotes.size() == 0) {
+        	composer.nil();
+        } else {
+        	composer.openParen();
+            for (final String string : quotes) {
+            	nillableQuote(composer,string);
+            }
+            composer.closeParen();
+        }
+        return composer;
+    }
+
 }

@@ -21,36 +21,29 @@ package org.apache.james.imap.encode;
 import java.util.ArrayList;
 import java.util.List;
 
+import junit.framework.Assert;
+
+import org.apache.james.imap.encode.base.ByteImapResponseWriter;
+import org.apache.james.imap.encode.base.ImapResponseComposerImpl;
 import org.apache.james.imap.message.response.ListResponse;
-import org.jmock.Expectations;
-import org.jmock.Mockery;
-import org.jmock.integration.junit4.JMock;
-import org.jmock.integration.junit4.JUnit4Mockery;
+
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 
-@RunWith(JMock.class)
 public class ListingEncodingUtilsTest  {
 
     final String nameParameter = "LIST";
     final String typeNameParameters = "A Type Name";
     
     List<String> attributesOutput;
-    
-    ImapResponseComposer mock;
-    
-    private Mockery context = new JUnit4Mockery();
+        
+    private ByteImapResponseWriter writer = new ByteImapResponseWriter();
+    private ImapResponseComposer composer = new ImapResponseComposerImpl(writer);
     
     @Before
     public void setUp() throws Exception {
-        mock = context.mock(ImapResponseComposer.class);
         attributesOutput = new ArrayList<String>();
-        
-        context.checking (new Expectations() {{
-            oneOf(mock).listResponse(with(equal(typeNameParameters)), with(equal(attributesOutput)), 
-                    with(equal('.')), with(equal(nameParameter)));
-        }});
+      
     }
 
     @Test
@@ -60,7 +53,8 @@ public class ListingEncodingUtilsTest  {
         ListResponse input = new ListResponse(false, false, false, false, true, false, nameParameter, '.');
             
         // Exercise
-        ListingEncodingUtils.encodeListingResponse(typeNameParameters, mock, input);
+        ListingEncodingUtils.encodeListingResponse(typeNameParameters, composer, input);
+        Assert.assertEquals("* A Type Name (\\HasChildren) \".\" \"LIST\"\r\n", writer.getString());
     }
     
     @Test
@@ -70,6 +64,8 @@ public class ListingEncodingUtilsTest  {
         ListResponse input = new ListResponse(false, false, false, false, false, true, nameParameter, '.');
             
         // Exercise
-        ListingEncodingUtils.encodeListingResponse(typeNameParameters, mock, input);
+        ListingEncodingUtils.encodeListingResponse(typeNameParameters, composer, input);
+        Assert.assertEquals("* A Type Name (\\HasNoChildren) \".\" \"LIST\"\r\n", writer.getString());
+
     }
 }
