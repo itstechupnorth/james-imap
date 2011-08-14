@@ -57,7 +57,9 @@ public class ExpungeProcessor extends AbstractMailboxProcessor<ExpungeRequest> i
             final MailboxSession mailboxSession = ImapSessionUtils.getMailboxSession(session);
 
             int expunged = 0;
-            if (!mailbox.isWriteable(mailboxSession)) {
+            MetaData mdata = mailbox.getMetaData(false, mailboxSession, FetchGroup.NO_COUNT);
+
+            if (!mdata.isWriteable()) {
                 no(command, tag, responder, HumanReadableText.MAILBOX_IS_READ_ONLY);
             } else {
                 IdRange[] ranges = request.getUidSet();
@@ -82,7 +84,6 @@ public class ExpungeProcessor extends AbstractMailboxProcessor<ExpungeRequest> i
                 //
                 // See RFC5162 3.3 EXPUNGE Command 3.5. UID EXPUNGE Command
                 if (EnableProcessor.getEnabledCapabilities(session).contains(ImapConstants.SUPPORTS_QRESYNC)  && expunged > 0) {
-                    MetaData mdata = mailbox.getMetaData(false, mailboxSession, FetchGroup.NO_COUNT);
                     okComplete(command, tag, ResponseCode.highestModSeq(mdata.getHighestModSeq()), responder);
                 } else {
                     okComplete(command, tag, responder);

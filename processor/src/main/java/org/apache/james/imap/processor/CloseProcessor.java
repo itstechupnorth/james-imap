@@ -31,6 +31,7 @@ import org.apache.james.mailbox.MailboxManager;
 import org.apache.james.mailbox.MailboxSession;
 import org.apache.james.mailbox.MessageManager;
 import org.apache.james.mailbox.MessageRange;
+import org.apache.james.mailbox.MessageManager.MetaData.FetchGroup;
 
 public class CloseProcessor extends AbstractMailboxProcessor<CloseRequest> {
 
@@ -42,8 +43,7 @@ public class CloseProcessor extends AbstractMailboxProcessor<CloseRequest> {
         try {
             MessageManager mailbox = getSelectedMailbox(session);
             final MailboxSession mailboxSession = ImapSessionUtils.getMailboxSession(session);
-            if (mailbox.isWriteable(mailboxSession)) {
-
+            if (mailbox.getMetaData(false, mailboxSession, FetchGroup.NO_COUNT).isWriteable()) {
                 mailbox.expunge(MessageRange.all(), mailboxSession);
                 session.deselect();
 
