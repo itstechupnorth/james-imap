@@ -19,7 +19,6 @@
 
 package org.apache.james.imap.decode;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
@@ -37,13 +36,13 @@ import java.util.List;
 
 import javax.mail.Flags;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.james.imap.api.ImapConstants;
 import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.api.message.IdRange;
 import org.apache.james.imap.api.message.request.DayMonthYear;
 import org.apache.james.imap.api.process.ImapSession;
 import org.apache.james.imap.api.process.SearchResUtil;
+import org.apache.james.imap.utils.io.FastByteArrayOutputStream;
 
 /**
  * Wraps the client input reader with a bunch of convenience methods, allowing
@@ -357,15 +356,31 @@ public abstract class ImapRequestLineReader {
         if (charset == null) {
             return consumeLiteral(US_ASCII);
         } else {
-            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            FastByteArrayOutputStream out = new FastByteArrayOutputStream();
+            InputStream in = null;
             try {
-                IOUtils.copy(consumeLiteral(false), out);
+            	in = consumeLiteral(false);
+            	byte[] buf = new byte[ 0xFFFF ]; 
+                
+            	for (int len; (len = in.read(buf)) != -1; ) 
+                    out.write( buf, 0, len ); 
+                
+                final byte[] bytes = out.toByteArray();
+                final ByteBuffer buffer = ByteBuffer.wrap(bytes);
+                return decode(charset, buffer);
+                
             } catch (IOException e) {
                 throw new DecodingException(HumanReadableText.BAD_IO_ENCODING, "Bad character encoding", e);
+            } finally {
+            	if (in != null) {
+            		try {
+            			in.close();
+            		} catch (IOException e) {
+            			// ignore on close
+            		}
+            	}
             }
-            final byte[] bytes = out.toByteArray();
-            final ByteBuffer buffer = ByteBuffer.wrap(bytes);
-            return decode(charset, buffer);
+
         }
     }
 

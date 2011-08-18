@@ -25,13 +25,13 @@ import java.nio.charset.Charset;
 
 import javax.mail.Flags;
 
-import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.apache.james.imap.api.ImapCommand;
 import org.apache.james.imap.api.ImapConstants;
 import org.apache.james.imap.api.message.IdRange;
 import org.apache.james.imap.encode.ImapResponseComposer;
 import org.apache.james.imap.encode.ImapResponseWriter;
 import org.apache.james.imap.message.response.Literal;
+import org.apache.james.imap.utils.io.FastByteArrayOutputStream;
 
 /**
  * Class providing methods to send response messages from the server to the
@@ -42,21 +42,27 @@ public class ImapResponseComposerImpl implements ImapConstants, ImapResponseComp
     public static final String FLAGS = "FLAGS";
 
     public static final String FAILED = "failed.";
-
+    private static final int LOWER_CASE_OFFSET = 'a' - 'A';
+    public final static int DEFAULT_BUFFER_SIZE = 2048;
+    
+    
     private final ImapResponseWriter writer;
 
-    private final ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-
-    private static final int LOWER_CASE_OFFSET = 'a' - 'A';
+    private final FastByteArrayOutputStream buffer;
 
     private final Charset usAscii;
 
     private boolean skipNextSpace;
 
-    public ImapResponseComposerImpl(final ImapResponseWriter writer) {
+    public ImapResponseComposerImpl(final ImapResponseWriter writer, int bufferSize) {
         skipNextSpace = false;
         usAscii = Charset.forName("US-ASCII");
         this.writer = writer;
+        this.buffer = new FastByteArrayOutputStream(bufferSize);
+    }
+    
+    public ImapResponseComposerImpl(final ImapResponseWriter writer) {
+        this(writer, DEFAULT_BUFFER_SIZE);
     }
 
     /*
