@@ -157,6 +157,7 @@ public class SearchProcessorTest {
         final SearchQuery.NumericRange[] ranges = { new SearchQuery.NumericRange(
                 42, 100L) };
         mockery.checking(new Expectations() {{
+        	allowing(selectedMailbox).existsCount();will(returnValue(100L));
             oneOf(selectedMailbox).uid(with(equal(1)));will(returnValue(42L));
             allowing(selectedMailbox).getFirstUid(); will(returnValue(1L));
             allowing(selectedMailbox).getLastUid(); will(returnValue(100L));
@@ -173,6 +174,7 @@ public class SearchProcessorTest {
         final SearchQuery.NumericRange[] ranges = { new SearchQuery.NumericRange(
                 42, 1729) };
         mockery.checking(new Expectations() {{
+        	allowing(selectedMailbox).existsCount();will(returnValue(2L));
             oneOf(selectedMailbox).uid(with(equal(1)));will(returnValue(42L));
             oneOf(selectedMailbox).uid(with(equal(5)));will(returnValue(1729L));
             allowing(selectedMailbox).getFirstUid(); will(returnValue(1L));
@@ -189,6 +191,7 @@ public class SearchProcessorTest {
         final SearchQuery.NumericRange[] ranges = { new SearchQuery.NumericRange(
                 42) };
         mockery.checking(new Expectations() {{
+        	allowing(selectedMailbox).existsCount();will(returnValue(1L));
             exactly(2).of(selectedMailbox).uid(with(equal(1)));will(returnValue(42L));
         }});
         allowUnsolicitedResponses();
