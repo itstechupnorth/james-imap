@@ -75,14 +75,6 @@ public class MailboxEventAnalyser extends ImapStateAwareMailboxListener {
         return mailboxPath;
     }
 
-    /**
-     * Set the mailbox name of the to observing Mailbox
-     * 
-     * @param mailboxName
-     */
-    public synchronized void setMailboxPath(MailboxPath mailboxPath) {
-        this.mailboxPath = mailboxPath;
-    }
 
     /**
      * Handle the given {@link Event} if it was fired for the mailbox we are
@@ -167,7 +159,7 @@ public class MailboxEventAnalyser extends ImapStateAwareMailboxListener {
                 }
             } else if (event instanceof MailboxRenamed) {
                 final MailboxRenamed mailboxRenamed = (MailboxRenamed) event;
-                setMailboxPath(mailboxRenamed.getNewPath());
+                mailboxPath = mailboxRenamed.getNewPath();
             }
         }
     }
