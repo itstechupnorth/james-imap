@@ -20,7 +20,6 @@
 package org.apache.james.imap.encode;
 
 import java.io.IOException;
-import java.nio.ByteBuffer;
 
 import org.apache.james.imap.message.response.Literal;
 
@@ -44,12 +43,12 @@ public interface ImapResponseWriter {
     void write(Literal literal) throws IOException;
 
     /**
-     * Write a ByteBuffer to the client
+     * Write a byte[] to the client
      * 
      * @param buffer
-     *            <code>ByteBuffer</code> to be written, not null
+     *            <code>byte array</code> to be written, not null
      * @throws IOException
      */
-    void write(ByteBuffer buffer) throws IOException;
+    void write(byte[] buffer) throws IOException;
 
 }

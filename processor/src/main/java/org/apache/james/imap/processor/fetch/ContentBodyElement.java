@@ -22,21 +22,18 @@
  */
 package org.apache.james.imap.processor.fetch;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.channels.Channels;
-import java.nio.channels.WritableByteChannel;
+
 
 import org.apache.james.imap.message.response.FetchResponse.BodyElement;
 import org.apache.james.mailbox.Content;
-import org.apache.james.mailbox.InputStreamContent;
+import org.apache.james.mailbox.MailboxException;
 
-final class ContentBodyElement implements BodyElement {
+class ContentBodyElement implements BodyElement {
     private final String name;
 
-    private final Content content;
+    protected final Content content;
 
     public ContentBodyElement(final String name, final Content content) {
         super();
@@ -52,29 +49,23 @@ final class ContentBodyElement implements BodyElement {
     }
 
     /**
+     * @throws MailboxException 
      * @see org.apache.james.imap.message.response.FetchResponse.BodyElement#size()
      */
-    public long size() {
-        return content.size();
+    public long size() throws IOException {
+        try {
+            return content.size();
+        } catch (MailboxException e) {
+            throw new IOException("Unable to get size for body element",e);
+        }
     }
 
-    /**
-     * @see org.apache.james.imap.message.response.FetchResponse.BodyElement#writeTo(WritableByteChannel)
-     */
-    public void writeTo(WritableByteChannel channel) throws IOException {
-        content.writeTo(channel);
-    }
 
     /*
      * (non-Javadoc)
      * @see org.apache.james.imap.message.response.Literal#getInputStream()
      */
     public InputStream getInputStream() throws IOException {
-        if (content instanceof InputStreamContent) {
-            return ((InputStreamContent) content).getInputStream();
-        }
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        writeTo(Channels.newChannel(out));
-        return new ByteArrayInputStream(out.toByteArray());
+        return content.getInputStream();
     }
 }

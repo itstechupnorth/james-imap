@@ -20,7 +20,6 @@
 package org.apache.james.imap.encode.base;
 
 import java.io.IOException;
-import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 
 import javax.mail.Flags;
@@ -184,7 +183,7 @@ public class ImapResponseComposerImpl implements ImapConstants, ImapResponseComp
      */
     public ImapResponseComposer end() throws IOException {
         buffer.write(LINE_END.getBytes());
-        writer.write(ByteBuffer.wrap(buffer.toByteArray()));
+        writer.write(buffer.toByteArray());
         buffer.reset();
         return this;
     }

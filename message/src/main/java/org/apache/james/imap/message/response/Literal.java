@@ -29,17 +29,10 @@ public interface Literal {
      * 
      * @return number of octets which {@link #writeTo(WritableByteChannel)} will
      *         put onto the channel
+     * @throws IOException 
      */
-    public long size();
+    public long size() throws IOException;
 
-    /**
-     * Writes the contents of this body element to the channel.
-     * 
-     * @param channel
-     *            <code>Channel</code>, not null
-     * @throws IOException
-     */
-    public void writeTo(WritableByteChannel channel) throws IOException;
 
     /**
      * Return the Literal as {@link InputStream}

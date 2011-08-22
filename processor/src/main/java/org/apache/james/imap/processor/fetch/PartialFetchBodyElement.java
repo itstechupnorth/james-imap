@@ -22,7 +22,6 @@ package org.apache.james.imap.processor.fetch;
 import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.channels.WritableByteChannel;
 
 import org.apache.james.imap.message.response.FetchResponse.BodyElement;
 
@@ -59,7 +58,7 @@ final class PartialFetchBodyElement implements BodyElement {
      * (non-Javadoc)
      * @see org.apache.james.imap.message.response.Literal#size()
      */
-    public long size() {
+    public long size() throws IOException {
         final long size = delegate.size();
         final long lastOctet = this.numberOfOctets + firstOctet;
         final long result;
@@ -73,14 +72,6 @@ final class PartialFetchBodyElement implements BodyElement {
         return result;
     }
 
-    /*
-     * (non-Javadoc)
-     * @see org.apache.james.imap.message.response.Literal#writeTo(java.nio.channels.WritableByteChannel)
-     */
-    public void writeTo(WritableByteChannel channel) throws IOException {
-        PartialWritableByteChannel partialChannel = new PartialWritableByteChannel(channel, firstOctet, size());
-        delegate.writeTo(partialChannel);
-    }
 
     /*
      * (non-Javadoc)
@@ -159,15 +150,14 @@ final class PartialFetchBodyElement implements BodyElement {
             if (pos >= length) {
                 return -1;
             }
-
+            int readLimit;
             if (pos + len >= length) {
-                int readLimit = (int) length - (int) pos;
-                pos = length;
-
-                return super.read(b, off, readLimit);
+                readLimit = (int) length - (int) pos;
+            } else {
+                readLimit = len;
             }
 
-            int i = super.read(b, off, len);
+            int i = super.read(b, off, readLimit);
             pos += i;
             return i;
 

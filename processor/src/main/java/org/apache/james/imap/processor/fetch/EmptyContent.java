@@ -18,8 +18,9 @@
  ****************************************************************/
 package org.apache.james.imap.processor.fetch;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.nio.channels.WritableByteChannel;
+import java.io.InputStream;
 
 import org.apache.james.mailbox.Content;
 
@@ -30,17 +31,15 @@ import org.apache.james.mailbox.Content;
 public class EmptyContent implements Content{
 
     /**
-     * Write nothing as this {@link Content} is empty
-     */
-    public void writeTo(WritableByteChannel channel) throws IOException {
-        // do nothing..
-    }
-
-    /**
      * Return 0 as this {@link Content} is empty
      */
     public long size() {
         return 0;
+    }
+
+    @Override
+    public InputStream getInputStream() throws IOException {
+        return new ByteArrayInputStream("".getBytes());
     }
 
 }

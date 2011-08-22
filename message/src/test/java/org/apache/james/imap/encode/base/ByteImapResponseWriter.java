@@ -21,9 +21,7 @@ package org.apache.james.imap.encode.base;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.nio.channels.Channels;
-import java.nio.channels.WritableByteChannel;
+import java.io.InputStream;
 
 import org.apache.james.imap.api.ImapConstants;
 import org.apache.james.imap.encode.ImapResponseWriter;
@@ -37,7 +35,6 @@ public class ByteImapResponseWriter implements ImapConstants, ImapResponseWriter
 
 
     private ByteArrayOutputStream out;
-    private WritableByteChannel channel;
 
 
     public ByteImapResponseWriter() {
@@ -55,15 +52,27 @@ public class ByteImapResponseWriter implements ImapConstants, ImapResponseWriter
     
     public void clear() {
         this.out = new ByteArrayOutputStream();
-        channel = Channels.newChannel(out);
     }
 
     public void write(Literal literal) throws IOException {
-        literal.writeTo(channel);
-    }
-    public void write(ByteBuffer buffer) throws IOException {
-        while (channel.write(buffer) > 0) { // NOPMD false positive
-            // Write all
+        InputStream in = null;
+        try {
+            in = literal.getInputStream();
+
+            byte[] buffer = new byte[1024];
+            for (int len; (len = in.read(buffer)) != -1;) {
+                out.write(buffer, 0, len);
+            }
+        } finally {
+            if (in != null) {
+                in.close();
+            }
         }
     }
+
+    @Override
+    public void write(byte[] buffer) throws IOException {
+        out.write(buffer);
+    }
+
 }

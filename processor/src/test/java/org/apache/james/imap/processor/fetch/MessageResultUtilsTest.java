@@ -22,7 +22,7 @@ package org.apache.james.imap.processor.fetch;
 import static org.junit.Assert.*;
 
 import java.io.IOException;
-import java.nio.channels.WritableByteChannel;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -66,9 +66,11 @@ public class MessageResultUtilsTest {
             return value;
         }
 
-        public void writeTo(WritableByteChannel channel) throws IOException {
-
+        @Override
+        public InputStream getInputStream() throws IOException {
+            return null;
         }
+
 
     }
 

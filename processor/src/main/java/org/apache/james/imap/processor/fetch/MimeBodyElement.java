@@ -22,14 +22,13 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.ByteBuffer;
-import java.nio.channels.Channels;
-import java.nio.channels.WritableByteChannel;
+import java.nio.charset.Charset;
 import java.util.Iterator;
 import java.util.List;
 
 import org.apache.james.imap.api.ImapConstants;
 import org.apache.james.imap.message.response.FetchResponse.BodyElement;
+import org.apache.james.mailbox.MailboxException;
 import org.apache.james.mailbox.MessageResult;
 
 
@@ -43,9 +42,10 @@ public class MimeBodyElement implements BodyElement {
     protected final List<MessageResult.Header> headers;
 
     protected long size;
+    private static final Charset US_ASCII = Charset.forName("US-ASCII");
 
 
-    public MimeBodyElement(final String name, final List<MessageResult.Header> headers) {
+    public MimeBodyElement(final String name, final List<MessageResult.Header> headers) throws MailboxException {
         super();
         this.name = name;
         this.headers = headers;
@@ -65,7 +65,7 @@ public class MimeBodyElement implements BodyElement {
     }
     
 
-    protected long calculateSize(List<MessageResult.Header> headers) {
+    protected long calculateSize(List<MessageResult.Header> headers) throws MailboxException {
         final int result;
         if (headers.isEmpty()) {
            result = 0;
@@ -90,29 +90,6 @@ public class MimeBodyElement implements BodyElement {
         return size;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * org.apache.james.imap.message.response.FetchResponse.BodyElement#writeTo
-     * (java.nio.channels.WritableByteChannel)
-     */
-    public void writeTo(WritableByteChannel channel) throws IOException {
-        ByteBuffer endLine = ByteBuffer.wrap(ImapConstants.LINE_END.getBytes());
-        endLine.rewind();
-        for (final Iterator<MessageResult.Header> it = headers.iterator(); it.hasNext();) {
-            MessageResult.Header header = it.next();
-            header.writeTo(channel);
-            while (channel.write(endLine) > 0) { // NOPMD false positive
-            }
-            endLine.rewind();
-        }
-        // no empty line with CRLF for MIME headers. See IMAP-297
-        if (size > 0) {
-            while (channel.write(endLine) > 0) { // NOPMD false positive
-            }
-        }
-    }
 
     /*
      * (non-Javadoc)
@@ -122,7 +99,19 @@ public class MimeBodyElement implements BodyElement {
      */
     public InputStream getInputStream() throws IOException {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
-        writeTo(Channels.newChannel(out));
+
+        for (final Iterator<MessageResult.Header> it = headers.iterator(); it.hasNext();) {
+            MessageResult.Header header = it.next();
+            try {
+                out.write((header.getName() + ": " + header.getValue() + ImapConstants.LINE_END).getBytes(US_ASCII));
+            } catch (MailboxException e) {
+                throw new IOException("Unable to read header", e);
+            }
+        }
+        // no empty line with CRLF for MIME headers. See IMAP-297
+        if (size > 0) {
+            out.write(ImapConstants.LINE_END.getBytes());
+        }
         return new ByteArrayInputStream(out.toByteArray());
     }
 
