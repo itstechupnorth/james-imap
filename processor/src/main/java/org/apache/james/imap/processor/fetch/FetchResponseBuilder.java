@@ -44,7 +44,6 @@ import org.apache.james.mailbox.MessageManager;
 import org.apache.james.mailbox.MessageRange;
 import org.apache.james.mailbox.MessageRangeException;
 import org.apache.james.mailbox.MessageResult;
-import org.apache.james.mailbox.MimeDescriptor;
 
 public final class FetchResponseBuilder {
 
@@ -150,24 +149,6 @@ public final class FetchResponseBuilder {
             this.envelope = buildEnvelope(result);
         }
 
-        // Only create when needed
-        if (fetch.isBody() || fetch.isBodyStructure()) {
-            final MimeDescriptor descriptor = result.getMimeDescriptor();
-
-            // BODY response
-            if (fetch.isBody()) {
-                body = new MimeDescriptorStructure(false, descriptor, envelopeBuilder);
-            }
-
-            // BODYSTRUCTURE response
-            if (fetch.isBodyStructure()) {
-                bodystructure = new MimeDescriptorStructure(true, descriptor, envelopeBuilder);
-            }
-        }
-        // UID response
-        if (fetch.isUid()) {
-            setUid(resultUid);
-        }
 
         // BODY part responses.
         Collection<BodyFetchElement> elements = fetch.getBodyElements();
@@ -179,6 +160,29 @@ public final class FetchResponseBuilder {
                 this.elements.add(element);
             }
         }
+        
+        // Only create when needed
+        if (fetch.isBody() || fetch.isBodyStructure()) {
+            // BODY response
+            //
+            // the STRUCTURE is only needed when no specific element is requested otherwise we don't need 
+            // to access it and may be able to not parse the message
+            //
+            // See IMAP-333
+            if (fetch.isBody() && this.elements.isEmpty()) {
+                body = new MimeDescriptorStructure(false, result.getMimeDescriptor(), envelopeBuilder);
+            }
+
+            // BODYSTRUCTURE response
+            if (fetch.isBodyStructure()) {
+                bodystructure = new MimeDescriptorStructure(true, result.getMimeDescriptor(), envelopeBuilder);
+            }
+        }
+        // UID response
+        if (fetch.isUid()) {
+            setUid(resultUid);
+        }
+
         
         if (fetch.isModSeq()) {
             long changedSince = fetch.getChangedSince();
