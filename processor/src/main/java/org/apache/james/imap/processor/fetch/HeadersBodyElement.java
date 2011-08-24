@@ -19,10 +19,7 @@
 
 package org.apache.james.imap.processor.fetch;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.SequenceInputStream;
 
 import org.apache.james.mailbox.Content;
 
@@ -51,17 +48,8 @@ public class HeadersBodyElement extends ContentBodyElement{
         if (noBody) {
             return 0;
         } else {
-            return super.size() + 2;
+            return super.size();
 
-        }
-    }
-
-    @Override
-    public InputStream getInputStream() throws IOException {
-        if (!noBody &&size() > 0) {
-            return new SequenceInputStream(super.getInputStream(),  new ByteArrayInputStream("\r\n".getBytes("US-ASCII")));
-        } else {
-            return super.getInputStream();
         }
     }
 
