@@ -41,6 +41,7 @@ import org.apache.james.mailbox.MailboxManager;
  */
 public class XListProcessor extends ListProcessor implements CapabilityImplementingProcessor {
 
+    private final static List<String> XLIST_CAPS = Collections.unmodifiableList(Arrays.asList(SUPPORTS_XLIST));
     private MailboxTyper mailboxTyper;
 
     // some interface
@@ -61,7 +62,7 @@ public class XListProcessor extends ListProcessor implements CapabilityImplement
             return Collections.emptyList();
         }
 
-        return Arrays.asList(SUPPORTS_XLIST);
+        return XLIST_CAPS;
     }
 
     @Override

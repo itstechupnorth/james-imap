@@ -21,6 +21,7 @@ package org.apache.james.imap.processor;
 
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.StringTokenizer;
 
@@ -153,7 +154,7 @@ public class AuthenticateProcessor extends AbstractAuthProcessor<AuthenticateReq
         }
         // Support for SASL-IR. See RFC4959
         caps.add("SASL-IR");
-        return caps;
+        return Collections.unmodifiableList(caps);
     }
 
 }

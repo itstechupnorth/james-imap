@@ -22,6 +22,7 @@ package org.apache.james.imap.processor;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -64,6 +65,7 @@ import org.apache.james.mailbox.SearchQuery.DateResolution;
 public class SearchProcessor extends AbstractMailboxProcessor<SearchRequest> implements CapabilityImplementingProcessor {
 
     protected final static String SEARCH_MODSEQ = "SEARCH_MODSEQ";
+    private final static List<String> CAPS = Collections.unmodifiableList(Arrays.asList("WITHIN", "ESEARCH", "SEARCHRES"));
     
     public SearchProcessor(final ImapProcessor next, final MailboxManager mailboxManager, final StatusResponseFactory factory) {
         super(SearchRequest.class, next, mailboxManager, factory);
@@ -488,6 +490,6 @@ public class SearchProcessor extends AbstractMailboxProcessor<SearchRequest> imp
      * @see org.apache.james.imap.processor.CapabilityImplementingProcessor#getImplementedCapabilities(org.apache.james.imap.api.process.ImapSession)
      */
     public List<String> getImplementedCapabilities(ImapSession session) {
-        return Arrays.asList("WITHIN", "ESEARCH", "SEARCHRES");
+        return CAPS;
     }
 }

@@ -18,8 +18,8 @@
  ****************************************************************/
 package org.apache.james.imap.processor;
 
-import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.james.imap.api.ImapConstants;
@@ -34,7 +34,7 @@ import org.apache.james.imap.processor.base.AbstractChainedProcessor;
  * Processing STARTLS commands
  */
 public class StartTLSProcessor extends AbstractChainedProcessor<StartTLSRequest> implements CapabilityImplementingProcessor {
-
+    private final static List<String> STARTTLS_CAP = Collections.unmodifiableList(Arrays.asList(ImapConstants.SUPPORTS_STARTTLS));
     private StatusResponseFactory factory;
 
     public StartTLSProcessor(final ImapProcessor next, final StatusResponseFactory factory) {
@@ -70,9 +70,9 @@ public class StartTLSProcessor extends AbstractChainedProcessor<StartTLSRequest>
      */
     public List<String> getImplementedCapabilities(ImapSession session) {
         if (session.supportStartTLS()) {
-            return Arrays.asList(ImapConstants.SUPPORTS_STARTTLS);
+            return STARTTLS_CAP;
         } else {
-            return new ArrayList<String>();
+            return Collections.emptyList();
         }
     }
 

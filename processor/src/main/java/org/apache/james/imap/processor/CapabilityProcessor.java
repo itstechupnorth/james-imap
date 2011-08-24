@@ -27,6 +27,7 @@ import static org.apache.james.imap.api.ImapConstants.SUPPORTS_I18NLEVEL_1;
 import static org.apache.james.imap.api.ImapConstants.SUPPORTS_CONDSTORE;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -42,8 +43,24 @@ import org.apache.james.mailbox.MailboxManager;
 
 public class CapabilityProcessor extends AbstractMailboxProcessor<CapabilityRequest> implements CapabilityImplementingProcessor {
 
-    private static final List<CapabilityImplementingProcessor> capabilities = new ArrayList<CapabilityImplementingProcessor>();
+    private final static List<String> CAPS;
+    
+    static {
+        List<String> caps = new ArrayList<String>();
+        caps.add(VERSION);
+        caps.add(SUPPORTS_LITERAL_PLUS);
+        caps.add(SUPPORTS_RFC3348);
 
+        // UTF-8 is needed for I18NLEVEL_1
+        if (CharsetUtil.getAvailableCharsetNames().contains(UTF8)) {
+            caps.add(SUPPORTS_I18NLEVEL_1);
+        }
+        caps.add(SUPPORTS_CONDSTORE);
+        CAPS = Collections.unmodifiableList(caps);
+    }
+    
+    private static final List<CapabilityImplementingProcessor> capabilities = new ArrayList<CapabilityImplementingProcessor>();
+    
     public CapabilityProcessor(final ImapProcessor next, final MailboxManager mailboxManager, final StatusResponseFactory factory, final List<CapabilityImplementingProcessor> capabilities) {
         this(next, mailboxManager, factory);
         CapabilityProcessor.capabilities.addAll(capabilities);
@@ -89,17 +106,7 @@ public class CapabilityProcessor extends AbstractMailboxProcessor<CapabilityRequ
      * getImplementedCapabilities(org.apache.james.imap.api.process.ImapSession)
      */
     public List<String> getImplementedCapabilities(ImapSession session) {
-        final List<String> capabilities = new ArrayList<String>();
-        capabilities.add(VERSION);
-        capabilities.add(SUPPORTS_LITERAL_PLUS);
-        capabilities.add(SUPPORTS_RFC3348);
-        
-        // UTF-8 is needed for I18NLEVEL_1
-        if (CharsetUtil.getAvailableCharsetNames().contains(UTF8)) {
-            capabilities.add(SUPPORTS_I18NLEVEL_1);
-        }
-        capabilities.add(SUPPORTS_CONDSTORE);
-        return capabilities;
+        return CAPS;
     }
     
     /**

@@ -32,7 +32,7 @@ import org.apache.james.imap.processor.base.AbstractChainedProcessor;
 
 public class CompressProcessor extends AbstractChainedProcessor<CompressRequest> implements CapabilityImplementingProcessor {
     private final static String ALGO = "DEFLATE";
-    private final static List<String> CAPA = Arrays.asList(ImapConstants.COMPRESS_COMMAND_NAME + "=" + ALGO);
+    private final static List<String> CAPA = Collections.unmodifiableList(Arrays.asList(ImapConstants.COMPRESS_COMMAND_NAME + "=" + ALGO));
     private StatusResponseFactory factory;
     private final static String COMPRESSED = "COMPRESSED";
 

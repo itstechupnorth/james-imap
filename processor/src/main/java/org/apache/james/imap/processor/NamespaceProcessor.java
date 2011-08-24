@@ -23,6 +23,7 @@ import static org.apache.james.imap.api.ImapConstants.SUPPORTS_NAMESPACES;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.james.imap.api.ImapCommand;
@@ -39,7 +40,9 @@ import org.apache.james.mailbox.MailboxSession;
  * Processes a NAMESPACE command into a suitable set of responses.
  */
 public class NamespaceProcessor extends AbstractMailboxProcessor<NamespaceRequest> implements CapabilityImplementingProcessor {
-
+    private final static List<String> CAPS = Collections.unmodifiableList(Arrays.asList(SUPPORTS_NAMESPACES));
+    
+    
     public NamespaceProcessor(ImapProcessor next, MailboxManager mailboxManager, StatusResponseFactory factory) {
         super(NamespaceRequest.class, next, mailboxManager, factory);
     }
@@ -104,7 +107,7 @@ public class NamespaceProcessor extends AbstractMailboxProcessor<NamespaceReques
      * getImplementedCapabilities(org.apache.james.imap.api.process.ImapSession)
      */
     public List<String> getImplementedCapabilities(ImapSession session) {
-        return Arrays.asList(SUPPORTS_NAMESPACES);
+        return CAPS;
     }
 
 }

@@ -19,7 +19,8 @@
 
 package org.apache.james.imap.processor;
 
-import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.james.imap.api.ImapCommand;
@@ -35,6 +36,7 @@ import org.apache.james.mailbox.MailboxManager;
  */
 public class LoginProcessor extends AbstractAuthProcessor<LoginRequest> implements CapabilityImplementingProcessor{
 
+    private final static List<String> LOGINDISABLED_CAPS = Collections.unmodifiableList(Arrays.asList("LOGINDISABLED"));
     public LoginProcessor(final ImapProcessor next, final MailboxManager mailboxManager, final StatusResponseFactory factory) {
         super(LoginRequest.class, next, mailboxManager, factory);
     }
@@ -59,12 +61,11 @@ public class LoginProcessor extends AbstractAuthProcessor<LoginRequest> implemen
      * @see org.apache.james.imap.processor.CapabilityImplementingProcessor#getImplementedCapabilities(org.apache.james.imap.api.process.ImapSession)
      */
     public List<String> getImplementedCapabilities(ImapSession session) {
-        List<String> caps = new ArrayList<String>();
         // Announce LOGINDISABLED if plain auth / login is deactivated and the session is not using
         // TLS. See IMAP-304
         if (session.isPlainAuthDisallowed() && session.isTLSActive() == false) {
-            caps.add("LOGINDISABLED");
+            return LOGINDISABLED_CAPS;
         }
-        return caps;
+        return Collections.emptyList();
     }
 }

@@ -22,6 +22,7 @@ package org.apache.james.imap.processor;
 import static org.apache.james.imap.api.ImapConstants.SUPPORTS_IDLE;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.Executors;
@@ -49,7 +50,7 @@ import org.apache.james.mailbox.MailboxSession;
 public class IdleProcessor extends AbstractMailboxProcessor<IdleRequest> implements CapabilityImplementingProcessor {
 
     private final ScheduledExecutorService heartbeatExecutor;
-
+    private final static List<String> CAPS = Collections.unmodifiableList(Arrays.asList(SUPPORTS_IDLE));
     // 2 minutes
     public final static long DEFAULT_HEARTBEAT_INTERVAL_IN_SECONDS = 2 * 60;
     public final static TimeUnit DEFAULT_HEARTBEAT_INTERVAL_UNIT = TimeUnit.SECONDS;
@@ -148,8 +149,12 @@ public class IdleProcessor extends AbstractMailboxProcessor<IdleRequest> impleme
         }
     }
 
+   /*
+    * (non-Javadoc)
+    * @see org.apache.james.imap.processor.CapabilityImplementingProcessor#getImplementedCapabilities(org.apache.james.imap.api.process.ImapSession)
+    */
     public List<String> getImplementedCapabilities(ImapSession session) {
-        return Arrays.asList(SUPPORTS_IDLE);
+        return CAPS;
     }
 
     private class IdleMailboxListener extends ImapStateAwareMailboxListener {

@@ -19,6 +19,7 @@
 package org.apache.james.imap.processor;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.james.imap.api.ImapCommand;
@@ -36,7 +37,7 @@ import org.apache.james.mailbox.MailboxManager;
  */
 public class UnselectProcessor extends AbstractMailboxProcessor<UnselectRequest> implements CapabilityImplementingProcessor {
 
-    private final static List<String> UNSELECT = Arrays.asList("UNSELECT");
+    private final static List<String> UNSELECT = Collections.unmodifiableList(Arrays.asList("UNSELECT"));
 
     public UnselectProcessor(ImapProcessor next, MailboxManager mailboxManager, StatusResponseFactory factory) {
         super(UnselectRequest.class, next, mailboxManager, factory);
