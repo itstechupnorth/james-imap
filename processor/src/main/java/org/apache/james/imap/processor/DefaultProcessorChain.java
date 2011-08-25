@@ -19,6 +19,9 @@
 
 package org.apache.james.imap.processor;
 
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+
 import org.apache.james.imap.api.message.response.StatusResponseFactory;
 import org.apache.james.imap.api.process.ImapProcessor;
 import org.apache.james.imap.api.process.MailboxTyper;
@@ -31,7 +34,7 @@ import org.apache.james.mailbox.SubscriptionManager;
  */
 public class DefaultProcessorChain {
 
-    public static final ImapProcessor createDefaultChain(final ImapProcessor chainEndProcessor, final MailboxManager mailboxManager, final SubscriptionManager subscriptionManager, final StatusResponseFactory statusResponseFactory, MailboxTyper mailboxTyper, int batchSize) {
+    public static final ImapProcessor createDefaultChain(final ImapProcessor chainEndProcessor, final MailboxManager mailboxManager, final SubscriptionManager subscriptionManager, final StatusResponseFactory statusResponseFactory, MailboxTyper mailboxTyper, int batchSize, long idleKeepAlive, TimeUnit milliseconds) {
         final SystemMessageProcessor systemProcessor = new SystemMessageProcessor(chainEndProcessor, mailboxManager);
         final LogoutProcessor logoutProcessor = new LogoutProcessor(systemProcessor, mailboxManager, statusResponseFactory);
 
@@ -54,7 +57,13 @@ public class DefaultProcessorChain {
         final AppendProcessor appendProcessor = new AppendProcessor(examineProcessor, mailboxManager, statusResponseFactory);
         final StoreProcessor storeProcessor = new StoreProcessor(appendProcessor, mailboxManager, statusResponseFactory);
         final NoopProcessor noopProcessor = new NoopProcessor(storeProcessor, mailboxManager, statusResponseFactory);
-        final IdleProcessor idleProcessor = new IdleProcessor(noopProcessor, mailboxManager, statusResponseFactory);
+        final IdleProcessor idleProcessor;
+        if (idleKeepAlive > 0) {
+            idleProcessor = new IdleProcessor(noopProcessor, mailboxManager, statusResponseFactory, idleKeepAlive, milliseconds, Executors.newScheduledThreadPool(IdleProcessor.DEFAULT_SCHEDULED_POOL_CORE_SIZE));
+        } else {
+            // We don't want to send keep alives so now scheduled executur needed
+            idleProcessor = new IdleProcessor(noopProcessor, mailboxManager, statusResponseFactory, idleKeepAlive, milliseconds, null);
+        }
         final StatusProcessor statusProcessor = new StatusProcessor(idleProcessor, mailboxManager, statusResponseFactory);
         final LSubProcessor lsubProcessor = new LSubProcessor(statusProcessor, mailboxManager, subscriptionManager, statusResponseFactory);
         final XListProcessor xlistProcessor = new XListProcessor(lsubProcessor, mailboxManager, statusResponseFactory, mailboxTyper);
