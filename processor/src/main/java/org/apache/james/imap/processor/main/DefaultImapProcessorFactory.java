@@ -53,7 +53,7 @@ public class DefaultImapProcessorFactory {
     public static final ImapProcessor createXListSupportingProcessor(final MailboxManager mailboxManager, final SubscriptionManager subscriptionManager, MailboxTyper mailboxTyper, int batchSize, long idleKeepAlive) {
         final StatusResponseFactory statusResponseFactory = new UnpooledStatusResponseFactory();
         final UnknownRequestProcessor unknownRequestImapProcessor = new UnknownRequestProcessor(statusResponseFactory);
-        final ImapProcessor imap4rev1Chain = DefaultProcessorChain.createDefaultChain(unknownRequestImapProcessor, mailboxManager, subscriptionManager, statusResponseFactory, mailboxTyper, batchSize, idleKeepAlive, TimeUnit.MILLISECONDS);
+        final ImapProcessor imap4rev1Chain = DefaultProcessorChain.createDefaultChain(unknownRequestImapProcessor, mailboxManager, subscriptionManager, statusResponseFactory, mailboxTyper, batchSize, idleKeepAlive, TimeUnit.SECONDS);
         final ImapProcessor result = new ImapResponseMessageProcessor(imap4rev1Chain);
         return result;
     }
