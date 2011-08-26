@@ -24,6 +24,7 @@ import java.util.Collection;
 
 import org.apache.james.imap.api.ImapCommand;
 import org.apache.james.imap.api.ImapSessionUtils;
+import org.apache.james.imap.api.display.CharsetUtil;
 import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.api.message.response.StatusResponseFactory;
 import org.apache.james.imap.api.process.ImapProcessor;
@@ -59,12 +60,12 @@ public class LSubProcessor extends AbstractSubscriptionProcessor<LsubRequest> {
         boolean isRelative = ((finalReferencename + mailboxName).charAt(0) != MailboxConstants.NAMESPACE_PREFIX_CHAR);
         MailboxPath basePath = null;
         if (isRelative) {
-            basePath = new MailboxPath(MailboxConstants.USER_NAMESPACE, mailboxSession.getUser().getUserName(), finalReferencename);
+            basePath = new MailboxPath(MailboxConstants.USER_NAMESPACE, mailboxSession.getUser().getUserName(), CharsetUtil.decodeModifiedUTF7(finalReferencename));
         } else {
-            basePath = buildFullPath(session, finalReferencename);
+            basePath = buildFullPath(session, CharsetUtil.decodeModifiedUTF7(finalReferencename));
         }
 
-        final MailboxQuery expression = new MailboxQuery(basePath, mailboxName, mailboxSession.getPathDelimiter());
+        final MailboxQuery expression = new MailboxQuery(basePath, CharsetUtil.decodeModifiedUTF7(mailboxName), mailboxSession.getPathDelimiter());
         final Collection<String> mailboxResponses = new ArrayList<String>();
         for (final String mailbox : mailboxes) {
             respond(responder, expression, mailbox, true, mailboxes, mailboxResponses, mailboxSession.getPathDelimiter());

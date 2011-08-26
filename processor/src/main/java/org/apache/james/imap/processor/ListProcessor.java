@@ -25,6 +25,7 @@ import java.util.List;
 import org.apache.james.imap.api.ImapCommand;
 import org.apache.james.imap.api.ImapMessage;
 import org.apache.james.imap.api.ImapSessionUtils;
+import org.apache.james.imap.api.display.CharsetUtil;
 import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.api.message.response.ImapResponseMessage;
 import org.apache.james.imap.api.message.response.StatusResponseFactory;
@@ -112,6 +113,7 @@ public class ListProcessor extends AbstractMailboxProcessor<ListRequest> {
                     } else {
                         referenceRoot = referenceName.substring(0, firstDelimiter);
                     }
+                    referenceRoot = CharsetUtil.decodeModifiedUTF7(referenceRoot);
                 } else {
                     // A relative reference name, return "" to indicate it is
                     // non-rooted
@@ -154,6 +156,8 @@ public class ListProcessor extends AbstractMailboxProcessor<ListRequest> {
                 // Is the interpreted (combined) pattern relative?
                 isRelative = ((finalReferencename + mailboxName).charAt(0) != MailboxConstants.NAMESPACE_PREFIX_CHAR);
 
+                finalReferencename = CharsetUtil.decodeModifiedUTF7(finalReferencename);
+
                 MailboxPath basePath = null;
                 if (isRelative) {
                     basePath = new MailboxPath(MailboxConstants.USER_NAMESPACE, user, finalReferencename);
@@ -161,7 +165,7 @@ public class ListProcessor extends AbstractMailboxProcessor<ListRequest> {
                     basePath = buildFullPath(session, finalReferencename);
                 }
 
-                results = getMailboxManager().search(new MailboxQuery(basePath, mailboxName, mailboxSession.getPathDelimiter()), mailboxSession);
+                results = getMailboxManager().search(new MailboxQuery(basePath, CharsetUtil.decodeModifiedUTF7(mailboxName), mailboxSession.getPathDelimiter()), mailboxSession);
             }
 
             for (final MailboxMetaData metaData : results) {
