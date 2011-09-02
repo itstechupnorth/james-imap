@@ -38,7 +38,7 @@
       <artifactId>apache-james-mailbox-api</artifactId>
     </dependency>
     <dependency>
-      <groupId>jutf7</groupId>
+      <groupId>com.beetstra.jutf7</groupId>
       <artifactId>jutf7</artifactId>
     </dependency>
     <dependency>
