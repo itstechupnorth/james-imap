@@ -28,7 +28,6 @@ import java.util.Locale;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.james.imap.api.ImapCommand;
 import org.apache.james.imap.api.ImapSessionState;
@@ -42,8 +41,8 @@ import org.apache.james.imap.api.process.ImapSession;
 import org.apache.james.imap.api.process.SelectedMailbox;
 import org.apache.james.imap.message.request.IdleRequest;
 import org.apache.james.imap.message.response.ContinuationResponse;
-import org.apache.james.imap.processor.base.ImapStateAwareMailboxListener;
 import org.apache.james.mailbox.MailboxException;
+import org.apache.james.mailbox.MailboxListener;
 import org.apache.james.mailbox.MailboxManager;
 import org.apache.james.mailbox.MailboxSession;
 
@@ -73,7 +72,6 @@ public class IdleProcessor extends AbstractMailboxProcessor<IdleRequest> impleme
     }
 
     protected void doProcess(final IdleRequest message, final ImapSession session, final String tag, final ImapCommand command, final Responder responder) {
-        final AtomicBoolean closed = new AtomicBoolean(false);
 
         try {
             responder.respond(new ContinuationResponse(HumanReadableText.IDLING));
@@ -81,9 +79,13 @@ public class IdleProcessor extends AbstractMailboxProcessor<IdleRequest> impleme
 
             final MailboxManager mailboxManager = getMailboxManager();
             final MailboxSession mailboxSession = ImapSessionUtils.getMailboxSession(session);
-            SelectedMailbox sm = session.getSelected();
+            final SelectedMailbox sm = session.getSelected();
+            final MailboxListener idleListener;
             if (sm != null) {
-                mailboxManager.addListener(sm.getPath(), new IdleMailboxListener(closed, session, responder), mailboxSession);
+                idleListener = new IdleMailboxListener(session, responder);
+                mailboxManager.addListener(sm.getPath(), idleListener , mailboxSession);
+            } else {
+                idleListener = null;
             }
 
             session.pushLineHandler(new ImapLineHandler() {
@@ -103,7 +105,13 @@ public class IdleProcessor extends AbstractMailboxProcessor<IdleRequest> impleme
                         line = "";
                     }
 
-                    closed.set(true);
+                    if (idleListener != null) {
+                        try {
+                            mailboxManager.removeListener(sm.getPath(), idleListener, mailboxSession);
+                        } catch (MailboxException e) {
+                            session.getLog().info("Unable to remove idle listener from mailbox", e);
+                        }
+                    }
                     session.popLineHandler();
                     if (!DONE.equals(line.toUpperCase(Locale.US))) {
                         StatusResponse response = getStatusResponseFactory().taggedBad(tag, command, HumanReadableText.INVALID_COMMAND);
@@ -122,7 +130,7 @@ public class IdleProcessor extends AbstractMailboxProcessor<IdleRequest> impleme
                     public void run() {
                         // check if we need to cancel the Runnable
                         // See IMAP-275
-                        if (session.getState() != ImapSessionState.LOGOUT && closed.get() == false) {
+                        if (session.getState() != ImapSessionState.LOGOUT) {
                             // Send a heartbeat to the client to make sure we
                             // reset the idle timeout. This is kind of the same
                             // workaround as dovecot use.
@@ -142,7 +150,6 @@ public class IdleProcessor extends AbstractMailboxProcessor<IdleRequest> impleme
             }
 
         } catch (MailboxException e) {
-            closed.set(true);
             session.getLog().debug("Idle failed", e);
             // TODO: What should we do here?
             no(command, tag, responder, HumanReadableText.GENERIC_FAILURE_DURING_PROCESSING);
@@ -157,37 +164,20 @@ public class IdleProcessor extends AbstractMailboxProcessor<IdleRequest> impleme
         return CAPS;
     }
 
-    private class IdleMailboxListener extends ImapStateAwareMailboxListener {
+    private class IdleMailboxListener implements MailboxListener {
 
-        private final AtomicBoolean closed;
         private final Responder responder;
+        private final ImapSession session;
 
-        public IdleMailboxListener(AtomicBoolean closed, ImapSession session, Responder responder) {
-            super(session);
-            this.closed = closed;
+        public IdleMailboxListener(ImapSession session, Responder responder) {
+            this.session = session;
             this.responder = responder;
         }
 
         public void event(Event event) {
-            synchronized (session) {
-                if (isClosed()) {
-                    return;
-                }
-                if (event instanceof Added || event instanceof Expunged || event instanceof FlagsUpdated) {
-                    unsolicitedResponses(session, responder, false);
-                }
+            if (event instanceof Added || event instanceof Expunged || event instanceof FlagsUpdated) {
+                unsolicitedResponses(session, responder, false);
             }
         }
-
-        /*
-         * (non-Javadoc)
-         * 
-         * @see org.apache.james.imap.processor.ImapSessionAwareMailboxListener#
-         * isListenerClosed()
-         */
-        protected boolean isListenerClosed() {
-            return closed.get();
-        }
-
     }
 }

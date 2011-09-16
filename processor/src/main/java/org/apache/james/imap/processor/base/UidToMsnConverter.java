@@ -36,7 +36,7 @@ import org.apache.james.mailbox.MailboxListener;
  * TODO: This is a major memory hog TODO: Each concurrent session requires one,
  * and typical clients now open many
  */
-public class UidToMsnConverter extends ImapStateAwareMailboxListener {
+public class UidToMsnConverter implements MailboxListener {
     private SortedMap<Integer, Long> msnToUid;
 
     private SortedMap<Long, Integer> uidToMsn;
@@ -45,10 +45,8 @@ public class UidToMsnConverter extends ImapStateAwareMailboxListener {
 
     private int highestMsn = 0;
 
-    private boolean closed = false;
 
     public UidToMsnConverter(final ImapSession session, final Iterator<Long> uids) {
-        super(session);
         msnToUid = new TreeMap<Integer, Long>();
         uidToMsn = new TreeMap<Long, Integer>();
         if (uids != null) {
@@ -177,7 +175,6 @@ public class UidToMsnConverter extends ImapStateAwareMailboxListener {
     public synchronized void close() {
         uidToMsn.clear();
         msnToUid.clear();
-        closed = true;
     }
 
     /**
@@ -187,13 +184,4 @@ public class UidToMsnConverter extends ImapStateAwareMailboxListener {
         return uidToMsn.size();
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.apache.james.imap.processor.ImapSessionAwareMailboxListener#
-     * isListenerClosed()
-     */
-    protected synchronized boolean isListenerClosed() {
-        return closed;
-    }
 }

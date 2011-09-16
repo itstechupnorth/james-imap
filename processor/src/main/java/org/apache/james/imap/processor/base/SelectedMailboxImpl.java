@@ -47,6 +47,12 @@ public class SelectedMailboxImpl implements SelectedMailbox {
     private final Set<Long> recentUids;
 
     private boolean recentUidRemoved;
+
+    private MailboxManager mailboxManager;
+
+    private MailboxPath path;
+
+    private ImapSession session;
     
     public SelectedMailboxImpl(final MailboxManager mailboxManager, final Iterator<Long> uids, final Flags applicableFlags, final ImapSession session, final MailboxPath path) throws MailboxException {
         recentUids = new TreeSet<Long>();
@@ -58,6 +64,9 @@ public class SelectedMailboxImpl implements SelectedMailbox {
         mailboxManager.addListener(path, events, mailboxSession);
         converter = new UidToMsnConverter(session, uids);
         mailboxManager.addListener(path, converter, mailboxSession);
+        this.mailboxManager = mailboxManager;
+        this.path = path;
+        this.session = session;
     }
 
     /**
@@ -67,6 +76,20 @@ public class SelectedMailboxImpl implements SelectedMailbox {
         converter.close();
         events.close();
         recentUids.clear();
+        MailboxSession mailboxSession = ImapSessionUtils.getMailboxSession(session);
+
+        try {
+            mailboxManager.removeListener(path, converter, mailboxSession);
+        } catch (MailboxException e) {
+            session.getLog().info("Unable to remove listener " + converter + " from mailbox while closing it", e);
+        }
+        try {
+            mailboxManager.removeListener(path, events, mailboxSession);
+        } catch (MailboxException e) {
+            session.getLog().info("Unable to remove listener " + events + " from mailbox while closing it", e);
+
+        }
+
     }
 
     /*
