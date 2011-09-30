@@ -19,6 +19,7 @@
 
 package org.apache.james.imap.processor;
 
+import java.util.Set;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
@@ -34,11 +35,11 @@ import org.apache.james.mailbox.SubscriptionManager;
  */
 public class DefaultProcessorChain {
 
-    public static final ImapProcessor createDefaultChain(final ImapProcessor chainEndProcessor, final MailboxManager mailboxManager, final SubscriptionManager subscriptionManager, final StatusResponseFactory statusResponseFactory, MailboxTyper mailboxTyper, int batchSize, long idleKeepAlive, TimeUnit milliseconds) {
+    public static final ImapProcessor createDefaultChain(final ImapProcessor chainEndProcessor, final MailboxManager mailboxManager, final SubscriptionManager subscriptionManager, final StatusResponseFactory statusResponseFactory, MailboxTyper mailboxTyper, int batchSize, long idleKeepAlive, TimeUnit milliseconds, Set<String> disabledCaps) {
         final SystemMessageProcessor systemProcessor = new SystemMessageProcessor(chainEndProcessor, mailboxManager);
         final LogoutProcessor logoutProcessor = new LogoutProcessor(systemProcessor, mailboxManager, statusResponseFactory);
 
-        final CapabilityProcessor capabilityProcessor = new CapabilityProcessor(logoutProcessor, mailboxManager, statusResponseFactory);
+        final CapabilityProcessor capabilityProcessor = new CapabilityProcessor(logoutProcessor, mailboxManager, statusResponseFactory, disabledCaps);
         final CheckProcessor checkProcessor = new CheckProcessor(capabilityProcessor, mailboxManager, statusResponseFactory);
         final LoginProcessor loginProcessor = new LoginProcessor(checkProcessor, mailboxManager, statusResponseFactory);
         // so it can announce the LOGINDISABLED if needed

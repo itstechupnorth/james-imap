@@ -19,6 +19,8 @@
 
 package org.apache.james.imap.processor.main;
 
+import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.james.imap.api.ImapConstants;
@@ -39,21 +41,21 @@ import org.apache.james.mailbox.SubscriptionManager;
 public class DefaultImapProcessorFactory {
 
     public static final ImapProcessor createDefaultProcessor(final MailboxManager mailboxManager, final SubscriptionManager subscriptionManager) {
-        return createXListSupportingProcessor(mailboxManager, subscriptionManager, null, ImapConstants.DEFAULT_BATCH_SIZE, IdleProcessor.DEFAULT_HEARTBEAT_INTERVAL_IN_SECONDS);
+        return createXListSupportingProcessor(mailboxManager, subscriptionManager, null, ImapConstants.DEFAULT_BATCH_SIZE, IdleProcessor.DEFAULT_HEARTBEAT_INTERVAL_IN_SECONDS, new HashSet<String>());
     }
 
     public static final ImapProcessor createDefaultProcessor(final MailboxManager mailboxManager, final SubscriptionManager subscriptionManager, int batchSize, long idleKeepAlive) {
-        return createXListSupportingProcessor(mailboxManager, subscriptionManager, null, batchSize, idleKeepAlive);
+        return createXListSupportingProcessor(mailboxManager, subscriptionManager, null, batchSize, idleKeepAlive, new HashSet<String>());
     }
 
     public static final ImapProcessor createXListSupportingProcessor(final MailboxManager mailboxManager, final SubscriptionManager subscriptionManager, MailboxTyper mailboxTyper) {
-        return createXListSupportingProcessor(mailboxManager, subscriptionManager, mailboxTyper, ImapConstants.DEFAULT_BATCH_SIZE, IdleProcessor.DEFAULT_HEARTBEAT_INTERVAL_IN_SECONDS);
+        return createXListSupportingProcessor(mailboxManager, subscriptionManager, mailboxTyper, ImapConstants.DEFAULT_BATCH_SIZE, IdleProcessor.DEFAULT_HEARTBEAT_INTERVAL_IN_SECONDS, new HashSet<String>());
     }
 
-    public static final ImapProcessor createXListSupportingProcessor(final MailboxManager mailboxManager, final SubscriptionManager subscriptionManager, MailboxTyper mailboxTyper, int batchSize, long idleKeepAlive) {
+    public static final ImapProcessor createXListSupportingProcessor(final MailboxManager mailboxManager, final SubscriptionManager subscriptionManager, MailboxTyper mailboxTyper, int batchSize, long idleKeepAlive, Set<String> disabledCaps) {
         final StatusResponseFactory statusResponseFactory = new UnpooledStatusResponseFactory();
         final UnknownRequestProcessor unknownRequestImapProcessor = new UnknownRequestProcessor(statusResponseFactory);
-        final ImapProcessor imap4rev1Chain = DefaultProcessorChain.createDefaultChain(unknownRequestImapProcessor, mailboxManager, subscriptionManager, statusResponseFactory, mailboxTyper, batchSize, idleKeepAlive, TimeUnit.SECONDS);
+        final ImapProcessor imap4rev1Chain = DefaultProcessorChain.createDefaultChain(unknownRequestImapProcessor, mailboxManager, subscriptionManager, statusResponseFactory, mailboxTyper, batchSize, idleKeepAlive, TimeUnit.SECONDS, disabledCaps);
         final ImapProcessor result = new ImapResponseMessageProcessor(imap4rev1Chain);
         return result;
     }
