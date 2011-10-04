@@ -52,7 +52,6 @@ public class MailboxEventAnalyser implements MailboxListener {
     private boolean sizeChanged = false;
     private boolean silentFlagChanges = false;
     private MailboxPath mailboxPath;
-    private boolean closed = false;
     private Flags applicableFlags;
     private boolean applicableFlagsChanged;
     private ImapSession session;
@@ -281,7 +280,6 @@ public class MailboxEventAnalyser implements MailboxListener {
      * Mark the listener as closed and dispose all stored stuff
      */
     public synchronized void close() {
-        closed = true;
         flagUpdateUids.clear();
 
         uninterestingFlag = null;
