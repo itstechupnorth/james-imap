@@ -128,7 +128,7 @@ public class UidToMsnConverter implements MailboxListener {
      * 
      * @param uid
      */
-    public synchronized void add(long uid) {
+    private void add(long uid) {
         if (!uidToMsn.containsKey(uid)) {
             highestMsn++;
             add(highestMsn, uid);
