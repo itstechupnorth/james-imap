@@ -117,7 +117,7 @@ public class StoreProcessor extends AbstractMailboxProcessor<StoreRequest> {
                         
                         List<Long> uids = new ArrayList<Long>();
 
-                        MessageResultIterator results = mailbox.getMessages(messageSet, FetchGroupImpl.MINIMAL, -1, mailboxSession);
+                        MessageResultIterator results = mailbox.getMessages(messageSet, FetchGroupImpl.MINIMAL, mailboxSession);
                         while(results.hasNext()) {
                             MessageResult r = results.next();
                             long uid = r.getUid();
@@ -261,7 +261,7 @@ public class StoreProcessor extends AbstractMailboxProcessor<StoreRequest> {
             //      - QRESYNC was enabled via ENABLE QRESYNC
             //
             if (unchangedSince != -1 || qresyncEnabled || condstoreEnabled) {
-                MessageResultIterator results = mailbox.getMessages(messageSet, FetchGroupImpl.MINIMAL, -1, mailboxSession);
+                MessageResultIterator results = mailbox.getMessages(messageSet, FetchGroupImpl.MINIMAL, mailboxSession);
                 while(results.hasNext()) {
                     MessageResult r = results.next();
                     // Store the modseq for the uid for later usage in the response

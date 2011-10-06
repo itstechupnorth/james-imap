@@ -53,11 +53,8 @@ import org.apache.james.mailbox.MessageResult.MimePath;
 
 public class FetchProcessor extends AbstractMailboxProcessor<FetchRequest> {
 
-    private int batchSize;
-
-    public FetchProcessor(final ImapProcessor next, final MailboxManager mailboxManager, final StatusResponseFactory factory, int batchSize) {
+    public FetchProcessor(final ImapProcessor next, final MailboxManager mailboxManager, final StatusResponseFactory factory) {
         super(FetchRequest.class, next, mailboxManager, factory);
-        this.batchSize = batchSize;
     }
 
     /*
@@ -160,7 +157,7 @@ public class FetchProcessor extends AbstractMailboxProcessor<FetchRequest> {
         FetchGroup resultToFetch = getFetchGroup(fetch);
 
         for (int i = 0; i < ranges.size(); i++) {
-            MessageResultIterator messages = mailbox.getMessages(ranges.get(i), resultToFetch, batchSize, mailboxSession);
+            MessageResultIterator messages = mailbox.getMessages(ranges.get(i), resultToFetch, mailboxSession);
             while (messages.hasNext()) {
                 final MessageResult result = messages.next();
                 try {

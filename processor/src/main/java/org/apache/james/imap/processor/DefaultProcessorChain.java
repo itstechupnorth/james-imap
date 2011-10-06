@@ -35,7 +35,7 @@ import org.apache.james.mailbox.SubscriptionManager;
  */
 public class DefaultProcessorChain {
 
-    public static final ImapProcessor createDefaultChain(final ImapProcessor chainEndProcessor, final MailboxManager mailboxManager, final SubscriptionManager subscriptionManager, final StatusResponseFactory statusResponseFactory, MailboxTyper mailboxTyper, int batchSize, long idleKeepAlive, TimeUnit milliseconds, Set<String> disabledCaps) {
+    public static final ImapProcessor createDefaultChain(final ImapProcessor chainEndProcessor, final MailboxManager mailboxManager, final SubscriptionManager subscriptionManager, final StatusResponseFactory statusResponseFactory, MailboxTyper mailboxTyper, long idleKeepAlive, TimeUnit milliseconds, Set<String> disabledCaps) {
         final SystemMessageProcessor systemProcessor = new SystemMessageProcessor(chainEndProcessor, mailboxManager);
         final LogoutProcessor logoutProcessor = new LogoutProcessor(systemProcessor, mailboxManager, statusResponseFactory);
 
@@ -78,7 +78,7 @@ public class DefaultProcessorChain {
 
         capabilityProcessor.addProcessor(xlistProcessor);
 
-        final ImapProcessor fetchProcessor = new FetchProcessor(namespaceProcessor, mailboxManager, statusResponseFactory, batchSize);
+        final ImapProcessor fetchProcessor = new FetchProcessor(namespaceProcessor, mailboxManager, statusResponseFactory);
         final StartTLSProcessor startTLSProcessor = new StartTLSProcessor(fetchProcessor, statusResponseFactory);
 
         final UnselectProcessor unselectProcessor = new UnselectProcessor(startTLSProcessor, mailboxManager, statusResponseFactory);

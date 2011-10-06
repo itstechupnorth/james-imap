@@ -240,7 +240,7 @@ public class SearchProcessor extends AbstractMailboxProcessor<SearchRequest> imp
         // Reverse loop over the ranges as its more likely that we find a match at the end
         int size = ranges.size();
         for (int i = size -1 ; i > 0; i--) {
-            MessageResultIterator results = mailbox.getMessages(ranges.get(i), FetchGroupImpl.MINIMAL, -1, session);
+            MessageResultIterator results = mailbox.getMessages(ranges.get(i), FetchGroupImpl.MINIMAL, session);
             while(results.hasNext()) {
                 long modSeq = results.next().getModSeq();
                 if (highestModSeq == null || modSeq > highestModSeq) {

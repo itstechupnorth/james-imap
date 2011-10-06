@@ -416,7 +416,7 @@ abstract class AbstractSelectionProcessor<M extends AbstractMailboxSelectionRequ
 
     private SelectedMailbox createNewSelectedMailbox(final MessageManager mailbox, final MailboxSession mailboxSession, ImapSession session, MailboxPath path) throws MailboxException {
         
-        MessageResultIterator messages = mailbox.getMessages(MessageRange.all(), FetchGroupImpl.MINIMAL, -1, mailboxSession);
+        MessageResultIterator messages = mailbox.getMessages(MessageRange.all(), FetchGroupImpl.MINIMAL, mailboxSession);
         Flags applicableFlags = new Flags(flags);
         List<Long> uids = new ArrayList<Long>();
         while(messages.hasNext()) {

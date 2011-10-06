@@ -225,7 +225,7 @@ abstract public class AbstractMailboxProcessor<M extends ImapRequest> extends Ab
 
     protected void addFlagsResponses(final ImapSession session, final SelectedMailbox selected, final ImapProcessor.Responder responder, boolean useUid, MessageRange messageSet, MessageManager mailbox, MailboxSession mailboxSession) throws MailboxException {
 
-        final MessageResultIterator it = mailbox.getMessages(messageSet, FetchGroupImpl.MINIMAL, -1,  mailboxSession);
+        final MessageResultIterator it = mailbox.getMessages(messageSet, FetchGroupImpl.MINIMAL,  mailboxSession);
         while (it.hasNext()) {
             MessageResult mr = it.next();
             final long uid = mr.getUid();
