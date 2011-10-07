@@ -22,6 +22,7 @@ package org.apache.james.imap.processor.base;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -34,6 +35,9 @@ import org.apache.james.mailbox.MailboxException;
 import org.apache.james.mailbox.MailboxManager;
 import org.apache.james.mailbox.MailboxPath;
 import org.apache.james.mailbox.MailboxSession;
+import org.apache.james.mailbox.MessageRange;
+import org.apache.james.mailbox.MessageResult;
+import org.apache.james.mailbox.MessageResultIterator;
 
 /**
  * Default implementation of {@link SelectedMailbox}
@@ -54,15 +58,41 @@ public class SelectedMailboxImpl implements SelectedMailbox {
 
     private ImapSession session;
     
-    public SelectedMailboxImpl(final MailboxManager mailboxManager, final Iterator<Long> uids, final Flags applicableFlags, final ImapSession session, final MailboxPath path) throws MailboxException {
+
+    private final static Flags FLAGS = new Flags();
+    static {
+        FLAGS.add(Flags.Flag.ANSWERED);
+        FLAGS.add(Flags.Flag.DELETED);
+        FLAGS.add(Flags.Flag.DRAFT);
+        FLAGS.add(Flags.Flag.FLAGGED);
+        FLAGS.add(Flags.Flag.SEEN);
+    }
+    
+    
+    public SelectedMailboxImpl(final MailboxManager mailboxManager, final ImapSession session, final MailboxPath path) throws MailboxException {
         recentUids = new TreeSet<Long>();
         recentUidRemoved = false;
+
         MailboxSession mailboxSession = ImapSessionUtils.getMailboxSession(session);
+        MessageResultIterator messages = mailboxManager.getMailbox(path, mailboxSession).getMessages(MessageRange.all(), FetchGroupImpl.MINIMAL, mailboxSession);
+        Flags applicableFlags = new Flags(FLAGS);
+        List<Long> uids = new ArrayList<Long>();
+        while(messages.hasNext()) {
+            MessageResult mr = messages.next();
+            applicableFlags.add(mr.getFlags());
+            uids.add(mr.getUid());
+        }
+        
+        
+        // \RECENT is not a applicable flag in imap so remove it from the list
+        applicableFlags.remove(Flags.Flag.RECENT);
+        
+        
         events = new MailboxEventAnalyser(session, path, applicableFlags);
         // Ignore events from our session
         events.setSilentFlagChanges(true);
         mailboxManager.addListener(path, events, mailboxSession);
-        converter = new UidToMsnConverter(session, uids);
+        converter = new UidToMsnConverter(session, uids.iterator());
         mailboxManager.addListener(path, converter, mailboxSession);
         this.mailboxManager = mailboxManager;
         this.path = path;

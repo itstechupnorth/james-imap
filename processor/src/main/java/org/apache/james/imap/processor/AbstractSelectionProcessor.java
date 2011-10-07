@@ -61,8 +61,6 @@ import org.apache.james.mailbox.MessageResult;
 
 abstract class AbstractSelectionProcessor<M extends AbstractMailboxSelectionRequest> extends AbstractMailboxProcessor<M> implements PermitEnableCapabilityProcessor {
 
-    private final Flags flags = new Flags();
-
     final StatusResponseFactory statusResponseFactory;
 
     private final boolean openReadOnly;
@@ -73,11 +71,7 @@ abstract class AbstractSelectionProcessor<M extends AbstractMailboxSelectionRequ
         super(acceptableClass, next, mailboxManager, statusResponseFactory);
         this.statusResponseFactory = statusResponseFactory;
         this.openReadOnly = openReadOnly;
-        flags.add(Flags.Flag.ANSWERED);
-        flags.add(Flags.Flag.DELETED);
-        flags.add(Flags.Flag.DRAFT);
-        flags.add(Flags.Flag.FLAGGED);
-        flags.add(Flags.Flag.SEEN);
+
     }
 
     /*
@@ -403,7 +397,9 @@ abstract class AbstractSelectionProcessor<M extends AbstractMailboxSelectionRequ
             if (currentMailbox != null) {
                 getStatusResponseFactory().untaggedOk(HumanReadableText.QRESYNC_CLOSED, ResponseCode.closed());
             }
-            sessionMailbox = createNewSelectedMailbox(mailbox, mailboxSession, session, mailboxPath);
+            session.selected(new SelectedMailboxImpl(getMailboxManager(),  session, mailboxPath));
+
+            sessionMailbox = session.getSelected();
             
         } else {
             // TODO: Check if we need to handle CONDSTORE there too 
@@ -414,25 +410,6 @@ abstract class AbstractSelectionProcessor<M extends AbstractMailboxSelectionRequ
         return metaData;
     }
 
-    private SelectedMailbox createNewSelectedMailbox(final MessageManager mailbox, final MailboxSession mailboxSession, ImapSession session, MailboxPath path) throws MailboxException {
-        
-        MessageResultIterator messages = mailbox.getMessages(MessageRange.all(), FetchGroupImpl.MINIMAL, mailboxSession);
-        Flags applicableFlags = new Flags(flags);
-        List<Long> uids = new ArrayList<Long>();
-        while(messages.hasNext()) {
-            MessageResult mr = messages.next();
-            applicableFlags.add(mr.getFlags());
-            uids.add(mr.getUid());
-        }
-        
-        
-        // \RECENT is not a applicable flag in imap so remove it from the list
-        applicableFlags.remove(Flags.Flag.RECENT);
-        
-        final SelectedMailbox sessionMailbox = new SelectedMailboxImpl(getMailboxManager(), uids.iterator(),applicableFlags,  session, path);
-        session.selected(sessionMailbox);
-        return sessionMailbox;
-    }
 
     private void addRecent(final MessageManager.MetaData metaData, SelectedMailbox sessionMailbox) throws MailboxException {
         final List<Long> recentUids = metaData.getRecent();
