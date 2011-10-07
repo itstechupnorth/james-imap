@@ -21,32 +21,41 @@ package org.apache.james.imap.processor.base;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.SortedMap;
+import java.util.TreeMap;
 import java.util.TreeSet;
 
 import javax.mail.Flags;
+import javax.mail.Flags.Flag;
 
 import org.apache.james.imap.api.ImapSessionUtils;
 import org.apache.james.imap.api.process.ImapSession;
 import org.apache.james.imap.api.process.SelectedMailbox;
 import org.apache.james.mailbox.MailboxException;
+import org.apache.james.mailbox.MailboxListener;
 import org.apache.james.mailbox.MailboxManager;
 import org.apache.james.mailbox.MailboxPath;
 import org.apache.james.mailbox.MailboxSession;
 import org.apache.james.mailbox.MessageRange;
 import org.apache.james.mailbox.MessageResult;
 import org.apache.james.mailbox.MessageResultIterator;
+import org.apache.james.mailbox.UpdatedFlags;
+import org.apache.james.mailbox.MailboxListener.Added;
+import org.apache.james.mailbox.MailboxListener.Event;
+import org.apache.james.mailbox.MailboxListener.Expunged;
+import org.apache.james.mailbox.MailboxListener.FlagsUpdated;
+import org.apache.james.mailbox.MailboxListener.MailboxDeletion;
+import org.apache.james.mailbox.MailboxListener.MailboxRenamed;
+import org.apache.james.mailbox.MailboxListener.MessageEvent;
 
 /**
  * Default implementation of {@link SelectedMailbox}
  */
-public class SelectedMailboxImpl implements SelectedMailbox {
-
-    private final MailboxEventAnalyser events;
-
-    private final UidToMsnConverter converter;
+public class SelectedMailboxImpl implements SelectedMailbox, MailboxListener{
 
     private final Set<Long> recentUids;
 
@@ -68,12 +77,56 @@ public class SelectedMailboxImpl implements SelectedMailbox {
         FLAGS.add(Flags.Flag.SEEN);
     }
     
+    private final long sessionId;
+    private Set<Long> flagUpdateUids;
+    private Flags.Flag uninterestingFlag;
+    private Set<Long> expungedUids;
+
+    private boolean isDeletedByOtherSession = false;
+    private boolean sizeChanged = false;
+    private boolean silentFlagChanges = false;
+    private Flags applicableFlags;
+    private boolean applicableFlagsChanged;
+    
+    private SortedMap<Integer, Long> msnToUid;
+
+    private SortedMap<Long, Integer> uidToMsn;
+
+    private long highestUid = 0;
+
+    private int highestMsn = 0;
     
     public SelectedMailboxImpl(final MailboxManager mailboxManager, final ImapSession session, final MailboxPath path) throws MailboxException {
         recentUids = new TreeSet<Long>();
         recentUidRemoved = false;
+        this.session = session;
+        this.sessionId = ImapSessionUtils.getMailboxSession(session).getSessionId();
+        flagUpdateUids = new TreeSet<Long>();
+        expungedUids = new TreeSet<Long>();
+        uninterestingFlag = Flags.Flag.RECENT;
+        this.mailboxManager = mailboxManager;
+        
+        // Ignore events from our session
+        setSilentFlagChanges(true);
+        this.path = path;
+        this.session = session;
+        
+        init();
+    }
+ 
 
+    private synchronized void init() throws MailboxException {
         MailboxSession mailboxSession = ImapSessionUtils.getMailboxSession(session);
+        
+        mailboxManager.addListener(path, this, mailboxSession);
+        
+
+        int msn = 1;
+        msnToUid = new TreeMap<Integer, Long>();
+        uidToMsn = new TreeMap<Long, Integer>();
+
+        
+     
         MessageResultIterator messages = mailboxManager.getMailbox(path, mailboxSession).getMessages(MessageRange.all(), FetchGroupImpl.MINIMAL, mailboxSession);
         Flags applicableFlags = new Flags(FLAGS);
         List<Long> uids = new ArrayList<Long>();
@@ -81,90 +134,122 @@ public class SelectedMailboxImpl implements SelectedMailbox {
             MessageResult mr = messages.next();
             applicableFlags.add(mr.getFlags());
             uids.add(mr.getUid());
+            final Long uid = mr.getUid();
+            highestUid = uid.longValue();
+            highestMsn = msn;
+            msnToUid.put(msn, uid);
+            uidToMsn.put(uid, msn);
+
+            msn++;
         }
         
-        
+      
         // \RECENT is not a applicable flag in imap so remove it from the list
         applicableFlags.remove(Flags.Flag.RECENT);
-        
-        
-        events = new MailboxEventAnalyser(session, path, applicableFlags);
-        // Ignore events from our session
-        events.setSilentFlagChanges(true);
-        mailboxManager.addListener(path, events, mailboxSession);
-        converter = new UidToMsnConverter(session, uids.iterator());
-        mailboxManager.addListener(path, converter, mailboxSession);
-        this.mailboxManager = mailboxManager;
-        this.path = path;
-        this.session = session;
+        this.applicableFlags = applicableFlags;
+    }
+
+    private void add(int msn, long uid) {
+        if (uid > highestUid) {
+            highestUid = uid;
+        }
+        msnToUid.put(msn, uid);
+        uidToMsn.put(uid, msn);
     }
 
     /**
-     * @see org.apache.james.imap.api.process.SelectedMailbox#deselect()
+     * Expunge the message with the given uid
+     * 
+     * @param uid
      */
-    public void deselect() {
-        converter.close();
-        events.close();
+    private void expunge(final long uid) {
+        final int msn = msn(uid);
+        remove(msn, uid);
+        final List<Integer> renumberMsns = new ArrayList<Integer>(msnToUid.tailMap(msn + 1).keySet());
+        for (final Integer msnInteger : renumberMsns) {
+            int aMsn = msnInteger.intValue();
+            long aUid = uid(aMsn);
+            remove(aMsn, aUid);
+            add(aMsn - 1, aUid);
+        }
+        highestMsn--;
+    }
+
+    private void remove(int msn, long uid) {
+        uidToMsn.remove(uid);
+        msnToUid.remove(msn);
+    }
+
+    /**
+     * Add the give uid
+     * 
+     * @param uid
+     */
+    private void add(long uid) {
+        if (!uidToMsn.containsKey(uid)) {
+            highestMsn++;
+            add(highestMsn, uid);
+        }
+    }
+
+    /**
+     * @see org.apache.james.mailbox.MailboxListener#event(org.apache.james.mailbox.MailboxListener.Event)
+     */
+
+
+    /**
+     * @see SelectedMailbox#getFirstUid()
+     */
+    @Override
+    public synchronized long getFirstUid() {
+        if (uidToMsn.isEmpty()) {
+            return -1;
+        } else {
+            return uidToMsn.firstKey();
+        }
+    }
+
+    /**
+     * @see SelectedMailbox#getLastUid()
+     */
+    @Override
+    public synchronized long getLastUid() {
+        if (uidToMsn.isEmpty()) {
+            return -1;
+        } else {
+            return uidToMsn.lastKey();
+        }
+    }
+
+
+    @Override
+    public synchronized void deselect() {
+        uidToMsn.clear();
+        msnToUid.clear();
+        flagUpdateUids.clear();
+
+        uninterestingFlag = null;
+        expungedUids.clear();
         recentUids.clear();
         MailboxSession mailboxSession = ImapSessionUtils.getMailboxSession(session);
 
         try {
-            mailboxManager.removeListener(path, converter, mailboxSession);
+            mailboxManager.removeListener(path, this, mailboxSession);
         } catch (MailboxException e) {
-            session.getLog().info("Unable to remove listener " + converter + " from mailbox while closing it", e);
-        }
-        try {
-            mailboxManager.removeListener(path, events, mailboxSession);
-        } catch (MailboxException e) {
-            session.getLog().info("Unable to remove listener " + events + " from mailbox while closing it", e);
+            session.getLog().info("Unable to remove listener " + this + " from mailbox while closing it", e);
 
         }
 
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.apache.james.imap.api.process.SelectedMailbox#isSizeChanged()
-     */
-    public boolean isSizeChanged() {
-        return events.isSizeChanged();
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.apache.james.imap.api.process.SelectedMailbox#msn(long)
-     */
-    public int msn(long uid) {
-        return converter.getMsn(uid);
-    }
-
-    /**
-     * Is the mailbox deleted?
-     * 
-     * @return true when the mailbox has been deleted by another session, false
-     *         otherwise
-     */
-    public boolean isDeletedByOtherSession() {
-        return events.isDeletedByOtherSession();
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.apache.james.imap.api.process.SelectedMailbox#uid(int)
-     */
-    public long uid(int msn) {
-        return converter.getUid(msn);
-    }
-
+   
     /*
      * (non-Javadoc)
      * 
      * @see org.apache.james.imap.api.process.SelectedMailbox#removeRecent(long)
      */
-    public boolean removeRecent(long uid) {
+    @Override
+    public synchronized  boolean removeRecent(long uid) {
         final boolean result = recentUids.remove(uid);
         if (result) {
             recentUidRemoved = true;
@@ -177,7 +262,7 @@ public class SelectedMailboxImpl implements SelectedMailbox {
      * 
      * @see org.apache.james.imap.api.process.SelectedMailbox#addRecent(long)
      */
-    public boolean addRecent(long uid) {
+    public synchronized boolean addRecent(long uid) {
         return recentUids.add(uid);
     }
 
@@ -186,7 +271,8 @@ public class SelectedMailboxImpl implements SelectedMailbox {
      * 
      * @see org.apache.james.imap.api.process.SelectedMailbox#getRecent()
      */
-    public Collection<Long> getRecent() {
+    @Override
+    public synchronized Collection<Long> getRecent() {
         checkExpungedRecents();
         return new ArrayList<Long>(recentUids);
     }
@@ -196,13 +282,10 @@ public class SelectedMailboxImpl implements SelectedMailbox {
      * 
      * @see org.apache.james.imap.api.process.SelectedMailbox#recentCount()
      */
-    public int recentCount() {
+    @Override
+    public synchronized int recentCount() {
         checkExpungedRecents();
         return recentUids.size();
-    }
-
-    public long existsCount() {
-        return converter.getCount();
     }
 
     /*
@@ -210,12 +293,13 @@ public class SelectedMailboxImpl implements SelectedMailbox {
      * 
      * @see org.apache.james.imap.api.process.SelectedMailbox#getPath()
      */
-    public MailboxPath getPath() {
-        return events.getMailboxPath();
+    @Override
+    public synchronized MailboxPath getPath() {
+        return path;
     }
 
     private void checkExpungedRecents() {
-        for (final long uid : events.expungedUids()) {
+        for (final long uid : expungedUids()) {
             removeRecent(uid);
         }
     }
@@ -225,7 +309,8 @@ public class SelectedMailboxImpl implements SelectedMailbox {
      * 
      * @see org.apache.james.imap.api.process.SelectedMailbox#isRecent(long)
      */
-    public boolean isRecent(long uid) {
+    @Override
+    public synchronized boolean isRecent(long uid) {
         return recentUids.contains(uid);
     }
 
@@ -235,7 +320,8 @@ public class SelectedMailboxImpl implements SelectedMailbox {
      * @see
      * org.apache.james.imap.api.process.SelectedMailbox#isRecentUidRemoved()
      */
-    public boolean isRecentUidRemoved() {
+    @Override
+    public synchronized boolean isRecentUidRemoved() {
         return recentUidRemoved;
     }
 
@@ -245,7 +331,8 @@ public class SelectedMailboxImpl implements SelectedMailbox {
      * @see
      * org.apache.james.imap.api.process.SelectedMailbox#resetRecentUidRemoved()
      */
-    public void resetRecentUidRemoved() {
+    @Override
+    public synchronized void resetRecentUidRemoved() {
         recentUidRemoved = false;
     }
 
@@ -254,17 +341,11 @@ public class SelectedMailboxImpl implements SelectedMailbox {
      * 
      * @see org.apache.james.imap.api.process.SelectedMailbox#resetEvents()
      */
-    public void resetEvents() {
-        events.reset();
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.apache.james.imap.api.process.SelectedMailbox#expungedUids()
-     */
-    public Collection<Long> expungedUids() {
-        return events.expungedUids();
+    public synchronized void resetEvents() {
+        sizeChanged = false;
+        flagUpdateUids.clear();
+        isDeletedByOtherSession = false;
+        applicableFlagsChanged = false;
     }
 
     /*
@@ -273,68 +354,242 @@ public class SelectedMailboxImpl implements SelectedMailbox {
      * @see
      * org.apache.james.imap.api.process.SelectedMailbox#remove(java.lang.Long)
      */
-    public int remove(Long uid) {
+    @Override
+    public synchronized  int remove(Long uid) {
         final int result = msn(uid);
-        converter.expunge(uid);
+        expunge(uid);
         return result;
     }
 
-    /*
-     * (non-Javadoc)
+
+
+    private boolean interestingFlags(UpdatedFlags updated) {
+        boolean result;
+        final Iterator<Flags.Flag> it = updated.systemFlagIterator();
+        if (it.hasNext()) {
+            final Flags.Flag flag = it.next();
+            if (flag.equals(uninterestingFlag)) {
+                result = false;
+            } else {
+                result = true;
+            }
+        } else {
+            result = false;
+        }
+        // See if we need to check the user flags
+        if (result == false) {
+            final Iterator<String> userIt = updated.userFlagIterator();
+            result = userIt.hasNext();
+        }
+        return result;
+    }
+
+    
+    @Override
+    public synchronized void resetExpungedUids() {
+        expungedUids.clear();
+    }
+
+    /**
+     * Are flag changes from current session ignored?
      * 
-     * @see org.apache.james.imap.api.process.SelectedMailbox#flagUpdateUids()
+     * @return true if any flag changes from current session will be ignored,
+     *         false otherwise
      */
-    public Collection<Long> flagUpdateUids() {
-        return events.flagUpdateUids();
+    public synchronized final boolean isSilentFlagChanges() {
+        return silentFlagChanges;
     }
 
-    /*
-     * (non-Javadoc)
+    /**
+     * Sets whether changes from current session should be ignored.
      * 
-     * @see org.apache.james.imap.api.process.SelectedMailbox#getFirstUid()
+     * @param silentFlagChanges
+     *            true if any flag changes from current session should be
+     *            ignored, false otherwise
      */
-    public long getFirstUid() {
-        return converter.getFirstUid();
+    public synchronized final void setSilentFlagChanges(boolean silentFlagChanges) {
+        this.silentFlagChanges = silentFlagChanges;
     }
 
-    /*
-     * (non-Javadoc)
+    /**
+     * Has the size of the mailbox changed?
      * 
-     * @see org.apache.james.imap.api.process.SelectedMailbox#getLastUid()
+     * @return true if new messages have been added, false otherwise
      */
-    public long getLastUid() {
-        return converter.getLastUid();
+    @Override
+    public synchronized final boolean isSizeChanged() {
+        return sizeChanged;
     }
 
-    /*
-     * (non-Javadoc)
-     * @see org.apache.james.imap.api.process.SelectedMailbox#resetExpungedUids()
+    /**
+     * Is the mailbox deleted?
+     * 
+     * @return true when the mailbox has been deleted by another session, false
+     *         otherwise
      */
-    public void resetExpungedUids() {
-        events.resetExpungedUids();
+    @Override
+    public synchronized final boolean isDeletedByOtherSession() {
+        return isDeletedByOtherSession;
     }
 
-    /*
-     * (non-Javadoc)
-     * @see org.apache.james.imap.api.process.SelectedMailbox#getApplicableFlags()
+    /**
+     * Return a unmodifiable {@link Collection} of uids which have updated flags
+     * 
+     * @return uids
      */
-    public Flags getApplicableFlags() {
-        return events.getApplicableFlags();
+    @Override
+    public synchronized Collection<Long> flagUpdateUids() {
+        // copy the TreeSet to fix possible
+        // java.util.ConcurrentModificationException
+        // See IMAP-278
+        return Collections.unmodifiableSet(new TreeSet<Long>(flagUpdateUids));
+        
     }
 
-    /*
-     * (non-Javadoc)
-     * @see org.apache.james.imap.api.process.SelectedMailbox#hasNewApplicableFlags()
+    /**
+     * Return a unmodifiable {@link Collection} of uids that where expunged
+     * 
+     * @return uids
      */
-    public boolean hasNewApplicableFlags() {
-        return events.hasNewApplicableFlags();
+    @Override
+    public synchronized Collection<Long> expungedUids() {
+        // copy the TreeSet to fix possible
+        // java.util.ConcurrentModificationException
+        // See IMAP-278
+        return Collections.unmodifiableSet(new TreeSet<Long>(expungedUids));
+        
+    }
+
+
+
+
+    @Override
+    public synchronized Flags getApplicableFlags() {
+        return applicableFlags;
+    }
+
+    @Override
+    public synchronized boolean hasNewApplicableFlags() {
+        return applicableFlagsChanged;
+    }
+
+    @Override
+    public synchronized void resetNewApplicableFlags() {
+        applicableFlagsChanged = false;
+    }
+
+    @Override
+    public synchronized void event(Event event) {
+
+        // Check if the event was for the mailbox we are observing
+        if (event.getMailboxPath().equals(getPath())) {
+            final long eventSessionId = event.getSession().getSessionId();
+            if (event instanceof MessageEvent) {
+                final MessageEvent messageEvent = (MessageEvent) event;
+                // final List<Long> uids = messageEvent.getUids();
+                if (messageEvent instanceof Added) {
+                    sizeChanged = true;
+                    final List<Long> uids = ((Added) event).getUids();
+                    for (int i = 0; i < uids.size(); i++) {
+                        add(uids.get(i));
+                    }
+                } else if (messageEvent instanceof FlagsUpdated) {
+                    FlagsUpdated updated = (FlagsUpdated) messageEvent;
+                    List<UpdatedFlags> uFlags = updated.getUpdatedFlags();
+                    if (sessionId != eventSessionId || !silentFlagChanges) {
+                        for (int i = 0; i < uFlags.size(); i++) {
+                            UpdatedFlags u = uFlags.get(i);
+                            if (interestingFlags(u)) {
+                                flagUpdateUids.add(u.getUid());
+                                
+                            }
+                        }
+                    }
+
+                    SelectedMailbox sm = session.getSelected();
+                    if (sm != null) {
+                        // We need to add the UID of the message to the recent
+                        // list if we receive an flag update which contains a
+                        // \RECENT flag
+                        // See IMAP-287
+                        List<UpdatedFlags> uflags = updated.getUpdatedFlags();
+                        for (int i = 0; i < uflags.size(); i++) {
+                            UpdatedFlags u = uflags.get(i);
+                            Iterator<Flag> flags = u.systemFlagIterator();
+
+                            while (flags.hasNext()) {
+                                if (Flag.RECENT.equals(flags.next())) {
+                                    MailboxPath path = sm.getPath();
+                                    if (path != null && path.equals(event.getMailboxPath())) {
+                                        sm.addRecent(u.getUid());
+                                    }
+                                }
+                            }
+                          
+
+                        }
+                    }
+                    
+                    int size = applicableFlags.getUserFlags().length;
+                    FlagsUpdated updatedF = (FlagsUpdated) messageEvent;
+                    List<UpdatedFlags> flags = updatedF.getUpdatedFlags();
+
+                    for (int i = 0; i < flags.size(); i++) {
+                        applicableFlags.add(flags.get(i).getNewFlags());
+
+                    }
+
+                    // \RECENT is not a applicable flag in imap so remove it
+                    // from the list
+                    applicableFlags.remove(Flags.Flag.RECENT);
+
+                    if (size < applicableFlags.getUserFlags().length) {
+                        applicableFlagsChanged = true;
+                    }
+                    
+                    
+                } else if (messageEvent instanceof Expunged) {
+                    expungedUids.addAll(messageEvent.getUids());
+                    
+                }
+            } else if (event instanceof MailboxDeletion) {
+                if (eventSessionId != sessionId) {
+                    isDeletedByOtherSession = true;
+                }
+            } else if (event instanceof MailboxRenamed) {
+                final MailboxRenamed mailboxRenamed = (MailboxRenamed) event;
+                path = mailboxRenamed.getNewPath();
+            }
+        }
+    }
+
+    @Override
+    public synchronized int msn(long uid) {
+        Integer msn = uidToMsn.get(uid);
+        if (msn != null) {
+            return msn.intValue();
+        } else {
+            return SelectedMailbox.NO_SUCH_MESSAGE;
+        }
+    }
+
+    @Override
+    public synchronized long uid(int msn) {
+        if (msn == -1) {
+            return SelectedMailbox.NO_SUCH_MESSAGE;
+        }
+        Long uid = msnToUid.get(msn);
+        if (uid != null) {
+            return uid.longValue();
+        } else {
+            return SelectedMailbox.NO_SUCH_MESSAGE;
+        }
+    }
+
+    @Override
+    public synchronized long existsCount() {
+        return uidToMsn.size();
     }
     
-    /*
-     * (non-Javadoc)
-     * @see org.apache.james.imap.api.process.SelectedMailbox#resetNewApplicableFlags()
-     */
-    public void resetNewApplicableFlags() {
-        events.resetNewApplicableFlags();
-    }
+
 }
