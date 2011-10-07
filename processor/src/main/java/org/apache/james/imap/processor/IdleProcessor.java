@@ -74,9 +74,7 @@ public class IdleProcessor extends AbstractMailboxProcessor<IdleRequest> impleme
     protected void doProcess(final IdleRequest message, final ImapSession session, final String tag, final ImapCommand command, final Responder responder) {
 
         try {
-            responder.respond(new ContinuationResponse(HumanReadableText.IDLING));
-            unsolicitedResponses(session, responder, false);
-
+          
             final MailboxManager mailboxManager = getMailboxManager();
             final MailboxSession mailboxSession = ImapSessionUtils.getMailboxSession(session);
             final SelectedMailbox sm = session.getSelected();
@@ -148,6 +146,12 @@ public class IdleProcessor extends AbstractMailboxProcessor<IdleRequest> impleme
                     }
                 }, heartbeatInterval, heartbeatIntervalUnit);
             }
+            
+            // Write the response after the listener was add
+            // IMAP-341
+            responder.respond(new ContinuationResponse(HumanReadableText.IDLING));
+            unsolicitedResponses(session, responder, false);
+
 
         } catch (MailboxException e) {
             session.getLog().debug("Idle failed", e);
