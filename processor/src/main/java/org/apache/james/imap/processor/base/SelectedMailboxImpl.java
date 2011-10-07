@@ -44,13 +44,6 @@ import org.apache.james.mailbox.MessageRange;
 import org.apache.james.mailbox.MessageResult;
 import org.apache.james.mailbox.MessageResultIterator;
 import org.apache.james.mailbox.UpdatedFlags;
-import org.apache.james.mailbox.MailboxListener.Added;
-import org.apache.james.mailbox.MailboxListener.Event;
-import org.apache.james.mailbox.MailboxListener.Expunged;
-import org.apache.james.mailbox.MailboxListener.FlagsUpdated;
-import org.apache.james.mailbox.MailboxListener.MailboxDeletion;
-import org.apache.james.mailbox.MailboxListener.MailboxRenamed;
-import org.apache.james.mailbox.MailboxListener.MessageEvent;
 
 /**
  * Default implementation of {@link SelectedMailbox}
@@ -497,11 +490,14 @@ public class SelectedMailboxImpl implements SelectedMailbox, MailboxListener{
                     FlagsUpdated updated = (FlagsUpdated) messageEvent;
                     List<UpdatedFlags> uFlags = updated.getUpdatedFlags();
                     if (sessionId != eventSessionId || !silentFlagChanges) {
+
                         for (int i = 0; i < uFlags.size(); i++) {
                             UpdatedFlags u = uFlags.get(i);
+
                             if (interestingFlags(u)) {
+
                                 flagUpdateUids.add(u.getUid());
-                                
+
                             }
                         }
                     }
