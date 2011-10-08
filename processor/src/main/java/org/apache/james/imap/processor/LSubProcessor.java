@@ -124,12 +124,8 @@ public class LSubProcessor extends AbstractSubscriptionProcessor<LsubRequest> {
             }
 
             okComplete(command, tag, responder);
-
-        } catch (SubscriptionException e) {
-            session.getLog().debug("LSub failed", e);
-            no(command, tag, responder, HumanReadableText.GENERIC_LSUB_FAILURE);
         } catch (MailboxException e) {
-            session.getLog().debug("LSub failed", e);
+            session.getLog().info("LSub failed for reference " + referenceName + " and pattern " + mailboxPattern, e);
             final HumanReadableText displayTextKey = HumanReadableText.GENERIC_LSUB_FAILURE;
             no(command, tag, responder, displayTextKey);
         }

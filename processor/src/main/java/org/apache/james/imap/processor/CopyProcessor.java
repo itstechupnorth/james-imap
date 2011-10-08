@@ -100,10 +100,10 @@ public class CopyProcessor extends AbstractMailboxProcessor<CopyRequest> {
                 okComplete(command, tag, ResponseCode.copyUid(uidValidity, idSet, resultUids), responder);
             }
         } catch (MessageRangeException e) {
-            session.getLog().debug("Copy failed", e);
+            session.getLog().debug("Copy failed from mailbox " + currentMailbox.getPath() + " to " + targetMailbox + " for invalid sequence-set " + idSet.toString(), e);
             taggedBad(command, tag, responder, HumanReadableText.INVALID_MESSAGESET);
         } catch (MailboxException e) {
-            session.getLog().debug("Copy failed", e);
+            session.getLog().info("Copy failed from mailbox " + currentMailbox.getPath() + " to " + targetMailbox + " for sequence-set " + idSet.toString(), e);
             no(command, tag, responder, HumanReadableText.GENERIC_FAILURE_DURING_PROCESSING);
         }
     }

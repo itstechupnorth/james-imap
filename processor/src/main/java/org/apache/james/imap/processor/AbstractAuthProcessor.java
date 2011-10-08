@@ -90,7 +90,7 @@ public abstract class AbstractAuthProcessor<M extends ImapRequest> extends Abstr
                 }
             }
         } catch (MailboxException e) {
-            session.getLog().debug("Login failed", e);
+            session.getLog().info("Login failed", e);
             no(command, tag, responder, HumanReadableText.GENERIC_FAILURE_DURING_PROCESSING);
         }
     }

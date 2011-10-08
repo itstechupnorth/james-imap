@@ -212,10 +212,10 @@ abstract public class AbstractMailboxProcessor<M extends ImapRequest> extends Ab
             
             final Collection<Long> flagUpdateUids = selected.flagUpdateUids();
             if (!flagUpdateUids.isEmpty()) {
-            	Iterator<MessageRange> ranges = MessageRange.toRanges(flagUpdateUids).iterator();
-            	while(ranges.hasNext()) {
-            		addFlagsResponses(session, selected, responder, useUid, ranges.next(), mailbox, mailboxSession);
-            	}
+                Iterator<MessageRange> ranges = MessageRange.toRanges(flagUpdateUids).iterator();
+                while(ranges.hasNext()) {
+                    addFlagsResponses(session, selected, responder, useUid, ranges.next(), mailbox, mailboxSession);
+                }
 
             }
         } catch (MailboxException e) {

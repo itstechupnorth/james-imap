@@ -25,8 +25,6 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
-import javax.mail.Flags;
-
 import org.apache.james.imap.api.ImapCommand;
 import org.apache.james.imap.api.ImapConstants;
 import org.apache.james.imap.api.ImapMessage;
@@ -43,7 +41,6 @@ import org.apache.james.imap.api.process.SelectedMailbox;
 import org.apache.james.imap.message.request.AbstractMailboxSelectionRequest;
 import org.apache.james.imap.message.response.ExistsResponse;
 import org.apache.james.imap.message.response.RecentResponse;
-import org.apache.james.imap.processor.base.FetchGroupImpl;
 import org.apache.james.imap.processor.base.SelectedMailboxImpl;
 import org.apache.james.mailbox.MailboxException;
 import org.apache.james.mailbox.MailboxManager;
@@ -51,13 +48,11 @@ import org.apache.james.mailbox.MailboxNotFoundException;
 import org.apache.james.mailbox.MailboxPath;
 import org.apache.james.mailbox.MailboxSession;
 import org.apache.james.mailbox.MessageManager;
-import org.apache.james.mailbox.MessageManager.MetaData.FetchGroup;
-import org.apache.james.mailbox.MessageRangeException;
-import org.apache.james.mailbox.MessageResultIterator;
-import org.apache.james.mailbox.SearchQuery;
 import org.apache.james.mailbox.MessageManager.MetaData;
+import org.apache.james.mailbox.MessageManager.MetaData.FetchGroup;
 import org.apache.james.mailbox.MessageRange;
-import org.apache.james.mailbox.MessageResult;
+import org.apache.james.mailbox.MessageRangeException;
+import org.apache.james.mailbox.SearchQuery;
 
 abstract class AbstractSelectionProcessor<M extends AbstractMailboxSelectionRequest> extends AbstractMailboxProcessor<M> implements PermitEnableCapabilityProcessor {
 
@@ -93,10 +88,10 @@ abstract class AbstractSelectionProcessor<M extends AbstractMailboxSelectionRequ
            
             
         } catch (MailboxNotFoundException e) {
-            session.getLog().debug("Select failed", e);
+            session.getLog().debug("Select failed as mailbox does not exist " + mailboxName, e);
             responder.respond(statusResponseFactory.taggedNo(tag, command, HumanReadableText.FAILURE_NO_SUCH_MAILBOX));
         } catch (MailboxException e) {
-            session.getLog().debug("Select failed", e);
+            session.getLog().info("Select failed for mailbox " + mailboxName , e);
             no(command, tag, responder, HumanReadableText.SELECT);
         } 
     }

@@ -154,7 +154,7 @@ public class IdleProcessor extends AbstractMailboxProcessor<IdleRequest> impleme
 
 
         } catch (MailboxException e) {
-            session.getLog().debug("Idle failed", e);
+            session.getLog().info("Enable idle for " + session.getSelected().getPath() + " failed", e);
             // TODO: What should we do here?
             no(command, tag, responder, HumanReadableText.GENERIC_FAILURE_DURING_PROCESSING);
         }

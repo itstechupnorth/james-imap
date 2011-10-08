@@ -128,11 +128,11 @@ public class FetchProcessor extends AbstractMailboxProcessor<FetchRequest> {
             unsolicitedResponses(session, responder, omitExpunged, useUids);
             okComplete(command, tag, responder);
         } catch (MessageRangeException e) {
-            session.getLog().debug("Fetch failed", e);
+            session.getLog().debug("Fetch failed for mailbox " + session.getSelected().getPath() + " because of invalid sequence-set " + idSet.toString(), e);
 
             taggedBad(command, tag, responder, HumanReadableText.INVALID_MESSAGESET);
         } catch (MailboxException e) {
-            session.getLog().debug("Fetch failed", e);
+            session.getLog().info("Fetch failed for mailbox " + session.getSelected().getPath() + " and sequence-set " + idSet.toString(), e);
             no(command, tag, responder, HumanReadableText.SEARCH_FAILED);
         }
     }

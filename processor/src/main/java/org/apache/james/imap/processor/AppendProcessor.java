@@ -66,9 +66,10 @@ public class AppendProcessor extends AbstractMailboxProcessor<AppendRequest> {
         final InputStream messageIn = request.getMessage();
         final Date datetime = request.getDatetime();
         final Flags flags = request.getFlags();
+        final MailboxPath mailboxPath = buildFullPath(session, mailboxName);
+
         try {
 
-            final MailboxPath mailboxPath = buildFullPath(session, mailboxName);
             final MailboxManager mailboxManager = getMailboxManager();
             final MessageManager mailbox = mailboxManager.getMailbox(mailboxPath, ImapSessionUtils.getMailboxSession(session));
             appendToMailbox(messageIn, datetime, flags, session, tag, command, mailbox, responder, mailboxPath);
@@ -76,7 +77,7 @@ public class AppendProcessor extends AbstractMailboxProcessor<AppendRequest> {
             // consume message on exception
             consume(messageIn);
 
-            session.getLog().debug("Append failed", e);
+            session.getLog().debug("Append failed for mailbox " + mailboxPath, e);
             
             // Indicates that the mailbox does not exist
             // So TRY CREATE
@@ -86,7 +87,7 @@ public class AppendProcessor extends AbstractMailboxProcessor<AppendRequest> {
             // consume message on exception
             consume(messageIn);
             
-            session.getLog().debug("Append failed", e);
+            session.getLog().info("Append failed for mailbox " + mailboxPath, e);
             
             // Some other issue
             no(command, tag, responder, HumanReadableText.GENERIC_FAILURE_DURING_PROCESSING);
@@ -156,7 +157,7 @@ public class AppendProcessor extends AbstractMailboxProcessor<AppendRequest> {
              * e.getKey());
              */
         } catch (MailboxException e) {
-            session.getLog().debug("Unable to append message", e);
+            session.getLog().info("Unable to append message to mailbox " + mailboxPath, e);
 
             // Some other issue
             no(command, tag, responder, HumanReadableText.SAVE_FAILED);
