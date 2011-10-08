@@ -229,8 +229,9 @@ public class SelectedMailboxImpl implements SelectedMailbox, MailboxListener{
         try {
             mailboxManager.removeListener(path, this, mailboxSession);
         } catch (MailboxException e) {
-            session.getLog().info("Unable to remove listener " + this + " from mailbox while closing it", e);
-
+            if (session.getLog().isInfoEnabled()) {
+                session.getLog().info("Unable to remove listener " + this + " from mailbox while closing it", e);
+            }
         }
 
     }

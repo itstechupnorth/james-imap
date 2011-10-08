@@ -44,7 +44,9 @@ public class EndImapEncoder implements ImapEncoder {
      */
     public void encode(ImapMessage message, ImapResponseComposer composer, ImapSession session) throws IOException {
         final Logger logger = session.getLog();
-        logger.warn("Unknown message");
+        if (logger.isWarnEnabled()) {
+            logger.warn("Unknown message " + message);
+        }
         if (logger.isDebugEnabled()) {
             logger.debug("Chain end reached for " + message);
         }

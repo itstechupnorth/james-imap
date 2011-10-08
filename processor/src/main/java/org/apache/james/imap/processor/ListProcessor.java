@@ -174,7 +174,9 @@ public class ListProcessor extends AbstractMailboxProcessor<ListRequest> {
 
             okComplete(command, tag, responder);
         } catch (MailboxException e) {
-            session.getLog().info("List failed", e);
+            if (session.getLog().isInfoEnabled()) {
+                session.getLog().info("List failed", e);
+            }
             no(command, tag, responder, HumanReadableText.SEARCH_FAILED);
         }
     }

@@ -72,7 +72,9 @@ public class DefaultImapDecoder implements ImapDecoder {
             final String tag = request.tag();
             message = decodeCommandTagged(request, tag, session);
         } catch (DecodingException e) {
-            logger.debug("Cannot parse tag", e);
+            if (logger.isDebugEnabled()) {
+                logger.debug("Cannot parse tag", e);
+            }
             message = unknownCommand(null, session);
         }
         return message;
@@ -87,7 +89,9 @@ public class DefaultImapDecoder implements ImapDecoder {
             final String commandName = request.atom();
             message = decodeCommandNamed(request, tag, commandName, session);
         } catch (DecodingException e) {
-            session.getLog().debug("Error during initial request parsing", e);
+            if (session.getLog().isDebugEnabled()) {
+                session.getLog().debug("Error during initial request parsing", e);
+            }
             message = unknownCommand(tag, session);
         }
         return message;
@@ -124,7 +128,9 @@ public class DefaultImapDecoder implements ImapDecoder {
         }
         final ImapCommandParser command = imapCommands.getParser(commandName);
         if (command == null) {
-            session.getLog().info("Missing command implementation.");
+            if (session.getLog().isInfoEnabled()) {
+                session.getLog().info("Missing command implementation for commmand " + commandName);
+            }
             message = unknownCommand(tag, session);
         } else {
             message = command.parse(request, tag, session);

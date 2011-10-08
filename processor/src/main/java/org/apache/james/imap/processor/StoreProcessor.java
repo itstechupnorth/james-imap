@@ -193,10 +193,14 @@ public class StoreProcessor extends AbstractMailboxProcessor<StoreRequest> {
                
             }
         } catch (MessageRangeException e) {
-            session.getLog().debug("Store failed for mailbox " + session.getSelected().getPath() + " because of an invalid sequence-set " + idSet.toString(), e); 
+            if (session.getLog().isDebugEnabled()) {
+                session.getLog().debug("Store failed for mailbox " + session.getSelected().getPath() + " because of an invalid sequence-set " + idSet.toString(), e); 
+            }
             taggedBad(imapCommand, tag, responder, HumanReadableText.INVALID_MESSAGESET);
         } catch (MailboxException e) {
-            session.getLog().info("Store failed for mailbox " + session.getSelected().getPath(), e);
+            if (session.getLog().isInfoEnabled()) {
+                session.getLog().info("Store failed for mailbox " + session.getSelected().getPath(), e);
+            }
             no(imapCommand, tag, responder, HumanReadableText.SAVE_FAILED);
         }
     }

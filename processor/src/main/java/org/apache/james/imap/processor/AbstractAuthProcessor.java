@@ -58,13 +58,17 @@ public abstract class AbstractAuthProcessor<M extends ImapRequest> extends Abstr
                     session.setAttribute(ImapSessionUtils.MAILBOX_SESSION_ATTRIBUTE_SESSION_KEY, mailboxSession);
                     final MailboxPath inboxPath = buildFullPath(session, MailboxConstants.INBOX);
                     if (mailboxManager.mailboxExists(inboxPath, mailboxSession)) {
-                        session.getLog().debug("INBOX exists. No need to create it.");
+                        if (session.getLog().isDebugEnabled()) {
+                            session.getLog().debug("INBOX exists. No need to create it.");
+                        }
                     } else {
                         try {
                             session.getLog().debug("INBOX does not exist. Creating it.");
                             mailboxManager.createMailbox(inboxPath, mailboxSession);
                         } catch (MailboxExistsException e) {
-                            session.getLog().debug("Mailbox created by concurrent call. Safe to ignore this exception.");
+                            if (session.getLog().isDebugEnabled()) {
+                                session.getLog().debug("Mailbox created by concurrent call. Safe to ignore this exception.");
+                            }
                         }
                     }
                     okComplete(command, tag, responder);
@@ -84,13 +88,17 @@ public abstract class AbstractAuthProcessor<M extends ImapRequest> extends Abstr
                     session.setAttribute(ATTRIBUTE_NUMBER_OF_FAILURES, failures);
                     no(command, tag, responder, failed);
                 } else {
-                    session.getLog().info("Too many authentication failures. Closing connection.");
+                    if (session.getLog().isInfoEnabled()) {
+                        session.getLog().info("Too many authentication failures. Closing connection.");
+                    }
                     bye(responder, HumanReadableText.TOO_MANY_FAILURES);
                     session.logout();
                 }
             }
         } catch (MailboxException e) {
-            session.getLog().info("Login failed", e);
+            if (session.getLog().isInfoEnabled()) {
+                session.getLog().info("Login failed", e);
+            }
             no(command, tag, responder, HumanReadableText.GENERIC_FAILURE_DURING_PROCESSING);
         }
     }

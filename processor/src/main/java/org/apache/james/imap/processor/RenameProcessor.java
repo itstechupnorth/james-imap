@@ -64,13 +64,19 @@ public class RenameProcessor extends AbstractMailboxProcessor<RenameRequest> {
             okComplete(command, tag, responder);
             unsolicitedResponses(session, responder, false);
         } catch (MailboxExistsException e) {
-            session.getLog().debug("Rename from " + existingPath + " to " + newPath + " failed because the target mailbox exists", e);
+            if (session.getLog().isDebugEnabled()) {
+                session.getLog().debug("Rename from " + existingPath + " to " + newPath + " failed because the target mailbox exists", e);
+            }
             no(command, tag, responder, HumanReadableText.FAILURE_MAILBOX_EXISTS);
         } catch (MailboxNotFoundException e) {
-            session.getLog().debug("Rename from " + existingPath + " to " + newPath + " failed because the source mailbox not exists", e);
+            if (session.getLog().isDebugEnabled()) {
+                session.getLog().debug("Rename from " + existingPath + " to " + newPath + " failed because the source mailbox not exists", e);
+            }
             no(command, tag, responder, HumanReadableText.MAILBOX_NOT_FOUND);
         } catch (MailboxException e) {
-            session.getLog().info("Rename from " + existingPath + " to " + newPath + " failed", e);
+            if (session.getLog().isInfoEnabled()) {
+                session.getLog().info("Rename from " + existingPath + " to " + newPath + " failed", e);
+            }
             no(command, tag, responder, HumanReadableText.GENERIC_FAILURE_DURING_PROCESSING);
         }
     }

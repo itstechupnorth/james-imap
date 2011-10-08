@@ -129,7 +129,9 @@ abstract public class AbstractMailboxProcessor<M extends ImapRequest> extends Ab
     protected void unsolicitedResponses(final ImapSession session, final ImapProcessor.Responder responder, boolean omitExpunged, boolean useUid) {
         final SelectedMailbox selected = session.getSelected();
         if (selected == null) {
-            session.getLog().debug("No mailbox selected");
+            if (session.getLog().isDebugEnabled()) {
+                session.getLog().debug("No mailbox selected");
+            }
         } else {
             unsolicitedResponses(session, responder, selected, omitExpunged, useUid);
         }

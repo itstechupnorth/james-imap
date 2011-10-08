@@ -55,10 +55,14 @@ public class CreateProcessor extends AbstractMailboxProcessor<CreateRequest> {
             unsolicitedResponses(session, responder, false);
             okComplete(command, tag, responder);
         } catch (MailboxExistsException e) {
-            session.getLog().debug("Create failed for mailbox " + mailboxPath + " as it already exists", e);
+            if (session.getLog().isDebugEnabled()) {
+                session.getLog().debug("Create failed for mailbox " + mailboxPath + " as it already exists", e);
+            }
             no(command, tag, responder, HumanReadableText.MAILBOX_EXISTS);
         } catch (MailboxException e) {
-            session.getLog().info("Create failed for mailbox " + mailboxPath, e);
+            if (session.getLog().isInfoEnabled()) {
+                session.getLog().info("Create failed for mailbox " + mailboxPath, e);
+            }
             no(command, tag, responder, HumanReadableText.GENERIC_FAILURE_DURING_PROCESSING);
         }
     }

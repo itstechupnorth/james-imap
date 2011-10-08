@@ -56,7 +56,9 @@ public class SubscribeProcessor extends AbstractSubscriptionProcessor<SubscribeR
             okComplete(command, tag, responder);
 
         } catch (SubscriptionException e) {
-            session.getLog().info("Subscribe failed for mailbox " + mailboxName, e);
+            if (session.getLog().isInfoEnabled()) {
+                session.getLog().info("Subscribe failed for mailbox " + mailboxName, e);
+            }
             unsolicitedResponses(session, responder, false);
             no(command, tag, responder, HumanReadableText.GENERIC_SUBSCRIPTION_FAILURE);
         }

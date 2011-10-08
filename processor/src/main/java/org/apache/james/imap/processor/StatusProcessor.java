@@ -59,7 +59,7 @@ public class StatusProcessor extends AbstractMailboxProcessor<StatusRequest> {
 
         try {
             if (logger != null && logger.isDebugEnabled()) {
-                logger.debug("Status called on mailbox named " + mailboxPath + " (" + mailboxPath + ")");
+                logger.debug("Status called on mailbox named " + mailboxPath);
             }
 
             final MailboxManager mailboxManager = getMailboxManager();
@@ -89,7 +89,9 @@ public class StatusProcessor extends AbstractMailboxProcessor<StatusRequest> {
             okComplete(command, tag, responder);
 
         } catch (MailboxException e) {
-            session.getLog().info("Status failed for mailbox " + mailboxPath, e);
+            if (session.getLog().isInfoEnabled()) {
+                session.getLog().info("Status failed for mailbox " + mailboxPath, e);
+            }
             no(command, tag, responder, HumanReadableText.SEARCH_FAILED);
         }
     }

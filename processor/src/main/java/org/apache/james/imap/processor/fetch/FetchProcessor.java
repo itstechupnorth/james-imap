@@ -128,11 +128,14 @@ public class FetchProcessor extends AbstractMailboxProcessor<FetchRequest> {
             unsolicitedResponses(session, responder, omitExpunged, useUids);
             okComplete(command, tag, responder);
         } catch (MessageRangeException e) {
-            session.getLog().debug("Fetch failed for mailbox " + session.getSelected().getPath() + " because of invalid sequence-set " + idSet.toString(), e);
-
+            if (session.getLog().isDebugEnabled()) {
+                session.getLog().debug("Fetch failed for mailbox " + session.getSelected().getPath() + " because of invalid sequence-set " + idSet.toString(), e);
+            }
             taggedBad(command, tag, responder, HumanReadableText.INVALID_MESSAGESET);
         } catch (MailboxException e) {
-            session.getLog().info("Fetch failed for mailbox " + session.getSelected().getPath() + " and sequence-set " + idSet.toString(), e);
+            if (session.getLog().isInfoEnabled()) {
+                session.getLog().info("Fetch failed for mailbox " + session.getSelected().getPath() + " and sequence-set " + idSet.toString(), e);
+            }
             no(command, tag, responder, HumanReadableText.SEARCH_FAILED);
         }
     }
@@ -166,7 +169,9 @@ public class FetchProcessor extends AbstractMailboxProcessor<FetchRequest> {
                 } catch (MessageRangeException e) {
                     // we can't for whatever reason find the message so
                     // just skip it and log it to debug
-                    session.getLog().debug("Unable to find message with uid " + result.getUid(), e);
+                    if (session.getLog().isDebugEnabled()) {
+                        session.getLog().debug("Unable to find message with uid " + result.getUid(), e);
+                    }
                 }
             }
             

@@ -53,7 +53,9 @@ public class SystemMessageProcessor extends AbstractChainedProcessor<SystemMessa
             }
         } catch (MailboxException e) {
             final Logger log = session.getLog();
-            log.debug("Cannot force logout", e);
+            if (log.isDebugEnabled()) {
+                log.debug("Cannot force logout", e);
+            }
         }
     }
 
@@ -68,7 +70,9 @@ public class SystemMessageProcessor extends AbstractChainedProcessor<SystemMessa
     private void forceLogout(ImapSession imapSession) throws MailboxException {
         final MailboxSession session = ImapSessionUtils.getMailboxSession(imapSession);
         if (session == null) {
-            imapSession.getLog().trace("No mailbox session so no force logout needed");
+            if (imapSession.getLog().isTraceEnabled()) {
+                imapSession.getLog().trace("No mailbox session so no force logout needed");
+            }
         } else {
             session.close();
             mailboxManager.logout(session, true);

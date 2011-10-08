@@ -157,8 +157,9 @@ public class AppendProcessor extends AbstractMailboxProcessor<AppendRequest> {
              * e.getKey());
              */
         } catch (MailboxException e) {
-            session.getLog().info("Unable to append message to mailbox " + mailboxPath, e);
-
+            if (session.getLog().isInfoEnabled()) {
+                session.getLog().info("Unable to append message to mailbox " + mailboxPath, e);
+            }
             // Some other issue
             no(command, tag, responder, HumanReadableText.SAVE_FAILED);
         }
