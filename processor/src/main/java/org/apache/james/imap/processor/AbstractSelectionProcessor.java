@@ -121,12 +121,31 @@ abstract class AbstractSelectionProcessor<M extends AbstractMailboxSelectionRequ
         
         final MessageManager.MetaData metaData = selectMailbox(fullMailboxPath, session);
         final SelectedMailbox selected = session.getSelected();
-
+        Long firstUnseen = metaData.getFirstUnseen();
+        
         flags(responder, selected);
         exists(responder, metaData);
         recent(responder, selected);
         uidValidity(responder, metaData);
-        unseen(responder, metaData, selected, ImapSessionUtils.getMailboxSession(session));
+        
+        
+        // try to write the UNSEEN message to the client and retry if we fail because of concurrent sessions.
+        // 
+        // See IMAP-345
+        int retryCount = 0;
+        while(unseen(responder, firstUnseen, selected, ImapSessionUtils.getMailboxSession(session)) == false) {
+            // if we not was able to get find the unseen within 5 retries we should just not send it
+            if (retryCount == 5) {
+                if (session.getLog().isInfoEnabled()) {
+                    session.getLog().info("Unable to uid for unseen message " + firstUnseen + " in mailbox " + selected.getPath());
+                }
+                break;
+            }
+            firstUnseen = selectMailbox(fullMailboxPath, session).getFirstUnseen();
+            retryCount++;
+            
+        }
+        
         permanentFlags(responder, metaData, selected);
         highestModSeq(responder, metaData, selected);
         uidNext(responder, metaData);
@@ -342,18 +361,23 @@ abstract class AbstractSelectionProcessor<M extends AbstractMailboxSelectionRequ
         responder.respond(taggedOk);
     }
 
-    private void unseen(Responder responder, MessageManager.MetaData metaData, final SelectedMailbox selected, MailboxSession session) throws MailboxException {
-        final Long firstUnseen = metaData.getFirstUnseen();
+    private boolean unseen(Responder responder, Long firstUnseen, final SelectedMailbox selected, MailboxSession session) throws MailboxException {
         if (firstUnseen != null) {
             final long unseenUid = firstUnseen;
             int msn = selected.msn(unseenUid);
 
-            if (msn == SelectedMailbox.NO_SUCH_MESSAGE)
-                throw new MailboxException("No message found with uid " + unseenUid + " in mailbox " + selected.getPath().getFullName(session.getPathDelimiter()));
+            if (msn == SelectedMailbox.NO_SUCH_MESSAGE) {
+                if (session.getLog().isDebugEnabled()) {
+                    session.getLog().debug("No message found with uid " + unseenUid + " in mailbox " + selected.getPath().getFullName(session.getPathDelimiter()));
+                }
+                return false;
+            } 
 
             final StatusResponse untaggedOk = statusResponseFactory.untaggedOk(HumanReadableText.unseen(msn), ResponseCode.unseen(msn));
             responder.respond(untaggedOk);
         }
+        return true;
+
 
     }
 
