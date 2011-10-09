@@ -195,12 +195,6 @@ public class SelectedMailboxImpl implements SelectedMailbox, MailboxListener{
 
     @Override
     public synchronized void deselect() {
-        uidToMsn.clear();
-        msnToUid.clear();
-        flagUpdateUids.clear();
-
-        expungedUids.clear();
-        recentUids.clear();
         MailboxSession mailboxSession = ImapSessionUtils.getMailboxSession(session);
 
         try {
@@ -210,6 +204,14 @@ public class SelectedMailboxImpl implements SelectedMailbox, MailboxListener{
                 session.getLog().info("Unable to remove listener " + this + " from mailbox while closing it", e);
             }
         }
+        
+        uidToMsn.clear();
+        msnToUid.clear();
+        flagUpdateUids.clear();
+
+        expungedUids.clear();
+        recentUids.clear();
+ 
 
     }
 
