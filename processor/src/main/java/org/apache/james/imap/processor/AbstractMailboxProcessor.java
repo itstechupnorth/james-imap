@@ -232,8 +232,18 @@ abstract public class AbstractMailboxProcessor<M extends ImapRequest> extends Ab
             MessageResult mr = it.next();
             final long uid = mr.getUid();
             int msn = selected.msn(uid);
-            if (msn == SelectedMailbox.NO_SUCH_MESSAGE)
-                throw new MailboxException("No message found with uid " + uid);
+            if (msn == SelectedMailbox.NO_SUCH_MESSAGE) {
+                if (session.getLog().isDebugEnabled()) {
+                    if(session.getLog().isDebugEnabled()) {
+                        session.getLog().debug("No message found with uid " + uid + " in the uid<->msn mapping for mailbox " + selected.getPath().getFullName(mailboxSession.getPathDelimiter()) +" , this may be because it was deleted by a concurrent session. So skip it..");
+                        
+                    }
+                    // skip this as it was not found in the mapping
+                    // 
+                    // See IMAP-346
+                    continue;
+                }
+            }
 
             boolean qresyncEnabled = EnableProcessor.getEnabledCapabilities(session).contains(ImapConstants.SUPPORTS_QRESYNC);
             boolean condstoreEnabled = EnableProcessor.getEnabledCapabilities(session).contains(ImapConstants.SUPPORTS_CONDSTORE);
