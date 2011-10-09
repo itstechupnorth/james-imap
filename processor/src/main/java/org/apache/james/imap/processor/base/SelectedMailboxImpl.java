@@ -50,15 +50,15 @@ import org.apache.james.mailbox.UpdatedFlags;
  */
 public class SelectedMailboxImpl implements SelectedMailbox, MailboxListener{
 
-    private final Set<Long> recentUids;
+    private final Set<Long> recentUids = new TreeSet<Long>();
 
-    private boolean recentUidRemoved;
+    private boolean recentUidRemoved = false;
 
     private MailboxManager mailboxManager;
 
     private MailboxPath path;
 
-    private ImapSession session;
+    private final ImapSession session;
     
 
     private final static Flags FLAGS = new Flags();
@@ -71,9 +71,9 @@ public class SelectedMailboxImpl implements SelectedMailbox, MailboxListener{
     }
     
     private final long sessionId;
-    private Set<Long> flagUpdateUids;
-    private Flags.Flag uninterestingFlag;
-    private Set<Long> expungedUids;
+    private final Set<Long> flagUpdateUids = new TreeSet<Long>();;
+    private final Flags.Flag uninterestingFlag = Flags.Flag.RECENT;
+    private final Set<Long> expungedUids = new TreeSet<Long>();
 
     private boolean isDeletedByOtherSession = false;
     private boolean sizeChanged = false;
@@ -81,33 +81,22 @@ public class SelectedMailboxImpl implements SelectedMailbox, MailboxListener{
     private Flags applicableFlags;
     private boolean applicableFlagsChanged;
     
-    private SortedMap<Integer, Long> msnToUid;
+    private final SortedMap<Integer, Long> msnToUid =new TreeMap<Integer, Long>();;
 
-    private SortedMap<Long, Integer> uidToMsn;
+    private final SortedMap<Long, Integer> uidToMsn = new TreeMap<Long, Integer>();
 
     private long highestUid = 0;
 
     private int highestMsn = 0;
     
     public SelectedMailboxImpl(final MailboxManager mailboxManager, final ImapSession session, final MailboxPath path) throws MailboxException {
-        recentUids = new TreeSet<Long>();
-        recentUidRemoved = false;
         this.session = session;
         this.sessionId = ImapSessionUtils.getMailboxSession(session).getSessionId();
-        flagUpdateUids = new TreeSet<Long>();
-        expungedUids = new TreeSet<Long>();
-        uninterestingFlag = Flags.Flag.RECENT;
         this.mailboxManager = mailboxManager;
         
         // Ignore events from our session
         setSilentFlagChanges(true);
         this.path = path;
-        this.session = session;
-
-        msnToUid = new TreeMap<Integer, Long>();
-        uidToMsn = new TreeMap<Long, Integer>();
-
-        
         init();
     }
  
@@ -210,7 +199,6 @@ public class SelectedMailboxImpl implements SelectedMailbox, MailboxListener{
         msnToUid.clear();
         flagUpdateUids.clear();
 
-        uninterestingFlag = null;
         expungedUids.clear();
         recentUids.clear();
         MailboxSession mailboxSession = ImapSessionUtils.getMailboxSession(session);
