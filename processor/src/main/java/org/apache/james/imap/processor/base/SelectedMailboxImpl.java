@@ -103,6 +103,10 @@ public class SelectedMailboxImpl implements SelectedMailbox, MailboxListener{
         setSilentFlagChanges(true);
         this.path = path;
         this.session = session;
+
+        msnToUid = new TreeMap<Integer, Long>();
+        uidToMsn = new TreeMap<Long, Integer>();
+
         
         init();
     }
@@ -112,28 +116,13 @@ public class SelectedMailboxImpl implements SelectedMailbox, MailboxListener{
         MailboxSession mailboxSession = ImapSessionUtils.getMailboxSession(session);
         
         mailboxManager.addListener(path, this, mailboxSession);
-        
 
-        int msn = 1;
-        msnToUid = new TreeMap<Integer, Long>();
-        uidToMsn = new TreeMap<Long, Integer>();
-
-        
-     
         MessageResultIterator messages = mailboxManager.getMailbox(path, mailboxSession).getMessages(MessageRange.all(), FetchGroupImpl.MINIMAL, mailboxSession);
         Flags applicableFlags = new Flags(FLAGS);
-        List<Long> uids = new ArrayList<Long>();
         while(messages.hasNext()) {
             MessageResult mr = messages.next();
             applicableFlags.add(mr.getFlags());
-            uids.add(mr.getUid());
-            final Long uid = mr.getUid();
-            highestUid = uid.longValue();
-            highestMsn = msn;
-            msnToUid.put(msn, uid);
-            uidToMsn.put(uid, msn);
-
-            msn++;
+            add(mr.getUid());
         }
         
       
