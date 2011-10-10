@@ -78,7 +78,8 @@ public class SelectedMailboxImpl implements SelectedMailbox, MailboxListener{
     private boolean isDeletedByOtherSession = false;
     private boolean sizeChanged = false;
     private boolean silentFlagChanges = false;
-    private Flags applicableFlags;
+    private final Flags applicableFlags = new Flags(FLAGS);
+
     private boolean applicableFlagsChanged;
     
     private final SortedMap<Integer, Long> msnToUid =new TreeMap<Integer, Long>();;
@@ -101,23 +102,24 @@ public class SelectedMailboxImpl implements SelectedMailbox, MailboxListener{
     }
  
 
-    private synchronized void init() throws MailboxException {
+    private void init() throws MailboxException {
         MailboxSession mailboxSession = ImapSessionUtils.getMailboxSession(session);
         
         mailboxManager.addListener(path, this, mailboxSession);
 
         MessageResultIterator messages = mailboxManager.getMailbox(path, mailboxSession).getMessages(MessageRange.all(), FetchGroupImpl.MINIMAL, mailboxSession);
-        Flags applicableFlags = new Flags(FLAGS);
-        while(messages.hasNext()) {
-            MessageResult mr = messages.next();
-            applicableFlags.add(mr.getFlags());
-            add(mr.getUid());
+        synchronized (this) {
+            while(messages.hasNext()) {
+                MessageResult mr = messages.next();
+                applicableFlags.add(mr.getFlags());
+                add(mr.getUid());
+            }
+            
+          
+            // \RECENT is not a applicable flag in imap so remove it from the list
+            applicableFlags.remove(Flags.Flag.RECENT);
         }
-        
-      
-        // \RECENT is not a applicable flag in imap so remove it from the list
-        applicableFlags.remove(Flags.Flag.RECENT);
-        this.applicableFlags = applicableFlags;
+       
     }
 
     private void add(int msn, long uid) {
