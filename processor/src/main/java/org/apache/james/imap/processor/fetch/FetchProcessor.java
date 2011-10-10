@@ -172,6 +172,14 @@ public class FetchProcessor extends AbstractMailboxProcessor<FetchRequest> {
                     if (session.getLog().isDebugEnabled()) {
                         session.getLog().debug("Unable to find message with uid " + result.getUid(), e);
                     }
+                } catch (MailboxException e) {
+                    // we can't for whatever reason find parse all requested parts of the message. This may because it was deleted while try to access the parts.
+                    // So we just skip it 
+                    //
+                    // See IMAP-347
+                    if (session.getLog().isDebugEnabled()) {
+                        session.getLog().debug("Unable to fetch message with uid " + result.getUid() + ", so skip it", e);
+                    }
                 }
             }
             
