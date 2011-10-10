@@ -38,12 +38,9 @@ public class DeleteProcessor extends AbstractMailboxProcessor<DeleteRequest> {
         super(DeleteRequest.class, next, mailboxManager, factory);
     }
 
-    /*
-     * (non-Javadoc)
-     * 
+    /**
      * @see
-     * org.apache.james.imap.processor.AbstractMailboxProcessor#doProcess(org
-     * .apache.james.imap.api.message.request.ImapRequest,
+     * org.apache.james.imap.processor.AbstractMailboxProcessor#doProcess(org.apache.james.imap.api.message.request.ImapRequest,
      * org.apache.james.imap.api.process.ImapSession, java.lang.String,
      * org.apache.james.imap.api.ImapCommand,
      * org.apache.james.imap.api.process.ImapProcessor.Responder)

@@ -88,12 +88,10 @@ public class IdleProcessor extends AbstractMailboxProcessor<IdleRequest> impleme
 
             session.pushLineHandler(new ImapLineHandler() {
 
-                /*
-                 * (non-Javadoc)
-                 * 
+                /**
                  * @see
-                 * org.apache.james.imap.api.process.ImapLineHandler#onLine(
-                 * org.apache.james.imap.api.process.ImapSession, byte[])
+                 * org.apache.james.imap.api.process.ImapLineHandler
+                 * #onLine(org.apache.james.imap.api.process.ImapSession, byte[])
                  */
                 public void onLine(ImapSession session, byte[] data) {
                     String line;
@@ -164,9 +162,9 @@ public class IdleProcessor extends AbstractMailboxProcessor<IdleRequest> impleme
         }
     }
 
-   /*
-    * (non-Javadoc)
-    * @see org.apache.james.imap.processor.CapabilityImplementingProcessor#getImplementedCapabilities(org.apache.james.imap.api.process.ImapSession)
+    /**
+    * @see org.apache.james.imap.processor.CapabilityImplementingProcessor
+    * #getImplementedCapabilities(org.apache.james.imap.api.process.ImapSession)
     */
     public List<String> getImplementedCapabilities(ImapSession session) {
         return CAPS;

@@ -49,12 +49,9 @@ public class AuthenticateProcessor extends AbstractAuthProcessor<AuthenticateReq
         super(AuthenticateRequest.class, next, mailboxManager, factory);
     }
 
-    /*
-     * (non-Javadoc)
-     * 
+    /**
      * @see
-     * org.apache.james.imap.processor.AbstractMailboxProcessor#doProcess(org
-     * .apache.james.imap.api.message.request.ImapRequest,
+     * org.apache.james.imap.processor.AbstractMailboxProcessor#doProcess(org.apache.james.imap.api.message.request.ImapRequest,
      * org.apache.james.imap.api.process.ImapSession, java.lang.String,
      * org.apache.james.imap.api.ImapCommand,
      * org.apache.james.imap.api.process.ImapProcessor.Responder)
@@ -143,9 +140,9 @@ public class AuthenticateProcessor extends AbstractAuthProcessor<AuthenticateReq
         doAuth(user, pass, session, tag, command, responder, HumanReadableText.AUTHENTICATION_FAILED);
     }
     
-    /*
-     * (non-Javadoc)
-     * @see org.apache.james.imap.processor.CapabilityImplementingProcessor#getImplementedCapabilities(org.apache.james.imap.api.process.ImapSession)
+    /**
+     * @see org.apache.james.imap.processor.CapabilityImplementingProcessor
+     * #getImplementedCapabilities(org.apache.james.imap.api.process.ImapSession)
      */
     public List<String> getImplementedCapabilities(ImapSession session) {
         List<String> caps = new ArrayList<String>();

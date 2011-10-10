@@ -43,12 +43,9 @@ public class OutputStreamImapResponseWriter implements ImapResponseWriter {
 
 
 
-    /*
-     * (non-Javadoc)
-     * 
+    /**
      * @see
-     * org.apache.james.imap.encode.ImapResponseWriter#write(org.apache.james
-     * .imap.message.response.Literal)
+     * org.apache.james.imap.encode.ImapResponseWriter#write(org.apache.james.imap.message.response.Literal)
      */
     public void write(Literal literal) throws IOException {
         InputStream in = null;

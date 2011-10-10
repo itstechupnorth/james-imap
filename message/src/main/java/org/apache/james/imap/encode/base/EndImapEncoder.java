@@ -34,12 +34,9 @@ import org.slf4j.Logger;
  */
 public class EndImapEncoder implements ImapEncoder {
 
-    /*
-     * (non-Javadoc)
-     * 
+    /**
      * @see
-     * org.apache.james.imap.encode.ImapEncoder#encode(org.apache.james.imap
-     * .api.ImapMessage, org.apache.james.imap.encode.ImapResponseComposer,
+     * org.apache.james.imap.encode.ImapEncoder#encode(org.apache.james.imap.api.ImapMessage, org.apache.james.imap.encode.ImapResponseComposer,
      * org.apache.james.imap.api.process.ImapSession)
      */
     public void encode(ImapMessage message, ImapResponseComposer composer, ImapSession session) throws IOException {

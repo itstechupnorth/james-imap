@@ -49,18 +49,15 @@ public class UidCommandParser extends AbstractImapCommandParser implements Deleg
     }
 
     /**
-     * @see org.apache.james.imap.decode.DelegatingImapCommandParser#setParserFactory(org.apache.james.imap.decode.imap4rev1.Imap4Rev1CommandParserFactory)
+     * @see org.apache.james.imap.decode.DelegatingImapCommandParser#setParserFactory(ImapCommandParserFactory)
      */
     public void setParserFactory(ImapCommandParserFactory imapCommandFactory) {
         this.parserFactory = imapCommandFactory;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
+    /**
      * @see
-     * org.apache.james.imap.decode.base.AbstractImapCommandParser#decode(org
-     * .apache.james.imap.api.ImapCommand,
+     * org.apache.james.imap.decode.base.AbstractImapCommandParser#decode(org.apache.james.imap.api.ImapCommand,
      * org.apache.james.imap.decode.ImapRequestLineReader, java.lang.String,
      * org.apache.james.imap.api.process.ImapSession)
      */

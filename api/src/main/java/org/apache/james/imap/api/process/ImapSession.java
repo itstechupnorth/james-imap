@@ -64,9 +64,6 @@ public interface ImapSession {
      * 
      * @param mailbox
      *            The selected mailbox.
-     * @param readOnly
-     *            If <code>true</code>, the selection is set to be read only.
-     * @throws MailboxManagerException
      */
     void selected(SelectedMailbox mailbox);
 

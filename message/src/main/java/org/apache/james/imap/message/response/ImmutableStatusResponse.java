@@ -26,7 +26,7 @@ import org.apache.james.imap.api.message.response.StatusResponse;
 /**
  * Immutable status response. Suitable for unpooled usage.
  * 
- * @see {@link StatusResponse}
+ * @see StatusResponse
  */
 public class ImmutableStatusResponse implements StatusResponse {
 
@@ -50,33 +50,36 @@ public class ImmutableStatusResponse implements StatusResponse {
     }
 
     /**
-     * @see {@link StatusResponse#getResponseCode()}
+     * @see StatusResponse#getResponseCode()
      */
     public ResponseCode getResponseCode() {
         return responseCode;
     }
 
     /**
-     * @see {@link StatusResponse#getServerResponseType()}
+     * @see StatusResponse#getServerResponseType()
      */
     public Type getServerResponseType() {
         return serverResponseType;
     }
 
     /**
-     * @see {@link StatusResponse#getTag()}
+     * @see StatusResponse#getTag()
      */
     public String getTag() {
         return tag;
     }
 
     /**
-     * @see {@link StatusResponse#getTextKey()}
+     * @see StatusResponse#getTextKey()
      */
     public HumanReadableText getTextKey() {
         return textKey;
     }
 
+    /**
+     * @see StatusResponse#getCommand()
+     */
     public ImapCommand getCommand() {
         return command;
     }

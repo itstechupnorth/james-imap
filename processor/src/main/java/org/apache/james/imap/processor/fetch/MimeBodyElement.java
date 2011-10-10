@@ -53,12 +53,9 @@ public class MimeBodyElement implements BodyElement {
         
     }
 
-    /*
-     * (non-Javadoc)
-     * 
+    /**
      * @see
-     * org.apache.james.imap.message.response.FetchResponse.BodyElement#getName
-     * ()
+     * org.apache.james.imap.message.response.FetchResponse.BodyElement#getName()
      */
     public String getName() {
         return name;
@@ -80,9 +77,7 @@ public class MimeBodyElement implements BodyElement {
         return result;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
+    /**
      * @see
      * org.apache.james.imap.message.response.FetchResponse.BodyElement#size()
      */
@@ -91,11 +86,8 @@ public class MimeBodyElement implements BodyElement {
     }
 
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.apache.james.imap.message.response.FetchResponse.BodyElement#
-     * getInputStream()
+    /**
+     * @see org.apache.james.imap.message.response.FetchResponse.BodyElement#getInputStream()
      */
     public InputStream getInputStream() throws IOException {
         ByteArrayOutputStream out = new ByteArrayOutputStream();

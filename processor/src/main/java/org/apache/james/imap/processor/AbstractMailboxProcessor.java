@@ -138,10 +138,10 @@ abstract public class AbstractMailboxProcessor<M extends ImapRequest> extends Ab
     }
 
     /**
-     * @see org.apache.james.imap.api.process.SelectedMailbox#unsolicitedResponses(boolean,
-     *      boolean)
+     * TODO This method is in no interface declared and referenced only 5 lines above in this module.
+     * Should this be a protected or even a private method?
      */
-    public void unsolicitedResponses(final ImapSession session, final ImapProcessor.Responder responder, final SelectedMailbox selected, boolean omitExpunged, boolean useUid) {
+    private void unsolicitedResponses(final ImapSession session, final ImapProcessor.Responder responder, final SelectedMailbox selected, boolean omitExpunged, boolean useUid) {
         final boolean sizeChanged = selected.isSizeChanged();
         // New message response
         if (sizeChanged) {

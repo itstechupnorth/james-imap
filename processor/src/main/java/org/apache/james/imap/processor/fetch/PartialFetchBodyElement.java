@@ -46,16 +46,14 @@ final class PartialFetchBodyElement implements BodyElement {
         name = delegate.getName() + "<" + firstOctet + ">";
     }
 
-    /*
-     * (non-Javadoc)
+    /**
      * @see org.apache.james.imap.message.response.FetchResponse.BodyElement#getName()
      */
     public String getName() {
         return name;
     }
 
-    /*
-     * (non-Javadoc)
+    /**
      * @see org.apache.james.imap.message.response.Literal#size()
      */
     public long size() throws IOException {
@@ -72,9 +70,7 @@ final class PartialFetchBodyElement implements BodyElement {
         return result;
     }
 
-
-    /*
-     * (non-Javadoc)
+    /**
      * @see org.apache.james.imap.message.response.Literal#getInputStream()
      */
     public InputStream getInputStream() throws IOException {
@@ -116,9 +112,7 @@ final class PartialFetchBodyElement implements BodyElement {
             }
         }
 
-        /*
-         * (non-Javadoc)
-         * 
+        /**
          * @see java.io.FilterInputStream#read()
          */
         public int read() throws IOException {
@@ -130,18 +124,14 @@ final class PartialFetchBodyElement implements BodyElement {
             return super.read();
         }
 
-        /*
-         * (non-Javadoc)
-         * 
+        /**
          * @see java.io.FilterInputStream#read(byte[])
          */
         public int read(byte b[]) throws IOException {
             return read(b, 0, b.length);
         }
 
-        /*
-         * (non-Javadoc)
-         * 
+        /**
          * @see java.io.FilterInputStream#read(byte[], int, int)
          */
         public int read(byte b[], int off, int len) throws IOException {
@@ -170,9 +160,7 @@ final class PartialFetchBodyElement implements BodyElement {
             throw new IOException("Not implemented");
         }
 
-        /*
-         * (non-Javadoc)
-         * 
+        /**
          * @see java.io.FilterInputStream#available()
          */
         public int available() throws IOException {

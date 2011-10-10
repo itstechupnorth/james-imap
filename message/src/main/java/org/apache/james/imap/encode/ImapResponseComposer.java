@@ -97,7 +97,7 @@ public interface ImapResponseComposer {
     /**
      * 
      * @param name
-     * @return
+     * @return composer
      * @throws IOException
      */
     public ImapResponseComposer commandName(final String name) throws IOException;

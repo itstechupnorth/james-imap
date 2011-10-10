@@ -35,9 +35,7 @@ public class EnableResponseEncoder extends AbstractChainedImapEncoder {
         super(next);
     }
 
-    /*
-     * (non-Javadoc)
-     * 
+    /**
      * @see
      * org.apache.james.imap.encode.base.AbstractChainedImapEncoder#doEncode
      * (org.apache.james.imap.api.ImapMessage,
@@ -56,9 +54,7 @@ public class EnableResponseEncoder extends AbstractChainedImapEncoder {
         composer.end();
     }
     
-    /*
-     * (non-Javadoc)
-     * 
+    /**
      * @see
      * org.apache.james.imap.encode.base.AbstractChainedImapEncoder#isAcceptable
      * (org.apache.james.imap.api.ImapMessage)

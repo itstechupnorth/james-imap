@@ -42,12 +42,10 @@ public class StartTLSProcessor extends AbstractChainedProcessor<StartTLSRequest>
         this.factory = factory;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
+    /**
      * @see
-     * org.apache.james.imap.processor.base.AbstractChainedProcessor#doProcess
-     * (org.apache.james.imap.api.ImapMessage,
+     * org.apache.james.imap.processor.base.AbstractChainedProcessor
+     * #doProcess(org.apache.james.imap.api.ImapMessage,
      * org.apache.james.imap.api.process.ImapProcessor.Responder,
      * org.apache.james.imap.api.process.ImapSession)
      */
@@ -62,11 +60,9 @@ public class StartTLSProcessor extends AbstractChainedProcessor<StartTLSRequest>
 
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.apache.james.imap.processor.CapabilityImplementingProcessor#
-     * getImplementedCapabilities(org.apache.james.imap.api.process.ImapSession)
+    /**
+     * @see org.apache.james.imap.processor.CapabilityImplementingProcessor
+     * #getImplementedCapabilities(org.apache.james.imap.api.process.ImapSession)
      */
     public List<String> getImplementedCapabilities(ImapSession session) {
         if (session.supportStartTLS()) {

@@ -37,11 +37,9 @@ public class UnsubscribeProcessor extends AbstractSubscriptionProcessor<Unsubscr
         super(UnsubscribeRequest.class, next, mailboxManager, subscriptionManager, factory);
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.apache.james.imap.processor.AbstractSubscriptionProcessor#
-     * doProcessRequest(org.apache.james.imap.api.message.request.ImapRequest,
+    /**
+     * @see org.apache.james.imap.processor.AbstractSubscriptionProcessor
+     * #doProcessRequest(org.apache.james.imap.api.message.request.ImapRequest,
      * org.apache.james.imap.api.process.ImapSession, java.lang.String,
      * org.apache.james.imap.api.ImapCommand,
      * org.apache.james.imap.api.process.ImapProcessor.Responder)

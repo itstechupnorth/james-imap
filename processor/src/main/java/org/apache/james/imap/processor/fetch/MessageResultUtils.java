@@ -33,7 +33,7 @@ public class MessageResultUtils {
      * Gets all header lines.
      * 
      * @param iterator
-     *            {@link MessageResult.Header} <code>Iterator</code>
+     *            {@link org.apache.james.mailbox.MessageResult.Header} <code>Iterator</code>
      * @return <code>List</code> of <code>MessageResult.Header<code>'s,
      * in their natural order
      * 
@@ -56,7 +56,7 @@ public class MessageResultUtils {
      * @param names
      *            header names to be matched, not null
      * @param iterator
-     *            {@link MessageResult.Header} <code>Iterator</code>
+     *            {@link org.apache.james.mailbox.MessageResult.Header} <code>Iterator</code>
      * @return <code>List</code> of <code>MessageResult.Header</code>'s, in
      *         their natural order
      * @throws MessagingException
@@ -89,7 +89,7 @@ public class MessageResultUtils {
      * @param names
      *            header names to be matched, not null
      * @param iterator
-     *            {@link MessageResult.Header} <code>Iterator</code>
+     *            {@link org.apache.james.mailbox.MessageResult.Header} <code>Iterator</code>
      * @return <code>List</code> of <code>MessageResult.Header</code>'s, in
      *         their natural order
      * @throws MessagingException
@@ -136,7 +136,7 @@ public class MessageResultUtils {
      * @param names
      *            header names to be matched, not null
      * @param iterator
-     *            {@link MessageResult.Header} <code>Iterator</code>
+     *            {@link org.apache.james.mailbox.MessageResult.Header} <code>Iterator</code>
      * @return <code>List</code> of <code>MessageResult.Header</code>'s, in
      *         their natural order
      * @throws MessagingException
@@ -180,7 +180,7 @@ public class MessageResultUtils {
      * @param names
      *            header names, not null
      * @param iterator
-     *            {@link MessageResult.Header} <code>Iterator</code>
+     *            {@link org.apache.james.mailbox.MessageResult.Header} <code>Iterator</code>
      * @return <code>List</code> of <code>@MessageResult.Header</code>'s, in
      *         their natural order
      * @throws MessagingException

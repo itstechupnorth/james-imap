@@ -117,11 +117,9 @@ public class ExpungeProcessor extends AbstractMailboxProcessor<ExpungeRequest> i
         return expunged;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.apache.james.imap.processor.CapabilityImplementingProcessor#
-     * getImplementedCapabilities(org.apache.james.imap.api.process.ImapSession)
+    /**
+     * @see org.apache.james.imap.processor.CapabilityImplementingProcessor
+     * #getImplementedCapabilities(org.apache.james.imap.api.process.ImapSession)
      */
     public List<String> getImplementedCapabilities(ImapSession session) {
         return UIDPLUS;

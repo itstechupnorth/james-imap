@@ -64,12 +64,10 @@ public class ImapResponseComposerImpl implements ImapConstants, ImapResponseComp
         this(writer, DEFAULT_BUFFER_SIZE);
     }
 
-    /*
-     * (non-Javadoc)
-     * 
+    /**
      * @see
-     * org.apache.james.imap.encode.ImapResponseComposer#untaggedNoResponse(
-     * java.lang.String, java.lang.String)
+     * org.apache.james.imap.encode.ImapResponseComposer#untaggedNoResponse
+     * (java.lang.String, java.lang.String)
      */
     public ImapResponseComposer untaggedNoResponse(String displayMessage, String responseCode) throws IOException {
         untagged();
@@ -80,9 +78,7 @@ public class ImapResponseComposerImpl implements ImapConstants, ImapResponseComp
         return this;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
+    /**
      * @see
      * org.apache.james.imap.encode.ImapResponseComposer#continuationResponse
      * (java.lang.String)
@@ -95,12 +91,10 @@ public class ImapResponseComposerImpl implements ImapConstants, ImapResponseComp
 
 
 
-    /*
-     * (non-Javadoc)
-     * 
+    /**
      * @see
-     * org.apache.james.imap.encode.ImapResponseComposer#commandResponse(org
-     * .apache.james.imap.api.ImapCommand, java.lang.String)
+     * org.apache.james.imap.encode.ImapResponseComposer#commandResponse(org.apache.james.imap.api.ImapCommand,
+     * java.lang.String)
      */
     public ImapResponseComposer commandResponse(ImapCommand command, String message) throws IOException {
         untagged();
@@ -110,12 +104,9 @@ public class ImapResponseComposerImpl implements ImapConstants, ImapResponseComp
         return this;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
+    /**
      * @see
-     * org.apache.james.imap.encode.ImapResponseComposer#taggedResponse(java
-     * .lang.String, java.lang.String)
+     * org.apache.james.imap.encode.ImapResponseComposer#taggedResponse(java.lang.String, java.lang.String)
      */
     public ImapResponseComposer taggedResponse(String message, String tag) throws IOException {
         tag(tag);
@@ -124,12 +115,9 @@ public class ImapResponseComposerImpl implements ImapConstants, ImapResponseComp
         return this;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
+    /**
      * @see
-     * org.apache.james.imap.encode.ImapResponseComposer#untaggedResponse(java
-     * .lang.String)
+     * org.apache.james.imap.encode.ImapResponseComposer#untaggedResponse(java.lang.String)
      */
     public ImapResponseComposer untaggedResponse(String message) throws IOException {
         untagged();
@@ -139,9 +127,7 @@ public class ImapResponseComposerImpl implements ImapConstants, ImapResponseComp
     }
 
    
-    /*
-     * (non-Javadoc)
-     * 
+    /**
      * @see org.apache.james.imap.encode.ImapResponseComposer#untagged()
      */
     public ImapResponseComposer untagged() throws IOException {
@@ -149,12 +135,9 @@ public class ImapResponseComposerImpl implements ImapConstants, ImapResponseComp
         return this;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
+    /**
      * @see
-     * org.apache.james.imap.encode.ImapResponseComposer#message(java.lang.String
-     * )
+     * org.apache.james.imap.encode.ImapResponseComposer#message(java.lang.String)
      */
     public ImapResponseComposer message(final String message) throws IOException {
         if (message != null) {
@@ -176,9 +159,7 @@ public class ImapResponseComposerImpl implements ImapConstants, ImapResponseComp
         }
     }
 
-    /*
-     * (non-Javadoc)
-     * 
+    /**
      * @see org.apache.james.imap.encode.ImapResponseComposer#end()
      */
     public ImapResponseComposer end() throws IOException {
@@ -188,9 +169,7 @@ public class ImapResponseComposerImpl implements ImapConstants, ImapResponseComp
         return this;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
+    /**
      * @see
      * org.apache.james.imap.encode.ImapResponseComposer#tag(java.lang.String)
      */
@@ -199,9 +178,7 @@ public class ImapResponseComposerImpl implements ImapConstants, ImapResponseComp
         return this;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
+    /**
      * @see org.apache.james.imap.encode.ImapResponseComposer#closeParen()
      */
     public ImapResponseComposer closeParen() throws IOException {
@@ -209,9 +186,7 @@ public class ImapResponseComposerImpl implements ImapConstants, ImapResponseComp
         return this;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
+    /**
      * @see org.apache.james.imap.encode.ImapResponseComposer#openParen()
      */
     public ImapResponseComposer openParen() throws IOException {
@@ -221,9 +196,7 @@ public class ImapResponseComposerImpl implements ImapConstants, ImapResponseComp
 
 
 
-    /*
-     * (non-Javadoc)
-     * 
+    /**
      * @see
      * org.apache.james.imap.encode.ImapResponseComposer#flags(javax.mail.Flags)
      */
@@ -257,12 +230,7 @@ public class ImapResponseComposerImpl implements ImapConstants, ImapResponseComp
         return this;
     }
 
-
-
-
-    /*
-     * (non-Javadoc)
-     * 
+    /**
      * @see org.apache.james.imap.encode.ImapResponseComposer#nil()
      */
     public ImapResponseComposer nil() throws IOException {
@@ -270,14 +238,9 @@ public class ImapResponseComposerImpl implements ImapConstants, ImapResponseComp
         return this;
     }
 
-
-
-    /*
-     * (non-Javadoc)
-     * 
+    /**
      * @see
-     * org.apache.james.imap.encode.ImapResponseComposer#upperCaseAscii(java
-     * .lang.String)
+     * org.apache.james.imap.encode.ImapResponseComposer#upperCaseAscii(java.lang.String)
      */
     public ImapResponseComposer upperCaseAscii(String message) throws IOException {
         if (message == null) {
@@ -288,9 +251,7 @@ public class ImapResponseComposerImpl implements ImapConstants, ImapResponseComp
         return this;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
+    /**
      * @see
      * org.apache.james.imap.encode.ImapResponseComposer#quoteUpperCaseAscii
      * (java.lang.String)
@@ -309,9 +270,7 @@ public class ImapResponseComposerImpl implements ImapConstants, ImapResponseComp
         buffer.write(string.getBytes(usAscii));
     }
 
-    /*
-     * (non-Javadoc)
-     * 
+    /**
      * @see org.apache.james.imap.encode.ImapResponseComposer#message(long)
      */
     public ImapResponseComposer message(long number) throws IOException {
@@ -320,12 +279,9 @@ public class ImapResponseComposerImpl implements ImapConstants, ImapResponseComp
         return this;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
+    /**
      * @see
-     * org.apache.james.imap.encode.ImapResponseComposer#commandName(java.lang
-     * .String)
+     * org.apache.james.imap.encode.ImapResponseComposer#commandName(java.lang.String)
      */
     public ImapResponseComposer commandName(String commandName) throws IOException {
         space();
@@ -333,9 +289,7 @@ public class ImapResponseComposerImpl implements ImapConstants, ImapResponseComp
         return this;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
+    /**
      * @see
      * org.apache.james.imap.encode.ImapResponseComposer#quote(java.lang.String)
      */
@@ -376,9 +330,7 @@ public class ImapResponseComposerImpl implements ImapConstants, ImapResponseComp
         skipNextSpace = false;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
+    /**
      * @see org.apache.james.imap.encode.ImapResponseComposer#skipNextSpace()
      */
     public ImapResponseComposer skipNextSpace() {
@@ -394,12 +346,9 @@ public class ImapResponseComposerImpl implements ImapConstants, ImapResponseComp
         }
     }
 
-    /*
-     * (non-Javadoc)
-     * 
+    /**
      * @see
-     * org.apache.james.imap.encode.ImapResponseComposer#literal(org.apache.
-     * james.imap.message.response.Literal)
+     * org.apache.james.imap.encode.ImapResponseComposer#literal(org.apache.james.imap.message.response.Literal)
      */
     public ImapResponseComposer literal(Literal literal) throws IOException {
         space();
@@ -443,8 +392,7 @@ public class ImapResponseComposerImpl implements ImapConstants, ImapResponseComp
         }
     }
 
-    /*
-     * (non-Javadoc)
+    /**
      * @see org.apache.james.imap.encode.ImapResponseComposer#sequenceSet(org.apache.james.imap.api.message.IdRange[])
      */
     public ImapResponseComposer sequenceSet(IdRange[] ranges) throws IOException {

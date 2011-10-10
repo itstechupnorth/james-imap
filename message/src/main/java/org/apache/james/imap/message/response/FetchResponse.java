@@ -376,7 +376,7 @@ public final class FetchResponse implements ImapResponseMessage {
         /**
          * Gets the envelope <code>message
          * 
-         * @return
+         * @return the message id
          */
         public String getMessageId();
 

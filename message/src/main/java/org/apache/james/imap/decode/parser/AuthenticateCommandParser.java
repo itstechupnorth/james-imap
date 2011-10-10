@@ -37,12 +37,9 @@ public class AuthenticateCommandParser extends AbstractImapCommandParser {
         super(ImapCommand.nonAuthenticatedStateCommand(ImapConstants.AUTHENTICATE_COMMAND_NAME));
     }
 
-    /*
-     * (non-Javadoc)
-     * 
+    /**
      * @see
-     * org.apache.james.imap.decode.base.AbstractImapCommandParser#decode(org
-     * .apache.james.imap.api.ImapCommand,
+     * org.apache.james.imap.decode.base.AbstractImapCommandParser#decode(org.apache.james.imap.api.ImapCommand,
      * org.apache.james.imap.decode.ImapRequestLineReader, java.lang.String,
      * org.apache.james.imap.api.process.ImapSession)
      */

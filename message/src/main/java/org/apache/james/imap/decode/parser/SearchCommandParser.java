@@ -968,12 +968,9 @@ public class SearchCommandParser extends AbstractUidCommandParser {
         }
         return options;
     }
-    /*
-     * (non-Javadoc)
-     * 
+    /**
      * @see
-     * org.apache.james.imap.decode.parser.AbstractUidCommandParser#decode(org
-     * .apache.james.imap.api.ImapCommand,
+     * org.apache.james.imap.decode.parser.AbstractUidCommandParser#decode(org.apache.james.imap.api.ImapCommand,
      * org.apache.james.imap.decode.ImapRequestLineReader, java.lang.String,
      * boolean, org.apache.james.imap.api.process.ImapSession)
      */

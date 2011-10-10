@@ -39,12 +39,9 @@ abstract public class AbstractChainedProcessor<M extends ImapMessage> implements
         this.acceptableClass = acceptableClass;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
+    /**
      * @see
-     * org.apache.james.imap.api.process.ImapProcessor#process(org.apache.james
-     * .imap.api.ImapMessage,
+     * org.apache.james.imap.api.process.ImapProcessor#process(org.apache.james.imap.api.ImapMessage,
      * org.apache.james.imap.api.process.ImapProcessor.Responder,
      * org.apache.james.imap.api.process.ImapSession)
      */
@@ -79,7 +76,6 @@ abstract public class AbstractChainedProcessor<M extends ImapMessage> implements
      *            <code>Responder</code>, not null
      * @param session
      *            <code>ImapSession</code>, not null
-     * @return <code>ImapResponseMessage</code>, not null
      */
     abstract protected void doProcess(final M acceptableMessage, final Responder responder, final ImapSession session);
 }

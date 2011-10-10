@@ -104,7 +104,7 @@ public class ImapParserFactory implements ImapCommandParserFactory {
     }
 
     /**
-     * @see org.apache.james.imap.decode.parser.ImapCommandParserFactory#getParser(java.lang.String)
+     * @see org.apache.james.imap.decode.ImapCommandParserFactory#getParser(java.lang.String)
      */
     public ImapCommandParser getParser(String commandName) {
         Class<?> cmdClass = (Class<?>) _imapCommands.get(commandName.toUpperCase());

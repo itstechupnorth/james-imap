@@ -38,10 +38,9 @@ public interface ImapProcessor {
      * specification. RuntimeException should not be thrown in this
      * circumstance.
      * 
-     * @param <code>ImapMessage</code>, not null
-     * @param session
-     *            <code>ImapSession</code>
-     * @return response, not null
+     * @param message <code>not null</code>
+     * @param responder <code>not null</code>, the responder use write response for message
+     * @param session the imap session
      */
     public void process(ImapMessage message, Responder responder, ImapSession session);
 
@@ -52,8 +51,7 @@ public interface ImapProcessor {
         /**
          * Writes the given response.
          * 
-         * @param message
-         *            <code>ImapResponseMessage</code>, not null
+         * @param message <code>not null</code>
          */
         public void respond(ImapResponseMessage message);
     }

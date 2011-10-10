@@ -41,9 +41,11 @@ public class LoginProcessor extends AbstractAuthProcessor<LoginRequest> implemen
         super(LoginRequest.class, next, mailboxManager, factory);
     }
 
-    /*
-     * (non-Javadoc)
-     * @see org.apache.james.imap.processor.AbstractMailboxProcessor#doProcess(org.apache.james.imap.api.message.request.ImapRequest, org.apache.james.imap.api.process.ImapSession, java.lang.String, org.apache.james.imap.api.ImapCommand, org.apache.james.imap.api.process.ImapProcessor.Responder)
+    /**
+     * @see org.apache.james.imap.processor.AbstractMailboxProcessor
+     * #doProcess(org.apache.james.imap.api.message.request.ImapRequest,
+     * org.apache.james.imap.api.process.ImapSession, java.lang.String,
+     * org.apache.james.imap.api.ImapCommand, org.apache.james.imap.api.process.ImapProcessor.Responder)
      */
     protected void doProcess(LoginRequest request, ImapSession session, String tag, ImapCommand command, Responder responder) {
             final String userid = request.getUserid();
@@ -56,9 +58,9 @@ public class LoginProcessor extends AbstractAuthProcessor<LoginRequest> implemen
             }
     }
 
-    /*
-     * (non-Javadoc)
-     * @see org.apache.james.imap.processor.CapabilityImplementingProcessor#getImplementedCapabilities(org.apache.james.imap.api.process.ImapSession)
+    /**
+     * @see org.apache.james.imap.processor.CapabilityImplementingProcessor
+     * #getImplementedCapabilities(org.apache.james.imap.api.process.ImapSession)
      */
     public List<String> getImplementedCapabilities(ImapSession session) {
         // Announce LOGINDISABLED if plain auth / login is deactivated and the session is not using

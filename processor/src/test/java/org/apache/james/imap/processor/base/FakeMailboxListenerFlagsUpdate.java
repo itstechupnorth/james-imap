@@ -38,17 +38,14 @@ public class FakeMailboxListenerFlagsUpdate extends FlagsUpdated {
         this.flags = flags;
     }
 
-
-    /*
-     * (non-Javadoc)
+    /**
      * @see org.apache.james.mailbox.MailboxListener.FlagsUpdated#getUpdatedFlags()
      */
     public List<UpdatedFlags> getUpdatedFlags() {
         return flags;
     }
 
-    /*
-     * (non-Javadoc)
+    /**
      * @see org.apache.james.mailbox.MailboxListener.MessageEvent#getUids()
      */
     public List<Long> getUids() {

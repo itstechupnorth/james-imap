@@ -73,7 +73,7 @@ public class FetchGroupImpl implements MessageResult.FetchGroup {
     /**
      * Gets content descriptors for the parts to be fetched.
      * 
-     * @return <code>Set</code> of {@link FetchGroup.PartContentDescriptor},
+     * @return <code>Set</code> of {@link org.apache.james.mailbox.MessageResult.FetchGroup.PartContentDescriptor},
      *         possibly null
      */
     public Set<PartContentDescriptor> getPartContentDescriptors() {

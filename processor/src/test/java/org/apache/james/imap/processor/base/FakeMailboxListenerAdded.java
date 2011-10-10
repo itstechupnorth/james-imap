@@ -38,8 +38,7 @@ public class FakeMailboxListenerAdded extends MailboxListener.Added {
         this.uids = uids;
     }
 
-    /*
-     * (non-Javadoc)
+    /**
      * @see org.apache.james.mailbox.MailboxListener.MessageEvent#getUids()
      */
     public List<Long> getUids() {
@@ -47,8 +46,7 @@ public class FakeMailboxListenerAdded extends MailboxListener.Added {
     }
 
 
-    /*
-     * (non-Javadoc)
+    /**
      * @see org.apache.james.mailbox.MailboxListener.Added#getMetaData(long)
      */
     public MessageMetaData getMetaData(long uid) {

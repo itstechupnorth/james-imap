@@ -333,8 +333,7 @@ public class MailboxEventAnalyserTest {
             this.sessionId = sessionId;
         }
 
-        /*
-         * (non-Javadoc)
+        /**
          * @see org.apache.james.mailbox.mock.MockMailboxSession#getSessionId()
          */
         public long getSessionId() {

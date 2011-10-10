@@ -143,7 +143,7 @@ public abstract class AbstractListingResponse {
      * Are any name attributes set?
      * 
      * @return true if {@link #isNoInferiors()}, {@link #isNoSelect()},
-     *         {@link #isMarked()} or {@link #isUnmarked()
+     *         {@link #isMarked()} or {@link #isUnmarked()}
      */
     public final boolean isNameAttributed() {
         return noInferiors || noSelect || marked || unmarked || children || noChildren || (!MailboxType.OTHER.equals(type));

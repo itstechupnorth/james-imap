@@ -243,24 +243,21 @@ public class LSubProcessorTest {
                     allowing(mailboxSession).getPathDelimiter(); will(returnValue(HIERARCHY_DELIMITER));
             oneOf(mailboxSession).getUser(); will(returnValue(new MailboxSession.User() {
 
-                /*
-                 * (non-Javadoc)
+                /**
                  * @see org.apache.james.mailbox.MailboxSession.User#getLocalePreferences()
                  */
                 public List<Locale> getLocalePreferences() {
                     return new ArrayList<Locale>();
                 }
 
-                /*
-                 * (non-Javadoc)
+                /**
                  * @see org.apache.james.mailbox.MailboxSession.User#getPassword()
                  */
                 public String getPassword() {
                     return "test";
                 }
 
-                /*
-                 * (non-Javadoc)
+                /**
                  * @see org.apache.james.mailbox.MailboxSession.User#getUserName()
                  */
                 public String getUserName() {

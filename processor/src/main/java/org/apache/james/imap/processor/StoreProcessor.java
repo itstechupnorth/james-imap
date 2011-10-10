@@ -65,9 +65,11 @@ public class StoreProcessor extends AbstractMailboxProcessor<StoreRequest> {
         super(StoreRequest.class, next, mailboxManager, factory);
     }
 
-    /*
-     * (non-Javadoc)
-     * @see org.apache.james.imap.processor.AbstractMailboxProcessor#doProcess(org.apache.james.imap.api.message.request.ImapRequest, org.apache.james.imap.api.process.ImapSession, java.lang.String, org.apache.james.imap.api.ImapCommand, org.apache.james.imap.api.process.ImapProcessor.Responder)
+    /**
+     * @see org.apache.james.imap.processor.AbstractMailboxProcessor
+     * #doProcess(org.apache.james.imap.api.message.request.ImapRequest,
+     * org.apache.james.imap.api.process.ImapSession, java.lang.String,
+     * org.apache.james.imap.api.ImapCommand, org.apache.james.imap.api.process.ImapProcessor.Responder)
      */
     protected void doProcess(StoreRequest request, ImapSession session, String tag, ImapCommand command, Responder responder) {
         final IdRange[] idSet = request.getIdSet();

@@ -32,13 +32,10 @@ public class LsubCommandParser extends ListCommandParser {
         super(ImapCommand.authenticatedStateCommand(ImapConstants.LSUB_COMMAND_NAME));
     }
 
-    /*
-     * (non-Javadoc)
-     * 
+    /**
      * @see
-     * org.apache.james.imap.decode.parser.ListCommandParser#createMessage(org
-     * .apache.james.imap.api.ImapCommand, java.lang.String, java.lang.String,
-     * java.lang.String)
+     * org.apache.james.imap.decode.parser.ListCommandParser#createMessage(org.apache.james.imap.api.ImapCommand,
+     * java.lang.String, java.lang.String, java.lang.String)
      */
     protected ImapMessage createMessage(ImapCommand command, String referenceName, String mailboxPattern, String tag) {
         final ImapMessage result = new LsubRequest(command, referenceName, mailboxPattern, tag);

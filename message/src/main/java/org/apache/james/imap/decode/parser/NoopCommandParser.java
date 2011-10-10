@@ -36,12 +36,9 @@ public class NoopCommandParser extends AbstractImapCommandParser {
         super(ImapCommand.anyStateCommand(ImapConstants.NOOP_COMMAND_NAME));
     }
 
-    /*
-     * (non-Javadoc)
-     * 
+    /**
      * @see
-     * org.apache.james.imap.decode.base.AbstractImapCommandParser#decode(org
-     * .apache.james.imap.api.ImapCommand,
+     * org.apache.james.imap.decode.base.AbstractImapCommandParser#decode(org.apache.james.imap.api.ImapCommand,
      * org.apache.james.imap.decode.ImapRequestLineReader, java.lang.String,
      * org.apache.james.imap.api.process.ImapSession)
      */

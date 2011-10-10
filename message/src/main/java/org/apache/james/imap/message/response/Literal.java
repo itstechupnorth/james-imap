@@ -21,13 +21,12 @@ package org.apache.james.imap.message.response;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.channels.WritableByteChannel;
 
 public interface Literal {
     /**
      * Size of the literal content data.
      * 
-     * @return number of octets which {@link #writeTo(WritableByteChannel)} will
+     * @return number of octets which will be
      *         put onto the channel
      * @throws IOException 
      */

@@ -33,7 +33,7 @@ import org.slf4j.Logger;
 /**
  * {@link ImapDecoder} implementation which parse the data via lookup the right
  * {@link ImapCommandParser} via an {@link ImapCommandParserFactory}. The
- * response will get generated via the {@link ImapMessageFactory}.
+ * response will get generated via the {@link StatusResponseFactory}.
  */
 public class DefaultImapDecoder implements ImapDecoder {
 
@@ -56,12 +56,9 @@ public class DefaultImapDecoder implements ImapDecoder {
         this.maxInvalidCommands = maxInvalidCommands;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
+    /**
      * @see
-     * org.apache.james.imap.decode.ImapDecoder#decode(org.apache.james.imap
-     * .decode.ImapRequestLineReader,
+     * org.apache.james.imap.decode.ImapDecoder#decode(org.apache.james.imap.decode.ImapRequestLineReader,
      * org.apache.james.imap.api.process.ImapSession)
      */
     public ImapMessage decode(ImapRequestLineReader request, ImapSession session) {

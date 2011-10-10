@@ -93,7 +93,7 @@ public final class DecoderUtils {
     /**
      * Decodes the given string as a standard IMAP date-time.
      * 
-     * @param dateString
+     * @param chars
      *            standard IMAP date-time
      * @return <code>Date</code> with time component, not null
      * @throws DecodingException

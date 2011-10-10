@@ -57,12 +57,9 @@ public class FetchProcessor extends AbstractMailboxProcessor<FetchRequest> {
         super(FetchRequest.class, next, mailboxManager, factory);
     }
 
-    /*
-     * (non-Javadoc)
-     * 
+    /**
      * @see
-     * org.apache.james.imap.processor.AbstractMailboxProcessor#doProcess(org
-     * .apache.james.imap.api.message.request.ImapRequest,
+     * org.apache.james.imap.processor.AbstractMailboxProcessor#doProcess(org.apache.james.imap.api.message.request.ImapRequest,
      * org.apache.james.imap.api.process.ImapSession, java.lang.String,
      * org.apache.james.imap.api.ImapCommand,
      * org.apache.james.imap.api.process.ImapProcessor.Responder)
@@ -144,11 +141,11 @@ public class FetchProcessor extends AbstractMailboxProcessor<FetchRequest> {
     
     /**
      * Process the given message ranges by fetch them and pass them to the
-     * {@link Responder}
+     * {@link org.apache.james.imap.api.process.ImapProcessor.Responder}
      * 
      * @param session
      * @param mailbox
-     * @param range
+     * @param ranges
      * @param fetch
      * @param useUids
      * @param mailboxSession

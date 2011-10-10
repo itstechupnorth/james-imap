@@ -71,15 +71,7 @@ public class ImapRequestStreamLineReader extends ImapRequestLineReader {
     }
 
     /**
-     * Reads and consumes a number of characters from the underlying reader,
-     * filling the char array provided. TODO: remove unnecessary copying of
-     * bits; line reader should maintain an internal ByteBuffer;
-     * 
-     * @param holder
-     *            A char array which will be filled with chars read from the
-     *            underlying reader.
-     * @throws DecodingException
-     *             If a char can't be read into each array element.
+     * @see ImapRequestLineReader#read(int, boolean)
      */
     public InputStream read(int size, boolean extraCRLF) throws DecodingException {
 

@@ -75,12 +75,9 @@ public class CapabilityProcessor extends AbstractMailboxProcessor<CapabilityRequ
         
     }
 
-    /*
-     * (non-Javadoc)
-     * 
+    /**
      * @see
-     * org.apache.james.imap.processor.AbstractMailboxProcessor#doProcess(org
-     * .apache.james.imap.api.message.request.ImapRequest,
+     * org.apache.james.imap.processor.AbstractMailboxProcessor#doProcess(org.apache.james.imap.api.message.request.ImapRequest,
      * org.apache.james.imap.api.process.ImapSession, java.lang.String,
      * org.apache.james.imap.api.ImapCommand,
      * org.apache.james.imap.api.process.ImapProcessor.Responder)
@@ -93,7 +90,7 @@ public class CapabilityProcessor extends AbstractMailboxProcessor<CapabilityRequ
     }
 
     /**
-     * Add a {@link CapabilityImplementor} which will get queried for
+     * Add a {@link CapabilityImplementingProcessor} which will get queried for
      * implemented capabilities
      * 
      * @param implementor
@@ -102,11 +99,9 @@ public class CapabilityProcessor extends AbstractMailboxProcessor<CapabilityRequ
         capabilities.add(implementor);
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.apache.james.imap.processor.CapabilityImplementingProcessor#
-     * getImplementedCapabilities(org.apache.james.imap.api.process.ImapSession)
+    /**
+     * @see org.apache.james.imap.processor.CapabilityImplementingProcessor
+     * #getImplementedCapabilities(org.apache.james.imap.api.process.ImapSession)
      */
     public List<String> getImplementedCapabilities(ImapSession session) {
         return CAPS;

@@ -31,17 +31,17 @@ public class AuthenticateResponseEncoder  extends AbstractChainedImapEncoder {
         super(next);
     }
 
-    /*
-     * (non-Javadoc)
-     * @see org.apache.james.imap.encode.base.AbstractChainedImapEncoder#isAcceptable(org.apache.james.imap.api.ImapMessage)
+    /**
+     * @see org.apache.james.imap.encode.base.AbstractChainedImapEncoder
+     * #isAcceptable(org.apache.james.imap.api.ImapMessage)
      */
     protected boolean isAcceptable(ImapMessage message) {
         return message instanceof AuthenticateResponse;
     }
 
-    /*
-     * (non-Javadoc)
-     * @see org.apache.james.imap.encode.base.AbstractChainedImapEncoder#doEncode(org.apache.james.imap.api.ImapMessage, org.apache.james.imap.encode.ImapResponseComposer, org.apache.james.imap.api.process.ImapSession)
+    /**
+     * @see org.apache.james.imap.encode.base.AbstractChainedImapEncoder
+     * #doEncode(org.apache.james.imap.api.ImapMessage, org.apache.james.imap.encode.ImapResponseComposer, org.apache.james.imap.api.process.ImapSession)
      */
     protected void doEncode(ImapMessage acceptableMessage, ImapResponseComposer composer, ImapSession session) throws IOException {
         composer.continuationResponse("");

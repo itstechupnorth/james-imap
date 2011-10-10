@@ -155,9 +155,10 @@ public abstract class ImapRequestLineReader {
      * filling the char array provided. TODO: remove unnecessary copying of
      * bits; line reader should maintain an internal ByteBuffer;
      * 
-     * @param holder
-     *            A char array which will be filled with chars read from the
-     *            underlying reader.
+     * @param size
+     *            count of characters to read and consume
+     * @param extraCRLF
+     *            <code>true</code> if extra CRLF is wanted, <code>false</code> else
      * @throws DecodingException
      *             If a char can't be read into each array element.
      */
@@ -278,8 +279,6 @@ public abstract class ImapRequestLineReader {
     /**
      * Reads one <code>date</code> argument from the request.
      * 
-     * @param request
-     *            <code>ImapRequestLineReader</code>, not null
      * @return <code>DayMonthYear</code>, not null
      * @throws DecodingException
      */

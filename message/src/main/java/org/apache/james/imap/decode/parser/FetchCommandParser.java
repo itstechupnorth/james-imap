@@ -269,12 +269,9 @@ public class FetchCommandParser extends AbstractUidCommandParser {
         return next;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
+    /**
      * @see
-     * org.apache.james.imap.decode.parser.AbstractUidCommandParser#decode(org
-     * .apache.james.imap.api.ImapCommand,
+     * org.apache.james.imap.decode.parser.AbstractUidCommandParser#decode(org.apache.james.imap.api.ImapCommand,
      * org.apache.james.imap.decode.ImapRequestLineReader, java.lang.String,
      * boolean, org.apache.james.imap.api.process.ImapSession)
      */

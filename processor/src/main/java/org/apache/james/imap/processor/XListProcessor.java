@@ -50,11 +50,9 @@ public class XListProcessor extends ListProcessor implements CapabilityImplement
         this.mailboxTyper = mailboxTyper;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.apache.james.imap.processor.CapabilityImplementingProcessor#
-     * getImplementedCapabilities(org.apache.james.imap.api.process.ImapSession)
+    /**
+     * @see org.apache.james.imap.processor.CapabilityImplementingProcessor
+     * #getImplementedCapabilities(org.apache.james.imap.api.process.ImapSession)
      */
     public List<String> getImplementedCapabilities(ImapSession session) {
         // if there's no mailboxTyper, do not annnoyce XLIST capability

@@ -44,7 +44,8 @@ public interface StatusResponse extends ImapResponseMessage {
     /**
      * Gets the server response type of this status message.
      * 
-     * @return
+     * @return The type, either {@link Type#BAD}, {@link Type#BYE}, {@link Type#NO},
+     *         {@link Type#OK} or {@link Type#PREAUTH}
      */
     public Type getServerResponseType();
 
@@ -205,7 +206,7 @@ public interface StatusResponse extends ImapResponseMessage {
         /**
          * Creates a RFC2060 <code>PERMENANTFLAGS</code> response code.
          * 
-         * @param flagNames
+         * @param flags
          *            <code>Collection<String></code> containing flag names
          * @return <code>ResponseCode</code>, not null
          */

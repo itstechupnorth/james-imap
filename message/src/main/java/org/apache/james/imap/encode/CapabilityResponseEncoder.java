@@ -38,12 +38,9 @@ public class CapabilityResponseEncoder extends AbstractChainedImapEncoder {
         super(next);
     }
 
-    /*
-     * (non-Javadoc)
-     * 
+    /**
      * @see
-     * org.apache.james.imap.encode.base.AbstractChainedImapEncoder#doEncode
-     * (org.apache.james.imap.api.ImapMessage,
+     * org.apache.james.imap.encode.base.AbstractChainedImapEncoder#doEncode(org.apache.james.imap.api.ImapMessage,
      * org.apache.james.imap.encode.ImapResponseComposer,
      * org.apache.james.imap.api.process.ImapSession)
      */
@@ -58,9 +55,7 @@ public class CapabilityResponseEncoder extends AbstractChainedImapEncoder {
         composer.end();        
     }
 
-    /*
-     * (non-Javadoc)
-     * 
+    /**
      * @see
      * org.apache.james.imap.encode.base.AbstractChainedImapEncoder#isAcceptable
      * (org.apache.james.imap.api.ImapMessage)

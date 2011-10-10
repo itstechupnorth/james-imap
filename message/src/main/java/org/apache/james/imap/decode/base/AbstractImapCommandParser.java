@@ -48,21 +48,15 @@ public abstract class AbstractImapCommandParser implements MessagingImapCommandP
         return command;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.apache.james.imap.decode.MessagingImapCommandParser#
-     * getStatusResponseFactory()
+    /**
+     * @see org.apache.james.imap.decode.MessagingImapCommandParser#getStatusResponseFactory()
      */
     public final StatusResponseFactory getStatusResponseFactory() {
         return statusResponseFactory;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.apache.james.imap.decode.MessagingImapCommandParser#
-     * setStatusResponseFactory
+    /**
+     * @see org.apache.james.imap.decode.MessagingImapCommandParser#setStatusResponseFactory
      * (org.apache.james.imap.api.message.response.StatusResponseFactory)
      */
     public final void setStatusResponseFactory(StatusResponseFactory statusResponseFactory) {

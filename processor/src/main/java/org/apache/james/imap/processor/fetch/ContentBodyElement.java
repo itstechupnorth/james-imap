@@ -61,8 +61,7 @@ class ContentBodyElement implements BodyElement {
     }
 
 
-    /*
-     * (non-Javadoc)
+    /**
      * @see org.apache.james.imap.message.response.Literal#getInputStream()
      */
     public InputStream getInputStream() throws IOException {
