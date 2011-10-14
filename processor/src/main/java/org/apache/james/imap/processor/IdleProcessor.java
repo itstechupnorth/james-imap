@@ -28,6 +28,7 @@ import java.util.Locale;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.james.imap.api.ImapCommand;
 import org.apache.james.imap.api.ImapSessionState;
@@ -86,6 +87,8 @@ public class IdleProcessor extends AbstractMailboxProcessor<IdleRequest> impleme
                 idleListener = null;
             }
 
+            final AtomicBoolean idleActive = new AtomicBoolean(true);
+            
             session.pushLineHandler(new ImapLineHandler() {
 
                 /**
@@ -118,6 +121,7 @@ public class IdleProcessor extends AbstractMailboxProcessor<IdleRequest> impleme
                         okComplete(command, tag, responder);
 
                     }
+                    idleActive.set(false);
                 }
             });
 
@@ -128,7 +132,7 @@ public class IdleProcessor extends AbstractMailboxProcessor<IdleRequest> impleme
                     public void run() {
                         // check if we need to cancel the Runnable
                         // See IMAP-275
-                        if (session.getState() != ImapSessionState.LOGOUT) {
+                        if (session.getState() != ImapSessionState.LOGOUT && idleActive.get()) {
                             // Send a heartbeat to the client to make sure we
                             // reset the idle timeout. This is kind of the same
                             // workaround as dovecot use.
