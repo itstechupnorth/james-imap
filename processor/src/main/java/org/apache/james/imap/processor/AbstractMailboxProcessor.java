@@ -137,10 +137,6 @@ abstract public class AbstractMailboxProcessor<M extends ImapRequest> extends Ab
         }
     }
 
-    /**
-     * TODO This method is in no interface declared and referenced only 5 lines above in this module.
-     * Should this be a protected or even a private method?
-     */
     private void unsolicitedResponses(final ImapSession session, final ImapProcessor.Responder responder, final SelectedMailbox selected, boolean omitExpunged, boolean useUid) {
         final boolean sizeChanged = selected.isSizeChanged();
         // New message response
