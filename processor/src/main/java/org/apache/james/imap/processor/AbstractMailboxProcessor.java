@@ -381,6 +381,13 @@ abstract public class AbstractMailboxProcessor<M extends ImapRequest> extends Ab
         if (namespace.equals(MailboxConstants.USER_NAMESPACE)) {
             user = ImapSessionUtils.getUserName(session);
         }
+        
+        // use uppercase for INBOX
+        //
+        // See IMAP-349
+        if (name.equalsIgnoreCase(MailboxConstants.INBOX)) {
+            name = MailboxConstants.INBOX;
+        }
 
         return new MailboxPath(namespace, user, name);
     }
