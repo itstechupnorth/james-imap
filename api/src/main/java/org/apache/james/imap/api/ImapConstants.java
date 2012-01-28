@@ -103,6 +103,8 @@ public interface ImapConstants {
     
     public static final String SUPPORTS_QRESYNC = "QRESYNC";
 
+    public static final String SUPPORTS_ACL = "ACL";
+    
     public static final String INBOX_NAME = "INBOX";
 
     public static final String MIME_TYPE_TEXT = "TEXT";
@@ -212,6 +214,16 @@ public interface ImapConstants {
     public static final String APPEND_COMMAND_NAME = "APPEND";
     
     public static final String ENABLE_COMMAND_NAME = "ENABLE";
+    
+    public static final String GETACL_COMMAND_NAME = "GETACL";
+
+    public static final String SETACL_COMMAND_NAME = "SETACL";
+    
+    public static final String DELETEACL_COMMAND_NAME = "DELETEACL";
+    
+    public static final String LISTRIGHTS_COMMAND_NAME = "LISTRIGHTS";
+    
+    public static final String MYRIGHTS_COMMAND_NAME = "MYRIGHTS";
 
     public static final String LIST_RESPONSE_NAME = "LIST";
 
@@ -220,6 +232,8 @@ public interface ImapConstants {
     public static final String LSUB_RESPONSE_NAME = "LSUB";
 
     public static final String SEARCH_RESPONSE_NAME = "SEARCH";
+
+    public static final String ACL_RESPONSE_NAME = "ACL";
 
     public static final String NAME_ATTRIBUTE_NOINFERIORS = "\\Noinferiors";
 

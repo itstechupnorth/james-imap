@@ -72,8 +72,8 @@ public class ImapParserFactory implements ImapCommandParserFactory {
         // RFC2342 NAMESPACE
         _imapCommands.put(ImapConstants.NAMESPACE_COMMAND_NAME, NamespaceCommandParser.class);
 
-        // RFC2086 GETACL, SETACL, DELETEACL, LISTRIGHTS, MYRIGHTS
-        // _imapCommands.put( "GETACL", GetAclCommand.class );
+        // RFC4314 GETACL, SETACL, DELETEACL, LISTRIGHTS, MYRIGHTS
+        _imapCommands.put(ImapConstants.GETACL_COMMAND_NAME, GetACLCommandParser.class );
         // _imapCommands.put( "SETACL", SetAclCommand.class );
         // _imapCommands.put( "DELETEACL", DeleteAclCommand.class );
         // _imapCommands.put( "LISTRIGHTS", ListRightsCommand.class );

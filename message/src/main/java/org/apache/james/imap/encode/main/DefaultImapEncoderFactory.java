@@ -20,6 +20,7 @@
 package org.apache.james.imap.encode.main;
 
 import org.apache.james.imap.api.display.Localizer;
+import org.apache.james.imap.encode.ACLResponseEncoder;
 import org.apache.james.imap.encode.AuthenticateResponseEncoder;
 import org.apache.james.imap.encode.CapabilityResponseEncoder;
 import org.apache.james.imap.encode.ContinuationResponseEncoder;
@@ -59,7 +60,9 @@ public class DefaultImapEncoderFactory implements ImapEncoderFactory {
      */
     public static final ImapEncoder createDefaultEncoder(final Localizer localizer, final boolean neverAddBodyStructureExtensions) {
         final EndImapEncoder endImapEncoder = new EndImapEncoder();
-        final NamespaceResponseEncoder namespaceEncoder = new NamespaceResponseEncoder(endImapEncoder);
+        
+        final ACLResponseEncoder aclResponseEncoder = new ACLResponseEncoder(endImapEncoder); 
+        final NamespaceResponseEncoder namespaceEncoder = new NamespaceResponseEncoder(aclResponseEncoder);
         final StatusResponseEncoder statusResponseEncoder = new StatusResponseEncoder(namespaceEncoder, localizer);
         final RecentResponseEncoder recentResponseEncoder = new RecentResponseEncoder(statusResponseEncoder);
         final FetchResponseEncoder fetchResponseEncoder = new FetchResponseEncoder(recentResponseEncoder, neverAddBodyStructureExtensions);

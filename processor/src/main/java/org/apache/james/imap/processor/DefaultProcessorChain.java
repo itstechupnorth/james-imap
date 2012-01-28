@@ -84,7 +84,11 @@ public class DefaultProcessorChain {
         final UnselectProcessor unselectProcessor = new UnselectProcessor(startTLSProcessor, mailboxManager, statusResponseFactory);
 
         final CompressProcessor compressProcessor = new CompressProcessor(unselectProcessor, statusResponseFactory);
-        final EnableProcessor enableProcessor = new EnableProcessor(compressProcessor, mailboxManager, statusResponseFactory);
+        
+        final GetACLProcessor getACLProcessor = new GetACLProcessor(compressProcessor, mailboxManager, statusResponseFactory);
+        
+        final EnableProcessor enableProcessor = new EnableProcessor(getACLProcessor, mailboxManager, statusResponseFactory);
+        
         // add for QRESYNC
         enableProcessor.addProcessor(selectProcessor);
         
@@ -108,6 +112,8 @@ public class DefaultProcessorChain {
         
         // Add to announce QRESYNC
         capabilityProcessor.addProcessor(selectProcessor);
+        
+        capabilityProcessor.addProcessor(getACLProcessor);
 
         return enableProcessor;
 

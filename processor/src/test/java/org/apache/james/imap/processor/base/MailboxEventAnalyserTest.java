@@ -43,6 +43,7 @@ import org.apache.james.imap.api.process.SelectedMailbox;
 import org.apache.james.mailbox.BadCredentialsException;
 import org.apache.james.mailbox.Content;
 import org.apache.james.mailbox.Headers;
+import org.apache.james.mailbox.MailboxACL.MailboxACLRight;
 import org.apache.james.mailbox.MailboxException;
 import org.apache.james.mailbox.MailboxListener;
 import org.apache.james.mailbox.MailboxManager;
@@ -295,6 +296,12 @@ public class MailboxEventAnalyserTest {
 
                 }
                 
+                @Override
+                public boolean hasRight(MailboxACLRight right, MailboxSession session) throws MailboxException {
+                    //FIXME: somebody should approve that always true is the proper result here
+                    return true;
+                }
+
             };
         }
         
