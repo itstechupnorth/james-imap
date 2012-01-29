@@ -24,7 +24,6 @@ import org.apache.james.imap.api.ImapCommand;
 /**
  * GETACL Request.
  * 
- * @author Peter Palaga
  */
 public class GetACLRequest extends AbstractImapRequest {
     private final String mailboxName;
