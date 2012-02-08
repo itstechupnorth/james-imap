@@ -19,6 +19,9 @@
 
 package org.apache.james.imap.encode.main;
 
+import java.text.MessageFormat;
+import java.util.Locale;
+
 import org.apache.james.imap.api.display.HumanReadableText;
 import org.apache.james.imap.api.display.Locales;
 import org.apache.james.imap.api.display.Localizer;
@@ -33,11 +36,21 @@ public class DefaultLocalizer implements Localizer {
      * @see Localizer#localize(HumanReadableText, Locales)
      */
     public String localize(HumanReadableText text, Locales locales) {
-        final String result;
+        
+        String result;
         if (text == null) {
             result = null;
         } else {
+            //FIXME implement the locale selection
+            final Locale chosenLocale = Locale.US;
+            //FIXME implement the localized value lookup depending on chosenLocale
             result = text.getDefaultValue();
+            
+            Object[] params = text.getParameters();
+            if (params != null && params.length > 0) {
+                MessageFormat messageFormat = new MessageFormat(result, chosenLocale);
+                result = messageFormat.format(params);
+            }
         }
         return result;
     }

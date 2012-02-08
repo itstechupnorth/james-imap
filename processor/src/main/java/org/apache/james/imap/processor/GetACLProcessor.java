@@ -31,7 +31,6 @@ import org.apache.james.imap.api.process.ImapProcessor;
 import org.apache.james.imap.api.process.ImapSession;
 import org.apache.james.imap.message.request.GetACLRequest;
 import org.apache.james.imap.message.response.ACLResponse;
-import org.apache.james.mailbox.InsufficientRightsException;
 import org.apache.james.mailbox.MailboxException;
 import org.apache.james.mailbox.MailboxManager;
 import org.apache.james.mailbox.MailboxNotFoundException;
@@ -40,6 +39,7 @@ import org.apache.james.mailbox.MessageManager;
 import org.apache.james.mailbox.MessageManager.MetaData;
 import org.apache.james.mailbox.MessageManager.MetaData.FetchGroup;
 import org.apache.james.mailbox.SimpleMailboxACL.Rfc4314Rights;
+import org.slf4j.Logger;
 
 /**
  * GETACL Processor.
@@ -58,8 +58,8 @@ public class GetACLProcessor extends AbstractMailboxProcessor<GetACLRequest> imp
 
         final MailboxManager mailboxManager = getMailboxManager();
         final MailboxSession mailboxSession = ImapSessionUtils.getMailboxSession(session);
+        final String mailboxName = message.getMailboxName();
         try {
-            String mailboxName = message.getMailboxName();
 
             MessageManager messageManager = mailboxManager.getMailbox(buildFullPath(session, mailboxName), mailboxSession);
 
@@ -74,27 +74,33 @@ public class GetACLProcessor extends AbstractMailboxProcessor<GetACLRequest> imp
              * existence information, much less the mailbox’s ACL.
              */
             if (!messageManager.hasRight(Rfc4314Rights.l_Lookup_RIGHT, mailboxSession)) {
-                throw new MailboxNotFoundException(mailboxName);
+                no(command, tag, responder, HumanReadableText.MAILBOX_NOT_FOUND);
             }
-
             /* RFC 4314 section 4. */
-            if (!messageManager.hasRight(Rfc4314Rights.a_Administer_RIGHT, mailboxSession)) {
-                throw new InsufficientRightsException();
+            else if (!messageManager.hasRight(Rfc4314Rights.a_Administer_RIGHT, mailboxSession)) {
+                Object[] params = new Object[] {
+                        Rfc4314Rights.a_Administer_RIGHT.toString(),
+                        command.getName(),
+                        mailboxName
+                };
+                HumanReadableText text = new HumanReadableText(HumanReadableText.UNSUFFICIENT_RIGHTS_KEY, HumanReadableText.UNSUFFICIENT_RIGHTS_DEFAULT_VALUE, params);
+                no(command, tag, responder, text);
             }
-
-            MetaData metaData = messageManager.getMetaData(false, mailboxSession, FetchGroup.NO_COUNT);
-            ACLResponse aclResponse = new ACLResponse(mailboxName, metaData.getACL());
-            responder.respond(aclResponse);
-            okComplete(command, tag, responder);
-            // FIXME should we send unsolicited responses here?
-            // unsolicitedResponses(session, responder, false);
+            else {
+                MetaData metaData = messageManager.getMetaData(false, mailboxSession, FetchGroup.NO_COUNT);
+                ACLResponse aclResponse = new ACLResponse(mailboxName, metaData.getACL());
+                responder.respond(aclResponse);
+                okComplete(command, tag, responder);
+                // FIXME should we send unsolicited responses here?
+                // unsolicitedResponses(session, responder, false);
+            }
         } catch (MailboxNotFoundException e) {
             no(command, tag, responder, HumanReadableText.MAILBOX_NOT_FOUND);
-        } catch (InsufficientRightsException e) {
-            // FIXME: be more specific in the human readable text.
-            no(command, tag, responder, HumanReadableText.GENERIC_FAILURE_DURING_PROCESSING);
         } catch (MailboxException e) {
-            // FIXME: be more specific in the human readable text.
+            Logger log = session.getLog();
+            if (log.isInfoEnabled()) {
+                log.info(command.getName() +" failed for mailbox " + mailboxName, e);
+            }
             no(command, tag, responder, HumanReadableText.GENERIC_FAILURE_DURING_PROCESSING);
         }
 
