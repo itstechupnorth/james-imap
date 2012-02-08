@@ -26,6 +26,7 @@ import javax.mail.Flags;
 
 import org.apache.james.imap.api.ImapCommand;
 import org.apache.james.imap.api.ImapConstants;
+import org.apache.james.imap.api.display.CharsetUtil;
 import org.apache.james.imap.api.message.IdRange;
 import org.apache.james.imap.encode.ImapResponseComposer;
 import org.apache.james.imap.encode.ImapResponseWriter;
@@ -276,6 +277,14 @@ public class ImapResponseComposerImpl implements ImapConstants, ImapResponseComp
     public ImapResponseComposer message(long number) throws IOException {
         space();
         writeASCII(Long.toString(number));
+        return this;
+    }
+    
+    /**
+     * @see org.apache.james.imap.encode.ImapResponseComposer#mailbox(java.lang.String)
+     */
+    public ImapResponseComposer mailbox(final String mailboxName) throws IOException {
+        quote(CharsetUtil.encodeModifiedUTF7(mailboxName));
         return this;
     }
 

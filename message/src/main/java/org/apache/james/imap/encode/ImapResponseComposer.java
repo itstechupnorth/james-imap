@@ -24,6 +24,7 @@ import java.io.IOException;
 import javax.mail.Flags;
 
 import org.apache.james.imap.api.ImapCommand;
+import org.apache.james.imap.api.display.CharsetUtil;
 import org.apache.james.imap.api.message.IdRange;
 import org.apache.james.imap.message.response.Literal;
 
@@ -48,7 +49,6 @@ public interface ImapResponseComposer {
      */
     public ImapResponseComposer flags(Flags flags) throws IOException;
 
-
     /**
      * Composes a <code>NIL</code>.
      * 
@@ -57,7 +57,8 @@ public interface ImapResponseComposer {
     public ImapResponseComposer nil() throws IOException;
 
     /**
-     * Compose a response which contains the {@link ImapCommand} to which the response belongs
+     * Compose a response which contains the {@link ImapCommand} to which the
+     * response belongs
      * 
      * @param command
      * @param message
@@ -66,7 +67,6 @@ public interface ImapResponseComposer {
      */
     public ImapResponseComposer commandResponse(ImapCommand command, String message) throws IOException;
 
-  
     /**
      * Writes the message provided to the client, prepended with the request
      * tag.
@@ -85,9 +85,8 @@ public interface ImapResponseComposer {
      */
     public ImapResponseComposer untaggedResponse(String message) throws IOException;
 
-
     /**
-     * Write a '*' 
+     * Write a '*'
      * 
      * @return composer
      * @throws IOException
@@ -121,6 +120,17 @@ public interface ImapResponseComposer {
     public ImapResponseComposer message(final long number) throws IOException;
 
     /**
+     * First encodes the given {@code mailboxName} using
+     * {@link CharsetUtil#encodeModifiedUTF7(String)} and then quotes the result
+     * with {@link #quote(String)}.
+     * 
+     * @param mailboxName
+     * @return
+     * @throws IOException
+     */
+    public ImapResponseComposer mailbox(final String mailboxName) throws IOException;
+
+    /**
      * Write the given sequence-set
      * 
      * @param ranges
@@ -130,7 +140,8 @@ public interface ImapResponseComposer {
     public ImapResponseComposer sequenceSet(final IdRange[] ranges) throws IOException;
 
     /**
-     * Write a CRLF and flush the composer which will write the content of it to the socket
+     * Write a CRLF and flush the composer which will write the content of it to
+     * the socket
      * 
      * @return composer
      * @throws IOException
@@ -156,8 +167,8 @@ public interface ImapResponseComposer {
     public ImapResponseComposer quote(String message) throws IOException;
 
     /**
-     * Compose a {@link Literal} and write it to the socket. Everything which was buffered before will
-     * get written too
+     * Compose a {@link Literal} and write it to the socket. Everything which
+     * was buffered before will get written too
      * 
      * @param literal
      * @return self
@@ -165,7 +176,6 @@ public interface ImapResponseComposer {
      */
     public ImapResponseComposer literal(Literal literal) throws IOException;
 
-    
     /**
      * Write a '('
      * 
@@ -206,7 +216,6 @@ public interface ImapResponseComposer {
      */
     public ImapResponseComposer quoteUpperCaseAscii(final String message) throws IOException;
 
-
     /**
      * Tell the {@link ImapResponseComposer} to skip the next written space
      * 
@@ -215,7 +224,6 @@ public interface ImapResponseComposer {
      */
     public ImapResponseComposer skipNextSpace() throws IOException;
 
-
     /**
      * Writes a continuation response.
      * 
@@ -223,7 +231,6 @@ public interface ImapResponseComposer {
      *            message for display, not null
      */
     public ImapResponseComposer continuationResponse(String message) throws IOException;
-    
 
     /**
      * Write a '}'

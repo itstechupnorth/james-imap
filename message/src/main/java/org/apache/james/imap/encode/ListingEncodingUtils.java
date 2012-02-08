@@ -55,7 +55,7 @@ public class ListingEncodingUtils {
         } else {
         	composer.quote(Character.toString(hierarchyDelimiter));
         }
-        composer.quote(name);
+        composer.mailbox(name);
 
         composer.end();
     }

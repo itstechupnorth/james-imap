@@ -57,7 +57,7 @@ public class ACLResponseEncoder extends AbstractChainedImapEncoder {
         composer.commandName(ImapConstants.ACL_RESPONSE_NAME);
         
         String mailboxName = aclResponse.getMailboxName();
-        composer.quote(mailboxName == null ? "" : mailboxName);
+        composer.mailbox(mailboxName == null ? "" : mailboxName);
         
         if (entries != null) {
             for (Entry<MailboxACLEntryKey, MailboxACLRights> entry : entries.entrySet()) {

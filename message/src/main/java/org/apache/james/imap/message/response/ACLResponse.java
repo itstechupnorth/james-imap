@@ -22,7 +22,6 @@ package org.apache.james.imap.message.response;
 import java.util.Map.Entry;
 
 import org.apache.james.imap.api.ImapConstants;
-import org.apache.james.imap.api.display.CharsetUtil;
 import org.apache.james.imap.api.message.response.ImapResponseMessage;
 import org.apache.james.mailbox.MailboxACL;
 import org.apache.james.mailbox.MailboxACL.MailboxACLEntryKey;
@@ -39,8 +38,7 @@ public final class ACLResponse implements ImapResponseMessage {
 
     public ACLResponse(String mailboxName, MailboxACL acl) {
         super();
-        //FIXME encodeModifiedUTF7 invocations should probably be moved to org.apache.james.imap.encode.ImapResponseComposer analogically to org.apache.james.imap.decode.ImapRequestLineReader.mailbox() 
-        this.mailboxName = CharsetUtil.encodeModifiedUTF7(mailboxName);
+        this.mailboxName = mailboxName;
         this.acl = acl;
     }
 

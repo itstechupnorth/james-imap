@@ -19,7 +19,6 @@
 
 package org.apache.james.imap.message.response;
 
-import org.apache.james.imap.api.display.CharsetUtil;
 import org.apache.james.imap.api.process.MailboxType;
 
 /**
@@ -53,7 +52,7 @@ public abstract class AbstractListingResponse {
         this.unmarked = unmarked;
         this.children = hasChildren;
         this.noChildren = hasNoChildren;
-        this.name = CharsetUtil.encodeModifiedUTF7(name);
+        this.name = name;
         this.hierarchyDelimiter = hierarchyDelimiter;
         this.type = type;
     }
