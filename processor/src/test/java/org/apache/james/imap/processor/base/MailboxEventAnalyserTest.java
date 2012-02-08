@@ -63,11 +63,9 @@ import org.junit.Test;
 import org.slf4j.Logger;
 
 public class MailboxEventAnalyserTest {
-
     private static final long BASE_SESSION_ID = 99;
-
-    
     private MailboxPath mailboxPath = new MailboxPath("namespace", "user", "name");
+
     private final MailboxManager mockManager = new MailboxManager() {
         
         @Override
@@ -298,7 +296,6 @@ public class MailboxEventAnalyserTest {
                 
                 @Override
                 public boolean hasRight(MailboxACLRight right, MailboxSession session) throws MailboxException {
-                    //FIXME: somebody should approve that always true is the proper result here
                     return true;
                 }
 
