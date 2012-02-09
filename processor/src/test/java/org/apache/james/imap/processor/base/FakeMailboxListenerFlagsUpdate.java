@@ -21,10 +21,10 @@ package org.apache.james.imap.processor.base;
 
 import java.util.List;
 
-import org.apache.james.mailbox.MailboxPath;
 import org.apache.james.mailbox.MailboxSession;
-import org.apache.james.mailbox.UpdatedFlags;
 import org.apache.james.mailbox.MailboxListener.FlagsUpdated;
+import org.apache.james.mailbox.model.MailboxPath;
+import org.apache.james.mailbox.model.UpdatedFlags;
 
 public class FakeMailboxListenerFlagsUpdate extends FlagsUpdated {
 

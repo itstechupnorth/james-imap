@@ -35,14 +35,14 @@ import org.apache.james.imap.api.process.MailboxType;
 import org.apache.james.imap.api.process.MailboxTyper;
 import org.apache.james.imap.message.request.ListRequest;
 import org.apache.james.imap.message.response.ListResponse;
-import org.apache.james.mailbox.MailboxConstants;
-import org.apache.james.mailbox.MailboxException;
 import org.apache.james.mailbox.MailboxManager;
-import org.apache.james.mailbox.MailboxMetaData;
-import org.apache.james.mailbox.MailboxPath;
-import org.apache.james.mailbox.MailboxQuery;
 import org.apache.james.mailbox.MailboxSession;
-import org.apache.james.mailbox.MailboxMetaData.Children;
+import org.apache.james.mailbox.exception.MailboxException;
+import org.apache.james.mailbox.model.MailboxConstants;
+import org.apache.james.mailbox.model.MailboxMetaData;
+import org.apache.james.mailbox.model.MailboxPath;
+import org.apache.james.mailbox.model.MailboxQuery;
+import org.apache.james.mailbox.model.MailboxMetaData.Children;
 
 public class ListProcessor extends AbstractMailboxProcessor<ListRequest> {
 

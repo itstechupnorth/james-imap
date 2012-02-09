@@ -18,7 +18,7 @@
  ****************************************************************/
 package org.apache.james.imap.api.process;
 
-import org.apache.james.mailbox.MailboxPath;
+import org.apache.james.mailbox.model.MailboxPath;
 
 /**
  * 

@@ -28,8 +28,8 @@ import org.apache.james.imap.api.ImapMessage;
 import org.apache.james.imap.api.process.ImapSession;
 import org.apache.james.imap.encode.base.AbstractChainedImapEncoder;
 import org.apache.james.imap.message.response.ACLResponse;
-import org.apache.james.mailbox.MailboxACL.MailboxACLEntryKey;
-import org.apache.james.mailbox.MailboxACL.MailboxACLRights;
+import org.apache.james.mailbox.model.MailboxACL.MailboxACLEntryKey;
+import org.apache.james.mailbox.model.MailboxACL.MailboxACLRights;
 
 /**
  * ACL Response Encoder.

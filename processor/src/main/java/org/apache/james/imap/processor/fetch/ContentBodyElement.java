@@ -27,8 +27,8 @@ import java.io.InputStream;
 
 
 import org.apache.james.imap.message.response.FetchResponse.BodyElement;
-import org.apache.james.mailbox.Content;
-import org.apache.james.mailbox.MailboxException;
+import org.apache.james.mailbox.exception.MailboxException;
+import org.apache.james.mailbox.model.Content;
 
 class ContentBodyElement implements BodyElement {
     private final String name;

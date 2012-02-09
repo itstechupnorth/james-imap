@@ -42,17 +42,17 @@ import org.apache.james.imap.api.process.SelectedMailbox;
 import org.apache.james.imap.message.request.StoreRequest;
 import org.apache.james.imap.message.response.FetchResponse;
 import org.apache.james.imap.processor.base.FetchGroupImpl;
-import org.apache.james.mailbox.MailboxException;
 import org.apache.james.mailbox.MailboxManager;
 import org.apache.james.mailbox.MailboxSession;
 import org.apache.james.mailbox.MessageManager;
 import org.apache.james.mailbox.MessageManager.MetaData;
 import org.apache.james.mailbox.MessageManager.MetaData.FetchGroup;
-import org.apache.james.mailbox.MessageRange;
-import org.apache.james.mailbox.MessageRange.Type;
-import org.apache.james.mailbox.MessageRangeException;
-import org.apache.james.mailbox.MessageResult;
-import org.apache.james.mailbox.MessageResultIterator;
+import org.apache.james.mailbox.exception.MailboxException;
+import org.apache.james.mailbox.exception.MessageRangeException;
+import org.apache.james.mailbox.model.MessageRange;
+import org.apache.james.mailbox.model.MessageResult;
+import org.apache.james.mailbox.model.MessageResultIterator;
+import org.apache.james.mailbox.model.MessageRange.Type;
 
 public class StoreProcessor extends AbstractMailboxProcessor<StoreRequest> {
 

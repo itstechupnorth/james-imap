@@ -23,8 +23,8 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
-import org.apache.james.mailbox.MessageResult;
-import org.apache.james.mailbox.MessageResult.MimePath;
+import org.apache.james.mailbox.model.MessageResult;
+import org.apache.james.mailbox.model.MessageResult.MimePath;
 
 /**
  * Specifies a fetch group.
@@ -73,7 +73,7 @@ public class FetchGroupImpl implements MessageResult.FetchGroup {
     /**
      * Gets content descriptors for the parts to be fetched.
      * 
-     * @return <code>Set</code> of {@link org.apache.james.mailbox.MessageResult.FetchGroup.PartContentDescriptor},
+     * @return <code>Set</code> of {@link org.apache.james.mailbox.model.MessageResult.FetchGroup.PartContentDescriptor},
      *         possibly null
      */
     public Set<PartContentDescriptor> getPartContentDescriptors() {

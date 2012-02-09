@@ -28,8 +28,8 @@ import org.apache.james.imap.api.process.ImapSession;
 import org.apache.james.imap.message.request.SubscribeRequest;
 import org.apache.james.mailbox.MailboxManager;
 import org.apache.james.mailbox.MailboxSession;
-import org.apache.james.mailbox.SubscriptionException;
 import org.apache.james.mailbox.SubscriptionManager;
+import org.apache.james.mailbox.exception.SubscriptionException;
 
 public class SubscribeProcessor extends AbstractSubscriptionProcessor<SubscribeRequest> {
 

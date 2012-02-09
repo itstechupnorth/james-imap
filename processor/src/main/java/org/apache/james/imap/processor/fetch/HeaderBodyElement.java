@@ -26,8 +26,8 @@ import java.util.List;
 
 import org.apache.james.imap.api.ImapConstants;
 import org.apache.james.imap.message.response.FetchResponse.BodyElement;
-import org.apache.james.mailbox.MailboxException;
-import org.apache.james.mailbox.MessageResult;
+import org.apache.james.mailbox.exception.MailboxException;
+import org.apache.james.mailbox.model.MessageResult;
 
 /**
  * {@link BodyElement} which represent a HEADER element specified by for example (BODY[1.HEADER])

@@ -23,9 +23,9 @@ import java.util.Map.Entry;
 
 import org.apache.james.imap.api.ImapConstants;
 import org.apache.james.imap.api.message.response.ImapResponseMessage;
-import org.apache.james.mailbox.MailboxACL;
-import org.apache.james.mailbox.MailboxACL.MailboxACLEntryKey;
-import org.apache.james.mailbox.MailboxACL.MailboxACLRights;
+import org.apache.james.mailbox.model.MailboxACL;
+import org.apache.james.mailbox.model.MailboxACL.MailboxACLEntryKey;
+import org.apache.james.mailbox.model.MailboxACL.MailboxACLRights;
 
 /**
  * ACL Response.

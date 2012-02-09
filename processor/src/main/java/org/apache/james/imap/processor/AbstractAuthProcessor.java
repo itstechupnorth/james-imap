@@ -25,13 +25,13 @@ import org.apache.james.imap.api.message.request.ImapRequest;
 import org.apache.james.imap.api.message.response.StatusResponseFactory;
 import org.apache.james.imap.api.process.ImapProcessor;
 import org.apache.james.imap.api.process.ImapSession;
-import org.apache.james.mailbox.BadCredentialsException;
-import org.apache.james.mailbox.MailboxConstants;
-import org.apache.james.mailbox.MailboxException;
-import org.apache.james.mailbox.MailboxExistsException;
 import org.apache.james.mailbox.MailboxManager;
-import org.apache.james.mailbox.MailboxPath;
 import org.apache.james.mailbox.MailboxSession;
+import org.apache.james.mailbox.exception.BadCredentialsException;
+import org.apache.james.mailbox.exception.MailboxException;
+import org.apache.james.mailbox.exception.MailboxExistsException;
+import org.apache.james.mailbox.model.MailboxConstants;
+import org.apache.james.mailbox.model.MailboxPath;
 
 public abstract class AbstractAuthProcessor<M extends ImapRequest> extends AbstractMailboxProcessor<M>{
 

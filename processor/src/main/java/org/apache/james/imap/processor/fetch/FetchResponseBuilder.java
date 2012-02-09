@@ -37,13 +37,13 @@ import org.apache.james.imap.api.message.FetchData;
 import org.apache.james.imap.api.process.ImapSession;
 import org.apache.james.imap.api.process.SelectedMailbox;
 import org.apache.james.imap.message.response.FetchResponse;
-import org.apache.james.mailbox.Content;
-import org.apache.james.mailbox.MailboxException;
 import org.apache.james.mailbox.MailboxSession;
 import org.apache.james.mailbox.MessageManager;
-import org.apache.james.mailbox.MessageRange;
-import org.apache.james.mailbox.MessageRangeException;
-import org.apache.james.mailbox.MessageResult;
+import org.apache.james.mailbox.exception.MailboxException;
+import org.apache.james.mailbox.exception.MessageRangeException;
+import org.apache.james.mailbox.model.Content;
+import org.apache.james.mailbox.model.MessageRange;
+import org.apache.james.mailbox.model.MessageResult;
 
 public final class FetchResponseBuilder {
 

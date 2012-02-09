@@ -25,9 +25,9 @@ import java.util.List;
 import javax.mail.Flags;
 
 import org.apache.james.mailbox.MailboxListener;
-import org.apache.james.mailbox.MailboxPath;
 import org.apache.james.mailbox.MailboxSession;
-import org.apache.james.mailbox.MessageMetaData;
+import org.apache.james.mailbox.model.MailboxPath;
+import org.apache.james.mailbox.model.MessageMetaData;
 
 public class FakeMailboxListenerAdded extends MailboxListener.Added {
 

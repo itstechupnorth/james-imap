@@ -22,7 +22,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import org.apache.james.mailbox.Content;
+import org.apache.james.mailbox.model.Content;
 
 /**
  * Just an Empty {@link Content}

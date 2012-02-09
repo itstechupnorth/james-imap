@@ -21,7 +21,7 @@ package org.apache.james.imap.processor.fetch;
 
 import java.io.IOException;
 
-import org.apache.james.mailbox.Content;
+import org.apache.james.mailbox.model.Content;
 
 public class HeadersBodyElement extends ContentBodyElement{
 

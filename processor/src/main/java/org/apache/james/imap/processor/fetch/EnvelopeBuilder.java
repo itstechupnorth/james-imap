@@ -29,9 +29,9 @@ import javax.mail.internet.MimeUtility;
 
 import org.apache.james.imap.api.ImapConstants;
 import org.apache.james.imap.message.response.FetchResponse;
-import org.apache.james.mailbox.Headers;
-import org.apache.james.mailbox.MailboxException;
-import org.apache.james.mailbox.MessageResult;
+import org.apache.james.mailbox.exception.MailboxException;
+import org.apache.james.mailbox.model.Headers;
+import org.apache.james.mailbox.model.MessageResult;
 import org.apache.james.mime4j.codec.EncoderUtil;
 import org.apache.james.mime4j.dom.address.Address;
 import org.apache.james.mime4j.dom.address.AddressList;

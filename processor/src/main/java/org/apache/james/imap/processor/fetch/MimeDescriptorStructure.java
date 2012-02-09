@@ -30,8 +30,8 @@ import java.util.Map;
 import org.apache.james.imap.message.response.FetchResponse;
 import org.apache.james.imap.message.response.FetchResponse.Envelope;
 import org.apache.james.imap.message.response.FetchResponse.Structure;
-import org.apache.james.mailbox.MailboxException;
-import org.apache.james.mailbox.MimeDescriptor;
+import org.apache.james.mailbox.exception.MailboxException;
+import org.apache.james.mailbox.model.MimeDescriptor;
 
 final class MimeDescriptorStructure implements FetchResponse.Structure {
 

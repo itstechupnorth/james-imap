@@ -23,7 +23,7 @@ import java.util.Collection;
 
 import javax.mail.Flags;
 
-import org.apache.james.mailbox.MailboxPath;
+import org.apache.james.mailbox.model.MailboxPath;
 
 /**
  * Interface which represent a selected Mailbox during the selected state

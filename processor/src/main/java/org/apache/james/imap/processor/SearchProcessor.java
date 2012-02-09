@@ -49,18 +49,18 @@ import org.apache.james.imap.message.request.SearchRequest;
 import org.apache.james.imap.message.response.ESearchResponse;
 import org.apache.james.imap.message.response.SearchResponse;
 import org.apache.james.imap.processor.base.FetchGroupImpl;
-import org.apache.james.mailbox.MailboxException;
 import org.apache.james.mailbox.MailboxManager;
 import org.apache.james.mailbox.MailboxSession;
 import org.apache.james.mailbox.MessageManager;
 import org.apache.james.mailbox.MessageManager.MetaData;
-import org.apache.james.mailbox.MessageRange;
-import org.apache.james.mailbox.MessageRangeException;
-import org.apache.james.mailbox.MessageResultIterator;
-import org.apache.james.mailbox.SearchQuery;
-import org.apache.james.mailbox.SearchQuery.AddressType;
-import org.apache.james.mailbox.SearchQuery.Criterion;
-import org.apache.james.mailbox.SearchQuery.DateResolution;
+import org.apache.james.mailbox.exception.MailboxException;
+import org.apache.james.mailbox.exception.MessageRangeException;
+import org.apache.james.mailbox.model.MessageRange;
+import org.apache.james.mailbox.model.MessageResultIterator;
+import org.apache.james.mailbox.model.SearchQuery;
+import org.apache.james.mailbox.model.SearchQuery.AddressType;
+import org.apache.james.mailbox.model.SearchQuery.Criterion;
+import org.apache.james.mailbox.model.SearchQuery.DateResolution;
 
 public class SearchProcessor extends AbstractMailboxProcessor<SearchRequest> implements CapabilityImplementingProcessor {
 

@@ -19,8 +19,8 @@
 
 package org.apache.james.imap.processor.base;
 
-import org.apache.james.mailbox.MessageResult.MimePath;
-import org.apache.james.mailbox.MessageResult.FetchGroup.PartContentDescriptor;
+import org.apache.james.mailbox.model.MessageResult.MimePath;
+import org.apache.james.mailbox.model.MessageResult.FetchGroup.PartContentDescriptor;
 
 public class PartContentDescriptorImpl implements PartContentDescriptor {
 
