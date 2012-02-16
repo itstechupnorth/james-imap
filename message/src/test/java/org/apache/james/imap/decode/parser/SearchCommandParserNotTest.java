@@ -19,11 +19,10 @@
 
 package org.apache.james.imap.decode.parser;
 
-import static org.junit.Assert.assertEquals;
-
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.util.Arrays;
+import java.util.List;
 
 import org.apache.james.imap.api.ImapCommand;
 import org.apache.james.imap.api.ImapMessage;
@@ -38,6 +37,8 @@ import org.jmock.integration.junit4.JUnit4Mockery;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
+import static org.junit.Assert.assertEquals;
 
 @RunWith(JMock.class)
 public class SearchCommandParserNotTest {
@@ -114,6 +115,18 @@ public class SearchCommandParserNotTest {
         checkValid("Not NEW\r\n", key);
         checkValid("not new\r\n", key);
     }
+    
+    @Test 
+    public void testUserFlagsParsing() throws Exception { 
+        ImapRequestLineReader reader = new ImapRequestStreamLineReader( 
+                new ByteArrayInputStream("NOT (KEYWORD bar KEYWORD foo)".getBytes("US-ASCII")), 
+                new ByteArrayOutputStream()); 
+        SearchKey key = parser.searchKey(null, reader, null, false); 
+        List<SearchKey> keys = key.getKeys().get(0).getKeys(); 
+        assertEquals(2, keys.size()); 
+        assertEquals("bar", keys.get(0).getValue()); 
+        assertEquals("foo", keys.get(1).getValue()); 
+    } 
 
     private void checkValid(String input, final SearchKey key) throws Exception {
         ImapRequestLineReader reader = new ImapRequestStreamLineReader(

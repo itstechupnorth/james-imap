@@ -188,7 +188,7 @@ public abstract class ImapRequestLineReader {
      * Reads an argument of type "atom" from the request.
      */
     public String atom() throws DecodingException {
-        return consumeWord(new ATOM_CHARValidator());
+        return consumeWord(new ATOM_CHARValidator(), true);
     }
 
     /**
