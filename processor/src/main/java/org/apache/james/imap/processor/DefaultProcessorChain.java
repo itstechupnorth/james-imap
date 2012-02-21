@@ -86,8 +86,12 @@ public class DefaultProcessorChain {
         final CompressProcessor compressProcessor = new CompressProcessor(unselectProcessor, statusResponseFactory);
         
         final GetACLProcessor getACLProcessor = new GetACLProcessor(compressProcessor, mailboxManager, statusResponseFactory);
+        final SetACLProcessor setACLProcessor = new SetACLProcessor(getACLProcessor, mailboxManager, statusResponseFactory);
+        final DeleteACLProcessor deleteACLProcessor = new DeleteACLProcessor(setACLProcessor, mailboxManager, statusResponseFactory);
+        final ListRightsProcessor listRightsProcessor = new ListRightsProcessor(deleteACLProcessor, mailboxManager, statusResponseFactory);
+        final MyRightsProcessor myRightsProcessor = new MyRightsProcessor(listRightsProcessor, mailboxManager, statusResponseFactory);
         
-        final EnableProcessor enableProcessor = new EnableProcessor(getACLProcessor, mailboxManager, statusResponseFactory);
+        final EnableProcessor enableProcessor = new EnableProcessor(myRightsProcessor, mailboxManager, statusResponseFactory);
         
         // add for QRESYNC
         enableProcessor.addProcessor(selectProcessor);

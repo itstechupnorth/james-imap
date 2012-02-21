@@ -46,8 +46,12 @@ import org.apache.james.mailbox.MailboxSession;
 import org.apache.james.mailbox.MessageManager;
 import org.apache.james.mailbox.exception.BadCredentialsException;
 import org.apache.james.mailbox.exception.MailboxException;
+import org.apache.james.mailbox.exception.UnsupportedRightException;
 import org.apache.james.mailbox.model.Content;
 import org.apache.james.mailbox.model.Headers;
+import org.apache.james.mailbox.model.MailboxACL.EditMode;
+import org.apache.james.mailbox.model.MailboxACL.MailboxACLEntryKey;
+import org.apache.james.mailbox.model.MailboxACL.MailboxACLRights;
 import org.apache.james.mailbox.model.MailboxMetaData;
 import org.apache.james.mailbox.model.MailboxPath;
 import org.apache.james.mailbox.model.MailboxQuery;
@@ -297,6 +301,21 @@ public class MailboxEventAnalyserTest {
                 @Override
                 public boolean hasRight(MailboxACLRight right, MailboxSession session) throws MailboxException {
                     return true;
+                }
+
+                @Override
+                public MailboxACLRights myRights(MailboxSession session) throws MailboxException {
+                    throw new UnsupportedOperationException("Not implemented");
+                }
+
+                @Override
+                public MailboxACLRights[] listRigths(MailboxACLEntryKey identifier, MailboxSession session) throws UnsupportedRightException {
+                    throw new UnsupportedOperationException("Not implemented");
+                }
+
+                @Override
+                public void setRights(MailboxACLEntryKey mailboxACLEntryKey, EditMode editMode, MailboxACLRights mailboxAclRights) throws UnsupportedRightException {
+                    throw new UnsupportedOperationException("Not implemented");
                 }
 
             };
@@ -614,5 +633,12 @@ public class MailboxEventAnalyserTest {
         final Iterator<Long> iterator = analyser.flagUpdateUids().iterator();
         assertNotNull(iterator);
         assertFalse(iterator.hasNext());
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.james.mailbox.MessageManager#myRights(org.apache.james.mailbox.MailboxSession)
+     */
+    public MailboxACLRights myRights(MailboxSession session) throws MailboxException {
+        return null;
     }
 }

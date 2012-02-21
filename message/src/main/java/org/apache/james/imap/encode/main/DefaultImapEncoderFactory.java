@@ -34,6 +34,8 @@ import org.apache.james.imap.encode.ImapEncoder;
 import org.apache.james.imap.encode.ImapEncoderFactory;
 import org.apache.james.imap.encode.LSubResponseEncoder;
 import org.apache.james.imap.encode.ListResponseEncoder;
+import org.apache.james.imap.encode.ListRightsResponseEncoder;
+import org.apache.james.imap.encode.MyRightsResponseEncoder;
 import org.apache.james.imap.encode.NamespaceResponseEncoder;
 import org.apache.james.imap.encode.RecentResponseEncoder;
 import org.apache.james.imap.encode.MailboxStatusResponseEncoder;
@@ -61,7 +63,9 @@ public class DefaultImapEncoderFactory implements ImapEncoderFactory {
     public static final ImapEncoder createDefaultEncoder(final Localizer localizer, final boolean neverAddBodyStructureExtensions) {
         final EndImapEncoder endImapEncoder = new EndImapEncoder();
         
-        final ACLResponseEncoder aclResponseEncoder = new ACLResponseEncoder(endImapEncoder); 
+        final MyRightsResponseEncoder myRightsResponseEncoder = new MyRightsResponseEncoder(endImapEncoder); 
+        final ListRightsResponseEncoder listRightsResponseEncoder = new ListRightsResponseEncoder(myRightsResponseEncoder); 
+        final ACLResponseEncoder aclResponseEncoder = new ACLResponseEncoder(listRightsResponseEncoder); 
         final NamespaceResponseEncoder namespaceEncoder = new NamespaceResponseEncoder(aclResponseEncoder);
         final StatusResponseEncoder statusResponseEncoder = new StatusResponseEncoder(namespaceEncoder, localizer);
         final RecentResponseEncoder recentResponseEncoder = new RecentResponseEncoder(statusResponseEncoder);

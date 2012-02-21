@@ -27,8 +27,7 @@ import org.apache.james.imap.api.message.response.StatusResponse;
 import org.apache.james.imap.api.process.ImapProcessor;
 import org.apache.james.imap.api.process.ImapProcessor.Responder;
 import org.apache.james.imap.api.process.ImapSession;
-import org.apache.james.imap.message.request.GetACLRequest;
-import org.apache.james.imap.message.response.ACLResponse;
+import org.apache.james.imap.message.request.SetACLRequest;
 import org.apache.james.imap.message.response.UnpooledStatusResponseFactory;
 import org.apache.james.mailbox.MailboxManager;
 import org.apache.james.mailbox.MailboxSession;
@@ -39,9 +38,13 @@ import org.apache.james.mailbox.MessageManager.MetaData.FetchGroup;
 import org.apache.james.mailbox.exception.MailboxException;
 import org.apache.james.mailbox.exception.MailboxNotFoundException;
 import org.apache.james.mailbox.model.MailboxACL;
+import org.apache.james.mailbox.model.MailboxACL.EditMode;
+import org.apache.james.mailbox.model.MailboxACL.MailboxACLEntryKey;
+import org.apache.james.mailbox.model.MailboxACL.MailboxACLRights;
 import org.apache.james.mailbox.model.MailboxPath;
 import org.apache.james.mailbox.model.SimpleMailboxACL;
 import org.apache.james.mailbox.model.SimpleMailboxACL.Rfc4314Rights;
+import org.apache.james.mailbox.model.SimpleMailboxACL.SimpleMailboxACLEntryKey;
 import org.jmock.Expectations;
 import org.jmock.Mockery;
 import org.jmock.integration.junit4.JMock;
@@ -51,14 +54,17 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 /**
- * GetACLProcessor Test.
+ * SetACLProcessor Test.
  * 
+ * @author Peter Palaga
  */
 @RunWith(JMock.class)
-public class GetACLProcessorTest {
+public class SetACLProcessorTest {
 
     private static final String MAILBOX_NAME = ImapConstants.INBOX_NAME;
     private static final String USER_1 = "user1";
+    private static final String SET_RIGHTS = "aw";
+    private static final String UNSUPPORTED_RIGHT = "W";
 
     ImapSession imapSessionStub;
     MailboxManager mailboxManagerStub;
@@ -66,10 +72,12 @@ public class GetACLProcessorTest {
     MessageManager messageManagerStub;
     MetaData metaDataStub;
     Mockery mockery = new JUnit4Mockery();
-    GetACLRequest getACLRequest;
+    SetACLRequest replaceACLRequest;
     UnpooledStatusResponseFactory statusResponseFactory;
-    GetACLProcessor subject;
+    SetACLProcessor subject;
     User user1Stub;
+    MailboxACLEntryKey user1Key;
+    MailboxACLRights setRights;
 
     private Expectations prepareRightsExpectations() throws MailboxException {
         return new Expectations() {
@@ -101,14 +109,39 @@ public class GetACLProcessorTest {
     public void setUp() throws Exception {
         statusResponseFactory = new UnpooledStatusResponseFactory();
         mailboxManagerStub = mockery.mock(MailboxManager.class);
-        subject = new GetACLProcessor(mockery.mock(ImapProcessor.class), mailboxManagerStub, statusResponseFactory);
+        subject = new SetACLProcessor(mockery.mock(ImapProcessor.class), mailboxManagerStub, statusResponseFactory);
         imapSessionStub = mockery.mock(ImapSession.class);
         mailboxSessionStub = mockery.mock(MailboxSession.class);
         user1Stub = mockery.mock(User.class);
         messageManagerStub = mockery.mock(MessageManager.class);
         metaDataStub = mockery.mock(MetaData.class);
 
-        getACLRequest = new GetACLRequest("TAG", ImapCommand.anyStateCommand("Name"), MAILBOX_NAME);
+        replaceACLRequest = new SetACLRequest("TAG", ImapCommand.anyStateCommand("Name"), MAILBOX_NAME, USER_1, SET_RIGHTS);
+
+        user1Key = new SimpleMailboxACLEntryKey(USER_1);
+        setRights = new Rfc4314Rights(SET_RIGHTS);
+    }
+    
+    @Test
+    public void testUnsupportedRight() throws Exception {
+
+        Expectations expectations = prepareRightsExpectations();
+        expectations.allowing(messageManagerStub).hasRight(expectations.with(Expectations.equal(Rfc4314Rights.l_Lookup_RIGHT)), expectations.with(Expectations.same(mailboxSessionStub)));
+        expectations.will(Expectations.returnValue(false));
+
+        expectations.allowing(mailboxManagerStub).getMailbox(expectations.with(Expectations.any(MailboxPath.class)), expectations.with(Expectations.any(MailboxSession.class)));
+        expectations.will(Expectations.returnValue(messageManagerStub));
+
+        mockery.checking(expectations);
+
+        final Responder responderMock = mockery.mock(Responder.class);
+        mockery.checking(new Expectations() {
+            {
+                oneOf(responderMock).respond(with(new StatusResponseTypeMatcher(StatusResponse.Type.BAD)));
+            }
+        });
+
+        subject.doProcess(new SetACLRequest("TAG", ImapCommand.anyStateCommand("Name"), MAILBOX_NAME, USER_1, UNSUPPORTED_RIGHT), responderMock, imapSessionStub);
 
     }
 
@@ -131,7 +164,7 @@ public class GetACLProcessorTest {
             }
         });
 
-        subject.doProcess(getACLRequest, responderMock, imapSessionStub);
+        subject.doProcess(replaceACLRequest, responderMock, imapSessionStub);
 
     }
     
@@ -157,7 +190,7 @@ public class GetACLProcessorTest {
             }
         });
 
-        subject.doProcess(getACLRequest, responderMock, imapSessionStub);
+        subject.doProcess(replaceACLRequest, responderMock, imapSessionStub);
 
     }
     
@@ -177,12 +210,15 @@ public class GetACLProcessorTest {
             }
         });
 
-        subject.doProcess(getACLRequest, responderMock, imapSessionStub);
+        subject.doProcess(replaceACLRequest, responderMock, imapSessionStub);
     }
 
     @Test
-    public void testSufficientRights() throws Exception {
-
+    public void testAddRights() throws Exception {
+        testOp("+", EditMode.ADD);
+    }
+    
+    private void testOp(String prefix, EditMode editMode) throws MailboxException {
         final MailboxACL acl = SimpleMailboxACL.OWNER_FULL_ACL;
 
         Expectations expectations = prepareRightsExpectations();
@@ -196,22 +232,32 @@ public class GetACLProcessorTest {
         expectations.allowing(messageManagerStub).hasRight(expectations.with(Expectations.equal(Rfc4314Rights.a_Administer_RIGHT)), expectations.with(Expectations.same(mailboxSessionStub)));
         expectations.will(Expectations.returnValue(true));
         
+        expectations.allowing(messageManagerStub).setRights(expectations.with(Expectations.equal(user1Key)), expectations.with(Expectations.equal(editMode)), expectations.with(Expectations.equal(setRights)));
 
         expectations.allowing(metaDataStub).getACL();
         expectations.will(Expectations.returnValue(acl));
 
         mockery.checking(expectations);
 
-        final ACLResponse response = new ACLResponse(MAILBOX_NAME, acl);
         final Responder responderMock = mockery.mock(Responder.class);
         mockery.checking(new Expectations() {
             {
-                oneOf(responderMock).respond(with(equal(response)));
                 oneOf(responderMock).respond(with(new StatusResponseTypeMatcher(StatusResponse.Type.OK)));
             }
         });
 
-        subject.doProcess(getACLRequest, responderMock, imapSessionStub);
+        SetACLRequest r = new SetACLRequest("TAG", ImapCommand.anyStateCommand("Name"), MAILBOX_NAME, USER_1, prefix + SET_RIGHTS);
+        subject.doProcess(r, responderMock, imapSessionStub);
+    }
+    
+    @Test
+    public void testRemoveRights() throws Exception {
+        testOp("-", EditMode.REMOVE);
+    }
+
+    @Test
+    public void testReplaceRights() throws Exception {
+        testOp("", EditMode.REPLACE);
     }
 
 }

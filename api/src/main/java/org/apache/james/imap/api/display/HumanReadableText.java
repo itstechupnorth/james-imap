@@ -156,9 +156,12 @@ public class HumanReadableText {
     public static final HumanReadableText QRESYNC_CLOSED = new HumanReadableText("org.apache.james.imap.QRESYNC_CLOSED", "");
     public static final HumanReadableText QRESYNC_VANISHED_WITHOUT_CHANGEDSINCE = new HumanReadableText("org.apache.james.imap.QRESYNC_VANISHED_WITHOUT_CHANGEDSINCE", "VANISHED used without CHANGEDSINCE");
 
+    public static final String UNSUFFICIENT_RIGHTS_DEFAULT_VALUE = "You need the {0} right to perform command {1} on mailbox {2}.";
     public static final String UNSUFFICIENT_RIGHTS_KEY = "org.apache.james.imap.UNSUFFICIENT_RIGHTS";
-    public static final String UNSUFFICIENT_RIGHTS_DEFAULT_VALUE = "You need the ''{0}'' right to perform command ''{1}'' on mailbox ''{2}''.";
-    
+
+    public static final String UNSUPPORTED_RIGHT_KEY = "org.apache.james.imap.UNSUPPORTED_RIGHT";
+    public static final String UNSUPPORTED_RIGHT_DEFAULT_VALUE = "The {0} right is not supported.";
+
     private final String defaultValue;
 
     private final String key;

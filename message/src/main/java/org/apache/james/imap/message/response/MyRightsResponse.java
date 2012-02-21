@@ -19,52 +19,48 @@
 
 package org.apache.james.imap.message.response;
 
-import java.util.Map.Entry;
-
 import org.apache.james.imap.api.ImapConstants;
 import org.apache.james.imap.api.message.response.ImapResponseMessage;
-import org.apache.james.mailbox.model.MailboxACL;
-import org.apache.james.mailbox.model.MailboxACL.MailboxACLEntryKey;
 import org.apache.james.mailbox.model.MailboxACL.MailboxACLRights;
 
 /**
- * ACL Response.
+ * MYRIGHTS Response.
  * 
+ * @author Peter Palaga
  */
-public final class ACLResponse implements ImapResponseMessage {
-    private final MailboxACL acl;
-
+public final class MyRightsResponse implements ImapResponseMessage {
     private final String mailboxName;
+    private final MailboxACLRights myRights;
 
-    public ACLResponse(String mailboxName, MailboxACL acl) {
+    public MyRightsResponse(String mailboxName, MailboxACLRights myRights) {
         super();
         this.mailboxName = mailboxName;
-        this.acl = acl;
+        this.myRights = myRights;
     }
 
     @Override
     public boolean equals(Object o) {
-        if (o instanceof ACLResponse) {
-            ACLResponse other = (ACLResponse) o;
-            return (this.acl == other.acl || (this.acl != null && this.acl.equals(other.acl)))
+        if (o instanceof MyRightsResponse) {
+            MyRightsResponse other = (MyRightsResponse) o;
+            return (this.myRights == other.myRights || (this.myRights != null && this.myRights.equals(other.myRights)))
                     && (this.mailboxName == other.mailboxName || (this.mailboxName != null && this.mailboxName.equals(other.mailboxName)))
                     ;
         }
         return false;
     }
 
-    public MailboxACL getAcl() {
-        return acl;
-    }
-
     public String getMailboxName() {
         return mailboxName;
+    }
+
+    public MailboxACLRights getMyRights() {
+        return myRights;
     }
 
     @Override
     public int hashCode() {
         final int PRIME = 31;
-        return PRIME * acl.hashCode() + mailboxName.hashCode();
+        return PRIME * myRights.hashCode() + mailboxName.hashCode();
     }
 
     @Override
@@ -72,16 +68,9 @@ public final class ACLResponse implements ImapResponseMessage {
         StringBuilder result = new StringBuilder()
         .append(ImapConstants.ACL_RESPONSE_NAME)
         .append(' ')
-        .append(mailboxName);
-        
-        for (Entry<MailboxACLEntryKey, MailboxACLRights> en : acl.getEntries().entrySet()) {
-            result
-            .append(' ')
-            .append(en.getKey().toString())
-            .append(' ')
-            .append(en.getValue().toString())
-            ;
-        }
+        .append(mailboxName)
+        .append(' ')
+        .append(myRights.toString());
         
         return result.toString();
     };

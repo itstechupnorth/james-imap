@@ -235,6 +235,10 @@ public interface ImapConstants {
 
     public static final String ACL_RESPONSE_NAME = "ACL";
 
+    public static final String LISTRIGHTS_RESPONSE_NAME = "LISTRIGHTS";
+    
+    public static final String MYRIGHTS_RESPONSE_NAME = "MYRIGHTS";
+
     public static final String NAME_ATTRIBUTE_NOINFERIORS = "\\Noinferiors";
 
     public static final String NAME_ATTRIBUTE_NOSELECT = "\\Noselect";

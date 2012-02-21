@@ -19,70 +19,69 @@
 
 package org.apache.james.imap.message.response;
 
-import java.util.Map.Entry;
+import java.util.Arrays;
 
 import org.apache.james.imap.api.ImapConstants;
 import org.apache.james.imap.api.message.response.ImapResponseMessage;
-import org.apache.james.mailbox.model.MailboxACL;
-import org.apache.james.mailbox.model.MailboxACL.MailboxACLEntryKey;
 import org.apache.james.mailbox.model.MailboxACL.MailboxACLRights;
 
 /**
- * ACL Response.
+ * LISTRIGHTS Response.
  * 
+ * @author Peter Palaga
  */
-public final class ACLResponse implements ImapResponseMessage {
-    private final MailboxACL acl;
+public final class ListRightsResponse implements ImapResponseMessage {
 
+    private final String identifier;
     private final String mailboxName;
+    private final MailboxACLRights[] rights;
 
-    public ACLResponse(String mailboxName, MailboxACL acl) {
+    public ListRightsResponse(String mailboxName, String identifier, MailboxACLRights[] rights) {
         super();
         this.mailboxName = mailboxName;
-        this.acl = acl;
+        this.identifier = identifier;
+        this.rights = rights;
     }
 
     @Override
     public boolean equals(Object o) {
-        if (o instanceof ACLResponse) {
-            ACLResponse other = (ACLResponse) o;
-            return (this.acl == other.acl || (this.acl != null && this.acl.equals(other.acl)))
-                    && (this.mailboxName == other.mailboxName || (this.mailboxName != null && this.mailboxName.equals(other.mailboxName)))
-                    ;
+        if (o instanceof ListRightsResponse) {
+            ListRightsResponse other = (ListRightsResponse) o;
+            return (this.mailboxName == other.mailboxName || (this.mailboxName != null && this.mailboxName.equals(other.mailboxName))) && (this.identifier == other.identifier || (this.identifier != null && this.identifier.equals(other.identifier))) && Arrays.equals(this.rights, other.rights);
         }
         return false;
     }
 
-    public MailboxACL getAcl() {
-        return acl;
+    public String getIdentifier() {
+        return identifier;
     }
 
     public String getMailboxName() {
         return mailboxName;
     }
 
+    public MailboxACLRights[] getRights() {
+        return rights;
+    }
+
     @Override
     public int hashCode() {
         final int PRIME = 31;
-        return PRIME * acl.hashCode() + mailboxName.hashCode();
+        int hashCode = (mailboxName == null ? 0 : mailboxName.hashCode());
+        hashCode = PRIME * hashCode + (identifier == null ? 0 : identifier.hashCode());
+        hashCode = PRIME * hashCode + (rights == null ? 0 : Arrays.hashCode(rights));
+
+        return hashCode;
     }
 
     @Override
     public String toString() {
-        StringBuilder result = new StringBuilder()
-        .append(ImapConstants.ACL_RESPONSE_NAME)
-        .append(' ')
-        .append(mailboxName);
-        
-        for (Entry<MailboxACLEntryKey, MailboxACLRights> en : acl.getEntries().entrySet()) {
-            result
-            .append(' ')
-            .append(en.getKey().toString())
-            .append(' ')
-            .append(en.getValue().toString())
-            ;
+        StringBuilder result = new StringBuilder().append(ImapConstants.LISTRIGHTS_RESPONSE_NAME).append(' ').append(mailboxName).append(' ').append(identifier);
+
+        for (MailboxACLRights optionalRightsGroup : rights) {
+            result.append(' ').append(optionalRightsGroup.toString());
         }
-        
+
         return result.toString();
     };
 
