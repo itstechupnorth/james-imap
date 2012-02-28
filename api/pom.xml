@@ -23,7 +23,7 @@
     <parent>
         <artifactId>apache-james-imap</artifactId>
         <groupId>org.apache.james</groupId>
-        <version>0.3-SNAPSHOT</version>
+        <version>0.3</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 

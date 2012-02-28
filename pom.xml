@@ -29,7 +29,7 @@
 
     <artifactId>apache-james-imap</artifactId>
     <groupId>org.apache.james</groupId>
-    <version>0.3-SNAPSHOT</version>
+    <version>0.3</version>
     <packaging>pom</packaging>
 
     <name>Apache James IMAP</name>
@@ -44,9 +44,9 @@
     </modules>
 
     <scm>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/james/imap/trunk</connection>
-        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/james/imap/trunk</developerConnection>
-        <url>http://svn.apache.org/viewcvs.cgi/james/imap/trunk?root=Apache-SVN</url>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/james/imap/tags/apache-james-imap-0.3</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/james/imap/tags/apache-james-imap-0.3</developerConnection>
+        <url>http://svn.apache.org/viewcvs.cgi/james/imap/trunk/tags/apache-james-imap-0.3?root=Apache-SVN</url>
     </scm>
 
     <distributionManagement>
