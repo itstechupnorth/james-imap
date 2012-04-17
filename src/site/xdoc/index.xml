@@ -21,7 +21,7 @@
 <document>
 
  <properties>
-  <title>Introduction</title>
+  <title>Apache James IMAP Introduction</title>
   <author email="server-dev@james.apache.org">Apache James IMAP</author>
  </properties>
 
@@ -35,6 +35,8 @@
     <p><a href='http://james.apache.org/server/rfclist/imap4/rfc2060.txt'>RFC 2060 IMAP4rev1</a> 
        is functionally complete, tested and usable. The data access layer is still 
        under optimization on performance perspectives. API is susceptible to change.</p>
+    <p>You can <a href="http://james.apache.org/download.cgi">download</a> current 0.3 release. 
+       The <a href="apidocs/">API</a> are susceptible to evolve.</p>
      <p>There are many extensions defined for IMAP (see a list <a href="http://www.iana.org/assignments/imap4-capabilities">here</a>)</p>
      <p>Apache James IMAP implements the following:</p>
      <ul>
@@ -52,7 +54,7 @@
        <li>AUTH=PLAIN (in release 0.2.1)</li>
        <li>SASL-IR (in release 0.2.1)</li>
        <li>ENABLE (in release 0.2.1)</li>
-       <li>CONDSTORE (RFC 4551 http://www.ietf.org/rfc/rfc4551.txt in trunk)</li>
+       <li>CONDSTORE (RFC 4551 http://www.ietf.org/rfc/rfc4551.txt in release 0.3)</li>
        <li>RESYNCH (RFC 5162 http://www.ietf.org/rfc/rfc5162.txt in trunk)</li>
      </ul>
      <p>We follow RFC2683 recommandations for our implementations:</p>
