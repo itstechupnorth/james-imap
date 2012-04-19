@@ -36,16 +36,16 @@
 
       <menu name="Documentation">
         <item name="Introduction" href="/index.html" />
-        <item name="Source Code" href="/source-code.html" />
+<!--         <item name="Source Code" href="/source-code.html" /> -->
       </menu>  
-     
+<!--      
       <menu name="References">
         <item name="Javadoc" href="/apidocs/index.html" />
         <item name="Issue Tracker" href="https://issues.apache.org/jira/browse/IMAP" />
-<!--        Report link is unavailable on hudson -->
-<!--        <item name="Reports" href="https://hudson.apache.org/hudson/view/G-L/view/James/job/imap-trunk-m2/site/" />-->
+       Report link is unavailable on hudson
+       <item name="Reports" href="https://hudson.apache.org/hudson/view/G-L/view/James/job/imap-trunk-m2/site/" />
       </menu>
-
+-->
 	</body>
 
 </project>
